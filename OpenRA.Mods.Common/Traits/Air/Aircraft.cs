@@ -514,7 +514,7 @@ namespace OpenRA.Mods.Common.Traits
 					continue;
 
 				var ai = actor.Info.TraitInfoOrDefault<AircraftInfo>();
-				if (ai == null || !ai.Repulsable || ai.CruiseAltitude != Info.CruiseAltitude)
+				if (ai == null || !ai.Repulsable || ai.CruiseAltitude != Info.CruiseAltitude || !actor.AppearsFriendlyTo(self))
 					continue;
 
 				repulsionForce += GetRepulsionForce(actor);
