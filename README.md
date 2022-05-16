@@ -1,5 +1,7 @@
 # OpenRA
 
+- 克隆自OpenRA引擎，本仓库用来实验3D素材。
+
 A Libre/Free Real Time Strategy game engine supporting early Westwood classics.
 
 * Website: [https://www.openra.net](https://www.openra.net)

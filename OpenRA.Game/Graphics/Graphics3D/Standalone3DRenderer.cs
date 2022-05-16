@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using GlmSharp;
-using OpenRA.Primitives;
 
 namespace OpenRA.Graphics
 {
@@ -26,9 +24,9 @@ namespace OpenRA.Graphics
 	public class Standalone3DRenderer : IDisposable
 	{
 		IVertexBuffer<Vertex3D> vertexBuffer;
-
 		public Standalone3DRenderer()
 		{
+
 			float[] vv =
 				{
 				-0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f, 0.0f,
