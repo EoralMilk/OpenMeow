@@ -24,13 +24,14 @@ namespace OpenRA
 	{
 		enum RenderType { None, World, UI }
 
-		public SpriteRenderer WorldSpriteRenderer { get; }
-		public RgbaSpriteRenderer WorldRgbaSpriteRenderer { get; }
-		public RgbaColorRenderer WorldRgbaColorRenderer { get; }
-		public ModelRenderer WorldModelRenderer { get; }
-		public RgbaColorRenderer RgbaColorRenderer { get; }
-		public SpriteRenderer SpriteRenderer { get; }
-		public RgbaSpriteRenderer RgbaSpriteRenderer { get; }
+		public Standalone3DRenderer Standalone3DRenderer { get; private set; }
+		public SpriteRenderer WorldSpriteRenderer { get; private set; }
+		public RgbaSpriteRenderer WorldRgbaSpriteRenderer { get; private set; }
+		public RgbaColorRenderer WorldRgbaColorRenderer { get; private set; }
+		public ModelRenderer WorldModelRenderer { get; private set; }
+		public RgbaColorRenderer RgbaColorRenderer { get; private set; }
+		public SpriteRenderer SpriteRenderer { get; private set; }
+		public RgbaSpriteRenderer RgbaSpriteRenderer { get; private set; }
 
 		public bool WindowHasInputFocus => Window.HasInputFocus;
 		public bool WindowIsSuspended => Window.IsSuspended;
@@ -92,6 +93,7 @@ namespace OpenRA
 			SpriteRenderer = new SpriteRenderer(this, Context.CreateShader("combined"));
 			RgbaSpriteRenderer = new RgbaSpriteRenderer(SpriteRenderer);
 			RgbaColorRenderer = new RgbaColorRenderer(SpriteRenderer);
+			Standalone3DRenderer = new Standalone3DRenderer();
 
 			tempBuffer = Context.CreateVertexBuffer(TempBufferSize);
 		}

@@ -6,7 +6,7 @@ using System.Text;
 
 namespace OpenRA.Graphics.Graphics3D
 {
-	struct Vertex
+	struct MeshVertex
 	{
 		public vec3 Position;
 		public vec3 Normal;
@@ -20,7 +20,7 @@ namespace OpenRA.Graphics.Graphics3D
 		public string Name;
 		public int CacheID;
 
-		public Vector<Vertex> Vertices;
+		public Vector<MeshVertex> Vertices;
 		public Vector<uint> Indices;
 	}
 
