@@ -1,5 +1,7 @@
 ﻿using System;
+using System.IO;
 using GlmSharp;
+using StbImageSharp;
 
 namespace OpenRA.Graphics
 {
@@ -23,9 +25,20 @@ namespace OpenRA.Graphics
 
 	public class Standalone3DRenderer : IDisposable
 	{
-		IVertexBuffer<Vertex3D> vertexBuffer;
+		//IVertexBuffer<Vertex3D> vertexBuffer;
+
+		public IVertexBuffer<Vertex> CreateVertexBuffer(int length)
+		{
+			return Game.Renderer.Context.CreateVertexBuffer(length);
+		}
+
 		public Standalone3DRenderer()
 		{
+			ImageResult image;
+			using (var stream = File.OpenRead("./texture/container.jpg"))
+			{
+				image = ImageResult.FromStream(stream, ColorComponents.RedGreenBlueAlpha);
+			}
 
 			float[] vv =
 				{
@@ -85,18 +98,19 @@ namespace OpenRA.Graphics
 					}
 					else if (k < 6)
 					{
-						tempVertex.Normal[k] = vv[i * 8 + k];
+						tempVertex.Normal[k - 3] = vv[i * 8 + k];
 					}
 					else
 					{
-						tempVertex.TexCoords[k] = vv[i * 8 + k];
+						tempVertex.TexCoords[k - 6] = vv[i * 8 + k];
 					}
 				}
 
 				vertex3Ds[i] = tempVertex;
 			}
 
-			vertexBuffer.SetData(vertex3Ds, vertexCount);
+		// ...
+
 		}
 
 		public void DrawTest()

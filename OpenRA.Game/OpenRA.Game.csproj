@@ -15,6 +15,7 @@
     <PackageReference Include="System.Threading.Channels" Version="6.0.0" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ThirdParty.GlmSharp\GlmSharp.csproj" />
+    <ProjectReference Include="..\ThirdParty.GlmSharpClone\ThirdParty.GlmSharpClone.csproj" />
+    <ProjectReference Include="..\ThirdParty.StbImageClone\ThirdParty.StbImageClone.csproj" />
   </ItemGroup>
 </Project>
