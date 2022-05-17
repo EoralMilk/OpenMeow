@@ -19,14 +19,12 @@ using OpenRA.Primitives;
 
 namespace OpenRA.Mods.Cnc.Graphics
 {
-	public sealed class VoxelLoader : IDisposable
+	public sealed class VxlLoader : IModelLoader
 	{
 		static readonly float[] ChannelSelect = { 0.75f, 0.25f, -0.25f, -0.75f };
 
-		readonly List<Vertex2D[]> vertices = new List<Vertex2D[]>();
-		readonly Cache<(string, string), Voxel> voxels;
-		readonly IReadOnlyFileSystem fileSystem;
-		IVertexBuffer<Vertex2D> vertexBuffer;
+		readonly List<Vertex[]> vertices = new List<Vertex[]>();
+		IVertexBuffer<Vertex> vertexBuffer;
 		int totalVertexCount;
 		int cachedVertexCount;
 
@@ -46,18 +44,56 @@ namespace OpenRA.Mods.Cnc.Graphics
 			return new SheetBuilder(SheetType.Indexed, allocate);
 		}
 
-		public VoxelLoader(IReadOnlyFileSystem fileSystem)
+		public VxlLoader()
 		{
-			this.fileSystem = fileSystem;
-			voxels = new Cache<(string, string), Voxel>(LoadFile);
-			vertices = new List<Vertex2D[]>();
+			vertices = new List<Vertex[]>();
 			totalVertexCount = 0;
 			cachedVertexCount = 0;
 
 			sheetBuilder = CreateSheetBuilder();
 		}
+		public bool TryLoadModel(IReadOnlyFileSystem fileSystem, string filename, out IModel model)
+		{
+			return TryLoadModel(fileSystem, filename, null, out model);
+		}
 
-		Vertex2D[] GenerateSlicePlane(int su, int sv, Func<int, int, VxlElement> first, Func<int, int, VxlElement> second, Func<int, int, float3> coord)
+		public bool TryLoadModel(IReadOnlyFileSystem fileSystem, string filename, MiniYaml yaml, out IModel model)
+		{
+			var fields = (yaml?.Value ?? filename).Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+
+			var vxl = fields[0].Trim();
+			var hva = vxl;
+
+			if (fields.Length > 1)
+				hva = fields[1].Trim();
+
+			if (!fileSystem.Exists(vxl))
+				vxl += ".vxl";
+
+			if (!fileSystem.Exists(hva))
+				hva += ".hva";
+
+			if (!fileSystem.Exists(vxl) || !fileSystem.Exists(hva))
+			{
+				model = null;
+				return false;
+			}
+
+			VxlReader vxlReader;
+			HvaReader hvaReader;
+
+			using (var s = fileSystem.Open(vxl))
+				vxlReader = new VxlReader(s);
+
+			using (var s = fileSystem.Open(hva))
+				hvaReader = new HvaReader(s, hva);
+
+			model = new VxlModel(this, vxlReader, hvaReader, (vxl, hva));
+
+			return true;
+		}
+
+		Vertex[] GenerateSlicePlane(int su, int sv, Func<int, int, VxlElement> first, Func<int, int, VxlElement> second, Func<int, int, float3> coord)
 		{
 			var colors = new byte[su * sv];
 			var normals = new byte[su * sv];
@@ -86,18 +122,18 @@ namespace OpenRA.Mods.Cnc.Graphics
 
 			var channelP = ChannelSelect[(int)s.Channel];
 			var channelC = ChannelSelect[(int)t.Channel];
-			return new Vertex2D[6]
+			return new Vertex[6]
 			{
-				new Vertex2D(coord(0, 0), s.Left, s.Top, t.Left, t.Top, channelP, channelC),
-				new Vertex2D(coord(su, 0), s.Right, s.Top, t.Right, t.Top, channelP, channelC),
-				new Vertex2D(coord(su, sv), s.Right, s.Bottom, t.Right, t.Bottom, channelP, channelC),
-				new Vertex2D(coord(su, sv), s.Right, s.Bottom, t.Right, t.Bottom, channelP, channelC),
-				new Vertex2D(coord(0, sv), s.Left, s.Bottom, t.Left, t.Bottom, channelP, channelC),
-				new Vertex2D(coord(0, 0), s.Left, s.Top, t.Left, t.Top, channelP, channelC)
+				new Vertex(coord(0, 0), s.Left, s.Top, t.Left, t.Top, channelP, channelC),
+				new Vertex(coord(su, 0), s.Right, s.Top, t.Right, t.Top, channelP, channelC),
+				new Vertex(coord(su, sv), s.Right, s.Bottom, t.Right, t.Bottom, channelP, channelC),
+				new Vertex(coord(su, sv), s.Right, s.Bottom, t.Right, t.Bottom, channelP, channelC),
+				new Vertex(coord(0, sv), s.Left, s.Bottom, t.Left, t.Bottom, channelP, channelC),
+				new Vertex(coord(0, 0), s.Left, s.Top, t.Left, t.Top, channelP, channelC)
 			};
 		}
 
-		IEnumerable<Vertex2D[]> GenerateSlicePlanes(VxlLimb l)
+		IEnumerable<Vertex[]> GenerateSlicePlanes(VxlLimb l)
 		{
 			Func<int, int, int, VxlElement> get = (x, y, z) =>
 			{
@@ -170,7 +206,7 @@ namespace OpenRA.Mods.Cnc.Graphics
 
 		public ModelRenderData GenerateRenderData(VxlLimb l)
 		{
-			Vertex2D[] v;
+			Vertex[] v;
 			try
 			{
 				v = GenerateSlicePlanes(l).SelectMany(x => x).ToArray();
@@ -189,18 +225,18 @@ namespace OpenRA.Mods.Cnc.Graphics
 			var start = totalVertexCount;
 			var count = v.Length;
 			totalVertexCount += count;
-			return new ModelRenderData(start, count, sheetBuilder.Current);
+			return new ModelRenderData(start, count, Game.Renderer.GetShader<ModelShaderBindings>(), VertexBuffer, new Dictionary<string, ITexture>() { { "DiffuseTexture", sheetBuilder.Current.GetTexture() } });
 		}
 
 		public void RefreshBuffer()
 		{
 			vertexBuffer?.Dispose();
-			vertexBuffer = Game.Renderer.CreateVertex2DBuffer(totalVertexCount);
+			vertexBuffer = Game.Renderer.CreateVertexBuffer<Vertex>(totalVertexCount);
 			vertexBuffer.SetData(vertices.SelectMany(v => v).ToArray(), totalVertexCount);
 			cachedVertexCount = totalVertexCount;
 		}
 
-		public IVertexBuffer<Vertex2D> VertexBuffer
+		public IVertexBuffer<Vertex> VertexBuffer
 		{
 			get
 			{
@@ -208,23 +244,6 @@ namespace OpenRA.Mods.Cnc.Graphics
 					RefreshBuffer();
 				return vertexBuffer;
 			}
-		}
-
-		Voxel LoadFile((string Vxl, string Hva) files)
-		{
-			VxlReader vxl;
-			HvaReader hva;
-			using (var s = fileSystem.Open(files.Vxl + ".vxl"))
-				vxl = new VxlReader(s);
-
-			using (var s = fileSystem.Open(files.Hva + ".hva"))
-				hva = new HvaReader(s, files.Hva + ".hva");
-			return new Voxel(this, vxl, hva, files);
-		}
-
-		public Voxel Load(string vxl, string hva)
-		{
-			return voxels[(vxl, hva)];
 		}
 
 		public void Finish()

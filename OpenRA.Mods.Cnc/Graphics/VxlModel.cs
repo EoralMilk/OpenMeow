@@ -25,7 +25,7 @@ namespace OpenRA.Mods.Cnc.Graphics
 		public ModelRenderData RenderData;
 	}
 
-	public class Voxel : IModel
+	public class VxlModel : IModel
 	{
 		readonly Limb[] limbData;
 		readonly float[] transforms;
@@ -35,7 +35,7 @@ namespace OpenRA.Mods.Cnc.Graphics
 		uint IModel.Frames => frames;
 		uint IModel.Sections => limbs;
 
-		public Voxel(VoxelLoader loader, VxlReader vxl, HvaReader hva, (string Vxl, string Hva) files)
+		public VxlModel(VxlLoader loader, VxlReader vxl, HvaReader hva, (string Vxl, string Hva) files)
 		{
 			if (vxl.LimbCount != hva.LimbCount)
 				throw new InvalidOperationException($"{files.Vxl}.vxl and {files.Hva}.hva limb counts don't match.");
@@ -157,5 +157,9 @@ namespace OpenRA.Mods.Cnc.Graphics
 				return Rectangle.FromLTRB(-r, -r, r, r);
 			}
 		}
+		public void Dispose()
+		{
+		}
+
 	}
 }

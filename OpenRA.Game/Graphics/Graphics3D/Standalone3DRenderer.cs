@@ -26,10 +26,11 @@ namespace OpenRA.Graphics
 	public class Standalone3DRenderer : IDisposable
 	{
 		IVertexBuffer<Vertex3D> vertexBuffer;
+		Vertex3D[] vertex3Ds;
 
 		public IVertexBuffer<Vertex3D> CreateVertexBuffer(int length)
 		{
-			return Game.Renderer.CreateVertex3DBuffer(length);
+			return Game.Renderer.CreateVertexBuffer<Vertex3D>(length);
 		}
 
 		public Standalone3DRenderer()
@@ -85,7 +86,7 @@ namespace OpenRA.Graphics
 				-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  0.0f, 1.0f
 				};
 			int vertexCount = vv.Length / 8;
-			Vertex3D[] vertex3Ds = new Vertex3D[vertexCount];
+			vertex3Ds = new Vertex3D[vertexCount];
 
 			for (int i = 0; i < vertexCount; i++)
 			{
@@ -108,18 +109,22 @@ namespace OpenRA.Graphics
 					}
 				}
 
-				Vertex3D tempVertex = new Vertex3D(pos, normal, uv);
-				vertex3Ds[i] = tempVertex;
+				Console.WriteLine("i = " + i + "vertexCount = " + vertexCount);
+				vertex3Ds[i] = new Vertex3D(pos, normal, uv); ;
 			}
 
-			vertexBuffer = CreateVertexBuffer(vertexCount);
-			vertexBuffer.SetData(vertex3Ds, vertexCount);
+			Console.WriteLine("vertex3Ds 完成");
+
 			// ...
 
 		}
 
 		public void DrawTest()
 		{
+			//vertexBuffer?.Dispose();
+
+			//vertexBuffer = Game.Renderer.CreateVertexBuffer<Vertex3D>(vertex3Ds.Length);
+			//vertexBuffer.SetData(vertex3Ds, vertex3Ds.Length);
 			return;
 		}
 

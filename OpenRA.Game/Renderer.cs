@@ -44,7 +44,7 @@ namespace OpenRA
 		internal int SheetSize { get; }
 		internal int TempBufferSize { get; }
 
-		readonly IVertexBuffer<Vertex2D> tempBuffer;
+		readonly IVertexBuffer<Vertex> tempBuffer;
 		readonly Stack<Rectangle> scissorState = new Stack<Rectangle>();
 
 		IFrameBuffer screenBuffer;
@@ -86,16 +86,16 @@ namespace OpenRA
 			TempBufferSize = graphicSettings.BatchSize;
 			SheetSize = graphicSettings.SheetSize;
 
-			WorldSpriteRenderer = new SpriteRenderer(this, Context.CreateShader("combined"));
+			WorldSpriteRenderer = new SpriteRenderer(this, Context.CreateUnsharedShader<CombinedShaderBindings>());
 			WorldRgbaSpriteRenderer = new RgbaSpriteRenderer(WorldSpriteRenderer);
 			WorldRgbaColorRenderer = new RgbaColorRenderer(WorldSpriteRenderer);
-			WorldModelRenderer = new ModelRenderer(this, Context.CreateShader("model"));
-			SpriteRenderer = new SpriteRenderer(this, Context.CreateShader("combined"));
+			WorldModelRenderer = new ModelRenderer(this);
+			SpriteRenderer = new SpriteRenderer(this, Context.CreateUnsharedShader<CombinedShaderBindings>());
 			RgbaSpriteRenderer = new RgbaSpriteRenderer(SpriteRenderer);
 			RgbaColorRenderer = new RgbaColorRenderer(SpriteRenderer);
 			Standalone3DRenderer = new Standalone3DRenderer();
 
-			tempBuffer = Context.CreateVertex2DBuffer(TempBufferSize);
+			tempBuffer = Context.CreateVertexBuffer<Vertex>(TempBufferSize);
 		}
 
 		static Size GetResolution(GraphicSettings graphicsSettings)
@@ -329,17 +329,19 @@ namespace OpenRA
 			renderType = RenderType.None;
 		}
 
-		public void DrawBatch(Vertex2D[] vertices, int numVertices, PrimitiveType type)
+		public void DrawBatch(IShader shader, Vertex[] vertices, int numVertices, PrimitiveType type)
 		{
 			tempBuffer.SetData(vertices, numVertices);
-			DrawBatch(tempBuffer, 0, numVertices, type);
+			DrawBatch(shader, tempBuffer, 0, numVertices, type);
 		}
 
-		public void DrawBatch<T>(IVertexBuffer<T> vertices,
+		public void DrawBatch(IShader shader, IVertexBuffer vertices,
 			int firstVertex, int numVertices, PrimitiveType type)
-			where T : struct
 		{
 			vertices.Bind();
+
+			// Future notice: using ARB_vertex_array_object makes all the gl calls in LayoutAttributes obsolete.
+			shader.LayoutAttributes();
 			Context.DrawPrimitives(type, firstVertex, numVertices);
 			PerfHistory.Increment("batches", 1);
 		}
@@ -371,14 +373,20 @@ namespace OpenRA
 			}
 		}
 
-		public IVertexBuffer<Vertex2D> CreateVertex2DBuffer(int length)
+		public IVertexBuffer<T> CreateVertexBuffer<T>(int length)
+			where T : struct
 		{
-			return Context.CreateVertex2DBuffer(length);
+			return Context.CreateVertexBuffer<T>(length);
 		}
 
-		public IVertexBuffer<Vertex3D> CreateVertex3DBuffer(int length)
+		public IShader GetShader<T>()
+			where T : IShaderBindings
 		{
-			return Context.CreateVertex3DBuffer(length);
+			return Context.CreateShader<T>();
+		}
+		public ITexture CreateTexture()
+		{
+			return Context.CreateTexture();
 		}
 
 		public void EnableScissor(Rectangle rect)

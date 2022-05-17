@@ -652,7 +652,7 @@ namespace OpenRA
 			{
 				++RenderFrame;
 
-				// Prepare renderables (i.e. render voxels) before calling BeginFrame
+				// Prepare renderables (i.e. render models) before calling BeginFrame
 				using (new PerfSample("render_prepare"))
 				{
 					Renderer.WorldModelRenderer.BeginFrame();

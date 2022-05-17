@@ -131,7 +131,7 @@ Background@ASSETBROWSER_PANEL:
 					Width: PARENT_RIGHT
 					Height: PARENT_BOTTOM
 					AspectRatio: 1
-				Model@VOXEL:
+				Model@MODEL:
 					Width: PARENT_RIGHT
 					Height: PARENT_BOTTOM
 					Palette: colorpicker
@@ -215,7 +215,7 @@ Background@ASSETBROWSER_PANEL:
 					Height: 25
 					Font: TinyBold
 					Align: Left
-		Container@VOXEL_SELECTOR:
+		Container@MODEL_SELECTOR:
 			X: 226
 			Y: PARENT_BOTTOM - 75
 			Children:

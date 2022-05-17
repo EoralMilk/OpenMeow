@@ -23,7 +23,7 @@ namespace OpenRA.Graphics
 		readonly Renderer renderer;
 		readonly IShader shader;
 
-		readonly Vertex2D[] vertices;
+		readonly Vertex[] vertices;
 		readonly Sheet[] sheets = new Sheet[SheetCount];
 
 		BlendMode currentBlend = BlendMode.Alpha;
@@ -34,7 +34,7 @@ namespace OpenRA.Graphics
 		{
 			this.renderer = renderer;
 			this.shader = shader;
-			vertices = new Vertex2D[renderer.TempBufferSize];
+			vertices = new Vertex[renderer.TempBufferSize];
 		}
 
 		public void Flush()
@@ -49,7 +49,8 @@ namespace OpenRA.Graphics
 
 				renderer.Context.SetBlendMode(currentBlend);
 				shader.PrepareRender();
-				renderer.DrawBatch(vertices, nv, PrimitiveType.TriangleList);
+				//renderer.DrawBatch(vertices, nv, PrimitiveType.TriangleList);
+				renderer.DrawBatch(shader, vertices, nv, PrimitiveType.TriangleList);
 				renderer.Context.SetBlendMode(BlendMode.None);
 
 				nv = 0;
@@ -164,7 +165,7 @@ namespace OpenRA.Graphics
 			nv += 6;
 		}
 
-		public void DrawVertexBuffer(IVertexBuffer<Vertex2D> buffer, int start, int length, PrimitiveType type, IEnumerable<Sheet> sheets, BlendMode blendMode)
+		public void DrawVertexBuffer(IVertexBuffer buffer, int start, int length, PrimitiveType type, IEnumerable<Sheet> sheets, BlendMode blendMode)
 		{
 			var i = 0;
 			foreach (var s in sheets)
@@ -178,7 +179,7 @@ namespace OpenRA.Graphics
 
 			renderer.Context.SetBlendMode(blendMode);
 			shader.PrepareRender();
-			renderer.DrawBatch(buffer, start, length, type);
+			renderer.DrawBatch(shader, buffer, start, length, type);
 			renderer.Context.SetBlendMode(BlendMode.None);
 		}
 
@@ -189,7 +190,7 @@ namespace OpenRA.Graphics
 		}
 
 		// For RGBAColorRenderer
-		internal void DrawRGBAVertices(Vertex2D[] v, BlendMode blendMode)
+		internal void DrawRGBAVertices(Vertex[] v, BlendMode blendMode)
 		{
 			renderer.CurrentBatchRenderer = this;
 

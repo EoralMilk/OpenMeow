@@ -14,7 +14,7 @@ using System.Runtime.InteropServices;
 namespace OpenRA.Graphics
 {
 	[StructLayout(LayoutKind.Sequential)]
-	public readonly struct Vertex2D
+	public readonly struct Vertex
 	{
 		// 3d position
 		public readonly float X, Y, Z;
@@ -28,16 +28,16 @@ namespace OpenRA.Graphics
 		// Color tint
 		public readonly float R, G, B, A;
 
-		public Vertex2D(in float3 xyz, float s, float t, float u, float v, float p, float c)
+		public Vertex(in float3 xyz, float s, float t, float u, float v, float p, float c)
 			: this(xyz.X, xyz.Y, xyz.Z, s, t, u, v, p, c, float3.Ones, 1f) { }
 
-		public Vertex2D(in float3 xyz, float s, float t, float u, float v, float p, float c, in float3 tint, float a)
+		public Vertex(in float3 xyz, float s, float t, float u, float v, float p, float c, in float3 tint, float a)
 			: this(xyz.X, xyz.Y, xyz.Z, s, t, u, v, p, c, tint.X, tint.Y, tint.Z, a) { }
 
-		public Vertex2D(float x, float y, float z, float s, float t, float u, float v, float p, float c, in float3 tint, float a)
+		public Vertex(float x, float y, float z, float s, float t, float u, float v, float p, float c, in float3 tint, float a)
 			: this(x, y, z, s, t, u, v, p, c, tint.X, tint.Y, tint.Z, a) { }
 
-		public Vertex2D(float x, float y, float z, float s, float t, float u, float v, float p, float c, float r, float g, float b, float a)
+		public Vertex(float x, float y, float z, float s, float t, float u, float v, float p, float c, float r, float g, float b, float a)
 		{
 			X = x; Y = y; Z = z;
 			S = s; T = t;

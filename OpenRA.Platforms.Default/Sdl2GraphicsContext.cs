@@ -10,6 +10,7 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
 using OpenRA.Graphics;
 using OpenRA.Primitives;
 using SDL2;
@@ -21,6 +22,7 @@ namespace OpenRA.Platforms.Default
 		readonly Sdl2PlatformWindow window;
 		bool disposed;
 		IntPtr context;
+		readonly Dictionary<Type, IShader> shaders = new Dictionary<Type, IShader>();
 
 		public Sdl2GraphicsContext(Sdl2PlatformWindow window)
 		{
@@ -51,26 +53,21 @@ namespace OpenRA.Platforms.Default
 				OpenGL.CheckGLError();
 			}
 
-			OpenGL.glEnableVertexAttribArray(Shader.VertexPosAttributeIndex);
-			OpenGL.CheckGLError();
-			OpenGL.glEnableVertexAttribArray(Shader.TexCoordAttributeIndex);
-			OpenGL.CheckGLError();
-			OpenGL.glEnableVertexAttribArray(Shader.TexMetadataAttributeIndex);
-			OpenGL.CheckGLError();
-			OpenGL.glEnableVertexAttribArray(Shader.TintAttributeIndex);
-			OpenGL.CheckGLError();
+			//OpenGL.glEnableVertexAttribArray(Shader.VertexPosAttributeIndex);
+			//OpenGL.CheckGLError();
+			//OpenGL.glEnableVertexAttribArray(Shader.TexCoordAttributeIndex);
+			//OpenGL.CheckGLError();
+			//OpenGL.glEnableVertexAttribArray(Shader.TexMetadataAttributeIndex);
+			//OpenGL.CheckGLError();
+			//OpenGL.glEnableVertexAttribArray(Shader.TintAttributeIndex);
+			//OpenGL.CheckGLError();
 		}
 
-		public IVertexBuffer<Vertex2D> CreateVertex2DBuffer(int size)
+		public IVertexBuffer<T> CreateVertexBuffer<T>(int size)
+				where T : struct
 		{
 			VerifyThreadAffinity();
-			return new VertexBuffer2D<Vertex2D>(size);
-		}
-
-		public IVertexBuffer<Vertex3D> CreateVertex3DBuffer(int length)
-		{
-			VerifyThreadAffinity();
-			return new VertexBuffer3D<Vertex3D>(length);
+			return new VertexBuffer<T>(size);
 		}
 
 		public ITexture CreateTexture()
@@ -97,10 +94,30 @@ namespace OpenRA.Platforms.Default
 			return new FrameBuffer(s, texture, clearColor);
 		}
 
-		public IShader CreateShader(string name)
+		public IShader CreateUnsharedShader(Type type)
+		{
+			return new Shader((IShaderBindings)Activator.CreateInstance(type));
+		}
+
+		public IShader CreateUnsharedShader<T>() where T : IShaderBindings
+		{
+			return CreateUnsharedShader(typeof(T));
+		}
+
+		public IShader CreateShader(Type type)
 		{
 			VerifyThreadAffinity();
-			return new Shader(name);
+
+			if (!shaders.ContainsKey(type))
+				shaders.Add(type, new Shader((IShaderBindings)Activator.CreateInstance(type)));
+
+			return shaders[type];
+		}
+
+		public IShader CreateShader<T>()
+			where T : IShaderBindings
+		{
+			return CreateShader(typeof(T));
 		}
 
 		public void EnableScissor(int x, int y, int width, int height)
