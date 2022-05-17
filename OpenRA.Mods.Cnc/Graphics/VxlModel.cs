@@ -32,6 +32,7 @@ namespace OpenRA.Mods.Cnc.Graphics
 		readonly uint frames;
 		readonly uint limbs;
 
+		public NormalType NormalType { get; set; }
 		uint IModel.Frames => frames;
 		uint IModel.Sections => limbs;
 
@@ -54,6 +55,7 @@ namespace OpenRA.Mods.Cnc.Graphics
 				l.Size = (byte[])vl.Size.Clone();
 				l.RenderData = loader.GenerateRenderData(vxl.Limbs[i]);
 				limbData[i] = l;
+				NormalType = vl.Type;
 			}
 		}
 

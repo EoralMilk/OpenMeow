@@ -19,6 +19,7 @@ in vec3 aVertexTint;
 out vec4 vTexCoord;
 out vec4 vChannelMask;
 out vec4 vNormalsMask;
+out mat4 transMat;
 #endif
 
 vec4 DecodeMask(float x)
@@ -35,4 +36,5 @@ void main()
 	vTexCoord = aVertexTexCoord;
 	vChannelMask = DecodeMask(aVertexTexMetadata.s);
 	vNormalsMask = DecodeMask(aVertexTexMetadata.t);
+	transMat = TransformMatrix;
 }

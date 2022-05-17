@@ -1,6 +1,6 @@
 #region Copyright & License Information
 /*
- * Copyright 2007-2022 The OpenRA Developers (see AUTHORS)
+ * Copyright 2007-2020 The OpenRA Developers (see AUTHORS)
  * This file is part of OpenRA, which is free software. It is made
  * available to you under the terms of the GNU General Public License
  * as published by the Free Software Foundation, either version 3 of
@@ -43,7 +43,7 @@ namespace OpenRA.Graphics
 		static readonly float[] FlipMtx = Util.ScaleMatrix(1, -1, 1);
 		static readonly float[] ShadowScaleFlipMtx = Util.ScaleMatrix(2, -2, 2);
 		static readonly float[] GroundNormal = { 0, 0, 1, 1 };
-
+		static float[] WorldLightDir = new float[] { 0, 0, -1 };
 		readonly Renderer renderer;
 
 		readonly Dictionary<Sheet, IFrameBuffer> mappedBuffers = new Dictionary<Sheet, IFrameBuffer>();
@@ -212,13 +212,14 @@ namespace OpenRA.Graphics
 						// Transform light vector from shadow -> world -> limb coords
 						var lightDirection = ExtractRotationVector(Util.MatrixMultiply(it, lightTransform));
 
+						// ugly fix normal palette bug temply
+						normals = FixNoramlPalette(wr,m.Model);
 						Render(rd, Util.MatrixMultiply(transform, t), lightDirection,
-							lightAmbientColor, lightDiffuseColor, color.TextureMidIndex, normals.TextureMidIndex);
-
+							lightAmbientColor, lightDiffuseColor, color.TextureMidIndex, normals.TextureMidIndex, color.VplStartIndex(), color.HardwardPaletteHeight());
 						// Disable shadow normals by forcing zero diffuse and identity ambient light
 						if (m.ShowShadow)
 							Render(rd, Util.MatrixMultiply(shadow, t), lightDirection,
-								ShadowAmbient, ShadowDiffuse, shadowPalette.TextureMidIndex, normals.TextureMidIndex);
+								ShadowAmbient, ShadowDiffuse, shadowPalette.TextureMidIndex, normals.TextureMidIndex, color.VplStartIndex(), color.HardwardPaletteHeight());
 					}
 				}
 			}));
@@ -227,6 +228,29 @@ namespace OpenRA.Graphics
 			screenLightVector = Util.MatrixVectorMultiply(cameraTransform, screenLightVector);
 			return new ModelRenderProxy(sprite, shadowSprite, screenCorners, -screenLightVector[2] / screenLightVector[1]);
 		}
+
+		static PaletteReference FixNoramlPalette(WorldRenderer wr, IModel model)
+		{
+			var p = model.GetType().GetProperty("NormalType");
+			int normalType = (int)p.GetValue(model);
+			PaletteReference ret = null;
+			if (normalType == 2)
+			{
+				ret = wr.Palette("ts-normals");
+			}
+			else if (normalType == 4)
+			{
+				ret = wr.Palette("normals");
+			}
+			else
+			{
+				ret = null;
+				Console.WriteLine("Cant Find This Normal");
+			}
+
+			return ret;
+		}
+
 
 		static void CalculateSpriteGeometry(float2 tl, float2 br, float scale, out Size size, out int2 offset)
 		{
@@ -265,11 +289,10 @@ namespace OpenRA.Graphics
 			ModelRenderData renderData,
 			float[] t, float[] lightDirection,
 			float[] ambientLight, float[] diffuseLight,
-			float colorPaletteTextureMidIndex, float normalsPaletteTextureMidIndex)
+			float colorPaletteTextureMidIndex, float normalsPaletteTextureMidIndex, int vplStart = 0, int paletteCount = 0)
 		{
 			var currentShader = renderData.Shader;
 
-			// Future notice: using ARB_Uniform_Buffer_Object makes all the gl calls obsolete.
 			currentShader.SetTexture("Palette", palette);
 
 			if (view != null)
@@ -280,6 +303,8 @@ namespace OpenRA.Graphics
 			currentShader.SetVec("LightDirection", lightDirection, 4);
 			currentShader.SetVec("AmbientLight", ambientLight, 3);
 			currentShader.SetVec("DiffuseLight", diffuseLight, 3);
+			currentShader.SetVec("VplInfo", vplStart, paletteCount);
+			currentShader.SetVec("WorldLight", WorldLightDir, 3);
 
 			currentShader.SetRenderData(renderData);
 

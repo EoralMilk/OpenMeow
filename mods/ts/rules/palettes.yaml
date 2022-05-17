@@ -126,7 +126,14 @@
 		Name: shroud
 	VoxelNormalsPalette@normals:
 		Name: normals
+		Type: RedAlert2
+	VoxelNormalsPalette@ts-normals:
+		Name: ts-normals
 		Type: TiberianSun
+	PaletteFromVPL@vpl:
+		Name: vpl
+		FilePath: voxels.vpl
+		AllowModifiers: true
 	FixedColorPalette@GreenTiberium:
 		Base: player
 		Name: greentiberium
