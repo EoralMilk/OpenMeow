@@ -212,7 +212,7 @@ namespace OpenRA.Graphics
 						// Transform light vector from shadow -> world -> limb coords
 						var lightDirection = ExtractRotationVector(Util.MatrixMultiply(it, lightTransform));
 
-						Render(rd, Util.MatrixMultiply(shadow, t), lightDirection,
+						Render(rd, Util.MatrixMultiply(transform, t), lightDirection,
 							lightAmbientColor, lightDiffuseColor, color.TextureMidIndex, normals.TextureMidIndex);
 
 						// Disable shadow normals by forcing zero diffuse and identity ambient light

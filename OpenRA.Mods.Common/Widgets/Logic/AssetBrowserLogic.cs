@@ -118,8 +118,8 @@ namespace OpenRA.Mods.Common.Widgets.Logic
 				modelWidget.GetPalette = () => currentPalette;
 				modelWidget.GetPlayerPalette = () => currentPalette;
 				modelWidget.GetRotation = () => modelOrientation;
-				modelWidget.IsVisible = () => !isVideoLoaded && !isLoadError && currentModel != null;
 				modelWidget.GetScale = () => modelScale;
+				modelWidget.IsVisible = () => !isVideoLoaded && !isLoadError && currentModel != null;
 			}
 
 			var errorLabelWidget = panel.GetOrNull("ERROR");

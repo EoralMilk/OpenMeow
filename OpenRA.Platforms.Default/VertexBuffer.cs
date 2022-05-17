@@ -55,29 +55,6 @@ namespace OpenRA.Platforms.Default
 			}
 		}
 
-		public VertexBuffer(T[] data)
-		{
-			OpenGL.glGenBuffers(1, out buffer);
-			OpenGL.CheckGLError();
-			Bind();
-			var dataptr = GCHandle.Alloc(data, GCHandleType.Pinned);
-
-			try
-			{
-				// Generates a buffer with uninitialized memory.
-				OpenGL.glBufferData(OpenGL.GL_ARRAY_BUFFER,
-						new IntPtr(VertexSize * data.Length),
-						dataptr.AddrOfPinnedObject(),
-						OpenGL.GL_STATIC_DRAW);
-			}
-			finally
-			{
-				dataptr.Free();
-			}
-
-			OpenGL.CheckGLError();
-		}
-
 		public void SetData(T[] data, int length)
 		{
 			SetData(data, 0, 0, length);
