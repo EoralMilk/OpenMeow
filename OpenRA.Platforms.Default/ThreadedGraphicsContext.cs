@@ -25,7 +25,7 @@ namespace OpenRA.Platforms.Default
 	sealed class ThreadedGraphicsContext : IGraphicsContext
 	{
 		// PERF: Maintain several object pools to reduce allocations.
-		readonly Stack<Vertex[]> verticesPool = new Stack<Vertex[]>();
+		readonly Stack<Vertex2D[]> verticesPool = new Stack<Vertex2D[]>();
 		readonly Stack<Message> messagePool = new Stack<Message>();
 		readonly Queue<Message> messages = new Queue<Message>();
 
@@ -45,7 +45,7 @@ namespace OpenRA.Platforms.Default
 		Func<ITexture> getCreateTexture;
 		Func<object, IFrameBuffer> getCreateFrameBuffer;
 		Func<object, IShader> getCreateShader;
-		Func<object, IVertexBuffer<Vertex>> getCreateVertexBuffer;
+		Func<object, IVertexBuffer<Vertex2D>> getCreateVertexBuffer;
 		Action<object> doDrawPrimitives;
 		Action<object> doEnableScissor;
 		Action<object> doSetBlendMode;
@@ -93,7 +93,7 @@ namespace OpenRA.Platforms.Default
 								context.CreateFrameBuffer(t.Item1, (ITextureInternal)CreateTexture(), t.Item2));
 						};
 					getCreateShader = name => new ThreadedShader(this, context.CreateShader((string)name));
-					getCreateVertexBuffer = length => new ThreadedVertexBuffer(this, context.CreateVertexBuffer((int)length));
+					getCreateVertexBuffer = length => new ThreadedVertexBuffer(this, context.CreateVertex2DBuffer((int)length));
 					doDrawPrimitives =
 						 tuple =>
 						 {
@@ -139,16 +139,16 @@ namespace OpenRA.Platforms.Default
 			}
 		}
 
-		internal Vertex[] GetVertices(int size)
+		internal Vertex2D[] GetVertices(int size)
 		{
 			lock (verticesPool)
 				if (size <= BatchSize && verticesPool.Count > 0)
 					return verticesPool.Pop();
 
-			return new Vertex[size < BatchSize ? BatchSize : size];
+			return new Vertex2D[size < BatchSize ? BatchSize : size];
 		}
 
-		internal void ReturnVertices(Vertex[] vertices)
+		internal void ReturnVertices(Vertex2D[] vertices)
 		{
 			if (vertices.Length == BatchSize)
 				lock (verticesPool)
@@ -399,7 +399,7 @@ namespace OpenRA.Platforms.Default
 			return Send(getCreateTexture);
 		}
 
-		public IVertexBuffer<Vertex> CreateVertexBuffer(int length)
+		public IVertexBuffer<Vertex2D> CreateVertex2DBuffer(int length)
 		{
 			return Send(getCreateVertexBuffer, length);
 		}
@@ -495,7 +495,7 @@ namespace OpenRA.Platforms.Default
 		}
 	}
 
-	class ThreadedVertexBuffer : IVertexBuffer<Vertex>
+	class ThreadedVertexBuffer : IVertexBuffer<Vertex2D>
 	{
 		readonly ThreadedGraphicsContext device;
 		readonly Action bind;
@@ -504,12 +504,12 @@ namespace OpenRA.Platforms.Default
 		readonly Func<object, object> setData3;
 		readonly Action dispose;
 
-		public ThreadedVertexBuffer(ThreadedGraphicsContext device, IVertexBuffer<Vertex> vertexBuffer)
+		public ThreadedVertexBuffer(ThreadedGraphicsContext device, IVertexBuffer<Vertex2D> vertexBuffer)
 		{
 			this.device = device;
 			bind = vertexBuffer.Bind;
-			setData1 = tuple => { var t = (ValueTuple<Vertex[], int>)tuple; vertexBuffer.SetData(t.Item1, t.Item2); device.ReturnVertices(t.Item1); };
-			setData2 = tuple => { var t = (ValueTuple<Vertex[], int, int, int>)tuple; vertexBuffer.SetData(t.Item1, t.Item2, t.Item3, t.Item4); device.ReturnVertices(t.Item1); };
+			setData1 = tuple => { var t = (ValueTuple<Vertex2D[], int>)tuple; vertexBuffer.SetData(t.Item1, t.Item2); device.ReturnVertices(t.Item1); };
+			setData2 = tuple => { var t = (ValueTuple<Vertex2D[], int, int, int>)tuple; vertexBuffer.SetData(t.Item1, t.Item2, t.Item3, t.Item4); device.ReturnVertices(t.Item1); };
 			setData3 = tuple => { setData2(tuple); return null; };
 			dispose = vertexBuffer.Dispose;
 		}
@@ -519,14 +519,14 @@ namespace OpenRA.Platforms.Default
 			device.Post(bind);
 		}
 
-		public void SetData(Vertex[] vertices, int length)
+		public void SetData(Vertex2D[] vertices, int length)
 		{
 			var buffer = device.GetVertices(length);
 			Array.Copy(vertices, buffer, length);
 			device.Post(setData1, (buffer, length));
 		}
 
-		public void SetData(Vertex[] vertices, int offset, int start, int length)
+		public void SetData(Vertex2D[] vertices, int offset, int start, int length)
 		{
 			if (length <= device.BatchSize)
 			{

@@ -115,7 +115,7 @@ namespace OpenRA.Mods.Cnc.Graphics
 			return models[model].ContainsKey(sequence);
 		}
 
-		public IVertexBuffer<Vertex> VertexBuffer => loader.VertexBuffer;
+		public IVertexBuffer<Vertex2D> VertexBuffer => loader.VertexBuffer;
 
 		public void Dispose()
 		{

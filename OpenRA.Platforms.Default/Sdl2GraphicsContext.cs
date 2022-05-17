@@ -61,10 +61,10 @@ namespace OpenRA.Platforms.Default
 			OpenGL.CheckGLError();
 		}
 
-		public IVertexBuffer<Vertex> CreateVertexBuffer(int size)
+		public IVertexBuffer<Vertex2D> CreateVertex2DBuffer(int size)
 		{
 			VerifyThreadAffinity();
-			return new VertexBuffer<Vertex>(size);
+			return new VertexBuffer<Vertex2D>(size);
 		}
 
 		public ITexture CreateTexture()

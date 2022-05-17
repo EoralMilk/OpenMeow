@@ -44,7 +44,7 @@ namespace OpenRA
 		internal int SheetSize { get; }
 		internal int TempBufferSize { get; }
 
-		readonly IVertexBuffer<Vertex> tempBuffer;
+		readonly IVertexBuffer<Vertex2D> tempBuffer;
 		readonly Stack<Rectangle> scissorState = new Stack<Rectangle>();
 
 		IFrameBuffer screenBuffer;
@@ -95,7 +95,7 @@ namespace OpenRA
 			RgbaColorRenderer = new RgbaColorRenderer(SpriteRenderer);
 			Standalone3DRenderer = new Standalone3DRenderer();
 
-			tempBuffer = Context.CreateVertexBuffer(TempBufferSize);
+			tempBuffer = Context.CreateVertex2DBuffer(TempBufferSize);
 		}
 
 		static Size GetResolution(GraphicSettings graphicsSettings)
@@ -329,7 +329,7 @@ namespace OpenRA
 			renderType = RenderType.None;
 		}
 
-		public void DrawBatch(Vertex[] vertices, int numVertices, PrimitiveType type)
+		public void DrawBatch(Vertex2D[] vertices, int numVertices, PrimitiveType type)
 		{
 			tempBuffer.SetData(vertices, numVertices);
 			DrawBatch(tempBuffer, 0, numVertices, type);
@@ -371,9 +371,9 @@ namespace OpenRA
 			}
 		}
 
-		public IVertexBuffer<Vertex> CreateVertexBuffer(int length)
+		public IVertexBuffer<Vertex2D> CreateVertexBuffer(int length)
 		{
-			return Context.CreateVertexBuffer(length);
+			return Context.CreateVertex2DBuffer(length);
 		}
 
 		public void EnableScissor(Rectangle rect)

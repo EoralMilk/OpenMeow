@@ -27,9 +27,9 @@ namespace OpenRA.Graphics
 	{
 		//IVertexBuffer<Vertex3D> vertexBuffer;
 
-		public IVertexBuffer<Vertex> CreateVertexBuffer(int length)
+		public IVertexBuffer<Vertex2D> CreateVertexBuffer(int length)
 		{
-			return Game.Renderer.Context.CreateVertexBuffer(length);
+			return Game.Renderer.Context.CreateVertex2DBuffer(length);
 		}
 
 		public Standalone3DRenderer()

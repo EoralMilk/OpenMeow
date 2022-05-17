@@ -24,8 +24,8 @@ namespace OpenRA.Graphics
 		readonly Sheet[] sheets;
 		readonly Sprite emptySprite;
 
-		readonly IVertexBuffer<Vertex> vertexBuffer;
-		readonly Vertex[] vertices;
+		readonly IVertexBuffer<Vertex2D> vertexBuffer;
+		readonly Vertex2D[] vertices;
 		readonly bool[] ignoreTint;
 		readonly HashSet<int> dirtyRows = new HashSet<int>();
 		readonly int rowStride;
@@ -47,9 +47,9 @@ namespace OpenRA.Graphics
 			map = world.Map;
 			rowStride = 6 * map.MapSize.X;
 
-			vertices = new Vertex[rowStride * map.MapSize.Y];
+			vertices = new Vertex2D[rowStride * map.MapSize.Y];
 			palettes = new PaletteReference[map.MapSize.X * map.MapSize.Y];
-			vertexBuffer = Game.Renderer.Context.CreateVertexBuffer(vertices.Length);
+			vertexBuffer = Game.Renderer.Context.CreateVertex2DBuffer(vertices.Length);
 
 			wr.PaletteInvalidated += UpdatePaletteIndices;
 
@@ -66,7 +66,7 @@ namespace OpenRA.Graphics
 			{
 				var v = vertices[i];
 				var p = palettes[i / 6]?.TextureIndex ?? 0;
-				vertices[i] = new Vertex(v.X, v.Y, v.Z, v.S, v.T, v.U, v.V, p, v.C, v.R, v.G, v.B, v.A);
+				vertices[i] = new Vertex2D(v.X, v.Y, v.Z, v.S, v.T, v.U, v.V, p, v.C, v.R, v.G, v.B, v.A);
 			}
 
 			for (var row = 0; row < map.MapSize.Y; row++)
@@ -103,7 +103,7 @@ namespace OpenRA.Graphics
 				for (var i = 0; i < 6; i++)
 				{
 					var v = vertices[offset + i];
-					vertices[offset + i] = new Vertex(v.X, v.Y, v.Z, v.S, v.T, v.U, v.V, v.P, v.C, v.A * float3.Ones, v.A);
+					vertices[offset + i] = new Vertex2D(v.X, v.Y, v.Z, v.S, v.T, v.U, v.V, v.P, v.C, v.A * float3.Ones, v.A);
 				}
 
 				return;
@@ -128,7 +128,7 @@ namespace OpenRA.Graphics
 			for (var i = 0; i < 6; i++)
 			{
 				var v = vertices[offset + i];
-				vertices[offset + i] = new Vertex(v.X, v.Y, v.Z, v.S, v.T, v.U, v.V, v.P, v.C, v.A * weights[CornerVertexMap[i]], v.A);
+				vertices[offset + i] = new Vertex2D(v.X, v.Y, v.Z, v.S, v.T, v.U, v.V, v.P, v.C, v.A * weights[CornerVertexMap[i]], v.A);
 			}
 
 			dirtyRows.Add(uv.V);
