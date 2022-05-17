@@ -64,7 +64,13 @@ namespace OpenRA.Platforms.Default
 		public IVertexBuffer<Vertex2D> CreateVertex2DBuffer(int size)
 		{
 			VerifyThreadAffinity();
-			return new VertexBuffer<Vertex2D>(size);
+			return new VertexBuffer2D<Vertex2D>(size);
+		}
+
+		public IVertexBuffer<Vertex3D> CreateVertex3DBuffer(int length)
+		{
+			VerifyThreadAffinity();
+			return new VertexBuffer3D<Vertex3D>(length);
 		}
 
 		public ITexture CreateTexture()

@@ -14,14 +14,14 @@ using System.Runtime.InteropServices;
 
 namespace OpenRA.Platforms.Default
 {
-	sealed class VertexBuffer<T> : ThreadAffine, IVertexBuffer<T>
+	sealed class VertexBuffer2D<T> : ThreadAffine, IVertexBuffer<T>
 			where T : struct
 	{
 		static readonly int VertexSize = Marshal.SizeOf(typeof(T));
 		uint buffer;
 		bool disposed;
 
-		public VertexBuffer(int size)
+		public VertexBuffer2D(int size)
 		{
 			OpenGL.glGenBuffers(1, out buffer);
 			OpenGL.CheckGLError();
@@ -53,6 +53,146 @@ namespace OpenRA.Platforms.Default
 			{
 				ptr.Free();
 			}
+		}
+
+		public VertexBuffer2D(T[] data)
+		{
+			OpenGL.glGenBuffers(1, out buffer);
+			OpenGL.CheckGLError();
+			Bind();
+			var dataptr = GCHandle.Alloc(data, GCHandleType.Pinned);
+
+			try
+			{
+				// Generates a buffer with uninitialized memory.
+				OpenGL.glBufferData(OpenGL.GL_ARRAY_BUFFER,
+						new IntPtr(VertexSize * data.Length),
+						dataptr.AddrOfPinnedObject(),
+						OpenGL.GL_STATIC_DRAW);
+			}
+			finally
+			{
+				dataptr.Free();
+			}
+
+			OpenGL.CheckGLError();
+		}
+
+		public void SetData(T[] data, int length)
+		{
+			SetData(data, 0, 0, length);
+		}
+
+		public void SetData(T[] data, int offset, int start, int length)
+		{
+			Bind();
+
+			var ptr = GCHandle.Alloc(data, GCHandleType.Pinned);
+			try
+			{
+				OpenGL.glBufferSubData(OpenGL.GL_ARRAY_BUFFER,
+					new IntPtr(VertexSize * start),
+					new IntPtr(VertexSize * length),
+					ptr.AddrOfPinnedObject() + VertexSize * offset);
+			}
+			finally
+			{
+				ptr.Free();
+			}
+
+			OpenGL.CheckGLError();
+		}
+
+		public void Bind()
+		{
+			VerifyThreadAffinity();
+			OpenGL.glBindBuffer(OpenGL.GL_ARRAY_BUFFER, buffer);
+			OpenGL.CheckGLError();
+			OpenGL.glVertexAttribPointer(Shader.VertexPosAttributeIndex, 3, OpenGL.GL_FLOAT, false, VertexSize, IntPtr.Zero);
+			OpenGL.CheckGLError();
+			OpenGL.glVertexAttribPointer(Shader.TexCoordAttributeIndex, 4, OpenGL.GL_FLOAT, false, VertexSize, new IntPtr(12));
+			OpenGL.CheckGLError();
+			OpenGL.glVertexAttribPointer(Shader.TexMetadataAttributeIndex, 2, OpenGL.GL_FLOAT, false, VertexSize, new IntPtr(28));
+			OpenGL.CheckGLError();
+			OpenGL.glVertexAttribPointer(Shader.TintAttributeIndex, 4, OpenGL.GL_FLOAT, false, VertexSize, new IntPtr(36));
+			OpenGL.CheckGLError();
+		}
+
+		public void Dispose()
+		{
+			if (disposed)
+				return;
+			disposed = true;
+			OpenGL.glDeleteBuffers(1, ref buffer);
+			OpenGL.CheckGLError();
+		}
+	}
+
+	/// <summary>
+	/// It should be GL_STATIC_DRAW
+	/// Data should not be set too often
+	/// </summary>
+	sealed class VertexBuffer3D<T> : ThreadAffine, IVertexBuffer<T>
+			where T : struct
+	{
+		static readonly int VertexSize = Marshal.SizeOf(typeof(T));
+		uint buffer;
+		bool disposed;
+		public VertexBuffer3D(int size)
+		{
+			OpenGL.glGenBuffers(1, out buffer);
+			OpenGL.CheckGLError();
+			Bind();
+
+			// Generates a buffer with uninitialized memory.
+			OpenGL.glBufferData(OpenGL.GL_ARRAY_BUFFER,
+					new IntPtr(VertexSize * size),
+					IntPtr.Zero,
+					OpenGL.GL_STATIC_DRAW);
+			OpenGL.CheckGLError();
+
+			// We need to zero all the memory. Let's generate a smallish array and copy that over the whole buffer.
+			var zeroedArrayElementSize = Math.Min(size, 2048);
+			var ptr = GCHandle.Alloc(new T[zeroedArrayElementSize], GCHandleType.Pinned);
+			try
+			{
+				for (var offset = 0; offset < size; offset += zeroedArrayElementSize)
+				{
+					var length = Math.Min(zeroedArrayElementSize, size - offset);
+					OpenGL.glBufferSubData(OpenGL.GL_ARRAY_BUFFER,
+						new IntPtr(VertexSize * offset),
+						new IntPtr(VertexSize * length),
+						ptr.AddrOfPinnedObject());
+					OpenGL.CheckGLError();
+				}
+			}
+			finally
+			{
+				ptr.Free();
+			}
+		}
+
+		public VertexBuffer3D(T[] data)
+		{
+			OpenGL.glGenBuffers(1, out buffer);
+			OpenGL.CheckGLError();
+			Bind();
+			var dataptr = GCHandle.Alloc(data, GCHandleType.Pinned);
+
+			try
+			{
+				// Generates a buffer with uninitialized memory.
+				OpenGL.glBufferData(OpenGL.GL_ARRAY_BUFFER,
+						new IntPtr(VertexSize * data.Length),
+						dataptr.AddrOfPinnedObject(),
+						OpenGL.GL_STATIC_DRAW);
+			}
+			finally
+			{
+				dataptr.Free();
+			}
+
+			OpenGL.CheckGLError();
 		}
 
 		public void SetData(T[] data, int length)

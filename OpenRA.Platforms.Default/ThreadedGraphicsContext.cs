@@ -25,7 +25,9 @@ namespace OpenRA.Platforms.Default
 	sealed class ThreadedGraphicsContext : IGraphicsContext
 	{
 		// PERF: Maintain several object pools to reduce allocations.
-		readonly Stack<Vertex2D[]> verticesPool = new Stack<Vertex2D[]>();
+		readonly Stack<Vertex2D[]> vertices2DPool = new Stack<Vertex2D[]>();
+		readonly Stack<Vertex3D[]> vertices3DPool = new Stack<Vertex3D[]>();
+
 		readonly Stack<Message> messagePool = new Stack<Message>();
 		readonly Queue<Message> messages = new Queue<Message>();
 
@@ -45,7 +47,9 @@ namespace OpenRA.Platforms.Default
 		Func<ITexture> getCreateTexture;
 		Func<object, IFrameBuffer> getCreateFrameBuffer;
 		Func<object, IShader> getCreateShader;
-		Func<object, IVertexBuffer<Vertex2D>> getCreateVertexBuffer;
+		Func<object, IVertexBuffer<Vertex2D>> getCreateVertex2DBuffer;
+		Func<object, IVertexBuffer<Vertex3D>> getCreateVertex3DBuffer;
+
 		Action<object> doDrawPrimitives;
 		Action<object> doEnableScissor;
 		Action<object> doSetBlendMode;
@@ -93,7 +97,9 @@ namespace OpenRA.Platforms.Default
 								context.CreateFrameBuffer(t.Item1, (ITextureInternal)CreateTexture(), t.Item2));
 						};
 					getCreateShader = name => new ThreadedShader(this, context.CreateShader((string)name));
-					getCreateVertexBuffer = length => new ThreadedVertexBuffer(this, context.CreateVertex2DBuffer((int)length));
+					getCreateVertex2DBuffer = length => new ThreadedVertex2DBuffer(this, context.CreateVertex2DBuffer((int)length));
+					getCreateVertex3DBuffer = length => new ThreadedVertex3DBuffer(this, context.CreateVertex3DBuffer((int)length));
+
 					doDrawPrimitives =
 						 tuple =>
 						 {
@@ -139,20 +145,36 @@ namespace OpenRA.Platforms.Default
 			}
 		}
 
-		internal Vertex2D[] GetVertices(int size)
+		internal Vertex2D[] GetVertices2D(int size)
 		{
-			lock (verticesPool)
-				if (size <= BatchSize && verticesPool.Count > 0)
-					return verticesPool.Pop();
+			lock (vertices2DPool)
+				if (size <= BatchSize && vertices2DPool.Count > 0)
+					return vertices2DPool.Pop();
 
 			return new Vertex2D[size < BatchSize ? BatchSize : size];
+		}
+
+		internal Vertex3D[] GetVertices3D(int size)
+		{
+			lock (vertices3DPool)
+				if (size <= BatchSize && vertices3DPool.Count > 0)
+					return vertices3DPool.Pop();
+
+			return new Vertex3D[size < BatchSize ? BatchSize : size];
 		}
 
 		internal void ReturnVertices(Vertex2D[] vertices)
 		{
 			if (vertices.Length == BatchSize)
-				lock (verticesPool)
-					verticesPool.Push(vertices);
+				lock (vertices2DPool)
+					vertices2DPool.Push(vertices);
+		}
+
+		internal void ReturnVertices(Vertex3D[] vertices)
+		{
+			if (vertices.Length == BatchSize)
+				lock (vertices3DPool)
+					vertices3DPool.Push(vertices);
 		}
 
 		class Message
@@ -401,7 +423,12 @@ namespace OpenRA.Platforms.Default
 
 		public IVertexBuffer<Vertex2D> CreateVertex2DBuffer(int length)
 		{
-			return Send(getCreateVertexBuffer, length);
+			return Send(getCreateVertex2DBuffer, length);
+		}
+
+		public IVertexBuffer<Vertex3D> CreateVertex3DBuffer(int length)
+		{
+			return Send(getCreateVertex3DBuffer, length);
 		}
 
 		public void DisableDepthBuffer()
@@ -495,7 +522,7 @@ namespace OpenRA.Platforms.Default
 		}
 	}
 
-	class ThreadedVertexBuffer : IVertexBuffer<Vertex2D>
+	class ThreadedVertex2DBuffer : IVertexBuffer<Vertex2D>
 	{
 		readonly ThreadedGraphicsContext device;
 		readonly Action bind;
@@ -504,7 +531,7 @@ namespace OpenRA.Platforms.Default
 		readonly Func<object, object> setData3;
 		readonly Action dispose;
 
-		public ThreadedVertexBuffer(ThreadedGraphicsContext device, IVertexBuffer<Vertex2D> vertexBuffer)
+		public ThreadedVertex2DBuffer(ThreadedGraphicsContext device, IVertexBuffer<Vertex2D> vertexBuffer)
 		{
 			this.device = device;
 			bind = vertexBuffer.Bind;
@@ -521,7 +548,7 @@ namespace OpenRA.Platforms.Default
 
 		public void SetData(Vertex2D[] vertices, int length)
 		{
-			var buffer = device.GetVertices(length);
+			var buffer = device.GetVertices2D(length);
 			Array.Copy(vertices, buffer, length);
 			device.Post(setData1, (buffer, length));
 		}
@@ -531,7 +558,60 @@ namespace OpenRA.Platforms.Default
 			if (length <= device.BatchSize)
 			{
 				// If we are able to use a buffer without allocation, post a message to avoid blocking.
-				var buffer = device.GetVertices(length);
+				var buffer = device.GetVertices2D(length);
+				Array.Copy(vertices, offset, buffer, 0, length);
+				device.Post(setData2, (buffer, 0, start, length));
+			}
+			else
+			{
+				// If the length is too large for a buffer, send a message and block to avoid allocations.
+				device.Send(setData3, (vertices, offset, start, length));
+			}
+		}
+
+		public void Dispose()
+		{
+			device.Post(dispose);
+		}
+	}
+
+	class ThreadedVertex3DBuffer : IVertexBuffer<Vertex3D>
+	{
+		readonly ThreadedGraphicsContext device;
+		readonly Action bind;
+		readonly Action<object> setData1;
+		readonly Action<object> setData2;
+		readonly Func<object, object> setData3;
+		readonly Action dispose;
+
+		public ThreadedVertex3DBuffer(ThreadedGraphicsContext device, IVertexBuffer<Vertex3D> vertexBuffer)
+		{
+			this.device = device;
+			bind = vertexBuffer.Bind;
+			setData1 = tuple => { var t = (ValueTuple<Vertex3D[], int>)tuple; vertexBuffer.SetData(t.Item1, t.Item2); device.ReturnVertices(t.Item1); };
+			setData2 = tuple => { var t = (ValueTuple<Vertex3D[], int, int, int>)tuple; vertexBuffer.SetData(t.Item1, t.Item2, t.Item3, t.Item4); device.ReturnVertices(t.Item1); };
+			setData3 = tuple => { setData2(tuple); return null; };
+			dispose = vertexBuffer.Dispose;
+		}
+
+		public void Bind()
+		{
+			device.Post(bind);
+		}
+
+		public void SetData(Vertex3D[] vertices, int length)
+		{
+			var buffer = device.GetVertices3D(length);
+			Array.Copy(vertices, buffer, length);
+			device.Post(setData1, (buffer, length));
+		}
+
+		public void SetData(Vertex3D[] vertices, int offset, int start, int length)
+		{
+			if (length <= device.BatchSize)
+			{
+				// If we are able to use a buffer without allocation, post a message to avoid blocking.
+				var buffer = device.GetVertices3D(length);
 				Array.Copy(vertices, offset, buffer, 0, length);
 				device.Post(setData2, (buffer, 0, start, length));
 			}

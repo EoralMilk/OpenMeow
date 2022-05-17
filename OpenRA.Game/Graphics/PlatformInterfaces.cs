@@ -84,6 +84,8 @@ namespace OpenRA
 	public interface IGraphicsContext : IDisposable
 	{
 		IVertexBuffer<Vertex2D> CreateVertex2DBuffer(int size);
+		IVertexBuffer<Vertex3D> CreateVertex3DBuffer(int length);
+
 		ITexture CreateTexture();
 		IFrameBuffer CreateFrameBuffer(Size s);
 		IFrameBuffer CreateFrameBuffer(Size s, Color clearColor);

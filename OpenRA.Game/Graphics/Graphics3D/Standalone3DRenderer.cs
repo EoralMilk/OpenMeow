@@ -5,7 +5,7 @@ using StbImageSharp;
 
 namespace OpenRA.Graphics
 {
-	struct Vertex3D
+	public struct Vertex3D
 	{
 		public vec3 Position;
 		public vec3 Normal;
@@ -25,11 +25,11 @@ namespace OpenRA.Graphics
 
 	public class Standalone3DRenderer : IDisposable
 	{
-		//IVertexBuffer<Vertex3D> vertexBuffer;
+		IVertexBuffer<Vertex3D> vertexBuffer;
 
-		public IVertexBuffer<Vertex2D> CreateVertexBuffer(int length)
+		public IVertexBuffer<Vertex3D> CreateVertexBuffer(int length)
 		{
-			return Game.Renderer.Context.CreateVertex2DBuffer(length);
+			return Game.Renderer.CreateVertex3DBuffer(length);
 		}
 
 		public Standalone3DRenderer()
@@ -89,27 +89,32 @@ namespace OpenRA.Graphics
 
 			for (int i = 0; i < vertexCount; i++)
 			{
-				Vertex3D tempVertex = Vertex3D.Default;
+				vec3 pos = vec3.Zero;
+				vec3 normal = vec3.Zero;
+				vec2 uv = vec2.Zero;
 				for (int k = 0; k < 8; k++)
 				{
 					if (k < 3)
 					{
-						tempVertex.Position[k] = vv[i * 8 + k];
+						pos[k] = vv[i * 8 + k];
 					}
 					else if (k < 6)
 					{
-						tempVertex.Normal[k - 3] = vv[i * 8 + k];
+						normal[k - 3] = vv[i * 8 + k];
 					}
 					else
 					{
-						tempVertex.TexCoords[k - 6] = vv[i * 8 + k];
+						uv[k - 6] = vv[i * 8 + k];
 					}
 				}
 
+				Vertex3D tempVertex = new Vertex3D(pos, normal, uv);
 				vertex3Ds[i] = tempVertex;
 			}
 
-		// ...
+			vertexBuffer = CreateVertexBuffer(vertexCount);
+			vertexBuffer.SetData(vertex3Ds, vertexCount);
+			// ...
 
 		}
 
@@ -120,7 +125,7 @@ namespace OpenRA.Graphics
 
 		public void Dispose()
 		{
-			throw new NotImplementedException();
+			vertexBuffer?.Dispose();
 		}
 	}
 }

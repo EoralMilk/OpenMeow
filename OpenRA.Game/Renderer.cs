@@ -371,9 +371,14 @@ namespace OpenRA
 			}
 		}
 
-		public IVertexBuffer<Vertex2D> CreateVertexBuffer(int length)
+		public IVertexBuffer<Vertex2D> CreateVertex2DBuffer(int length)
 		{
 			return Context.CreateVertex2DBuffer(length);
+		}
+
+		public IVertexBuffer<Vertex3D> CreateVertex3DBuffer(int length)
+		{
+			return Context.CreateVertex3DBuffer(length);
 		}
 
 		public void EnableScissor(Rectangle rect)
