@@ -128,6 +128,8 @@ namespace OpenRA
 	{
 		void SetRenderData(ModelRenderData renderData);
 		void SetBool(string name, bool value);
+		void SetInt(string name, int value);
+		void SetFloat(string name, float value);
 		void SetVec(string name, float x);
 		void SetVec(string name, float x, float y);
 		void SetVec(string name, float x, float y, float z);
@@ -142,11 +144,19 @@ namespace OpenRA
 
 	public interface ITexture : IDisposable
 	{
-		void SetData(byte[] colors, int width, int height);
-		void SetFloatData(float[] data, int width, int height);
+		void SetData(byte[] colors, int width, int height, TextureType type = TextureType.BGRA);
+		void SetFloatData(float[] data, int width, int height, TextureType type = TextureType.RGBA);
 		byte[] GetData();
 		Size Size { get; }
 		TextureScaleFilter ScaleFilter { get; set; }
+	}
+
+	public enum TextureType
+	{
+		BGRA,
+		RGBA,
+		RGB,
+		Gray,
 	}
 
 	public interface IFrameBuffer : IDisposable

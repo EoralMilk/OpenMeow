@@ -11,6 +11,7 @@ attribute vec3 aVertexTint;
 varying vec4 vTexCoord;
 varying vec4 vChannelMask;
 varying vec4 vNormalsMask;
+varying mat4 transMat;
 #else
 in vec4 aVertexPosition;
 in vec4 aVertexTexCoord;

@@ -624,9 +624,9 @@ namespace OpenRA.Platforms.Default
 			getSize = () => texture.Size;
 			setEmpty = tuple => { var t = (ValueTuple<int, int>)tuple; texture.SetEmpty(t.Item1, t.Item2); };
 			getData = () => texture.GetData();
-			setData1 = tuple => { var t = (ValueTuple<byte[], int, int>)tuple; texture.SetData(t.Item1, t.Item2, t.Item3); };
+			setData1 = tuple => { var t = (ValueTuple<byte[], int, int, TextureType>)tuple; texture.SetData(t.Item1, t.Item2, t.Item3, t.Item4); };
 			setData2 = tuple => { setData1(tuple); return null; };
-			setData3 = tuple => { var t = (ValueTuple<float[], int, int>)tuple; texture.SetFloatData(t.Item1, t.Item2, t.Item3); };
+			setData3 = tuple => { var t = (ValueTuple<float[], int, int, TextureType>)tuple; texture.SetFloatData(t.Item1, t.Item2, t.Item3, t.Item4); };
 			setData4 = tuple => { setData3(tuple); return null; };
 			dispose = texture.Dispose;
 		}
@@ -652,7 +652,7 @@ namespace OpenRA.Platforms.Default
 			return device.Send(getData);
 		}
 
-		public void SetData(byte[] colors, int width, int height)
+		public void SetData(byte[] colors, int width, int height, TextureType type = TextureType.BGRA)
 		{
 			// Objects 85000 bytes or more will be directly allocated in the Large Object Heap (LOH).
 			// https://docs.microsoft.com/en-us/dotnet/standard/garbage-collection/large-object-heap
@@ -661,17 +661,17 @@ namespace OpenRA.Platforms.Default
 				// If we are able to create a small array the GC can collect easily, post a message to avoid blocking.
 				var temp = new byte[colors.Length];
 				Array.Copy(colors, temp, temp.Length);
-				device.Post(setData1, (temp, width, height));
+				device.Post(setData1, (temp, width, height, type));
 			}
 			else
 			{
 				// If the length is large and would result in an array on the Large Object Heap (LOH),
 				// send a message and block to avoid LOH allocation as this requires a Gen2 collection.
-				device.Send(setData2, (colors, width, height));
+				device.Send(setData2, (colors, width, height, type));
 			}
 		}
 
-		public void SetFloatData(float[] data, int width, int height)
+		public void SetFloatData(float[] data, int width, int height, TextureType type = TextureType.RGBA)
 		{
 			// Objects 85000 bytes or more will be directly allocated in the Large Object Heap (LOH).
 			// https://docs.microsoft.com/en-us/dotnet/standard/garbage-collection/large-object-heap
@@ -680,13 +680,13 @@ namespace OpenRA.Platforms.Default
 				// If we are able to create a small array the GC can collect easily, post a message to avoid blocking.
 				var temp = new float[data.Length];
 				Array.Copy(data, temp, temp.Length);
-				device.Post(setData3, (temp, width, height));
+				device.Post(setData3, (temp, width, height, type));
 			}
 			else
 			{
 				// If the length is large and would result in an array on the Large Object Heap (LOH),
 				// send a message and block to avoid LOH allocation as this requires a Gen2 collection.
-				device.Send(setData4, (data, width, height));
+				device.Send(setData4, (data, width, height, type));
 			}
 		}
 
@@ -701,6 +701,8 @@ namespace OpenRA.Platforms.Default
 		readonly ThreadedGraphicsContext device;
 		readonly Action prepareRender;
 		readonly Action<object> setBool;
+		readonly Action<object> setInt;
+		readonly Action<object> setFloat;
 		readonly Action<object> setMatrix;
 		readonly Action<object> setTexture;
 		readonly Action<object> setVec1;
@@ -715,6 +717,8 @@ namespace OpenRA.Platforms.Default
 			this.device = device;
 			prepareRender = shader.PrepareRender;
 			setBool = tuple => { var t = (ValueTuple<string, bool>)tuple; shader.SetBool(t.Item1, t.Item2); };
+			setInt = tuple => { var t = (ValueTuple<string, int>)tuple; shader.SetInt(t.Item1, t.Item2); };
+			setFloat = tuple => { var t = (ValueTuple<string, float>)tuple; shader.SetFloat(t.Item1, t.Item2); };
 			setMatrix = tuple => { var t = (ValueTuple<string, float[]>)tuple; shader.SetMatrix(t.Item1, t.Item2); };
 			setTexture = tuple => { var t = (ValueTuple<string, ITexture>)tuple; shader.SetTexture(t.Item1, t.Item2); };
 			setVec1 = tuple => { var t = (ValueTuple<string, float>)tuple; shader.SetVec(t.Item1, t.Item2); };
@@ -733,6 +737,16 @@ namespace OpenRA.Platforms.Default
 		public void SetBool(string name, bool value)
 		{
 			device.Post(setBool, (name, value));
+		}
+
+		public void SetInt(string name, int value)
+		{
+			device.Post(setInt, (name, value));
+		}
+
+		public void SetFloat(string name, float value)
+		{
+			device.Post(setFloat, (name, value));
 		}
 
 		public void SetMatrix(string param, float[] mtx)

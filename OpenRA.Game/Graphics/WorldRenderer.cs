@@ -267,9 +267,6 @@ namespace OpenRA.Graphics
 			for (var i = 0; i < preparedRenderables.Count; i++)
 				preparedRenderables[i].Render(this);
 
-			// for test
-			Game.Renderer.Standalone3DRenderer.DrawTest();
-
 			if (enableDepthBuffer)
 				Game.Renderer.ClearDepthBuffer();
 
@@ -296,6 +293,9 @@ namespace OpenRA.Graphics
 					r.Render(this);
 
 			Game.Renderer.Flush();
+
+			// for test
+			Game.Renderer.Standalone3DRenderer.DrawTest(this.Viewport);
 		}
 
 		public void DrawAnnotations()

@@ -69,16 +69,18 @@ namespace OpenRA.Platforms.Default
 			OpenGL.CheckGLError();
 		}
 
-		void SetData(IntPtr data, int width, int height)
+		void SetData(IntPtr data, int width, int height, TextureType type = TextureType.BGRA)
 		{
 			PrepareTexture();
-			var glInternalFormat = OpenGL.Profile == GLProfile.Embedded ? OpenGL.GL_BGRA : OpenGL.GL_RGBA8;
+			var glInternalFormat = type == TextureType.BGRA ? (OpenGL.Profile == GLProfile.Embedded ? OpenGL.GL_BGRA : OpenGL.GL_RGBA8) :
+				type == TextureType.RGBA ? OpenGL.GL_RGBA :
+				type == TextureType.RGB ? OpenGL.GL_RGB : OpenGL.GL_RED;
 			OpenGL.glTexImage2D(OpenGL.GL_TEXTURE_2D, 0, glInternalFormat, width, height,
-				0, OpenGL.GL_BGRA, OpenGL.GL_UNSIGNED_BYTE, data);
+				0, type == TextureType.BGRA ? OpenGL.GL_BGRA : glInternalFormat, OpenGL.GL_UNSIGNED_BYTE, data);
 			OpenGL.CheckGLError();
 		}
 
-		public void SetData(byte[] colors, int width, int height)
+		public void SetData(byte[] colors, int width, int height, TextureType type = TextureType.BGRA)
 		{
 			VerifyThreadAffinity();
 			if (!Exts.IsPowerOf2(width) || !Exts.IsPowerOf2(height))
@@ -88,11 +90,11 @@ namespace OpenRA.Platforms.Default
 			unsafe
 			{
 				fixed (byte* ptr = &colors[0])
-					SetData(new IntPtr(ptr), width, height);
+					SetData(new IntPtr(ptr), width, height, type);
 			}
 		}
 
-		public void SetFloatData(float[] data, int width, int height)
+		public void SetFloatData(float[] data, int width, int height, TextureType type = TextureType.RGBA)
 		{
 			VerifyThreadAffinity();
 			if (!Exts.IsPowerOf2(width) || !Exts.IsPowerOf2(height))

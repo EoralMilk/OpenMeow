@@ -93,7 +93,7 @@ namespace OpenRA
 			SpriteRenderer = new SpriteRenderer(this, Context.CreateUnsharedShader<CombinedShaderBindings>());
 			RgbaSpriteRenderer = new RgbaSpriteRenderer(SpriteRenderer);
 			RgbaColorRenderer = new RgbaColorRenderer(SpriteRenderer);
-			Standalone3DRenderer = new Standalone3DRenderer();
+			Standalone3DRenderer = new Standalone3DRenderer(this);
 
 			tempBuffer = Context.CreateVertexBuffer<Vertex>(TempBufferSize);
 		}
@@ -336,12 +336,13 @@ namespace OpenRA
 		}
 
 		public void DrawBatch(IShader shader, IVertexBuffer vertices,
-			int firstVertex, int numVertices, PrimitiveType type)
+			int firstVertex, int numVertices, PrimitiveType type, bool enableDepthTest = false)
 		{
 			vertices.Bind();
 
 			// Future notice: using ARB_vertex_array_object makes all the gl calls in LayoutAttributes obsolete.
 			shader.LayoutAttributes();
+
 			Context.DrawPrimitives(type, firstVertex, numVertices);
 			PerfHistory.Increment("batches", 1);
 		}
@@ -384,6 +385,7 @@ namespace OpenRA
 		{
 			return Context.CreateShader<T>();
 		}
+
 		public ITexture CreateTexture()
 		{
 			return Context.CreateTexture();

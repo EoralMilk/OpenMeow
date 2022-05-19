@@ -80,6 +80,7 @@ BIKE:
 		RequiresCondition: !inside-tunnel && !rank-elite
 	LeavesTrails@VEINS:
 		RequiresCondition: !inside-tunnel && !rank-elite
+	GetWPos:
 
 TTNK:
 	Inherits: ^Tank

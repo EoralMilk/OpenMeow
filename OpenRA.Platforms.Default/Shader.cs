@@ -19,10 +19,6 @@ namespace OpenRA.Platforms.Default
 {
 	class Shader : ThreadAffine, IShader
 	{
-		//public const int VertexPosAttributeIndex = 0;
-		//public const int TexCoordAttributeIndex = 1;
-		//public const int TexMetadataAttributeIndex = 2;
-		//public const int TintAttributeIndex = 3;
 
 		readonly Dictionary<string, int> samplers = new Dictionary<string, int>();
 		readonly Dictionary<int, int> legacySizeUniforms = new Dictionary<int, int>();
@@ -161,6 +157,10 @@ namespace OpenRA.Platforms.Default
 			OpenGL.glUseProgram(program);
 			OpenGL.CheckGLError();
 
+			for (int i = 0; i < 16; i++)
+				OpenGL.glDisableVertexAttribArray(i);
+			OpenGL.CheckGLError();
+
 			// bind the textures
 			foreach (var kv in textures)
 			{
@@ -212,6 +212,28 @@ namespace OpenRA.Platforms.Default
 			var param = OpenGL.glGetUniformLocation(program, name);
 			OpenGL.CheckGLError();
 			OpenGL.glUniform1i(param, value ? 1 : 0);
+			OpenGL.CheckGLError();
+		}
+
+		public void SetInt(string name, int value)
+		{
+			VerifyThreadAffinity();
+			OpenGL.glUseProgram(program);
+			OpenGL.CheckGLError();
+			var param = OpenGL.glGetUniformLocation(program, name);
+			OpenGL.CheckGLError();
+			OpenGL.glUniform1i(param, value);
+			OpenGL.CheckGLError();
+		}
+
+		public void SetFloat(string name, float value)
+		{
+			VerifyThreadAffinity();
+			OpenGL.glUseProgram(program);
+			OpenGL.CheckGLError();
+			var param = OpenGL.glGetUniformLocation(program, name);
+			OpenGL.CheckGLError();
+			OpenGL.glUniform1f(param, value);
 			OpenGL.CheckGLError();
 		}
 

@@ -122,6 +122,8 @@ namespace OpenRA.Platforms.Default
 
 		// OpenGL 1.1 - 1.5
 		public const int GL_CLIENT_PIXEL_STORE_BIT = 0x0001;
+		public const int GL_RED = 0x1903;
+		public const int GL_RGB = 0x1907;
 		public const int GL_RGBA = 0x1908;
 		public const int GL_BGRA = 0x80E1;
 		public const int GL_RGBA8 = 0x8058;
