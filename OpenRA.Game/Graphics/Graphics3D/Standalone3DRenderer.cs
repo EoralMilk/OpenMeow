@@ -281,7 +281,11 @@ namespace OpenRA.Graphics
 			}
 
 			projection = mat4.Ortho(viewport.ViewportSize.X * meterPerPixHalf, -viewport.ViewportSize.X * meterPerPixHalf,
-				viewport.ViewportSize.Y * meterPerPixHalf, -viewport.ViewportSize.Y * meterPerPixHalf, 0.1f, 2000);
+				viewport.ViewportSize.Y * meterPerPixHalf, -viewport.ViewportSize.Y * meterPerPixHalf, 0.1f, 300);
+			Console.WriteLine("____________");
+			Console.WriteLine(" Ortho: " + viewport.ViewportSize.X * meterPerPixHalf + ", " + -viewport.ViewportSize.X * meterPerPixHalf + ", " +
+				viewport.ViewportSize.Y * meterPerPixHalf + ", " + -viewport.ViewportSize.Y * meterPerPixHalf);
+
 			var viewPoint = new vec3((float)viewport.CenterPosition.X / WPosPerMeter, (float)viewport.CenterPosition.Y / WPosPerMeter, (float)viewport.CenterPosition.Z / WPosPerMeter);
 
 			CameraPos = new vec3((float)viewport.CenterPosition.X / WPosPerMeter, ((float)viewport.CenterPosition.Y + 1.7320508075f * hight) / WPosPerMeter, (float)hight / WPosPerMeter);
@@ -297,9 +301,8 @@ namespace OpenRA.Graphics
 			Console.WriteLine("____________");
 			Console.WriteLine("CameraPos: " + CameraPos.x + ", " + CameraPos.y + ", " + CameraPos.z);
 			Console.WriteLine("ViewPoint: " + viewPoint.x + ", " + viewPoint.y + ", " + viewPoint.z);
-			Console.WriteLine("viewport.CenterPosition: " + viewport.CenterPosition);
-			Console.WriteLine("CameraSize: " + viewport.ViewportSize.X* meterPerPix + ", " + viewport.ViewportSize.Y* meterPerPix);
 			Console.WriteLine("testPoint: " + testPoint);
+			Console.WriteLine("viewport.CenterPosition: " + viewport.CenterPosition);
 
 			shader.SetMatrix("model", model.Values1D);
 

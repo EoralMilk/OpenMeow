@@ -473,6 +473,7 @@ APACHE:
 	WithShadow:
 	WithModelBody:
 		ShowShadow: False
+	GetWPos:
 
 HUNTER:
 	Inherits@2: ^ExistsInWorld
