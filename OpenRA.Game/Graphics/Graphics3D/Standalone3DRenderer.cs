@@ -56,18 +56,19 @@ namespace OpenRA.Graphics
 		public static Vertex3D Default = new Vertex3D(vec3.Zero, vec3.Zero, vec2.Zero);
 	}
 
-	public class Standalone3DRenderer : IDisposable
+	public sealed class Standalone3DRenderer : IDisposable
 	{
-		public vec3 WorldUp;
+		public vec3 CameraUp;
 		public vec3 CameraHorizontalFront;
 		public int WPosPerMeter = 256;
 		public vec3 CameraPos { get; private set; }
-		readonly float meterPerPix;
-		readonly float meterPerPixHalf;
+		bool init = false;
+		float meterPerPix;
+		float meterPerPixHalf;
 		mat4 projection;
 		mat4 view;
 		mat4 camera;
-		float hight = 102400;
+		float hight = 256 * 100;
 
 		IVertexBuffer<Vertex3D> vertexBuffer;
 		Vertex3D[] vertex3Ds;
@@ -81,10 +82,6 @@ namespace OpenRA.Graphics
 
 		ImageResult image, image2;
 		uint tick = 0;
-		public IVertexBuffer<Vertex3D> CreateVertexBuffer(int length)
-		{
-			return Game.Renderer.CreateVertexBuffer<Vertex3D>(length);
-		}
 
 		public static mat4 LookAt(vec3 eye, vec3 center, vec3 up)
 		{
@@ -109,10 +106,6 @@ namespace OpenRA.Graphics
 
 		public Standalone3DRenderer(Renderer renderer)
 		{
-			var tilleWidthPix = Game.ModData.Manifest.Get<MapGrid>().TileSize.Width;
-			meterPerPix = (float)((1024 / WPosPerMeter) / (tilleWidthPix / 1.4142135d));
-			meterPerPixHalf = meterPerPix / 2.0f;
-
 			this.renderer = renderer;
 			this.shader = renderer.Context.CreateUnsharedShader<MyShaderBindings>();
 
@@ -194,7 +187,6 @@ namespace OpenRA.Graphics
 					}
 				}
 
-				//Console.WriteLine("i = " + i + "vertexCount = " + vertexCount);
 				vertex3Ds[i] = new Vertex3D(pos, normal, uv); ;
 			}
 
@@ -202,9 +194,9 @@ namespace OpenRA.Graphics
 			shader.SetFloat("material.shininess", 32.0f);
 
 			// 平行光
-			shader.SetVec("dirLight.direction", -0.2f, -1.0f, -0.3f);
-			shader.SetVec("dirLight.ambient", 0.05f, 0.05f, 0.05f);
-			shader.SetVec("dirLight.diffuse", 0.35f, 0.35f, 0.35f);
+			shader.SetVec("dirLight.direction", 0.5f, -0.1f, -0.3f);
+			shader.SetVec("dirLight.ambient", 0.45f, 0.45f, 0.45f);
+			shader.SetVec("dirLight.diffuse", 0.95f, 0.95f, 0.95f);
 			shader.SetVec("dirLight.specular", 0.5f, 0.5f, 0.5f);
 
 			vec3[] pointLightPositions = {
@@ -260,40 +252,56 @@ namespace OpenRA.Graphics
 			shader.SetFloat("spotLight.outerCutOff", glm.Cos(glm.Radians(10.0f)));
 			// ...
 
-			WorldUp = new vec3(0, 0, 1);
-			CameraHorizontalFront = new vec3(0, -1, 0);
-			projection = mat4.Identity;
-			view = mat4.Identity;
-			camera = mat4.Rotate(glm.Radians(30.0f), new vec3(-1, 0, 0)) * mat4.LookAt(vec3.Zero, CameraHorizontalFront, WorldUp);
-
 		}
 
 		public void DrawTest(Viewport viewport)
 		{
-			projection = mat4.Ortho(-viewport.ViewportSize.X * meterPerPixHalf, viewport.ViewportSize.X * meterPerPixHalf,
-				-viewport.ViewportSize.Y * meterPerPixHalf, viewport.ViewportSize.Y * meterPerPixHalf);
+			if (!init) {
+				CameraUp = glm.Normalized(new vec3(0, -1, 1.7320508075f));
+				CameraHorizontalFront = new vec3(0, -1, 0);
+				projection = mat4.Identity;
+				view = mat4.Identity;
+				//camera = mat4.Rotate(glm.Radians(-30.0f), new vec3(-1, 0, 0)) * mat4.LookAt(vec3.Zero, CameraHorizontalFront, WorldUp);
+				//camera = mat4.LookAt(vec3.Zero, new vec3(0, -1.7320508075f, -1), new vec3(0, -1, 1.7320508075f));
+				var tilleWidthPix = Game.ModData.Manifest.Get<MapGrid>().TileSize.Width;
+				meterPerPix = (float)((1024 / WPosPerMeter) / (tilleWidthPix / 1.4142135d));
+				meterPerPixHalf = meterPerPix / 2.0f;
+				diffuseTexBuffer = Game.Renderer.Context.CreateTexture();
+				diffuseTexBuffer.SetData(image.Data, image.Width, image.Height, TextureType.RGBA);
+				specularTexBuffer = Game.Renderer.Context.CreateTexture();
+				specularTexBuffer.SetData(image2.Data, image2.Width, image2.Height, TextureType.RGBA);
+				shader.SetTexture("material.diffuse", diffuseTexBuffer);
+				shader.SetTexture("material.specular", specularTexBuffer);
+				if (vertexBuffer == null)
+				{
+					vertexBuffer = Game.Renderer.CreateVertexBuffer<Vertex3D>(vertex3Ds.Length);
+					vertexBuffer.SetData(vertex3Ds, vertex3Ds.Length);
+				}
+				init = true;
+			}
 
-			CameraPos = new vec3(viewport.CenterPosition.X / WPosPerMeter, (viewport.CenterPosition.Y + 1.7320508075f * hight) / WPosPerMeter, hight / WPosPerMeter);
-			view = mat4.Translate(CameraPos) * camera;
+			projection = mat4.Ortho(viewport.ViewportSize.X * meterPerPixHalf, -viewport.ViewportSize.X * meterPerPixHalf,
+				viewport.ViewportSize.Y * meterPerPixHalf, -viewport.ViewportSize.Y * meterPerPixHalf, 0.1f, 2000);
+			var viewPoint = new vec3((float)viewport.CenterPosition.X / WPosPerMeter, (float)viewport.CenterPosition.Y / WPosPerMeter, (float)viewport.CenterPosition.Z / WPosPerMeter);
 
-			diffuseTexBuffer = Game.Renderer.Context.CreateTexture();
-			diffuseTexBuffer.SetData(image.Data, image.Width, image.Height, TextureType.RGBA);
-			specularTexBuffer = Game.Renderer.Context.CreateTexture();
-			specularTexBuffer.SetData(image2.Data, image2.Width, image2.Height, TextureType.RGBA);
+			CameraPos = new vec3((float)viewport.CenterPosition.X / WPosPerMeter, ((float)viewport.CenterPosition.Y + 1.7320508075f * hight) / WPosPerMeter, (float)hight / WPosPerMeter);
+			//view = mat4.Translate(CameraPos) * camera;
+			view = mat4.LookAt(CameraPos, viewPoint, CameraUp);
+			var testPoint = new vec3((float)TestPos.X / WPosPerMeter, (float)TestPos.Y / WPosPerMeter, (float)TestPos.Z / WPosPerMeter);
 
-			shader.SetTexture("material.diffuse", diffuseTexBuffer);
-			shader.SetTexture("material.specular", specularTexBuffer);
 			shader.SetMatrix("projection", projection.Values1D);
 			shader.SetMatrix("view", view.Values1D);
 			shader.SetVec("viewPos", CameraPos.x, CameraPos.y, CameraPos.z);
-			model = mat4.Translate(TestPos.X / WPosPerMeter, TestPos.Y / WPosPerMeter, TestPos.Z / WPosPerMeter) * mat4.Rotate(glm.Radians((float)tick++), new vec3(0.5f, 1.0f, 0));
-			shader.SetMatrix("model", model.Values1D);
+			model = mat4.Translate(testPoint) * mat4.Rotate(glm.Radians(45.0f), new vec3(0, 0, 1)); ;// mat4.Rotate(glm.Radians((float)tick++), new vec3(0.5f, 1.0f, 0));
 
-			if (vertexBuffer == null)
-			{
-				vertexBuffer = Game.Renderer.CreateVertexBuffer<Vertex3D>(vertex3Ds.Length);
-				vertexBuffer.SetData(vertex3Ds, vertex3Ds.Length);
-			}
+			Console.WriteLine("____________");
+			Console.WriteLine("CameraPos: " + CameraPos.x + ", " + CameraPos.y + ", " + CameraPos.z);
+			Console.WriteLine("ViewPoint: " + viewPoint.x + ", " + viewPoint.y + ", " + viewPoint.z);
+			Console.WriteLine("viewport.CenterPosition: " + viewport.CenterPosition);
+			Console.WriteLine("CameraSize: " + viewport.ViewportSize.X* meterPerPix + ", " + viewport.ViewportSize.Y* meterPerPix);
+			Console.WriteLine("testPoint: " + testPoint);
+
+			shader.SetMatrix("model", model.Values1D);
 
 			shader.PrepareRender();
 
