@@ -37,7 +37,7 @@ namespace OpenRA.Graphics
 			vertices = new Vertex[renderer.TempBufferSize];
 		}
 
-		public void Flush()
+		public void Flush(BlendMode blendMode = BlendMode.None)
 		{
 			if (nv > 0)
 			{
@@ -47,7 +47,7 @@ namespace OpenRA.Graphics
 					sheets[i] = null;
 				}
 
-				renderer.Context.SetBlendMode(currentBlend);
+				renderer.Context.SetBlendMode(blendMode != BlendMode.None ? blendMode : currentBlend);
 				shader.PrepareRender();
 				//renderer.DrawBatch(vertices, nv, PrimitiveType.TriangleList);
 				renderer.DrawBatch(shader, vertices, nv, PrimitiveType.TriangleList);

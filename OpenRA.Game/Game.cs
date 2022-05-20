@@ -678,6 +678,9 @@ namespace OpenRA
 					Sound.SetListenerPosition(worldRenderer.Viewport.CenterPosition);
 					using (new PerfSample("render_world"))
 						worldRenderer.Draw();
+
+					Renderer.End2DWorld();
+					Renderer.Render3D(worldRenderer);
 				}
 
 				using (new PerfSample("render_widgets"))
@@ -702,7 +705,7 @@ namespace OpenRA
 				}
 
 				using (new PerfSample("render_flip"))
-					Renderer.EndFrame(new DefaultInputHandler(OrderManager.World), worldRenderer);
+					Renderer.EndFrame(new DefaultInputHandler(OrderManager.World));
 
 				if (takeScreenshot)
 				{

@@ -59,10 +59,11 @@ namespace OpenRA.Graphics
 	public sealed class Standalone3DRenderer : IDisposable
 	{
 		const bool ShowDebugInfo = false;
+		public readonly float CameraPitch = 60.0f;
 		public readonly vec3 CameraUp;
-		public readonly vec3 CameraHorizontalFront;
 		public readonly int WPosPerMeter = 256;
 		readonly float height = 256 * 100;
+		readonly float tanCameraPitch;
 		public readonly float WPosPerMeterHeight;
 
 		readonly Renderer renderer;
@@ -91,8 +92,8 @@ namespace OpenRA.Graphics
 			meterPerPixHalf = meterPerPix / 2.0f;
 
 			WPosPerMeterHeight = 1773.62f / (1024.0f / WPosPerMeter);
-			CameraUp = glm.Normalized(new vec3(0, -1, 1.7320508075f));
-			CameraHorizontalFront = new vec3(0, -1, 0);
+			tanCameraPitch = (float)Math.Tan(glm.Radians(CameraPitch));
+			CameraUp = glm.Normalized(new vec3(0, -1, tanCameraPitch));
 
 			this.renderer = renderer;
 			this.shader = renderer.Context.CreateUnsharedShader<MyShaderBindings>();
@@ -273,10 +274,12 @@ namespace OpenRA.Graphics
 					-viewPortSize.Y * meterPerPixHalf, viewPortSize.Y * meterPerPixHalf);
 
 				projection = mat4.Ortho(ortho.Item1, ortho.Item2, ortho.Item3, ortho.Item4, 0.1f, 300);
+				//var vv = mat4.Rotate(glm.Radians(-30.0f), new vec3(-1,0,0)) * mat4.LookAt(vec3.Zero, new vec3(0, -1, 0), new vec3(0, 0, 1));
 
 				var viewPoint = new vec3((float)viewport.CenterPosition.X / WPosPerMeter, (float)viewport.CenterPosition.Y / WPosPerMeter, 0);
-				CameraPos = new vec3((float)viewport.CenterPosition.X / WPosPerMeter, ((float)viewport.CenterPosition.Y + 1.7320508075f * height) / WPosPerMeter, (float)height / WPosPerMeter);
+				CameraPos = new vec3((float)viewport.CenterPosition.X / WPosPerMeter, ((float)viewport.CenterPosition.Y + tanCameraPitch * height) / WPosPerMeter, (float)height / WPosPerMeter);
 				view = mat4.LookAt(CameraPos, viewPoint, CameraUp);
+				//view = mat4.Translate(CameraPos) * vv;
 
 				shader.SetMatrix("projection", projection.Values1D);
 				shader.SetMatrix("view", view.Values1D);
@@ -300,7 +303,7 @@ namespace OpenRA.Graphics
 			var parentMat = DrawOneTestBox(TestPos, TestRot, 2);
 
 			// draw child test box
-			DrawOneTestBox(parentMat, new vec3(0, -4, 0), new vec3(0, 0, glm.Radians(15.0f)));
+			DrawOneTestBox(parentMat, new vec3(0, -4, 0), new vec3(0, 0, 0));
 
 			return;
 		}

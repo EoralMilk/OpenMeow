@@ -177,6 +177,7 @@ APC:
 		Actor: APC.Husk
 		OwnerType: InternalName
 		EffectiveOwnerFromOwner: true
+	GetWPos:
 
 ARTY:
 	Inherits: ^Tank

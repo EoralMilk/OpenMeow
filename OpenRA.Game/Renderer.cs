@@ -168,7 +168,7 @@ namespace OpenRA
 				screenBuffer?.Dispose();
 
 				// Render the screen into a frame buffer to simplify reading back screenshots
-				screenBuffer = Context.CreateFrameBuffer(surfaceBufferSize, Color.FromArgb(0xFF, 0, 0, 0));
+				screenBuffer = Context.CreateFrameBuffer(surfaceBufferSize, Color.FromArgb(0x00, 0, 0, 0));
 			}
 
 			if (screenSprite == null || surfaceSize.Width != screenSprite.Bounds.Width || -surfaceSize.Height != screenSprite.Bounds.Height)
@@ -268,6 +268,46 @@ namespace OpenRA
 			renderType = RenderType.World;
 		}
 
+		public void End2DWorld()
+		{
+			if (renderType == RenderType.World)
+			{
+				// Complete world rendering
+				Flush();
+				worldBuffer.Unbind();
+
+				var scale = Window.EffectiveWindowScale;
+				var bufferScale = new float3((int)(screenSprite.Bounds.Width / scale) / worldSprite.Size.X, (int)(-screenSprite.Bounds.Height / scale) / worldSprite.Size.Y, 1f);
+				SpriteRenderer.SetAntialiasingPixelsPerTexel(Window.SurfaceSize.Height * 1f / worldSprite.Bounds.Height);
+				//RgbaSpriteRenderer.DrawSprite(worldSprite, float3.Zero, bufferScale);
+				var f3 = new float3(lastBufferSize.Width / worldSprite.Size.X, -lastBufferSize.Height / worldSprite.Size.Y, 1f);
+
+				// 直接画出来好不好，别再往screenbuffer里塞了，你们ora的坐标系统真的太恶心了
+				RgbaSpriteRenderer.DrawSprite(worldSprite, new float3(0, lastBufferSize.Height, 0), f3);
+
+				//Console.WriteLine("_____________________");
+				//Console.WriteLine("bufferScale: " + bufferScale);
+				//Console.WriteLine("f3: " + f3);
+				//Console.WriteLine("worldSprite.offset: " + worldSprite.Offset);
+				//Console.WriteLine("worldSprite.Bounds: " + worldSprite.Bounds);
+				//Console.WriteLine("worldSprite.Size: " + worldSprite.Size);
+				//Console.WriteLine("lastBufferSize.Width: " + lastBufferSize.Width);
+				//Console.WriteLine("lastBufferSize.Height: " + lastBufferSize.Height);
+				//Console.WriteLine("screenSprite.Size: " + screenSprite.Size);
+				//Console.WriteLine("~~~~~~~~~~~~~~~~~~~~");
+
+				Flush();
+				SpriteRenderer.SetAntialiasingPixelsPerTexel(0);
+			}
+		}
+
+		// world 没塞到 screenbuffer里 这样我们可以把3d物体渲染在world之上，ui之下
+		public void Render3D(WorldRenderer wr)
+		{
+			Standalone3DRenderer.DrawTest(wr);
+		}
+
+		// 你好好begin你的ui，少管 world 的闲事
 		public void BeginUI()
 		{
 			if (renderType == RenderType.World)
@@ -279,12 +319,6 @@ namespace OpenRA
 				// Render the world buffer into the UI buffer
 				screenBuffer.Bind();
 
-				var scale = Window.EffectiveWindowScale;
-				var bufferScale = new float3((int)(screenSprite.Bounds.Width / scale) / worldSprite.Size.X, (int)(-screenSprite.Bounds.Height / scale) / worldSprite.Size.Y, 1f);
-
-				SpriteRenderer.SetAntialiasingPixelsPerTexel(Window.SurfaceSize.Height * 1f / worldSprite.Bounds.Height);
-				RgbaSpriteRenderer.DrawSprite(worldSprite, float3.Zero, bufferScale);
-				Flush();
 				SpriteRenderer.SetAntialiasingPixelsPerTexel(0);
 			}
 			else
@@ -312,7 +346,8 @@ namespace OpenRA
 			WorldModelRenderer.SetPalette(currentPaletteTexture);
 		}
 
-		public void EndFrame(IInputHandler inputHandler, WorldRenderer wr = null)
+		// 最后把ui画出来好吗，画在最顶上
+		public void EndFrame(IInputHandler inputHandler)
 		{
 			if (renderType != RenderType.UI)
 				throw new InvalidOperationException($"EndFrame called with renderType = {renderType}, expected RenderType.UI.");
@@ -326,8 +361,6 @@ namespace OpenRA
 			// This saves us two redundant (and expensive) SetViewportParams each frame
 			RgbaSpriteRenderer.DrawSprite(screenSprite, new float3(0, lastBufferSize.Height, 0), new float3(lastBufferSize.Width / screenSprite.Size.X, -lastBufferSize.Height / screenSprite.Size.Y, 1f));
 			Flush();
-			if (wr != null && !wr.World.IsLoadingGameSave)
-				Standalone3DRenderer.DrawTest(wr);
 			Window.PumpInput(inputHandler);
 			Context.Present();
 
@@ -364,7 +397,7 @@ namespace OpenRA
 		public GLProfile GLProfile => Window.GLProfile;
 		public GLProfile[] SupportedGLProfiles => Window.SupportedGLProfiles;
 
-		public interface IBatchRenderer { void Flush(); }
+		public interface IBatchRenderer { void Flush(BlendMode blendMode = BlendMode.None); }
 
 		public IBatchRenderer CurrentBatchRenderer
 		{
@@ -374,7 +407,7 @@ namespace OpenRA
 			{
 				if (currentBatchRenderer == value)
 					return;
-				currentBatchRenderer?.Flush();
+				currentBatchRenderer?.Flush(BlendMode.Alpha);
 				currentBatchRenderer = value;
 			}
 		}
