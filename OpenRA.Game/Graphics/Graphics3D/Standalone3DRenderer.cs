@@ -58,54 +58,42 @@ namespace OpenRA.Graphics
 
 	public sealed class Standalone3DRenderer : IDisposable
 	{
-		public vec3 CameraUp;
-		public vec3 CameraHorizontalFront;
-		public int WPosPerMeter = 256;
+		const bool ShowDebugInfo = false;
+		public readonly vec3 CameraUp;
+		public readonly vec3 CameraHorizontalFront;
+		public readonly int WPosPerMeter = 256;
+		readonly float height = 256 * 100;
+		public readonly float WPosPerMeterHeight;
+
+		readonly Renderer renderer;
+		readonly IShader shader;
+
 		public vec3 CameraPos { get; private set; }
 		bool init = false;
 		float meterPerPix;
 		float meterPerPixHalf;
 		mat4 projection;
 		mat4 view;
-		mat4 camera;
-		float hight = 256 * 100;
 
-		IVertexBuffer<Vertex3D> vertexBuffer;
-		Vertex3D[] vertex3Ds;
-		readonly Renderer renderer;
-		readonly IShader shader;
-		ITexture diffuseTexBuffer;
-		ITexture specularTexBuffer;
-
-		mat4 model = mat4.Identity;
+		// for test
+		readonly ImageResult image;
+		readonly ImageResult image2;
+		readonly ITexture diffuseTexBufferTestBox;
+		readonly ITexture specularTexBufferTestBox;
+		readonly IVertexBuffer<Vertex3D> vertexBufferTestBox;
+		readonly Vertex3D[] vertexsTestBox;
 		public WPos TestPos = WPos.Zero;
+		public WRot TestRot = WRot.None;
 
-		ImageResult image, image2;
-		uint tick = 0;
-
-		public static mat4 LookAt(vec3 eye, vec3 center, vec3 up)
+		public Standalone3DRenderer(Renderer renderer, int tilleWidthPix)
 		{
-			var f = (center - eye).Normalized;
-			var s = vec3.Cross(f, up).Normalized;
-			var u = vec3.Cross(s, f);
-			var m = mat4.Identity;
-			m.m00 = s.x;
-			m.m10 = s.y;
-			m.m20 = s.z;
-			m.m01 = u.x;
-			m.m11 = u.y;
-			m.m21 = u.z;
-			m.m02 = -f.x;
-			m.m12 = -f.y;
-			m.m22 = -f.z;
-			m.m30 = -vec3.Dot(s, eye);
-			m.m31 = -vec3.Dot(u, eye);
-			m.m32 = vec3.Dot(f, eye);
-			return m;
-		}
+			meterPerPix = (float)((1024 / WPosPerMeter) / (tilleWidthPix / 1.4142135d));
+			meterPerPixHalf = meterPerPix / 2.0f;
 
-		public Standalone3DRenderer(Renderer renderer)
-		{
+			WPosPerMeterHeight = 1773.62f / (1024.0f / WPosPerMeter);
+			CameraUp = glm.Normalized(new vec3(0, -1, 1.7320508075f));
+			CameraHorizontalFront = new vec3(0, -1, 0);
+
 			this.renderer = renderer;
 			this.shader = renderer.Context.CreateUnsharedShader<MyShaderBindings>();
 
@@ -164,7 +152,7 @@ namespace OpenRA.Graphics
 				-0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  0.0f, 1.0f
 				};
 			int vertexCount = vv.Length / 8;
-			vertex3Ds = new Vertex3D[vertexCount];
+			vertexsTestBox = new Vertex3D[vertexCount];
 
 			for (int i = 0; i < vertexCount; i++)
 			{
@@ -187,7 +175,7 @@ namespace OpenRA.Graphics
 					}
 				}
 
-				vertex3Ds[i] = new Vertex3D(pos, normal, uv); ;
+				vertexsTestBox[i] = new Vertex3D(pos, normal, uv); ;
 			}
 
 			shader.SetInt("material.diffuse", 0);
@@ -250,73 +238,116 @@ namespace OpenRA.Graphics
 			shader.SetFloat("spotLight.quadratic", 0.032f);
 			shader.SetFloat("spotLight.cutOff", glm.Cos(glm.Radians(7.5f)));
 			shader.SetFloat("spotLight.outerCutOff", glm.Cos(glm.Radians(10.0f)));
-			// ...
 
+
+			diffuseTexBufferTestBox = Game.Renderer.Context.CreateTexture();
+			diffuseTexBufferTestBox.SetData(image.Data, image.Width, image.Height, TextureType.RGBA);
+			specularTexBufferTestBox = Game.Renderer.Context.CreateTexture();
+			specularTexBufferTestBox.SetData(image2.Data, image2.Width, image2.Height, TextureType.RGBA);
+			shader.SetTexture("material.diffuse", diffuseTexBufferTestBox);
+			shader.SetTexture("material.specular", specularTexBufferTestBox);
+			if (vertexBufferTestBox == null)
+			{
+				vertexBufferTestBox = Game.Renderer.CreateVertexBuffer<Vertex3D>(vertexsTestBox.Length);
+				vertexBufferTestBox.SetData(vertexsTestBox, vertexsTestBox.Length);
+			}
 		}
 
-		public void DrawTest(Viewport viewport)
+		public void DrawTest(WorldRenderer wr)
 		{
-			if (!init) {
-				CameraUp = glm.Normalized(new vec3(0, -1, 1.7320508075f));
-				CameraHorizontalFront = new vec3(0, -1, 0);
-				projection = mat4.Identity;
-				view = mat4.Identity;
-				//camera = mat4.Rotate(glm.Radians(-30.0f), new vec3(-1, 0, 0)) * mat4.LookAt(vec3.Zero, CameraHorizontalFront, WorldUp);
-				//camera = mat4.LookAt(vec3.Zero, new vec3(0, -1.7320508075f, -1), new vec3(0, -1, 1.7320508075f));
-				var tilleWidthPix = Game.ModData.Manifest.Get<MapGrid>().TileSize.Width;
-				meterPerPix = (float)((1024 / WPosPerMeter) / (tilleWidthPix / 1.4142135d));
-				meterPerPixHalf = meterPerPix / 2.0f;
-				diffuseTexBuffer = Game.Renderer.Context.CreateTexture();
-				diffuseTexBuffer.SetData(image.Data, image.Width, image.Height, TextureType.RGBA);
-				specularTexBuffer = Game.Renderer.Context.CreateTexture();
-				specularTexBuffer.SetData(image2.Data, image2.Width, image2.Height, TextureType.RGBA);
-				shader.SetTexture("material.diffuse", diffuseTexBuffer);
-				shader.SetTexture("material.specular", specularTexBuffer);
-				if (vertexBuffer == null)
+			// projection and view
+			{
+				if (ShowDebugInfo)
 				{
-					vertexBuffer = Game.Renderer.CreateVertexBuffer<Vertex3D>(vertex3Ds.Length);
-					vertexBuffer.SetData(vertex3Ds, vertex3Ds.Length);
+					Console.WriteLine("______Resolutions______");
+					Console.WriteLine("Resolution: " + Game.Renderer.Resolution);
+					Console.WriteLine("NativeResolution: " + Game.Renderer.NativeResolution);
+					Console.WriteLine("NativeResolution: " + Game.Renderer.Window);
+					Console.WriteLine("NativeResolution: " + Game.Renderer.WindowScale);
+					Console.WriteLine("------------------------------------");
 				}
-				init = true;
+
+				Viewport viewport = wr.Viewport;
+				var viewPortSize = (1f / viewport.Zoom * new float2(Game.Renderer.NativeResolution));
+				var ortho = (viewPortSize.X * meterPerPixHalf, -viewPortSize.X * meterPerPixHalf,
+					-viewPortSize.Y * meterPerPixHalf, viewPortSize.Y * meterPerPixHalf);
+
+				projection = mat4.Ortho(ortho.Item1, ortho.Item2, ortho.Item3, ortho.Item4, 0.1f, 300);
+
+				var viewPoint = new vec3((float)viewport.CenterPosition.X / WPosPerMeter, (float)viewport.CenterPosition.Y / WPosPerMeter, 0);
+				CameraPos = new vec3((float)viewport.CenterPosition.X / WPosPerMeter, ((float)viewport.CenterPosition.Y + 1.7320508075f * height) / WPosPerMeter, (float)height / WPosPerMeter);
+				view = mat4.LookAt(CameraPos, viewPoint, CameraUp);
+
+				shader.SetMatrix("projection", projection.Values1D);
+				shader.SetMatrix("view", view.Values1D);
+				shader.SetVec("viewPos", CameraPos.x, CameraPos.y, CameraPos.z);
+
+				if (ShowDebugInfo)
+				{
+					Console.WriteLine("______View and Camera______");
+					Console.WriteLine("Ortho: " + ortho.Item1 + ", " + ortho.Item2 + ", " + ortho.Item3 + ", " + ortho.Item4);
+					Console.WriteLine("viewport.CenterPosition: " + viewport.CenterPosition);
+					Console.WriteLine("Camera-Position: " + CameraPos.x + ", " + CameraPos.y + ", " + CameraPos.z);
+					Console.WriteLine("Camera-ViewPoint: " + viewPoint.x + ", " + viewPoint.y + ", " + viewPoint.z);
+					Console.WriteLine("~~~~~~~~~~~~~~~~~~~~~~~~~");
+				}
 			}
 
-			projection = mat4.Ortho(viewport.ViewportSize.X * meterPerPixHalf, -viewport.ViewportSize.X * meterPerPixHalf,
-				viewport.ViewportSize.Y * meterPerPixHalf, -viewport.ViewportSize.Y * meterPerPixHalf, 0.1f, 300);
-			Console.WriteLine("____________");
-			Console.WriteLine(" Ortho: " + viewport.ViewportSize.X * meterPerPixHalf + ", " + -viewport.ViewportSize.X * meterPerPixHalf + ", " +
-				viewport.ViewportSize.Y * meterPerPixHalf + ", " + -viewport.ViewportSize.Y * meterPerPixHalf);
-
-			var viewPoint = new vec3((float)viewport.CenterPosition.X / WPosPerMeter, (float)viewport.CenterPosition.Y / WPosPerMeter, (float)viewport.CenterPosition.Z / WPosPerMeter);
-
-			CameraPos = new vec3((float)viewport.CenterPosition.X / WPosPerMeter, ((float)viewport.CenterPosition.Y + 1.7320508075f * hight) / WPosPerMeter, (float)hight / WPosPerMeter);
-			//view = mat4.Translate(CameraPos) * camera;
-			view = mat4.LookAt(CameraPos, viewPoint, CameraUp);
-			var testPoint = new vec3((float)TestPos.X / WPosPerMeter, (float)TestPos.Y / WPosPerMeter, (float)TestPos.Z / WPosPerMeter);
-
-			shader.SetMatrix("projection", projection.Values1D);
-			shader.SetMatrix("view", view.Values1D);
-			shader.SetVec("viewPos", CameraPos.x, CameraPos.y, CameraPos.z);
-			model = mat4.Translate(testPoint) * mat4.Rotate(glm.Radians(45.0f), new vec3(0, 0, 1)); ;// mat4.Rotate(glm.Radians((float)tick++), new vec3(0.5f, 1.0f, 0));
-
-			Console.WriteLine("____________");
-			Console.WriteLine("CameraPos: " + CameraPos.x + ", " + CameraPos.y + ", " + CameraPos.z);
-			Console.WriteLine("ViewPoint: " + viewPoint.x + ", " + viewPoint.y + ", " + viewPoint.z);
-			Console.WriteLine("testPoint: " + testPoint);
-			Console.WriteLine("viewport.CenterPosition: " + viewport.CenterPosition);
-
-			shader.SetMatrix("model", model.Values1D);
-
 			shader.PrepareRender();
-
 			renderer.Context.EnableDepthBuffer();
 
-			renderer.DrawBatch(shader, vertexBuffer, 0, 36, PrimitiveType.TriangleList);
+			// draw parent test box
+			var parentMat = DrawOneTestBox(TestPos, TestRot, 2);
+
+			// draw child test box
+			DrawOneTestBox(parentMat, new vec3(0, -4, 0), new vec3(0, 0, glm.Radians(15.0f)));
+
 			return;
+		}
+
+		mat4 DrawOneTestBox(WPos wpos, WRot wrot, float scale = 1.0f)
+		{
+			var position = new vec3((float)wpos.X / WPosPerMeter, (float)wpos.Y / WPosPerMeter, (float)wpos.Z / WPosPerMeterHeight);
+			var rotation = -(new vec3(wrot.Pitch.Angle / 512.0f * (float)Math.PI, wrot.Roll.Angle / 512.0f * (float)Math.PI, wrot.Yaw.Angle / 512.0f * (float)Math.PI));
+
+			var m = mat4.Translate(position) * new mat4(new quat(rotation)) * mat4.Scale(scale);
+			shader.SetMatrix("model", m.Values1D);
+			renderer.DrawBatch(shader, vertexBufferTestBox, 0, 36, PrimitiveType.TriangleList);
+
+			if (ShowDebugInfo)
+			{
+				Console.WriteLine("______Draw Test______");
+				Console.WriteLine("position: " + position);
+				Console.WriteLine("rotation: " + rotation);
+				Console.WriteLine("scale: " + scale);
+				Console.WriteLine("~~~~~~~~~~~~~~~~~~~");
+			}
+
+			return m;
+		}
+
+		mat4 DrawOneTestBox(mat4 parent, WPos wpos, WRot wrot, float scale = 1.0f)
+		{
+			var position = new vec3((float)wpos.X / WPosPerMeter, (float)wpos.Y / WPosPerMeter, (float)wpos.Z / WPosPerMeterHeight);
+			var rotation = -(new vec3(wrot.Pitch.Angle / 512.0f * (float)Math.PI, wrot.Roll.Angle / 512.0f * (float)Math.PI, wrot.Yaw.Angle / 512.0f * (float)Math.PI));
+
+			var m = parent * mat4.Translate(position) * new mat4(new quat(rotation)) * mat4.Scale(scale);
+			shader.SetMatrix("model", m.Values1D);
+			renderer.DrawBatch(shader, vertexBufferTestBox, 0, 36, PrimitiveType.TriangleList);
+			return m;
+		}
+
+		mat4 DrawOneTestBox(mat4 parent, vec3 pos, vec3 rot, float scale = 1.0f)
+		{
+			var m = parent * mat4.Translate(pos) * new mat4(new quat(rot)) * mat4.Scale(scale);
+			shader.SetMatrix("model", m.Values1D);
+			renderer.DrawBatch(shader, vertexBufferTestBox, 0, 36, PrimitiveType.TriangleList);
+			return m;
 		}
 
 		public void Dispose()
 		{
-			vertexBuffer?.Dispose();
+			vertexBufferTestBox?.Dispose();
 		}
 	}
 }

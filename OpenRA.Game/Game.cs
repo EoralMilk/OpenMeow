@@ -470,6 +470,7 @@ namespace OpenRA
 
 			var grid = ModData.Manifest.Contains<MapGrid>() ? ModData.Manifest.Get<MapGrid>() : null;
 			Renderer.InitializeDepthBuffer(grid);
+			Renderer.Initialize3DRenderer(grid);
 
 			Cursor?.Dispose();
 			Cursor = new CursorManager(ModData.CursorProvider);
@@ -701,7 +702,7 @@ namespace OpenRA
 				}
 
 				using (new PerfSample("render_flip"))
-					Renderer.EndFrame(new DefaultInputHandler(OrderManager.World));
+					Renderer.EndFrame(new DefaultInputHandler(OrderManager.World), worldRenderer);
 
 				if (takeScreenshot)
 				{

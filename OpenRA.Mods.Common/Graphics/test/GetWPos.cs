@@ -12,9 +12,11 @@ namespace OpenRA.Mods.Common.Traits
 	public class GetWPos : ConditionalTrait<GetWPosInfo>, ITick
 	{
 		IPositionable positionable;
+		IFacing facing;
 		public GetWPos(Actor self, GetWPosInfo info)
 			: base(info) {
 			positionable = self.TraitOrDefault< IPositionable>();
+			facing = self.TraitOrDefault<IFacing>();
 		}
 
 		public void Tick(Actor self)
@@ -27,7 +29,17 @@ namespace OpenRA.Mods.Common.Traits
 					Console.WriteLine(self.ActorID + " Game.Renderer.Standalone3DRenderer == null");
 			}
 			else
-				Console.WriteLine(self.ActorID + " has no Positonable");
+				Console.WriteLine(self.ActorID + " has no IPositonable");
+
+			if (facing != null)
+			{
+				if (Game.Renderer.Standalone3DRenderer != null)
+					Game.Renderer.Standalone3DRenderer.TestRot = facing.Orientation;
+				else
+					Console.WriteLine(self.ActorID + " Game.Renderer.Standalone3DRenderer == null");
+			}
+			else
+				Console.WriteLine(self.ActorID + " has no IFacing");
 		}
 	}
 }

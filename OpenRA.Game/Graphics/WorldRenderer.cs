@@ -293,9 +293,6 @@ namespace OpenRA.Graphics
 					r.Render(this);
 
 			Game.Renderer.Flush();
-
-			// for test
-			Game.Renderer.Standalone3DRenderer.DrawTest(this.Viewport);
 		}
 
 		public void DrawAnnotations()

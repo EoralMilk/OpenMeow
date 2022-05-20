@@ -93,7 +93,6 @@ namespace OpenRA
 			SpriteRenderer = new SpriteRenderer(this, Context.CreateUnsharedShader<CombinedShaderBindings>());
 			RgbaSpriteRenderer = new RgbaSpriteRenderer(SpriteRenderer);
 			RgbaColorRenderer = new RgbaColorRenderer(SpriteRenderer);
-			Standalone3DRenderer = new Standalone3DRenderer(this);
 
 			tempBuffer = Context.CreateVertexBuffer<Vertex>(TempBufferSize);
 		}
@@ -150,6 +149,11 @@ namespace OpenRA
 			// We need an offset of mapGrid.MaximumTerrainHeight * mapGrid.TileSize.Height / 2 to cover the terrain height
 			// and choose to use mapGrid.MaximumTerrainHeight * mapGrid.TileSize.Height / 4 for each of the actor and top-edge cases
 			depthMargin = mapGrid == null || !mapGrid.EnableDepthBuffer ? 0 : mapGrid.TileSize.Height * mapGrid.MaximumTerrainHeight;
+		}
+
+		public void Initialize3DRenderer(MapGrid mapGrid)
+		{
+			Standalone3DRenderer = new Standalone3DRenderer(this, mapGrid.TileSize.Width);
 		}
 
 		void BeginFrame()
@@ -308,7 +312,7 @@ namespace OpenRA
 			WorldModelRenderer.SetPalette(currentPaletteTexture);
 		}
 
-		public void EndFrame(IInputHandler inputHandler)
+		public void EndFrame(IInputHandler inputHandler, WorldRenderer wr = null)
 		{
 			if (renderType != RenderType.UI)
 				throw new InvalidOperationException($"EndFrame called with renderType = {renderType}, expected RenderType.UI.");
@@ -322,7 +326,8 @@ namespace OpenRA
 			// This saves us two redundant (and expensive) SetViewportParams each frame
 			RgbaSpriteRenderer.DrawSprite(screenSprite, new float3(0, lastBufferSize.Height, 0), new float3(lastBufferSize.Width / screenSprite.Size.X, -lastBufferSize.Height / screenSprite.Size.Y, 1f));
 			Flush();
-
+			if (wr != null && !wr.World.IsLoadingGameSave)
+				Standalone3DRenderer.DrawTest(wr);
 			Window.PumpInput(inputHandler);
 			Context.Present();
 
