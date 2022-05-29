@@ -200,6 +200,15 @@ namespace OpenRA.Platforms.Default
 			OpenGL.CheckGLError();
 		}
 
+		public void EnableDepthTest()
+		{
+			VerifyThreadAffinity();
+			OpenGL.glEnable(OpenGL.GL_DEPTH_TEST);
+			OpenGL.CheckGLError();
+			OpenGL.glDepthFunc(OpenGL.GL_LEQUAL);
+			OpenGL.CheckGLError();
+		}
+
 		public void DisableDepthBuffer()
 		{
 			VerifyThreadAffinity();

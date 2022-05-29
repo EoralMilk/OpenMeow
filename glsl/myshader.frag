@@ -74,6 +74,8 @@ in vec2 TexCoords;
 #endif
 
 uniform vec3 viewPos;
+uniform bool EnableDepthPreview;
+uniform vec2 DepthPreviewParams;
 
 vec3 CalcDirLight(DirLight light, vec3 normal, vec3 viewDir)
 {
@@ -154,5 +156,18 @@ void main()
 
 	// result += CalcSpotLight(spotLight, norm, FragPos, viewDir);
 
-	FragColor = vec4(result, 1.0);
+	// FragColor = vec4(result, 1.0);
+	if (EnableDepthPreview)
+	{
+		float intensity = 1.0 - clamp(DepthPreviewParams.x * gl_FragCoord.z - 0.5 * DepthPreviewParams.x - DepthPreviewParams.y + 0.5, 0.0, 1.0);
+
+		#if __VERSION__ == 120
+		gl_FragColor = vec4(vec3(intensity), 1.0);
+		#else
+		FragColor = vec4(vec3(intensity), 1.0);
+		#endif
+	}
+	else{
+		FragColor = vec4(result, 1.0);
+	}
 }

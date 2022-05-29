@@ -492,7 +492,7 @@ namespace OpenRA
 			Context.EnableDepthBuffer();
 		}
 
-		public void DisableDepthBuffer()
+		public void DisableDepthTest()
 		{
 			Flush();
 			Context.DisableDepthBuffer();

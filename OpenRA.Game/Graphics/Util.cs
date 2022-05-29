@@ -10,6 +10,7 @@
 #endregion
 
 using System;
+using GlmSharp;
 using OpenRA.FileFormats;
 using OpenRA.Primitives;
 
@@ -19,6 +20,76 @@ namespace OpenRA.Graphics
 	{
 		// yes, our channel order is nuts.
 		static readonly int[] ChannelMasks = { 2, 1, 0, 3 };
+
+		public static void FastCreateCard(Vertex[] vertices,
+			WPos inPos,
+			Sprite r, int2 samplers, float paletteTextureIndex, float scale,
+			in float3 tint, float alpha, int nv)
+		{
+			var position = new vec3((float)inPos.X / Game.Renderer.Standalone3DRenderer.WPosPerMeter, (float)inPos.Y / Game.Renderer.Standalone3DRenderer.WPosPerMeter, (float)inPos.Z / Game.Renderer.Standalone3DRenderer.WPosPerMeterHeight);
+			var ssziehalf = scale * r.Size / Game.Renderer.Standalone3DRenderer.meterPerPix / 2;
+			var soffset = scale * r.Offset / Game.Renderer.Standalone3DRenderer.meterPerPix;
+
+			float2 leftRight = new float2(soffset.X - ssziehalf.X, soffset.X + ssziehalf.X);
+			float2 topBottom = new float2(ssziehalf.Y - soffset.Y, soffset.Y + ssziehalf.Y);
+
+			float3 leftTop = new float3(position.x + leftRight.X, position.y, position.z + (topBottom.X) / Game.Renderer.Standalone3DRenderer.SinCameraPitch);
+			float3 rightTop = new float3(position.x + leftRight.Y, position.y, leftTop.Z);
+			float3 leftBase = new float3(leftTop.X, position.y, position.z);
+			float3 rightBase = new float3(rightTop.X, position.y, position.z);
+			float3 leftFront = new float3(leftTop.X, position.y + topBottom.Y / Game.Renderer.Standalone3DRenderer.CosCameraPitch, position.z);
+			float3 rightFront = new float3(rightTop.X, leftFront.Y, position.z);
+
+			float ycut = topBottom.X / (ssziehalf.Y * 2);
+
+			float sl = 0;
+			float st = 0;
+			float sbase = 0;
+			float sr = 0;
+			float sb = 0;
+
+			// See combined.vert for documentation on the channel attribute format
+			var attribC = r.Channel == TextureChannel.RGBA ? 0x02 : ((byte)r.Channel) << 1 | 0x01;
+			attribC |= samplers.X << 6;
+			if (r is SpriteWithSecondaryData ss)
+			{
+				sl = ss.SecondaryLeft;
+				st = ss.SecondaryTop;
+				sr = ss.SecondaryRight;
+				sb = ss.SecondaryBottom;
+
+				sbase = st - (st - sb) * ycut;
+
+				attribC |= ((byte)ss.SecondaryChannel) << 4 | 0x08;
+				attribC |= samplers.Y << 9;
+			}
+
+			var fAttribC = (float)attribC;
+			float baseY = r.Top - (r.Top - r.Bottom) * ycut;
+
+			vertices[nv] = new Vertex(leftTop, r.Left, r.Top, sl, st, paletteTextureIndex, fAttribC, tint, alpha);
+			vertices[nv + 1] = new Vertex(rightTop, r.Right, r.Top, sr, st, paletteTextureIndex, fAttribC, tint, alpha);
+			vertices[nv + 2] = new Vertex(rightBase, r.Right, baseY, sr, sbase, paletteTextureIndex, fAttribC, tint, alpha);
+
+			vertices[nv + 3] = new Vertex(rightBase, r.Right, baseY, sr, sbase, paletteTextureIndex, fAttribC, tint, alpha);
+			vertices[nv + 4] = new Vertex(leftBase, r.Left, baseY, sl, sbase, paletteTextureIndex, fAttribC, tint, alpha);
+			vertices[nv + 5] = new Vertex(leftTop, r.Left, r.Top, sl, st, paletteTextureIndex, fAttribC, tint, alpha);
+
+			vertices[nv + 6] = new Vertex(leftBase, r.Left, baseY, sl, sbase, paletteTextureIndex, fAttribC, tint, alpha);
+			vertices[nv + 7] = new Vertex(rightBase, r.Right, baseY, sr, sbase, paletteTextureIndex, fAttribC, tint, alpha);
+			vertices[nv + 8] = new Vertex(rightFront, r.Right, r.Bottom, sr, sb, paletteTextureIndex, fAttribC, tint, alpha);
+
+			vertices[nv + 9] = new Vertex(rightFront, r.Right, r.Bottom, sr, sb, paletteTextureIndex, fAttribC, tint, alpha);
+			vertices[nv + 10] = new Vertex(leftFront, r.Left, r.Bottom, sl, sb, paletteTextureIndex, fAttribC, tint, alpha);
+			vertices[nv + 11] = new Vertex(leftBase, r.Left, baseY, sl, sbase, paletteTextureIndex, fAttribC, tint, alpha);
+
+			//vertices[nv] = new Vertex(a, r.Left, r.Top, sl, st, paletteTextureIndex, fAttribC, tint, alpha);
+			//vertices[nv + 1] = new Vertex(b, r.Right, r.Top, sr, st, paletteTextureIndex, fAttribC, tint, alpha);
+			//vertices[nv + 2] = new Vertex(c, r.Right, r.Bottom, sr, sb, paletteTextureIndex, fAttribC, tint, alpha);
+			//vertices[nv + 3] = new Vertex(c, r.Right, r.Bottom, sr, sb, paletteTextureIndex, fAttribC, tint, alpha);
+			//vertices[nv + 4] = new Vertex(d, r.Left, r.Bottom, sl, sb, paletteTextureIndex, fAttribC, tint, alpha);
+			//vertices[nv + 5] = new Vertex(a, r.Left, r.Top, sl, st, paletteTextureIndex, fAttribC, tint, alpha);
+		}
 
 		public static void FastCreateQuad(Vertex[] vertices, in float3 o, Sprite r, int2 samplers, float paletteTextureIndex, int nv, in float3 size, in float3 tint, float alpha)
 		{

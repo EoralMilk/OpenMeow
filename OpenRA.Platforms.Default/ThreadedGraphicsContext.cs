@@ -41,6 +41,7 @@ namespace OpenRA.Platforms.Default
 		Action doClearDepthBuffer;
 		Action doDisableDepthBuffer;
 		Action doEnableDepthBuffer;
+		Action doEnableDepthTest;
 		Action doDisableScissor;
 		Action doPresent;
 		Func<string> getGLVersion;
@@ -85,6 +86,7 @@ namespace OpenRA.Platforms.Default
 					doClearDepthBuffer = () => context.ClearDepthBuffer();
 					doDisableDepthBuffer = () => context.DisableDepthBuffer();
 					doEnableDepthBuffer = () => context.EnableDepthBuffer();
+					doEnableDepthTest = () => context.EnableDepthTest();
 					doDisableScissor = () => context.DisableScissor();
 					doPresent = () => context.Present();
 					getGLVersion = () => context.GLVersion;
@@ -473,6 +475,11 @@ namespace OpenRA.Platforms.Default
 		public void EnableDepthBuffer()
 		{
 			Post(doEnableDepthBuffer);
+		}
+
+		public void EnableDepthTest()
+		{
+			Post(doEnableDepthTest);
 		}
 
 		public void EnableScissor(int left, int top, int width, int height)

@@ -62,8 +62,10 @@ namespace OpenRA.Graphics
 		public readonly float CameraPitch = 60.0f;
 		public readonly vec3 CameraUp;
 		public readonly int WPosPerMeter = 256;
-		readonly float height = 256 * 100;
-		readonly float tanCameraPitch;
+		readonly float height = 256 * 200;
+		public readonly float TanCameraPitch;
+		public readonly float CosCameraPitch;
+		public readonly float SinCameraPitch;
 		public readonly float WPosPerMeterHeight;
 
 		readonly Renderer renderer;
@@ -71,8 +73,8 @@ namespace OpenRA.Graphics
 
 		public vec3 CameraPos { get; private set; }
 		bool init = false;
-		float meterPerPix;
-		float meterPerPixHalf;
+		public readonly float meterPerPix;
+		public readonly float meterPerPixHalf;
 		mat4 projection;
 		mat4 view;
 
@@ -92,8 +94,10 @@ namespace OpenRA.Graphics
 			meterPerPixHalf = meterPerPix / 2.0f;
 
 			WPosPerMeterHeight = 1773.62f / (1024.0f / WPosPerMeter);
-			tanCameraPitch = (float)Math.Tan(glm.Radians(CameraPitch));
-			CameraUp = glm.Normalized(new vec3(0, -1, tanCameraPitch));
+			TanCameraPitch = (float)Math.Tan(glm.Radians(CameraPitch));
+			CosCameraPitch = (float)Math.Cos(glm.Radians(CameraPitch));
+			SinCameraPitch = (float)Math.Sin(glm.Radians(CameraPitch));
+			CameraUp = glm.Normalized(new vec3(0, -1, TanCameraPitch));
 
 			this.renderer = renderer;
 			this.shader = renderer.Context.CreateUnsharedShader<MyShaderBindings>();
@@ -240,7 +244,6 @@ namespace OpenRA.Graphics
 			shader.SetFloat("spotLight.cutOff", glm.Cos(glm.Radians(7.5f)));
 			shader.SetFloat("spotLight.outerCutOff", glm.Cos(glm.Radians(10.0f)));
 
-
 			diffuseTexBufferTestBox = Game.Renderer.Context.CreateTexture();
 			diffuseTexBufferTestBox.SetData(image.Data, image.Width, image.Height, TextureType.RGBA);
 			specularTexBufferTestBox = Game.Renderer.Context.CreateTexture();
@@ -252,6 +255,12 @@ namespace OpenRA.Graphics
 				vertexBufferTestBox = Game.Renderer.CreateVertexBuffer<Vertex3D>(vertexsTestBox.Length);
 				vertexBufferTestBox.SetData(vertexsTestBox, vertexsTestBox.Length);
 			}
+		}
+
+		public void SetDepthPreview(bool enabled, float contrast, float offset)
+		{
+			shader.SetBool("EnableDepthPreview", enabled);
+			shader.SetVec("DepthPreviewParams", contrast, offset);
 		}
 
 		public void DrawTest(WorldRenderer wr)
@@ -273,11 +282,11 @@ namespace OpenRA.Graphics
 				var ortho = (viewPortSize.X * meterPerPixHalf, -viewPortSize.X * meterPerPixHalf,
 					-viewPortSize.Y * meterPerPixHalf, viewPortSize.Y * meterPerPixHalf);
 
-				projection = mat4.Ortho(ortho.Item1, ortho.Item2, ortho.Item3, ortho.Item4, 0.1f, 300);
+				projection = mat4.Ortho(ortho.Item1, ortho.Item2, ortho.Item3, ortho.Item4, 0.1f, 480);
 				//var vv = mat4.Rotate(glm.Radians(-30.0f), new vec3(-1,0,0)) * mat4.LookAt(vec3.Zero, new vec3(0, -1, 0), new vec3(0, 0, 1));
 
 				var viewPoint = new vec3((float)viewport.CenterPosition.X / WPosPerMeter, (float)viewport.CenterPosition.Y / WPosPerMeter, 0);
-				CameraPos = new vec3((float)viewport.CenterPosition.X / WPosPerMeter, ((float)viewport.CenterPosition.Y + tanCameraPitch * height) / WPosPerMeter, (float)height / WPosPerMeter);
+				CameraPos = new vec3((float)viewport.CenterPosition.X / WPosPerMeter, ((float)viewport.CenterPosition.Y + TanCameraPitch * height) / WPosPerMeter, (float)height / WPosPerMeter);
 				view = mat4.LookAt(CameraPos, viewPoint, CameraUp);
 				//view = mat4.Translate(CameraPos) * vv;
 
@@ -297,7 +306,7 @@ namespace OpenRA.Graphics
 			}
 
 			shader.PrepareRender();
-			renderer.Context.EnableDepthBuffer();
+			renderer.Context.EnableDepthTest();
 
 			// draw parent test box
 			var parentMat = DrawOneTestBox(TestPos, TestRot, 2);
@@ -305,6 +314,8 @@ namespace OpenRA.Graphics
 			// draw child test box
 			DrawOneTestBox(parentMat, new vec3(0, -4, 0), new vec3(0, 0, 0));
 
+			Game.Renderer.Context.ClearDepthBuffer();
+			Game.Renderer.Context.DisableDepthBuffer();
 			return;
 		}
 

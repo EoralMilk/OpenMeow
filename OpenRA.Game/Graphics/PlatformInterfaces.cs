@@ -96,6 +96,7 @@ namespace OpenRA
 		void DrawPrimitives(PrimitiveType pt, int firstVertex, int numVertices);
 		void Clear();
 		void EnableDepthBuffer();
+		void EnableDepthTest();
 		void DisableDepthBuffer();
 		void ClearDepthBuffer();
 		void SetBlendMode(BlendMode mode);
