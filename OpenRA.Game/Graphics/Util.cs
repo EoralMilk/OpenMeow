@@ -27,8 +27,8 @@ namespace OpenRA.Graphics
 			in float3 tint, float alpha, int nv)
 		{
 			var position = new vec3((float)inPos.X / Game.Renderer.Standalone3DRenderer.WPosPerMeter, (float)inPos.Y / Game.Renderer.Standalone3DRenderer.WPosPerMeter, (float)inPos.Z / Game.Renderer.Standalone3DRenderer.WPosPerMeterHeight);
-			var ssziehalf = scale * r.Size / Game.Renderer.Standalone3DRenderer.meterPerPix / 2;
-			var soffset = scale * r.Offset / Game.Renderer.Standalone3DRenderer.meterPerPix;
+			var ssziehalf = Game.Renderer.Standalone3DRenderer.meterPerPix * scale * r.Size / 2;
+			var soffset = Game.Renderer.Standalone3DRenderer.meterPerPix * scale * r.Offset;
 
 			float2 leftRight = new float2(soffset.X - ssziehalf.X, soffset.X + ssziehalf.X);
 			float2 topBottom = new float2(ssziehalf.Y - soffset.Y, soffset.Y + ssziehalf.Y);
@@ -89,6 +89,53 @@ namespace OpenRA.Graphics
 			//vertices[nv + 3] = new Vertex(c, r.Right, r.Bottom, sr, sb, paletteTextureIndex, fAttribC, tint, alpha);
 			//vertices[nv + 4] = new Vertex(d, r.Left, r.Bottom, sl, sb, paletteTextureIndex, fAttribC, tint, alpha);
 			//vertices[nv + 5] = new Vertex(a, r.Left, r.Top, sl, st, paletteTextureIndex, fAttribC, tint, alpha);
+		}
+
+		public static void FastCreatePlane(Vertex[] vertices,
+			WPos inPos,
+			Sprite r, int2 samplers, float paletteTextureIndex, float scale,
+			in float3 tint, float alpha, int nv)
+		{
+			var position = new vec3((float)inPos.X / Game.Renderer.Standalone3DRenderer.WPosPerMeter, (float)inPos.Y / Game.Renderer.Standalone3DRenderer.WPosPerMeter, (float)inPos.Z / Game.Renderer.Standalone3DRenderer.WPosPerMeterHeight);
+			var ssziehalf = Game.Renderer.Standalone3DRenderer.meterPerPix * scale * r.Size / 2;
+			var soffset = Game.Renderer.Standalone3DRenderer.meterPerPix * scale * r.Offset;
+
+			float2 leftRight = new float2(soffset.X - ssziehalf.X, soffset.X + ssziehalf.X);
+			float2 topBottom = new float2(ssziehalf.Y - soffset.Y, soffset.Y + ssziehalf.Y);
+
+			float3 leftBack = new float3(position.x + leftRight.X, position.y - topBottom.X / Game.Renderer.Standalone3DRenderer.CosCameraPitch, position.z);
+			float3 rightBack = new float3(position.x + leftRight.Y, leftBack.Y, position.z);
+			float3 leftFront = new float3(leftBack.X, position.y + topBottom.Y / Game.Renderer.Standalone3DRenderer.CosCameraPitch, position.z);
+			float3 rightFront = new float3(rightBack.X, leftFront.Y, position.z);
+
+			float sl = 0;
+			float st = 0;
+			float sr = 0;
+			float sb = 0;
+
+			// See combined.vert for documentation on the channel attribute format
+			var attribC = r.Channel == TextureChannel.RGBA ? 0x02 : ((byte)r.Channel) << 1 | 0x01;
+			attribC |= samplers.X << 6;
+			if (r is SpriteWithSecondaryData ss)
+			{
+				sl = ss.SecondaryLeft;
+				st = ss.SecondaryTop;
+				sr = ss.SecondaryRight;
+				sb = ss.SecondaryBottom;
+
+				attribC |= ((byte)ss.SecondaryChannel) << 4 | 0x08;
+				attribC |= samplers.Y << 9;
+			}
+
+			var fAttribC = (float)attribC;
+
+			vertices[nv] = new Vertex(leftBack, r.Left, r.Top, sl, st, paletteTextureIndex, fAttribC, tint, alpha);
+			vertices[nv + 1] = new Vertex(rightBack, r.Right, r.Top, sr, st, paletteTextureIndex, fAttribC, tint, alpha);
+			vertices[nv + 2] = new Vertex(rightFront, r.Right, r.Bottom, sr, sb, paletteTextureIndex, fAttribC, tint, alpha);
+
+			vertices[nv + 3] = new Vertex(rightFront, r.Right, r.Bottom, sr, sb, paletteTextureIndex, fAttribC, tint, alpha);
+			vertices[nv + 4] = new Vertex(leftFront, r.Left, r.Bottom, sl, sb, paletteTextureIndex, fAttribC, tint, alpha);
+			vertices[nv + 5] = new Vertex(leftBack, r.Left, r.Top, sl, st, paletteTextureIndex, fAttribC, tint, alpha);
 		}
 
 		public static void FastCreateQuad(Vertex[] vertices, in float3 o, Sprite r, int2 samplers, float paletteTextureIndex, int nv, in float3 size, in float3 tint, float alpha)

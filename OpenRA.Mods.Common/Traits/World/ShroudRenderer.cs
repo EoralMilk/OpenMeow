@@ -83,12 +83,14 @@ namespace OpenRA.Mods.Common.Traits
 
 		readonly struct TileInfo
 		{
-			public readonly float3 ScreenPosition;
+			//public readonly float3 ScreenPosition;
+			public readonly WPos WorldPosition;
 			public readonly byte Variant;
 
-			public TileInfo(in float3 screenPosition, byte variant)
+			public TileInfo(in WPos wpos, byte variant)
 			{
-				ScreenPosition = screenPosition;
+				//ScreenPosition = screenPosition;
+				WorldPosition = wpos;
 				Variant = variant;
 			}
 		}
@@ -181,9 +183,9 @@ namespace OpenRA.Mods.Common.Traits
 			foreach (var uv in w.Map.AllCells.MapCoords)
 			{
 				var pos = w.Map.CenterOfCell(uv.ToCPos(map));
-				var screen = wr.Screen3DPosition(pos - new WVec(0, 0, pos.Z));
+				//var screen = wr.Screen3DPosition(pos - new WVec(0, 0, pos.Z));
 				var variant = (byte)Game.CosmeticRandom.Next(info.ShroudVariants.Length);
-				tileInfos[uv] = new TileInfo(screen, variant);
+				tileInfos[uv] = new TileInfo(pos - new WVec(0, 0, pos.Z), variant);
 			}
 
 			// All tiles are visible in the editor
@@ -286,16 +288,16 @@ namespace OpenRA.Mods.Common.Traits
 
 				cellsDirty[uv] = false;
 
-				var tileInfo = tileInfos[uv];
+				TileInfo tileInfo = tileInfos[uv];
 				var shroudSprite = GetSprite(shroudSprites, GetEdges(puv, visibleUnderShroud), tileInfo.Variant);
-				var shroudPos = tileInfo.ScreenPosition;
-				if (shroudSprite.Sprite != null)
-					shroudPos += shroudSprite.Sprite.Offset - 0.5f * shroudSprite.Sprite.Size;
+				var shroudPos = tileInfo.WorldPosition;//tileInfo.ScreenPosition;
+				//if (shroudSprite.Sprite != null)
+				//	shroudPos += shroudSprite.Sprite.Offset - 0.5f * shroudSprite.Sprite.Size;
 
 				var fogSprite = GetSprite(fogSprites, GetEdges(puv, visibleUnderFog), tileInfo.Variant);
-				var fogPos = tileInfo.ScreenPosition;
-				if (fogSprite.Sprite != null)
-					fogPos += fogSprite.Sprite.Offset - 0.5f * fogSprite.Sprite.Size;
+				var fogPos = tileInfo.WorldPosition;
+				//if (fogSprite.Sprite != null)
+				//	fogPos += fogSprite.Sprite.Offset - 0.5f * fogSprite.Sprite.Size;
 
 				shroudLayer.Update(uv, shroudSprite.Sprite, shroudPaletteReference, shroudPos, shroudSprite.Scale, shroudSprite.Alpha, true);
 				fogLayer.Update(uv, fogSprite.Sprite, fogPaletteReference, fogPos, fogSprite.Scale, fogSprite.Alpha, true);

@@ -94,7 +94,8 @@ namespace OpenRA.Graphics
 			if ((tintModifiers & TintModifiers.ReplaceColor) != 0)
 				a *= -1;
 
-			wsr.DrawSprite(sprite, palette, ScreenPosition(wr), scale, t, a);
+			//wsr.DrawSprite(sprite, palette, ScreenPosition(wr), scale, t, a);
+			wsr.DrawSprite(sprite, palette, pos, scale, t, a);
 		}
 
 		public void RenderDebugGeometry(WorldRenderer wr)

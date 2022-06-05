@@ -254,8 +254,8 @@ namespace OpenRA.Graphics
 
 			debugVis.Value?.UpdateDepthBuffer();
 
-			var bounds = Viewport.GetScissorBounds(World.Type != WorldType.Editor);
-			Game.Renderer.EnableScissor(bounds);
+			//var bounds = Viewport.GetScissorBounds(World.Type != WorldType.Editor);
+			//Game.Renderer.EnableScissor(bounds);
 
 			if (enableDepthBuffer)
 				Game.Renderer.Context.EnableDepthBuffer();
@@ -266,6 +266,10 @@ namespace OpenRA.Graphics
 
 			for (var i = 0; i < preparedRenderables.Count; i++)
 				preparedRenderables[i].Render(this);
+
+			Game.Renderer.Flush();
+
+			Game.Renderer.Standalone3DRenderer?.DrawTest(this);
 
 			if (enableDepthBuffer)
 				Game.Renderer.ClearDepthBuffer();
@@ -284,7 +288,7 @@ namespace OpenRA.Graphics
 			if (enableDepthBuffer)
 				Game.Renderer.Context.DisableDepthBuffer();
 
-			Game.Renderer.DisableScissor();
+			//Game.Renderer.DisableScissor();
 
 			// HACK: Keep old grouping behaviour
 			var groupedOverlayRenderables = preparedOverlayRenderables.GroupBy(prs => prs.GetType());

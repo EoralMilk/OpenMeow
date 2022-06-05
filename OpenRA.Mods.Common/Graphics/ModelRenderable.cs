@@ -178,6 +178,7 @@ namespace OpenRA.Mods.Common.Graphics
 
 				wrsr.DrawSprite(renderProxy.ShadowSprite, sa, sb, sc, sd, t, a);
 				wrsr.DrawSprite(renderProxy.Sprite, pxOrigin - 0.5f * renderProxy.Sprite.Size, 1f, t, a);
+
 			}
 
 			public void RenderDebugGeometry(WorldRenderer wr)

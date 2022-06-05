@@ -122,6 +122,14 @@ namespace OpenRA.Mods.Common.Widgets.Logic
 				var team = teamChat && !disableTeamChat;
 				if (chatText.Text != "")
 				{
+					if (chatText.Text.StartsWith("-"))
+					{
+						var ss = chatText.Text;
+						var ff = float.Parse(ss.Substring(1));
+						if (Game.Renderer.Standalone3DRenderer != null)
+							Game.Renderer.Standalone3DRenderer.HeightOverlay = ff;
+					}
+
 					if (!chatText.Text.StartsWith("/", StringComparison.Ordinal))
 					{
 						// This should never happen, but avoid a crash if it does somehow (chat will just stay open)

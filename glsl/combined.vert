@@ -2,6 +2,9 @@
 
 uniform vec3 Scroll;
 uniform vec3 r1, r2;
+uniform mat4 view;
+uniform mat4 projection;
+uniform bool hasCamera;
 
 #if __VERSION__ == 120
 attribute vec4 aVertexPosition;
@@ -19,6 +22,7 @@ varying vec4 vColorFraction;
 varying vec4 vRGBAFraction;
 varying vec4 vPalettedFraction;
 varying vec4 vTint;
+
 #else
 in vec4 aVertexPosition;
 in vec4 aVertexTexCoord;
@@ -116,7 +120,14 @@ vec4 SelectPalettedFraction(float x)
 
 void main()
 {
-	gl_Position = vec4((aVertexPosition.xyz - Scroll.xyz) * r1 + r2, 1);
+	if (hasCamera)
+	{
+		gl_Position = projection * view * aVertexPosition;
+	}
+	else
+	{
+		gl_Position = vec4((aVertexPosition.xyz - Scroll.xyz) * r1 + r2, 1);
+	}
 	vTexCoord = aVertexTexCoord;
 	vTexMetadata = aVertexTexMetadata;
 

@@ -63,10 +63,12 @@ namespace OpenRA.Graphics
 		public readonly vec3 CameraUp;
 		public readonly int WPosPerMeter = 256;
 		readonly float height = 256 * 200;
+		public float HeightOverlay = 50;
 		public readonly float TanCameraPitch;
 		public readonly float CosCameraPitch;
 		public readonly float SinCameraPitch;
 		public readonly float WPosPerMeterHeight;
+		public readonly float MaxTerrainHeight;
 
 		readonly Renderer renderer;
 		readonly IShader shader;
@@ -75,8 +77,8 @@ namespace OpenRA.Graphics
 		bool init = false;
 		public readonly float meterPerPix;
 		public readonly float meterPerPixHalf;
-		mat4 projection;
-		mat4 view;
+		public mat4 Projection;
+		public mat4 View;
 
 		// for test
 		readonly ImageResult image;
@@ -88,9 +90,9 @@ namespace OpenRA.Graphics
 		public WPos TestPos = WPos.Zero;
 		public WRot TestRot = WRot.None;
 
-		public Standalone3DRenderer(Renderer renderer, int tilleWidthPix)
+		public Standalone3DRenderer(Renderer renderer, MapGrid mapGrid)
 		{
-			meterPerPix = (float)((1024 / WPosPerMeter) / (tilleWidthPix / 1.4142135d));
+			meterPerPix = (float)((1024 / WPosPerMeter) / (mapGrid.TileSize.Width / 1.4142135d));
 			meterPerPixHalf = meterPerPix / 2.0f;
 
 			WPosPerMeterHeight = 1773.62f / (1024.0f / WPosPerMeter);
@@ -98,6 +100,8 @@ namespace OpenRA.Graphics
 			CosCameraPitch = (float)Math.Cos(glm.Radians(CameraPitch));
 			SinCameraPitch = (float)Math.Sin(glm.Radians(CameraPitch));
 			CameraUp = glm.Normalized(new vec3(0, -1, TanCameraPitch));
+
+			MaxTerrainHeight = mapGrid.MaximumTerrainHeight * 724 * 1.25f / WPosPerMeterHeight;
 
 			this.renderer = renderer;
 			this.shader = renderer.Context.CreateUnsharedShader<MyShaderBindings>();
@@ -282,16 +286,20 @@ namespace OpenRA.Graphics
 				var ortho = (viewPortSize.X * meterPerPixHalf, -viewPortSize.X * meterPerPixHalf,
 					-viewPortSize.Y * meterPerPixHalf, viewPortSize.Y * meterPerPixHalf);
 
-				projection = mat4.Ortho(ortho.Item1, ortho.Item2, ortho.Item3, ortho.Item4, 0.1f, 480);
+				var heightMeter = 100;//ortho.Item4 / SinCameraPitch + (MaxTerrainHeight - (ortho.Item4 / TanCameraPitch * CosCameraPitch));
+
+				var far = heightMeter / CosCameraPitch + TanCameraPitch * ortho.Item4 + 100f;
+
+				Projection = mat4.Ortho(ortho.Item1, ortho.Item2, ortho.Item3, ortho.Item4, 0, far);
 				//var vv = mat4.Rotate(glm.Radians(-30.0f), new vec3(-1,0,0)) * mat4.LookAt(vec3.Zero, new vec3(0, -1, 0), new vec3(0, 0, 1));
 
 				var viewPoint = new vec3((float)viewport.CenterPosition.X / WPosPerMeter, (float)viewport.CenterPosition.Y / WPosPerMeter, 0);
-				CameraPos = new vec3((float)viewport.CenterPosition.X / WPosPerMeter, ((float)viewport.CenterPosition.Y + TanCameraPitch * height) / WPosPerMeter, (float)height / WPosPerMeter);
-				view = mat4.LookAt(CameraPos, viewPoint, CameraUp);
+				CameraPos = new vec3((float)viewport.CenterPosition.X / WPosPerMeter, ((float)viewport.CenterPosition.Y) / WPosPerMeter + TanCameraPitch * heightMeter, heightMeter);
+				View = mat4.LookAt(CameraPos, viewPoint, CameraUp);
 				//view = mat4.Translate(CameraPos) * vv;
 
-				shader.SetMatrix("projection", projection.Values1D);
-				shader.SetMatrix("view", view.Values1D);
+				shader.SetMatrix("projection", Projection.Values1D);
+				shader.SetMatrix("view", View.Values1D);
 				shader.SetVec("viewPos", CameraPos.x, CameraPos.y, CameraPos.z);
 
 				if (ShowDebugInfo)
@@ -299,6 +307,7 @@ namespace OpenRA.Graphics
 					Console.WriteLine("______View and Camera______");
 					Console.WriteLine("Ortho: " + ortho.Item1 + ", " + ortho.Item2 + ", " + ortho.Item3 + ", " + ortho.Item4);
 					Console.WriteLine("viewport.CenterPosition: " + viewport.CenterPosition);
+					Console.WriteLine("viewport.Zoom: " + viewport.Zoom);
 					Console.WriteLine("Camera-Position: " + CameraPos.x + ", " + CameraPos.y + ", " + CameraPos.z);
 					Console.WriteLine("Camera-ViewPoint: " + viewPoint.x + ", " + viewPoint.y + ", " + viewPoint.z);
 					Console.WriteLine("~~~~~~~~~~~~~~~~~~~~~~~~~");

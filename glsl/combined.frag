@@ -19,6 +19,9 @@ uniform vec2 DepthPreviewParams;
 uniform float DepthTextureScale;
 uniform float AntialiasPixelsPerTexel;
 
+uniform bool hasCamera;
+
+
 #if __VERSION__ == 120
 varying vec4 vTexCoord;
 varying vec2 vTexMetadata;
@@ -264,11 +267,11 @@ void main()
 		c = ColorShift(c, vTexMetadata.s);
 
 	float depth = gl_FragCoord.z;
-	if (length(vDepthMask) > 0.0)
-	{
-		vec4 y = Sample(vTexSampler.t, vTexCoord.pq);
-		depth = depth + DepthTextureScale * dot(y, vDepthMask);
-	}
+	// if (length(vDepthMask) > 0.0)
+	// {
+	// 	vec4 y = Sample(vTexSampler.t, vTexCoord.pq);
+	// 	depth = depth + DepthTextureScale * dot(y, vDepthMask);
+	// }
 
 	gl_FragDepth = depth;
 

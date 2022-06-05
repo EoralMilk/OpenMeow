@@ -679,8 +679,8 @@ namespace OpenRA
 					using (new PerfSample("render_world"))
 						worldRenderer.Draw();
 
-					Renderer.End2DWorld();
-					Renderer.Render3D(worldRenderer);
+					//Renderer.End2DWorld();
+					//Renderer.Render3D(worldRenderer);
 				}
 
 				using (new PerfSample("render_widgets"))
