@@ -61,7 +61,7 @@ namespace OpenRA.Mods.Common.Graphics
 				for (var i = 0; i < CircleSegments; i++)
 				{
 					var b = wr.Viewport.WorldToViewPx(wr.ScreenPosition(centerPosition + r * FacingOffsets[i] / 1024));
-					cr.DrawLine(a, b, width, color);
+					cr.DrawScreenLine(a, b, width, color);
 					a = b;
 				}
 			}

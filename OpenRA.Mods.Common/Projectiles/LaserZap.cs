@@ -96,6 +96,8 @@ namespace OpenRA.Mods.Common.Projectiles
 		[Desc("Palette to use for launch effect.")]
 		public readonly string LaunchEffectPalette = "effect";
 
+		[Desc("Render BlendMode.")]
+		public readonly BlendMode BlendMode = BlendMode.Additive;
 		public IProjectile Create(ProjectileArgs args)
 		{
 			var c = UsePlayerColor ? args.SourceActor.Owner.Color : Color;
@@ -196,13 +198,13 @@ namespace OpenRA.Mods.Common.Projectiles
 			if (ticks < info.Duration)
 			{
 				var rc = Color.FromArgb((info.Duration - ticks) * color.A / info.Duration, color);
-				yield return new BeamRenderable(source, info.ZOffset, target - source, info.Shape, info.Width, rc);
+				yield return new BeamRenderable(source, info.ZOffset, target - source, info.Shape, info.Width, rc, info.BlendMode);
 
 				if (info.SecondaryBeam)
 				{
 					var src = Color.FromArgb((info.Duration - ticks) * secondaryColor.A / info.Duration, secondaryColor);
 					yield return new BeamRenderable(source, info.SecondaryBeamZOffset, target - source,
-						info.SecondaryBeamShape, info.SecondaryBeamWidth, src);
+						info.SecondaryBeamShape, info.SecondaryBeamWidth, src, info.BlendMode);
 				}
 			}
 

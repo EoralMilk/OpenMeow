@@ -1,6 +1,6 @@
 ^bridge:
 	Defaults:
-		ZOffset: -1c511
+		MeshType: Plane
 		UseTilesetExtension: true
 		Start: 1
 		ZRamp: 1

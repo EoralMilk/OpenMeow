@@ -55,7 +55,7 @@ namespace OpenRA.Graphics
 			var a = first;
 			foreach (var b in waypoints.Skip(1).Select(pos => wr.Viewport.WorldToViewPx(wr.Screen3DPosition(pos))))
 			{
-				Game.Renderer.RgbaColorRenderer.DrawLine(a, b, width, color);
+				Game.Renderer.RgbaColorRenderer.DrawScreenLine(a, b, width, color);
 				DrawTargetMarker(color, b, markerSize);
 				a = b;
 			}

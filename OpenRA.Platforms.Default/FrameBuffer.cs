@@ -99,6 +99,18 @@ namespace OpenRA.Platforms.Default
 			OpenGL.CheckGLError();
 		}
 
+		public void SetViewport()
+		{
+			OpenGL.glViewport(0, 0, size.Width, size.Height);
+			OpenGL.CheckGLError();
+		}
+
+		public void SetViewportBack()
+		{
+			OpenGL.glViewport(cv[0], cv[1], cv[2], cv[3]);
+			OpenGL.CheckGLError();
+		}
+
 		public void Unbind()
 		{
 			if (scissored)
@@ -110,6 +122,18 @@ namespace OpenRA.Platforms.Default
 			OpenGL.glBindFramebuffer(OpenGL.GL_FRAMEBUFFER, 0);
 			OpenGL.CheckGLError();
 			OpenGL.glViewport(cv[0], cv[1], cv[2], cv[3]);
+			OpenGL.CheckGLError();
+		}
+
+		public void UnbindNotSetViewport()
+		{
+			if (scissored)
+				throw new InvalidOperationException("Attempting to unbind FrameBuffer with an active scissor region.");
+
+			VerifyThreadAffinity();
+			OpenGL.glFlush();
+			OpenGL.CheckGLError();
+			OpenGL.glBindFramebuffer(OpenGL.GL_FRAMEBUFFER, 0);
 			OpenGL.CheckGLError();
 		}
 

@@ -106,7 +106,7 @@ VEINHOLE:
 	AppearsOnMapPreview:
 		Terrain: Veins
 	Building:
-		Footprint: xxx xxx xxx
+		Footprint: === === ===
 		Dimensions: 3, 3
 	BodyOrientation:
 		QuantizedFacings: 1

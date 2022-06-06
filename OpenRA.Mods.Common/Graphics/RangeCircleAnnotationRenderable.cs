@@ -64,10 +64,10 @@ namespace OpenRA.Mods.Common.Graphics
 				var b = wr.Viewport.WorldToViewPx(wr.ScreenPosition(centerPosition + offset.Rotate(ref RangeCircleEndRotations[i])));
 
 				if (borderWidth > 0)
-					cr.DrawLine(a, b, borderWidth, borderColor);
+					cr.DrawScreenLine(a, b, borderWidth, borderColor);
 
 				if (width > 0)
-					cr.DrawLine(a, b, width, color);
+					cr.DrawScreenLine(a, b, width, color);
 			}
 		}
 

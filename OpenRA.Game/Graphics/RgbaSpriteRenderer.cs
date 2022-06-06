@@ -10,16 +10,17 @@
 #endregion
 
 using System;
+using OpenRA.Primitives;
 
 namespace OpenRA.Graphics
 {
 	public class RgbaSpriteRenderer
 	{
-		readonly SpriteRenderer parent;
+		public readonly SpriteRenderer Parent;
 
 		public RgbaSpriteRenderer(SpriteRenderer parent)
 		{
-			this.parent = parent;
+			this.Parent = parent;
 		}
 
 		public void DrawSprite(Sprite s, in float3 location, in float3 scale)
@@ -27,15 +28,15 @@ namespace OpenRA.Graphics
 			if (s.Channel != TextureChannel.RGBA)
 				throw new InvalidOperationException("DrawRGBASprite requires a RGBA sprite.");
 
-			parent.DrawSprite(s, 0, location, scale);
+			Parent.DrawSprite(s, 0, location, scale);
 		}
 
-		public void DrawWorldSprite(Sprite s, float3 scale)
+		public void DrawWorldSprite(Sprite s)
 		{
 			if (s.Channel != TextureChannel.RGBA)
 				throw new InvalidOperationException("DrawRGBASprite requires a RGBA sprite.");
-			scale = float3.Ones;
-			parent.DrawWorldSprite(s, 0, float3.Zero, scale);
+
+			Parent.DrawWorldSprite(s);
 		}
 
 		public void DrawSprite(Sprite s, in float3 location, float scale = 1f)
@@ -43,7 +44,7 @@ namespace OpenRA.Graphics
 			if (s.Channel != TextureChannel.RGBA)
 				throw new InvalidOperationException("DrawRGBASprite requires a RGBA sprite.");
 
-			parent.DrawSprite(s, 0, location, scale);
+			Parent.DrawSprite(s, 0, location, scale);
 		}
 
 		public void DrawSprite(Sprite s, in float3 location, float scale, in float3 tint, float alpha)
@@ -51,7 +52,7 @@ namespace OpenRA.Graphics
 			if (s.Channel != TextureChannel.RGBA)
 				throw new InvalidOperationException("DrawRGBASprite requires a RGBA sprite.");
 
-			parent.DrawSprite(s, 0, location, scale, tint, alpha);
+			Parent.DrawSprite(s, 0, location, scale, tint, alpha);
 		}
 
 		public void DrawSprite(Sprite s, in float3 a, in float3 b, in float3 c, in float3 d, in float3 tint, float alpha)
@@ -59,7 +60,7 @@ namespace OpenRA.Graphics
 			if (s.Channel != TextureChannel.RGBA)
 				throw new InvalidOperationException("DrawRGBASprite requires a RGBA sprite.");
 
-			parent.DrawSprite(s, 0, a, b, c, d, tint, alpha);
+			Parent.DrawSprite(s, 0, a, b, c, d, tint, alpha);
 		}
 	}
 }

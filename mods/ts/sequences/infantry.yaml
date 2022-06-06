@@ -1,7 +1,13 @@
+^InfantryBase:
+	Defaults:
+		Offset: 0, 0, 16
+		ShadowZOffset: 5
+		ZOffset: 5
+
 ^BasicInfantry:
+	Inherits@defaults: ^InfantryBase
 	Defaults:
 		Tick: 80
-		Offset: 0, 0, 16
 	stand:
 		Facings: 8
 		ShadowStart: 292
@@ -43,7 +49,7 @@
 		Length: 5
 		ShadowStart: 451
 		Tick: 800
-		ZOffset: -511
+		MeshType: Plane
 	standup:
 		Start: 260
 		Length: 2
@@ -189,6 +195,7 @@ civ3:
 	Inherits: civ1
 
 cyborg:
+	Inherits@defaults: ^InfantryBase
 	Defaults:
 		Tick: 80
 		Offset: 0, 0, 16
@@ -246,6 +253,7 @@ cyborg:
 	icon: cybiicon
 
 cyc2:
+	Inherits@defaults: ^InfantryBase
 	Defaults:
 		Offset: 0, 0, 16
 	stand:
@@ -305,6 +313,7 @@ cyc2:
 	icon: cybcicon
 
 medic:
+	Inherits@defaults: ^InfantryBase
 	Defaults:
 		Tick: 80
 		Offset: 0, 0, 16
@@ -349,7 +358,7 @@ medic:
 		Length: 5
 		ShadowStart: 451
 		Tick: 800
-		ZOffset: -511
+		MeshType: Plane
 	standup:
 		Start: 260
 		Length: 2
@@ -365,6 +374,7 @@ medic:
 	icon: mediicon
 
 jumpjet:
+	Inherits@defaults: ^InfantryBase
 	Defaults:
 		Tick: 80
 		Offset: 0, 0, 16
@@ -421,7 +431,7 @@ jumpjet:
 		Start: 450
 		ShadowStart: 901
 		Tick: 800
-		ZOffset: -511
+		MeshType: Plane
 	attack:
 		Start: 164
 		Length: 6
@@ -463,6 +473,7 @@ jumpjet:
 	icon: jjeticon
 
 weedguy:
+	Inherits@defaults: ^InfantryBase
 	Defaults: weed
 		Tick: 80
 		Offset: 0, 0, 16
@@ -532,6 +543,7 @@ weedguy:
 		Tick: 1000
 
 flameguy:
+	Inherits@defaults: ^InfantryBase
 	Defaults:
 		Facings: 8
 		Tick: 80

@@ -41,7 +41,7 @@ doggie:
 		Length: 4
 		ShadowStart: 224
 		Tick: 800
-		ZOffset: -511
+		MeshType: Plane
 	die-burning:
 		Start: 109
 		Length: 10

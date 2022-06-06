@@ -49,6 +49,12 @@ namespace OpenRA.Mods.Common.Projectiles
 		[Desc("Beam color in (A),R,G,B.")]
 		public readonly Color BeamColor = Color.FromArgb(128, 255, 255, 255);
 
+		[Desc("Beam BlendMode.")]
+		public readonly BlendMode BeamBlendMode = BlendMode.Additive;
+
+		[Desc("Helix BlendMode.")]
+		public readonly BlendMode HelixBlendMode = BlendMode.Additive;
+
 		[Desc("When true, this will override BeamColor parameter and draw the laser with player color."
 			+ " (Still uses BeamColor's alpha information)")]
 		public readonly bool BeamPlayerColor = false;
@@ -241,9 +247,9 @@ namespace OpenRA.Mods.Common.Projectiles
 
 			if (ticks < info.Duration)
 			{
-				yield return new RailgunHelixRenderable(args.Source, info.ZOffset, this, info, ticks);
+				yield return new RailgunHelixRenderable(args.Source, info.ZOffset, this, info, ticks, info.HelixBlendMode);
 				yield return new BeamRenderable(args.Source, info.ZOffset, SourceToTarget, info.BeamShape, info.BeamWidth,
-					Color.FromArgb(BeamColor.A + info.BeamAlphaDeltaPerTick * ticks, BeamColor));
+					Color.FromArgb(BeamColor.A + info.BeamAlphaDeltaPerTick * ticks, BeamColor), info.BeamBlendMode);
 			}
 
 			if (hitanim != null)

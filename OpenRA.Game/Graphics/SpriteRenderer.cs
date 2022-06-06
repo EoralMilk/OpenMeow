@@ -11,6 +11,7 @@
 
 using System;
 using System.Collections.Generic;
+using GlmSharp;
 using OpenRA.Primitives;
 
 namespace OpenRA.Graphics
@@ -160,18 +161,24 @@ namespace OpenRA.Graphics
 		}
 
 		// draw sprite with wpos
-		public void DrawSprite(Sprite s, PaletteReference pal, WPos wPos, float scale, in float3 tint, float alpha)
+		public void DrawCardSprite(Sprite s, PaletteReference pal, WPos wPos, vec3 viewOffset, float scale, in float3 tint, float alpha)
 		{
 			var samplers = SetRenderStateForSprite(s);
-			Util.FastCreateCard(vertices, wPos, s, samplers, ResolveTextureIndex(s, pal), scale, tint, alpha, nv);
-			nv += 12;
+			nv += Util.FastCreateCard(vertices, wPos, viewOffset, s, samplers, ResolveTextureIndex(s, pal), scale, tint, alpha, nv);
+		}
+
+		public void DrawPlaneSprite(Sprite s, PaletteReference pal, WPos wPos, vec3 viewOffset, float scale, in float3 tint, float alpha)
+		{
+			var samplers = SetRenderStateForSprite(s);
+			Util.FastCreatePlane(vertices, wPos, viewOffset, s, samplers, ResolveTextureIndex(s, pal), scale, tint, alpha, nv);
+			nv += 6;
 		}
 
 		// draw world sprite
-		internal void DrawWorldSprite(Sprite s, float paletteTextureIndex, in float3 location, in float3 scale)
+		internal void DrawWorldSprite(Sprite s)
 		{
 			var samplers = SetRenderStateForSprite(s);
-			Util.FastCreateQuad(vertices, location, s, samplers, paletteTextureIndex, nv, scale * s.Size, float3.Ones, 1f);
+			Util.FastCreateScreen(vertices, s, samplers, 0, float3.Ones, 1f, nv);
 			nv += 6;
 		}
 
@@ -225,7 +232,7 @@ namespace OpenRA.Graphics
 			shader.SetTexture("ColorShifts", colorShifts);
 		}
 
-		public void SetViewportParams(Size sheetSize, int downscale, float depthMargin, int2 scroll, bool hasCamera = false)
+		public void SetViewportParams(Size sheetSize, int downscale, float depthMargin, int2 scroll)
 		{
 			// Calculate the scale (r1) and offset (r2) that convert from OpenRA viewport pixels
 			// to OpenGL normalized device coordinates (NDC). OpenGL expects coordinates to vary from [-1, 1],
@@ -248,24 +255,31 @@ namespace OpenRA.Graphics
 			//   extend beyond the top of bottom edges of the screen may be pushed outside [-1, 1] and
 			//   culled by the GPU. We avoid this by forcing everything into the z = 0 plane.
 			var depth = depthMargin != 0f ? 2f / (downscale * (sheetSize.Height + depthMargin)) : 0;
-			//Console.WriteLine("Depth: " + depth);
-			shader.SetVec("DepthTextureScale", 128 * depth);
+
+			//shader.SetVec("DepthTextureScale", 128 * depth);
 			shader.SetVec("Scroll", scroll.X, scroll.Y, depthMargin != 0f ? scroll.Y : 0);
-			//Console.WriteLine("Scroll: " + scroll.X + ", " + scroll.Y + ", " + (depthMargin != 0f ? scroll.Y : 0));
 			shader.SetVec("r1", width, height, -depth);
-			//Console.WriteLine("r1: " + width + ", " + height + ", " + (-depth));
 			shader.SetVec("r2", -1, -1, depthMargin != 0f ? 1 : 0);
-			//Console.WriteLine("r2: " + (-1) + ", " + (-1) + ", " + (depthMargin != 0f ? 1 : 0));
-			if (hasCamera && Game.Renderer.Standalone3DRenderer != null)
+			shader.SetBool("hasCamera", false);
+			shader.SetBool("renderScreen", false);
+		}
+
+		public void SetCameraParams()
+		{
+			if (Game.Renderer.Standalone3DRenderer != null)
 			{
 				shader.SetBool("hasCamera", true);
+				shader.SetBool("renderScreen", false);
 				shader.SetMatrix("projection", Game.Renderer.Standalone3DRenderer.Projection.Values1D);
 				shader.SetMatrix("view", Game.Renderer.Standalone3DRenderer.View.Values1D);
 				//shader.SetVec("viewPos", Game.Renderer.Standalone3DRenderer.CameraPos.x, Game.Renderer.Standalone3DRenderer.CameraPos.y, Game.Renderer.Standalone3DRenderer.CameraPos.z);
 			}
-			else
-				shader.SetBool("hasCamera", false);
+		}
 
+		public void SetRenderScreenParams(bool set)
+		{
+			shader.SetBool("hasCamera", false);
+			shader.SetBool("renderScreen", set);
 		}
 
 		public void SetDepthPreview(bool enabled, float contrast, float offset)

@@ -71,7 +71,7 @@ namespace OpenRA.Mods.Common.Graphics
 			if (renderLength <= 1)
 				return;
 
-			var screenWidth = wr.ScreenVector(new WVec(width, WDist.Zero, WDist.Zero))[0];
+			var screenWidth = wr.RenderVector(new WVec(width, WDist.Zero, WDist.Zero))[0];
 			var wcr = Game.Renderer.WorldRgbaColorRenderer;
 
 			// Start of the first line segment is the tail of the list - don't smooth it.
@@ -99,7 +99,7 @@ namespace OpenRA.Mods.Common.Graphics
 				var nextPos = new WPos((int)(nextX / k), (int)(nextY / k), (int)(nextZ / k));
 
 				if (!world.FogObscures(curPos) && !world.FogObscures(nextPos))
-					wcr.DrawLine(wr.Screen3DPosition(curPos), wr.Screen3DPosition(nextPos), screenWidth, curColor, nextColor);
+					wcr.DrawWorldLine(wr.Render3DPosition(curPos), wr.Render3DPosition(nextPos), screenWidth, curColor, nextColor);
 
 				curPos = nextPos;
 				curColor = nextColor;

@@ -360,6 +360,11 @@ namespace OpenRA.Graphics
 			return new float2((float)TileSize.Width * pos.X / TileScale, (float)TileSize.Height * (pos.Y - pos.Z) / TileScale);
 		}
 
+		public float3 Render3DPosition(WPos pos)
+		{
+			return new float3((float)pos.X / Game.Renderer.Standalone3DRenderer.WPosPerMeter, (float)pos.Y / Game.Renderer.Standalone3DRenderer.WPosPerMeter, (float)pos.Z / Game.Renderer.Standalone3DRenderer.WPosPerMeterHeight);
+		}
+
 		public float3 Screen3DPosition(WPos pos)
 		{
 			// The projection from world coordinates to screen coordinates has
@@ -395,18 +400,23 @@ namespace OpenRA.Graphics
 				(float)TileSize.Height * vec.Z / TileScale);
 		}
 
-		// For scaling vectors to pixel sizes in the model renderer
-		public float[] ScreenVector(in WVec vec)
-		{
-			var xyz = ScreenVectorComponents(vec);
-			return new[] { xyz.X, xyz.Y, xyz.Z, 1f };
-		}
-
 		public int2 ScreenPxOffset(in WVec vec)
 		{
 			// Round to nearest pixel
 			var xyz = ScreenVectorComponents(vec);
 			return new int2((int)Math.Round(xyz.X), (int)Math.Round(xyz.Y));
+		}
+
+		public float3 RenderVectorComponents(in WVec vec)
+		{
+			return new float3((float)vec.X / Game.Renderer.Standalone3DRenderer.WPosPerMeter, (float)vec.Y / Game.Renderer.Standalone3DRenderer.WPosPerMeter, (float)vec.Z / Game.Renderer.Standalone3DRenderer.WPosPerMeterHeight);
+		}
+
+		// For scaling vectors to pixel sizes in the model renderer
+		public float[] RenderVector(in WVec vec)
+		{
+			var xyz = RenderVectorComponents(vec);
+			return new[] { xyz.X, xyz.Y, xyz.Z, 1f };
 		}
 
 		/// <summary>

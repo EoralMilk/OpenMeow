@@ -19,6 +19,13 @@ namespace OpenRA.Graphics
 	using Sequences = IReadOnlyDictionary<string, Lazy<IReadOnlyDictionary<string, ISpriteSequence>>>;
 	using UnitSequences = Lazy<IReadOnlyDictionary<string, ISpriteSequence>>;
 
+	public enum SpriteMeshType : byte
+	{
+		Card,
+		Plane,
+		Quad,
+	}
+
 	public interface ISpriteSequence
 	{
 		string Name { get; }
@@ -34,6 +41,7 @@ namespace OpenRA.Graphics
 		Rectangle Bounds { get; }
 		bool IgnoreWorldTint { get; }
 		float Scale { get; }
+		SpriteMeshType MeshType { get; }
 
 		Sprite GetSprite(int frame);
 		Sprite GetSprite(int frame, WAngle facing);

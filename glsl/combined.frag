@@ -16,7 +16,7 @@ uniform sampler2D ColorShifts;
 
 uniform bool EnableDepthPreview;
 uniform vec2 DepthPreviewParams;
-uniform float DepthTextureScale;
+// uniform float DepthTextureScale;
 uniform float AntialiasPixelsPerTexel;
 
 uniform bool hasCamera;

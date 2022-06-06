@@ -64,16 +64,16 @@ namespace OpenRA.Mods.Common.Graphics
 		public void Render(WorldRenderer wr)
 		{
 			var cr = Game.Renderer.RgbaColorRenderer;
-			var center = wr.Viewport.WorldToViewPx(wr.Screen3DPosition(centerPosition));
+			var center = wr.Viewport.WorldToViewPx(wr.Render3DPosition(centerPosition));
 
 			for (var i = 0; i < trailCount; i++)
 			{
 				var angle = trailAngle - new WAngle(i * (trailSeparation.Angle <= 512 ? 1 : -1));
 				var length = radius.Length * new WVec(angle.Cos(), angle.Sin(), 0) / 1024;
-				var end = wr.Viewport.WorldToViewPx(wr.Screen3DPosition(centerPosition + length));
+				var end = wr.Viewport.WorldToViewPx(wr.Render3DPosition(centerPosition + length));
 				var alpha = color.A - i * color.A / trailCount;
-				cr.DrawLine(center, end, borderWidth, Color.FromArgb(alpha, borderColor));
-				cr.DrawLine(center, end, width, Color.FromArgb(alpha, color));
+				cr.DrawScreenLine(center, end, borderWidth, Color.FromArgb(alpha, borderColor));
+				cr.DrawScreenLine(center, end, width, Color.FromArgb(alpha, color));
 			}
 
 			RangeCircleAnnotationRenderable.DrawRangeCircle(wr, centerPosition, radius, width, color, borderWidth, borderColor);

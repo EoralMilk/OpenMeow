@@ -155,7 +155,7 @@ namespace OpenRA.Mods.Common.Widgets
 					points = points.Reverse().Take(xAxisSize).Reverse();
 					var lastX = 0;
 					var lastPoint = 0f;
-					cr.DrawLine(
+					cr.DrawScreenLine(
 						points.Select((point, x) =>
 						{
 							lastX = x;
@@ -179,7 +179,7 @@ namespace OpenRA.Mods.Common.Widgets
 			// TODO: make this stuff not draw outside of the RenderBounds
 			for (int n = pointStart, x = 0; n <= pointEnd; n++, x += xStep)
 			{
-				cr.DrawLine(graphOrigin + new float2(x, 0), graphOrigin + new float2(x, -5), 1, Color.White);
+				cr.DrawScreenLine(graphOrigin + new float2(x, 0), graphOrigin + new float2(x, -5), 1, Color.White);
 				if (n % XAxisTicksPerLabel != 0)
 					continue;
 
@@ -195,7 +195,7 @@ namespace OpenRA.Mods.Common.Widgets
 			for (var y = GetDisplayFirstYAxisValue() ? 0 : yStep; y <= height; y += yStep)
 			{
 				var yValue = y / scale;
-				cr.DrawLine(graphOrigin + new float2(0, -y), graphOrigin + new float2(5, -y), 1, Color.White);
+				cr.DrawScreenLine(graphOrigin + new float2(0, -y), graphOrigin + new float2(5, -y), 1, Color.White);
 				var text = GetYAxisValueFormat().F(yValue);
 
 				var textWidth = labelFont.Measure(text);
@@ -206,10 +206,10 @@ namespace OpenRA.Mods.Common.Widgets
 			}
 
 			// Bottom line
-			cr.DrawLine(graphOrigin, graphOrigin + new float2(width, 0), 1, Color.White);
+			cr.DrawScreenLine(graphOrigin, graphOrigin + new float2(width, 0), 1, Color.White);
 
 			// Left line
-			cr.DrawLine(graphOrigin, graphOrigin + new float2(0, -height), 1, Color.White);
+			cr.DrawScreenLine(graphOrigin, graphOrigin + new float2(0, -height), 1, Color.White);
 		}
 
 		public override Widget Clone()

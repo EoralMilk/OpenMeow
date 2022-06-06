@@ -101,8 +101,8 @@ namespace OpenRA.Mods.Common.Graphics
 			while (dx < cut.X - start.X)
 			{
 				var step = start + dx * stepAspect;
-				cr.DrawLine(step, step + da, 1, DarkenColor);
-				cr.DrawLine(step + da, step + dc, 1, LightenColor);
+				cr.DrawScreenLine(step, step + da, 1, DarkenColor);
+				cr.DrawScreenLine(step + da, step + dc, 1, LightenColor);
 				dx += BarWidth;
 			}
 

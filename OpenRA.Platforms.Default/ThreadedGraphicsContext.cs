@@ -55,6 +55,7 @@ namespace OpenRA.Platforms.Default
 		Action<object> doEnableScissor;
 		Action<object> doSetBlendMode;
 		Action<object> doSetVSync;
+		Action<object> doSetViewport;
 
 		public ThreadedGraphicsContext(Sdl2GraphicsContext context, int batchSize)
 		{
@@ -120,6 +121,11 @@ namespace OpenRA.Platforms.Default
 						};
 					doSetBlendMode = mode => { context.SetBlendMode((BlendMode)mode); };
 					doSetVSync = enabled => { context.SetVSyncEnabled((bool)enabled); };
+					doSetViewport = tuple =>
+					{
+						var t = (ValueTuple<int, int>)tuple;
+						context.SetViewport(t.Item1, t.Item2);
+					};
 
 					Monitor.Pulse(syncObject);
 				}
@@ -501,6 +507,11 @@ namespace OpenRA.Platforms.Default
 		{
 			Post(doSetVSync, enabled);
 		}
+
+		public void SetViewport(int width, int height)
+		{
+			Post(doSetViewport, (width, height));
+		}
 	}
 
 	class ThreadedFrameBuffer : IFrameBuffer
@@ -508,7 +519,10 @@ namespace OpenRA.Platforms.Default
 		readonly ThreadedGraphicsContext device;
 		readonly Func<ITexture> getTexture;
 		readonly Action bind;
+		readonly Action setViewport;
+		readonly Action setViewportBack;
 		readonly Action unbind;
+		readonly Action unbindnotSetViewport;
 		readonly Action dispose;
 		readonly Action<object> enableScissor;
 		readonly Action disableScissor;
@@ -518,7 +532,10 @@ namespace OpenRA.Platforms.Default
 			this.device = device;
 			getTexture = () => frameBuffer.Texture;
 			bind = frameBuffer.Bind;
+			setViewport = frameBuffer.SetViewport;
+			setViewportBack = frameBuffer.SetViewportBack;
 			unbind = frameBuffer.Unbind;
+			unbindnotSetViewport = frameBuffer.UnbindNotSetViewport;
 			dispose = frameBuffer.Dispose;
 
 			enableScissor = rect => frameBuffer.EnableScissor((Rectangle)rect);
@@ -526,6 +543,21 @@ namespace OpenRA.Platforms.Default
 		}
 
 		public ITexture Texture => device.Send(getTexture);
+
+		public void SetViewport()
+		{
+			device.Post(setViewport);
+		}
+
+		public void SetViewportBack()
+		{
+			device.Post(setViewport);
+		}
+
+		public void UnbindNotSetViewport()
+		{
+			device.Post(UnbindNotSetViewport);
+		}
 
 		public void Bind()
 		{

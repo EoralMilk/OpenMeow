@@ -101,6 +101,7 @@ namespace OpenRA
 		void ClearDepthBuffer();
 		void SetBlendMode(BlendMode mode);
 		void SetVSyncEnabled(bool enabled);
+		void SetViewport(int width, int height);
 		string GLVersion { get; }
 	}
 
@@ -163,7 +164,10 @@ namespace OpenRA
 	public interface IFrameBuffer : IDisposable
 	{
 		void Bind();
+		void SetViewportBack();
+		void SetViewport();
 		void Unbind();
+		void UnbindNotSetViewport();
 		void EnableScissor(Rectangle rect);
 		void DisableScissor();
 		ITexture Texture { get; }

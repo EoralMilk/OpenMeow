@@ -334,7 +334,7 @@ namespace OpenRA.Mods.Cnc.Traits
 						alpha = blockedAlpha;
 					}
 
-					yield return new SpriteRenderable(tile, world.Map.CenterOfCell(c), WVec.Zero, -511, pal, 1f, alpha, float3.Ones, TintModifiers.IgnoreWorldTint, true);
+					yield return new SpriteRenderable(tile, world.Map.CenterOfCell(c), WVec.Zero, -511, pal, 1f, alpha, float3.Ones, TintModifiers.IgnoreWorldTint, true, SpriteMeshType.Plane);
 				}
 			}
 

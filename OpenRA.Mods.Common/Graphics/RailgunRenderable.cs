@@ -24,16 +24,17 @@ namespace OpenRA.Mods.Common.Graphics
 		readonly WDist helixRadius;
 		readonly int alpha;
 		readonly int ticks;
-
+		readonly BlendMode blendMode;
 		WAngle angle;
 
-		public RailgunHelixRenderable(WPos pos, int zOffset, Railgun railgun, RailgunInfo railgunInfo, int ticks)
+		public RailgunHelixRenderable(WPos pos, int zOffset, Railgun railgun, RailgunInfo railgunInfo, int ticks, BlendMode blendMode)
 		{
 			this.pos = pos;
 			this.zOffset = zOffset;
 			this.railgun = railgun;
 			info = railgunInfo;
 			this.ticks = ticks;
+			this.blendMode = blendMode;
 
 			helixRadius = info.HelixRadius + new WDist(ticks * info.HelixRadiusDeltaPerTick);
 			alpha = (railgun.HelixColor.A + ticks * info.HelixAlphaDeltaPerTick).Clamp(0, 255);
@@ -44,8 +45,8 @@ namespace OpenRA.Mods.Common.Graphics
 		public int ZOffset => zOffset;
 		public bool IsDecoration => true;
 
-		public IRenderable WithZOffset(int newOffset) { return new RailgunHelixRenderable(pos, newOffset, railgun, info, ticks); }
-		public IRenderable OffsetBy(in WVec vec) { return new RailgunHelixRenderable(pos + vec, zOffset, railgun, info, ticks); }
+		public IRenderable WithZOffset(int newOffset) { return new RailgunHelixRenderable(pos, newOffset, railgun, info, ticks, blendMode); }
+		public IRenderable OffsetBy(in WVec vec) { return new RailgunHelixRenderable(pos + vec, zOffset, railgun, info, ticks, blendMode); }
 		public IRenderable AsDecoration() { return this; }
 
 		public IFinalizedRenderable PrepareRender(WorldRenderer wr) { return this; }
@@ -54,7 +55,7 @@ namespace OpenRA.Mods.Common.Graphics
 			if (railgun.ForwardStep == WVec.Zero)
 				return;
 
-			var screenWidth = wr.ScreenVector(new WVec(info.HelixThickness.Length, 0, 0))[0];
+			var screenWidth = wr.RenderVector(new WVec(info.HelixThickness.Length, 0, 0))[0];
 
 			// Move forward from self to target to draw helix
 			var centerPos = pos;
@@ -69,13 +70,13 @@ namespace OpenRA.Mods.Common.Graphics
 				// Note: WAngle.Sin(x) = 1024 * Math.Sin(2pi/1024 * x)
 				var u = rad.Length * angle.Cos() * railgun.LeftVector / (1024 * 1024)
 					+ rad.Length * angle.Sin() * railgun.UpVector / (1024 * 1024);
-				points[i] = wr.Screen3DPosition(centerPos + u);
+				points[i] = wr.Render3DPosition(centerPos + u);
 
 				centerPos += railgun.ForwardStep;
 				angle += railgun.AngleStep;
 			}
 
-			Game.Renderer.WorldRgbaColorRenderer.DrawLine(points, screenWidth, Color.FromArgb(alpha, railgun.HelixColor));
+			Game.Renderer.WorldRgbaColorRenderer.DrawWorldLine(points, screenWidth, Color.FromArgb(alpha, railgun.HelixColor), blendMode: blendMode);
 		}
 
 		public void RenderDebugGeometry(WorldRenderer wr) { }

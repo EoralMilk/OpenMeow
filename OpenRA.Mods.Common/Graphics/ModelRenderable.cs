@@ -146,7 +146,7 @@ namespace OpenRA.Mods.Common.Graphics
 				var tileScale = map.Grid.Type == MapGridType.RectangularIsometric ? 1448f : 1024f;
 
 				var groundZ = map.Grid.TileSize.Height * (groundPos.Z - model.pos.Z) / tileScale;
-				var pxOrigin = wr.Screen3DPosition(model.pos);
+				var pxOrigin = wr.Render3DPosition(model.pos);
 
 				// HACK: We don't have enough texture channels to pass the depth data to the shader
 				// so for now just offset everything forward so that the back corner is rendered at pos.
@@ -185,7 +185,7 @@ namespace OpenRA.Mods.Common.Graphics
 			{
 				var groundPos = model.pos - new WVec(0, 0, wr.World.Map.DistanceAboveTerrain(model.pos).Length);
 				var groundZ = wr.World.Map.Grid.TileSize.Height * (groundPos.Z - model.pos.Z) / 1024f;
-				var pxOrigin = wr.Screen3DPosition(model.pos);
+				var pxOrigin = wr.Render3DPosition(model.pos);
 				var shadowOrigin = pxOrigin - groundZ * (new float2(renderProxy.ShadowDirection, 1));
 
 				// Draw sprite rect
@@ -217,7 +217,7 @@ namespace OpenRA.Mods.Common.Graphics
 					var rotation = OpenRA.Graphics.Util.MakeFloatMatrix(v.RotationFunc().AsMatrix());
 					var worldTransform = OpenRA.Graphics.Util.MatrixMultiply(scaleTransform, rotation);
 
-					var pxPos = pxOrigin + wr.ScreenVectorComponents(v.OffsetFunc());
+					var pxPos = pxOrigin + wr.RenderVectorComponents(v.OffsetFunc());
 					var screenTransform = OpenRA.Graphics.Util.MatrixMultiply(cameraTransform, worldTransform);
 					DrawBoundsBox(wr, pxPos, screenTransform, bounds, 1, Color.Yellow);
 				}
@@ -244,10 +244,10 @@ namespace OpenRA.Mods.Common.Graphics
 				cr.DrawPolygon(new[] { corners[4], corners[5], corners[7], corners[6] }, width, c);
 
 				// Horizontal edges
-				cr.DrawLine(corners[0], corners[4], width, c);
-				cr.DrawLine(corners[1], corners[5], width, c);
-				cr.DrawLine(corners[2], corners[6], width, c);
-				cr.DrawLine(corners[3], corners[7], width, c);
+				cr.DrawScreenLine(corners[0], corners[4], width, c);
+				cr.DrawScreenLine(corners[1], corners[5], width, c);
+				cr.DrawScreenLine(corners[2], corners[6], width, c);
+				cr.DrawScreenLine(corners[3], corners[7], width, c);
 			}
 
 			public Rectangle ScreenBounds(WorldRenderer wr)
@@ -275,7 +275,7 @@ namespace OpenRA.Mods.Common.Graphics
 					var rotation = OpenRA.Graphics.Util.MakeFloatMatrix(v.RotationFunc().AsMatrix());
 					var worldTransform = OpenRA.Graphics.Util.MatrixMultiply(scaleTransform, rotation);
 
-					var pxPos = pxOrigin + wr.ScreenVectorComponents(v.OffsetFunc());
+					var pxPos = pxOrigin + wr.RenderVectorComponents(v.OffsetFunc());
 					var screenTransform = OpenRA.Graphics.Util.MatrixMultiply(cameraTransform, worldTransform);
 
 					for (var i = 0; i < 8; i++)

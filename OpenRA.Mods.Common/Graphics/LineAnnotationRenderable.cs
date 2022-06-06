@@ -50,7 +50,7 @@ namespace OpenRA.Mods.Common.Graphics
 		public IFinalizedRenderable PrepareRender(WorldRenderer wr) { return this; }
 		public void Render(WorldRenderer wr)
 		{
-			Game.Renderer.RgbaColorRenderer.DrawLine(
+			Game.Renderer.RgbaColorRenderer.DrawScreenLine(
 				wr.Viewport.WorldToViewPx(wr.ScreenPosition(start)),
 				wr.Viewport.WorldToViewPx(wr.Screen3DPosition(end)),
 				width, startColor, endColor);

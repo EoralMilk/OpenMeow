@@ -56,11 +56,14 @@ namespace OpenRA.Graphics
 		public static Vertex3D Default = new Vertex3D(vec3.Zero, vec3.Zero, vec2.Zero);
 	}
 
-	public sealed class Standalone3DRenderer : IDisposable
+	public sealed class World3DRenderer : IDisposable
 	{
 		const bool ShowDebugInfo = false;
 		public readonly float CameraPitch = 60.0f;
 		public readonly vec3 CameraUp;
+		public readonly vec3 InverseCameraFront;
+		public readonly vec3 InverseCameraFrontMeterPerWPos;
+
 		public readonly int WPosPerMeter = 256;
 		readonly float height = 256 * 200;
 		public float HeightOverlay = 50;
@@ -90,7 +93,7 @@ namespace OpenRA.Graphics
 		public WPos TestPos = WPos.Zero;
 		public WRot TestRot = WRot.None;
 
-		public Standalone3DRenderer(Renderer renderer, MapGrid mapGrid)
+		public World3DRenderer(Renderer renderer, MapGrid mapGrid)
 		{
 			meterPerPix = (float)((1024 / WPosPerMeter) / (mapGrid.TileSize.Width / 1.4142135d));
 			meterPerPixHalf = meterPerPix / 2.0f;
@@ -100,6 +103,10 @@ namespace OpenRA.Graphics
 			CosCameraPitch = (float)Math.Cos(glm.Radians(CameraPitch));
 			SinCameraPitch = (float)Math.Sin(glm.Radians(CameraPitch));
 			CameraUp = glm.Normalized(new vec3(0, -1, TanCameraPitch));
+			InverseCameraFront = glm.Normalized(new vec3(0, 1, 1/TanCameraPitch));
+			InverseCameraFrontMeterPerWPos = InverseCameraFront / WPosPerMeter;
+			//Console.WriteLine("InverseCameraFront  " + InverseCameraFront);
+			//Console.WriteLine("InverseCameraFrontMeterPerWPos  " + InverseCameraFrontMeterPerWPos);
 
 			MaxTerrainHeight = mapGrid.MaximumTerrainHeight * 724 * 1.25f / WPosPerMeterHeight;
 

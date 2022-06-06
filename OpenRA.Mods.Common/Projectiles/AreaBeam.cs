@@ -71,6 +71,9 @@ namespace OpenRA.Mods.Common.Projectiles
 		[Desc("Beam color is the player's color.")]
 		public readonly bool UsePlayerColor = false;
 
+		[Desc("Render BlendMode.")]
+		public readonly BlendMode BlendMode = BlendMode.Additive;
+
 		public IProjectile Create(ProjectileArgs args)
 		{
 			var c = UsePlayerColor ? args.SourceActor.Owner.Color : Color;
@@ -252,7 +255,7 @@ namespace OpenRA.Mods.Common.Projectiles
 		{
 			if (!IsBeamComplete && info.RenderBeam && !(wr.World.FogObscures(tailPos) && wr.World.FogObscures(headPos)))
 			{
-				var beamRender = new BeamRenderable(headPos, info.ZOffset, tailPos - headPos, info.Shape, info.Width, color);
+				var beamRender = new BeamRenderable(headPos, info.ZOffset, tailPos - headPos, info.Shape, info.Width, color, info.BlendMode);
 				return new[] { (IRenderable)beamRender };
 			}
 

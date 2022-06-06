@@ -192,5 +192,7 @@ veinhole:
 	idle:
 		ShadowStart: 1
 		UseTilesetExtension: true
-		Offset: 0, -36, 1
+		Offset: 0, -36, 0
 		ZRamp: 1
+		MeshType: Plane
+

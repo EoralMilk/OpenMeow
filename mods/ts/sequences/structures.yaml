@@ -18,17 +18,17 @@ gacnst:
 	make-bright: gtcnstmk
 		Length: 24
 		IgnoreWorldTint: True
-		ZOffset: 1023
+		ZOffset: 10
 	crane-overlay: gtcnst_d
 		Length: 20
-		ZOffset: 1023
+		ZOffset: 10
 	damaged-crane-overlay: gtcnst_d
 		Length: 20
-		ZOffset: 1023
+		ZOffset: 10
 	critical-crane-overlay: gtcnst_d
 		Start: 20
 		Length: 20
-		ZOffset: 1023
+		ZOffset: 10
 	idle-top: gtcnst_c
 		Length: 15
 		Tick: 80
@@ -207,13 +207,13 @@ gaweap:
 	idle: gtweap_1
 		ShadowStart: 2
 		Offset: -12, -42, 1
-		ZOffset: -1024
+		MeshType: Plane
 		ZRamp: 1
 		-DepthSprite:
 	damaged-idle: gtweap_1
 		Start: 1
 		ShadowStart: 3
-		ZOffset: -1024
+		MeshType: Plane
 		Offset: -12, -42, 1
 		ZRamp: 1
 		-DepthSprite:
@@ -429,17 +429,17 @@ naweap:
 		DepthSprite: isodepth.shp
 	idle: ntweap_1
 		ShadowStart: 2
-		ZOffset: -1024
 		Offset: -12, -42, 1
 		ZRamp: 1
 		-DepthSprite:
+		MeshType: Plane
 	damaged-idle: ntweap_1
 		Start: 1
 		ShadowStart: 3
-		ZOffset: -1024
 		Offset: -12, -42, 1
 		ZRamp: 1
 		-DepthSprite:
+		MeshType: Plane
 	idle-roof: ntweap_2
 		ShadowStart: 2
 		ZOffset: 512
@@ -758,7 +758,7 @@ gagate_a:
 		ShadowStart: 30
 		Offset: -24, -24, 1
 		ZRamp: 1
-		ZOffset: -1024
+		MeshType: Plane
 		-DepthSprite:
 	damaged-idle:
 		Start: 10
@@ -769,7 +769,7 @@ gagate_a:
 		ShadowStart: 40
 		Offset: -24, -24, 1
 		ZRamp: 1
-		ZOffset: -1024
+		MeshType: Plane
 		-DepthSprite:
 	dead:
 		Start: 20
@@ -801,7 +801,7 @@ gagate_b:
 		Start: 9
 		ShadowStart: 30
 		Offset: 24, -24, 1
-		ZOffset: -1024
+		MeshType: Plane
 		ZRamp: 1
 		-DepthSprite:
 	damaged-idle:
@@ -813,7 +813,7 @@ gagate_b:
 		ShadowStart: 40
 		Offset: 24, -24, 1
 		ZRamp: 1
-		ZOffset: -1024
+		MeshType: Plane
 		-DepthSprite:
 	dead:
 		Start: 20
@@ -851,7 +851,7 @@ nagate_a:
 		ShadowStart: 21
 		Offset: -24, -24, 1
 		ZRamp: 1
-		ZOffset: -1024
+		MeshType: Plane
 		-DepthSprite:
 	damaged-idle:
 		Start: 7
@@ -862,7 +862,7 @@ nagate_a:
 		ShadowStart: 28
 		Offset: -24, -24, 1
 		ZRamp: 1
-		ZOffset: -1024
+		MeshType: Plane
 		-DepthSprite:
 	dead:
 		Start: 14
@@ -896,7 +896,7 @@ nagate_b:
 		ShadowStart: 21
 		Offset: 24, -24, 1
 		ZRamp: 1
-		ZOffset: -1024
+		MeshType: Plane
 		-DepthSprite:
 	damaged-idle:
 		Start: 7
@@ -907,7 +907,7 @@ nagate_b:
 		ShadowStart: 28
 		Offset: 24, -24, 1
 		ZRamp: 1
-		ZOffset: -1024
+		MeshType: Plane
 		-DepthSprite:
 	dead:
 		Start: 14
@@ -1388,48 +1388,48 @@ gahpad:
 		UseTilesetCode: true
 	idle:
 		ShadowStart: 3
-		ZOffset: -1c511
+		MeshType: Plane
 		Offset: 0, -24, 8
 		DepthSprite: isodepth.shp
 	damaged-idle:
 		Start: 1
 		ShadowStart: 4
-		ZOffset: -1c511
+		MeshType: Plane
 		Offset: 0, -24, 8
 		DepthSprite: isodepth.shp
 	dead:
 		Start: 2
 		ShadowStart: 5
-		ZOffset: -1c511
+		MeshType: Plane
 		Tick: 400
 		Offset: 0, -24, 8
 		DepthSprite: isodepth.shp
 	idle-platform: gthpadbb
 		ShadowStart: 3
-		ZOffset: -1c511
+		MeshType: Plane
 		ZRamp: 1
 	damaged-idle-platform: gthpadbb
 		Start: 1
 		ShadowStart: 4
-		ZOffset: -1c511
+		MeshType: Plane
 		ZRamp: 1
 	dead-platform: gthpadbb
 		Start: 2
 		ShadowStart: 5
-		ZOffset: -1c511
+		MeshType: Plane
 		Tick: 400
 		ZRamp: 1
 	idle-lights: gthpad_a
 		Length: 8
 		Tick: 100
 		Offset: 0, -36
-		ZOffset: -1c511
+		MeshType: Plane
 		ZRamp: 1
 	idle-lights-bright: gthpad_a
 		Length: 8
 		Tick: 100
 		Offset: 0, -36
-		ZOffset: -1c511
+		MeshType: Plane
 		ZRamp: 1
 		IgnoreWorldTint: True
 	damaged-idle-lights: gthpad_a
@@ -1437,20 +1437,20 @@ gahpad:
 		Length: 8
 		Tick: 100
 		Offset: 0, -36
-		ZOffset: -1c511
+		MeshType: Plane
 		ZRamp: 1
 	damaged-idle-lights-bright: gthpad_a
 		Start: 8
 		Length: 8
 		Tick: 100
 		Offset: 0, -36
-		ZOffset: -1c511
+		MeshType: Plane
 		ZRamp: 1
 		IgnoreWorldTint: True
 	make: gthpadmk
 		Length: 18
 		ShadowStart: 18
-		ZOffset: -1c511
+		MeshType: Plane
 		Offset: 0, -24, 24
 		DepthSpriteOffset: 0, 0
 		DepthSprite: isodepth.shp
@@ -1472,45 +1472,45 @@ nahpad:
 		UseTilesetCode: true
 	idle:
 		ShadowStart: 3
-		ZOffset: -1c511
+		MeshType: Plane
 		Offset: 0, -24, 3
 		DepthSprite: isodepth.shp
 	damaged-idle:
 		Start: 1
 		ShadowStart: 4
-		ZOffset: -1c511
+		MeshType: Plane
 		Offset: 0, -24, 3
 		DepthSprite: isodepth.shp
 	dead:
 		Start: 2
 		ShadowStart: 5
-		ZOffset: -1c511
+		MeshType: Plane
 		Tick: 400
 		Offset: 0, -24, 3
 		DepthSprite: isodepth.shp
 	idle-platform: nthpadbb
 		ShadowStart: 3
-		ZOffset: -1c511
+		MeshType: Plane
 		ZRamp: 1
 	damaged-idle-platform: nthpadbb
 		Start: 1
 		ShadowStart: 4
-		ZOffset: -1c511
+		MeshType: Plane
 		ZRamp: 1
 	dead-platform: nthpadbb
 		Start: 2
 		ShadowStart: 5
-		ZOffset: -1c511
+		MeshType: Plane
 		Tick: 400
 		ZRamp: 1
 	idle-lights: nthpad_a
 		Length: 46
-		ZOffset: -1c511
+		MeshType: Plane
 		Tick: 100
 		ZRamp: 1
 	idle-lights-bright: nthpad_a
 		Length: 46
-		ZOffset: -1c511
+		MeshType: Plane
 		Tick: 100
 		ZRamp: 1
 		IgnoreWorldTint: True
@@ -1518,13 +1518,13 @@ nahpad:
 		Start: 46
 		Length: 46
 		Tick: 100
-		ZOffset: -1c511
+		MeshType: Plane
 		ZRamp: 1
 	damaged-idle-lights-bright: nthpad_a
 		Start: 46
 		Length: 46
 		Tick: 100
-		ZOffset: -1c511
+		MeshType: Plane
 		ZRamp: 1
 		IgnoreWorldTint: True
 	make: nthpadmk
@@ -1569,7 +1569,7 @@ proc.gdi:
 		IgnoreWorldTint: True
 	unload-overlay: narefn_a
 		Length: *
-		ZOffset: 1024
+		MeshType: Plane
 	idle-lights: ntrefn_c
 		Length: 16
 		Tick: 120
@@ -1579,19 +1579,19 @@ proc.gdi:
 		IgnoreWorldTint: True
 	bib: ntrefnbb
 		Length: 1
-		ZOffset: -1024
+		MeshType: Plane
 		Offset: -12, -42, 1
 		ZRamp: 1
 		-DepthSprite:
 	damaged-bib: ntrefnbb
 		Start: 1
-		ZOffset: -1024
+		MeshType: Plane
 		Offset: -12, -42, 1
 		ZRamp: 1
 		-DepthSprite:
 	dead-bib: ntrefnbb
 		Start: 2
-		ZOffset: -1024
+		MeshType: Plane
 		Offset: -12, -42, 1
 		ZRamp: 1
 		-DepthSprite:
@@ -1643,19 +1643,19 @@ proc.nod:
 		IgnoreWorldTint: True
 	bib: ntrefnbb
 		Length: 1
-		ZOffset: -1024
+		MeshType: Plane
 		Offset: -12, -42, 1
 		ZRamp: 1
 		-DepthSprite:
 	damaged-bib: ntrefnbb
 		Start: 1
-		ZOffset: -1024
+		MeshType: Plane
 		Offset: -12, -42, 1
 		ZRamp: 1
 		-DepthSprite:
 	dead-bib: ntrefnbb
 		Start: 2
-		ZOffset: -1024
+		MeshType: Plane
 		Offset: -12, -42, 1
 		ZRamp: 1
 		-DepthSprite:
@@ -1711,19 +1711,19 @@ nawast:
 		Tick: 120
 		IgnoreWorldTint: True
 	bib: ntwastbb
-		ZOffset: -1024
+		MeshType: Plane
 		ZRamp: 1
 		-DepthSprite:
 		Offset: 0, -36, 1
 	damaged-bib: ntwastbb
 		Start: 1
-		ZOffset: -1024
+		MeshType: Plane
 		ZRamp: 1
 		-DepthSprite:
 		Offset: 0, -36, 1
 	dead-bib: ntwastbb
 		Start: 2
-		ZOffset: -1024
+		MeshType: Plane
 		ZRamp: 1
 		-DepthSprite:
 		Offset: 0, -36, 1
@@ -1755,15 +1755,15 @@ gasilo.gdi:
 		Length: 4
 	idle-underlay:
 		ShadowStart: 3
-		ZOffset: -512
+		MeshType: Plane
 	damaged-idle-underlay:
 		Start: 1
 		ShadowStart: 4
-		ZOffset: -512
+		MeshType: Plane
 	dead:
 		Start: 2
 		ShadowStart: 5
-		ZOffset: -512
+		MeshType: Plane
 		Tick: 400
 	idle-lights-bright: gtsilo_b
 		Length: 16
@@ -1805,15 +1805,15 @@ gasilo.nod:
 		Length: 4
 	idle-underlay:
 		ShadowStart: 3
-		ZOffset: -512
+		MeshType: Plane
 	damaged-idle-underlay:
 		Start: 1
 		ShadowStart: 4
-		ZOffset: -512
+		MeshType: Plane
 	dead:
 		Start: 2
 		ShadowStart: 5
-		ZOffset: -512
+		MeshType: Plane
 		Tick: 400
 	idle-lights-bright: gtsilo_b
 		Length: 16
@@ -1862,19 +1862,19 @@ gadept.gdi:
 		DepthSprite: isodepth.shp
 	ground: gtdeptbb
 		ShadowStart: 3
-		ZOffset: -1c611
 		ZRamp: 1
+		MeshType: Plane
 	damaged-ground: gtdeptbb
 		Start: 1
 		ShadowStart: 4
-		ZOffset: -1c611
 		ZRamp: 1
+		MeshType: Plane
 	dead-ground: gtdeptbb
 		Start: 2
 		ShadowStart: 5
-		ZOffset: -1c611
 		Tick: 400
 		ZRamp: 1
+		MeshType: Plane
 	idle-light: gtdept_b
 		Offset: 0, -36, 13
 		Length: 7
@@ -1888,27 +1888,27 @@ gadept.gdi:
 		IgnoreWorldTint: True
 	circuits: gtdept_a
 		Length: 5
-		ZOffset: -1c511
 		Tick: 120
 		ZRamp: 1
+		MeshType: Plane
 	circuits-bright: gtdept_a
 		Length: 5
-		ZOffset: -1c511
 		Tick: 120
 		ZRamp: 1
 		IgnoreWorldTint: True
+		MeshType: Plane
 	damaged-circuits: gtdept_a
 		Start: 5
 		Length: 5
-		ZOffset: -1c511
 		Tick: 120
 		ZRamp: 1
+		MeshType: Plane
 	damaged-circuits-bright: gtdept_a
 		Start: 5
 		Length: 5
-		ZOffset: -1c511
 		Tick: 120
 		ZRamp: 1
+		MeshType: Plane
 		IgnoreWorldTint: True
 	crane-start: gtdept_c
 		Length: 6
@@ -1936,13 +1936,13 @@ gadept.gdi:
 		DepthSprite: isodepth.shp
 	platform: gtdept_d
 		Length: 7
-		ZOffset: -1c511
 		ZRamp: 1
+		MeshType: Plane
 	damaged-platform: gtdept_d
 		Start: 7
 		Length: 7
-		ZOffset: -1c511
 		ZRamp: 1
+		MeshType: Plane
 	make: gtdeptmk
 		Length: 10
 		Tick: 60
@@ -1982,19 +1982,19 @@ gadept.nod:
 		DepthSprite: isodepth.shp
 	ground: gtdeptbb
 		ShadowStart: 3
-		ZOffset: -1c611
 		ZRamp: 1
+		MeshType: Plane
 	damaged-ground: gtdeptbb
 		Start: 1
 		ShadowStart: 4
-		ZOffset: -1c611
 		ZRamp: 1
+		MeshType: Plane
 	dead-ground: gtdeptbb
 		Start: 2
 		ShadowStart: 5
-		ZOffset: -1c611
 		Tick: 400
 		ZRamp: 1
+		MeshType: Plane
 	idle-light: gtdept_b
 		Offset: 0, -36, 13
 		Length: 7
@@ -2008,27 +2008,27 @@ gadept.nod:
 		IgnoreWorldTint: True
 	circuits: gtdept_a
 		Length: 5
-		ZOffset: -1c511
 		Tick: 120
 		ZRamp: 1
+		MeshType: Plane
 	circuits-bright: gtdept_a
 		Length: 5
-		ZOffset: -1c511
 		Tick: 120
 		ZRamp: 1
+		MeshType: Plane
 		IgnoreWorldTint: True
 	damaged-circuits: gtdept_a
 		Start: 5
 		Length: 5
-		ZOffset: -1c511
 		Tick: 120
 		ZRamp: 1
+		MeshType: Plane
 	damaged-circuits-bright: gtdept_a
 		Start: 5
 		Length: 5
-		ZOffset: -1c511
 		Tick: 120
 		ZRamp: 1
+		MeshType: Plane
 		IgnoreWorldTint: True
 	crane-start: gtdept_c
 		Length: 6
@@ -2056,13 +2056,13 @@ gadept.nod:
 		Tick: 60
 	platform: gtdept_d
 		Length: 7
-		ZOffset: -1c511
 		ZRamp: 1
+		MeshType: Plane
 	damaged-platform: gtdept_d
 		Start: 7
 		Length: 7
-		ZOffset: -1c511
 		ZRamp: 1
+		MeshType: Plane
 	make: gtdeptmk
 		Length: 10
 		Tick: 60

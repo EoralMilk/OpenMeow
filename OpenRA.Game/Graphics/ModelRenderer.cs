@@ -113,7 +113,7 @@ namespace OpenRA.Graphics
 			foreach (var m in models)
 			{
 				// Convert screen offset back to world coords
-				var offsetVec = Util.MatrixVectorMultiply(invCameraTransform, wr.ScreenVector(m.OffsetFunc()));
+				var offsetVec = Util.MatrixVectorMultiply(invCameraTransform, wr.RenderVector(m.OffsetFunc()));
 				var offsetTransform = Util.TranslationMatrix(offsetVec[0], offsetVec[1], offsetVec[2]);
 
 				var worldTransform = Util.MakeFloatMatrix(m.RotationFunc().AsMatrix());
@@ -185,7 +185,7 @@ namespace OpenRA.Graphics
 				foreach (var m in models)
 				{
 					// Convert screen offset to world offset
-					var offsetVec = Util.MatrixVectorMultiply(invCameraTransform, wr.ScreenVector(m.OffsetFunc()));
+					var offsetVec = Util.MatrixVectorMultiply(invCameraTransform, wr.RenderVector(m.OffsetFunc()));
 					var offsetTransform = Util.TranslationMatrix(offsetVec[0], offsetVec[1], offsetVec[2]);
 
 					var rotations = Util.MakeFloatMatrix(m.RotationFunc().AsMatrix());

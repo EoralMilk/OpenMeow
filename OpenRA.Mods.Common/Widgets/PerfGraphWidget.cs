@@ -25,29 +25,29 @@ namespace OpenRA.Mods.Common.Widgets
 			var origin = new float2(rect.Right, rect.Bottom);
 			var basis = new float2(-rect.Width / 100, -rect.Height / 100);
 
-			cr.DrawLine(new[]
+			cr.DrawScreenLine(new[]
 			{
 				new float3(rect.Left, rect.Top, 0),
 				new float3(rect.Left, rect.Bottom, 0),
 				new float3(rect.Right, rect.Bottom, 0)
 			}, 1, Color.White);
 
-			cr.DrawLine(origin + new float2(100, 0) * basis, origin + new float2(100, 100) * basis, 1, Color.White);
+			cr.DrawScreenLine(origin + new float2(100, 0) * basis, origin + new float2(100, 100) * basis, 1, Color.White);
 
 			var k = 0;
 			foreach (var item in PerfHistory.Items.Values)
 			{
-				cr.DrawLine(item.Samples()
+				cr.DrawScreenLine(item.Samples()
 					.Select((sample, i) => origin + new float3(i, (float)sample, 0) * basis),
 					1, item.C);
 
 				var u = new float2(rect.Left, rect.Top);
 
-				cr.DrawLine(
+				cr.DrawScreenLine(
 					u + new float2(10, 10 * k + 5),
 					u + new float2(12, 10 * k + 5),
 					1, item.C);
-				cr.DrawLine(
+				cr.DrawScreenLine(
 					u + new float2(10, 10 * k + 4),
 					u + new float2(12, 10 * k + 4),
 					1, item.C);

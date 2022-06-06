@@ -248,7 +248,7 @@ namespace OpenRA.Mods.Common.Traits
 					var tail = p.Pos + new float2(-windStrength, -p.Gravity * 2 / 3);
 
 					var b = new float3(tail.X, tail.Y, tail.Y);
-					wcr.DrawLine(a, b, p.Size, p.TailColor);
+					wcr.DrawScreenLine(a, b, p.Size, p.TailColor);
 				}
 			}
 		}

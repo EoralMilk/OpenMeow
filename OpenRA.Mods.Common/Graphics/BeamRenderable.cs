@@ -23,8 +23,9 @@ namespace OpenRA.Mods.Common.Graphics
 		readonly BeamRenderableShape shape;
 		readonly WDist width;
 		readonly Color color;
+		readonly BlendMode blendMode;
 
-		public BeamRenderable(WPos pos, int zOffset, in WVec length, BeamRenderableShape shape, WDist width, Color color)
+		public BeamRenderable(WPos pos, int zOffset, in WVec length, BeamRenderableShape shape, WDist width, Color color, BlendMode blendMode)
 		{
 			this.pos = pos;
 			this.zOffset = zOffset;
@@ -32,14 +33,15 @@ namespace OpenRA.Mods.Common.Graphics
 			this.shape = shape;
 			this.width = width;
 			this.color = color;
+			this.blendMode = blendMode;
 		}
 
 		public WPos Pos => pos;
 		public int ZOffset => zOffset;
 		public bool IsDecoration => true;
 
-		public IRenderable WithZOffset(int newOffset) { return new BeamRenderable(pos, zOffset, length, shape, width, color); }
-		public IRenderable OffsetBy(in WVec vec) { return new BeamRenderable(pos + vec, zOffset, length, shape, width, color); }
+		public IRenderable WithZOffset(int newOffset) { return new BeamRenderable(pos, zOffset, length, shape, width, color, blendMode); }
+		public IRenderable OffsetBy(in WVec vec) { return new BeamRenderable(pos + vec, zOffset, length, shape, width, color, blendMode); }
 		public IRenderable AsDecoration() { return this; }
 
 		public IFinalizedRenderable PrepareRender(WorldRenderer wr) { return this; }
@@ -53,18 +55,18 @@ namespace OpenRA.Mods.Common.Graphics
 			{
 				var delta = length * width.Length / (2 * vecLength);
 				var corner = new WVec(-delta.Y, delta.X, delta.Z);
-				var a = wr.Screen3DPosition(pos - corner);
-				var b = wr.Screen3DPosition(pos + corner);
-				var c = wr.Screen3DPosition(pos + corner + length);
-				var d = wr.Screen3DPosition(pos - corner + length);
-				Game.Renderer.WorldRgbaColorRenderer.FillRect(a, b, c, d, color);
+				var a = wr.Render3DPosition(pos - corner);
+				var b = wr.Render3DPosition(pos + corner);
+				var c = wr.Render3DPosition(pos + corner + length);
+				var d = wr.Render3DPosition(pos - corner + length);
+				Game.Renderer.WorldRgbaColorRenderer.FillWorldRect(a, b, c, d, color, blendMode: blendMode);
 			}
 			else
 			{
-				var start = wr.Screen3DPosition(pos);
-				var end = wr.Screen3DPosition(pos + length);
-				var screenWidth = wr.ScreenVector(new WVec(width, WDist.Zero, WDist.Zero))[0];
-				Game.Renderer.WorldRgbaColorRenderer.DrawLine(start, end, screenWidth, color);
+				var start = wr.Render3DPosition(pos);
+				var end = wr.Render3DPosition(pos + length);
+				var screenWidth = wr.RenderVector(new WVec(width, WDist.Zero, WDist.Zero))[0];
+				Game.Renderer.WorldRgbaColorRenderer.DrawWorldLine(start, end, screenWidth, color, blendMode: blendMode);
 			}
 		}
 

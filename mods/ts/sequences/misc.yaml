@@ -360,6 +360,7 @@ moveflsh:
 		Length: *
 		Tick: 30
 		ZOffset: 2047
+		MeshType: Plane
 		ZRamp: 1
 		AlphaFade: True
 
@@ -367,7 +368,8 @@ wake:
 	idle: wake2
 		Length: *
 		Tick: 180
-		ZOffset: -512
+		ZOffset: 1
+		MeshType: Plane
 		ZRamp: 1
 		Offset: 0, 0, 1
 		AlphaFade: True
@@ -380,6 +382,7 @@ resources:
 		Offset: 0, -12, 1
 		ZRamp: 1
 		IgnoreWorldTint: true
+		MeshType: Plane # useless, because the terrain meshtype is fixed
 	tib01: tib01
 	tib02: tib02
 	tib03: tib03
@@ -411,6 +414,7 @@ veins:
 		UseTilesetExtension: true
 		ZOffset: 1023
 		Offset: 0, -12, 24
+		MeshType: Plane
 
 shroud:
 	Defaults:
@@ -609,9 +613,10 @@ palet04:
 ^tracks:
 	idle:
 		UseTilesetExtension: true
-		ZOffset: -1c0
+		ZOffset: 1
 		Offset: 0, 0, 1
 		ZRamp: 1
+		MeshType: Plane
 
 tracks01:
 	Inherits: ^tracks
@@ -689,8 +694,9 @@ tuntop04:
 dig:
 	idle:
 		Length: *
-		ZOffset: 511
+		ZOffset: 1
 		Offset: 0, 0, 24
+		MeshType: Plane
 
 typeglyphs:
 	infantry:
@@ -714,11 +720,11 @@ fire1:
 		Length: 17
 		BlendMode: Translucent
 		Offset: 0, -24, 24
-		ZOffset: 1023
+		ZOffset: 10
 
 fire2:
 	idle-overlay:
 		Length: 17
 		BlendMode: Translucent
 		Offset: 0, -18, 18
-		ZOffset: 1023
+		ZOffset: 10

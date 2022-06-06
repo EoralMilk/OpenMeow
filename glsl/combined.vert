@@ -5,6 +5,7 @@ uniform vec3 r1, r2;
 uniform mat4 view;
 uniform mat4 projection;
 uniform bool hasCamera;
+uniform bool renderScreen;
 
 #if __VERSION__ == 120
 attribute vec4 aVertexPosition;
@@ -123,6 +124,10 @@ void main()
 	if (hasCamera)
 	{
 		gl_Position = projection * view * aVertexPosition;
+	}
+	else if (renderScreen)
+	{
+		gl_Position = vec4(aVertexPosition.xyz, 1);
 	}
 	else
 	{

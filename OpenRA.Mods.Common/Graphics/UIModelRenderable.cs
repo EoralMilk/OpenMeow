@@ -131,7 +131,7 @@ namespace OpenRA.Mods.Common.Graphics
 					var rotation = OpenRA.Graphics.Util.MakeFloatMatrix(v.RotationFunc().AsMatrix());
 					var worldTransform = OpenRA.Graphics.Util.MatrixMultiply(scaleTransform, rotation);
 
-					var pxPos = pxOrigin + wr.ScreenVectorComponents(v.OffsetFunc());
+					var pxPos = pxOrigin + wr.RenderVectorComponents(v.OffsetFunc());
 					var screenTransform = OpenRA.Graphics.Util.MatrixMultiply(cameraTransform, worldTransform);
 
 					for (var i = 0; i < 8; i++)

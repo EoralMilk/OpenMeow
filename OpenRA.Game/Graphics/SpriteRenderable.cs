@@ -29,8 +29,9 @@ namespace OpenRA.Graphics
 		readonly TintModifiers tintModifiers;
 		readonly float alpha;
 		readonly bool isDecoration;
+		readonly SpriteMeshType meshType;
 
-		public SpriteRenderable(Sprite sprite, WPos pos, WVec offset, int zOffset, PaletteReference palette, float scale, float alpha, float3 tint, TintModifiers tintModifiers, bool isDecoration)
+		public SpriteRenderable(Sprite sprite, WPos pos, WVec offset, int zOffset, PaletteReference palette, float scale, float alpha, float3 tint, TintModifiers tintModifiers, bool isDecoration, SpriteMeshType meshType)
 		{
 			this.sprite = sprite;
 			this.pos = pos;
@@ -42,6 +43,7 @@ namespace OpenRA.Graphics
 			this.isDecoration = isDecoration;
 			this.tintModifiers = tintModifiers;
 			this.alpha = alpha;
+			this.meshType = meshType;
 
 			// PERF: Remove useless palette assignments for RGBA sprites
 			// HACK: This is working around the fact that palettes are defined on traits rather than sequences
@@ -60,19 +62,21 @@ namespace OpenRA.Graphics
 		public float3 Tint => tint;
 		public TintModifiers TintModifiers => tintModifiers;
 
-		public IPalettedRenderable WithPalette(PaletteReference newPalette) { return new SpriteRenderable(sprite, pos, offset, zOffset, newPalette, scale, alpha, tint, tintModifiers, isDecoration); }
-		public IRenderable WithZOffset(int newOffset) { return new SpriteRenderable(sprite, pos, offset, newOffset, palette, scale, alpha, tint, tintModifiers, isDecoration); }
-		public IRenderable OffsetBy(in WVec vec) { return new SpriteRenderable(sprite, pos + vec, offset, zOffset, palette, scale, alpha, tint, tintModifiers, isDecoration); }
-		public IRenderable AsDecoration() { return new SpriteRenderable(sprite, pos, offset, zOffset, palette, scale, alpha, tint, tintModifiers, true); }
+		public SpriteMeshType MeshType => meshType;
+
+		public IPalettedRenderable WithPalette(PaletteReference newPalette) { return new SpriteRenderable(sprite, pos, offset, zOffset, newPalette, scale, alpha, tint, tintModifiers, isDecoration, meshType); }
+		public IRenderable WithZOffset(int newOffset) { return new SpriteRenderable(sprite, pos, offset, newOffset, palette, scale, alpha, tint, tintModifiers, isDecoration, meshType); }
+		public IRenderable OffsetBy(in WVec vec) { return new SpriteRenderable(sprite, pos + vec, offset, zOffset, palette, scale, alpha, tint, tintModifiers, isDecoration, meshType); }
+		public IRenderable AsDecoration() { return new SpriteRenderable(sprite, pos, offset, zOffset, palette, scale, alpha, tint, tintModifiers, true, meshType); }
 
 		public IModifyableRenderable WithAlpha(float newAlpha)
 		{
-			return new SpriteRenderable(sprite, pos, offset, zOffset, palette, scale, newAlpha, tint, tintModifiers, isDecoration);
+			return new SpriteRenderable(sprite, pos, offset, zOffset, palette, scale, newAlpha, tint, tintModifiers, isDecoration, meshType);
 		}
 
 		public IModifyableRenderable WithTint(in float3 newTint, TintModifiers newTintModifiers)
 		{
-			return new SpriteRenderable(sprite, pos, offset, zOffset, palette, scale, alpha, newTint, newTintModifiers, isDecoration);
+			return new SpriteRenderable(sprite, pos, offset, zOffset, palette, scale, alpha, newTint, newTintModifiers, isDecoration, meshType);
 		}
 
 		float3 ScreenPosition(WorldRenderer wr)
@@ -95,7 +99,15 @@ namespace OpenRA.Graphics
 				a *= -1;
 
 			//wsr.DrawSprite(sprite, palette, ScreenPosition(wr), scale, t, a);
-			wsr.DrawSprite(sprite, palette, pos, scale, t, a);
+
+			//if (meshType == SpriteMeshType.Plane)
+			//	Console.WriteLine("meshType == SpriteMeshType.Plane");
+			var viewOffset = Game.Renderer.Standalone3DRenderer.InverseCameraFrontMeterPerWPos * (zOffset + 1);
+
+			if (meshType == SpriteMeshType.Plane)
+				wsr.DrawPlaneSprite(sprite, palette, Pos, viewOffset, scale, t, a);
+			else if (meshType == SpriteMeshType.Card)
+				wsr.DrawCardSprite(sprite, palette, Pos, viewOffset, scale, t, a);
 		}
 
 		public void RenderDebugGeometry(WorldRenderer wr)
@@ -107,7 +119,7 @@ namespace OpenRA.Graphics
 			var ca = wr.Viewport.WorldToViewPx(pos + sprite.Size / 2);
 			var cb = wr.Viewport.WorldToViewPx(bpos + sprite.Size / 2);
 			Game.Renderer.RgbaColorRenderer.DrawRect(tl, br, 1, Color.Red);
-			Game.Renderer.RgbaColorRenderer.DrawLine(ca, cb, 2,Color.Azure);
+			Game.Renderer.RgbaColorRenderer.DrawScreenLine(ca, cb, 2,Color.Azure);
 			Game.Renderer.RgbaColorRenderer.DrawRect(cb - new int2(1,1), cb + new int2(1, 1), 1, Color.BlueViolet);
 		}
 

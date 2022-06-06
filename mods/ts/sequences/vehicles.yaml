@@ -1,3 +1,9 @@
+^VehicleBase:
+	Defaults:
+		Offset: 0, 0, 10
+		ShadowZOffset: 5
+		ZOffset: 5
+
 ^VehicleOverlays:
 	emp-overlay: emp_fx01
 		Offset: 0, 0, 24
@@ -6,18 +12,22 @@
 		IgnoreWorldTint: True
 
 mcv.gdi:
+	Inherits@defaults: ^VehicleBase
 	Inherits: ^VehicleOverlays
 	icon: sidebar-gdi|mcvicon
 
 mcv.nod:
+	Inherits@defaults: ^VehicleBase
 	Inherits: ^VehicleOverlays
 	icon: sidebar-nod|mcvicon
 
 apc:
+	Inherits@defaults: ^VehicleBase
 	Inherits: ^VehicleOverlays
 	icon: apcicon
 
 harv.gdi:
+	Inherits@defaults: ^VehicleBase
 	Inherits: ^VehicleOverlays
 	harvest: harvestr
 		Length: *
@@ -26,6 +36,7 @@ harv.gdi:
 	icon: sidebar-gdi|harvicon
 
 harv.nod:
+	Inherits@defaults: ^VehicleBase
 	Inherits: ^VehicleOverlays
 	harvest: harvestr
 		Length: *
@@ -34,16 +45,19 @@ harv.nod:
 	icon: sidebar-nod|harvicon
 
 hvr:
+	Inherits@defaults: ^VehicleBase
 	Inherits: ^VehicleOverlays
 	icon: hovricon
 
 4tnk:
+	Inherits@defaults: ^VehicleBase
 	Inherits: ^VehicleOverlays
 	muzzle: gunfire
 		Length: *
 		IgnoreWorldTint: True
 
 lpst.gdi:
+	Inherits@defaults: ^VehicleBase
 	Inherits: ^VehicleOverlays
 	idle: gadpsa
 		DepthSprite: isodepth.shp
@@ -80,10 +94,12 @@ lpst.nod:
 	icon: sidebar-nod|lpsticon
 
 repair:
+	Inherits@defaults: ^VehicleBase
 	Inherits: ^VehicleOverlays
 	icon: rboticon
 
 art2:
+	Inherits@defaults: ^VehicleBase
 	Inherits: ^VehicleOverlays
 	icon: artyicon
 	idle: gaarty
@@ -109,18 +125,22 @@ art2:
 		IgnoreWorldTint: True
 
 weed:
+	Inherits@defaults: ^VehicleBase
 	Inherits: ^VehicleOverlays
 	icon: weedicon
 
 hmec:
+	Inherits@defaults: ^VehicleBase
 	Inherits: ^VehicleOverlays
 	icon: hmecicon
 
 bike:
+	Inherits@defaults: ^VehicleBase
 	Inherits: ^VehicleOverlays
 	icon: cyclicon
 
 bggy:
+	Inherits@defaults: ^VehicleBase
 	Inherits: ^VehicleOverlays
 	Defaults:
 		Offset: 0, 0, 24
@@ -149,18 +169,22 @@ bggy:
 		Offset: 0, 0
 
 sapc:
+	Inherits@defaults: ^VehicleBase
 	Inherits: ^VehicleOverlays
 	icon: sapcicon
 
 subtank:
+	Inherits@defaults: ^VehicleBase
 	Inherits: ^VehicleOverlays
 	icon: subticon
 
 sonic:
+	Inherits@defaults: ^VehicleBase
 	Inherits: ^VehicleOverlays
 	icon: soniicon
 
 ttnk:
+	Inherits@defaults: ^VehicleBase
 	Inherits: ^VehicleOverlays
 	idle: gatick
 		ShadowStart: 3
@@ -180,10 +204,12 @@ ttnk:
 	icon: tickicon
 
 stnk:
+	Inherits@defaults: ^VehicleBase
 	Inherits: ^VehicleOverlays
 	icon: stnkicon
 
 mmch:
+	Inherits@defaults: ^VehicleBase
 	Inherits: ^VehicleOverlays
 	stand:
 		Facings: -8
@@ -207,6 +233,7 @@ mmch:
 	icon: mmchicon
 
 jugg:
+	Inherits@defaults: ^VehicleBase
 	Inherits: ^VehicleOverlays
 	icon: juggicon
 	stand: jugger
@@ -240,6 +267,7 @@ jugg:
 		IgnoreWorldTint: True
 
 gghunt:
+	Inherits@defaults: ^VehicleBase
 	Inherits: ^VehicleOverlays
 	idle:
 		Facings: 1
@@ -247,6 +275,7 @@ gghunt:
 		ShadowStart: 8
 
 smech:
+	Inherits@defaults: ^VehicleBase
 	Inherits: ^VehicleOverlays
 	Defaults:
 		Offset: 0,0,8
@@ -274,31 +303,41 @@ smech:
 	icon: smchicon
 
 trucka:
+	Inherits@defaults: ^VehicleBase
 	Inherits: ^VehicleOverlays
 
 truckb:
+	Inherits@defaults: ^VehicleBase
 	Inherits: ^VehicleOverlays
 
 icbm:
+	Inherits@defaults: ^VehicleBase
 	Inherits: ^VehicleOverlays
 
 bus:
+	Inherits@defaults: ^VehicleBase
 	Inherits: ^VehicleOverlays
 
 pick:
+	Inherits@defaults: ^VehicleBase
 	Inherits: ^VehicleOverlays
 
 car:
+	Inherits@defaults: ^VehicleBase
 	Inherits: ^VehicleOverlays
 
 wini:
+	Inherits@defaults: ^VehicleBase
 	Inherits: ^VehicleOverlays
 
 locomotive:
+	Inherits@defaults: ^VehicleBase
 	Inherits: ^VehicleOverlays
 
 traincar:
+	Inherits@defaults: ^VehicleBase
 	Inherits: ^VehicleOverlays
 
 cargocar:
+	Inherits@defaults: ^VehicleBase
 	Inherits: ^VehicleOverlays

@@ -116,6 +116,8 @@ namespace OpenRA.Mods.Common.Graphics
 		Rectangle ISpriteSequence.Bounds => throw exception;
 		bool ISpriteSequence.IgnoreWorldTint => throw exception;
 		float ISpriteSequence.Scale => throw exception;
+		SpriteMeshType ISpriteSequence.MeshType => throw exception;
+
 		Sprite ISpriteSequence.GetSprite(int frame) { throw exception; }
 		Sprite ISpriteSequence.GetSprite(int frame, WAngle facing) { throw exception; }
 		Sprite ISpriteSequence.GetShadow(int frame, WAngle facing) { throw exception; }
@@ -144,8 +146,9 @@ namespace OpenRA.Mods.Common.Graphics
 		public int ShadowZOffset { get; }
 		public int[] Frames { get; private set; }
 		public Rectangle Bounds { get; private set; }
-		public bool IgnoreWorldTint { get; }
-		public float Scale { get; }
+		public bool IgnoreWorldTint { get; private set; }
+		public float Scale { get; private set; }
+		public SpriteMeshType MeshType { get; private set; }
 
 		public readonly uint[] EmbeddedPalette;
 
@@ -191,7 +194,7 @@ namespace OpenRA.Mods.Common.Graphics
 				Frames = LoadField<int[]>(d, "Frames", null);
 				IgnoreWorldTint = LoadField(d, "IgnoreWorldTint", false);
 				Scale = LoadField(d, "Scale", 1f);
-
+				MeshType = LoadField(d, "MeshType", SpriteMeshType.Card);
 				var flipX = LoadField(d, "FlipX", false);
 				var flipY = LoadField(d, "FlipY", false);
 

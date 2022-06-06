@@ -21,67 +21,150 @@ namespace OpenRA.Graphics
 		// yes, our channel order is nuts.
 		static readonly int[] ChannelMasks = { 2, 1, 0, 3 };
 
-		public static void FastCreateCard(Vertex[] vertices,
-			WPos inPos,
+		public static int FastCreateCard(Vertex[] vertices,
+			WPos inPos, vec3 viewOffset,
 			Sprite r, int2 samplers, float paletteTextureIndex, float scale,
 			in float3 tint, float alpha, int nv)
 		{
 			var position = new vec3((float)inPos.X / Game.Renderer.Standalone3DRenderer.WPosPerMeter, (float)inPos.Y / Game.Renderer.Standalone3DRenderer.WPosPerMeter, (float)inPos.Z / Game.Renderer.Standalone3DRenderer.WPosPerMeterHeight);
+			position += viewOffset;
 			var ssziehalf = Game.Renderer.Standalone3DRenderer.meterPerPix * scale * r.Size / 2;
 			var soffset = Game.Renderer.Standalone3DRenderer.meterPerPix * scale * r.Offset;
 
 			float2 leftRight = new float2(soffset.X - ssziehalf.X, soffset.X + ssziehalf.X);
-			float2 topBottom = new float2(ssziehalf.Y - soffset.Y, soffset.Y + ssziehalf.Y);
+			float2 topBottom = new float2(ssziehalf.Y - soffset.Y, soffset.Y + ssziehalf.Y); // 这里可能比较奇怪，一般都是top和bottom正值
 
-			float3 leftTop = new float3(position.x + leftRight.X, position.y, position.z + (topBottom.X) / Game.Renderer.Standalone3DRenderer.SinCameraPitch);
-			float3 rightTop = new float3(position.x + leftRight.Y, position.y, leftTop.Z);
-			float3 leftBase = new float3(leftTop.X, position.y, position.z);
-			float3 rightBase = new float3(rightTop.X, position.y, position.z);
-			float3 leftFront = new float3(leftTop.X, position.y + topBottom.Y / Game.Renderer.Standalone3DRenderer.CosCameraPitch, position.z);
-			float3 rightFront = new float3(rightTop.X, leftFront.Y, position.z);
-
-			float ycut = topBottom.X / (ssziehalf.Y * 2);
-
-			float sl = 0;
-			float st = 0;
-			float sbase = 0;
-			float sr = 0;
-			float sb = 0;
-
-			// See combined.vert for documentation on the channel attribute format
-			var attribC = r.Channel == TextureChannel.RGBA ? 0x02 : ((byte)r.Channel) << 1 | 0x01;
-			attribC |= samplers.X << 6;
-			if (r is SpriteWithSecondaryData ss)
+			// sprite的顶边低于中线，那么整个sprite应该是放平的
+			if (topBottom.X < 0)
 			{
-				sl = ss.SecondaryLeft;
-				st = ss.SecondaryTop;
-				sr = ss.SecondaryRight;
-				sb = ss.SecondaryBottom;
+				float3 leftBack = new float3(position.x + leftRight.X, position.y - topBottom.X / Game.Renderer.Standalone3DRenderer.CosCameraPitch, position.z);
+				float3 rightBack = new float3(position.x + leftRight.Y, leftBack.Y, position.z);
+				float3 leftFront = new float3(leftBack.X, position.y + topBottom.Y / Game.Renderer.Standalone3DRenderer.CosCameraPitch, position.z);
+				float3 rightFront = new float3(rightBack.X, leftFront.Y, position.z);
 
-				sbase = st - (st - sb) * ycut;
+				float sl = 0;
+				float st = 0;
+				float sr = 0;
+				float sb = 0;
 
-				attribC |= ((byte)ss.SecondaryChannel) << 4 | 0x08;
-				attribC |= samplers.Y << 9;
+				// See combined.vert for documentation on the channel attribute format
+				var attribC = r.Channel == TextureChannel.RGBA ? 0x02 : ((byte)r.Channel) << 1 | 0x01;
+				attribC |= samplers.X << 6;
+				if (r is SpriteWithSecondaryData ss)
+				{
+					sl = ss.SecondaryLeft;
+					st = ss.SecondaryTop;
+					sr = ss.SecondaryRight;
+					sb = ss.SecondaryBottom;
+
+					attribC |= ((byte)ss.SecondaryChannel) << 4 | 0x08;
+					attribC |= samplers.Y << 9;
+				}
+
+				var fAttribC = (float)attribC;
+
+				vertices[nv] = new Vertex(leftBack, r.Left, r.Top, sl, st, paletteTextureIndex, fAttribC, tint, alpha);
+				vertices[nv + 1] = new Vertex(rightBack, r.Right, r.Top, sr, st, paletteTextureIndex, fAttribC, tint, alpha);
+				vertices[nv + 2] = new Vertex(rightFront, r.Right, r.Bottom, sr, sb, paletteTextureIndex, fAttribC, tint, alpha);
+
+				vertices[nv + 3] = new Vertex(rightFront, r.Right, r.Bottom, sr, sb, paletteTextureIndex, fAttribC, tint, alpha);
+				vertices[nv + 4] = new Vertex(leftFront, r.Left, r.Bottom, sl, sb, paletteTextureIndex, fAttribC, tint, alpha);
+				vertices[nv + 5] = new Vertex(leftBack, r.Left, r.Top, sl, st, paletteTextureIndex, fAttribC, tint, alpha);
+
+				return 6;
 			}
+			// sprite的底边高于中线，整个sprite应该立起来的
+			else if (topBottom.Y < 0)
+			{
+				float3 leftTop = new float3(position.x + leftRight.X, position.y, position.z + (topBottom.X) / Game.Renderer.Standalone3DRenderer.SinCameraPitch);
+				float3 rightTop = new float3(position.x + leftRight.Y, position.y, leftTop.Z);
+				float3 leftBottom = new float3(leftTop.X, position.y, position.z - (topBottom.Y) / Game.Renderer.Standalone3DRenderer.SinCameraPitch);
+				float3 rightBottom = new float3(rightTop.X, position.y, leftBottom.Z);
 
-			var fAttribC = (float)attribC;
-			float baseY = r.Top - (r.Top - r.Bottom) * ycut;
+				float sl = 0;
+				float st = 0;
+				float sr = 0;
+				float sb = 0;
 
-			vertices[nv] = new Vertex(leftTop, r.Left, r.Top, sl, st, paletteTextureIndex, fAttribC, tint, alpha);
-			vertices[nv + 1] = new Vertex(rightTop, r.Right, r.Top, sr, st, paletteTextureIndex, fAttribC, tint, alpha);
-			vertices[nv + 2] = new Vertex(rightBase, r.Right, baseY, sr, sbase, paletteTextureIndex, fAttribC, tint, alpha);
+				// See combined.vert for documentation on the channel attribute format
+				var attribC = r.Channel == TextureChannel.RGBA ? 0x02 : ((byte)r.Channel) << 1 | 0x01;
+				attribC |= samplers.X << 6;
+				if (r is SpriteWithSecondaryData ss)
+				{
+					sl = ss.SecondaryLeft;
+					st = ss.SecondaryTop;
+					sr = ss.SecondaryRight;
+					sb = ss.SecondaryBottom;
 
-			vertices[nv + 3] = new Vertex(rightBase, r.Right, baseY, sr, sbase, paletteTextureIndex, fAttribC, tint, alpha);
-			vertices[nv + 4] = new Vertex(leftBase, r.Left, baseY, sl, sbase, paletteTextureIndex, fAttribC, tint, alpha);
-			vertices[nv + 5] = new Vertex(leftTop, r.Left, r.Top, sl, st, paletteTextureIndex, fAttribC, tint, alpha);
+					attribC |= ((byte)ss.SecondaryChannel) << 4 | 0x08;
+					attribC |= samplers.Y << 9;
+				}
 
-			vertices[nv + 6] = new Vertex(leftBase, r.Left, baseY, sl, sbase, paletteTextureIndex, fAttribC, tint, alpha);
-			vertices[nv + 7] = new Vertex(rightBase, r.Right, baseY, sr, sbase, paletteTextureIndex, fAttribC, tint, alpha);
-			vertices[nv + 8] = new Vertex(rightFront, r.Right, r.Bottom, sr, sb, paletteTextureIndex, fAttribC, tint, alpha);
+				var fAttribC = (float)attribC;
 
-			vertices[nv + 9] = new Vertex(rightFront, r.Right, r.Bottom, sr, sb, paletteTextureIndex, fAttribC, tint, alpha);
-			vertices[nv + 10] = new Vertex(leftFront, r.Left, r.Bottom, sl, sb, paletteTextureIndex, fAttribC, tint, alpha);
-			vertices[nv + 11] = new Vertex(leftBase, r.Left, baseY, sl, sbase, paletteTextureIndex, fAttribC, tint, alpha);
+				vertices[nv] = new Vertex(leftTop, r.Left, r.Top, sl, st, paletteTextureIndex, fAttribC, tint, alpha);
+				vertices[nv + 1] = new Vertex(rightTop, r.Right, r.Top, sr, st, paletteTextureIndex, fAttribC, tint, alpha);
+				vertices[nv + 2] = new Vertex(rightBottom, r.Right, r.Bottom, sr, sb, paletteTextureIndex, fAttribC, tint, alpha);
+
+				vertices[nv + 3] = new Vertex(rightBottom, r.Right, r.Bottom, sr, sb, paletteTextureIndex, fAttribC, tint, alpha);
+				vertices[nv + 4] = new Vertex(leftBottom, r.Left, r.Bottom, sl, sb, paletteTextureIndex, fAttribC, tint, alpha);
+				vertices[nv + 5] = new Vertex(leftTop, r.Left, r.Top, sl, st, paletteTextureIndex, fAttribC, tint, alpha);
+
+				return 6;
+			}
+			else
+			{
+				float3 leftTop = new float3(position.x + leftRight.X, position.y, position.z + (topBottom.X) / Game.Renderer.Standalone3DRenderer.SinCameraPitch);
+				float3 rightTop = new float3(position.x + leftRight.Y, position.y, leftTop.Z);
+				float3 leftBase = new float3(leftTop.X, position.y, position.z);
+				float3 rightBase = new float3(rightTop.X, position.y, position.z);
+				float3 leftFront = new float3(leftTop.X, position.y + topBottom.Y / Game.Renderer.Standalone3DRenderer.CosCameraPitch, position.z);
+				float3 rightFront = new float3(rightTop.X, leftFront.Y, position.z);
+
+				float ycut = topBottom.X / (ssziehalf.Y * 2);
+
+				float sl = 0;
+				float st = 0;
+				float sbase = 0;
+				float sr = 0;
+				float sb = 0;
+
+				// See combined.vert for documentation on the channel attribute format
+				var attribC = r.Channel == TextureChannel.RGBA ? 0x02 : ((byte)r.Channel) << 1 | 0x01;
+				attribC |= samplers.X << 6;
+				if (r is SpriteWithSecondaryData ss)
+				{
+					sl = ss.SecondaryLeft;
+					st = ss.SecondaryTop;
+					sr = ss.SecondaryRight;
+					sb = ss.SecondaryBottom;
+
+					sbase = st - (st - sb) * ycut;
+
+					attribC |= ((byte)ss.SecondaryChannel) << 4 | 0x08;
+					attribC |= samplers.Y << 9;
+				}
+
+				var fAttribC = (float)attribC;
+				float baseY = r.Top - (r.Top - r.Bottom) * ycut;
+
+				vertices[nv] = new Vertex(leftTop, r.Left, r.Top, sl, st, paletteTextureIndex, fAttribC, tint, alpha);
+				vertices[nv + 1] = new Vertex(rightTop, r.Right, r.Top, sr, st, paletteTextureIndex, fAttribC, tint, alpha);
+				vertices[nv + 2] = new Vertex(rightBase, r.Right, baseY, sr, sbase, paletteTextureIndex, fAttribC, tint, alpha);
+
+				vertices[nv + 3] = new Vertex(rightBase, r.Right, baseY, sr, sbase, paletteTextureIndex, fAttribC, tint, alpha);
+				vertices[nv + 4] = new Vertex(leftBase, r.Left, baseY, sl, sbase, paletteTextureIndex, fAttribC, tint, alpha);
+				vertices[nv + 5] = new Vertex(leftTop, r.Left, r.Top, sl, st, paletteTextureIndex, fAttribC, tint, alpha);
+
+				vertices[nv + 6] = new Vertex(leftBase, r.Left, baseY, sl, sbase, paletteTextureIndex, fAttribC, tint, alpha);
+				vertices[nv + 7] = new Vertex(rightBase, r.Right, baseY, sr, sbase, paletteTextureIndex, fAttribC, tint, alpha);
+				vertices[nv + 8] = new Vertex(rightFront, r.Right, r.Bottom, sr, sb, paletteTextureIndex, fAttribC, tint, alpha);
+
+				vertices[nv + 9] = new Vertex(rightFront, r.Right, r.Bottom, sr, sb, paletteTextureIndex, fAttribC, tint, alpha);
+				vertices[nv + 10] = new Vertex(leftFront, r.Left, r.Bottom, sl, sb, paletteTextureIndex, fAttribC, tint, alpha);
+				vertices[nv + 11] = new Vertex(leftBase, r.Left, baseY, sl, sbase, paletteTextureIndex, fAttribC, tint, alpha);
+				return 12;
+			}
 
 			//vertices[nv] = new Vertex(a, r.Left, r.Top, sl, st, paletteTextureIndex, fAttribC, tint, alpha);
 			//vertices[nv + 1] = new Vertex(b, r.Right, r.Top, sr, st, paletteTextureIndex, fAttribC, tint, alpha);
@@ -92,11 +175,12 @@ namespace OpenRA.Graphics
 		}
 
 		public static void FastCreatePlane(Vertex[] vertices,
-			WPos inPos,
+			WPos inPos, vec3 viewOffset,
 			Sprite r, int2 samplers, float paletteTextureIndex, float scale,
 			in float3 tint, float alpha, int nv)
 		{
 			var position = new vec3((float)inPos.X / Game.Renderer.Standalone3DRenderer.WPosPerMeter, (float)inPos.Y / Game.Renderer.Standalone3DRenderer.WPosPerMeter, (float)inPos.Z / Game.Renderer.Standalone3DRenderer.WPosPerMeterHeight);
+			position += viewOffset;
 			var ssziehalf = Game.Renderer.Standalone3DRenderer.meterPerPix * scale * r.Size / 2;
 			var soffset = Game.Renderer.Standalone3DRenderer.meterPerPix * scale * r.Offset;
 
@@ -136,6 +220,38 @@ namespace OpenRA.Graphics
 			vertices[nv + 3] = new Vertex(rightFront, r.Right, r.Bottom, sr, sb, paletteTextureIndex, fAttribC, tint, alpha);
 			vertices[nv + 4] = new Vertex(leftFront, r.Left, r.Bottom, sl, sb, paletteTextureIndex, fAttribC, tint, alpha);
 			vertices[nv + 5] = new Vertex(leftBack, r.Left, r.Top, sl, st, paletteTextureIndex, fAttribC, tint, alpha);
+		}
+
+		public static void FastCreateScreen(Vertex[] vertices,
+			Sprite r, int2 samplers, float paletteTextureIndex,
+			in float3 tint, float alpha, int nv)
+		{
+			float sl = 0;
+			float st = 0;
+			float sr = 0;
+			float sb = 0;
+
+			// See combined.vert for documentation on the channel attribute format
+			var attribC = r.Channel == TextureChannel.RGBA ? 0x02 : ((byte)r.Channel) << 1 | 0x01;
+			attribC |= samplers.X << 6;
+			if (r is SpriteWithSecondaryData ss)
+			{
+				sl = ss.SecondaryLeft;
+				st = ss.SecondaryTop;
+				sr = ss.SecondaryRight;
+				sb = ss.SecondaryBottom;
+
+				attribC |= ((byte)ss.SecondaryChannel) << 4 | 0x08;
+				attribC |= samplers.Y << 9;
+			}
+
+			var fAttribC = (float)attribC;
+			vertices[nv] = new Vertex(new float3(-1, -1, 0), r.Left, r.Top, sl, st, paletteTextureIndex, fAttribC, tint, alpha);
+			vertices[nv + 1] = new Vertex(new float3(1, -1, 0), r.Right, r.Top, sr, st, paletteTextureIndex, fAttribC, tint, alpha);
+			vertices[nv + 2] = new Vertex(new float3(1, 1, 0), r.Right, r.Bottom, sr, sb, paletteTextureIndex, fAttribC, tint, alpha);
+			vertices[nv + 3] = new Vertex(new float3(1, 1, 0), r.Right, r.Bottom, sr, sb, paletteTextureIndex, fAttribC, tint, alpha);
+			vertices[nv + 4] = new Vertex(new float3(-1, 1, 0), r.Left, r.Bottom, sl, sb, paletteTextureIndex, fAttribC, tint, alpha);
+			vertices[nv + 5] = new Vertex(new float3(-1, -1, 0), r.Left, r.Top, sl, st, paletteTextureIndex, fAttribC, tint, alpha);
 		}
 
 		public static void FastCreateQuad(Vertex[] vertices, in float3 o, Sprite r, int2 samplers, float paletteTextureIndex, int nv, in float3 size, in float3 tint, float alpha)
