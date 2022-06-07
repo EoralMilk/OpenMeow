@@ -47,6 +47,14 @@ namespace OpenRA.Graphics
 			Parent.DrawSprite(s, 0, location, scale);
 		}
 
+		public void DrawCardSprite(Sprite s, in WPos wpos, in GlmSharp.vec3 offset, float scale, in float3 tint, float alpha)
+		{
+			if (s.Channel != TextureChannel.RGBA)
+				throw new InvalidOperationException("DrawRGBASprite requires a RGBA sprite.");
+
+			Parent.DrawCardSprite(s, 0, wpos, offset, scale, tint, alpha);
+		}
+
 		public void DrawSprite(Sprite s, in float3 location, float scale, in float3 tint, float alpha)
 		{
 			if (s.Channel != TextureChannel.RGBA)

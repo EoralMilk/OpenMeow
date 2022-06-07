@@ -126,8 +126,8 @@ namespace OpenRA.Mods.Common.Widgets.Logic
 					{
 						var ss = chatText.Text;
 						var ff = float.Parse(ss.Substring(1));
-						if (Game.Renderer.Standalone3DRenderer != null)
-							Game.Renderer.Standalone3DRenderer.HeightOverlay = ff;
+						if (Game.Renderer.World3DRenderer != null)
+							Game.Renderer.World3DRenderer.HeightOverlay = ff;
 					}
 
 					if (!chatText.Text.StartsWith("/", StringComparison.Ordinal))

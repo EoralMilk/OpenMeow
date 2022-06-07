@@ -1,27 +1,37 @@
 #version {VERSION}
 
-uniform mat4 View;
-uniform mat4 TransformMatrix;
+// uniform mat4 model;
+uniform mat4 view;
+uniform mat4 projection;
 
-#if __VERSION__ == 120
-attribute vec4 aVertexPosition;
-attribute vec4 aVertexTexCoord;
-attribute vec2 aVertexTexMetadata;
-attribute vec3 aVertexTint;
-varying vec4 vTexCoord;
-varying vec4 vChannelMask;
-varying vec4 vNormalsMask;
-varying mat4 transMat;
-#else
+// #if __VERSION__ == 120
+// attribute vec4 aVertexPosition;
+// attribute vec4 aVertexTexCoord;
+// attribute vec2 aVertexTexMetadata;
+// attribute vec3 aVertexTint;
+// varying vec4 vTexCoord;
+// varying vec4 vChannelMask;
+// varying vec4 vNormalsMask;
+// varying mat4 normalTrans;
+// varying vec3 FragPos;
+// varying vec2 PaletteRows;
+// #else
 in vec4 aVertexPosition;
 in vec4 aVertexTexCoord;
 in vec2 aVertexTexMetadata;
 in vec3 aVertexTint;
+in vec4 iModelV1;
+in vec4 iModelV2;
+in vec4 iModelV3;
+in vec4 iModelV4;
+in vec2 iPaletteRows;
 out vec4 vTexCoord;
 out vec4 vChannelMask;
 out vec4 vNormalsMask;
-out mat4 transMat;
-#endif
+out mat3 normalTrans;
+out vec3 FragPos;
+out vec2 PaletteRows;
+// #endif
 
 vec4 DecodeMask(float x)
 {
@@ -33,9 +43,13 @@ vec4 DecodeMask(float x)
 
 void main()
 {
-	gl_Position = View*TransformMatrix*aVertexPosition;
+	mat4 model = mat4(iModelV1, iModelV2, iModelV3, iModelV4);
+
+	gl_Position = projection * view * model *aVertexPosition;
 	vTexCoord = aVertexTexCoord;
 	vChannelMask = DecodeMask(aVertexTexMetadata.s);
 	vNormalsMask = DecodeMask(aVertexTexMetadata.t);
-	transMat = TransformMatrix;
+	normalTrans = mat3(transpose(inverse(model)));
+	FragPos = vec3(model * aVertexPosition);
+	PaletteRows = iPaletteRows;
 }

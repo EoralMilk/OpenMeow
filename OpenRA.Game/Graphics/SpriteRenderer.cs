@@ -50,7 +50,6 @@ namespace OpenRA.Graphics
 
 				renderer.Context.SetBlendMode(blendMode != BlendMode.None ? blendMode : currentBlend);
 				shader.PrepareRender();
-				//renderer.DrawBatch(vertices, nv, PrimitiveType.TriangleList);
 				renderer.DrawBatch(shader, vertices, nv, PrimitiveType.TriangleList);
 				renderer.Context.SetBlendMode(BlendMode.None);
 
@@ -161,13 +160,19 @@ namespace OpenRA.Graphics
 		}
 
 		// draw sprite with wpos
-		public void DrawCardSprite(Sprite s, PaletteReference pal, WPos wPos, vec3 viewOffset, float scale, in float3 tint, float alpha)
+		public void DrawCardSprite(Sprite s, float pal, in WPos wPos, in vec3 viewOffset, float scale, in float3 tint, float alpha)
+		{
+			var samplers = SetRenderStateForSprite(s);
+			nv += Util.FastCreateCard(vertices, wPos, viewOffset, s, samplers, pal, scale, tint, alpha, nv);
+		}
+
+		public void DrawCardSprite(Sprite s, PaletteReference pal, in WPos wPos, in vec3 viewOffset, float scale, in float3 tint, float alpha)
 		{
 			var samplers = SetRenderStateForSprite(s);
 			nv += Util.FastCreateCard(vertices, wPos, viewOffset, s, samplers, ResolveTextureIndex(s, pal), scale, tint, alpha, nv);
 		}
 
-		public void DrawPlaneSprite(Sprite s, PaletteReference pal, WPos wPos, vec3 viewOffset, float scale, in float3 tint, float alpha)
+		public void DrawPlaneSprite(Sprite s, PaletteReference pal, in WPos wPos, in  vec3 viewOffset, float scale, in float3 tint, float alpha)
 		{
 			var samplers = SetRenderStateForSprite(s);
 			Util.FastCreatePlane(vertices, wPos, viewOffset, s, samplers, ResolveTextureIndex(s, pal), scale, tint, alpha, nv);
@@ -266,12 +271,12 @@ namespace OpenRA.Graphics
 
 		public void SetCameraParams()
 		{
-			if (Game.Renderer.Standalone3DRenderer != null)
+			if (Game.Renderer.World3DRenderer != null)
 			{
 				shader.SetBool("hasCamera", true);
 				shader.SetBool("renderScreen", false);
-				shader.SetMatrix("projection", Game.Renderer.Standalone3DRenderer.Projection.Values1D);
-				shader.SetMatrix("view", Game.Renderer.Standalone3DRenderer.View.Values1D);
+				shader.SetMatrix("projection", Game.Renderer.World3DRenderer.Projection.Values1D);
+				shader.SetMatrix("view", Game.Renderer.World3DRenderer.View.Values1D);
 				//shader.SetVec("viewPos", Game.Renderer.Standalone3DRenderer.CameraPos.x, Game.Renderer.Standalone3DRenderer.CameraPos.y, Game.Renderer.Standalone3DRenderer.CameraPos.z);
 			}
 		}

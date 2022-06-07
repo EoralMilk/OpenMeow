@@ -12,17 +12,161 @@
 using System;
 using System.Linq;
 using OpenRA.Graphics;
+using OpenRA.Graphics.Graphics3D;
 using OpenRA.Mods.Cnc.FileFormats;
 using OpenRA.Primitives;
 
 namespace OpenRA.Mods.Cnc.Graphics
 {
+	public struct VxlInstanceData
+	{
+		float t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15;
+		float colorPaletteTextureMidIndex;
+		float normalsPaletteTextureMidIndex;
+
+		public VxlInstanceData(float[] mat, float c, float n)
+		{
+			t0 = mat[0];
+			t1 = mat[1];
+			t2 = mat[2];
+			t3 = mat[3];
+			t4 = mat[4];
+			t5 = mat[5];
+			t6 = mat[6];
+			t7 = mat[7];
+			t8 = mat[8];
+			t9 = mat[9];
+			t10 = mat[10];
+			t11 = mat[11];
+			t12 = mat[12];
+			t13 = mat[13];
+			t14 = mat[14];
+			t15 = mat[15];
+
+			colorPaletteTextureMidIndex = c;
+			normalsPaletteTextureMidIndex = n;
+		}
+
+		public VxlInstanceData(float t0, float t1, float t2, float t3, float t4, float t5, float t6, float t7, float t8, float t9, float t10, float t11, float t12, float t13, float t14, float t15, float c, float n)
+		{
+			this.t0 = t0;
+			this.t1 = t1;
+			this.t2 = t2;
+			this.t3 = t3;
+			this.t4 = t4;
+			this.t5 = t5;
+			this.t6 = t6;
+			this.t7 = t7;
+			this.t8 = t8;
+			this.t9 = t9;
+			this.t10 = t10;
+			this.t11 = t11;
+			this.t12 = t12;
+			this.t13 = t13;
+			this.t14 = t14;
+			this.t15 = t15;
+
+			colorPaletteTextureMidIndex = c;
+			normalsPaletteTextureMidIndex = n;
+		}
+
+		public VxlInstanceData(float[] data)
+		{
+			this.t0 = data[0];
+			this.t1 = data[1];
+			this.t2 = data[2];
+			this.t3 = data[3];
+			this.t4 = data[4];
+			this.t5 = data[5];
+			this.t6 = data[6];
+			this.t7 = data[7];
+			this.t8 = data[8];
+			this.t9 = data[9];
+			this.t10 = data[10];
+			this.t11 = data[11];
+			this.t12 = data[12];
+			this.t13 = data[13];
+			this.t14 = data[14];
+			this.t15 = data[15];
+
+			colorPaletteTextureMidIndex = data[16];
+			normalsPaletteTextureMidIndex = data[17];
+		}
+	}
+
+	class OrderedVxlSection : IOrderedMesh
+	{
+		public static readonly int MaxInstanceCount = 1024;
+
+		readonly MeshRenderData renderData;
+		public MeshRenderData RenderData => renderData;
+
+		ITexture palette;
+
+		VxlInstanceData[] instancesToDraw;
+		int instanceCount;
+		public IVertexBuffer<VxlInstanceData> InstanceArrayBuffer;
+
+		public OrderedVxlSection(MeshRenderData data)
+		{
+			renderData = data;
+			InstanceArrayBuffer = Game.Renderer.CreateVertexBuffer<VxlInstanceData>(MaxInstanceCount);
+			instancesToDraw = new VxlInstanceData[MaxInstanceCount];
+			instanceCount = 0;
+		}
+
+		public void AddInstanceData(float[] data, int dataCount)
+		{
+			if (instanceCount == MaxInstanceCount)
+				throw new Exception("Instance Count bigger than MaxInstanceCount");
+
+			if (dataCount != 18)
+				throw new Exception("AddInstanceData params length unright");
+
+			VxlInstanceData instanceData = new VxlInstanceData(data);
+			instancesToDraw[instanceCount] = instanceData;
+			instanceCount++;
+		}
+
+		public void Flush()
+		{
+			instanceCount = 0;
+		}
+
+		public void SetPalette(ITexture pal)
+		{
+			palette = pal;
+		}
+
+		public void DrawInstances()
+		{
+			if (instanceCount == 0)
+				return;
+
+			renderData.Shader.SetTexture("Palette", palette);
+
+			foreach (var (name, texture) in renderData.Textures)
+				renderData.Shader.SetTexture(name, texture);
+			renderData.Shader.PrepareRender();
+
+			renderData.VertexBuffer.Bind();
+			renderData.Shader.LayoutAttributes();
+
+			InstanceArrayBuffer.SetData(instancesToDraw, instanceCount);
+			InstanceArrayBuffer.Bind();
+			renderData.Shader.LayoutInstanceArray();
+
+			// draw instance
+			Game.Renderer.RenderInstance(renderData.Start, renderData.Count, instanceCount);
+		}
+	}
+
 	struct Limb
 	{
 		public float Scale;
 		public float[] Bounds;
 		public byte[] Size;
-		public ModelRenderData RenderData;
+		public MeshRenderData RenderData;
 	}
 
 	public class VxlModel : IModel
@@ -31,7 +175,7 @@ namespace OpenRA.Mods.Cnc.Graphics
 		readonly float[] transforms;
 		readonly uint frames;
 		readonly uint limbs;
-
+		readonly IOrderedMesh[] orderedSections;
 		public NormalType NormalType { get; set; }
 		uint IModel.Frames => frames;
 		uint IModel.Sections => limbs;
@@ -46,6 +190,8 @@ namespace OpenRA.Mods.Cnc.Graphics
 			limbs = hva.LimbCount;
 
 			limbData = new Limb[vxl.LimbCount];
+			orderedSections = new IOrderedMesh[vxl.LimbCount];
+
 			for (var i = 0; i < vxl.LimbCount; i++)
 			{
 				var vl = vxl.Limbs[i];
@@ -54,6 +200,8 @@ namespace OpenRA.Mods.Cnc.Graphics
 				l.Bounds = (float[])vl.Bounds.Clone();
 				l.Size = (byte[])vl.Size.Clone();
 				l.RenderData = loader.GenerateRenderData(vxl.Limbs[i]);
+				var iom = new OrderedVxlSection(l.RenderData);
+				orderedSections[i] = Game.Renderer.UpdateOrderedMeshes(files.Vxl + "_" + i, iom);
 				limbData[i] = l;
 				NormalType = vl.Type;
 			}
@@ -82,9 +230,9 @@ namespace OpenRA.Mods.Cnc.Graphics
 			return t;
 		}
 
-		public ModelRenderData RenderData(uint limb)
+		public IOrderedMesh RenderData(uint limb)
 		{
-			return limbData[limb].RenderData;
+			return orderedSections[limb];
 		}
 
 		public float[] Size
@@ -159,6 +307,7 @@ namespace OpenRA.Mods.Cnc.Graphics
 				return Rectangle.FromLTRB(-r, -r, r, r);
 			}
 		}
+
 		public void Dispose()
 		{
 		}

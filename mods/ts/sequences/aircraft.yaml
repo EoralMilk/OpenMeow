@@ -21,13 +21,18 @@ apache:
 		Start: 32
 		Length: 31
 		Offset: 0, 0, 32
+		ZOffset: 15
 		ZRamp: 1
 		Tick: 25
+		MeshType: Plane
 	slow-rotor: harpyrotor
 		Length: 31
 		Offset: 0, 0, 32
+		ZOffset: 15
 		ZRamp: 1
 		Tick: 50
+		MeshType: Plane
+
 
 orcatran:
 	Inherits: ^VehicleOverlays

@@ -101,6 +101,13 @@ namespace OpenRA.Platforms.Default
 		// Depth buffer
 		public const int GL_DEPTH_COMPONENT = 0x1902;
 		public const int GL_LEQUAL = 0x0203;
+		public const int GL_LESS = 0x0201;
+
+		// Cull Face
+		public const int GL_CULL_FACE = 0x0B44;
+		public const int GL_FRONT = 0x0404;
+		public const int GL_BACK = 0x0405;
+		public const int GL_FRONT_AND_BACK = 0x0408;
 
 		// BlendingFactorDest
 		public const int GL_ZERO = 0;
@@ -391,8 +398,14 @@ namespace OpenRA.Platforms.Default
 		public delegate void DisableVertexAttribArray(int index);
 		public static DisableVertexAttribArray glDisableVertexAttribArray { get; private set; }
 
+		public delegate void VertexAttribDivisor(int index, int divisor);
+		public static VertexAttribDivisor glVertexAttribDivisor { get; private set; }
+
 		public delegate void DrawArrays(int mode, int first, int count);
 		public static DrawArrays glDrawArrays { get; private set; }
+
+		public delegate void DrawArraysInstanced(int mode, int first, int count, int instancesCount);
+		public static DrawArraysInstanced glDrawArraysInstanced { get; private set; }
 
 		public delegate void Enable(int cap);
 		public static Enable glEnable { get; private set; }
@@ -411,6 +424,9 @@ namespace OpenRA.Platforms.Default
 
 		public delegate void DepthFunc(int func);
 		public static DepthFunc glDepthFunc { get; private set; }
+
+		public delegate void CullFace(int func);
+		public static CullFace glCullFace { get; private set; }
 
 		public delegate void Scissor(int x, int y, int width, int height);
 		public static Scissor glScissor { get; private set; }
@@ -589,11 +605,14 @@ namespace OpenRA.Platforms.Default
 				glVertexAttribPointer = Bind<VertexAttribPointer>("glVertexAttribPointer");
 				glEnableVertexAttribArray = Bind<EnableVertexAttribArray>("glEnableVertexAttribArray");
 				glDisableVertexAttribArray = Bind<DisableVertexAttribArray>("glDisableVertexAttribArray");
+				glVertexAttribDivisor = Bind<VertexAttribDivisor>("glVertexAttribDivisor");
 				glDrawArrays = Bind<DrawArrays>("glDrawArrays");
+				glDrawArraysInstanced = Bind<DrawArraysInstanced>("glDrawArraysInstanced");
 				glBlendEquation = Bind<BlendEquation>("glBlendEquation");
 				glBlendEquationSeparate = Bind<BlendEquationSeparate>("glBlendEquationSeparate");
 				glBlendFunc = Bind<BlendFunc>("glBlendFunc");
 				glDepthFunc = Bind<DepthFunc>("glDepthFunc");
+				glCullFace = Bind<CullFace>("glCullFace");
 				glScissor = Bind<Scissor>("glScissor");
 				glReadPixels = Bind<ReadPixels>("glReadPixels");
 				glGenTextures = Bind<GenTextures>("glGenTextures");

@@ -40,8 +40,10 @@ namespace OpenRA.Platforms.Default
 		Func<object> doClear;
 		Action doClearDepthBuffer;
 		Action doDisableDepthBuffer;
-		Action doEnableDepthBuffer;
-		Action doEnableDepthTest;
+		Action<object> doEnableDepthBuffer;
+		Action<object> doEnableDepthTest;
+		Action<object> doEnableCullFace;
+		Action doDisableCullFace;
 		Action doDisableScissor;
 		Action doPresent;
 		Func<string> getGLVersion;
@@ -52,6 +54,7 @@ namespace OpenRA.Platforms.Default
 		Func<object, Type, object> getCreateVertexBuffer;
 
 		Action<object> doDrawPrimitives;
+		Action<object> doDrawInstances;
 		Action<object> doEnableScissor;
 		Action<object> doSetBlendMode;
 		Action<object> doSetVSync;
@@ -86,8 +89,10 @@ namespace OpenRA.Platforms.Default
 					doClear = () => { context.Clear(); return null; };
 					doClearDepthBuffer = () => context.ClearDepthBuffer();
 					doDisableDepthBuffer = () => context.DisableDepthBuffer();
-					doEnableDepthBuffer = () => context.EnableDepthBuffer();
-					doEnableDepthTest = () => context.EnableDepthTest();
+					doEnableDepthBuffer = type => context.EnableDepthBuffer((DepthFunc)type);
+					doEnableDepthTest = type => context.EnableDepthTest((DepthFunc)type);
+					doEnableCullFace = type => context.EnableCullFace((FaceCullFunc)type);
+					doDisableCullFace = () => context.DisableCullFace();
 					doDisableScissor = () => context.DisableScissor();
 					doPresent = () => context.Present();
 					getGLVersion = () => context.GLVersion;
@@ -113,6 +118,12 @@ namespace OpenRA.Platforms.Default
 							 var t = (ValueTuple<PrimitiveType, int, int>)tuple;
 							 context.DrawPrimitives(t.Item1, t.Item2, t.Item3);
 						 };
+					doDrawInstances =
+						tuple =>
+						{
+							var t = (ValueTuple<PrimitiveType, int, int, int>)tuple;
+							context.DrawInstances(t.Item1, t.Item2, t.Item3, t.Item4);
+						};
 					doEnableScissor =
 						tuple =>
 						{
@@ -478,14 +489,29 @@ namespace OpenRA.Platforms.Default
 			Post(doDrawPrimitives, (type, firstVertex, numVertices));
 		}
 
-		public void EnableDepthBuffer()
+		public void DrawInstances(PrimitiveType type, int firstVertex, int numVertices, int count)
 		{
-			Post(doEnableDepthBuffer);
+			Post(doDrawInstances, (type, firstVertex, numVertices, count));
 		}
 
-		public void EnableDepthTest()
+		public void EnableDepthBuffer(DepthFunc type)
 		{
-			Post(doEnableDepthTest);
+			Post(doEnableDepthBuffer, type);
+		}
+
+		public void EnableDepthTest(DepthFunc type)
+		{
+			Post(doEnableDepthTest, type);
+		}
+
+		public void EnableCullFace(FaceCullFunc type)
+		{
+			Post(doEnableCullFace, type);
+		}
+
+		public void DisableCullFace()
+		{
+			Post(doDisableCullFace);
 		}
 
 		public void EnableScissor(int left, int top, int width, int height)
@@ -749,7 +775,8 @@ namespace OpenRA.Platforms.Default
 		readonly Action<object> setVec3;
 		readonly Action<object> setVec4;
 		readonly Action layoutAttributes;
-		readonly Action<object> setRenderData;
+		readonly Action layoutInstanceArray;
+		readonly Action<object> setCommonParaments;
 
 		public ThreadedShader(ThreadedGraphicsContext device, IShader shader)
 		{
@@ -765,7 +792,8 @@ namespace OpenRA.Platforms.Default
 			setVec3 = tuple => { var t = (ValueTuple<string, float, float>)tuple; shader.SetVec(t.Item1, t.Item2, t.Item3); };
 			setVec4 = tuple => { var t = (ValueTuple<string, float, float, float>)tuple; shader.SetVec(t.Item1, t.Item2, t.Item3, t.Item4); };
 			layoutAttributes = () => { shader.LayoutAttributes(); };
-			setRenderData = tuple => { var t = (ValueTuple<ModelRenderData>)tuple; shader.SetRenderData(t.Item1); };
+			layoutInstanceArray = () => { shader.LayoutInstanceArray(); };
+			setCommonParaments = w3dr => { shader.SetCommonParaments((World3DRenderer)w3dr); };
 		}
 
 		public void PrepareRender()
@@ -817,15 +845,20 @@ namespace OpenRA.Platforms.Default
 		{
 			device.Post(setVec4, (name, x, y, z));
 		}
+
 		public void LayoutAttributes()
 		{
 			device.Post(layoutAttributes);
 		}
 
-		public void SetRenderData(ModelRenderData renderData)
+		public void LayoutInstanceArray()
 		{
-			device.Post(setRenderData, (renderData));
+			device.Post(layoutInstanceArray);
 		}
 
+		public void SetCommonParaments(World3DRenderer w3dr)
+		{
+			device.Post(setCommonParaments, w3dr);
+		}
 	}
 }

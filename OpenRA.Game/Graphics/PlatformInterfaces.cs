@@ -48,6 +48,19 @@ namespace OpenRA
 		Translucent
 	}
 
+	public enum DepthFunc : byte
+	{
+		LessEqual,
+		Less,
+	}
+
+	public enum FaceCullFunc : byte
+	{
+		Front,
+		Back,
+		FrontAndBack,
+	}
+
 	public interface IPlatformWindow : IDisposable
 	{
 		IGraphicsContext Context { get; }
@@ -94,11 +107,14 @@ namespace OpenRA
 		void DisableScissor();
 		void Present();
 		void DrawPrimitives(PrimitiveType pt, int firstVertex, int numVertices);
+		void DrawInstances(PrimitiveType pt, int firstVertex, int numVertices, int count);
 		void Clear();
-		void EnableDepthBuffer();
-		void EnableDepthTest();
+		void EnableDepthBuffer(DepthFunc type);
+		void EnableDepthTest(DepthFunc type);
 		void DisableDepthBuffer();
 		void ClearDepthBuffer();
+		void EnableCullFace(FaceCullFunc type);
+		void DisableCullFace();
 		void SetBlendMode(BlendMode mode);
 		void SetVSyncEnabled(bool enabled);
 		void SetViewport(int width, int height);
@@ -121,14 +137,24 @@ namespace OpenRA
 	{
 		string VertexShaderName { get; }
 		string FragmentShaderName { get; }
+
+		// 这是基础顶点属性的参数
 		int Stride { get; }
 		IEnumerable<ShaderVertexAttribute> Attributes { get; }
-		void SetRenderData(IShader shader, ModelRenderData renderData);
+
+		// Instance Array属性的参数
+		bool Instanced { get; }
+		int InstanceStrde { get; }
+		IEnumerable<ShaderVertexAttribute> InstanceAttributes { get; }
+
+		void SetCommonParaments(IShader shader,World3DRenderer w3dr);
+
+		// 实际上没什么意义，后面删掉它
+		//void SetRenderData(IShader shader, ModelRenderData renderData);
 	}
 
 	public interface IShader
 	{
-		void SetRenderData(ModelRenderData renderData);
 		void SetBool(string name, bool value);
 		void SetInt(string name, int value);
 		void SetFloat(string name, float value);
@@ -140,6 +166,8 @@ namespace OpenRA
 		void SetMatrix(string param, float[] mtx);
 		void PrepareRender();
 		void LayoutAttributes();
+		void LayoutInstanceArray();
+		void SetCommonParaments(World3DRenderer w3dr);
 	}
 
 	public enum TextureScaleFilter { Nearest, Linear }

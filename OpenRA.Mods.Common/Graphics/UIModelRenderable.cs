@@ -83,22 +83,22 @@ namespace OpenRA.Mods.Common.Graphics
 				this.model = model;
 				var draw = model.models.Where(v => v.IsVisible);
 
-				renderProxy = Game.Renderer.WorldModelRenderer.RenderAsync(
-					wr, draw, model.camera, model.scale, WRot.None, model.lightSource,
-					model.lightAmbientColor, model.lightDiffuseColor,
-					model.palette, model.normalsPalette, model.shadowPalette);
+				//renderProxy = Game.Renderer.WorldModelRenderer.RenderAsync(
+				//	wr, draw, model.camera, model.scale, WRot.None, model.lightSource,
+				//	model.lightAmbientColor, model.lightDiffuseColor,
+				//	model.palette, model.normalsPalette, model.shadowPalette);
 			}
 
 			public void Render(WorldRenderer wr)
 			{
-				var pxOrigin = model.screenPos;
-				var psb = renderProxy.ProjectedShadowBounds;
-				var sa = pxOrigin + psb[0];
-				var sb = pxOrigin + psb[2];
-				var sc = pxOrigin + psb[1];
-				var sd = pxOrigin + psb[3];
-				Game.Renderer.RgbaSpriteRenderer.DrawSprite(renderProxy.ShadowSprite, sa, sb, sc, sd, float3.Ones, 1f);
-				Game.Renderer.RgbaSpriteRenderer.DrawSprite(renderProxy.Sprite, pxOrigin - 0.5f * renderProxy.Sprite.Size);
+				//var pxOrigin = model.screenPos;
+				//var psb = renderProxy.ProjectedShadowBounds;
+				//var sa = pxOrigin + psb[0];
+				//var sb = pxOrigin + psb[2];
+				//var sc = pxOrigin + psb[1];
+				//var sd = pxOrigin + psb[3];
+				//Game.Renderer.RgbaSpriteRenderer.DrawSprite(renderProxy.ShadowSprite, sa, sb, sc, sd, float3.Ones, 1f);
+				//Game.Renderer.RgbaSpriteRenderer.DrawSprite(renderProxy.Sprite, pxOrigin - 0.5f * renderProxy.Sprite.Size);
 			}
 
 			public void RenderDebugGeometry(WorldRenderer wr) { }

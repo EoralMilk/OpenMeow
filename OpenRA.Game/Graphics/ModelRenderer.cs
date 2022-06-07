@@ -12,6 +12,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using OpenRA.Graphics.Graphics3D;
 using OpenRA.Primitives;
 
 namespace OpenRA.Graphics
@@ -31,6 +32,8 @@ namespace OpenRA.Graphics
 			ShadowDirection = shadowDirection;
 		}
 	}
+
+
 
 	public sealed class ModelRenderer : IDisposable
 	{
@@ -78,9 +81,9 @@ namespace OpenRA.Graphics
 		}
 
 		public ModelRenderProxy RenderAsync(
-			WorldRenderer wr, IEnumerable<ModelAnimation> models, in WRot camera, float scale,
-			in WRot groundOrientation, in WRot lightSource, float[] lightAmbientColor, float[] lightDiffuseColor,
-			PaletteReference color, PaletteReference normals, PaletteReference shadowPalette)
+					WorldRenderer wr, IEnumerable<ModelAnimation> models, in WRot camera, float scale,
+					in WRot groundOrientation, in WRot lightSource, float[] lightAmbientColor, float[] lightDiffuseColor,
+					PaletteReference color, PaletteReference normals, PaletteReference shadowPalette)
 		{
 			if (!isInFrame)
 				throw new InvalidOperationException("BeginFrame has not been called. You cannot render until a frame has been started.");
@@ -180,53 +183,101 @@ namespace OpenRA.Graphics
 			var correctionTransform = Util.MatrixMultiply(translateMtx, FlipMtx);
 			var shadowCorrectionTransform = Util.MatrixMultiply(shadowTranslateMtx, ShadowScaleFlipMtx);
 
-			doRender.Add((sprite.Sheet, () =>
-			{
-				foreach (var m in models)
-				{
-					// Convert screen offset to world offset
-					var offsetVec = Util.MatrixVectorMultiply(invCameraTransform, wr.RenderVector(m.OffsetFunc()));
-					var offsetTransform = Util.TranslationMatrix(offsetVec[0], offsetVec[1], offsetVec[2]);
+			//doRender.Add((sprite.Sheet, () =>
+			//{
+			//	foreach (var m in models)
+			//	{
+			//		// Convert screen offset to world offset
+			//		var offsetVec = Util.MatrixVectorMultiply(invCameraTransform, wr.RenderVector(m.OffsetFunc()));
+			//		var offsetTransform = Util.TranslationMatrix(offsetVec[0], offsetVec[1], offsetVec[2]);
 
-					var rotations = Util.MakeFloatMatrix(m.RotationFunc().AsMatrix());
-					var worldTransform = Util.MatrixMultiply(scaleTransform, rotations);
-					worldTransform = Util.MatrixMultiply(offsetTransform, worldTransform);
+			//		var rotations = Util.MakeFloatMatrix(m.RotationFunc().AsMatrix());
+			//		var worldTransform = Util.MatrixMultiply(scaleTransform, rotations);
+			//		worldTransform = Util.MatrixMultiply(offsetTransform, worldTransform);
 
-					var transform = Util.MatrixMultiply(cameraTransform, worldTransform);
-					transform = Util.MatrixMultiply(correctionTransform, transform);
+			//		var transform = Util.MatrixMultiply(cameraTransform, worldTransform);
+			//		transform = Util.MatrixMultiply(correctionTransform, transform);
 
-					var shadow = Util.MatrixMultiply(shadowTransform, worldTransform);
-					shadow = Util.MatrixMultiply(shadowCorrectionTransform, shadow);
+			//		var shadow = Util.MatrixMultiply(shadowTransform, worldTransform);
+			//		shadow = Util.MatrixMultiply(shadowCorrectionTransform, shadow);
 
-					var lightTransform = Util.MatrixMultiply(Util.MatrixInverse(rotations), invShadowTransform);
+			//		var lightTransform = Util.MatrixMultiply(Util.MatrixInverse(rotations), invShadowTransform);
 
-					var frame = m.FrameFunc();
-					for (uint i = 0; i < m.Model.Sections; i++)
-					{
-						var rd = m.Model.RenderData(i);
-						var t = m.Model.TransformationMatrix(i, frame);
-						var it = Util.MatrixInverse(t);
-						if (it == null)
-							throw new InvalidOperationException($"Failed to invert the transformed matrix of frame {i} during RenderAsync.");
+			//		var frame = m.FrameFunc();
+			//		for (uint i = 0; i < m.Model.Sections; i++)
+			//		{
+			//			var rd = m.Model.RenderData(i);
+			//			var t = m.Model.TransformationMatrix(i, frame);
+			//			var it = Util.MatrixInverse(t);
+			//			if (it == null)
+			//				throw new InvalidOperationException($"Failed to invert the transformed matrix of frame {i} during RenderAsync.");
 
-						// Transform light vector from shadow -> world -> limb coords
-						var lightDirection = ExtractRotationVector(Util.MatrixMultiply(it, lightTransform));
+			//			// Transform light vector from shadow -> world -> limb coords
+			//			var lightDirection = ExtractRotationVector(Util.MatrixMultiply(it, lightTransform));
 
-						// ugly fix normal palette bug temply
-						normals = FixNoramlPalette(wr,m.Model);
-						Render(rd, Util.MatrixMultiply(transform, t), lightDirection,
-							lightAmbientColor, lightDiffuseColor, color.TextureMidIndex, normals.TextureMidIndex, color.VplStartIndex(), color.HardwardPaletteHeight());
-						// Disable shadow normals by forcing zero diffuse and identity ambient light
-						if (m.ShowShadow)
-							Render(rd, Util.MatrixMultiply(shadow, t), lightDirection,
-								ShadowAmbient, ShadowDiffuse, shadowPalette.TextureMidIndex, normals.TextureMidIndex, color.VplStartIndex(), color.HardwardPaletteHeight());
-					}
-				}
-			}));
+			//			// ugly fix normal palette bug temply
+			//			normals = FixNoramlPalette(wr, m.Model);
+			//			//Render(rd, Util.MatrixMultiply(transform, t), lightDirection,
+			//			//	lightAmbientColor, lightDiffuseColor, color.TextureMidIndex, normals.TextureMidIndex, color.VplStartIndex(), color.HardwardPaletteHeight());
+			//			//// Disable shadow normals by forcing zero diffuse and identity ambient light
+			//			//if (m.ShowShadow)
+			//			//	Render(rd, Util.MatrixMultiply(shadow, t), lightDirection,
+			//			//		ShadowAmbient, ShadowDiffuse, shadowPalette.TextureMidIndex, normals.TextureMidIndex, color.VplStartIndex(), color.HardwardPaletteHeight());
+			//		}
+			//	}
+			//}
+			//));
 
 			var screenLightVector = Util.MatrixVectorMultiply(invShadowTransform, ZVector);
 			screenLightVector = Util.MatrixVectorMultiply(cameraTransform, screenLightVector);
 			return new ModelRenderProxy(sprite, shadowSprite, screenCorners, -screenLightVector[2] / screenLightVector[1]);
+		}
+
+		public void RenderDirectly(
+			WorldRenderer wr, in WPos pos, IEnumerable<ModelAnimation> models, float scale,
+			in WRot groundOrientation, 
+			PaletteReference color, PaletteReference normals, PaletteReference shadowPalette)
+		{
+			//// Correct for inverted y-axis
+			//var scaleTransform = Util.ScaleMatrix(scale, scale, scale);
+			var scaleMat = GlmSharp.mat4.Scale(scale);
+			var w3dr = Game.Renderer.World3DRenderer;
+
+			//var ground = Util.MakeFloatMatrix(groundOrientation.AsMatrix());
+
+			foreach (var m in models)
+			{
+				// Convert screen offset to world offset
+				var offsetVec = w3dr.Get3DPositionFromWPos(pos + m.OffsetFunc());
+				var offsetTransform = GlmSharp.mat4.Translate(offsetVec);
+
+				var rotMat = new GlmSharp.mat4(new GlmSharp.quat(w3dr.Get3DRotationFromWRot(m.RotationFunc())));
+
+				var worldTransform = offsetTransform * scaleMat * rotMat ;
+
+				var frame = m.FrameFunc();
+				for (uint i = 0; i < m.Model.Sections; i++)
+				{
+					var rd = m.Model.RenderData(i);
+					//var t = m.Model.TransformationMatrix(i, frame);
+					//t = Util.MatrixMultiply(worldTransform.Values1D, t);
+
+					// ugly fix normal palette bug temply
+					normals = FixNoramlPalette(wr, m.Model);
+
+					var iom = m.Model.RenderData(i);
+					float[] data = new float[18] {worldTransform[0], worldTransform[1], worldTransform[2], worldTransform[3],
+																worldTransform[4], worldTransform[5], worldTransform[6], worldTransform[7],
+																worldTransform[8], worldTransform[9], worldTransform[10], worldTransform[11],
+																worldTransform[12], worldTransform[13], worldTransform[14], worldTransform[15],
+																color.TextureMidIndex, normals.TextureMidIndex};
+
+					// vxl instance data needed
+					iom.AddInstanceData(data, 18);
+					iom.SetPalette(palette);
+				}
+			}
+
 		}
 
 		static PaletteReference FixNoramlPalette(WorldRenderer wr, IModel model)
@@ -250,7 +301,6 @@ namespace OpenRA.Graphics
 
 			return ret;
 		}
-
 
 		static void CalculateSpriteGeometry(float2 tl, float2 br, float scale, out Size size, out int2 offset)
 		{
@@ -286,31 +336,18 @@ namespace OpenRA.Graphics
 		}
 
 		void Render(
-			ModelRenderData renderData,
-			float[] t, float[] lightDirection,
-			float[] ambientLight, float[] diffuseLight,
-			float colorPaletteTextureMidIndex, float normalsPaletteTextureMidIndex, int vplStart = 0, int paletteCount = 0)
+			IOrderedMesh orderedMesh,
+			in GlmSharp.mat4 model,
+			float colorPaletteTextureMidIndex, float normalsPaletteTextureMidIndex)
 		{
-			var currentShader = renderData.Shader;
+			var currentShader = orderedMesh.RenderData.Shader;
 
 			currentShader.SetTexture("Palette", palette);
-
-			if (view != null)
-				currentShader.SetMatrix("View", view);
-
 			currentShader.SetVec("PaletteRows", colorPaletteTextureMidIndex, normalsPaletteTextureMidIndex);
-			currentShader.SetMatrix("TransformMatrix", t);
-			currentShader.SetVec("LightDirection", lightDirection, 4);
-			currentShader.SetVec("AmbientLight", ambientLight, 3);
-			currentShader.SetVec("DiffuseLight", diffuseLight, 3);
-			currentShader.SetVec("VplInfo", vplStart, paletteCount);
-			currentShader.SetVec("WorldLight", WorldLightDir, 3);
 
-			currentShader.SetRenderData(renderData);
+			currentShader.SetMatrix("model", model.Values1D);
 
-			currentShader.PrepareRender();
-
-			renderer.DrawBatch(currentShader, renderData.VertexBuffer, renderData.Start, renderData.Count, PrimitiveType.TriangleList);
+			renderer.DrawBatch(currentShader, orderedMesh.RenderData.VertexBuffer, orderedMesh.RenderData.Start, orderedMesh.RenderData.Count, PrimitiveType.TriangleList);
 		}
 
 		public void BeginFrame()
@@ -331,7 +368,7 @@ namespace OpenRA.Graphics
 			Game.Renderer.Flush();
 			fbo.Bind();
 
-			Game.Renderer.Context.EnableDepthBuffer();
+			Game.Renderer.Context.EnableDepthBuffer(DepthFunc.LessEqual);
 			return fbo;
 		}
 

@@ -183,7 +183,6 @@ namespace OpenRA.Graphics
 				return;
 
 			var offset = rowStride * uv.V + 6 * uv.U;
-			//Util.FastCreateQuad(vertices, pos, sprite, samplers, palette?.TextureIndex ?? 0, offset, scale * sprite.Size, alpha * float3.Ones, alpha);
 			Util.FastCreatePlane(vertices, pos, GlmSharp.vec3.Zero, sprite, samplers, palette?.TextureIndex ?? 0, scale, alpha * float3.Ones, alpha, offset);
 			palettes[uv.V * map.MapSize.X + uv.U] = palette;
 

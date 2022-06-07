@@ -9,11 +9,12 @@
  */
 #endregion
 
+using System;
 using System.Collections.Generic;
 
 namespace OpenRA.Graphics
 {
-	public abstract class ShaderBindings : IShaderBindings
+	public class CombinedShaderBindings : IShaderBindings
 	{
 		public string VertexShaderName { get; }
 		public string FragmentShaderName { get; }
@@ -27,32 +28,70 @@ namespace OpenRA.Graphics
 			new ShaderVertexAttribute("aVertexTint", 3, 4, 36)
 		};
 
-		protected ShaderBindings(string name)
+		public bool Instanced => false;
+
+		public int InstanceStrde => throw new System.NotImplementedException();
+
+		public IEnumerable<ShaderVertexAttribute> InstanceAttributes => throw new System.NotImplementedException();
+
+		public CombinedShaderBindings()
 		{
+			var name = "combined";
 			VertexShaderName = name;
 			FragmentShaderName = name;
 		}
 
-		public void SetRenderData(IShader shader, ModelRenderData renderData)
+		public void SetCommonParaments(IShader shader, World3DRenderer w3dr)
 		{
-			foreach (var (name, texture) in renderData.Textures)
-				shader.SetTexture(name, texture);
+			// Set By SpriteRenderer
 		}
 	}
 
-	public class CombinedShaderBindings : ShaderBindings
+	public class ModelShaderBindings : IShaderBindings
 	{
-		public CombinedShaderBindings()
-			: base("combined")
-		{
-		}
-	}
+		public string VertexShaderName { get; }
+		public string FragmentShaderName { get; }
+		public int Stride => 52;
 
-	public class ModelShaderBindings : ShaderBindings
-	{
+		public IEnumerable<ShaderVertexAttribute> Attributes { get; } = new[]
+		{
+			new ShaderVertexAttribute("aVertexPosition", 0, 3, 0),
+			new ShaderVertexAttribute("aVertexTexCoord", 1, 4, 12),
+			new ShaderVertexAttribute("aVertexTexMetadata", 2, 2, 28),
+			new ShaderVertexAttribute("aVertexTint", 3, 4, 36)
+		};
+
+		public bool Instanced => true;
+
+		public int InstanceStrde => (18 * sizeof(float));
+
+		public IEnumerable<ShaderVertexAttribute> InstanceAttributes { get; } = new[]
+		{
+			new ShaderVertexAttribute("iModelV1", 4, 4, 0),
+			new ShaderVertexAttribute("iModelV2", 5, 4, 4 * sizeof(float)),
+			new ShaderVertexAttribute("iModelV3", 6, 4, 8 * sizeof(float)),
+			new ShaderVertexAttribute("iModelV4", 7, 4, 12 * sizeof(float)),
+
+			new ShaderVertexAttribute("iPaletteRows", 8, 2, 16 * sizeof(float)),
+		};
+
 		public ModelShaderBindings()
-			: base("model")
 		{
+			VertexShaderName = "combined";
+			FragmentShaderName = "combined";
+		}
+
+		public void SetCommonParaments(IShader shader, World3DRenderer w3dr)
+		{
+			shader.SetMatrix("projection", w3dr.Projection.Values1D);
+			shader.SetMatrix("view", w3dr.View.Values1D);
+			shader.SetVec("viewPos", w3dr.CameraPos.x, w3dr.CameraPos.y, w3dr.CameraPos.z);
+
+			shader.SetVec("dirLight.direction", w3dr.SunDir.x, w3dr.SunDir.y, w3dr.SunDir.z);
+			shader.SetVec("dirLight.ambient", w3dr.AmbientColor.x, w3dr.AmbientColor.y, w3dr.AmbientColor.z);
+			shader.SetVec("dirLight.diffuse", w3dr.SunColor.x, w3dr.SunColor.y, w3dr.SunColor.z);
+			shader.SetVec("dirLight.specular", w3dr.SunSpecularColor.x, w3dr.SunSpecularColor.y, w3dr.SunSpecularColor.z);
+			//Console.WriteLine("SetCommonParaments");
 		}
 	}
 }

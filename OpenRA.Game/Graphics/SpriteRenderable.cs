@@ -100,9 +100,7 @@ namespace OpenRA.Graphics
 
 			//wsr.DrawSprite(sprite, palette, ScreenPosition(wr), scale, t, a);
 
-			//if (meshType == SpriteMeshType.Plane)
-			//	Console.WriteLine("meshType == SpriteMeshType.Plane");
-			var viewOffset = Game.Renderer.Standalone3DRenderer.InverseCameraFrontMeterPerWPos * (zOffset + 1);
+			var viewOffset = Game.Renderer.World3DRenderer.InverseCameraFrontMeterPerWPos * (zOffset + 1);
 
 			if (meshType == SpriteMeshType.Plane)
 				wsr.DrawPlaneSprite(sprite, palette, Pos, viewOffset, scale, t, a);

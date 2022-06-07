@@ -22,24 +22,24 @@ namespace OpenRA.Graphics
 		static readonly int[] ChannelMasks = { 2, 1, 0, 3 };
 
 		public static int FastCreateCard(Vertex[] vertices,
-			WPos inPos, vec3 viewOffset,
+			in WPos inPos, in vec3 viewOffset,
 			Sprite r, int2 samplers, float paletteTextureIndex, float scale,
 			in float3 tint, float alpha, int nv)
 		{
-			var position = new vec3((float)inPos.X / Game.Renderer.Standalone3DRenderer.WPosPerMeter, (float)inPos.Y / Game.Renderer.Standalone3DRenderer.WPosPerMeter, (float)inPos.Z / Game.Renderer.Standalone3DRenderer.WPosPerMeterHeight);
+			var position = new vec3((float)inPos.X / Game.Renderer.World3DRenderer.WPosPerMeter, (float)inPos.Y / Game.Renderer.World3DRenderer.WPosPerMeter, (float)inPos.Z / Game.Renderer.World3DRenderer.WPosPerMeterHeight);
 			position += viewOffset;
-			var ssziehalf = Game.Renderer.Standalone3DRenderer.meterPerPix * scale * r.Size / 2;
-			var soffset = Game.Renderer.Standalone3DRenderer.meterPerPix * scale * r.Offset;
+			var ssziehalf = Game.Renderer.World3DRenderer.MeterPerPix * scale * r.Size / 2;
+			var soffset = Game.Renderer.World3DRenderer.MeterPerPix * scale * r.Offset;
 
 			float2 leftRight = new float2(soffset.X - ssziehalf.X, soffset.X + ssziehalf.X);
-			float2 topBottom = new float2(ssziehalf.Y - soffset.Y, soffset.Y + ssziehalf.Y); // ÕâÀï¿ÉÄÜ±È½ÏÆæ¹Ö£¬Ò»°ã¶¼ÊÇtopºÍbottomÕýÖµ
+			float2 topBottom = new float2(ssziehalf.Y - soffset.Y, soffset.Y + ssziehalf.Y); // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ü±È½ï¿½ï¿½ï¿½Ö£ï¿½Ò»ï¿½ã¶¼ï¿½ï¿½topï¿½ï¿½bottomï¿½ï¿½Öµ
 
-			// spriteµÄ¶¥±ßµÍÓÚÖÐÏß£¬ÄÇÃ´Õû¸öspriteÓ¦¸ÃÊÇ·ÅÆ½µÄ
+			// spriteï¿½Ä¶ï¿½ï¿½ßµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ß£ï¿½ï¿½ï¿½Ã´ï¿½ï¿½ï¿½ï¿½spriteÓ¦ï¿½ï¿½ï¿½Ç·ï¿½Æ½ï¿½ï¿½
 			if (topBottom.X < 0)
 			{
-				float3 leftBack = new float3(position.x + leftRight.X, position.y - topBottom.X / Game.Renderer.Standalone3DRenderer.CosCameraPitch, position.z);
+				float3 leftBack = new float3(position.x + leftRight.X, position.y - topBottom.X / Game.Renderer.World3DRenderer.CosCameraPitch, position.z);
 				float3 rightBack = new float3(position.x + leftRight.Y, leftBack.Y, position.z);
-				float3 leftFront = new float3(leftBack.X, position.y + topBottom.Y / Game.Renderer.Standalone3DRenderer.CosCameraPitch, position.z);
+				float3 leftFront = new float3(leftBack.X, position.y + topBottom.Y / Game.Renderer.World3DRenderer.CosCameraPitch, position.z);
 				float3 rightFront = new float3(rightBack.X, leftFront.Y, position.z);
 
 				float sl = 0;
@@ -73,12 +73,12 @@ namespace OpenRA.Graphics
 
 				return 6;
 			}
-			// spriteµÄµ×±ß¸ßÓÚÖÐÏß£¬Õû¸öspriteÓ¦¸ÃÁ¢ÆðÀ´µÄ
+			// spriteï¿½Äµ×±ß¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ß£ï¿½ï¿½ï¿½ï¿½ï¿½spriteÓ¦ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 			else if (topBottom.Y < 0)
 			{
-				float3 leftTop = new float3(position.x + leftRight.X, position.y, position.z + (topBottom.X) / Game.Renderer.Standalone3DRenderer.SinCameraPitch);
+				float3 leftTop = new float3(position.x + leftRight.X, position.y, position.z + (topBottom.X) / Game.Renderer.World3DRenderer.SinCameraPitch);
 				float3 rightTop = new float3(position.x + leftRight.Y, position.y, leftTop.Z);
-				float3 leftBottom = new float3(leftTop.X, position.y, position.z - (topBottom.Y) / Game.Renderer.Standalone3DRenderer.SinCameraPitch);
+				float3 leftBottom = new float3(leftTop.X, position.y, position.z - (topBottom.Y) / Game.Renderer.World3DRenderer.SinCameraPitch);
 				float3 rightBottom = new float3(rightTop.X, position.y, leftBottom.Z);
 
 				float sl = 0;
@@ -114,11 +114,11 @@ namespace OpenRA.Graphics
 			}
 			else
 			{
-				float3 leftTop = new float3(position.x + leftRight.X, position.y, position.z + (topBottom.X) / Game.Renderer.Standalone3DRenderer.SinCameraPitch);
+				float3 leftTop = new float3(position.x + leftRight.X, position.y, position.z + (topBottom.X) / Game.Renderer.World3DRenderer.SinCameraPitch);
 				float3 rightTop = new float3(position.x + leftRight.Y, position.y, leftTop.Z);
 				float3 leftBase = new float3(leftTop.X, position.y, position.z);
 				float3 rightBase = new float3(rightTop.X, position.y, position.z);
-				float3 leftFront = new float3(leftTop.X, position.y + topBottom.Y / Game.Renderer.Standalone3DRenderer.CosCameraPitch, position.z);
+				float3 leftFront = new float3(leftTop.X, position.y + topBottom.Y / Game.Renderer.World3DRenderer.CosCameraPitch, position.z);
 				float3 rightFront = new float3(rightTop.X, leftFront.Y, position.z);
 
 				float ycut = topBottom.X / (ssziehalf.Y * 2);
@@ -165,31 +165,24 @@ namespace OpenRA.Graphics
 				vertices[nv + 11] = new Vertex(leftBase, r.Left, baseY, sl, sbase, paletteTextureIndex, fAttribC, tint, alpha);
 				return 12;
 			}
-
-			//vertices[nv] = new Vertex(a, r.Left, r.Top, sl, st, paletteTextureIndex, fAttribC, tint, alpha);
-			//vertices[nv + 1] = new Vertex(b, r.Right, r.Top, sr, st, paletteTextureIndex, fAttribC, tint, alpha);
-			//vertices[nv + 2] = new Vertex(c, r.Right, r.Bottom, sr, sb, paletteTextureIndex, fAttribC, tint, alpha);
-			//vertices[nv + 3] = new Vertex(c, r.Right, r.Bottom, sr, sb, paletteTextureIndex, fAttribC, tint, alpha);
-			//vertices[nv + 4] = new Vertex(d, r.Left, r.Bottom, sl, sb, paletteTextureIndex, fAttribC, tint, alpha);
-			//vertices[nv + 5] = new Vertex(a, r.Left, r.Top, sl, st, paletteTextureIndex, fAttribC, tint, alpha);
 		}
 
 		public static void FastCreatePlane(Vertex[] vertices,
-			WPos inPos, vec3 viewOffset,
+			in WPos inPos, in vec3 viewOffset,
 			Sprite r, int2 samplers, float paletteTextureIndex, float scale,
 			in float3 tint, float alpha, int nv)
 		{
-			var position = new vec3((float)inPos.X / Game.Renderer.Standalone3DRenderer.WPosPerMeter, (float)inPos.Y / Game.Renderer.Standalone3DRenderer.WPosPerMeter, (float)inPos.Z / Game.Renderer.Standalone3DRenderer.WPosPerMeterHeight);
+			var position = new vec3((float)inPos.X / Game.Renderer.World3DRenderer.WPosPerMeter, (float)inPos.Y / Game.Renderer.World3DRenderer.WPosPerMeter, (float)inPos.Z / Game.Renderer.World3DRenderer.WPosPerMeterHeight);
 			position += viewOffset;
-			var ssziehalf = Game.Renderer.Standalone3DRenderer.meterPerPix * scale * r.Size / 2;
-			var soffset = Game.Renderer.Standalone3DRenderer.meterPerPix * scale * r.Offset;
+			var ssziehalf = Game.Renderer.World3DRenderer.MeterPerPix * scale * r.Size / 2;
+			var soffset = Game.Renderer.World3DRenderer.MeterPerPix * scale * r.Offset;
 
 			float2 leftRight = new float2(soffset.X - ssziehalf.X, soffset.X + ssziehalf.X);
 			float2 topBottom = new float2(ssziehalf.Y - soffset.Y, soffset.Y + ssziehalf.Y);
 
-			float3 leftBack = new float3(position.x + leftRight.X, position.y - topBottom.X / Game.Renderer.Standalone3DRenderer.CosCameraPitch, position.z);
+			float3 leftBack = new float3(position.x + leftRight.X, position.y - topBottom.X / Game.Renderer.World3DRenderer.CosCameraPitch, position.z);
 			float3 rightBack = new float3(position.x + leftRight.Y, leftBack.Y, position.z);
-			float3 leftFront = new float3(leftBack.X, position.y + topBottom.Y / Game.Renderer.Standalone3DRenderer.CosCameraPitch, position.z);
+			float3 leftFront = new float3(leftBack.X, position.y + topBottom.Y / Game.Renderer.World3DRenderer.CosCameraPitch, position.z);
 			float3 rightFront = new float3(rightBack.X, leftFront.Y, position.z);
 
 			float sl = 0;

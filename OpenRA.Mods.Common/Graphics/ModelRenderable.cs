@@ -128,99 +128,112 @@ namespace OpenRA.Mods.Common.Graphics
 
 			public FinalizedModelRenderable(WorldRenderer wr, ModelRenderable model)
 			{
-				this.model = model;
-				var draw = model.models.Where(v => v.IsVisible);
 
-				var map = wr.World.Map;
-				var groundOrientation = map.TerrainOrientation(map.CellContaining(model.pos));
-				renderProxy = Game.Renderer.WorldModelRenderer.RenderAsync(
-					wr, draw, model.camera, model.scale, groundOrientation, model.lightSource,
-					model.lightAmbientColor, model.lightDiffuseColor,
-					model.palette, model.normalsPalette, model.shadowPalette);
+				this.model = model;
+				//var draw = model.models.Where(v => v.IsVisible);
+
+				//var map = wr.World.Map;
+				//var groundOrientation = map.TerrainOrientation(map.CellContaining(model.pos));
+				//renderProxy = Game.Renderer.WorldModelRenderer.RenderAsync(
+				//	wr, draw, model.camera, model.scale, groundOrientation, model.lightSource,
+				//	model.lightAmbientColor, model.lightDiffuseColor,
+				//	model.palette, model.normalsPalette, model.shadowPalette);
 			}
 
 			public void Render(WorldRenderer wr)
 			{
+				//var map = wr.World.Map;
+				//var groundPos = model.pos - new WVec(0, 0, map.DistanceAboveTerrain(model.pos).Length);
+				//var tileScale = map.Grid.Type == MapGridType.RectangularIsometric ? 1448f : 1024f;
+
+				//var groundZ = map.Grid.TileSize.Height * (groundPos.Z - model.pos.Z) / tileScale;
+				//var pxOrigin = wr.Render3DPosition(model.pos);
+
+				//// HACK: We don't have enough texture channels to pass the depth data to the shader
+				//// so for now just offset everything forward so that the back corner is rendered at pos.
+				//pxOrigin -= new float3(0, 0, Screen3DBounds(wr).Z.X);
+
+				//// HACK: The previous hack isn't sufficient for the ramp type that is half flat and half
+				//// sloped towards the camera. Offset it by another half cell to avoid clipping.
+				//var cell = map.CellContaining(model.pos);
+				//if (map.Ramp.Contains(cell) && map.Ramp[cell] == 7)
+				//	pxOrigin += new float3(0, 0, 0.5f * map.Grid.TileSize.Height);
+
+				//var shadowOrigin = pxOrigin - groundZ * (new float2(renderProxy.ShadowDirection, 1));
+
+				//var psb = renderProxy.ProjectedShadowBounds;
+				//var sa = shadowOrigin + psb[0];
+				//var sb = shadowOrigin + psb[2];
+				//var sc = shadowOrigin + psb[1];
+				//var sd = shadowOrigin + psb[3];
+
+				//var wrsr = Game.Renderer.WorldRgbaSpriteRenderer;
+				//var t = model.tint;
+				//if (wr.TerrainLighting != null && (model.tintModifiers & TintModifiers.IgnoreWorldTint) == 0)
+				//	t *= wr.TerrainLighting.TintAt(model.pos);
+
+				//// Shader interprets negative alpha as a flag to use the tint colour directly instead of multiplying the sprite colour
+				//var a = model.alpha;
+				//if ((model.tintModifiers & TintModifiers.ReplaceColor) != 0)
+				//	a *= -1;
+
+				//var viewOffset = Game.Renderer.World3DRenderer.InverseCameraFrontMeterPerWPos * (5);
+
+				////wrsr.DrawSprite(renderProxy.ShadowSprite, sa, sb, sc, sd, t, a);
+				////wrsr.DrawSprite(renderProxy.Sprite, pxOrigin - 0.5f * renderProxy.Sprite.Size, 1f, t, a);
+				//wrsr.DrawCardSprite(renderProxy.Sprite, model.pos, viewOffset, 1f, t, a);
+
+				var draw = model.models.Where(v => v.IsVisible);
+
 				var map = wr.World.Map;
-				var groundPos = model.pos - new WVec(0, 0, map.DistanceAboveTerrain(model.pos).Length);
-				var tileScale = map.Grid.Type == MapGridType.RectangularIsometric ? 1448f : 1024f;
+				var groundOrientation = map.TerrainOrientation(map.CellContaining(model.pos));
 
-				var groundZ = map.Grid.TileSize.Height * (groundPos.Z - model.pos.Z) / tileScale;
-				var pxOrigin = wr.Render3DPosition(model.pos);
-
-				// HACK: We don't have enough texture channels to pass the depth data to the shader
-				// so for now just offset everything forward so that the back corner is rendered at pos.
-				pxOrigin -= new float3(0, 0, Screen3DBounds(wr).Z.X);
-
-				// HACK: The previous hack isn't sufficient for the ramp type that is half flat and half
-				// sloped towards the camera. Offset it by another half cell to avoid clipping.
-				var cell = map.CellContaining(model.pos);
-				if (map.Ramp.Contains(cell) && map.Ramp[cell] == 7)
-					pxOrigin += new float3(0, 0, 0.5f * map.Grid.TileSize.Height);
-
-				var shadowOrigin = pxOrigin - groundZ * (new float2(renderProxy.ShadowDirection, 1));
-
-				var psb = renderProxy.ProjectedShadowBounds;
-				var sa = shadowOrigin + psb[0];
-				var sb = shadowOrigin + psb[2];
-				var sc = shadowOrigin + psb[1];
-				var sd = shadowOrigin + psb[3];
-
-				var wrsr = Game.Renderer.WorldRgbaSpriteRenderer;
-				var t = model.tint;
-				if (wr.TerrainLighting != null && (model.tintModifiers & TintModifiers.IgnoreWorldTint) == 0)
-					t *= wr.TerrainLighting.TintAt(model.pos);
-
-				// Shader interprets negative alpha as a flag to use the tint colour directly instead of multiplying the sprite colour
-				var a = model.alpha;
-				if ((model.tintModifiers & TintModifiers.ReplaceColor) != 0)
-					a *= -1;
-
-				wrsr.DrawSprite(renderProxy.ShadowSprite, sa, sb, sc, sd, t, a);
-				wrsr.DrawSprite(renderProxy.Sprite, pxOrigin - 0.5f * renderProxy.Sprite.Size, 1f, t, a);
+				Game.Renderer.WorldModelRenderer.RenderDirectly(
+					wr, model.pos, draw, model.scale, groundOrientation,
+					model.palette, model.normalsPalette, model.shadowPalette);
 
 			}
 
 			public void RenderDebugGeometry(WorldRenderer wr)
 			{
-				var groundPos = model.pos - new WVec(0, 0, wr.World.Map.DistanceAboveTerrain(model.pos).Length);
-				var groundZ = wr.World.Map.Grid.TileSize.Height * (groundPos.Z - model.pos.Z) / 1024f;
-				var pxOrigin = wr.Render3DPosition(model.pos);
-				var shadowOrigin = pxOrigin - groundZ * (new float2(renderProxy.ShadowDirection, 1));
+				//var groundPos = model.pos - new WVec(0, 0, wr.World.Map.DistanceAboveTerrain(model.pos).Length);
+				//var groundZ = wr.World.Map.Grid.TileSize.Height * (groundPos.Z - model.pos.Z) / 1024f;
+				//var pxOrigin = wr.Render3DPosition(model.pos);
+				//var shadowOrigin = pxOrigin - groundZ * (new float2(renderProxy.ShadowDirection, 1));
 
-				// Draw sprite rect
-				var offset = pxOrigin + renderProxy.Sprite.Offset - 0.5f * renderProxy.Sprite.Size;
-				var tl = wr.Viewport.WorldToViewPx(offset.XY);
-				var br = wr.Viewport.WorldToViewPx((offset + renderProxy.Sprite.Size).XY);
-				Game.Renderer.RgbaColorRenderer.DrawRect(tl, br, 1, Color.Red);
+				//// Draw sprite rect
+				//var offset = pxOrigin + renderProxy.Sprite.Offset - 0.5f * renderProxy.Sprite.Size;
+				//var tl = wr.Viewport.WorldToViewPx(offset.XY);
+				//var br = wr.Viewport.WorldToViewPx((offset + renderProxy.Sprite.Size).XY);
+				//Game.Renderer.RgbaColorRenderer.DrawRect(tl, br, 1, Color.Red);
 
-				// Draw transformed shadow sprite rect
-				var c = Color.Purple;
-				var psb = renderProxy.ProjectedShadowBounds;
+				//// Draw transformed shadow sprite rect
+				//var c = Color.Purple;
+				//var psb = renderProxy.ProjectedShadowBounds;
 
-				Game.Renderer.RgbaColorRenderer.DrawPolygon(new float2[]
-				{
-					wr.Viewport.WorldToViewPx(shadowOrigin + psb[1]),
-					wr.Viewport.WorldToViewPx(shadowOrigin + psb[3]),
-					wr.Viewport.WorldToViewPx(shadowOrigin + psb[0]),
-					wr.Viewport.WorldToViewPx(shadowOrigin + psb[2])
-				}, 1, c);
+				//Game.Renderer.RgbaColorRenderer.DrawPolygon(new float2[]
+				//{
+				//	wr.Viewport.WorldToViewPx(shadowOrigin + psb[1]),
+				//	wr.Viewport.WorldToViewPx(shadowOrigin + psb[3]),
+				//	wr.Viewport.WorldToViewPx(shadowOrigin + psb[0]),
+				//	wr.Viewport.WorldToViewPx(shadowOrigin + psb[2])
+				//}, 1, c);
 
-				// Draw bounding box
-				var draw = model.models.Where(v => v.IsVisible);
-				var scaleTransform = OpenRA.Graphics.Util.ScaleMatrix(model.scale, model.scale, model.scale);
-				var cameraTransform = OpenRA.Graphics.Util.MakeFloatMatrix(model.camera.AsMatrix());
+				//// Draw bounding box
+				//var draw = model.models.Where(v => v.IsVisible);
+				//var scaleTransform = OpenRA.Graphics.Util.ScaleMatrix(model.scale, model.scale, model.scale);
+				//var cameraTransform = OpenRA.Graphics.Util.MakeFloatMatrix(model.camera.AsMatrix());
 
-				foreach (var v in draw)
-				{
-					var bounds = v.Model.Bounds(v.FrameFunc());
-					var rotation = OpenRA.Graphics.Util.MakeFloatMatrix(v.RotationFunc().AsMatrix());
-					var worldTransform = OpenRA.Graphics.Util.MatrixMultiply(scaleTransform, rotation);
+				//foreach (var v in draw)
+				//{
+				//	var bounds = v.Model.Bounds(v.FrameFunc());
+				//	var rotation = OpenRA.Graphics.Util.MakeFloatMatrix(v.RotationFunc().AsMatrix());
+				//	var worldTransform = OpenRA.Graphics.Util.MatrixMultiply(scaleTransform, rotation);
 
-					var pxPos = pxOrigin + wr.RenderVectorComponents(v.OffsetFunc());
-					var screenTransform = OpenRA.Graphics.Util.MatrixMultiply(cameraTransform, worldTransform);
-					DrawBoundsBox(wr, pxPos, screenTransform, bounds, 1, Color.Yellow);
-				}
+				//	var pxPos = pxOrigin + wr.ScreenVectorComponents(v.OffsetFunc());
+				//	var screenTransform = OpenRA.Graphics.Util.MatrixMultiply(cameraTransform, worldTransform);
+				//	DrawBoundsBox(wr, pxPos, screenTransform, bounds, 1, Color.Yellow);
+				//}
 			}
 
 			static readonly uint[] CornerXIndex = new uint[] { 0, 0, 0, 0, 3, 3, 3, 3 };
@@ -275,7 +288,7 @@ namespace OpenRA.Mods.Common.Graphics
 					var rotation = OpenRA.Graphics.Util.MakeFloatMatrix(v.RotationFunc().AsMatrix());
 					var worldTransform = OpenRA.Graphics.Util.MatrixMultiply(scaleTransform, rotation);
 
-					var pxPos = pxOrigin + wr.RenderVectorComponents(v.OffsetFunc());
+					var pxPos = pxOrigin + wr.ScreenVectorComponents(v.OffsetFunc());
 					var screenTransform = OpenRA.Graphics.Util.MatrixMultiply(cameraTransform, worldTransform);
 
 					for (var i = 0; i < 8; i++)

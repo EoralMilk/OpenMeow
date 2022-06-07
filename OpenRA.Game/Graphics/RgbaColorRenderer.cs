@@ -31,7 +31,7 @@ namespace OpenRA.Graphics
 
 		public void UpdateWorldRenderOffset()
 		{
-			var offset = Game.Renderer.Standalone3DRenderer.InverseCameraFrontMeterPerWPos * 10;
+			var offset = Game.Renderer.World3DRenderer.InverseCameraFrontMeterPerWPos * 10;
 			Offset = new float3(offset.x, offset.y, offset.z);
 		}
 

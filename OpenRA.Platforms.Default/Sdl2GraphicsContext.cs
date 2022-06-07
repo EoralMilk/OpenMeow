@@ -180,6 +180,13 @@ namespace OpenRA.Platforms.Default
 			OpenGL.CheckGLError();
 		}
 
+		public void DrawInstances(PrimitiveType pt, int firstVertex, int numVertices, int count)
+		{
+			VerifyThreadAffinity();
+			OpenGL.glDrawArraysInstanced(ModeFromPrimitiveType(pt), firstVertex, numVertices, count);
+			OpenGL.CheckGLError();
+		}
+
 		public void Clear()
 		{
 			VerifyThreadAffinity();
@@ -189,23 +196,29 @@ namespace OpenRA.Platforms.Default
 			OpenGL.CheckGLError();
 		}
 
-		public void EnableDepthBuffer()
+		public void EnableDepthBuffer(DepthFunc type)
 		{
 			VerifyThreadAffinity();
 			OpenGL.glClear(OpenGL.GL_DEPTH_BUFFER_BIT);
 			OpenGL.CheckGLError();
 			OpenGL.glEnable(OpenGL.GL_DEPTH_TEST);
 			OpenGL.CheckGLError();
-			OpenGL.glDepthFunc(OpenGL.GL_LEQUAL);
+			if (type == DepthFunc.LessEqual)
+				OpenGL.glDepthFunc(OpenGL.GL_LEQUAL);
+			else if (type == DepthFunc.Less)
+				OpenGL.glDepthFunc(OpenGL.GL_LESS);
 			OpenGL.CheckGLError();
 		}
 
-		public void EnableDepthTest()
+		public void EnableDepthTest(DepthFunc type)
 		{
 			VerifyThreadAffinity();
 			OpenGL.glEnable(OpenGL.GL_DEPTH_TEST);
 			OpenGL.CheckGLError();
-			OpenGL.glDepthFunc(OpenGL.GL_LEQUAL);
+			if (type == DepthFunc.LessEqual)
+				OpenGL.glDepthFunc(OpenGL.GL_LEQUAL);
+			else if (type == DepthFunc.Less)
+				OpenGL.glDepthFunc(OpenGL.GL_LESS);
 			OpenGL.CheckGLError();
 		}
 
@@ -220,6 +233,29 @@ namespace OpenRA.Platforms.Default
 		{
 			VerifyThreadAffinity();
 			OpenGL.glClear(OpenGL.GL_DEPTH_BUFFER_BIT);
+			OpenGL.CheckGLError();
+		}
+
+		public void EnableCullFace(FaceCullFunc type)
+		{
+			VerifyThreadAffinity();
+			OpenGL.glEnable(OpenGL.GL_CULL_FACE);
+			OpenGL.CheckGLError();
+			switch (type)
+			{
+				case FaceCullFunc.Front: OpenGL.glCullFace(OpenGL.GL_FRONT); break;
+				case FaceCullFunc.Back: OpenGL.glCullFace(OpenGL.GL_BACK); break;
+				case FaceCullFunc.FrontAndBack: OpenGL.glCullFace(OpenGL.GL_FRONT_AND_BACK); break;
+				default: break;
+			}
+
+			OpenGL.CheckGLError();
+		}
+
+		public void DisableCullFace()
+		{
+			VerifyThreadAffinity();
+			OpenGL.glDisable(OpenGL.GL_CULL_FACE);
 			OpenGL.CheckGLError();
 		}
 

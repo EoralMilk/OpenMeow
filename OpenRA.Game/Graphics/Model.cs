@@ -12,6 +12,7 @@
 using System;
 using System.Collections.Generic;
 using OpenRA.FileSystem;
+using OpenRA.Graphics.Graphics3D;
 using OpenRA.Primitives;
 
 namespace OpenRA.Graphics
@@ -24,36 +25,32 @@ namespace OpenRA.Graphics
 		float[] TransformationMatrix(uint section, uint frame);
 		float[] Size { get; }
 		float[] Bounds(uint frame);
-		ModelRenderData RenderData(uint section);
+
+		IOrderedMesh RenderData(uint section);
 
 		/// <summary>Returns the smallest rectangle that covers all rotations of all frames in a model</summary>
 		Rectangle AggregateBounds { get; }
 	}
 
-	public readonly struct ModelRenderData
-	{
-		public readonly int Start;
-		public readonly int Count;
-		public readonly IShader Shader;
-		public readonly IVertexBuffer VertexBuffer;
-		public readonly Dictionary<string, ITexture> Textures;
-		public ModelRenderData(int start, int count, IShader shader, IVertexBuffer vertexBuffer, Dictionary<string, ITexture> textures)
-		{
-			Start = start;
-			Count = count;
-			Shader = shader;
-			VertexBuffer = vertexBuffer;
-			Textures = textures;
-		}
-	}
+	//public readonly struct ModelRenderData
+	//{
+	//	public readonly int Start;
+	//	public readonly int Count;
+	//	public readonly IShader Shader;
+	//	public readonly IVertexBuffer VertexBuffer;
+	//	public readonly Dictionary<string, ITexture> Textures;
+	//	public ModelRenderData(int start, int count, IShader shader, IVertexBuffer vertexBuffer, Dictionary<string, ITexture> textures)
+	//	{
+	//		Start = start;
+	//		Count = count;
+	//		Shader = shader;
+	//		VertexBuffer = vertexBuffer;
+	//		Textures = textures;
+	//	}
+	//}
 
-	//public interface IModelCache : IDisposable
 	public interface IModelLoader
 	{
-		//IModel GetModel(string model);
-		//IModel GetModelSequence(string model, string sequence);
-		//bool HasModelSequence(string model, string sequence);
-		//IVertexBuffer<Vertex> VertexBuffer { get; }
 		bool TryLoadModel(IReadOnlyFileSystem fileSystem, string filename, out IModel model);
 		bool TryLoadModel(IReadOnlyFileSystem fileSystem, string filename, MiniYaml yaml, out IModel model);
 	}

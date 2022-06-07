@@ -22,6 +22,7 @@
 		CruiseAltitude: 5c512
 		AllowSnapping: true
 		TerrainHeightAware: true
+		ContrailLength: 10
 	Warhead@1Dam: SpreadDamage
 		Spread: 108
 		Falloff: 100, 50, 25, 12, 6, 3, 0

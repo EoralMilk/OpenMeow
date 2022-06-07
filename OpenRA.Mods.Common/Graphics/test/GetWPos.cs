@@ -23,8 +23,8 @@ namespace OpenRA.Mods.Common.Traits
 		{
 			if (positionable != null)
 			{
-				if (Game.Renderer.Standalone3DRenderer != null)
-					Game.Renderer.Standalone3DRenderer.TestPos = positionable.CenterPosition;
+				if (Game.Renderer.World3DRenderer != null)
+					Game.Renderer.World3DRenderer.TestPos = positionable.CenterPosition;
 				else
 					Console.WriteLine(self.ActorID + " Game.Renderer.Standalone3DRenderer == null");
 			}
@@ -33,8 +33,8 @@ namespace OpenRA.Mods.Common.Traits
 
 			if (facing != null)
 			{
-				if (Game.Renderer.Standalone3DRenderer != null)
-					Game.Renderer.Standalone3DRenderer.TestRot = facing.Orientation;
+				if (Game.Renderer.World3DRenderer != null)
+					Game.Renderer.World3DRenderer.TestRot = facing.Orientation;
 				else
 					Console.WriteLine(self.ActorID + " Game.Renderer.Standalone3DRenderer == null");
 			}

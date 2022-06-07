@@ -158,8 +158,12 @@ namespace OpenRA.Platforms.Default
 			OpenGL.CheckGLError();
 
 			for (int i = 0; i < 16; i++)
+			{
+				OpenGL.glVertexAttribDivisor(i, 0);
+				OpenGL.CheckGLError();
 				OpenGL.glDisableVertexAttribArray(i);
-			OpenGL.CheckGLError();
+				OpenGL.CheckGLError();
+			}
 
 			// bind the textures
 			foreach (var kv in textures)
@@ -197,11 +201,6 @@ namespace OpenRA.Platforms.Default
 
 			if (samplers.TryGetValue(name, out var texUnit))
 				textures[texUnit] = t;
-		}
-
-		public void SetRenderData(ModelRenderData renderData)
-		{
-			bindings.SetRenderData(this, renderData);
 		}
 
 		public void SetBool(string name, bool value)
@@ -323,6 +322,27 @@ namespace OpenRA.Platforms.Default
 				OpenGL.glEnableVertexAttribArray(attribute.Index);
 				OpenGL.CheckGLError();
 			}
+		}
+
+		public void LayoutInstanceArray()
+		{
+			if (bindings.Instanced == false)
+				throw new Exception("this shader is not instanced");
+
+			foreach (var attribute in bindings.InstanceAttributes)
+			{
+				OpenGL.glVertexAttribPointer(attribute.Index, attribute.Components, OpenGL.GL_FLOAT, false, bindings.InstanceStrde, new IntPtr(attribute.Offset));
+				OpenGL.CheckGLError();
+				OpenGL.glEnableVertexAttribArray(attribute.Index);
+				OpenGL.CheckGLError();
+				OpenGL.glVertexAttribDivisor(attribute.Index, 1);
+				OpenGL.CheckGLError();
+			}
+		}
+
+		public void SetCommonParaments(World3DRenderer w3dr)
+		{
+			bindings.SetCommonParaments(this, w3dr);
 		}
 
 	}

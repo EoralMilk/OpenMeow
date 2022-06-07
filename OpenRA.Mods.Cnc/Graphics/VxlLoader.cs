@@ -14,6 +14,7 @@ using System.Collections.Generic;
 using System.Linq;
 using OpenRA.FileSystem;
 using OpenRA.Graphics;
+using OpenRA.Graphics.Graphics3D;
 using OpenRA.Mods.Cnc.FileFormats;
 using OpenRA.Primitives;
 
@@ -204,7 +205,7 @@ namespace OpenRA.Mods.Cnc.Graphics
 						(u, v) => new float3(u, v, z));
 		}
 
-		public ModelRenderData GenerateRenderData(VxlLimb l)
+		public MeshRenderData GenerateRenderData(VxlLimb l)
 		{
 			Vertex[] v;
 			try
@@ -225,7 +226,7 @@ namespace OpenRA.Mods.Cnc.Graphics
 			var start = totalVertexCount;
 			var count = v.Length;
 			totalVertexCount += count;
-			return new ModelRenderData(start, count, Game.Renderer.GetShader<ModelShaderBindings>(), VertexBuffer, new Dictionary<string, ITexture>() { { "DiffuseTexture", sheetBuilder.Current.GetTexture() } });
+			return new MeshRenderData(start, count, Game.Renderer.GetOrCreateShader<ModelShaderBindings>("ModelShaderBindings"), VertexBuffer, new Dictionary<string, ITexture>() { { "DiffuseTexture", sheetBuilder.Current.GetTexture() } });
 		}
 
 		public void RefreshBuffer()

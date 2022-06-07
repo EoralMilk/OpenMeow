@@ -15,6 +15,7 @@ using System.Linq;
 using System.Threading;
 using OpenRA.FileFormats;
 using OpenRA.Graphics;
+using OpenRA.Graphics.Graphics3D;
 using OpenRA.Primitives;
 using OpenRA.Support;
 
@@ -24,7 +25,7 @@ namespace OpenRA
 	{
 		enum RenderType { None, World, UI }
 
-		public World3DRenderer Standalone3DRenderer { get; private set; }
+		public World3DRenderer World3DRenderer { get; private set; }
 		public SpriteRenderer WorldSpriteRenderer { get; private set; }
 		public RgbaSpriteRenderer WorldRgbaSpriteRenderer { get; private set; }
 		public RgbaColorRenderer WorldRgbaColorRenderer { get; private set; }
@@ -72,10 +73,15 @@ namespace OpenRA
 		IBatchRenderer currentBatchRenderer;
 		RenderType renderType = RenderType.None;
 
+		Dictionary<string, IShader> orderedMeshShaders;
+		Dictionary<string, IOrderedMesh> orderedMeshes;
 		public Renderer(IPlatform platform, GraphicSettings graphicSettings)
 		{
 			this.platform = platform;
 			var resolution = GetResolution(graphicSettings);
+
+			orderedMeshShaders = new Dictionary<string, IShader>();
+			orderedMeshes = new Dictionary<string, IOrderedMesh>();
 
 			Window = platform.CreateWindow(new Size(resolution.Width, resolution.Height),
 				graphicSettings.Mode, graphicSettings.UIScale, graphicSettings.BatchSize,
@@ -153,7 +159,7 @@ namespace OpenRA
 
 		public void InitializeWorld3DRenderer(MapGrid mapGrid)
 		{
-			Standalone3DRenderer = new World3DRenderer(this, mapGrid);
+			World3DRenderer = new World3DRenderer(this, mapGrid);
 			WorldRgbaColorRenderer.UpdateWorldRenderOffset();
 		}
 
@@ -268,6 +274,32 @@ namespace OpenRA
 			}
 
 			renderType = RenderType.World;
+		}
+
+		public void Draw3DMeshesInstance(WorldRenderer wr)
+		{
+			// 首先对所有的3d用shader的通用参数进行赋值
+			foreach (var shader in orderedMeshShaders)
+			{
+				shader.Value.SetCommonParaments(World3DRenderer);
+			}
+
+			foreach (var orderedMesh in orderedMeshes)
+			{
+				//if (orderedMesh.Key == "TestBox")
+				//{
+				//	orderedMesh.Value.Flush();
+				//	continue;
+				//}
+
+				orderedMesh.Value.DrawInstances();
+				orderedMesh.Value.Flush();
+			}
+		}
+
+		public void RenderInstance(int start, int numVertices, int numInstance)
+		{
+			Context.DrawInstances(PrimitiveType.TriangleList, start, numVertices, numInstance);
 		}
 
 		public void EndWorld()
@@ -398,10 +430,29 @@ namespace OpenRA
 			return Context.CreateVertexBuffer<T>(length);
 		}
 
-		public IShader GetShader<T>()
+		public IShader GetOrCreateShader<T>(string typeName)
 			where T : IShaderBindings
 		{
-			return Context.CreateShader<T>();
+			if (orderedMeshShaders.ContainsKey(typeName))
+				return orderedMeshShaders[typeName];
+			else
+			{
+				// 实际上在context中也维护了一个字典防止重复定义相同类型的shader
+				// 但是在这里我们需要记录所有的shader
+				orderedMeshShaders.Add(typeName, Context.CreateShader<T>());
+				return orderedMeshShaders[typeName];
+			}
+		}
+
+		public IOrderedMesh UpdateOrderedMeshes(string typeName,in IOrderedMesh iom)
+		{
+			if (orderedMeshes.ContainsKey(typeName))
+				return orderedMeshes[typeName];
+			else
+			{
+				orderedMeshes.Add(typeName, iom);
+				return orderedMeshes[typeName];
+			}
 		}
 
 		public ITexture CreateTexture()
@@ -469,7 +520,7 @@ namespace OpenRA
 		public void EnableDepthBuffer()
 		{
 			Flush();
-			Context.EnableDepthBuffer();
+			Context.EnableDepthBuffer(DepthFunc.LessEqual);
 		}
 
 		public void DisableDepthTest()
