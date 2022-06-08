@@ -201,7 +201,7 @@ TTNK:
 	RevealOnFire:
 		ArmamentNames: primary, deployed
 	RenderModels:
-		Scale: 1
+		Scale: 1.4
 
 ART2:
 	Inherits: ^Tank

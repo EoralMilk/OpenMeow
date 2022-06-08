@@ -165,11 +165,11 @@ gapile:
 	idle-lights: gtpile_a
 		Length: 8
 		Tick: 200
-		ZOffset: 1023
+		ZOffset: 10
 	idle-lights-bright: gtpile_a
 		Length: 8
 		Tick: 200
-		ZOffset: 1023
+		ZOffset: 10
 		IgnoreWorldTint: True
 	idle-light-bright: gtpile_b
 		Length: 8
@@ -229,35 +229,37 @@ gaweap:
 	idle-lights-white: gtweap_a
 		Length: 16
 		Tick: 100
-		ZOffset: 2048
+		ZOffset: 1
 	idle-lights-white-bright: gtweap_a
 		Length: 16
 		Tick: 100
-		ZOffset: 2048
+		ZOffset: 1
 		IgnoreWorldTint: True
 	idle-lights-red: gtweap_b
 		Length: 8
 		Tick: 120
-		ZOffset: 2048
+		ZOffset: 1
 	idle-lights-red-bright: gtweap_b
 		Length: 8
 		Tick: 120
-		ZOffset: 2048
+		ZOffset: 1
 		IgnoreWorldTint: True
 	idle-turbines: gtweap_c
 		Length: 4
 		Tick: 80
-		ZOffset: 2048
+		ZOffset: 1
 	damaged-idle-turbines: gtweap_c
 		Length: 4
 		Tick: 80
-		ZOffset: 2048
+		ZOffset: 1
 	build-door: gtweap_d
 		Length: 9
 		ShadowStart: 9
+		ZOffset: 1
 	damaged-build-door: gtweap_d
 		Length: 9
 		ShadowStart: 9
+		ZOffset: 1
 	make: gtweapmk
 		Length: 20
 		Tick: 80
@@ -394,7 +396,7 @@ nahand:
 	idle-light-bright: nthand_a
 		Length: 10
 		Tick: 100
-		ZOffset: 1023
+		ZOffset: 10
 		IgnoreWorldTint: True
 	idle-lights-bright: nthand_b
 		Length: 12
@@ -442,11 +444,11 @@ naweap:
 		MeshType: Plane
 	idle-roof: ntweap_2
 		ShadowStart: 2
-		ZOffset: 512
+		ZOffset: 1
 	damaged-idle-roof: ntweap_2
 		Start: 1
 		ShadowStart: 3
-		ZOffset: 512
+		ZOffset: 1
 	dead: ntweap
 		Start: 2
 		ShadowStart: 5
@@ -454,32 +456,32 @@ naweap:
 	idle-lights: ntweap_a
 		Length: 16
 		Tick: 100
-		ZOffset: 2048
+		ZOffset: 1
 	idle-lights-bright: ntweap_a
 		Length: 16
 		Tick: 100
-		ZOffset: 2048
+		ZOffset: 1
 		IgnoreWorldTint: True
 	damaged-idle-lights: ntweap_a
 		Start: 16
 		Length: 16
 		Tick: 100
-		ZOffset: 2048
+		ZOffset:1
 	damaged-idle-lights-bright: ntweap_a
 		Start: 16
 		Length: 16
 		Tick: 100
-		ZOffset: 2048
+		ZOffset: 1
 		IgnoreWorldTint: True
 	build-door: ntweap_b
 		Length: 10
 		ShadowStart: 10
-		ZOffset: 512
+		ZOffset: 1
 	damaged-build-door: ntweap_b
 		Start: 10
 		Length: 10
 		ShadowStart: 20
-		ZOffset: 512
+		ZOffset: 1
 	make: ntweapmk
 		Length: 22
 		Tick: 80
@@ -1633,7 +1635,7 @@ proc.nod:
 		IgnoreWorldTint: True
 	unload-overlay: narefn_a
 		Length: *
-		ZOffset: 1024
+		ZOffset: 10
 	idle-lights: ntrefn_c
 		Length: 16
 		Tick: 120

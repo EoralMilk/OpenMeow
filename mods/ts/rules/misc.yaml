@@ -35,7 +35,7 @@ harv.colorpicker:
 	RenderModels:
 		Image: harv
 		Palette: colorpicker
-		Scale: 0.1
+		Scale: 1.4
 
 hvr.colorpicker:
 	Inherits: HVR
@@ -44,7 +44,7 @@ hvr.colorpicker:
 	RenderModels:
 		Image: hvr
 		Palette: colorpicker
-		Scale: 0.1
+		Scale: 1.4
 
 stnk.colorpicker:
 	Inherits: STNK
@@ -53,7 +53,7 @@ stnk.colorpicker:
 	RenderModels:
 		Image: stnk
 		Palette: colorpicker
-		Scale: 0.1
+		Scale: 1.4
 
 CAMERA:
 	Interactable:
