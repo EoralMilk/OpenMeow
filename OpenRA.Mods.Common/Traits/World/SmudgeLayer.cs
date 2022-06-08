@@ -117,7 +117,7 @@ namespace OpenRA.Mods.Common.Traits
 			var sprites = smudges.Values.SelectMany(v => Exts.MakeArray(v.Length, x => v.GetSprite(x))).ToList();
 			var sheet = sprites[0].Sheet;
 			var blendMode = sprites[0].BlendMode;
-			var emptySprite = new Sprite(sheet, Rectangle.Empty, TextureChannel.Alpha);
+			var emptySprite = new Sprite(sheet, Rectangle.Empty, TextureChannel.Alpha, spriteMeshType: SpriteMeshType.Plane);
 
 			if (sprites.Any(s => s.BlendMode != blendMode))
 				throw new InvalidDataException("Smudges specify different blend modes. "

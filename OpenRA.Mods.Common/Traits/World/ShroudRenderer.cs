@@ -204,7 +204,7 @@ namespace OpenRA.Mods.Common.Traits
 			if (fogSprites.Any(s => s.Sprite.BlendMode != fogBlend))
 				throw new InvalidDataException("Fog sprites must all use the same blend mode.");
 
-			var emptySprite = new Sprite(shroudSprites[0].Sprite.Sheet, Rectangle.Empty, TextureChannel.Alpha);
+			var emptySprite = new Sprite(shroudSprites[0].Sprite.Sheet, Rectangle.Empty, TextureChannel.Alpha, spriteMeshType: SpriteMeshType.Plane);
 			shroudPaletteReference = wr.Palette(info.ShroudPalette);
 			fogPaletteReference = wr.Palette(info.FogPalette);
 			shroudLayer = new TerrainSpriteLayer(w, wr, emptySprite, shroudBlend, false);
@@ -299,8 +299,8 @@ namespace OpenRA.Mods.Common.Traits
 				//if (fogSprite.Sprite != null)
 				//	fogPos += fogSprite.Sprite.Offset - 0.5f * fogSprite.Sprite.Size;
 
-				shroudLayer.Update(uv, shroudSprite.Sprite, shroudPaletteReference, shroudPos, shroudSprite.Scale, shroudSprite.Alpha, true);
-				fogLayer.Update(uv, fogSprite.Sprite, fogPaletteReference, fogPos, fogSprite.Scale, fogSprite.Alpha, true);
+				shroudLayer.Update(uv, shroudSprite.Sprite, shroudPaletteReference, shroudPos, shroudSprite.Scale, shroudSprite.Alpha, true, 0);
+				fogLayer.Update(uv, fogSprite.Sprite, fogPaletteReference, fogPos, fogSprite.Scale, fogSprite.Alpha, true, 0);
 			}
 
 			anyCellDirty = false;

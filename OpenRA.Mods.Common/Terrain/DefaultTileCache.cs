@@ -109,17 +109,18 @@ namespace OpenRA.Mods.Common.Terrain
 						// The internal z axis is inverted from expectation (negative is closer)
 						var zOffset = tile != null ? -tile.ZOffset : 0;
 						var zRamp = tile != null ? tile.ZRamp : 1f;
+						var meshType = tile != null ? tile.MeshType : SpriteMeshType.Plane;
 						var offset = new float3(f.Offset, zOffset);
 						var type = SheetBuilder.FrameTypeToSheetType(f.Type);
 
-						var s = sheetBuilders[type].Allocate(f.Size, zRamp, offset);
+						var s = sheetBuilders[type].Allocate(f.Size, zRamp, offset, spriteMeshType: meshType);
 						OpenRA.Graphics.Util.FastCopyIntoChannel(s, f.Data, f.Type);
 
 						if (terrainInfo.EnableDepth)
 						{
 							var depthFrame = depthFrames != null ? depthFrames[j] : allFrames[j + frameCount];
 							var depthType = SheetBuilder.FrameTypeToSheetType(depthFrame.Type);
-							var ss = sheetBuilders[depthType].Allocate(depthFrame.Size, zRamp, offset);
+							var ss = sheetBuilders[depthType].Allocate(depthFrame.Size, zRamp, offset, spriteMeshType: meshType);
 							OpenRA.Graphics.Util.FastCopyIntoChannel(ss, depthFrame.Data, depthFrame.Type);
 							s = new SpriteWithSecondaryData(s, ss.Sheet, ss.Bounds, ss.Channel);
 						}
@@ -132,7 +133,7 @@ namespace OpenRA.Mods.Common.Terrain
 
 				// Ignore the offsets baked into R8 sprites
 				if (terrainInfo.IgnoreTileSpriteOffsets)
-					allSprites = allSprites.Select(s => new Sprite(s.Sheet, s.Bounds, s.ZRamp, new float3(float2.Zero, s.Offset.Z), s.Channel, s.BlendMode));
+					allSprites = allSprites.Select(s => new Sprite(s.Sheet, s.Bounds, s.ZRamp, new float3(float2.Zero, s.Offset.Z), s.Channel, s.BlendMode, spriteMeshType: s.SpriteMeshType));
 
 				if (onMissingImage != null && variants.Count == 0)
 					continue;

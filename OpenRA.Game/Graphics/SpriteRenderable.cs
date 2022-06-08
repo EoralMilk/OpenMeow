@@ -102,11 +102,11 @@ namespace OpenRA.Graphics
 
 			var viewOffset = Game.Renderer.World3DRenderer.InverseCameraFrontMeterPerWPos * (zOffset + 1);
 
-			if (meshType == SpriteMeshType.Plane)
+			if (sprite.SpriteMeshType == SpriteMeshType.Plane)
 				wsr.DrawPlaneSprite(sprite, palette, Pos, viewOffset, scale, t, a);
-			else if (meshType == SpriteMeshType.Card)
+			else if (sprite.SpriteMeshType == SpriteMeshType.Card)
 				wsr.DrawCardSprite(sprite, palette, Pos, viewOffset, scale, t, a);
-			else if (meshType == SpriteMeshType.Board)
+			else if (sprite.SpriteMeshType == SpriteMeshType.Board)
 				wsr.DrawBoardSprite(sprite, palette, Pos, viewOffset, scale, t, a);
 		}
 

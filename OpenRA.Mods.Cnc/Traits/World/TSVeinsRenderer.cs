@@ -197,7 +197,7 @@ namespace OpenRA.Mods.Cnc.Traits
 			veinPalette = wr.Palette(info.Palette);
 
 			var first = veinSequence.GetSprite(0);
-			var emptySprite = new Sprite(first.Sheet, Rectangle.Empty, TextureChannel.Alpha);
+			var emptySprite = new Sprite(first.Sheet, Rectangle.Empty, TextureChannel.Alpha, spriteMeshType: SpriteMeshType.Plane);
 			spriteLayer = new TerrainSpriteLayer(w, wr, emptySprite, first.BlendMode, wr.World.Type != WorldType.Editor);
 
 			// Initialize the renderIndices with the initial map state so it is visible

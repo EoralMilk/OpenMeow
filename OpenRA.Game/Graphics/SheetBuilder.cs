@@ -113,7 +113,7 @@ namespace OpenRA.Graphics
 		}
 
 		public Sprite Allocate(Size imageSize, float scale = 1f) { return Allocate(imageSize, 0, float3.Zero, scale); }
-		public Sprite Allocate(Size imageSize, float zRamp, in float3 spriteOffset, float scale = 1f)
+		public Sprite Allocate(Size imageSize, float zRamp, in float3 spriteOffset, float scale = 1f, SpriteMeshType spriteMeshType = SpriteMeshType.UI)
 		{
 			if (imageSize.Width + p.X + margin > current.Size.Width)
 			{
@@ -141,7 +141,7 @@ namespace OpenRA.Graphics
 				p = int2.Zero;
 			}
 
-			var rect = new Sprite(current, new Rectangle(p.X + margin, p.Y + margin, imageSize.Width, imageSize.Height), zRamp, spriteOffset, channel, BlendMode.Alpha, scale);
+			var rect = new Sprite(current, new Rectangle(p.X + margin, p.Y + margin, imageSize.Width, imageSize.Height), zRamp, spriteOffset, channel, BlendMode.Alpha, scale, spriteMeshType);
 			p += new int2(imageSize.Width + margin, 0);
 
 			return rect;

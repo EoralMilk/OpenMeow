@@ -24,6 +24,8 @@ namespace OpenRA.Graphics
 		Card,
 		Plane,
 		Board,
+		UI,
+		NullType,
 	}
 
 	public interface ISpriteSequence

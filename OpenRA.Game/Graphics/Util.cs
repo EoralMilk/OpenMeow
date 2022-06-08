@@ -26,34 +26,41 @@ namespace OpenRA.Graphics
 			Sprite r, int2 samplers, float paletteTextureIndex, float scale,
 			in float3 tint, float alpha, int nv)
 		{
-			var position = new vec3((float)inPos.X / Game.Renderer.World3DRenderer.WPosPerMeter, (float)inPos.Y / Game.Renderer.World3DRenderer.WPosPerMeter, (float)inPos.Z / Game.Renderer.World3DRenderer.WPosPerMeterHeight);
-			position += viewOffset;
-
-			float3 ssziehalf, soffset;
-			float2 leftRight, topBottom; // In general, both top and bottom are positive
-
 			if (r.HasMeshCreateInfo)
 			{
-				ssziehalf = scale * r.Ssziehalf;
-				soffset = scale * r.Soffset;
-				leftRight = scale * r.LeftRight;
-				topBottom = scale * r.TopBottom;
+				if (!r.UpdateMeshInfo())
+					throw new Exception("invalide create mesh time: sprite has not create mesh data");
 			}
-			else
+
+			if (r.SpriteMeshType != SpriteMeshType.Card)
 			{
-				Console.WriteLine("Don't have Mesh create info");
-				ssziehalf = Game.Renderer.World3DRenderer.MeterPerPix * scale * r.Size / 2;
-				soffset = Game.Renderer.World3DRenderer.MeterPerPix * scale * r.Offset;
-				leftRight = new float2(soffset.X - ssziehalf.X, soffset.X + ssziehalf.X);
-				topBottom = new float2(ssziehalf.Y - soffset.Y, soffset.Y + ssziehalf.Y);
+				throw new Exception("sprite's mesh type is not card");
 			}
+
+			if (scale < 0)
+			{
+				throw new Exception("invalide create mesh scale: only positve value supported");
+			}
+
+			float3 ssziehalf = scale * r.Ssizehalf;
+			float3 soffset = scale * r.Soffset;
+			float2 leftRight = scale * r.LeftRight;
+			float2 topBottom = scale * r.TopBottom; // In general, both top and bottom are positive
+
+			var position = new vec3((float)inPos.X / Game.Renderer.World3DRenderer.WPosPerMeter, (float)inPos.Y / Game.Renderer.World3DRenderer.WPosPerMeter, (float)inPos.Z / Game.Renderer.World3DRenderer.WPosPerMeterHeight);
+			position += viewOffset;
 
 			// sprite only has horizental part
 			if (topBottom.X < 0)
 			{
-				float3 leftBack = new float3(position.x + leftRight.X, position.y - topBottom.X / Game.Renderer.World3DRenderer.CosCameraPitch, position.z);
+				//float3 leftBack = new float3(position.x + leftRight.X, position.y - topBottom.X / Game.Renderer.World3DRenderer.CosCameraPitch, position.z);
+				//float3 rightBack = new float3(position.x + leftRight.Y, leftBack.Y, position.z);
+				//float3 leftFront = new float3(leftBack.X, position.y + topBottom.Y / Game.Renderer.World3DRenderer.CosCameraPitch, position.z);
+				//float3 rightFront = new float3(rightBack.X, leftFront.Y, position.z);
+
+				float3 leftBack = new float3(position.x + r.leftBack.X, position.y + r.leftBack.Y, position.z);
 				float3 rightBack = new float3(position.x + leftRight.Y, leftBack.Y, position.z);
-				float3 leftFront = new float3(leftBack.X, position.y + topBottom.Y / Game.Renderer.World3DRenderer.CosCameraPitch, position.z);
+				float3 leftFront = new float3(leftBack.X, position.y + r.leftFront.Y, position.z);
 				float3 rightFront = new float3(rightBack.X, leftFront.Y, position.z);
 
 				float sl = 0;
@@ -89,9 +96,14 @@ namespace OpenRA.Graphics
 			}
 			else if (topBottom.Y < 0) // sprite only has vertical part
 			{
-				float3 leftTop = new float3(position.x + leftRight.X, position.y, position.z + (topBottom.X) / Game.Renderer.World3DRenderer.SinCameraPitch);
+				//float3 leftTop = new float3(position.x + leftRight.X, position.y, position.z + (topBottom.X) / Game.Renderer.World3DRenderer.SinCameraPitch);
+				//float3 rightTop = new float3(position.x + leftRight.Y, position.y, leftTop.Z);
+				//float3 leftBottom = new float3(leftTop.X, position.y, position.z - (topBottom.Y) / Game.Renderer.World3DRenderer.SinCameraPitch);
+				//float3 rightBottom = new float3(rightTop.X, position.y, leftBottom.Z);
+
+				float3 leftTop = new float3(position.x + r.leftTop.X, position.y, position.z + r.leftTop.Z);
 				float3 rightTop = new float3(position.x + leftRight.Y, position.y, leftTop.Z);
-				float3 leftBottom = new float3(leftTop.X, position.y, position.z - (topBottom.Y) / Game.Renderer.World3DRenderer.SinCameraPitch);
+				float3 leftBottom = new float3(leftTop.X, position.y, position.z + r.leftBottom.Z);
 				float3 rightBottom = new float3(rightTop.X, position.y, leftBottom.Z);
 
 				float sl = 0;
@@ -127,11 +139,11 @@ namespace OpenRA.Graphics
 			}
 			else
 			{
-				float3 leftTop = new float3(position.x + leftRight.X, position.y, position.z + (topBottom.X) / Game.Renderer.World3DRenderer.SinCameraPitch);
+				float3 leftTop = new float3(position.x + r.leftTop.X, position.y, position.z + r.leftTop.Z);
 				float3 rightTop = new float3(position.x + leftRight.Y, position.y, leftTop.Z);
 				float3 leftBase = new float3(leftTop.X, position.y, position.z);
 				float3 rightBase = new float3(rightTop.X, position.y, position.z);
-				float3 leftFront = new float3(leftTop.X, position.y + topBottom.Y / Game.Renderer.World3DRenderer.CosCameraPitch, position.z);
+				float3 leftFront = new float3(leftTop.X, position.y + r.leftFront.Y, position.z);
 				float3 rightFront = new float3(rightTop.X, leftFront.Y, position.z);
 
 				float ycut = topBottom.X / (ssziehalf.Y * 2);
@@ -185,31 +197,33 @@ namespace OpenRA.Graphics
 			Sprite r, int2 samplers, float paletteTextureIndex, float scale,
 			in float3 tint, float alpha, int nv)
 		{
+			if (r.HasMeshCreateInfo)
+			{
+				if (!r.UpdateMeshInfo())
+					throw new Exception("invalide create mesh time: sprite has not create mesh data");
+			}
+
+			if (r.SpriteMeshType != SpriteMeshType.Plane)
+			{
+				throw new Exception("sprite's mesh type is not plane");
+			}
+
+			if (scale < 0)
+			{
+				throw new Exception("invalide create mesh scale: only positve value supported");
+			}
+
+			float3 ssziehalf = scale * r.Ssizehalf;
+			float3 soffset = scale * r.Soffset;
+			float2 leftRight = scale * r.LeftRight;
+			float2 topBottom = scale * r.TopBottom; // In general, both top and bottom are positive
+
 			var position = new vec3((float)inPos.X / Game.Renderer.World3DRenderer.WPosPerMeter, (float)inPos.Y / Game.Renderer.World3DRenderer.WPosPerMeter, (float)inPos.Z / Game.Renderer.World3DRenderer.WPosPerMeterHeight);
 			position += viewOffset;
 
-			float3 ssziehalf, soffset;
-			float2 leftRight, topBottom;
-
-			if (r.HasMeshCreateInfo)
-			{
-				ssziehalf = scale * r.Ssziehalf;
-				soffset = scale * r.Soffset;
-				leftRight = scale * r.LeftRight;
-				topBottom = scale * r.TopBottom;
-			}
-			else
-			{
-				Console.WriteLine("Don't have Mesh create info");
-				ssziehalf = Game.Renderer.World3DRenderer.MeterPerPix * scale * r.Size / 2;
-				soffset = Game.Renderer.World3DRenderer.MeterPerPix * scale * r.Offset;
-				leftRight = new float2(soffset.X - ssziehalf.X, soffset.X + ssziehalf.X);
-				topBottom = new float2(ssziehalf.Y - soffset.Y, soffset.Y + ssziehalf.Y);
-			}
-
-			float3 leftBack = new float3(position.x + leftRight.X, position.y - topBottom.X / Game.Renderer.World3DRenderer.CosCameraPitch, position.z);
+			float3 leftBack = new float3(position.x + leftRight.X, position.y + r.leftBack.Y, position.z);
 			float3 rightBack = new float3(position.x + leftRight.Y, leftBack.Y, position.z);
-			float3 leftFront = new float3(leftBack.X, position.y + topBottom.Y / Game.Renderer.World3DRenderer.CosCameraPitch, position.z);
+			float3 leftFront = new float3(leftBack.X, position.y + r.leftFront.Y, position.z);
 			float3 rightFront = new float3(rightBack.X, leftFront.Y, position.z);
 
 			float sl = 0;
@@ -247,31 +261,33 @@ namespace OpenRA.Graphics
 			Sprite r, int2 samplers, float paletteTextureIndex, float scale,
 			in float3 tint, float alpha, int nv)
 		{
+			if (r.HasMeshCreateInfo)
+			{
+				if (!r.UpdateMeshInfo())
+					throw new Exception("invalide create mesh time: sprite has not create mesh data");
+			}
+
+			if (r.SpriteMeshType != SpriteMeshType.Board)
+			{
+				throw new Exception("sprite's mesh type is not board");
+			}
+
+			if (scale < 0)
+			{
+				throw new Exception("invalide create mesh scale: only positve value supported");
+			}
+
+			float3 ssziehalf = scale * r.Ssizehalf;
+			float3 soffset = scale * r.Soffset;
+			float2 leftRight = scale * r.LeftRight;
+			float2 topBottom = scale * r.TopBottom; // In general, both top and bottom are positive
+
 			var position = new vec3((float)inPos.X / Game.Renderer.World3DRenderer.WPosPerMeter, (float)inPos.Y / Game.Renderer.World3DRenderer.WPosPerMeter, (float)inPos.Z / Game.Renderer.World3DRenderer.WPosPerMeterHeight);
 			position += viewOffset;
 
-			float3 ssziehalf, soffset;
-			float2 leftRight, topBottom;
-
-			if (r.HasMeshCreateInfo)
-			{
-				ssziehalf = scale * r.Ssziehalf;
-				soffset = scale * r.Soffset;
-				leftRight = scale * r.LeftRight;
-				topBottom = scale * r.TopBottom;
-			}
-			else
-			{
-				Console.WriteLine("Don't have Mesh create info");
-				ssziehalf = Game.Renderer.World3DRenderer.MeterPerPix * scale * r.Size / 2;
-				soffset = Game.Renderer.World3DRenderer.MeterPerPix * scale * r.Offset;
-				leftRight = new float2(soffset.X - ssziehalf.X, soffset.X + ssziehalf.X);
-				topBottom = new float2(ssziehalf.Y - soffset.Y, soffset.Y + ssziehalf.Y);
-			}
-
-			float3 leftTop = new float3(position.x + leftRight.X, position.y, position.z + (topBottom.X) / Game.Renderer.World3DRenderer.SinCameraPitch);
+			float3 leftTop = new float3(position.x + leftRight.X, position.y, position.z + r.leftTop.Z);
 			float3 rightTop = new float3(position.x + leftRight.Y, position.y, leftTop.Z);
-			float3 leftBottom = new float3(leftTop.X, position.y, position.z - (topBottom.Y) / Game.Renderer.World3DRenderer.SinCameraPitch);
+			float3 leftBottom = new float3(leftTop.X, position.y, position.z + r.leftBottom.Z);
 			float3 rightBottom = new float3(rightTop.X, position.y, leftBottom.Z);
 
 			float sl = 0;

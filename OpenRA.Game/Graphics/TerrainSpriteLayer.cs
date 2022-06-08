@@ -29,6 +29,7 @@ namespace OpenRA.Graphics
 		readonly bool[] ignoreTint;
 		readonly HashSet<int> dirtyRows = new HashSet<int>();
 		readonly int rowStride;
+		readonly int maxVerticesPerCell;
 		readonly bool restrictToBounds;
 
 		readonly WorldRenderer worldRenderer;
@@ -45,7 +46,9 @@ namespace OpenRA.Graphics
 			BlendMode = blendMode;
 
 			map = world.Map;
-			rowStride = 6 * map.MapSize.X;
+			maxVerticesPerCell = 12;
+
+			rowStride = maxVerticesPerCell * map.MapSize.X;
 
 			vertices = new Vertex[rowStride * map.MapSize.Y];
 			palettes = new PaletteReference[map.MapSize.X * map.MapSize.Y];
@@ -80,10 +83,10 @@ namespace OpenRA.Graphics
 
 		public void Update(CPos cell, ISpriteSequence sequence, PaletteReference palette, int frame)
 		{
-			Update(cell, sequence.GetSprite(frame), palette, sequence.Scale, sequence.GetAlpha(frame), sequence.IgnoreWorldTint);
+			Update(cell, sequence.GetSprite(frame), palette, sequence.Scale, sequence.GetAlpha(frame), sequence.IgnoreWorldTint, sequence.ZOffset);
 		}
 
-		public void Update(CPos cell, Sprite sprite, PaletteReference palette, float scale = 1f, float alpha = 1f, bool ignoreTint = false)
+		public void Update(CPos cell, Sprite sprite, PaletteReference palette, float scale = 1f, float alpha = 1f, bool ignoreTint = false, int zOffset = -1)
 		{
 			//var xyz = float3.Zero;
 			WPos wPos = WPos.Zero;
@@ -94,12 +97,12 @@ namespace OpenRA.Graphics
 				wPos = map.CenterOfCell(cell) - new WVec(0, 0, map.Grid.Ramps[map.Ramp[cell]].CenterHeightOffset);
 			}
 
-			Update(cell.ToMPos(map.Grid.Type), sprite, palette, wPos, scale, alpha, ignoreTint);
+			Update(cell.ToMPos(map.Grid.Type), sprite, palette, wPos, scale, alpha, ignoreTint, zOffset);
 		}
 
 		void UpdateTint(MPos uv)
 		{
-			var offset = rowStride * uv.V + 6 * uv.U;
+			var offset = rowStride * uv.V + maxVerticesPerCell * uv.U;
 			if (ignoreTint[offset])
 			{
 				for (var i = 0; i < 6; i++)
@@ -156,7 +159,7 @@ namespace OpenRA.Graphics
 			throw new InvalidDataException("Sheet overflow");
 		}
 
-		public void Update(MPos uv, Sprite sprite, PaletteReference palette, in WPos pos, float scale, float alpha, bool ignoreTint)
+		public void Update(MPos uv, Sprite sprite, PaletteReference palette, in WPos pos, float scale, float alpha, bool ignoreTint, int zOffset = -1)
 		{
 			int2 samplers;
 			if (sprite != null)
@@ -182,8 +185,27 @@ namespace OpenRA.Graphics
 			if (!map.Tiles.Contains(uv))
 				return;
 
-			var offset = rowStride * uv.V + 6 * uv.U;
-			Util.FastCreatePlane(vertices, pos, GlmSharp.vec3.Zero, sprite, samplers, palette?.TextureIndex ?? 0, scale, alpha * float3.Ones, alpha, offset);
+			// Note that since the maximum number of vertices per cell is used here, null values may appear in the vertices array 
+			var offset = rowStride * uv.V + maxVerticesPerCell * uv.U;
+
+			var viewOffset = Game.Renderer.World3DRenderer.InverseCameraFrontMeterPerWPos * zOffset;
+
+			var spriteMeshType = sprite.SpriteMeshType;
+
+			switch (spriteMeshType)
+			{
+				case SpriteMeshType.Plane:
+					Util.FastCreatePlane(vertices, pos, viewOffset, sprite, samplers, palette?.TextureIndex ?? 0, scale, alpha * float3.Ones, alpha, offset);
+					break;
+				case SpriteMeshType.Card:
+					Util.FastCreateCard(vertices, pos, viewOffset, sprite, samplers, palette?.TextureIndex ?? 0, scale, alpha * float3.Ones, alpha, offset);
+					break;
+				case SpriteMeshType.Board:
+					Util.FastCreateBoard(vertices, pos, viewOffset, sprite, samplers, palette?.TextureIndex ?? 0, scale, alpha * float3.Ones, alpha, offset);
+					break;
+				default: throw new Exception("not valid SpriteMeshType for terrain");
+			}
+
 			palettes[uv.V * map.MapSize.X + uv.U] = palette;
 
 			if (worldRenderer.TerrainLighting != null)

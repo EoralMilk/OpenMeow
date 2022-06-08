@@ -302,7 +302,7 @@ namespace OpenRA.Mods.Common.Graphics
 							var dy = subOffset.Y + offset.Y + (subFlipY ? -s.Offset.Y : s.Offset.Y);
 							var dz = subOffset.Z + offset.Z + s.Offset.Z + ZRamp * dy;
 
-							return new Sprite(s.Sheet, bounds, ZRamp, new float3(dx, dy, dz), s.Channel, blendMode);
+							return new Sprite(s.Sheet, bounds, ZRamp, new float3(dx, dy, dz), s.Channel, blendMode, spriteMeshType: MeshType);
 						}).ToList();
 
 						var frames = subFrames != null ? subFrames.Skip(subStart).Take(subLength).ToArray() : Exts.MakeArray(subLength, i => subStart + i);
@@ -327,7 +327,7 @@ namespace OpenRA.Mods.Common.Graphics
 						var dy = offset.Y + (flipY ? -s.Offset.Y : s.Offset.Y);
 						var dz = offset.Z + s.Offset.Z + ZRamp * dy;
 
-						return new Sprite(s.Sheet, bounds, ZRamp, new float3(dx, dy, dz), s.Channel, blendMode);
+						return new Sprite(s.Sheet, bounds, ZRamp, new float3(dx, dy, dz), s.Channel, blendMode, spriteMeshType: MeshType);
 					}).ToArray();
 				}
 

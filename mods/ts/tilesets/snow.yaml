@@ -726,6 +726,7 @@ Templates:
 				MaxColor: 96ACBF
 				ZOffset: -12
 				ZRamp: 0
+				MeshType: Card
 			3: Cliff
 				Height: 4
 				MinColor: 5A6C7A
@@ -754,6 +755,7 @@ Templates:
 				MaxColor: 93ABC2
 				ZOffset: -12
 				ZRamp: 0
+				MeshType: Card
 	Template@62:
 		Categories: Cliff Set
 		Id: 62
@@ -771,6 +773,7 @@ Templates:
 				MaxColor: 94A9C0
 				ZOffset: -12
 				ZRamp: 0
+				MeshType: Card
 			3: Cliff
 				Height: 4
 				MinColor: 798795
@@ -799,6 +802,7 @@ Templates:
 				MaxColor: A9BECE
 				ZOffset: -12
 				ZRamp: 0
+				MeshType: Card
 			3: Cliff
 				Height: 4
 				MinColor: 8B99A7
@@ -833,11 +837,13 @@ Templates:
 				MaxColor: AAC0D5
 				ZOffset: -12
 				ZRamp: 0
+				MeshType: Card
 			3: Cliff
 				MinColor: B6D0E9
 				MaxColor: A9BED2
 				ZOffset: -12
 				ZRamp: 0
+				MeshType: Card
 	Template@65:
 		Categories: Cliff Set
 		Id: 65
@@ -861,11 +867,13 @@ Templates:
 				MaxColor: 9EB4C7
 				ZOffset: -12
 				ZRamp: 0
+				MeshType: Card
 			3: Cliff
 				MinColor: B4CDE6
 				MaxColor: 97AEC4
 				ZOffset: -12
 				ZRamp: 0
+				MeshType: Card
 	Template@66:
 		Categories: Cliff Set
 		Id: 66
@@ -889,11 +897,13 @@ Templates:
 				MaxColor: 91A8BB
 				ZOffset: -12
 				ZRamp: 0
+				MeshType: Card
 			3: Cliff
 				MinColor: B3CDE4
 				MaxColor: A6BACB
 				ZOffset: -12
 				ZRamp: 0
+				MeshType: Card
 	Template@67:
 		Categories: Cliff Set
 		Id: 67
@@ -911,6 +921,7 @@ Templates:
 				MaxColor: 8BA4BA
 				ZOffset: -12
 				ZRamp: 0
+				MeshType: Card
 	Template@68:
 		Categories: Cliff Set
 		Id: 68
@@ -928,11 +939,13 @@ Templates:
 				MaxColor: 99ADC0
 				ZOffset: -12
 				ZRamp: 0
+				MeshType: Card
 			2: Cliff
 				MinColor: A4B8CC
 				MaxColor: A4B9CE
 				ZOffset: -12
 				ZRamp: 0
+				MeshType: Card
 	Template@69:
 		Categories: Cliff Set
 		Id: 69
@@ -950,11 +963,13 @@ Templates:
 				MaxColor: 9CB3CA
 				ZOffset: -12
 				ZRamp: 0
+				MeshType: Card
 			2: Cliff
 				MinColor: 83A0BC
 				MaxColor: 93ADCC
 				ZOffset: -12
 				ZRamp: 0
+				MeshType: Card
 	Template@70:
 		Categories: Cliff Set
 		Id: 70
@@ -972,11 +987,13 @@ Templates:
 				MaxColor: 8FA9C4
 				ZOffset: -12
 				ZRamp: 0
+				MeshType: Card
 			2: Cliff
 				MinColor: 8FA8C0
 				MaxColor: A8C0D4
 				ZOffset: -12
 				ZRamp: 0
+				MeshType: Card
 	Template@71:
 		Categories: Cliff Set
 		Id: 71
@@ -988,6 +1005,7 @@ Templates:
 				MaxColor: A3B9CE
 				ZOffset: -12
 				ZRamp: 0
+				MeshType: Card
 	Template@72:
 		Categories: Cliff Set
 		Id: 72
@@ -999,6 +1017,7 @@ Templates:
 				MaxColor: A6BDD2
 				ZOffset: -12
 				ZRamp: 0
+				MeshType: Card
 	Template@73:
 		Categories: Cliff Set
 		Id: 73
@@ -1010,6 +1029,7 @@ Templates:
 				MaxColor: 83A0B5
 				ZOffset: -12
 				ZRamp: 0
+				MeshType: Card
 	Template@74:
 		Categories: Cliff Set
 		Id: 74
@@ -1027,6 +1047,7 @@ Templates:
 				MaxColor: 7997AE
 				ZOffset: -12
 				ZRamp: 0
+				MeshType: Card
 			2: Cliff
 				Height: 4
 				MinColor: 899EB0
@@ -1038,6 +1059,7 @@ Templates:
 				MaxColor: 819EB5
 				ZOffset: -12
 				ZRamp: 0
+				MeshType: Card
 	Template@75:
 		Categories: Cliff Set
 		Id: 75
@@ -1055,6 +1077,7 @@ Templates:
 				MaxColor: 7795AA
 				ZOffset: -12
 				ZRamp: 0
+				MeshType: Card
 			2: Cliff
 				Height: 4
 				MinColor: 8296A9
@@ -1066,6 +1089,7 @@ Templates:
 				MaxColor: 83A1BA
 				ZOffset: -12
 				ZRamp: 0
+				MeshType: Card
 	Template@76:
 		Categories: Cliff Set
 		Id: 76
@@ -1083,6 +1107,7 @@ Templates:
 				MaxColor: 829CB4
 				ZOffset: -12
 				ZRamp: 0
+				MeshType: Card
 			2: Cliff
 				Height: 4
 				MinColor: 8BA0B4
@@ -1094,6 +1119,7 @@ Templates:
 				MaxColor: 7991A6
 				ZOffset: -12
 				ZRamp: 0
+				MeshType: Card
 	Template@77:
 		Categories: Cliff Set
 		Id: 77
@@ -1111,6 +1137,7 @@ Templates:
 				MaxColor: 859EB1
 				ZOffset: -12
 				ZRamp: 0
+				MeshType: Card
 	Template@78:
 		Categories: Cliff Set
 		Id: 78
@@ -1128,6 +1155,7 @@ Templates:
 				MaxColor: 7F9AAE
 				ZOffset: -12
 				ZRamp: 0
+				MeshType: Card
 			4: Cliff
 				Height: 4
 				MinColor: 889BAD
@@ -1139,6 +1167,7 @@ Templates:
 				MaxColor: 8EA9C3
 				ZOffset: -12
 				ZRamp: 0
+				MeshType: Card
 	Template@79:
 		Categories: Cliff Set
 		Id: 79
@@ -1156,6 +1185,7 @@ Templates:
 				MaxColor: 849EB0
 				ZOffset: -12
 				ZRamp: 0
+				MeshType: Card
 			4: Cliff
 				Height: 4
 				MinColor: 8A9FB2
@@ -1167,6 +1197,7 @@ Templates:
 				MaxColor: 9CB7D0
 				ZOffset: -12
 				ZRamp: 0
+				MeshType: Card
 	Template@80:
 		Categories: Cliff Set
 		Id: 80
@@ -1184,6 +1215,7 @@ Templates:
 				MaxColor: 94AABD
 				ZOffset: -12
 				ZRamp: 0
+				MeshType: Card
 			4: Cliff
 				Height: 4
 				MinColor: 8DA0B2
@@ -1195,6 +1227,7 @@ Templates:
 				MaxColor: A4BBD1
 				ZOffset: -12
 				ZRamp: 0
+				MeshType: Card
 	Template@81:
 		Categories: Cliff Set
 		Id: 81
@@ -1212,6 +1245,7 @@ Templates:
 				MaxColor: 88A0B4
 				ZOffset: -12
 				ZRamp: 0
+				MeshType: Card
 	Template@82:
 		Categories: Cliff Set
 		Id: 82
@@ -3241,6 +3275,7 @@ Templates:
 				MaxColor: A2B6C6
 				ZOffset: -12
 				ZRamp: 0
+				MeshType: Card
 			3: Cliff
 				Height: 4
 				MinColor: 6A7B87
@@ -3252,6 +3287,7 @@ Templates:
 				MaxColor: 93A8BE
 				ZOffset: -12
 				ZRamp: 0
+				MeshType: Card
 	Template@168:
 		Categories: Cliff/Water pieces
 		Id: 168
@@ -3269,6 +3305,7 @@ Templates:
 				MaxColor: 8BA3BB
 				ZOffset: -12
 				ZRamp: 0
+				MeshType: Card
 	Template@169:
 		Categories: Cliff/Water pieces
 		Id: 169
@@ -3286,6 +3323,7 @@ Templates:
 				MaxColor: 96AAC0
 				ZOffset: -12
 				ZRamp: 0
+				MeshType: Card
 			3: Cliff
 				Height: 4
 				MinColor: 788695
@@ -3297,6 +3335,7 @@ Templates:
 				MaxColor: 8DA1BF
 				ZOffset: -12
 				ZRamp: 0
+				MeshType: Card
 	Template@170:
 		Categories: Cliff/Water pieces
 		Id: 170
@@ -3314,6 +3353,7 @@ Templates:
 				MaxColor: A7BBCB
 				ZOffset: -12
 				ZRamp: 0
+				MeshType: Card
 			3: Cliff
 				Height: 4
 				MinColor: 8997A4
@@ -3325,6 +3365,7 @@ Templates:
 				MaxColor: A1B7CC
 				ZOffset: -12
 				ZRamp: 0
+				MeshType: Card
 	Template@171:
 		Categories: Cliff/Water pieces
 		Id: 171
@@ -3348,11 +3389,13 @@ Templates:
 				MaxColor: 8CA6B9
 				ZOffset: -12
 				ZRamp: 0
+				MeshType: Card
 			3: Cliff
 				MinColor: 8A9FBB
 				MaxColor: 93A8BE
 				ZOffset: -12
 				ZRamp: 0
+				MeshType: Card
 	Template@172:
 		Categories: Cliff/Water pieces
 		Id: 172
@@ -3376,11 +3419,13 @@ Templates:
 				MaxColor: A3B7C8
 				ZOffset: -12
 				ZRamp: 0
+				MeshType: Card
 			3: Cliff
 				MinColor: 96ACC7
 				MaxColor: A1B6CB
 				ZOffset: -12
 				ZRamp: 0
+				MeshType: Card
 	Template@173:
 		Categories: Cliff/Water pieces
 		Id: 173
@@ -3404,11 +3449,13 @@ Templates:
 				MaxColor: 95A8B7
 				ZOffset: -12
 				ZRamp: 0
+				MeshType: Card
 			3: Cliff
 				MinColor: B5C4D8
 				MaxColor: 96ABBE
 				ZOffset: -12
 				ZRamp: 0
+				MeshType: Card
 	Template@174:
 		Categories: Cliff/Water pieces
 		Id: 174
@@ -3426,6 +3473,7 @@ Templates:
 				MaxColor: 859CB3
 				ZOffset: -12
 				ZRamp: 0
+				MeshType: Card
 	Template@175:
 		Categories: Cliff/Water pieces
 		Id: 175
@@ -3443,11 +3491,13 @@ Templates:
 				MaxColor: 92A8BC
 				ZOffset: -12
 				ZRamp: 0
+				MeshType: Card
 			2: Cliff
 				MinColor: A3B7CE
 				MaxColor: 9AAFC5
 				ZOffset: -12
 				ZRamp: 0
+				MeshType: Card
 	Template@176:
 		Categories: Cliff/Water pieces
 		Id: 176
@@ -3465,11 +3515,13 @@ Templates:
 				MaxColor: 9EB7D0
 				ZOffset: -12
 				ZRamp: 0
+				MeshType: Card
 			2: Cliff
 				MinColor: 8CA6C1
 				MaxColor: 84A0BC
 				ZOffset: -12
 				ZRamp: 0
+				MeshType: Card
 			3: Cliff
 				MinColor: 7F93B5
 				MaxColor: 8095B8
@@ -3492,11 +3544,13 @@ Templates:
 				MaxColor: 94AEC7
 				ZOffset: -12
 				ZRamp: 0
+				MeshType: Card
 			2: Cliff
 				MinColor: 94ABC3
 				MaxColor: AEC4D9
 				ZOffset: -12
 				ZRamp: 0
+				MeshType: Card
 	Template@178:
 		Categories: Cliff/Water pieces
 		Id: 178
@@ -3508,6 +3562,7 @@ Templates:
 				MaxColor: 9DB2C7
 				ZOffset: -12
 				ZRamp: 0
+				MeshType: Card
 	Template@179:
 		Categories: Cliff/Water pieces
 		Id: 179
@@ -3519,6 +3574,7 @@ Templates:
 				MaxColor: A4B9CF
 				ZOffset: -12
 				ZRamp: 0
+				MeshType: Card
 	Template@180:
 		Categories: Cliff/Water pieces
 		Id: 180
@@ -3530,6 +3586,7 @@ Templates:
 				MaxColor: 8AA3B6
 				ZOffset: -12
 				ZRamp: 0
+				MeshType: Card
 	Template@181:
 		Categories: Cliff/Water pieces
 		Id: 181
@@ -3547,6 +3604,7 @@ Templates:
 				MaxColor: 7591AB
 				ZOffset: -12
 				ZRamp: 0
+				MeshType: Card
 			2: Cliff
 				Height: 4
 				MinColor: 899EB0
@@ -3558,6 +3616,7 @@ Templates:
 				MaxColor: 708BA0
 				ZOffset: -12
 				ZRamp: 0
+				MeshType: Card
 	Template@182:
 		Categories: Cliff/Water pieces
 		Id: 182
@@ -3575,6 +3634,7 @@ Templates:
 				MaxColor: 738FA5
 				ZOffset: -12
 				ZRamp: 0
+				MeshType: Card
 			2: Cliff
 				Height: 4
 				MinColor: 8296A9
@@ -3586,6 +3646,7 @@ Templates:
 				MaxColor: 859EB7
 				ZOffset: -12
 				ZRamp: 0
+				MeshType: Card
 	Template@183:
 		Categories: Cliff/Water pieces
 		Id: 183
@@ -3603,6 +3664,7 @@ Templates:
 				MaxColor: 7892AB
 				ZOffset: -12
 				ZRamp: 0
+				MeshType: Card
 			2: Cliff
 				Height: 4
 				MinColor: 8BA0B4
@@ -3614,6 +3676,7 @@ Templates:
 				MaxColor: 657E90
 				ZOffset: -12
 				ZRamp: 0
+				MeshType: Card
 	Template@184:
 		Categories: Cliff/Water pieces
 		Id: 184
@@ -3631,6 +3694,7 @@ Templates:
 				MaxColor: 7F98AC
 				ZOffset: -12
 				ZRamp: 0
+				MeshType: Card
 	Template@185:
 		Categories: Cliff/Water pieces
 		Id: 185
@@ -3648,6 +3712,7 @@ Templates:
 				MaxColor: 7991A6
 				ZOffset: -12
 				ZRamp: 0
+				MeshType: Card
 			4: Cliff
 				Height: 4
 				MinColor: 899CAF
@@ -3659,6 +3724,7 @@ Templates:
 				MaxColor: 889FBD
 				ZOffset: -12
 				ZRamp: 0
+				MeshType: Card
 	Template@186:
 		Categories: Cliff/Water pieces
 		Id: 186
@@ -3676,6 +3742,7 @@ Templates:
 				MaxColor: 7C95AB
 				ZOffset: -12
 				ZRamp: 0
+				MeshType: Card
 			4: Cliff
 				Height: 4
 				MinColor: 8BA0B3
@@ -3687,6 +3754,7 @@ Templates:
 				MaxColor: 7C94B4
 				ZOffset: -12
 				ZRamp: 0
+				MeshType: Card
 	Template@187:
 		Categories: Cliff/Water pieces
 		Id: 187
@@ -3704,6 +3772,7 @@ Templates:
 				MaxColor: 859BAE
 				ZOffset: -12
 				ZRamp: 0
+				MeshType: Card
 			4: Cliff
 				Height: 4
 				MinColor: 8DA0B2
@@ -3715,6 +3784,7 @@ Templates:
 				MaxColor: 8EA4C4
 				ZOffset: -12
 				ZRamp: 0
+				MeshType: Card
 	Template@188:
 		Categories: Cliff/Water pieces
 		Id: 188
@@ -3732,6 +3802,7 @@ Templates:
 				MaxColor: 8BA2B6
 				ZOffset: -12
 				ZRamp: 0
+				MeshType: Card
 	Template@189:
 		Categories: Cliff/Water pieces
 		Id: 189
@@ -3749,6 +3820,7 @@ Templates:
 				MaxColor: 92AABD
 				ZOffset: -12
 				ZRamp: 0
+				MeshType: Card
 			3: Cliff
 				Height: 4
 				MinColor: 637683
@@ -3765,6 +3837,7 @@ Templates:
 				MaxColor: 91A7BD
 				ZOffset: -12
 				ZRamp: 0
+				MeshType: Card
 	Template@190:
 		Categories: Cliff/Water pieces
 		Id: 190
@@ -3776,6 +3849,7 @@ Templates:
 				MaxColor: 92ABBE
 				ZOffset: -12
 				ZRamp: 0
+				MeshType: Card
 			1: Cliff
 				MinColor: 8B9FBD
 				MaxColor: ACBFD1
@@ -3792,6 +3866,7 @@ Templates:
 				MaxColor: A4BACF
 				ZOffset: -12
 				ZRamp: 0
+				MeshType: Card
 			1: Cliff
 				MinColor: B2C4D4
 				MaxColor: 99ABC6
@@ -3808,6 +3883,7 @@ Templates:
 				MaxColor: 9FB5CA
 				ZOffset: -12
 				ZRamp: 0
+				MeshType: Card
 			1: Cliff
 				MinColor: 9BACC4
 				MaxColor: B2C7DC
@@ -3824,6 +3900,7 @@ Templates:
 				MaxColor: 90A7BC
 				ZOffset: -12
 				ZRamp: 0
+				MeshType: Card
 			1: Cliff
 				MinColor: B6CADC
 				MaxColor: 9BAEC7
@@ -3846,6 +3923,7 @@ Templates:
 				MaxColor: 95ABBF
 				ZOffset: -12
 				ZRamp: 0
+				MeshType: Card
 			2: Cliff
 				MinColor: A7BDD3
 				MaxColor: 98A9BE
@@ -3862,6 +3940,7 @@ Templates:
 				MaxColor: 9DB5CE
 				ZOffset: -12
 				ZRamp: 0
+				MeshType: Card
 	Template@195:
 		Categories: Bendy Dirt Roads
 		Id: 195
@@ -17279,31 +17358,37 @@ Templates:
 				MaxColor: ACC1D5
 				ZOffset: -12
 				ZRamp: 0
+				MeshType: Card
 			13: Cliff
 				MinColor: D9E9F4
 				MaxColor: B1C3D3
 				ZOffset: -12
 				ZRamp: 0
+				MeshType: Card
 			14: Cliff
 				MinColor: C6D8E5
 				MaxColor: AABED1
 				ZOffset: -12
 				ZRamp: 0
+				MeshType: Card
 			15: Cliff
 				MinColor: BED1E1
 				MaxColor: 9CB3C8
 				ZOffset: -12
 				ZRamp: 0
+				MeshType: Card
 			16: Cliff
 				MinColor: B7CDE1
 				MaxColor: 94AABD
 				ZOffset: -12
 				ZRamp: 0
+				MeshType: Card
 			17: Cliff
 				MinColor: B3CDE7
 				MaxColor: A6BCCF
 				ZOffset: -12
 				ZRamp: 0
+				MeshType: Card
 			19: Cliff
 				MinColor: BCD8F1
 				MaxColor: C5DDF2
@@ -17341,6 +17426,7 @@ Templates:
 				MaxColor: 87A2B8
 				ZOffset: -12
 				ZRamp: 0
+				MeshType: Card
 			4: Cliff
 				Height: 4
 				MinColor: 96A7B5
@@ -17358,6 +17444,7 @@ Templates:
 				MaxColor: 7E9BB4
 				ZOffset: -12
 				ZRamp: 0
+				MeshType: Card
 			7: Cliff
 				MinColor: BBD5ED
 				MaxColor: C2DCF2
@@ -17380,6 +17467,7 @@ Templates:
 				MaxColor: 839EB8
 				ZOffset: -12
 				ZRamp: 0
+				MeshType: Card
 			11: Cliff
 				MinColor: ADC8E6
 				MaxColor: BCD6EF
@@ -17402,6 +17490,7 @@ Templates:
 				MaxColor: 94ADC7
 				ZOffset: -12
 				ZRamp: 0
+				MeshType: Card
 			15: Cliff
 				MinColor: ADC8E7
 				MaxColor: B8D3EE
@@ -17424,6 +17513,7 @@ Templates:
 				MaxColor: 88A3B6
 				ZOffset: -12
 				ZRamp: 0
+				MeshType: Card
 			19: Cliff
 				MinColor: C3DCF0
 				MaxColor: BFDAF0
@@ -17440,6 +17530,7 @@ Templates:
 				MaxColor: 8AA7BF
 				ZOffset: -12
 				ZRamp: 0
+				MeshType: Card
 	Template@989:
 		Categories: Rock LAT
 		Id: 989

@@ -11,6 +11,7 @@
 
 using System.Collections.Generic;
 using OpenRA.FileSystem;
+using OpenRA.Graphics;
 using OpenRA.Primitives;
 using OpenRA.Support;
 using OpenRA.Traits;
@@ -46,6 +47,7 @@ namespace OpenRA
 		public readonly byte RampType;
 		public readonly Color MinColor;
 		public readonly Color MaxColor;
+		public readonly SpriteMeshType MeshType = SpriteMeshType.Plane;
 
 		public Color GetColor(MersenneTwister random)
 		{

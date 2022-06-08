@@ -25,16 +25,28 @@ namespace OpenRA.Graphics
 		public readonly float3 Offset;
 		public readonly float Top, Left, Bottom, Right;
 
-		public readonly bool HasMeshCreateInfo;
-		public readonly float3 Ssziehalf;
-		public readonly float3 Soffset;
-		public readonly float2 LeftRight;
-		public readonly float2 TopBottom;
+		public readonly SpriteMeshType SpriteMeshType;
+		public bool HasMeshCreateInfo;
+		public float3 Ssizehalf;
+		public float3 Soffset;
+		public float2 LeftRight;
+		public float2 TopBottom;
 
-		public Sprite(Sheet sheet, Rectangle bounds, TextureChannel channel, float scale = 1)
-			: this(sheet, bounds, 0, float2.Zero, channel, BlendMode.Alpha, scale) { }
+		public float3 leftBack;
+		public float3 rightBack;
+		public float3 leftFront;
+		public float3 rightFront;
+		public float3 leftTop;
+		public float3 rightTop;
+		public float3 leftBottom;
+		public float3 rightBottom;
+		public float3 leftBase;
+		public float3 rightBase;
 
-		public Sprite(Sheet sheet, Rectangle bounds, float zRamp, in float3 offset, TextureChannel channel, BlendMode blendMode = BlendMode.Alpha, float scale = 1f)
+		public Sprite(Sheet sheet, Rectangle bounds, TextureChannel channel, float scale = 1, SpriteMeshType spriteMeshType = SpriteMeshType.UI)
+			: this(sheet, bounds, 0, float2.Zero, channel, BlendMode.Alpha, scale, spriteMeshType) { }
+
+		public Sprite(Sheet sheet, Rectangle bounds, float zRamp, in float3 offset, TextureChannel channel, BlendMode blendMode = BlendMode.Alpha, float scale = 1f, SpriteMeshType spriteMeshType = SpriteMeshType.UI)
 		{
 			Sheet = sheet;
 			Bounds = bounds;
@@ -43,6 +55,7 @@ namespace OpenRA.Graphics
 			Channel = channel;
 			Size = scale * new float3(bounds.Size.Width, bounds.Size.Height, bounds.Size.Height * zRamp);
 			BlendMode = blendMode;
+			SpriteMeshType = spriteMeshType;
 
 			// Some GPUs suffer from precision issues when rendering into non 1:1 framebuffers that result
 			// in rendering a line of texels that sample outside the sprite rectangle.
@@ -54,20 +67,56 @@ namespace OpenRA.Graphics
 			Right = (Math.Max(bounds.Left, bounds.Right) - inset) / sheet.Size.Width;
 			Bottom = (Math.Max(bounds.Top, bounds.Bottom) - inset) / sheet.Size.Height;
 
+			UpdateMeshInfo();
+		}
+
+		public bool UpdateMeshInfo()
+		{
 			if (Game.Renderer.World3DRenderer != null)
 			{
 				HasMeshCreateInfo = true;
 
-				Ssziehalf = Game.Renderer.World3DRenderer.MeterPerPix * Size / 2;
+				Ssizehalf = Game.Renderer.World3DRenderer.MeterPerPix * Size / 2;
 				Soffset = Game.Renderer.World3DRenderer.MeterPerPix * Offset;
 
-				LeftRight = new float2(Soffset.X - Ssziehalf.X, Soffset.X + Ssziehalf.X);
-				TopBottom = new float2(Ssziehalf.Y - Soffset.Y, Soffset.Y + Ssziehalf.Y);
+				LeftRight = new float2(Soffset.X - Ssizehalf.X, Soffset.X + Ssizehalf.X);
+				TopBottom = new float2(Ssizehalf.Y - Soffset.Y, Soffset.Y + Ssizehalf.Y);
+
+				if (SpriteMeshType == SpriteMeshType.Plane || (SpriteMeshType == SpriteMeshType.Card && TopBottom.X < 0))
+				{
+					leftBack = new float3(LeftRight.X, -TopBottom.X / Game.Renderer.World3DRenderer.CosCameraPitch, 0);
+					rightBack = new float3(LeftRight.Y, leftBack.Y, 0);
+					leftFront = new float3(leftBack.X, TopBottom.Y / Game.Renderer.World3DRenderer.CosCameraPitch, 0);
+					rightFront = new float3(rightBack.X, leftFront.Y, 0);
+				}
+				else if (SpriteMeshType == SpriteMeshType.Board || (SpriteMeshType == SpriteMeshType.Card && TopBottom.Y < 0))
+				{
+					leftTop = new float3(LeftRight.X, 0, TopBottom.X / Game.Renderer.World3DRenderer.SinCameraPitch);
+					rightTop = new float3(LeftRight.Y, 0, leftTop.Z);
+					leftBottom = new float3(leftTop.X, 0, -TopBottom.Y / Game.Renderer.World3DRenderer.SinCameraPitch);
+					rightBottom = new float3(rightTop.X, 0, leftBottom.Z);
+				}
+				else if (SpriteMeshType == SpriteMeshType.Card)
+				{
+					leftTop = new float3(LeftRight.X, 0, TopBottom.X / Game.Renderer.World3DRenderer.SinCameraPitch);
+					rightTop = new float3(LeftRight.Y, 0, leftTop.Z);
+					leftBase = new float3(leftTop.X, 0, 0);
+					rightBase = new float3(rightTop.X, 0, 0);
+					leftFront = new float3(leftTop.X, TopBottom.Y / Game.Renderer.World3DRenderer.CosCameraPitch, 0);
+					rightFront = new float3(rightTop.X, leftFront.Y, 0);
+				}
+				else
+				{
+					// ...
+				}
+
 			}
 			else
 			{
 				HasMeshCreateInfo = false;
 			}
+
+			return HasMeshCreateInfo;
 		}
 	}
 
@@ -79,7 +128,7 @@ namespace OpenRA.Graphics
 		public readonly float SecondaryTop, SecondaryLeft, SecondaryBottom, SecondaryRight;
 
 		public SpriteWithSecondaryData(Sprite s, Sheet secondarySheet, Rectangle secondaryBounds, TextureChannel secondaryChannel)
-			: base(s.Sheet, s.Bounds, s.ZRamp, s.Offset, s.Channel, s.BlendMode)
+			: base(s.Sheet, s.Bounds, s.ZRamp, s.Offset, s.Channel, s.BlendMode, spriteMeshType: s.SpriteMeshType)
 		{
 			SecondarySheet = secondarySheet;
 			SecondaryBounds = secondaryBounds;
