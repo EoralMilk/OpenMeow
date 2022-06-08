@@ -26,7 +26,7 @@ namespace OpenRA.Platforms.Default
 	sealed class ThreadedGraphicsContext : IGraphicsContext
 	{
 		// PERF: Maintain several object pools to reduce allocations.
-		readonly Stack<object[]> verticesPool = new Stack<object[]>();
+		readonly Dictionary<Type, Stack<object>> verticesPool = new Dictionary<Type, Stack<object>>();
 
 		readonly Stack<Message> messagePool = new Stack<Message>();
 		readonly Queue<Message> messages = new Queue<Message>();
@@ -110,7 +110,7 @@ namespace OpenRA.Platforms.Default
 					getCreateVertexBuffer = (length, type) =>
 					{
 						var vertexBuffer = context.GetType().GetMethod(nameof(context.CreateVertexBuffer)).MakeGenericMethod(type).Invoke(context, new[] { length });
-						return typeof(ThreadedVertexBuffer<>).MakeGenericType(type).GetConstructors().First().Invoke(null, new[] { this, vertexBuffer });
+						return typeof(ThreadedVertexBuffer<>).MakeGenericType(type).GetConstructors().First().Invoke(new[] { this, vertexBuffer });
 					};
 					doDrawPrimitives =
 						 tuple =>
@@ -172,17 +172,22 @@ namespace OpenRA.Platforms.Default
 			where T : struct
 		{
 			lock (verticesPool)
-				if (size <= BatchSize && verticesPool.Count > 0)
-					return verticesPool.Pop().Cast<T>().ToArray();
+				if (verticesPool.ContainsKey(typeof(T)))
+					if (size <= BatchSize && verticesPool[typeof(T)].Count > 0)
+						return verticesPool[typeof(T)].Pop() as T[];
 
 			return new T[size < BatchSize ? BatchSize : size];
 		}
 
-		internal void ReturnVertices(object[] vertices)
+		internal void ReturnVertices<T>(T[] vertices)
 		{
 			if (vertices.Length == BatchSize)
 				lock (verticesPool)
-					verticesPool.Push(vertices);
+				{
+					if (!verticesPool.ContainsKey(typeof(T)))
+						verticesPool.Add(typeof(T), new Stack<object>());
+					verticesPool[typeof(T)].Push(vertices);
+				}
 		}
 
 		class Message
@@ -611,7 +616,7 @@ namespace OpenRA.Platforms.Default
 		}
 	}
 
-	class ThreadedVertexBuffer<T> : IVertexBuffer
+	class ThreadedVertexBuffer<T> : IVertexBuffer<T>
 		where T : struct
 	{
 		readonly ThreadedGraphicsContext device;

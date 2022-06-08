@@ -249,12 +249,12 @@ namespace OpenRA.Graphics
 			this.renderer = renderer;
 			IShader shader = renderer.GetOrCreateShader<MyShaderBindings>("MyShaderBindings");
 
-			using (var stream = File.OpenRead("./texture/container.png"))
+			using (var stream = File.OpenRead( Path.Combine(Platform.EngineDir, "texture", "container.png")))
 			{
 				image = ImageResult.FromStream(stream, ColorComponents.RedGreenBlueAlpha);
 			}
 
-			using (var stream = File.OpenRead("./texture/container2_specular.png"))
+			using (var stream = File.OpenRead( Path.Combine(Platform.EngineDir, "texture", "container2_specular.png")))
 			{
 				image2 = ImageResult.FromStream(stream, ColorComponents.RedGreenBlueAlpha);
 			}
