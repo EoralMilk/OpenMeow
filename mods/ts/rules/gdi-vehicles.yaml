@@ -217,7 +217,7 @@ MMCH:
 	RenderModels:
 		NormalsPalette: normals
 		ShadowPalette: shadow
-		Scale: 0.1
+		Scale: 1
 	WithModelBarrel:
 		LocalOffset: 0,51,256
 	Selectable:
@@ -357,7 +357,7 @@ JUGG:
 	RenderModels:
 		NormalsPalette: normals
 		ShadowPalette: shadow
-		Scale: 0.1
+		Scale: 1
 		LightAmbientColor: 0.4, 0.4, 0.4
 	RenderSprites:
 		Image: jugg

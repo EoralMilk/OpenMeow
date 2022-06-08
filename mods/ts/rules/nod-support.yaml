@@ -201,7 +201,7 @@ NALASR:
 	RenderModels:
 		NormalsPalette: normals
 		ShadowPalette: shadow
-		Scale: 0.1
+		Scale: 1
 	WithModelTurret:
 		RequiresCondition: !build-incomplete
 	Power:

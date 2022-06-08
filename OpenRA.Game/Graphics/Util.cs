@@ -28,13 +28,27 @@ namespace OpenRA.Graphics
 		{
 			var position = new vec3((float)inPos.X / Game.Renderer.World3DRenderer.WPosPerMeter, (float)inPos.Y / Game.Renderer.World3DRenderer.WPosPerMeter, (float)inPos.Z / Game.Renderer.World3DRenderer.WPosPerMeterHeight);
 			position += viewOffset;
-			var ssziehalf = Game.Renderer.World3DRenderer.MeterPerPix * scale * r.Size / 2;
-			var soffset = Game.Renderer.World3DRenderer.MeterPerPix * scale * r.Offset;
 
-			float2 leftRight = new float2(soffset.X - ssziehalf.X, soffset.X + ssziehalf.X);
-			float2 topBottom = new float2(ssziehalf.Y - soffset.Y, soffset.Y + ssziehalf.Y); // ������ܱȽ���֣�һ�㶼��top��bottom��ֵ
+			float3 ssziehalf, soffset;
+			float2 leftRight, topBottom; // In general, both top and bottom are positive
 
-			// sprite�Ķ��ߵ������ߣ���ô����spriteӦ���Ƿ�ƽ��
+			if (r.HasMeshCreateInfo)
+			{
+				ssziehalf = scale * r.Ssziehalf;
+				soffset = scale * r.Soffset;
+				leftRight = scale * r.LeftRight;
+				topBottom = scale * r.TopBottom;
+			}
+			else
+			{
+				Console.WriteLine("Don't have Mesh create info");
+				ssziehalf = Game.Renderer.World3DRenderer.MeterPerPix * scale * r.Size / 2;
+				soffset = Game.Renderer.World3DRenderer.MeterPerPix * scale * r.Offset;
+				leftRight = new float2(soffset.X - ssziehalf.X, soffset.X + ssziehalf.X);
+				topBottom = new float2(ssziehalf.Y - soffset.Y, soffset.Y + ssziehalf.Y);
+			}
+
+			// sprite only has horizental part
 			if (topBottom.X < 0)
 			{
 				float3 leftBack = new float3(position.x + leftRight.X, position.y - topBottom.X / Game.Renderer.World3DRenderer.CosCameraPitch, position.z);
@@ -73,8 +87,7 @@ namespace OpenRA.Graphics
 
 				return 6;
 			}
-			// sprite�ĵױ߸������ߣ�����spriteӦ����������
-			else if (topBottom.Y < 0)
+			else if (topBottom.Y < 0) // sprite only has vertical part
 			{
 				float3 leftTop = new float3(position.x + leftRight.X, position.y, position.z + (topBottom.X) / Game.Renderer.World3DRenderer.SinCameraPitch);
 				float3 rightTop = new float3(position.x + leftRight.Y, position.y, leftTop.Z);
@@ -174,11 +187,25 @@ namespace OpenRA.Graphics
 		{
 			var position = new vec3((float)inPos.X / Game.Renderer.World3DRenderer.WPosPerMeter, (float)inPos.Y / Game.Renderer.World3DRenderer.WPosPerMeter, (float)inPos.Z / Game.Renderer.World3DRenderer.WPosPerMeterHeight);
 			position += viewOffset;
-			var ssziehalf = Game.Renderer.World3DRenderer.MeterPerPix * scale * r.Size / 2;
-			var soffset = Game.Renderer.World3DRenderer.MeterPerPix * scale * r.Offset;
 
-			float2 leftRight = new float2(soffset.X - ssziehalf.X, soffset.X + ssziehalf.X);
-			float2 topBottom = new float2(ssziehalf.Y - soffset.Y, soffset.Y + ssziehalf.Y);
+			float3 ssziehalf, soffset;
+			float2 leftRight, topBottom;
+
+			if (r.HasMeshCreateInfo)
+			{
+				ssziehalf = scale * r.Ssziehalf;
+				soffset = scale * r.Soffset;
+				leftRight = scale * r.LeftRight;
+				topBottom = scale * r.TopBottom;
+			}
+			else
+			{
+				Console.WriteLine("Don't have Mesh create info");
+				ssziehalf = Game.Renderer.World3DRenderer.MeterPerPix * scale * r.Size / 2;
+				soffset = Game.Renderer.World3DRenderer.MeterPerPix * scale * r.Offset;
+				leftRight = new float2(soffset.X - ssziehalf.X, soffset.X + ssziehalf.X);
+				topBottom = new float2(ssziehalf.Y - soffset.Y, soffset.Y + ssziehalf.Y);
+			}
 
 			float3 leftBack = new float3(position.x + leftRight.X, position.y - topBottom.X / Game.Renderer.World3DRenderer.CosCameraPitch, position.z);
 			float3 rightBack = new float3(position.x + leftRight.Y, leftBack.Y, position.z);
@@ -213,6 +240,68 @@ namespace OpenRA.Graphics
 			vertices[nv + 3] = new Vertex(rightFront, r.Right, r.Bottom, sr, sb, paletteTextureIndex, fAttribC, tint, alpha);
 			vertices[nv + 4] = new Vertex(leftFront, r.Left, r.Bottom, sl, sb, paletteTextureIndex, fAttribC, tint, alpha);
 			vertices[nv + 5] = new Vertex(leftBack, r.Left, r.Top, sl, st, paletteTextureIndex, fAttribC, tint, alpha);
+		}
+
+		public static void FastCreateBoard(Vertex[] vertices,
+			in WPos inPos, in vec3 viewOffset,
+			Sprite r, int2 samplers, float paletteTextureIndex, float scale,
+			in float3 tint, float alpha, int nv)
+		{
+			var position = new vec3((float)inPos.X / Game.Renderer.World3DRenderer.WPosPerMeter, (float)inPos.Y / Game.Renderer.World3DRenderer.WPosPerMeter, (float)inPos.Z / Game.Renderer.World3DRenderer.WPosPerMeterHeight);
+			position += viewOffset;
+
+			float3 ssziehalf, soffset;
+			float2 leftRight, topBottom;
+
+			if (r.HasMeshCreateInfo)
+			{
+				ssziehalf = scale * r.Ssziehalf;
+				soffset = scale * r.Soffset;
+				leftRight = scale * r.LeftRight;
+				topBottom = scale * r.TopBottom;
+			}
+			else
+			{
+				Console.WriteLine("Don't have Mesh create info");
+				ssziehalf = Game.Renderer.World3DRenderer.MeterPerPix * scale * r.Size / 2;
+				soffset = Game.Renderer.World3DRenderer.MeterPerPix * scale * r.Offset;
+				leftRight = new float2(soffset.X - ssziehalf.X, soffset.X + ssziehalf.X);
+				topBottom = new float2(ssziehalf.Y - soffset.Y, soffset.Y + ssziehalf.Y);
+			}
+
+			float3 leftTop = new float3(position.x + leftRight.X, position.y, position.z + (topBottom.X) / Game.Renderer.World3DRenderer.SinCameraPitch);
+			float3 rightTop = new float3(position.x + leftRight.Y, position.y, leftTop.Z);
+			float3 leftBottom = new float3(leftTop.X, position.y, position.z - (topBottom.Y) / Game.Renderer.World3DRenderer.SinCameraPitch);
+			float3 rightBottom = new float3(rightTop.X, position.y, leftBottom.Z);
+
+			float sl = 0;
+			float st = 0;
+			float sr = 0;
+			float sb = 0;
+
+			// See combined.vert for documentation on the channel attribute format
+			var attribC = r.Channel == TextureChannel.RGBA ? 0x02 : ((byte)r.Channel) << 1 | 0x01;
+			attribC |= samplers.X << 6;
+			if (r is SpriteWithSecondaryData ss)
+			{
+				sl = ss.SecondaryLeft;
+				st = ss.SecondaryTop;
+				sr = ss.SecondaryRight;
+				sb = ss.SecondaryBottom;
+
+				attribC |= ((byte)ss.SecondaryChannel) << 4 | 0x08;
+				attribC |= samplers.Y << 9;
+			}
+
+			var fAttribC = (float)attribC;
+
+			vertices[nv] = new Vertex(leftTop, r.Left, r.Top, sl, st, paletteTextureIndex, fAttribC, tint, alpha);
+			vertices[nv + 1] = new Vertex(rightTop, r.Right, r.Top, sr, st, paletteTextureIndex, fAttribC, tint, alpha);
+			vertices[nv + 2] = new Vertex(rightBottom, r.Right, r.Bottom, sr, sb, paletteTextureIndex, fAttribC, tint, alpha);
+
+			vertices[nv + 3] = new Vertex(rightBottom, r.Right, r.Bottom, sr, sb, paletteTextureIndex, fAttribC, tint, alpha);
+			vertices[nv + 4] = new Vertex(leftBottom, r.Left, r.Bottom, sl, sb, paletteTextureIndex, fAttribC, tint, alpha);
+			vertices[nv + 5] = new Vertex(leftTop, r.Left, r.Top, sl, st, paletteTextureIndex, fAttribC, tint, alpha);
 		}
 
 		public static void FastCreateScreen(Vertex[] vertices,

@@ -249,6 +249,7 @@ discus:
 		Length: *
 		ZOffset: 1023
 		Offset: 0, 0, 12
+		MeshType: Plane
 
 canister:
 	idle:
@@ -281,6 +282,8 @@ crystal4:
 	idle:
 		ZOffset: 1023
 		Offset: 0, 0, 4
+		MeshType: Plane
+
 
 torpedo:
 	idle:
@@ -288,6 +291,8 @@ torpedo:
 		ZOffset: 1023
 		Offset: 0, 0, 8
 		IgnoreWorldTint: True
+		MeshType: Plane
+
 
 flameall:
 	idle:
@@ -421,6 +426,7 @@ shroud:
 	Defaults:
 		Offset: 0, -1
 		ZRamp: 1
+		MeshType: Plane
 	shroud:
 		Length: *
 	fog: fog

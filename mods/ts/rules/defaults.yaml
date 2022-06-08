@@ -870,7 +870,7 @@
 	RenderModels:
 		NormalsPalette: normals
 		ShadowPalette: shadow
-		Scale: 0.1
+		Scale: 1
 	WithModelBody:
 
 ^CivilianVoxelVehicle:
@@ -939,7 +939,7 @@
 	RenderModels:
 		NormalsPalette: normals
 		ShadowPalette: shadow
-		Scale: 0.1
+		Scale: 1
 	WithModelBody:
 	RevealOnFire:
 	HitShape:
@@ -964,7 +964,7 @@
 	RenderModels:
 		NormalsPalette: normals
 		ShadowPalette: shadow
-		Scale: 0.1
+		Scale: 1
 	RenderSprites:
 	WithModelBody:
 	BodyOrientation:
@@ -1168,7 +1168,7 @@
 	RenderModels:
 		NormalsPalette: normals
 		ShadowPalette: shadow
-		Scale: 0.1
+		Scale: 1
 	RenderSprites:
 	WithModelBody:
 	Mobile:

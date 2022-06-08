@@ -23,7 +23,7 @@ namespace OpenRA.Graphics
 	{
 		Card,
 		Plane,
-		Quad,
+		Board,
 	}
 
 	public interface ISpriteSequence

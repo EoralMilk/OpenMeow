@@ -260,6 +260,8 @@ namespace OpenRA.Graphics
 			if (enableDepthBuffer)
 				Game.Renderer.Context.EnableDepthBuffer(DepthFunc.LessEqual);
 
+			Game.Renderer.Context.EnableCullFace(FaceCullFunc.Front);
+
 			Game.Renderer.World3DRenderer.PrepareToRender(this);
 
 			terrainRenderer?.RenderTerrain(this, Viewport);
@@ -271,7 +273,11 @@ namespace OpenRA.Graphics
 
 			Game.Renderer.Flush();
 
+			//Game.Renderer.Context.EnableCullFace(FaceCullFunc.Back);
+
 			Game.Renderer.Draw3DMeshesInstance(this);
+
+			Game.Renderer.Context.DisableCullFace();
 
 			if (enableDepthBuffer)
 				Game.Renderer.ClearDepthBuffer();

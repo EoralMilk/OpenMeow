@@ -192,4 +192,4 @@ LPST:
 	RenderDetectionCircle:
 		TrailCount: 3
 	RenderModels:
-		Scale: 0.1
+		Scale: 1

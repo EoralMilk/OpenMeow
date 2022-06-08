@@ -179,6 +179,13 @@ namespace OpenRA.Graphics
 			nv += 6;
 		}
 
+		public void DrawBoardSprite(Sprite s, PaletteReference pal, in WPos wPos, in vec3 viewOffset, float scale, in float3 tint, float alpha)
+		{
+			var samplers = SetRenderStateForSprite(s);
+			Util.FastCreateBoard(vertices, wPos, viewOffset, s, samplers, ResolveTextureIndex(s, pal), scale, tint, alpha, nv);
+			nv += 6;
+		}
+
 		// draw world sprite
 		internal void DrawWorldSprite(Sprite s)
 		{

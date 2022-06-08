@@ -25,6 +25,12 @@ namespace OpenRA.Graphics
 		public readonly float3 Offset;
 		public readonly float Top, Left, Bottom, Right;
 
+		public readonly bool HasMeshCreateInfo;
+		public readonly float3 Ssziehalf;
+		public readonly float3 Soffset;
+		public readonly float2 LeftRight;
+		public readonly float2 TopBottom;
+
 		public Sprite(Sheet sheet, Rectangle bounds, TextureChannel channel, float scale = 1)
 			: this(sheet, bounds, 0, float2.Zero, channel, BlendMode.Alpha, scale) { }
 
@@ -47,6 +53,21 @@ namespace OpenRA.Graphics
 			Top = (Math.Min(bounds.Top, bounds.Bottom) + inset) / sheet.Size.Height;
 			Right = (Math.Max(bounds.Left, bounds.Right) - inset) / sheet.Size.Width;
 			Bottom = (Math.Max(bounds.Top, bounds.Bottom) - inset) / sheet.Size.Height;
+
+			if (Game.Renderer.World3DRenderer != null)
+			{
+				HasMeshCreateInfo = true;
+
+				Ssziehalf = Game.Renderer.World3DRenderer.MeterPerPix * Size / 2;
+				Soffset = Game.Renderer.World3DRenderer.MeterPerPix * Offset;
+
+				LeftRight = new float2(Soffset.X - Ssziehalf.X, Soffset.X + Ssziehalf.X);
+				TopBottom = new float2(Ssziehalf.Y - Soffset.Y, Soffset.Y + Ssziehalf.Y);
+			}
+			else
+			{
+				HasMeshCreateInfo = false;
+			}
 		}
 	}
 
