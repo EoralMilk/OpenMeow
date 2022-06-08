@@ -233,6 +233,8 @@ namespace OpenRA.Graphics
 			return new ModelRenderProxy(sprite, shadowSprite, screenCorners, -screenLightVector[2] / screenLightVector[1]);
 		}
 
+		GlmSharp.mat4 rotFix = new GlmSharp.mat4(new GlmSharp.quat(new GlmSharp.vec3(0,0, -0.5f * (float)Math.PI)));
+
 		public void RenderDirectly(
 			WorldRenderer wr, in WPos pos, IEnumerable<ModelAnimation> models, float scale,
 			in WRot groundOrientation, 
@@ -242,7 +244,6 @@ namespace OpenRA.Graphics
 			//var scaleTransform = Util.ScaleMatrix(scale, scale, scale);
 			var scaleMat = GlmSharp.mat4.Scale(scale);
 			var w3dr = Game.Renderer.World3DRenderer;
-
 			//var ground = Util.MakeFloatMatrix(groundOrientation.AsMatrix());
 
 			foreach (var m in models)
@@ -253,27 +254,30 @@ namespace OpenRA.Graphics
 
 				var rotMat = new GlmSharp.mat4(new GlmSharp.quat(w3dr.Get3DRotationFromWRot(m.RotationFunc())));
 
-				var worldTransform = offsetTransform * scaleMat * rotMat ;
+				var worldTransform = offsetTransform * (scaleMat * rotMat * rotFix) ;
 
 				var frame = m.FrameFunc();
 				for (uint i = 0; i < m.Model.Sections; i++)
 				{
-					var rd = m.Model.RenderData(i);
-					//var t = m.Model.TransformationMatrix(i, frame);
-					//t = Util.MatrixMultiply(worldTransform.Values1D, t);
+					var t = m.Model.TransformationMatrix(i, frame);
+					//t[12] /= w3dr.WPosPerMeter;
+					//t[13] /= w3dr.WPosPerMeter;
+					//t[14] /= w3dr.WPosPerMeter;
+					t = Util.MatrixMultiply(worldTransform.Values1D, t);
 
 					// ugly fix normal palette bug temply
 					normals = FixNoramlPalette(wr, m.Model);
 
 					var iom = m.Model.RenderData(i);
-					float[] data = new float[18] {worldTransform[0], worldTransform[1], worldTransform[2], worldTransform[3],
-																worldTransform[4], worldTransform[5], worldTransform[6], worldTransform[7],
-																worldTransform[8], worldTransform[9], worldTransform[10], worldTransform[11],
-																worldTransform[12], worldTransform[13], worldTransform[14], worldTransform[15],
-																color.TextureMidIndex, normals.TextureMidIndex};
+					float[] data = new float[20] {t[0], t[1], t[2], t[3],
+																t[4], t[5], t[6], t[7],
+																t[8], t[9], t[10], t[11],
+																t[12], t[13], t[14], t[15],
+																color.TextureMidIndex, normals.TextureMidIndex,
+																color.VplStartIndex(), color.HardwardPaletteHeight() };
 
 					// vxl instance data needed
-					iom.AddInstanceData(data, 18);
+					iom.AddInstanceData(data, 20);
 					iom.SetPalette(palette);
 				}
 			}

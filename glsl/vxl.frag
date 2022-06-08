@@ -5,9 +5,9 @@ precision mediump float;
 
 uniform sampler2D Palette, DiffuseTexture;
 // uniform vec2 PaletteRows;
+// uniform vec2 VplInfo;
 
-uniform vec2 VplInfo;
-uniform vec3 WorldLight;
+
 // #if __VERSION__ == 120
 // varying vec4 vTexCoord;
 // varying vec4 vChannelMask;
@@ -19,8 +19,9 @@ in vec4 vTexCoord;
 in vec4 vChannelMask;
 in vec4 vNormalsMask;
 in mat3 normalTrans;
-in vec3 FragPos;
 in vec2 PaletteRows;
+in mat4 inverseViewProjection;
+in vec2 VplInfo;
 out vec4 fragColor;
 // #endif
 
@@ -35,19 +36,20 @@ struct DirLight {
 uniform DirLight dirLight;
 uniform vec3 viewPos;
 
+// Strangely, the VXL is too bright when scale smaller , so make color darker
 vec3 CalcDirLight(DirLight light, vec3 normal, vec3 viewDir, vec3 color)
 {
-	vec3 lightDir = normalize(-light.direction);
+	vec3 lightDir = -light.direction;
 	// diffuse
 	float diff = max(dot(normal, lightDir), 0.0);
 	// specular
 	vec3 reflectDir = reflect(-lightDir, normal);
-	// float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
+	float spec = pow(max(dot(viewDir, reflectDir), 0.0), 0.5f);
 	// merge
 	vec3 ambient  = light.ambient  * color;
 	vec3 diffuse  = light.diffuse  * diff * color;
-	// vec3 specular = light.specular * spec * vec3(texture(material.specular, TexCoords));
-	return (ambient + diffuse);//+ specular);
+	vec3 specular = light.specular * spec * 0.1f;
+	return (ambient + diffuse) * 0.3f + specular;
 }
 
 void main()
@@ -65,8 +67,6 @@ void main()
 
 	// #else
 
-	vec3 viewDir = normalize(viewPos - FragPos);
-
 	vec4 x = texture(DiffuseTexture, vTexCoord.st);
 	float colorIndex = dot(x, vChannelMask);
 	vec4 color = texture(Palette, vec2(dot(x, vChannelMask), PaletteRows.x));
@@ -79,13 +79,14 @@ void main()
     normal = normalize(normal);
 	vec3 worldNormal = normalTrans * normal.xyz;
 
+	vec3 FragPos = (inverseViewProjection * gl_FragCoord).xyz;
+	vec3 viewDir = normalize(viewPos - FragPos);
 	vec3 result = vec3(0);
 	result = CalcDirLight(dirLight, worldNormal, viewDir, color.xyz);
-
 	fragColor =vec4(result.rgb, color.a);
 
 	// //AcosAngle --> 0 is more lighter
-	// float acosAngle = acos(dot(worldNormal.xyz, -WorldLight));
+	// float acosAngle = acos(dot(worldNormal.xyz, -dirLight.direction));
 	// float halfPi =1.5707963;
 	// float vxlPaletteStartIndex=VplInfo.x;
 	// float PaletteHeight =VplInfo.y;

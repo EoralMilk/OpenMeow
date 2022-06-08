@@ -20,15 +20,15 @@ apache:
 	rotor: harpyrotor
 		Start: 32
 		Length: 31
-		Offset: 0, 0, 32
-		ZOffset: 15
+		Offset: 0, 0, 30
+		ZOffset: 1500
 		ZRamp: 1
 		Tick: 25
 		MeshType: Plane
 	slow-rotor: harpyrotor
 		Length: 31
-		Offset: 0, 0, 32
-		ZOffset: 15
+		Offset: 0, 0, 30
+		ZOffset: 1500
 		ZRamp: 1
 		Tick: 50
 		MeshType: Plane

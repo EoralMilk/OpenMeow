@@ -104,6 +104,7 @@ namespace OpenRA.Graphics
 
 		readonly MeshRenderData renderData;
 		public MeshRenderData RenderData => renderData;
+		public string Name => "box";
 
 		//ITexture palette;
 

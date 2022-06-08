@@ -191,7 +191,7 @@ namespace OpenRA.Mods.Common.Graphics
 				Game.Renderer.WorldModelRenderer.RenderDirectly(
 					wr, model.pos, draw, model.scale, groundOrientation,
 					model.palette, model.normalsPalette, model.shadowPalette);
-
+				//Console.WriteLine("vxl render");
 			}
 
 			public void RenderDebugGeometry(WorldRenderer wr)

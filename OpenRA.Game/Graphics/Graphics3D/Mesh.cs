@@ -7,6 +7,7 @@ namespace OpenRA.Graphics.Graphics3D
 	public interface IOrderedMesh
 	{
 		MeshRenderData RenderData { get; }
+		string Name { get; }
 		void AddInstanceData(float[] data, int dataCount);
 		void Flush();
 		void DrawInstances();

@@ -25,12 +25,14 @@ in vec4 iModelV2;
 in vec4 iModelV3;
 in vec4 iModelV4;
 in vec2 iPaletteRows;
+in vec2 iVplInfo;
 out vec4 vTexCoord;
 out vec4 vChannelMask;
 out vec4 vNormalsMask;
 out mat3 normalTrans;
-out vec3 FragPos;
 out vec2 PaletteRows;
+out mat4 inverseViewProjection;
+out vec2 VplInfo;
 // #endif
 
 vec4 DecodeMask(float x)
@@ -50,6 +52,7 @@ void main()
 	vChannelMask = DecodeMask(aVertexTexMetadata.s);
 	vNormalsMask = DecodeMask(aVertexTexMetadata.t);
 	normalTrans = mat3(transpose(inverse(model)));
-	FragPos = vec3(model * aVertexPosition);
 	PaletteRows = iPaletteRows;
+	inverseViewProjection = inverse(projection * view);
+	VplInfo = iVplInfo;
 }

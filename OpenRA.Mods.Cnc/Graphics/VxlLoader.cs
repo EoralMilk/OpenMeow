@@ -226,7 +226,7 @@ namespace OpenRA.Mods.Cnc.Graphics
 			var start = totalVertexCount;
 			var count = v.Length;
 			totalVertexCount += count;
-			return new MeshRenderData(start, count, Game.Renderer.GetOrCreateShader<ModelShaderBindings>("ModelShaderBindings"), VertexBuffer, new Dictionary<string, ITexture>() { { "DiffuseTexture", sheetBuilder.Current.GetTexture() } });
+			return new MeshRenderData(start, count, Game.Renderer.GetOrCreateShader<VxlShaderBindings>("ModelShaderBindings"), VertexBuffer, new Dictionary<string, ITexture>() { { "DiffuseTexture", sheetBuilder.Current.GetTexture() } });
 		}
 
 		public void RefreshBuffer()
