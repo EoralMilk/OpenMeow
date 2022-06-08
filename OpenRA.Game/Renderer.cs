@@ -276,12 +276,23 @@ namespace OpenRA
 			renderType = RenderType.World;
 		}
 
+		bool enable3DDepthPreview;
+		float2 depthPreview3dParams;
+
+		public void SetDepthPreview(bool enabled, float contrast, float offset)
+		{
+			enable3DDepthPreview = enabled;
+			depthPreview3dParams = new float2(contrast, offset);
+		}
+
 		public void Draw3DMeshesInstance(WorldRenderer wr)
 		{
 			// 首先对所有的3d用shader的通用参数进行赋值
 			foreach (var shader in orderedMeshShaders)
 			{
 				shader.Value.SetCommonParaments(World3DRenderer);
+				shader.Value.SetBool("EnableDepthPreview", enable3DDepthPreview);
+				shader.Value.SetVec("DepthPreviewParams", depthPreview3dParams.X, depthPreview3dParams.Y);
 			}
 
 			foreach (var orderedMesh in orderedMeshes)

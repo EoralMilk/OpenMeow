@@ -6,7 +6,8 @@ precision mediump float;
 uniform sampler2D Palette, DiffuseTexture;
 // uniform vec2 PaletteRows;
 // uniform vec2 VplInfo;
-
+uniform bool EnableDepthPreview;
+uniform vec2 DepthPreviewParams;
 
 // #if __VERSION__ == 120
 // varying vec4 vTexCoord;
@@ -66,24 +67,33 @@ void main()
 	// gl_FragColor = vec4(intensity * color.rgb, color.a);
 
 	// #else
-
 	vec4 x = texture(DiffuseTexture, vTexCoord.st);
 	float colorIndex = dot(x, vChannelMask);
 	vec4 color = texture(Palette, vec2(dot(x, vChannelMask), PaletteRows.x));
 	if (color.a < 0.01)
 		discard;
-	vec4 y = texture(DiffuseTexture, vTexCoord.pq);
-	float normaIndex = dot(y, vNormalsMask);
-	vec4 normal = (2.0 * texture(Palette, vec2(normaIndex, PaletteRows.y)) - 1.0);
-	normal.w = 0.0;
-    normal = normalize(normal);
-	vec3 worldNormal = normalTrans * normal.xyz;
+	
+	if (EnableDepthPreview)
+	{
+		float intensity = 1.0 - clamp(DepthPreviewParams.x * gl_FragCoord.z - 0.5 * DepthPreviewParams.x - DepthPreviewParams.y + 0.5, 0.0, 1.0);
+		fragColor = vec4(vec3(intensity), 1.0);
+	}
+	else{
+		vec4 y = texture(DiffuseTexture, vTexCoord.pq);
+		float normaIndex = dot(y, vNormalsMask);
+		vec4 normal = (2.0 * texture(Palette, vec2(normaIndex, PaletteRows.y)) - 1.0);
+		normal.w = 0.0;
+		normal = normalize(normal);
+		vec3 worldNormal = normalTrans * normal.xyz;
 
-	vec3 FragPos = (inverseViewProjection * gl_FragCoord).xyz;
-	vec3 viewDir = normalize(viewPos - FragPos);
-	vec3 result = vec3(0);
-	result = CalcDirLight(dirLight, worldNormal, viewDir, color.xyz);
-	fragColor =vec4(result.rgb, color.a);
+		vec3 FragPos = (inverseViewProjection * gl_FragCoord).xyz;
+		vec3 viewDir = normalize(viewPos - FragPos);
+		vec3 result = vec3(0);
+		result = CalcDirLight(dirLight, worldNormal, viewDir, color.xyz);
+		fragColor =vec4(result.rgb, color.a);
+	}
+
+
 
 	// //AcosAngle --> 0 is more lighter
 	// float acosAngle = acos(dot(worldNormal.xyz, -dirLight.direction));

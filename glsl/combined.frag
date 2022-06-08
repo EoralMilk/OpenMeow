@@ -273,7 +273,7 @@ void main()
 	// 	depth = depth + DepthTextureScale * dot(y, vDepthMask);
 	// }
 
-	gl_FragDepth = depth;
+	// gl_FragDepth = depth;
 
 	if (EnableDepthPreview)
 	{
