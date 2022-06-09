@@ -20,6 +20,12 @@ BIGBLUE:
 	SeedsResource:
 		ResourceType: BlueTiberium
 		Interval: 1000
+	TerrainLightSource:
+		Range: 7c640
+		Intensity: 0.01
+		RedTint: 0.01
+		GreenTint: 0.01
+		BlueTint: 0.9
 
 BIGBLUE3:
 	Inherits: BIGBLUE

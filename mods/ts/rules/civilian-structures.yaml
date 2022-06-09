@@ -1689,10 +1689,9 @@ INBLULMP:
 
 TSTLAMP:
 	Inherits: GALITE
-	-TerrainLightSource:
-	WithIdleOverlay@LIGHTING:
-		Sequence: lighting
-		Palette: alpha
+	# WithIdleOverlay@LIGHTING:
+	# 	Sequence: lighting
+	# 	Palette: alpha
 
 GAICBM:
 	Inherits: ^Building

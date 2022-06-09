@@ -29,7 +29,7 @@ namespace OpenRA.Graphics
 		readonly bool[] ignoreTint;
 		readonly HashSet<int> dirtyRows = new HashSet<int>();
 		readonly int rowStride;
-		readonly int maxVerticesPerCell;
+		readonly int maxVerticesPerCell = 12;
 		readonly bool restrictToBounds;
 
 		readonly WorldRenderer worldRenderer;
@@ -46,7 +46,6 @@ namespace OpenRA.Graphics
 			BlendMode = blendMode;
 
 			map = world.Map;
-			maxVerticesPerCell = 12;
 
 			rowStride = maxVerticesPerCell * map.MapSize.X;
 
@@ -68,7 +67,7 @@ namespace OpenRA.Graphics
 			for (var i = 0; i < vertices.Length; i++)
 			{
 				var v = vertices[i];
-				var p = palettes[i / 6]?.TextureIndex ?? 0;
+				var p = palettes[i / maxVerticesPerCell]?.TextureIndex ?? 0;
 				vertices[i] = new Vertex(v.X, v.Y, v.Z, v.S, v.T, v.U, v.V, p, v.C, v.R, v.G, v.B, v.A);
 			}
 
@@ -105,7 +104,7 @@ namespace OpenRA.Graphics
 			var offset = rowStride * uv.V + maxVerticesPerCell * uv.U;
 			if (ignoreTint[offset])
 			{
-				for (var i = 0; i < 6; i++)
+				for (var i = 0; i < maxVerticesPerCell; i++)
 				{
 					var v = vertices[offset + i];
 					vertices[offset + i] = new Vertex(v.X, v.Y, v.Z, v.S, v.T, v.U, v.V, v.P, v.C, v.A * float3.Ones, v.A);
@@ -130,10 +129,10 @@ namespace OpenRA.Graphics
 
 			// Apply tint directly to the underlying vertices
 			// This saves us from having to re-query the sprite information, which has not changed
-			for (var i = 0; i < 6; i++)
+			for (var i = 0; i < maxVerticesPerCell; i++)
 			{
 				var v = vertices[offset + i];
-				vertices[offset + i] = new Vertex(v.X, v.Y, v.Z, v.S, v.T, v.U, v.V, v.P, v.C, v.A * weights[CornerVertexMap[i]], v.A);
+				vertices[offset + i] = new Vertex(v.X, v.Y, v.Z, v.S, v.T, v.U, v.V, v.P, v.C, v.A * weights[CornerVertexMap[i % 6]], v.A);
 			}
 
 			dirtyRows.Add(uv.V);

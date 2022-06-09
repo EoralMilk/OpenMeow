@@ -696,14 +696,15 @@ galite:
 	damaged-idle: gtlite
 		Start: 1
 		ShadowStart: 3
-	lighting: alphatst
-		BlendMode: DoubleMultiplicative
-		UseTilesetCode: false
-		IgnoreWorldTint: true
-		-DepthSprite:
-		Offset: 0, 0, 240
-		ZRamp: 1
-		ZOffset: 10
+	# lighting: alphatst
+	# 	BlendMode: DoubleMultiplicative
+	# 	UseTilesetCode: false
+	# 	IgnoreWorldTint: true
+	# 	-DepthSprite:
+	# 	Offset: 0, 0, 0
+	# 	ZRamp: 1
+	# 	ZOffset: 4284
+	# 	# MeshType: Plane
 	emp-overlay: emp_fx01
 		Length: *
 		Offset: 0, 0

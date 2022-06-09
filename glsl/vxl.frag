@@ -23,6 +23,7 @@ in mat3 normalTrans;
 in vec2 PaletteRows;
 in mat4 inverseViewProjection;
 in vec2 VplInfo;
+in vec4 vTint;
 out vec4 fragColor;
 // #endif
 
@@ -72,10 +73,14 @@ void main()
 	vec4 color = texture(Palette, vec2(dot(x, vChannelMask), PaletteRows.x));
 	if (color.a < 0.01)
 		discard;
+	if (vTint.a < 0.0f)
+		color = vec4(vTint.rgb, -vTint.a);
+	else
+		color *= vTint;
 	
 	if (EnableDepthPreview)
 	{
-		float intensity = 1.0 - clamp(DepthPreviewParams.x * gl_FragCoord.z - 0.5 * DepthPreviewParams.x - DepthPreviewParams.y + 0.5, 0.0, 1.0);
+		float intensity = 1.0 - gl_FragCoord.z;//clamp(DepthPreviewParams.x * gl_FragCoord.z - 0.5 * DepthPreviewParams.x - DepthPreviewParams.y + 0.5, 0.0, 1.0);
 		fragColor = vec4(vec3(intensity), 1.0);
 	}
 	else{

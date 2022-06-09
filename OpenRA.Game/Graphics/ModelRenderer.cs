@@ -237,7 +237,7 @@ namespace OpenRA.Graphics
 
 		public void RenderDirectly(
 			WorldRenderer wr, in WPos pos, IEnumerable<ModelAnimation> models, float scale,
-			in WRot groundOrientation, 
+			in WRot groundOrientation, in float3 tint, in float alpha,
 			PaletteReference color, PaletteReference normals, PaletteReference shadowPalette)
 		{
 			//// Correct for inverted y-axis
@@ -269,15 +269,17 @@ namespace OpenRA.Graphics
 					normals = FixNoramlPalette(wr, m.Model);
 
 					var iom = m.Model.RenderData(i);
-					float[] data = new float[20] {t[0], t[1], t[2], t[3],
+					float[] data = new float[24] {t[0], t[1], t[2], t[3],
 																t[4], t[5], t[6], t[7],
 																t[8], t[9], t[10], t[11],
 																t[12], t[13], t[14], t[15],
 																color.TextureMidIndex, normals.TextureMidIndex,
-																color.VplStartIndex(), color.HardwardPaletteHeight() };
+																color.VplStartIndex(), color.HardwardPaletteHeight() ,
+																tint.X, tint.Y, tint.Z, alpha
+					};
 
 					// vxl instance data needed
-					iom.AddInstanceData(data, 20);
+					iom.AddInstanceData(data, 24);
 					iom.SetPalette(palette);
 				}
 			}

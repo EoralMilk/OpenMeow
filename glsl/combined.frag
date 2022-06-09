@@ -266,7 +266,7 @@ void main()
 	if (vRGBAFraction.r > 0.0 && vTexMetadata.s > 0.0)
 		c = ColorShift(c, vTexMetadata.s);
 
-	float depth = gl_FragCoord.z;
+	// float depth = gl_FragCoord.z;
 	// if (length(vDepthMask) > 0.0)
 	// {
 	// 	vec4 y = Sample(vTexSampler.t, vTexCoord.pq);
@@ -277,7 +277,7 @@ void main()
 
 	if (EnableDepthPreview)
 	{
-		float intensity = 1.0 - clamp(DepthPreviewParams.x * depth - 0.5 * DepthPreviewParams.x - DepthPreviewParams.y + 0.5, 0.0, 1.0);
+		float intensity = 1.0 - gl_FragCoord.z;//clamp(DepthPreviewParams.x * gl_FragCoord.z - 0.5 * DepthPreviewParams.x - DepthPreviewParams.y + 0.5, 0.0, 1.0);
 
 		#if __VERSION__ == 120
 		gl_FragColor = vec4(vec3(intensity), 1.0);

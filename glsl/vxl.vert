@@ -19,13 +19,15 @@ uniform mat4 projection;
 in vec4 aVertexPosition;
 in vec4 aVertexTexCoord;
 in vec2 aVertexTexMetadata;
-in vec3 aVertexTint;
+in vec4 aVertexTint;
 in vec4 iModelV1;
 in vec4 iModelV2;
 in vec4 iModelV3;
 in vec4 iModelV4;
 in vec2 iPaletteRows;
 in vec2 iVplInfo;
+in vec4 iVertexTint;
+
 out vec4 vTexCoord;
 out vec4 vChannelMask;
 out vec4 vNormalsMask;
@@ -33,6 +35,7 @@ out mat3 normalTrans;
 out vec2 PaletteRows;
 out mat4 inverseViewProjection;
 out vec2 VplInfo;
+out vec4 vTint;
 // #endif
 
 vec4 DecodeMask(float x)
@@ -55,4 +58,5 @@ void main()
 	PaletteRows = iPaletteRows;
 	inverseViewProjection = inverse(projection * view);
 	VplInfo = iVplInfo;
+	vTint = iVertexTint;
 }

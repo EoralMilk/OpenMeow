@@ -239,7 +239,7 @@ namespace OpenRA.Graphics
 			InverseCameraFront = glm.Normalized(new vec3(0, 1, 1/TanCameraPitch));
 			InverseCameraFrontMeterPerWPos = InverseCameraFront / WPosPerMeter;
 
-			MaxTerrainHeight = mapGrid.MaximumTerrainHeight * 724 * 1.25f / WPosPerMeterHeight;
+			MaxTerrainHeight = mapGrid.MaximumTerrainHeight * 724 * 2f / WPosPerMeterHeight;
 
 			SunDir = glm.Normalized(new vec3(0, 0, 0) - new vec3(-3.2506f, 1.3557f, 4.7588f));
 			AmbientColor = new vec3(0.45f, 0.45f, 0.45f);
@@ -428,7 +428,7 @@ namespace OpenRA.Graphics
 
 				var far = heightMeter / CosCameraPitch + TanCameraPitch * ortho.Item4 + 100f;
 
-				Projection = mat4.Ortho(ortho.Item1, ortho.Item2, ortho.Item3, ortho.Item4, 0, far);
+				Projection = mat4.Ortho(ortho.Item1, ortho.Item2, ortho.Item3, ortho.Item4, far/8, far);
 
 				var viewPoint = new vec3((float)viewport.CenterPosition.X / WPosPerMeter, (float)viewport.CenterPosition.Y / WPosPerMeter, 0);
 				CameraPos = new vec3((float)viewport.CenterPosition.X / WPosPerMeter, ((float)viewport.CenterPosition.Y) / WPosPerMeter + TanCameraPitch * heightMeter, heightMeter);

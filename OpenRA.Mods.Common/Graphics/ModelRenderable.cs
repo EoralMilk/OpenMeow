@@ -167,15 +167,15 @@ namespace OpenRA.Mods.Common.Graphics
 				//var sc = shadowOrigin + psb[1];
 				//var sd = shadowOrigin + psb[3];
 
-				//var wrsr = Game.Renderer.WorldRgbaSpriteRenderer;
-				//var t = model.tint;
-				//if (wr.TerrainLighting != null && (model.tintModifiers & TintModifiers.IgnoreWorldTint) == 0)
-				//	t *= wr.TerrainLighting.TintAt(model.pos);
+				var wrsr = Game.Renderer.WorldRgbaSpriteRenderer;
+				var t = model.tint;
+				if (wr.TerrainLighting != null && (model.tintModifiers & TintModifiers.IgnoreWorldTint) == 0)
+					t *= wr.TerrainLighting.TintAt(model.pos);
 
-				//// Shader interprets negative alpha as a flag to use the tint colour directly instead of multiplying the sprite colour
-				//var a = model.alpha;
-				//if ((model.tintModifiers & TintModifiers.ReplaceColor) != 0)
-				//	a *= -1;
+				// Shader interprets negative alpha as a flag to use the tint colour directly instead of multiplying the sprite colour
+				var a = model.alpha;
+				if ((model.tintModifiers & TintModifiers.ReplaceColor) != 0)
+					a *= -1;
 
 				//var viewOffset = Game.Renderer.World3DRenderer.InverseCameraFrontMeterPerWPos * (5);
 
@@ -189,7 +189,7 @@ namespace OpenRA.Mods.Common.Graphics
 				var groundOrientation = map.TerrainOrientation(map.CellContaining(model.pos));
 
 				Game.Renderer.WorldModelRenderer.RenderDirectly(
-					wr, model.pos, draw, model.scale, groundOrientation,
+					wr, model.pos, draw, model.scale, groundOrientation, t, a,
 					model.palette, model.normalsPalette, model.shadowPalette);
 				//Console.WriteLine("vxl render");
 			}
