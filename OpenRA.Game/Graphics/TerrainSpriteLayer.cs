@@ -163,8 +163,10 @@ namespace OpenRA.Graphics
 			int2 samplers;
 			if (sprite != null)
 			{
-				if (sprite.BlendMode != BlendMode)
+				if (sprite.BlendMode != BlendMode && sprite.BlendMode != BlendMode.None)
+				{
 					throw new InvalidDataException("Attempted to add sprite with a different blend mode");
+				}
 
 				samplers = new int2(GetOrAddSheetIndex(sprite.Sheet), GetOrAddSheetIndex((sprite as SpriteWithSecondaryData)?.SecondarySheet));
 

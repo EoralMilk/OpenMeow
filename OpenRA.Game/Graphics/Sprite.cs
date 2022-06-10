@@ -18,7 +18,8 @@ namespace OpenRA.Graphics
 	{
 		public readonly Rectangle Bounds;
 		public readonly Sheet Sheet;
-		public readonly BlendMode BlendMode;
+		BlendMode blendMode;
+		public BlendMode BlendMode => blendMode;
 		public readonly TextureChannel Channel;
 		public readonly float ZRamp;
 		public readonly float3 Size;
@@ -43,6 +44,11 @@ namespace OpenRA.Graphics
 		public float3 leftBase;
 		public float3 rightBase;
 
+		public void ChangeBlendMode(BlendMode mode)
+		{
+			blendMode = mode;
+		}
+
 		public Sprite(Sheet sheet, Rectangle bounds, TextureChannel channel, float scale = 1, SpriteMeshType spriteMeshType = SpriteMeshType.UI)
 			: this(sheet, bounds, 0, float2.Zero, channel, BlendMode.Alpha, scale, spriteMeshType) { }
 
@@ -54,7 +60,7 @@ namespace OpenRA.Graphics
 			ZRamp = zRamp;
 			Channel = channel;
 			Size = scale * new float3(bounds.Size.Width, bounds.Size.Height, bounds.Size.Height * zRamp);
-			BlendMode = blendMode;
+			this.blendMode = blendMode;
 			SpriteMeshType = spriteMeshType;
 
 			// Some GPUs suffer from precision issues when rendering into non 1:1 framebuffers that result

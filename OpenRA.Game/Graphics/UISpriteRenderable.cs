@@ -35,9 +35,11 @@ namespace OpenRA.Graphics
 			this.scale = scale;
 			this.alpha = alpha;
 			if (sprite.BlendMode == BlendMode.None && alpha < 0.9999f)
-				blendMode = BlendMode.Alpha;
-			else
-				blendMode = sprite.BlendMode;
+			{
+				sprite.ChangeBlendMode(BlendMode.Alpha);
+			}
+
+			blendMode = sprite.BlendMode;
 
 			// PERF: Remove useless palette assignments for RGBA sprites
 			// HACK: This is working around the fact that palettes are defined on traits rather than sequences

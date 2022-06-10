@@ -31,7 +31,7 @@ namespace OpenRA.Graphics
 		readonly bool isDecoration;
 		readonly BlendMode blendMode;
 		public BlendMode BlendMode => blendMode;
-		public SpriteRenderable(Sprite sprite, WPos pos, WVec offset, int zOffset, PaletteReference palette, float scale, float alpha, float3 tint, TintModifiers tintModifiers, bool isDecoration)
+		public SpriteRenderable(Sprite sprite, WPos pos, WVec offset, int zOffset, PaletteReference palette, float scale, float alpha, float3 tint, TintModifiers tintModifiers, bool isDecoration, bool isShadow = false)
 		{
 			this.sprite = sprite;
 			this.pos = pos;
@@ -43,10 +43,13 @@ namespace OpenRA.Graphics
 			this.isDecoration = isDecoration;
 			this.tintModifiers = tintModifiers;
 			this.alpha = alpha;
-			if (sprite.BlendMode == BlendMode.None && alpha < 0.9999f)
-				blendMode = BlendMode.Alpha;
-			else
-				blendMode = sprite.BlendMode;
+			if (isShadow || (sprite.BlendMode == BlendMode.None && alpha < 0.9999f))
+			{
+				sprite.ChangeBlendMode(BlendMode.Alpha);
+			}
+
+			blendMode = sprite.BlendMode;
+
 			// PERF: Remove useless palette assignments for RGBA sprites
 			// HACK: This is working around the fact that palettes are defined on traits rather than sequences
 			// and can be removed once this has been fixed

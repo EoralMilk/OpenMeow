@@ -427,6 +427,7 @@ shroud:
 		Offset: 0, -1
 		ZRamp: 1
 		MeshType: Plane
+		BlendMode: Alpha
 	shroud:
 		Length: *
 	fog: fog
@@ -681,6 +682,7 @@ tracks16:
 
 ^tuntop:
 	idle:
+		MeshType: Board
 		ZRamp: 1
 		UseTilesetExtension: true
 
@@ -688,21 +690,28 @@ tuntop01:
 	Inherits: ^tuntop
 	idle:
 		Offset: 24, -49, 48
+		ZOffset: 30
 
 tuntop02:
 	Inherits: ^tuntop
 	idle:
 		Offset: -24, -49, 48
+		ZOffset: 30
+
 
 tuntop03:
 	Inherits: ^tuntop
 	idle:
+		MeshType: Plane
 		Offset: 24, -49, 49
+		ZOffset: 4096
 
 tuntop04:
 	Inherits: ^tuntop
 	idle:
+		MeshType: Plane
 		Offset: -24, -49, 49
+		ZOffset: 4096
 
 dig:
 	idle:

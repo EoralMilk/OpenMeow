@@ -206,7 +206,7 @@ namespace OpenRA.Mods.Common.Graphics
 				}
 
 				var offset = LoadField(d, "Offset", float3.Zero);
-				var blendMode = LoadField(d, "BlendMode", BlendMode.Alpha);
+				var blendMode = LoadField(d, "BlendMode", BlendMode.None);
 
 				Func<int, IEnumerable<int>> getUsedFrames = frameCount =>
 				{

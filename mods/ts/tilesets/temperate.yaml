@@ -16272,11 +16272,13 @@ Templates:
 				MaxColor: 2F2A24
 				ZOffset: -12
 				ZRamp: 0
+				MeshType: Card # Card
 			1: Cliff
 				MinColor: 5B574F
 				MaxColor: 5C5954
 				ZOffset: -12
 				ZRamp: 0
+				MeshType: Card # Card
 			2: Cliff
 				MinColor: 6D6354
 				MaxColor: 6F583D
@@ -16287,6 +16289,7 @@ Templates:
 				MaxColor: 090909
 				ZOffset: -12
 				ZRamp: 0
+				MeshType: Card # Card
 			4: Road
 				MinColor: 2F2F2F
 				MaxColor: 474541
@@ -16302,6 +16305,7 @@ Templates:
 				MaxColor: 060605
 				ZOffset: -12
 				ZRamp: 0
+				MeshType: Card # Card
 			7: Road
 				MinColor: 2D2B28
 				MaxColor: 36332F
@@ -16317,6 +16321,7 @@ Templates:
 				MaxColor: 20201E
 				ZOffset: -12
 				ZRamp: 0
+				MeshType: Card # Card
 			10: Road
 				MinColor: 3B3A37
 				MaxColor: 383939
@@ -16338,26 +16343,31 @@ Templates:
 				MaxColor: 2A2620
 				ZOffset: -12
 				ZRamp: 0
+				MeshType: Card # Card
 			1: Road
 				MinColor: 252523
 				MaxColor: 070707
 				ZOffset: -12
 				ZRamp: 0
+				MeshType: Card # Card
 			2: Road
 				MinColor: 1F1E1B
 				MaxColor: 050504
 				ZOffset: -12
 				ZRamp: 0
+				MeshType: Card # Card
 			3: Road
 				MinColor: 20201E
 				MaxColor: 050505
 				ZOffset: -12
 				ZRamp: 0
+				MeshType: Card # Card
 			4: Cliff
 				MinColor: 58544C
 				MaxColor: 4D4B47
 				ZOffset: -12
 				ZRamp: 0
+				MeshType: Card # Card
 			5: Road
 				MinColor: 474541
 				MaxColor: 2F2F2F
@@ -16410,11 +16420,13 @@ Templates:
 				MaxColor: 807B72
 				ZOffset: -12
 				ZRamp: 0
+				MeshType: Card # Card
 			2: Cliff
 				MinColor: 6F5C44
 				MaxColor: 736C61
 				ZOffset: -12
 				ZRamp: 0
+				MeshType: Card # Card
 	Template@712:
 		Categories: Tunnel Side
 		Id: 712
@@ -16432,11 +16444,13 @@ Templates:
 				MaxColor: 5E564B
 				ZOffset: -12
 				ZRamp: 0
+				MeshType: Card # Card
 			2: Cliff
 				MinColor: 7E7870
 				MaxColor: 5A4B38
 				ZOffset: -12
 				ZRamp: 0
+				MeshType: Card # Card
 	Template@713:
 		Categories: TrackTunnel Floor
 		Id: 713
@@ -16610,11 +16624,13 @@ Templates:
 				MaxColor: 2F2B25
 				ZOffset: -12
 				ZRamp: 0
+				MeshType: Card # Card
 			1: Cliff
 				MinColor: 5B574F
 				MaxColor: 5C5954
 				ZOffset: -12
 				ZRamp: 0
+				MeshType: Card # Card
 			2: Cliff
 				MinColor: 6D6354
 				MaxColor: 6F583D
@@ -16625,6 +16641,7 @@ Templates:
 				MaxColor: 090909
 				ZOffset: -12
 				ZRamp: 0
+				MeshType: Card # Card
 			4: Road
 				MinColor: 2F2F2F
 				MaxColor: 474541
@@ -16640,6 +16657,7 @@ Templates:
 				MaxColor: 080806
 				ZOffset: -12
 				ZRamp: 0
+				MeshType: Card # Card
 			7: Rail
 				MinColor: 363533
 				MaxColor: 3A3935
@@ -16655,6 +16673,7 @@ Templates:
 				MaxColor: 20201E
 				ZOffset: -12
 				ZRamp: 0
+				MeshType: Card # Card
 			10: Road
 				MinColor: 3B3A37
 				MaxColor: 383939
@@ -16676,26 +16695,31 @@ Templates:
 				MaxColor: 2A2621
 				ZOffset: -12
 				ZRamp: 0
+				MeshType: Card # Card
 			1: Road
 				MinColor: 252523
 				MaxColor: 070707
 				ZOffset: -12
 				ZRamp: 0
+				MeshType: Card # Card
 			2: Road
 				MinColor: 2B2721
 				MaxColor: 080706
 				ZOffset: -12
 				ZRamp: 0
+				MeshType: Card # Card
 			3: Road
 				MinColor: 20201E
 				MaxColor: 050505
 				ZOffset: -12
 				ZRamp: 0
+				MeshType: Card # Card
 			4: Cliff
 				MinColor: 58544C
 				MaxColor: 4D4B47
 				ZOffset: -12
 				ZRamp: 0
+				MeshType: Card # Card
 			5: Road
 				MinColor: 474541
 				MaxColor: 2F2F2F
@@ -18320,11 +18344,13 @@ Templates:
 				MaxColor: 2F2B25
 				ZOffset: -12
 				ZRamp: 0
+				MeshType: Card # card
 			1: Cliff
 				MinColor: 5B574F
 				MaxColor: 5C5954
 				ZOffset: -12
 				ZRamp: 0
+				MeshType: Card # card
 			2: Cliff
 				MinColor: 6D6354
 				MaxColor: 6F583D
@@ -18335,6 +18361,7 @@ Templates:
 				MaxColor: 100C09
 				ZOffset: -12
 				ZRamp: 0
+				MeshType: Card # card
 			4: Clear
 				MinColor: 705C43
 				MaxColor: 6D583F
@@ -18350,6 +18377,7 @@ Templates:
 				MaxColor: 0F0F0F
 				ZOffset: -12
 				ZRamp: 0
+				MeshType: Card # card
 			7: Rail
 				MinColor: 55524F
 				MaxColor: 585552
@@ -18365,6 +18393,7 @@ Templates:
 				MaxColor: 453625
 				ZOffset: -12
 				ZRamp: 0
+				MeshType: Card # card
 			10: Clear
 				MinColor: 705C43
 				MaxColor: 6D583F
@@ -18386,26 +18415,31 @@ Templates:
 				MaxColor: 2A2621
 				ZOffset: -12
 				ZRamp: 0
+				MeshType: Card # card
 			1: Road
 				MinColor: 453625
 				MaxColor: 100C09
 				ZOffset: -12
 				ZRamp: 0
+				MeshType: Card # card
 			2: Road
 				MinColor: 4C4B4A
 				MaxColor: 0E0E0E
 				ZOffset: -12
 				ZRamp: 0
+				MeshType: Card # card
 			3: Road
 				MinColor: 453625
 				MaxColor: 0E0A07
 				ZOffset: -12
 				ZRamp: 0
+				MeshType: Card # card
 			4: Cliff
 				MinColor: 58544C
 				MaxColor: 4D4B47
 				ZOffset: -12
 				ZRamp: 0
+				MeshType: Card # card
 			5: Clear
 				MinColor: 6D583F
 				MaxColor: 705C43
@@ -18614,11 +18648,13 @@ Templates:
 				MaxColor: 2F2A24
 				ZOffset: -12
 				ZRamp: 0
+				MeshType: Card # card
 			1: Cliff
 				MinColor: 5B574F
 				MaxColor: 5C5954
 				ZOffset: -12
 				ZRamp: 0
+				MeshType: Card # card
 			2: Cliff
 				MinColor: 6D6354
 				MaxColor: 6F583D
@@ -18629,6 +18665,7 @@ Templates:
 				MaxColor: 100C09
 				ZOffset: -12
 				ZRamp: 0
+				MeshType: Card # card
 			4: Clear
 				MinColor: 705C43
 				MaxColor: 6D583F
@@ -18644,6 +18681,7 @@ Templates:
 				MaxColor: 0D0A07
 				ZOffset: -12
 				ZRamp: 0
+				MeshType: Card # card
 			7: Clear
 				MinColor: 705C43
 				MaxColor: 6D583F
@@ -18659,6 +18697,7 @@ Templates:
 				MaxColor: 453625
 				ZOffset: -12
 				ZRamp: 0
+				MeshType: Card # card
 			10: Clear
 				MinColor: 705C43
 				MaxColor: 6D583F
@@ -18680,26 +18719,31 @@ Templates:
 				MaxColor: 2A2620
 				ZOffset: -12
 				ZRamp: 0
+				MeshType: Card # card
 			1: Road
 				MinColor: 453625
 				MaxColor: 100C09
 				ZOffset: -12
 				ZRamp: 0
+				MeshType: Card # card
 			2: Road
 				MinColor: 453625
 				MaxColor: 0E0A07
 				ZOffset: -12
 				ZRamp: 0
+				MeshType: Card # card
 			3: Road
 				MinColor: 453625
 				MaxColor: 0E0A07
 				ZOffset: -12
 				ZRamp: 0
+				MeshType: Card # card
 			4: Cliff
 				MinColor: 58544C
 				MaxColor: 4D4B47
 				ZOffset: -12
 				ZRamp: 0
+				MeshType: Card # card
 			5: Clear
 				MinColor: 6D583F
 				MaxColor: 705C43
