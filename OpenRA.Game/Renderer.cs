@@ -33,6 +33,7 @@ namespace OpenRA
 		public RgbaColorRenderer RgbaColorRenderer { get; private set; }
 		public SpriteRenderer SpriteRenderer { get; private set; }
 		public RgbaSpriteRenderer RgbaSpriteRenderer { get; private set; }
+		public ScreenRenderer ScreenRenderer { get; private set; }
 
 		public bool WindowHasInputFocus => Window.HasInputFocus;
 		public bool WindowIsSuspended => Window.IsSuspended;
@@ -48,10 +49,12 @@ namespace OpenRA
 		readonly IVertexBuffer<Vertex> tempBuffer;
 		readonly Stack<Rectangle> scissorState = new Stack<Rectangle>();
 
+		ITexture screenTexture;
 		IFrameBuffer screenBuffer;
 		Sprite screenSprite;
 
 		IFrameBuffer worldBuffer;
+		ITexture worldTexture;
 		Sheet worldSheet;
 		Sprite worldSprite;
 		int worldDownscaleFactor = 1;
@@ -99,7 +102,7 @@ namespace OpenRA
 			SpriteRenderer = new SpriteRenderer(this, Context.CreateUnsharedShader<CombinedShaderBindings>());
 			RgbaSpriteRenderer = new RgbaSpriteRenderer(SpriteRenderer);
 			RgbaColorRenderer = new RgbaColorRenderer(SpriteRenderer);
-
+			ScreenRenderer = new ScreenRenderer(this, Context.CreateUnsharedShader<ScreenShaderBindings>());
 			tempBuffer = Context.CreateVertexBuffer<Vertex>(TempBufferSize);
 		}
 
@@ -180,6 +183,7 @@ namespace OpenRA
 
 			if (screenSprite == null || surfaceSize.Width != screenSprite.Bounds.Width || -surfaceSize.Height != screenSprite.Bounds.Height)
 			{
+				screenTexture = screenBuffer.Texture;
 				var screenSheet = new Sheet(SheetType.BGRA, screenBuffer.Texture);
 
 				// Flip sprite in Y to match OpenGL's bottom-left origin
@@ -226,6 +230,7 @@ namespace OpenRA
 
 				// Pixel art scaling mode is a customized bilinear sampling
 				worldBuffer.Texture.ScaleFilter = TextureScaleFilter.Linear;
+				worldTexture = worldBuffer.Texture;
 				worldSheet = new Sheet(SheetType.BGRA, worldBuffer.Texture);
 
 				// Invalidate cached state to force a shader update
@@ -262,7 +267,7 @@ namespace OpenRA
 				lastWorldViewportSize = worldViewport.Size;
 			}
 
-			//worldBuffer.Bind();
+			worldBuffer.Bind();
 
 			WorldSpriteRenderer.SetCameraParams();
 
@@ -297,12 +302,6 @@ namespace OpenRA
 
 			foreach (var orderedMesh in orderedMeshes)
 			{
-				//if (orderedMesh.Key == "TestBox")
-				//{
-				//	orderedMesh.Value.Flush();
-				//	continue;
-				//}
-
 				orderedMesh.Value.DrawInstances();
 				orderedMesh.Value.Flush();
 			}
@@ -319,19 +318,11 @@ namespace OpenRA
 			{
 				// Complete world rendering
 				Flush();
-				worldBuffer.UnbindNotSetViewport();
-				SpriteRenderer.SetRenderScreenParams(true);
+				worldBuffer.Unbind();
 
-				var scale = Window.EffectiveWindowScale;
-				var bufferScale = new float3((int)(screenSprite.Bounds.Width / scale) / worldSprite.Size.X, (int)(-screenSprite.Bounds.Height / scale) / worldSprite.Size.Y, 1f);
-				SpriteRenderer.SetAntialiasingPixelsPerTexel(Window.SurfaceSize.Height * 1f / worldSprite.Bounds.Height);
-
-				RgbaSpriteRenderer.DrawWorldSprite(worldSprite);
-
-				Flush();
-				SpriteRenderer.SetAntialiasingPixelsPerTexel(0);
-				SpriteRenderer.SetRenderScreenParams(false);
-				worldBuffer.SetViewportBack();
+				ScreenRenderer.SetAntialiasingPixelsPerTexel(Window.SurfaceSize.Height * 1f / worldSprite.Bounds.Height);
+				ScreenRenderer.DrawScreen(worldTexture);
+				ScreenRenderer.SetAntialiasingPixelsPerTexel(0);
 			}
 		}
 
@@ -384,6 +375,7 @@ namespace OpenRA
 			// This saves us two redundant (and expensive) SetViewportParams each frame
 			RgbaSpriteRenderer.DrawSprite(screenSprite, new float3(0, lastBufferSize.Height, 0), new float3(lastBufferSize.Width / screenSprite.Size.X, -lastBufferSize.Height / screenSprite.Size.Y, 1f));
 			Flush();
+
 			Window.PumpInput(inputHandler);
 			Context.Present();
 

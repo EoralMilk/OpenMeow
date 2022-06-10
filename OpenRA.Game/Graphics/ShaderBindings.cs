@@ -46,4 +46,34 @@ namespace OpenRA.Graphics
 			// Set By SpriteRenderer
 		}
 	}
+
+	public class ScreenShaderBindings : IShaderBindings
+	{
+		public string VertexShaderName { get; }
+		public string FragmentShaderName { get; }
+		public int Stride => 4 * sizeof(float);
+
+		public IEnumerable<ShaderVertexAttribute> Attributes { get; } = new[]
+		{
+			new ShaderVertexAttribute("aPosition", 0, 2, 0),
+			new ShaderVertexAttribute("aTexCoords", 1, 2, 2 * sizeof(float)),
+		};
+
+		public bool Instanced => false;
+
+		public int InstanceStrde => throw new System.NotImplementedException();
+
+		public IEnumerable<ShaderVertexAttribute> InstanceAttributes => throw new System.NotImplementedException();
+
+		public ScreenShaderBindings()
+		{
+			var name = "screen";
+			VertexShaderName = name;
+			FragmentShaderName = name;
+		}
+
+		public void SetCommonParaments(IShader shader, World3DRenderer w3dr)
+		{
+		}
+	}
 }

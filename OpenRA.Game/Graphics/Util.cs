@@ -320,38 +320,6 @@ namespace OpenRA.Graphics
 			vertices[nv + 5] = new Vertex(leftTop, r.Left, r.Top, sl, st, paletteTextureIndex, fAttribC, tint, alpha);
 		}
 
-		public static void FastCreateScreen(Vertex[] vertices,
-			Sprite r, int2 samplers, float paletteTextureIndex,
-			in float3 tint, float alpha, int nv)
-		{
-			float sl = 0;
-			float st = 0;
-			float sr = 0;
-			float sb = 0;
-
-			// See combined.vert for documentation on the channel attribute format
-			var attribC = r.Channel == TextureChannel.RGBA ? 0x02 : ((byte)r.Channel) << 1 | 0x01;
-			attribC |= samplers.X << 6;
-			if (r is SpriteWithSecondaryData ss)
-			{
-				sl = ss.SecondaryLeft;
-				st = ss.SecondaryTop;
-				sr = ss.SecondaryRight;
-				sb = ss.SecondaryBottom;
-
-				attribC |= ((byte)ss.SecondaryChannel) << 4 | 0x08;
-				attribC |= samplers.Y << 9;
-			}
-
-			var fAttribC = (float)attribC;
-			vertices[nv] = new Vertex(new float3(-1, -1, 0), r.Left, r.Top, sl, st, paletteTextureIndex, fAttribC, tint, alpha);
-			vertices[nv + 1] = new Vertex(new float3(1, -1, 0), r.Right, r.Top, sr, st, paletteTextureIndex, fAttribC, tint, alpha);
-			vertices[nv + 2] = new Vertex(new float3(1, 1, 0), r.Right, r.Bottom, sr, sb, paletteTextureIndex, fAttribC, tint, alpha);
-			vertices[nv + 3] = new Vertex(new float3(1, 1, 0), r.Right, r.Bottom, sr, sb, paletteTextureIndex, fAttribC, tint, alpha);
-			vertices[nv + 4] = new Vertex(new float3(-1, 1, 0), r.Left, r.Bottom, sl, sb, paletteTextureIndex, fAttribC, tint, alpha);
-			vertices[nv + 5] = new Vertex(new float3(-1, -1, 0), r.Left, r.Top, sl, st, paletteTextureIndex, fAttribC, tint, alpha);
-		}
-
 		public static void FastCreateQuad(Vertex[] vertices, in float3 o, Sprite r, int2 samplers, float paletteTextureIndex, int nv, in float3 size, in float3 tint, float alpha)
 		{
 			var b = new float3(o.X + size.X, o.Y, o.Z);

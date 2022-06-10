@@ -46,4 +46,19 @@ namespace OpenRA.Graphics
 			R = r; G = g; B = b; A = a;
 		}
 	}
+
+	public readonly struct ScreenVertex
+	{
+		// 3d position
+		public readonly float X, Y;
+
+		// Primary and secondary texture coordinates or RGBA color
+		public readonly float U, V;
+
+		public ScreenVertex(float x, float y, float u, float v)
+		{
+			X = x; Y = y;
+			U = u; V = v;
+		}
+	}
 }

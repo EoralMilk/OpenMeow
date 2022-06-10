@@ -679,7 +679,7 @@ namespace OpenRA
 					using (new PerfSample("render_world"))
 						worldRenderer.Draw();
 
-					//Renderer.EndWorld();
+					Renderer.EndWorld();
 				}
 
 				using (new PerfSample("render_widgets"))

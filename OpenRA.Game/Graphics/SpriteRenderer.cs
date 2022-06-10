@@ -186,14 +186,6 @@ namespace OpenRA.Graphics
 			nv += 6;
 		}
 
-		// draw world sprite
-		internal void DrawWorldSprite(Sprite s)
-		{
-			var samplers = SetRenderStateForSprite(s);
-			Util.FastCreateScreen(vertices, s, samplers, 0, float3.Ones, 1f, nv);
-			nv += 6;
-		}
-
 		internal void DrawSprite(Sprite s, float paletteTextureIndex, in float3 a, in float3 b, in float3 c, in float3 d, in float3 tint, float alpha)
 		{
 			var samplers = SetRenderStateForSprite(s);
@@ -286,12 +278,6 @@ namespace OpenRA.Graphics
 				shader.SetMatrix("view", Game.Renderer.World3DRenderer.View.Values1D);
 				//shader.SetVec("viewPos", Game.Renderer.Standalone3DRenderer.CameraPos.x, Game.Renderer.Standalone3DRenderer.CameraPos.y, Game.Renderer.Standalone3DRenderer.CameraPos.z);
 			}
-		}
-
-		public void SetRenderScreenParams(bool set)
-		{
-			shader.SetBool("hasCamera", false);
-			shader.SetBool("renderScreen", set);
 		}
 
 		public void SetDepthPreview(bool enabled, float contrast, float offset)

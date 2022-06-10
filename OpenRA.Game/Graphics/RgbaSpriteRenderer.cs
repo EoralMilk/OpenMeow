@@ -31,14 +31,6 @@ namespace OpenRA.Graphics
 			Parent.DrawSprite(s, 0, location, scale);
 		}
 
-		public void DrawWorldSprite(Sprite s)
-		{
-			if (s.Channel != TextureChannel.RGBA)
-				throw new InvalidOperationException("DrawRGBASprite requires a RGBA sprite.");
-
-			Parent.DrawWorldSprite(s);
-		}
-
 		public void DrawSprite(Sprite s, in float3 location, float scale = 1f)
 		{
 			if (s.Channel != TextureChannel.RGBA)
