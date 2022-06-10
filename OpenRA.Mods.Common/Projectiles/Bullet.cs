@@ -107,7 +107,7 @@ namespace OpenRA.Mods.Common.Projectiles
 		public readonly bool ContrailUsePlayerColor = false;
 		public readonly int ContrailDelay = 1;
 		public readonly WDist ContrailWidth = new WDist(64);
-
+		public readonly BlendMode ContrailBlendMode = BlendMode.Alpha;
 		public IProjectile Create(ProjectileArgs args) { return new Bullet(this, args); }
 	}
 
@@ -174,7 +174,7 @@ namespace OpenRA.Mods.Common.Projectiles
 			if (info.ContrailLength > 0)
 			{
 				var color = info.ContrailUsePlayerColor ? ContrailRenderable.ChooseColor(args.SourceActor) : info.ContrailColor;
-				contrail = new ContrailRenderable(world, color, info.ContrailWidth, info.ContrailLength, info.ContrailDelay, info.ContrailZOffset);
+				contrail = new ContrailRenderable(world, color, info.ContrailWidth, info.ContrailLength, info.ContrailDelay, info.ContrailZOffset, info.ContrailBlendMode);
 			}
 
 			trailPalette = info.TrailPalette;

@@ -21,6 +21,7 @@ namespace OpenRA.Graphics
 		readonly Color color;
 		readonly int width;
 		readonly int markerSize;
+		public BlendMode BlendMode => BlendMode.Alpha;
 
 		public TargetLineRenderable(IEnumerable<WPos> waypoints, Color color, int width, int markerSize)
 		{

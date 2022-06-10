@@ -24,6 +24,7 @@ namespace OpenRA.Mods.Common.Graphics
 		readonly Color bgDark;
 		readonly Color bgLight;
 		readonly string text;
+		public BlendMode BlendMode => BlendMode.Alpha;
 
 		public TextAnnotationRenderable(SpriteFont font, WPos pos, int zOffset, Color color, Color bgDark, Color bgLight, string text)
 		{

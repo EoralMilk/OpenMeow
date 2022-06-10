@@ -39,6 +39,8 @@ namespace OpenRA.Mods.Common.Traits
 		[Desc("Use player remap color instead of a custom color?")]
 		public readonly bool UsePlayerColor = true;
 
+		public readonly BlendMode BlendMode = BlendMode.Alpha;
+
 		public override object Create(ActorInitializer init) { return new Contrail(init.Self, this); }
 	}
 
@@ -57,7 +59,7 @@ namespace OpenRA.Mods.Common.Traits
 			this.info = info;
 
 			color = info.UsePlayerColor ? ContrailRenderable.ChooseColor(self) : info.Color;
-			trail = new ContrailRenderable(self.World, color, info.TrailWidth, info.TrailLength, 0, info.ZOffset);
+			trail = new ContrailRenderable(self.World, color, info.TrailWidth, info.TrailLength, 0, info.ZOffset, info.BlendMode);
 
 			body = self.Trait<BodyOrientation>();
 		}
@@ -86,7 +88,7 @@ namespace OpenRA.Mods.Common.Traits
 
 		void INotifyAddedToWorld.AddedToWorld(Actor self)
 		{
-			trail = new ContrailRenderable(self.World, color, info.TrailWidth, info.TrailLength, 0, info.ZOffset);
+			trail = new ContrailRenderable(self.World, color, info.TrailWidth, info.TrailLength, 0, info.ZOffset, info.BlendMode);
 		}
 	}
 }

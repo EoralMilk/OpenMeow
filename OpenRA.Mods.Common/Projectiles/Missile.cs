@@ -141,6 +141,8 @@ namespace OpenRA.Mods.Common.Projectiles
 
 		public readonly int ContrailDelay = 1;
 
+		public readonly BlendMode ContrailBlendMode = BlendMode.Alpha;
+
 		[Desc("Should missile targeting be thrown off by nearby actors with JamsMissiles.")]
 		public readonly bool Jammable = true;
 
@@ -264,7 +266,7 @@ namespace OpenRA.Mods.Common.Projectiles
 			if (info.ContrailLength > 0)
 			{
 				var color = info.ContrailUsePlayerColor ? ContrailRenderable.ChooseColor(args.SourceActor) : info.ContrailColor;
-				contrail = new ContrailRenderable(world, color, info.ContrailWidth, info.ContrailLength, info.ContrailDelay, info.ContrailZOffset);
+				contrail = new ContrailRenderable(world, color, info.ContrailWidth, info.ContrailLength, info.ContrailDelay, info.ContrailZOffset, info.ContrailBlendMode);
 			}
 
 			trailPalette = info.TrailPalette;

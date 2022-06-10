@@ -26,7 +26,7 @@ namespace OpenRA.Mods.Common.Graphics
 		readonly int ticks;
 		readonly BlendMode blendMode;
 		WAngle angle;
-
+		public BlendMode BlendMode => blendMode;
 		public RailgunHelixRenderable(WPos pos, int zOffset, Railgun railgun, RailgunInfo railgunInfo, int ticks, BlendMode blendMode)
 		{
 			this.pos = pos;

@@ -31,11 +31,13 @@ namespace OpenRA.Mods.Common.Graphics
 		int next;
 		int length;
 		readonly int skip;
+		readonly BlendMode blendMode;
+		public BlendMode BlendMode => blendMode;
 
-		public ContrailRenderable(World world, Color color, WDist width, int length, int skip, int zOffset)
-			: this(world, new WPos[length], width, 0, 0, skip, color, zOffset) { }
+		public ContrailRenderable(World world, Color color, WDist width, int length, int skip, int zOffset, BlendMode blendMode)
+			: this(world, new WPos[length], width, 0, 0, skip, color, zOffset, blendMode) { }
 
-		ContrailRenderable(World world, WPos[] trail, WDist width, int next, int length, int skip, Color color, int zOffset)
+		ContrailRenderable(World world, WPos[] trail, WDist width, int next, int length, int skip, Color color, int zOffset, BlendMode blendMode)
 		{
 			this.world = world;
 			this.trail = trail;
@@ -45,19 +47,20 @@ namespace OpenRA.Mods.Common.Graphics
 			this.skip = skip;
 			this.color = color;
 			this.zOffset = zOffset;
+			this.blendMode = blendMode;
 		}
 
 		public WPos Pos => trail[Index(next - 1)];
 		public int ZOffset => zOffset;
 		public bool IsDecoration => true;
 
-		public IRenderable WithZOffset(int newOffset) { return new ContrailRenderable(world, (WPos[])trail.Clone(), width, next, length, skip, color, newOffset); }
+		public IRenderable WithZOffset(int newOffset) { return new ContrailRenderable(world, (WPos[])trail.Clone(), width, next, length, skip, color, newOffset, blendMode); }
 
 		public IRenderable OffsetBy(in WVec vec)
 		{
 			// Lambdas can't use 'in' variables, so capture a copy for later
 			var offset = vec;
-			return new ContrailRenderable(world, trail.Select(pos => pos + offset).ToArray(), width, next, length, skip, color, zOffset);
+			return new ContrailRenderable(world, trail.Select(pos => pos + offset).ToArray(), width, next, length, skip, color, zOffset, blendMode);
 		}
 
 		public IRenderable AsDecoration() { return this; }
@@ -99,7 +102,7 @@ namespace OpenRA.Mods.Common.Graphics
 				var nextPos = new WPos((int)(nextX / k), (int)(nextY / k), (int)(nextZ / k));
 
 				if (!world.FogObscures(curPos) && !world.FogObscures(nextPos))
-					wcr.DrawWorldLine(wr.Render3DPosition(curPos), wr.Render3DPosition(nextPos), screenWidth, curColor, nextColor);
+					wcr.DrawWorldLine(wr.Render3DPosition(curPos), wr.Render3DPosition(nextPos), screenWidth, curColor, nextColor, blendMode);
 
 				curPos = nextPos;
 				curColor = nextColor;

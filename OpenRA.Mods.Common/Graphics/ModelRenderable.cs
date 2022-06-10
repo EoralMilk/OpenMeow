@@ -125,6 +125,7 @@ namespace OpenRA.Mods.Common.Graphics
 		{
 			readonly ModelRenderable model;
 			readonly ModelRenderProxy renderProxy;
+			public BlendMode BlendMode => BlendMode.Alpha;
 
 			public FinalizedModelRenderable(WorldRenderer wr, ModelRenderable model)
 			{

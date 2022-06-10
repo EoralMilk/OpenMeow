@@ -26,7 +26,7 @@ namespace OpenRA.Mods.Common.Graphics
 		readonly float width;
 		readonly Color borderColor;
 		readonly float borderWidth;
-
+		public BlendMode BlendMode => BlendMode.Alpha;
 		public DetectionCircleAnnotationRenderable(WPos centerPosition, WDist radius, int zOffset,
 			int lineTrails, WAngle trailSeparation, WAngle trailAngle, Color color, float width, Color borderColor, float borderWidth)
 		{

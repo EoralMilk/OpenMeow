@@ -43,6 +43,7 @@ namespace OpenRA.Mods.Cnc.Graphics
 		readonly WPos cachedPos;
 		readonly WVec cachedLength;
 		IEnumerable<IFinalizedRenderable> cache;
+		public BlendMode BlendMode => BlendMode.Alpha;
 
 		public TeslaZapRenderable(WPos pos, int zOffset, in WVec length, string image, string brightSequence, int brightZaps, string dimSequence, int dimZaps, string palette)
 		{

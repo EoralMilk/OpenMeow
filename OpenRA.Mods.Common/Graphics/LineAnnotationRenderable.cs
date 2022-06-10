@@ -21,7 +21,7 @@ namespace OpenRA.Mods.Common.Graphics
 		readonly float width;
 		readonly Color startColor;
 		readonly Color endColor;
-
+		public BlendMode BlendMode => BlendMode.Alpha;
 		public LineAnnotationRenderable(WPos start, WPos end, float width, Color color)
 		{
 			this.start = start;

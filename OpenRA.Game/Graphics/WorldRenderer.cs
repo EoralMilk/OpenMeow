@@ -40,6 +40,9 @@ namespace OpenRA.Graphics
 		readonly bool enableDepthBuffer;
 
 		readonly List<IFinalizedRenderable> preparedRenderables = new List<IFinalizedRenderable>();
+		readonly List<IFinalizedRenderable> preparedAlphaRenderables = new List<IFinalizedRenderable>();
+		readonly List<IFinalizedRenderable> preparedBlendRenderables = new List<IFinalizedRenderable>();
+
 		readonly List<IFinalizedRenderable> preparedOverlayRenderables = new List<IFinalizedRenderable>();
 		readonly List<IFinalizedRenderable> preparedAnnotationRenderables = new List<IFinalizedRenderable>();
 
@@ -267,15 +270,34 @@ namespace OpenRA.Graphics
 			Game.Renderer.Flush();
 
 			for (var i = 0; i < preparedRenderables.Count; i++)
-				preparedRenderables[i].Render(this);
+			{
+				if (preparedRenderables[i].BlendMode == BlendMode.None)
+					preparedRenderables[i].Render(this);
+				else if (preparedRenderables[i].BlendMode == BlendMode.Alpha)
+					preparedAlphaRenderables.Add(preparedRenderables[i]);
+				else
+					preparedBlendRenderables.Add(preparedRenderables[i]);
+			}
 
 			Game.Renderer.Flush();
-
-			//Game.Renderer.Context.EnableCullFace(FaceCullFunc.Back);
 
 			Game.Renderer.Draw3DMeshesInstance(this);
 
 			Game.Renderer.Context.DisableCullFace();
+
+			for (var i = 0; i < preparedAlphaRenderables.Count; i++)
+			{
+				preparedAlphaRenderables[i].Render(this);
+			}
+
+			Game.Renderer.Flush();
+
+			for (var i = 0; i < preparedBlendRenderables.Count; i++)
+			{
+					preparedBlendRenderables[i].Render(this);
+			}
+
+			Game.Renderer.Flush();
 
 			if (enableDepthBuffer)
 				Game.Renderer.ClearDepthBuffer();
@@ -350,6 +372,8 @@ namespace OpenRA.Graphics
 			Game.Renderer.Flush();
 
 			preparedRenderables.Clear();
+			preparedAlphaRenderables.Clear();
+			preparedBlendRenderables.Clear();
 			preparedOverlayRenderables.Clear();
 			preparedAnnotationRenderables.Clear();
 		}

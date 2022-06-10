@@ -33,7 +33,7 @@ namespace OpenRA.Mods.Common.Graphics
 		readonly WPos pos;
 		readonly Polygon bounds;
 		readonly Color color;
-
+		public BlendMode BlendMode => BlendMode.Alpha;
 		public IsometricSelectionBoxAnnotationRenderable(Actor actor, in Polygon bounds, Color color)
 		{
 			pos = actor.CenterPosition;

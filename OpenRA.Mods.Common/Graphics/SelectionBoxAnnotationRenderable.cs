@@ -19,6 +19,7 @@ namespace OpenRA.Mods.Common.Graphics
 		readonly WPos pos;
 		readonly Rectangle decorationBounds;
 		readonly Color color;
+		public BlendMode BlendMode => BlendMode.Alpha;
 
 		public SelectionBoxAnnotationRenderable(Actor actor, Rectangle decorationBounds, Color color)
 			: this(actor.CenterPosition, decorationBounds, color) { }

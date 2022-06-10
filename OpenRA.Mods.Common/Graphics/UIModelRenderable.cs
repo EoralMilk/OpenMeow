@@ -77,6 +77,7 @@ namespace OpenRA.Mods.Common.Graphics
 		{
 			readonly UIModelRenderable model;
 			readonly ModelRenderProxy renderProxy;
+			public BlendMode BlendMode => BlendMode.Alpha;
 
 			public FinalizedUIModelRenderable(WorldRenderer wr, UIModelRenderable model)
 			{

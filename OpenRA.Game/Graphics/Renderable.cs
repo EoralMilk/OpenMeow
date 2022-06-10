@@ -53,6 +53,7 @@ namespace OpenRA.Graphics
 
 	public interface IFinalizedRenderable
 	{
+		BlendMode BlendMode { get; }
 		void Render(WorldRenderer wr);
 		void RenderDebugGeometry(WorldRenderer wr);
 		Rectangle ScreenBounds(WorldRenderer wr);

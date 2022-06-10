@@ -22,6 +22,8 @@ namespace OpenRA.Mods.Common.Graphics
 		readonly bool displayHealth;
 		readonly bool displayExtra;
 		readonly Rectangle decorationBounds;
+		public BlendMode BlendMode => BlendMode.Alpha;
+
 
 		public SelectionBarsAnnotationRenderable(Actor actor, Rectangle decorationBounds, bool displayHealth, bool displayExtra)
 			: this(actor.CenterPosition, actor, decorationBounds)

@@ -31,7 +31,7 @@ namespace OpenRA.Mods.Common.Graphics
 		readonly bool displayHealth;
 		readonly bool displayExtra;
 		readonly Polygon bounds;
-
+		public BlendMode BlendMode => BlendMode.Alpha;
 		public IsometricSelectionBarsAnnotationRenderable(Actor actor, Polygon bounds, bool displayHealth, bool displayExtra)
 			: this(actor.CenterPosition, actor, bounds)
 		{

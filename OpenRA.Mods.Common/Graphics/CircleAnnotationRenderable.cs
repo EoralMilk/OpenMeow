@@ -24,6 +24,7 @@ namespace OpenRA.Mods.Common.Graphics
 		readonly int width;
 		readonly Color color;
 		readonly bool filled;
+		public BlendMode BlendMode => BlendMode.Alpha;
 
 		public CircleAnnotationRenderable(WPos centerPosition, WDist radius, int width, Color color, bool filled = false)
 		{

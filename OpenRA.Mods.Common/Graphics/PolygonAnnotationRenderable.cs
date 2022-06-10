@@ -21,6 +21,7 @@ namespace OpenRA.Mods.Common.Graphics
 		readonly WPos effectivePos;
 		readonly int width;
 		readonly Color color;
+		public BlendMode BlendMode => BlendMode.Alpha;
 
 		public PolygonAnnotationRenderable(WPos[] vertices, WPos effectivePos, int width, Color color)
 		{

@@ -24,6 +24,7 @@ namespace OpenRA.Mods.Common.Graphics
 		readonly WDist width;
 		readonly Color color;
 		readonly BlendMode blendMode;
+		public BlendMode BlendMode => blendMode;
 
 		public BeamRenderable(WPos pos, int zOffset, in WVec length, BeamRenderableShape shape, WDist width, Color color, BlendMode blendMode)
 		{

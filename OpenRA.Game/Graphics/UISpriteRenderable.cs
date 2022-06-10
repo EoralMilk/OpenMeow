@@ -22,6 +22,8 @@ namespace OpenRA.Graphics
 		readonly PaletteReference palette;
 		readonly float scale;
 		readonly float alpha;
+		readonly BlendMode blendMode;
+		public BlendMode BlendMode => blendMode;
 
 		public UISpriteRenderable(Sprite sprite, WPos effectiveWorldPos, int2 screenPos, int zOffset, PaletteReference palette, float scale = 1f, float alpha = 1f)
 		{
@@ -32,6 +34,10 @@ namespace OpenRA.Graphics
 			this.palette = palette;
 			this.scale = scale;
 			this.alpha = alpha;
+			if (sprite.BlendMode == BlendMode.None && alpha < 0.9999f)
+				blendMode = BlendMode.Alpha;
+			else
+				blendMode = sprite.BlendMode;
 
 			// PERF: Remove useless palette assignments for RGBA sprites
 			// HACK: This is working around the fact that palettes are defined on traits rather than sequences
