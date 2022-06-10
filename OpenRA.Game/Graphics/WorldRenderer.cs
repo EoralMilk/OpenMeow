@@ -40,8 +40,7 @@ namespace OpenRA.Graphics
 		readonly bool enableDepthBuffer;
 
 		readonly List<IFinalizedRenderable> preparedRenderables = new List<IFinalizedRenderable>();
-		readonly List<IFinalizedRenderable> preparedAlphaRenderables = new List<IFinalizedRenderable>();
-		readonly List<IFinalizedRenderable> preparedBlendRenderables = new List<IFinalizedRenderable>();
+		readonly List<IFinalizedRenderable>[] preparedBlendRenderables = new List<IFinalizedRenderable>[10];
 
 		readonly List<IFinalizedRenderable> preparedOverlayRenderables = new List<IFinalizedRenderable>();
 		readonly List<IFinalizedRenderable> preparedAnnotationRenderables = new List<IFinalizedRenderable>();
@@ -72,6 +71,10 @@ namespace OpenRA.Graphics
 			terrainRenderer = world.WorldActor.TraitOrDefault<IRenderTerrain>();
 
 			debugVis = Exts.Lazy(() => world.WorldActor.TraitOrDefault<DebugVisualizations>());
+			for (int i = 0; i < preparedBlendRenderables.Length; i++)
+			{
+				preparedBlendRenderables[i] = new List<IFinalizedRenderable>();
+			}
 		}
 
 		public void UpdatePalettesForPlayer(string internalName, Color color, bool replaceExisting)
@@ -273,10 +276,10 @@ namespace OpenRA.Graphics
 			{
 				if (preparedRenderables[i].BlendMode == BlendMode.None)
 					preparedRenderables[i].Render(this);
-				else if (preparedRenderables[i].BlendMode == BlendMode.Alpha)
-					preparedAlphaRenderables.Add(preparedRenderables[i]);
 				else
-					preparedBlendRenderables.Add(preparedRenderables[i]);
+				{
+					preparedBlendRenderables[(int)preparedRenderables[i].BlendMode].Add(preparedRenderables[i]);
+				}
 			}
 
 			Game.Renderer.Flush();
@@ -285,16 +288,18 @@ namespace OpenRA.Graphics
 
 			Game.Renderer.Context.DisableCullFace();
 
-			for (var i = 0; i < preparedAlphaRenderables.Count; i++)
+			for (var i = 0; i < preparedBlendRenderables.Length; i++)
 			{
-				preparedAlphaRenderables[i].Render(this);
-			}
+				if (preparedBlendRenderables[i].Count > 0)
+				{
+					for (var j = 0; j < preparedBlendRenderables[i].Count; j++)
+					{
+						preparedBlendRenderables[i][j].Render(this);
+					}
 
-			Game.Renderer.Flush();
-
-			for (var i = 0; i < preparedBlendRenderables.Count; i++)
-			{
-					preparedBlendRenderables[i].Render(this);
+					// Don't use Game.Renderer.Flush(), which will stupidly use alpha BlendMode any first draw
+					Game.Renderer.WorldSpriteRenderer.Flush((BlendMode)i);
+				}
 			}
 
 			Game.Renderer.Flush();
@@ -372,8 +377,9 @@ namespace OpenRA.Graphics
 			Game.Renderer.Flush();
 
 			preparedRenderables.Clear();
-			preparedAlphaRenderables.Clear();
-			preparedBlendRenderables.Clear();
+			foreach (var l in preparedBlendRenderables)
+				l.Clear();
+
 			preparedOverlayRenderables.Clear();
 			preparedAnnotationRenderables.Clear();
 		}

@@ -422,7 +422,7 @@ namespace OpenRA
 			{
 				if (currentBatchRenderer == value)
 					return;
-				currentBatchRenderer?.Flush(BlendMode.Alpha);
+				currentBatchRenderer?.Flush(BlendMode.None);
 				currentBatchRenderer = value;
 			}
 		}
