@@ -30,7 +30,7 @@ namespace OpenRA.Graphics
 		BlendMode currentBlend = BlendMode.Alpha;
 		int nv = 0;
 		int ns = 0;
-
+		readonly int maxVerticesPerMesh = 12;
 		public SpriteRenderer(Renderer renderer, IShader shader)
 		{
 			this.renderer = renderer;
@@ -62,7 +62,7 @@ namespace OpenRA.Graphics
 		{
 			renderer.CurrentBatchRenderer = this;
 
-			if (s.BlendMode != currentBlend || nv + 6 > renderer.TempBufferSize)
+			if (s.BlendMode != currentBlend || nv + maxVerticesPerMesh > renderer.TempBufferSize)
 				Flush();
 
 			currentBlend = s.BlendMode;
