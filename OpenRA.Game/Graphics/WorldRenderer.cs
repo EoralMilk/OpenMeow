@@ -286,10 +286,11 @@ namespace OpenRA.Graphics
 
 			Game.Renderer.Context.DisableCullFace();
 
-			Game.Renderer.EnableDepthWrite(false);
-
 			for (var i = 0; i < preparedBlendRenderables.Length; i++)
 			{
+				if (i == 2)
+					Game.Renderer.EnableDepthWrite(false);
+
 				if (preparedBlendRenderables[i].Count > 0)
 				{
 					for (var j = 0; j < preparedBlendRenderables[i].Count; j++)
