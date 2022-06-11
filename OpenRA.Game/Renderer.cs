@@ -337,6 +337,7 @@ namespace OpenRA
 		public void RenderInstance(int start, int numVertices, int numInstance)
 		{
 			Context.DrawInstances(PrimitiveType.TriangleList, start, numVertices, numInstance);
+			PerfHistory.Increment("batches", 1);
 		}
 
 		public void EndWorld()
@@ -546,6 +547,11 @@ namespace OpenRA
 				else
 					Context.DisableScissor();
 			}
+		}
+
+		public void SetBlendMode(BlendMode blendMode)
+		{
+			Context.SetBlendMode(blendMode);
 		}
 
 		public void EnableDepthBuffer()

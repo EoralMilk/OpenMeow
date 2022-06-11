@@ -58,18 +58,6 @@ vec3 CalcDirLight(DirLight light, vec3 normal, vec3 viewDir, vec3 color)
 
 void main()
 {
-	// #if __VERSION__ == 120
-
-	// vec4 x = texture2D(DiffuseTexture, vTexCoord.st);
-	// vec4 color = texture2D(Palette, vec2(dot(x, vChannelMask), PaletteRows.x));
-	// if (color.a < 0.01)
-	// 	discard;
-	// vec4 y = texture2D(DiffuseTexture, vTexCoord.pq);
-	// vec4 normal = normalize((2.0 * texture2D(Palette, vec2(dot(y, vNormalsMask), PaletteRows.y)) - 1.0));
-	// vec3 intensity = AmbientLight + DiffuseLight * max(dot(normal, LightDirection), 0.0);
-	// gl_FragColor = vec4(intensity * color.rgb, color.a);
-
-	// #else
 	vec4 x = texture(DiffuseTexture, vTexCoord.st);
 	float colorIndex = dot(x, vChannelMask);
 	vec4 color = texture(Palette, vec2(dot(x, vChannelMask), PaletteRows.x));
@@ -83,11 +71,13 @@ void main()
 	if (vTint.a < 0.0f)
 		color = vec4(vTint.rgb, -vTint.a);
 	else
+	{
 		color *= vTint;
+	}
 	
 	if (EnableDepthPreview)
 	{
-		float intensity = 1.0 - gl_FragCoord.z;//clamp(DepthPreviewParams.x * gl_FragCoord.z - 0.5 * DepthPreviewParams.x - DepthPreviewParams.y + 0.5, 0.0, 1.0);
+		float intensity = 1.0 - gl_FragCoord.z;
 		fragColor = vec4(vec3(intensity), 1.0);
 	}
 	else{
@@ -104,36 +94,5 @@ void main()
 		result = CalcDirLight(dirLight, worldNormal, viewDir, color.xyz);
 		fragColor =vec4(result.rgb, color.a);
 	}
-
-
-
-	// //AcosAngle --> 0 is more lighter
-	// float acosAngle = acos(dot(worldNormal.xyz, -dirLight.direction));
-	// float halfPi =1.5707963;
-	// float vxlPaletteStartIndex=VplInfo.x;
-	// float PaletteHeight =VplInfo.y;
-	// //AcosAngle Rangle  0 -> PI
-	// if (acosAngle >= halfPi)
-	// {
-	// 		vec4 cc = texture(Palette, vec2(colorIndex, (vxlPaletteStartIndex+0.5)/PaletteHeight));
-	// 		color = texture(Palette, vec2(cc.r, PaletteRows.x));
-	// }
-	// else
-	// {
-	// 		float nIndex = float(31 - int(acosAngle/halfPi*32.0));
-	// 		if(nIndex > 31.0)
-	// 		{
-	// 			nIndex =31.0;
-	// 		}
-	// 		if(nIndex <0.0)
-	// 		{
-	// 			nIndex =31.0;
-	// 		}
-	// 		vec4 cc = texture(Palette, vec2(colorIndex, (vxlPaletteStartIndex+nIndex +0.5)/PaletteHeight));
-	// 		color = texture(Palette, vec2(cc.r, PaletteRows.x));
-	// }
-	// fragColor =vec4(color.rgb,color.a);
-
-	// #endif
 }
 

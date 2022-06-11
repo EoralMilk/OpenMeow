@@ -47,7 +47,7 @@ void main()
             // float closestDepth = texture(sunDepthTexture, projCoords.xy).r;
 
             float shadow = 0.0f;
-            float bias = FrameShadowBias * 0.007f;
+            float bias = FrameShadowBias * 0.01f;
 
             if(projCoords.z <= 1.0f)
             {

@@ -134,6 +134,8 @@ namespace OpenRA.Mods.Cnc.Graphics
 		int instanceCount;
 		public IVertexBuffer<VxlInstanceData> InstanceArrayBuffer;
 
+		bool alphaBlend;
+
 		public OrderedVxlSection(MeshRenderData data, string name)
 		{
 			renderData = data;
@@ -152,6 +154,10 @@ namespace OpenRA.Mods.Cnc.Graphics
 				throw new Exception("AddInstanceData params length unright");
 
 			VxlInstanceData instanceData = new VxlInstanceData(data);
+
+			if (data[23] < 1.0f)
+				alphaBlend = true;
+
 			instancesToDraw[instanceCount] = instanceData;
 			instanceCount++;
 		}
@@ -159,6 +165,7 @@ namespace OpenRA.Mods.Cnc.Graphics
 		public void Flush()
 		{
 			instanceCount = 0;
+			alphaBlend = false;
 		}
 
 		public void SetPalette(ITexture pal)
@@ -184,9 +191,15 @@ namespace OpenRA.Mods.Cnc.Graphics
 			InstanceArrayBuffer.Bind();
 			renderData.Shader.LayoutInstanceArray();
 
+			if (alphaBlend)
+				Game.Renderer.SetBlendMode(BlendMode.Alpha);
+			else
+				Game.Renderer.SetBlendMode(BlendMode.None);
+
 			// draw instance
 			Game.Renderer.RenderInstance(renderData.Start, renderData.Count, instanceCount);
-			//Console.WriteLine("Draw vxl instance " + name + "  " + instanceCount);
+
+			Game.Renderer.SetBlendMode(BlendMode.None);
 		}
 	}
 

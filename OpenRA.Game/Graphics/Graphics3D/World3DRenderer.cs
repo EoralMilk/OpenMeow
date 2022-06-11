@@ -170,10 +170,14 @@ namespace OpenRA.Graphics
 			InstanceArrayBuffer.Bind();
 			renderData.Shader.LayoutInstanceArray();
 
+			Game.Renderer.SetBlendMode(BlendMode.Alpha);
+
 			// draw instance
 			Game.Renderer.RenderInstance(renderData.Start, renderData.Count, instanceCount);
+			Game.Renderer.SetBlendMode(BlendMode.None);
 		}
 	}
+
 	public struct Vertex3D
 	{
 		public readonly float X, Y, Z;
@@ -496,7 +500,7 @@ namespace OpenRA.Graphics
 				}
 			}
 
-			//// render test box
+			// render test box
 			//{
 			//	// draw parent test box
 			//	var parentMat = DrawOneTestBox(TestPos, TestRot, 2);
