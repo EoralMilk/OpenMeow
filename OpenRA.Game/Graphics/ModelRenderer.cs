@@ -236,9 +236,8 @@ namespace OpenRA.Graphics
 		GlmSharp.mat4 rotFix = new GlmSharp.mat4(new GlmSharp.quat(new GlmSharp.vec3(0,0, -0.5f * (float)Math.PI)));
 
 		public void RenderDirectly(
-			WorldRenderer wr, in WPos pos, IEnumerable<ModelAnimation> models, float scale,
-			in WRot groundOrientation, in float3 tint, in float alpha,
-			PaletteReference color, PaletteReference normals, PaletteReference shadowPalette)
+			WorldRenderer wr, in WPos pos,in GlmSharp.vec3 viewOffset, IEnumerable<ModelAnimation> models, float scale,
+			in float3 tint, in float alpha, PaletteReference color, PaletteReference normals)
 		{
 			//// Correct for inverted y-axis
 			//var scaleTransform = Util.ScaleMatrix(scale, scale, scale);
@@ -250,6 +249,7 @@ namespace OpenRA.Graphics
 			{
 				// Convert screen offset to world offset
 				var offsetVec = w3dr.Get3DPositionFromWPos(pos + m.OffsetFunc());
+				offsetVec += viewOffset;
 				var offsetTransform = GlmSharp.mat4.Translate(offsetVec);
 
 				var rotMat = new GlmSharp.mat4(new GlmSharp.quat(w3dr.Get3DRotationFromWRot(m.RotationFunc())));

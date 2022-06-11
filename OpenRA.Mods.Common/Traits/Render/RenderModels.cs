@@ -47,6 +47,8 @@ namespace OpenRA.Mods.Common.Traits.Render
 		[Desc("Change the image size.")]
 		public readonly float Scale = 1;
 
+		public readonly int ZOffset = 1;
+
 		public readonly WAngle LightPitch = WAngle.FromDegrees(50);
 		public readonly WAngle LightYaw = WAngle.FromDegrees(240);
 		public readonly float[] LightAmbientColor = { 0.6f, 0.6f, 0.6f };
@@ -150,7 +152,7 @@ namespace OpenRA.Mods.Common.Traits.Render
 			return new IRenderable[]
 			{
 				new ModelRenderable(
-					components, self.CenterPosition, 0, camera, Info.Scale,
+					components, self.CenterPosition, Info.ZOffset, camera, Info.Scale,
 					lightSource, Info.LightAmbientColor, Info.LightDiffuseColor,
 					colorPalette, normalsPalette, shadowPalette)
 			};

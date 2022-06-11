@@ -169,6 +169,8 @@ explosion:
 		BlendMode: Additive
 		ZRamp: 1
 		Tick: 80
+		MeshType: Plane
+		ZOffset: 2048
 	small_watersplash: h2o_exp2
 		IgnoreWorldTint: False
 		AlphaFade: False

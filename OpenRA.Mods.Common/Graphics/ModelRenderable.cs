@@ -134,9 +134,11 @@ namespace OpenRA.Mods.Common.Graphics
 			var map = wr.World.Map;
 			var groundOrientation = map.TerrainOrientation(map.CellContaining(model.pos));
 
+			var viewOffset = Game.Renderer.World3DRenderer.InverseCameraFrontMeterPerWPos * zOffset;
+
 			Game.Renderer.WorldModelRenderer.RenderDirectly(
-				wr, model.pos, draw, model.scale, groundOrientation, t, a,
-				model.palette, model.normalsPalette, model.shadowPalette);
+				wr, model.pos, viewOffset, draw, model.scale, t, a,
+				model.palette, model.normalsPalette);
 
 			return new FinalizedModelRenderable(wr, this);
 		}
@@ -188,15 +190,15 @@ namespace OpenRA.Mods.Common.Graphics
 				//var sc = shadowOrigin + psb[1];
 				//var sd = shadowOrigin + psb[3];
 
-				var wrsr = Game.Renderer.WorldRgbaSpriteRenderer;
-				var t = model.tint;
-				if (wr.TerrainLighting != null && (model.tintModifiers & TintModifiers.IgnoreWorldTint) == 0)
-					t *= wr.TerrainLighting.TintAt(model.pos);
+				//var wrsr = Game.Renderer.WorldRgbaSpriteRenderer;
+				//var t = model.tint;
+				//if (wr.TerrainLighting != null && (model.tintModifiers & TintModifiers.IgnoreWorldTint) == 0)
+				//	t *= wr.TerrainLighting.TintAt(model.pos);
 
-				// Shader interprets negative alpha as a flag to use the tint colour directly instead of multiplying the sprite colour
-				var a = model.alpha;
-				if ((model.tintModifiers & TintModifiers.ReplaceColor) != 0)
-					a *= -1;
+				//// Shader interprets negative alpha as a flag to use the tint colour directly instead of multiplying the sprite colour
+				//var a = model.alpha;
+				//if ((model.tintModifiers & TintModifiers.ReplaceColor) != 0)
+				//	a *= -1;
 
 				//var viewOffset = Game.Renderer.World3DRenderer.InverseCameraFrontMeterPerWPos * (5);
 
@@ -204,14 +206,6 @@ namespace OpenRA.Mods.Common.Graphics
 				////wrsr.DrawSprite(renderProxy.Sprite, pxOrigin - 0.5f * renderProxy.Sprite.Size, 1f, t, a);
 				//wrsr.DrawCardSprite(renderProxy.Sprite, model.pos, viewOffset, 1f, t, a);
 
-				var draw = model.models.Where(v => v.IsVisible);
-
-				var map = wr.World.Map;
-				var groundOrientation = map.TerrainOrientation(map.CellContaining(model.pos));
-
-				Game.Renderer.WorldModelRenderer.RenderDirectly(
-					wr, model.pos, draw, model.scale, groundOrientation, t, a,
-					model.palette, model.normalsPalette, model.shadowPalette);
 				//Console.WriteLine("vxl render");
 			}
 

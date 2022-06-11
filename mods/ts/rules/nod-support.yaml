@@ -202,6 +202,7 @@ NALASR:
 		NormalsPalette: normals
 		ShadowPalette: shadow
 		Scale: 1.4
+		ZOffset: 678
 	WithModelTurret:
 		RequiresCondition: !build-incomplete
 	Power:
