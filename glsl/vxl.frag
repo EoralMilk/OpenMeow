@@ -6,6 +6,8 @@ precision mediump float;
 uniform sampler2D Palette, DiffuseTexture;
 // uniform vec2 PaletteRows;
 // uniform vec2 VplInfo;
+uniform bool RenderDepthBuffer;
+
 uniform bool EnableDepthPreview;
 uniform vec2 DepthPreviewParams;
 
@@ -49,9 +51,9 @@ vec3 CalcDirLight(DirLight light, vec3 normal, vec3 viewDir, vec3 color)
 	float spec = pow(max(dot(viewDir, reflectDir), 0.0), 0.5f);
 	// merge
 	vec3 ambient  = light.ambient  * color;
-	vec3 diffuse  = light.diffuse  * diff * color;
+	vec3 diffuse  = light.diffuse  * diff * color  * 0.5f;
 	vec3 specular = light.specular * spec * 0.1f;
-	return (ambient + diffuse) * 0.3f + specular;
+	return (ambient + diffuse) + specular;
 }
 
 void main()

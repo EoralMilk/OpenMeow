@@ -189,7 +189,7 @@ namespace OpenRA.Graphics
 			// Note that since the maximum number of vertices per cell is used here, null values may appear in the vertices array 
 			var offset = rowStride * uv.V + maxVerticesPerCell * uv.U;
 
-			var viewOffset = Game.Renderer.World3DRenderer.InverseCameraFrontMeterPerWPos * zOffset;
+			var viewOffset = Game.Renderer.World3DRenderer.InverseCameraFrontMeterPerWPos * (zOffset - 15);
 
 			var spriteMeshType = sprite.SpriteMeshType;
 

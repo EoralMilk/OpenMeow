@@ -18,14 +18,20 @@ uniform mat4 SunVP;
 uniform mat4 InvCameraVP;
 uniform float FrameShadowBias;
 
-
+uniform float AmbientIntencity;
 
 void main()
 {
+    // vec3 rgba = texture(screenTexture, TexCoords).rgba;
     vec3 col = texture(screenTexture, TexCoords).rgb;
+
     if (FrameBufferShadow || FrameBufferPosition){
         float depth = texture(screenDepthTexture, TexCoords).r;
-        if (depth > 0.99999f)
+
+        // FragColor = vec4(depth,depth,depth, 1.0);
+        // return;
+
+        if (depth >= 0.99999f)
             discard;
 
         vec4 fragP = InvCameraVP * vec4(TexCoords.x * 2.0f-1.0f, TexCoords.y * 2.0f-1.0f, depth * 2.0f - 1.0f, 1.0f);
@@ -37,12 +43,14 @@ void main()
             projCoords = projCoords * 0.5f + 0.5f;
             float currentDepth = projCoords.z;
 
+
             // float closestDepth = texture(sunDepthTexture, projCoords.xy).r;
 
             float shadow = 0.0f;
+            float bias = FrameShadowBias * 0.007f;
+
             if(projCoords.z <= 1.0f)
             {
-                float bias = FrameShadowBias;
                 vec2 texelSize = 1.0f / vec2(textureSize(sunDepthTexture, 0));
                 for(int x = -1; x <= 1; ++x)
                 {
@@ -55,7 +63,7 @@ void main()
                 shadow /= 9.0f;
             }
 
-            col = col * (1.0f - shadow);
+            col = col * (1.0f - max(shadow - AmbientIntencity, 0.0f));
             FragColor = vec4(col, 1.0f);
             return;
         }

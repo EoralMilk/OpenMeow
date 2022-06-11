@@ -41,6 +41,7 @@ namespace OpenRA.Platforms.Default
 		#region Constants
 
 		public const int GL_FALSE = 0;
+		public const int GL_TRUE = 1;
 
 		// ClearBufferMask
 		public const int GL_COLOR_BUFFER_BIT = 0x4000;
@@ -49,6 +50,9 @@ namespace OpenRA.Platforms.Default
 
 		// Data types
 		public const int GL_UNSIGNED_BYTE = 0x1401;
+		public const int GL_UNSIGNED_SHORT = 0x1403;
+		public const int GL_UNSIGNED_INT = 0x1405;
+
 		public const int GL_FLOAT = 0x1406;
 
 		// Errors
@@ -236,6 +240,7 @@ namespace OpenRA.Platforms.Default
 		public const int GL_DEPTH_ATTACHMENT = 0x8D00;
 		public const int GL_FRAMEBUFFER_COMPLETE = 0x8CD5;
 		public const int GL_FRAMEBUFFER_BINDING = 0x8CA6;
+		public const int GL_NONE = 0;
 
 		#endregion
 
@@ -407,6 +412,9 @@ namespace OpenRA.Platforms.Default
 		public delegate void DrawArraysInstanced(int mode, int first, int count, int instancesCount);
 		public static DrawArraysInstanced glDrawArraysInstanced { get; private set; }
 
+		public delegate void ReadBuffer(int mode);
+		public static ReadBuffer glReadBuffer { get; private set; }
+
 		public delegate void Enable(int cap);
 		public static Enable glEnable { get; private set; }
 
@@ -424,6 +432,9 @@ namespace OpenRA.Platforms.Default
 
 		public delegate void DepthFunc(int func);
 		public static DepthFunc glDepthFunc { get; private set; }
+
+		public delegate void DepthMask(int state);
+		public static DepthMask glDepthMask { get; private set; }
 
 		public delegate void CullFace(int func);
 		public static CullFace glCullFace { get; private set; }
@@ -608,10 +619,12 @@ namespace OpenRA.Platforms.Default
 				glVertexAttribDivisor = Bind<VertexAttribDivisor>("glVertexAttribDivisor");
 				glDrawArrays = Bind<DrawArrays>("glDrawArrays");
 				glDrawArraysInstanced = Bind<DrawArraysInstanced>("glDrawArraysInstanced");
+				glReadBuffer = Bind<ReadBuffer>("glReadBuffer");
 				glBlendEquation = Bind<BlendEquation>("glBlendEquation");
 				glBlendEquationSeparate = Bind<BlendEquationSeparate>("glBlendEquationSeparate");
 				glBlendFunc = Bind<BlendFunc>("glBlendFunc");
 				glDepthFunc = Bind<DepthFunc>("glDepthFunc");
+				glDepthMask = Bind<DepthMask>("glDepthMask");
 				glCullFace = Bind<CullFace>("glCullFace");
 				glScissor = Bind<Scissor>("glScissor");
 				glReadPixels = Bind<ReadPixels>("glReadPixels");

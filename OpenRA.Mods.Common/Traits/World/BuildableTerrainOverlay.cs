@@ -86,7 +86,7 @@ namespace OpenRA.Mods.Common.Traits
 				return;
 
 			var buildableSprite = !info.AllowedTerrainTypes.Contains(world.Map.GetTerrainInfo(cell).Type) || world.Map.Ramp[cell] != 0 ? disabledSprite : null;
-			render.Update(cell, buildableSprite, palette, 1f, info.Alpha, zOffset: 10);
+			render.Update(cell, buildableSprite, palette, 1f, info.Alpha, zOffset: 15);
 		}
 
 		void IRenderAboveWorld.RenderAboveWorld(Actor self, WorldRenderer wr)

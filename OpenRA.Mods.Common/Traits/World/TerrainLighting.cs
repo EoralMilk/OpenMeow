@@ -22,6 +22,7 @@ namespace OpenRA.Mods.Common.Traits
 	public class TerrainLightingInfo : TraitInfo, ILobbyCustomRulesIgnore
 	{
 		public readonly float Intensity = 1;
+		public readonly float AmbientIntensity = 0.35f;
 		public readonly float HeightStep = 0;
 		public readonly float RedTint = 1;
 		public readonly float GreenTint = 1;
@@ -73,6 +74,16 @@ namespace OpenRA.Mods.Common.Traits
 				(map.MapSize.X + 1) * cellSize,
 				(map.MapSize.Y + 1) * cellSize,
 				info.BinSize * cellSize);
+		}
+
+		public float3 GetGlobalDirectLight()
+		{
+			return (info.Intensity - info.AmbientIntensity) * globalTint;
+		}
+
+		public float3 GetGlobalAmbient()
+		{
+			return info.AmbientIntensity * globalTint;
 		}
 
 		Rectangle Bounds(LightSource source)
@@ -136,6 +147,11 @@ namespace OpenRA.Mods.Common.Traits
 
 				return intensity * tint;
 			}
+		}
+
+		public float GetGlobalAmbientIntencity()
+		{
+			return info.AmbientIntensity;
 		}
 	}
 }

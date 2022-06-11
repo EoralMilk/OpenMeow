@@ -99,6 +99,7 @@ namespace OpenRA
 	{
 		IVertexBuffer<T> CreateVertexBuffer<T>(int size) where T : struct;
 		ITexture CreateTexture();
+		IFrameBuffer CreateDepthFrameBuffer(Size s);
 		IFrameBuffer CreateFrameBuffer(Size s);
 		IFrameBuffer CreateFrameBuffer(Size s, Color clearColor);
 		IShader CreateShader<T>() where T : IShaderBindings;
@@ -111,6 +112,7 @@ namespace OpenRA
 		void Clear();
 		void EnableDepthBuffer(DepthFunc type);
 		void EnableDepthTest(DepthFunc type);
+		void EnableDepthWrite(bool enable);
 		void DisableDepthBuffer();
 		void ClearDepthBuffer();
 		void EnableCullFace(FaceCullFunc type);
@@ -147,7 +149,7 @@ namespace OpenRA
 		int InstanceStrde { get; }
 		IEnumerable<ShaderVertexAttribute> InstanceAttributes { get; }
 
-		void SetCommonParaments(IShader shader,World3DRenderer w3dr);
+		void SetCommonParaments(IShader shader,World3DRenderer w3dr, bool sunCamera);
 
 		// 实际上没什么意义，后面删掉它
 		//void SetRenderData(IShader shader, ModelRenderData renderData);
@@ -167,7 +169,7 @@ namespace OpenRA
 		void PrepareRender();
 		void LayoutAttributes();
 		void LayoutInstanceArray();
-		void SetCommonParaments(World3DRenderer w3dr);
+		void SetCommonParaments(World3DRenderer w3dr, bool sunCamera);
 	}
 
 	public enum TextureScaleFilter { Nearest, Linear }
@@ -192,13 +194,15 @@ namespace OpenRA
 	public interface IFrameBuffer : IDisposable
 	{
 		void Bind();
+		void BindNotFlush();
 		void SetViewportBack();
 		void SetViewport();
 		void Unbind();
-		void UnbindNotSetViewport();
+		void UnbindNotFlush();
 		void EnableScissor(Rectangle rect);
 		void DisableScissor();
 		ITexture Texture { get; }
+		ITexture DepthTexture { get; }
 	}
 
 	public enum PrimitiveType

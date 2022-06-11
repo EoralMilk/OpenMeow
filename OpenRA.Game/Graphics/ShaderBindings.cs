@@ -41,7 +41,7 @@ namespace OpenRA.Graphics
 			FragmentShaderName = name;
 		}
 
-		public void SetCommonParaments(IShader shader, World3DRenderer w3dr)
+		public void SetCommonParaments(IShader shader, World3DRenderer w3dr, bool sunCamera)
 		{
 			// Set By SpriteRenderer
 		}
@@ -72,7 +72,7 @@ namespace OpenRA.Graphics
 			FragmentShaderName = name;
 		}
 
-		public void SetCommonParaments(IShader shader, World3DRenderer w3dr)
+		public void SetCommonParaments(IShader shader, World3DRenderer w3dr, bool sunCamera)
 		{
 		}
 	}

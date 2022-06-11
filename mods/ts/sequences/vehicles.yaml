@@ -44,7 +44,7 @@ harv.nod:
 		Length: *
 		ZRamp: 1
 		Offset: 0, 0, 1
-		ZOffset: 3
+		ZOffset: -3
 		MeshType: Plane
 	icon: sidebar-nod|harvicon
 

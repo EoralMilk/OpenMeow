@@ -470,7 +470,7 @@ APACHE:
 		FullSequence: pip-ammo
 		EmptySequence: pip-ammoempty
 		Palette: pips
-	WithShadow:
+	# WithShadow:
 	WithModelBody:
 		ShowShadow: False
 	GetWPos:

@@ -118,6 +118,26 @@ namespace OpenRA.Mods.Common.Graphics
 
 		public IFinalizedRenderable PrepareRender(WorldRenderer wr)
 		{
+			var model = this;
+			var wrsr = Game.Renderer.WorldRgbaSpriteRenderer;
+			var t = model.tint;
+			if (wr.TerrainLighting != null && (model.tintModifiers & TintModifiers.IgnoreWorldTint) == 0)
+				t *= wr.TerrainLighting.TintAt(model.pos);
+
+			// Shader interprets negative alpha as a flag to use the tint colour directly instead of multiplying the sprite colour
+			var a = model.alpha;
+			if ((model.tintModifiers & TintModifiers.ReplaceColor) != 0)
+				a *= -1;
+
+			var draw = model.models.Where(v => v.IsVisible);
+
+			var map = wr.World.Map;
+			var groundOrientation = map.TerrainOrientation(map.CellContaining(model.pos));
+
+			Game.Renderer.WorldModelRenderer.RenderDirectly(
+				wr, model.pos, draw, model.scale, groundOrientation, t, a,
+				model.palette, model.normalsPalette, model.shadowPalette);
+
 			return new FinalizedModelRenderable(wr, this);
 		}
 

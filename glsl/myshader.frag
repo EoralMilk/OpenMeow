@@ -76,6 +76,7 @@ in vec2 TexCoords;
 uniform vec3 viewPos;
 uniform bool EnableDepthPreview;
 uniform vec2 DepthPreviewParams;
+uniform bool RenderDepthBuffer;
 
 vec3 CalcDirLight(DirLight light, vec3 normal, vec3 viewDir)
 {

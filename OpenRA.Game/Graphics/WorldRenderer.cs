@@ -263,10 +263,7 @@ namespace OpenRA.Graphics
 			//var bounds = Viewport.GetScissorBounds(World.Type != WorldType.Editor);
 			//Game.Renderer.EnableScissor(bounds);
 
-			if (enableDepthBuffer)
-				Game.Renderer.Context.EnableDepthBuffer(DepthFunc.LessEqual);
-
-			Game.Renderer.World3DRenderer.PrepareToRender(this);
+			Game.Renderer.Context.EnableDepthBuffer(DepthFunc.LessEqual);
 
 			terrainRenderer?.RenderTerrain(this, Viewport);
 
@@ -282,11 +279,14 @@ namespace OpenRA.Graphics
 				}
 			}
 
-			Game.Renderer.Flush();
+			//Game.Renderer.Flush();
+			Game.Renderer.WorldSpriteRenderer.Flush(BlendMode.None);
 
-			Game.Renderer.Draw3DMeshesInstance(this);
+			Game.Renderer.Draw3DMeshesInstance(this, false);
 
 			Game.Renderer.Context.DisableCullFace();
+
+			Game.Renderer.EnableDepthWrite(false);
 
 			for (var i = 0; i < preparedBlendRenderables.Length; i++)
 			{
@@ -304,8 +304,10 @@ namespace OpenRA.Graphics
 
 			Game.Renderer.Flush();
 
+			Game.Renderer.EnableDepthWrite(true);
+
 			if (enableDepthBuffer)
-				Game.Renderer.ClearDepthBuffer();
+				Game.Renderer.DisableDepthTest();
 
 			World.ApplyToActorsWithTrait<IRenderAboveWorld>((actor, trait) =>
 			{
@@ -313,13 +315,7 @@ namespace OpenRA.Graphics
 					trait.RenderAboveWorld(actor, this);
 			});
 
-			if (enableDepthBuffer)
-				Game.Renderer.ClearDepthBuffer();
-
 			World.ApplyToActorsWithTrait<IRenderShroud>((actor, trait) => trait.RenderShroud(this));
-
-			if (enableDepthBuffer)
-				Game.Renderer.Context.DisableDepthBuffer();
 
 			//Game.Renderer.DisableScissor();
 

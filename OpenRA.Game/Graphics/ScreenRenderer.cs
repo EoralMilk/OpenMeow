@@ -61,6 +61,21 @@ namespace OpenRA.Graphics
 			renderer.Context.SetBlendMode(BlendMode.None);
 		}
 
+		public void SetShadowParams(ITexture shadowDepth, ITexture screenDepth, World3DRenderer wr)
+		{
+			shader.SetTexture("screenDepthTexture", screenDepth);
+			shader.SetTexture("sunDepthTexture", shadowDepth);
+			shader.SetBool("FrameBufferShadow", true);
+			shader.SetBool("FrameBufferPosition", true);
+
+			var sunVP = wr.SunProjection * wr.SunView;
+			var invCameraVP = (wr.Projection * wr.View).Inverse;
+			shader.SetMatrix("SunVP", sunVP.Values1D);
+			shader.SetMatrix("InvCameraVP", invCameraVP.Values1D);
+			shader.SetFloat("FrameShadowBias", wr.FrameShadowBias);
+			shader.SetFloat("AmbientIntencity", wr.AmbientIntencity);
+		}
+
 		public void DrawScreen(ITexture screenTexture, BlendMode blendMode = BlendMode.None)
 		{
 			shader.SetTexture("screenTexture", screenTexture);

@@ -20,6 +20,7 @@ uniform vec2 DepthPreviewParams;
 uniform float AntialiasPixelsPerTexel;
 
 uniform bool hasCamera;
+uniform bool RenderDepthBuffer;
 
 
 #if __VERSION__ == 120
@@ -278,7 +279,6 @@ void main()
 	if (EnableDepthPreview)
 	{
 		float intensity = 1.0 - gl_FragCoord.z;//clamp(DepthPreviewParams.x * gl_FragCoord.z - 0.5 * DepthPreviewParams.x - DepthPreviewParams.y + 0.5, 0.0, 1.0);
-
 		#if __VERSION__ == 120
 		gl_FragColor = vec4(vec3(intensity), 1.0);
 		#else

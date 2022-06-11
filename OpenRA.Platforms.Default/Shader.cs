@@ -340,9 +340,9 @@ namespace OpenRA.Platforms.Default
 			}
 		}
 
-		public void SetCommonParaments(World3DRenderer w3dr)
+		public void SetCommonParaments(World3DRenderer w3dr, bool sunCamera)
 		{
-			bindings.SetCommonParaments(this, w3dr);
+			bindings.SetCommonParaments(this, w3dr, sunCamera);
 		}
 
 	}

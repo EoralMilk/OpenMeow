@@ -76,6 +76,12 @@ namespace OpenRA.Platforms.Default
 			return new Texture();
 		}
 
+		public IFrameBuffer CreateDepthFrameBuffer(Size s)
+		{
+			VerifyThreadAffinity();
+			return new FrameBuffer(s, new Texture(), Color.FromArgb(0), true);
+		}
+
 		public IFrameBuffer CreateFrameBuffer(Size s)
 		{
 			VerifyThreadAffinity();
@@ -207,6 +213,13 @@ namespace OpenRA.Platforms.Default
 				OpenGL.glDepthFunc(OpenGL.GL_LEQUAL);
 			else if (type == DepthFunc.Less)
 				OpenGL.glDepthFunc(OpenGL.GL_LESS);
+			OpenGL.CheckGLError();
+		}
+
+		public void EnableDepthWrite(bool enable)
+		{
+			VerifyThreadAffinity();
+			OpenGL.glDepthMask(enable ? OpenGL.GL_TRUE : OpenGL.GL_FALSE);
 			OpenGL.CheckGLError();
 		}
 

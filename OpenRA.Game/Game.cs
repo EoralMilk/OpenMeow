@@ -675,6 +675,8 @@ namespace OpenRA
 				if (worldRenderer != null && !worldRenderer.World.IsLoadingGameSave)
 				{
 					Renderer.BeginWorld(worldRenderer.Viewport.Rectangle);
+					Renderer.UpdateShadowBuffer(worldRenderer);
+
 					Sound.SetListenerPosition(worldRenderer.Viewport.CenterPosition);
 					using (new PerfSample("render_world"))
 						worldRenderer.Draw();

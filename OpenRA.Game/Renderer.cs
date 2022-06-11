@@ -55,13 +55,19 @@ namespace OpenRA
 
 		IFrameBuffer worldBuffer;
 		ITexture worldTexture;
-		Sheet worldSheet;
-		Sprite worldSprite;
+		ITexture worldDepthTexture;
+		IFrameBuffer worldShadowBuffer;
+		ITexture worldShadowDepthTexture;
+		ITexture worldShadowTexture;
+
+
+		//Sheet worldSheet;
+		//Sprite worldSprite;
 		int worldDownscaleFactor = 1;
 		Size lastMaximumViewportSize;
 		Size lastWorldViewportSize;
 
-		public Size WorldFrameBufferSize => worldSheet.Size;
+		public Size WorldFrameBufferSize => worldTexture.Size;
 		public int WorldDownscaleFactor => worldDownscaleFactor;
 
 		SheetBuilder fontSheetBuilder;
@@ -173,6 +179,13 @@ namespace OpenRA
 			var surfaceSize = Window.SurfaceSize;
 			var surfaceBufferSize = surfaceSize.NextPowerOf2();
 
+			if (worldShadowDepthTexture == null || worldShadowBuffer == null)
+			{
+				worldShadowBuffer = Context.CreateFrameBuffer(new Size(2048,2048));
+				worldShadowTexture = worldShadowBuffer.Texture;
+				worldShadowDepthTexture = worldShadowBuffer.DepthTexture;
+			}
+
 			if (screenSprite == null || screenSprite.Sheet.Size != surfaceBufferSize)
 			{
 				screenBuffer?.Dispose();
@@ -221,7 +234,7 @@ namespace OpenRA
 			else
 				worldBufferSize = size.NextPowerOf2();
 
-			if (worldSprite == null || worldSheet.Size != worldBufferSize)
+			if (worldTexture == null || worldTexture.Size != worldBufferSize)
 			{
 				worldBuffer?.Dispose();
 
@@ -231,11 +244,12 @@ namespace OpenRA
 				// Pixel art scaling mode is a customized bilinear sampling
 				worldBuffer.Texture.ScaleFilter = TextureScaleFilter.Linear;
 				worldTexture = worldBuffer.Texture;
-				worldSheet = new Sheet(SheetType.BGRA, worldBuffer.Texture);
+				worldDepthTexture = worldBuffer.DepthTexture;
+				//worldSheet = new Sheet(SheetType.BGRA, worldBuffer.Texture);
 
 				// Invalidate cached state to force a shader update
 				lastWorldViewport = Rectangle.Empty;
-				worldSprite = null;
+				//worldSprite = null;
 			}
 
 			lastMaximumViewportSize = size;
@@ -248,26 +262,24 @@ namespace OpenRA
 
 			BeginFrame();
 
-			if (worldSheet == null)
-				throw new InvalidOperationException("BeginWorld called before SetMaximumViewportSize has been set.");
+			if (worldTexture == null)
+				throw new InvalidOperationException($"BeginWorld called before SetMaximumViewportSize has been set.");
 
-			if (worldSprite == null || worldViewport.Size != lastWorldViewportSize)
-			{
-				// Downscale world rendering if needed to fit within the framebuffer
-				var vw = worldViewport.Size.Width;
-				var vh = worldViewport.Size.Height;
-				var bw = worldSheet.Size.Width;
-				var bh = worldSheet.Size.Height;
-				worldDownscaleFactor = 1;
-				while (vw / worldDownscaleFactor > bw || vh / worldDownscaleFactor > bh)
-					worldDownscaleFactor++;
+			//if (worldSprite == null || worldViewport.Size != lastWorldViewportSize)
+			//{
+			//	// Downscale world rendering if needed to fit within the framebuffer
+			//	var vw = worldViewport.Size.Width;
+			//	var vh = worldViewport.Size.Height;
+			//	var bw = worldSheet.Size.Width;
+			//	var bh = worldSheet.Size.Height;
+			//	worldDownscaleFactor = 1;
+			//	while (vw / worldDownscaleFactor > bw || vh / worldDownscaleFactor > bh)
+			//		worldDownscaleFactor++;
 
-				var s = new Size(vw / worldDownscaleFactor, vh / worldDownscaleFactor);
-				worldSprite = new Sprite(worldSheet, new Rectangle(int2.Zero, s), TextureChannel.RGBA);
-				lastWorldViewportSize = worldViewport.Size;
-			}
-
-			worldBuffer.Bind();
+			//	var s = new Size(vw / worldDownscaleFactor, vh / worldDownscaleFactor);
+			//	worldSprite = new Sprite(worldSheet, new Rectangle(int2.Zero, s), TextureChannel.RGBA);
+			//	lastWorldViewportSize = worldViewport.Size;
+			//}
 
 			WorldSpriteRenderer.SetCameraParams();
 
@@ -290,12 +302,26 @@ namespace OpenRA
 			depthPreview3dParams = new float2(contrast, offset);
 		}
 
-		public void Draw3DMeshesInstance(WorldRenderer wr)
+		// call by world renderer before draw 3d meshes
+		public void UpdateShadowBuffer(WorldRenderer wr)
+		{
+			Game.Renderer.World3DRenderer.PrepareToRender(wr);
+
+			worldShadowBuffer.Bind();
+			Game.Renderer.Context.EnableDepthBuffer(DepthFunc.LessEqual);
+			Draw3DMeshesInstance(wr, true);
+			Game.Renderer.Context.DisableDepthBuffer();
+			worldShadowBuffer.Unbind();
+			Game.Renderer.Context.Clear();
+			worldBuffer.Bind();
+		}
+
+		public void Draw3DMeshesInstance(WorldRenderer wr, bool sunCamera)
 		{
 			// 首先对所有的3d用shader的通用参数进行赋值
 			foreach (var shader in orderedMeshShaders)
 			{
-				shader.Value.SetCommonParaments(World3DRenderer);
+				shader.Value.SetCommonParaments(World3DRenderer, sunCamera);
 				shader.Value.SetBool("EnableDepthPreview", enable3DDepthPreview);
 				shader.Value.SetVec("DepthPreviewParams", depthPreview3dParams.X, depthPreview3dParams.Y);
 			}
@@ -303,7 +329,8 @@ namespace OpenRA
 			foreach (var orderedMesh in orderedMeshes)
 			{
 				orderedMesh.Value.DrawInstances();
-				orderedMesh.Value.Flush();
+				if (!sunCamera)
+					orderedMesh.Value.Flush();
 			}
 		}
 
@@ -320,7 +347,8 @@ namespace OpenRA
 				Flush();
 				worldBuffer.Unbind();
 
-				ScreenRenderer.SetAntialiasingPixelsPerTexel(Window.SurfaceSize.Height * 1f / worldSprite.Bounds.Height);
+				ScreenRenderer.SetAntialiasingPixelsPerTexel(Window.SurfaceSize.Height * 1f / worldTexture.Size.Height);
+				ScreenRenderer.SetShadowParams(worldShadowDepthTexture, worldDepthTexture, World3DRenderer);
 				ScreenRenderer.DrawScreen(worldTexture);
 				ScreenRenderer.SetAntialiasingPixelsPerTexel(0);
 			}
@@ -524,6 +552,11 @@ namespace OpenRA
 		{
 			Flush();
 			Context.EnableDepthBuffer(DepthFunc.LessEqual);
+		}
+
+		public void EnableDepthWrite(bool enable)
+		{
+			Context.EnableDepthWrite(enable);
 		}
 
 		public void DisableDepthTest()

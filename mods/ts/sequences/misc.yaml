@@ -381,13 +381,14 @@ wake:
 
 resources:
 	Defaults:
+		BlendMode: Alpha
 		UseTilesetExtension: true
 		Length: 12
 		ShadowStart: 12
 		Offset: 0, -12, 1
 		ZRamp: 1
 		IgnoreWorldTint: true
-		ZOffset: 2
+		ZOffset: 15
 		MeshType: Plane # useless, because the terrain meshtype is fixed
 	tib01: tib01
 	tib02: tib02

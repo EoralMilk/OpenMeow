@@ -42,6 +42,7 @@ namespace OpenRA.Platforms.Default
 		Action doDisableDepthBuffer;
 		Action<object> doEnableDepthBuffer;
 		Action<object> doEnableDepthTest;
+		Action<object> doEnableDepthWrite;
 		Action<object> doEnableCullFace;
 		Action doDisableCullFace;
 		Action doDisableScissor;
@@ -49,6 +50,7 @@ namespace OpenRA.Platforms.Default
 		Func<string> getGLVersion;
 		Func<ITexture> getCreateTexture;
 		Func<object, IFrameBuffer> getCreateFrameBuffer;
+		Func<object, IFrameBuffer> getCreateDepthFrameBuffer;
 		Func<object, IShader> getCreateShader;
 		Func<object, IShader> getCreateUnsharedShader;
 		Func<object, Type, object> getCreateVertexBuffer;
@@ -91,6 +93,7 @@ namespace OpenRA.Platforms.Default
 					doDisableDepthBuffer = () => context.DisableDepthBuffer();
 					doEnableDepthBuffer = type => context.EnableDepthBuffer((DepthFunc)type);
 					doEnableDepthTest = type => context.EnableDepthTest((DepthFunc)type);
+					doEnableDepthWrite = enable => context.EnableDepthWrite((bool)enable);
 					doEnableCullFace = type => context.EnableCullFace((FaceCullFunc)type);
 					doDisableCullFace = () => context.DisableCullFace();
 					doDisableScissor = () => context.DisableScissor();
@@ -103,6 +106,13 @@ namespace OpenRA.Platforms.Default
 							var t = (ValueTuple<Size, Color>)tuple;
 							return new ThreadedFrameBuffer(this,
 								context.CreateFrameBuffer(t.Item1, (ITextureInternal)CreateTexture(), t.Item2));
+						};
+
+					getCreateDepthFrameBuffer =
+						tuple =>
+						{
+							var t = (ValueTuple<Size, Color>)tuple;
+							return new ThreadedFrameBuffer(this, context.CreateDepthFrameBuffer(t.Item1));
 						};
 
 					getCreateShader = type => new ThreadedShader(this, context.CreateShader((Type)type));
@@ -446,6 +456,11 @@ namespace OpenRA.Platforms.Default
 			Post(doClearDepthBuffer);
 		}
 
+		public IFrameBuffer CreateDepthFrameBuffer(Size s)
+		{
+			return Send(getCreateDepthFrameBuffer, (s, Color.FromArgb(0)));
+		}
+
 		public IFrameBuffer CreateFrameBuffer(Size s)
 		{
 			return Send(getCreateFrameBuffer, (s, Color.FromArgb(0)));
@@ -509,6 +524,11 @@ namespace OpenRA.Platforms.Default
 			Post(doEnableDepthTest, type);
 		}
 
+		public void EnableDepthWrite(bool enable)
+		{
+			Post(doEnableDepthWrite, enable);
+		}
+
 		public void EnableCullFace(FaceCullFunc type)
 		{
 			Post(doEnableCullFace, type);
@@ -549,11 +569,13 @@ namespace OpenRA.Platforms.Default
 	{
 		readonly ThreadedGraphicsContext device;
 		readonly Func<ITexture> getTexture;
+		readonly Func<ITexture> getDepthTexture;
 		readonly Action bind;
+		readonly Action bindNotFlush;
 		readonly Action setViewport;
 		readonly Action setViewportBack;
 		readonly Action unbind;
-		readonly Action unbindnotSetViewport;
+		readonly Action unbindnotflush;
 		readonly Action dispose;
 		readonly Action<object> enableScissor;
 		readonly Action disableScissor;
@@ -562,11 +584,13 @@ namespace OpenRA.Platforms.Default
 		{
 			this.device = device;
 			getTexture = () => frameBuffer.Texture;
+			getDepthTexture = () => frameBuffer.DepthTexture;
 			bind = frameBuffer.Bind;
+			bindNotFlush = frameBuffer.BindNotFlush;
 			setViewport = frameBuffer.SetViewport;
 			setViewportBack = frameBuffer.SetViewportBack;
 			unbind = frameBuffer.Unbind;
-			unbindnotSetViewport = frameBuffer.UnbindNotSetViewport;
+			unbindnotflush = frameBuffer.UnbindNotFlush;
 			dispose = frameBuffer.Dispose;
 
 			enableScissor = rect => frameBuffer.EnableScissor((Rectangle)rect);
@@ -574,6 +598,7 @@ namespace OpenRA.Platforms.Default
 		}
 
 		public ITexture Texture => device.Send(getTexture);
+		public ITexture DepthTexture => device.Send(getDepthTexture);
 
 		public void SetViewport()
 		{
@@ -585,14 +610,19 @@ namespace OpenRA.Platforms.Default
 			device.Post(setViewport);
 		}
 
-		public void UnbindNotSetViewport()
+		public void UnbindNotFlush()
 		{
-			device.Post(UnbindNotSetViewport);
+			device.Post(UnbindNotFlush);
 		}
 
 		public void Bind()
 		{
 			device.Post(bind);
+		}
+
+		public void BindNotFlush()
+		{
+			device.Post(bindNotFlush);
 		}
 
 		public void Unbind()
@@ -798,7 +828,7 @@ namespace OpenRA.Platforms.Default
 			setVec4 = tuple => { var t = (ValueTuple<string, float, float, float>)tuple; shader.SetVec(t.Item1, t.Item2, t.Item3, t.Item4); };
 			layoutAttributes = () => { shader.LayoutAttributes(); };
 			layoutInstanceArray = () => { shader.LayoutInstanceArray(); };
-			setCommonParaments = w3dr => { shader.SetCommonParaments((World3DRenderer)w3dr); };
+			setCommonParaments = tuple => {var t = (ValueTuple<World3DRenderer, bool>)tuple; shader.SetCommonParaments(t.Item1, t.Item2); };
 		}
 
 		public void PrepareRender()
@@ -861,9 +891,9 @@ namespace OpenRA.Platforms.Default
 			device.Post(layoutInstanceArray);
 		}
 
-		public void SetCommonParaments(World3DRenderer w3dr)
+		public void SetCommonParaments(World3DRenderer w3dr, bool sunCamera)
 		{
-			device.Post(setCommonParaments, w3dr);
+			device.Post(setCommonParaments, (w3dr, sunCamera));
 		}
 	}
 }

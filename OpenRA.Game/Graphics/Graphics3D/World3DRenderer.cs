@@ -38,19 +38,28 @@ namespace OpenRA.Graphics
 			FragmentShaderName = name;
 		}
 
-		public void SetCommonParaments(IShader shader, World3DRenderer w3dr)
+		public void SetCommonParaments(IShader shader, World3DRenderer w3dr, bool sunCamera)
 		{
 			shader.SetInt("material.diffuse", 0);
 			shader.SetFloat("material.shininess", 32.0f);
 
-			shader.SetMatrix("projection", w3dr.Projection.Values1D);
-			shader.SetMatrix("view", w3dr.View.Values1D);
-			shader.SetVec("viewPos", w3dr.CameraPos.x, w3dr.CameraPos.y, w3dr.CameraPos.z);
+			if (sunCamera)
+			{
+				shader.SetMatrix("projection", w3dr.SunProjection.Values1D);
+				shader.SetMatrix("view", w3dr.SunView.Values1D);
+				shader.SetVec("viewPos", w3dr.SunPos.x, w3dr.SunPos.y, w3dr.SunPos.z);
+			}
+			else
+			{
+				shader.SetMatrix("projection", w3dr.Projection.Values1D);
+				shader.SetMatrix("view", w3dr.View.Values1D);
+				shader.SetVec("viewPos", w3dr.CameraPos.x, w3dr.CameraPos.y, w3dr.CameraPos.z);
+			}
 
 			shader.SetVec("dirLight.direction", w3dr.SunDir.x, w3dr.SunDir.y, w3dr.SunDir.z);
-			shader.SetVec("dirLight.ambient", w3dr.AmbientColor.x, w3dr.AmbientColor.y, w3dr.AmbientColor.z);
-			shader.SetVec("dirLight.diffuse", w3dr.SunColor.x, w3dr.SunColor.y, w3dr.SunColor.z);
-			shader.SetVec("dirLight.specular", w3dr.SunSpecularColor.x, w3dr.SunSpecularColor.y, w3dr.SunSpecularColor.z);
+			shader.SetVec("dirLight.ambient", w3dr.AmbientColor.X, w3dr.AmbientColor.Y, w3dr.AmbientColor.Z);
+			shader.SetVec("dirLight.diffuse", w3dr.SunColor.X, w3dr.SunColor.Y, w3dr.SunColor.Z);
+			shader.SetVec("dirLight.specular", w3dr.SunSpecularColor.X, w3dr.SunSpecularColor.Y, w3dr.SunSpecularColor.Z);
 		}
 	}
 
@@ -164,8 +173,6 @@ namespace OpenRA.Graphics
 			Game.Renderer.RenderInstance(renderData.Start, renderData.Count, instanceCount);
 		}
 	}
-
-
 	public struct Vertex3D
 	{
 		public readonly float X, Y, Z;
@@ -192,6 +199,7 @@ namespace OpenRA.Graphics
 	public sealed class World3DRenderer : IDisposable
 	{
 		const bool ShowDebugInfo = false;
+		public readonly vec3 WorldUp = new vec3(0, 0, 1);
 		public readonly float CameraPitch = 60.0f;
 		public readonly vec3 CameraUp;
 		public readonly vec3 InverseCameraFront;
@@ -206,10 +214,21 @@ namespace OpenRA.Graphics
 		public readonly float WPosPerMeterHeight;
 		public readonly float MaxTerrainHeight;
 
-		public readonly vec3 SunDir;
-		public readonly vec3 AmbientColor;
-		public readonly vec3 SunColor;
-		public readonly vec3 SunSpecularColor;
+		public readonly vec3 SunPosHeightOne = new vec3(-2.39773f, 1.0f, 3.51021f);
+		public readonly float SunCos;
+		public readonly float SunSin;
+
+		public float FrameShadowBias;
+		public vec3 SunPos;
+		public vec3 SunDir;
+		public vec3 SunUp;
+		public vec3 SunRight;
+		public mat4 SunView;
+		public mat4 SunProjection;
+		public float3 AmbientColor;
+		public float AmbientIntencity;
+		public float3 SunColor;
+		public float3 SunSpecularColor;
 
 		readonly Renderer renderer;
 
@@ -225,7 +244,8 @@ namespace OpenRA.Graphics
 
 		public WPos TestPos = WPos.Zero;
 		public WRot TestRot = WRot.None;
-		OrderedTestBox imo;
+		readonly OrderedTestBox imo;
+
 		public World3DRenderer(Renderer renderer, MapGrid mapGrid)
 		{
 			MeterPerPix = (float)((1024 / WPosPerMeter) / (mapGrid.TileSize.Width / 1.4142135d));
@@ -241,10 +261,15 @@ namespace OpenRA.Graphics
 
 			MaxTerrainHeight = mapGrid.MaximumTerrainHeight * 724 * 2f / WPosPerMeterHeight;
 
-			SunDir = glm.Normalized(new vec3(0, 0, 0) - new vec3(-3.2506f, 1.3557f, 4.7588f));
-			AmbientColor = new vec3(0.45f, 0.45f, 0.45f);
-			SunColor = new vec3(1, 1, 1) - AmbientColor;
-			SunSpecularColor = new vec3(0.25f, 0.25f, 0.25f);
+			UpdateSunPos(SunPosHeightOne, vec3.Zero);
+			var chordPow = (SunPosHeightOne.x * SunPosHeightOne.x + SunPosHeightOne.y * SunPosHeightOne.y) + (SunPosHeightOne.z * SunPosHeightOne.z);
+			var chord = MathF.Sqrt(chordPow);
+			SunCos = SunPosHeightOne.z / chord;
+			SunSin = (SunPosHeightOne.x * SunPosHeightOne.x + SunPosHeightOne.y * SunPosHeightOne.y) / chord;
+
+			AmbientColor = new float3(0.45f, 0.45f, 0.45f);
+			SunColor = new float3(1, 1, 1) - AmbientColor;
+			SunSpecularColor = new float3(0.25f, 0.25f, 0.25f);
 
 			this.renderer = renderer;
 			IShader shader = renderer.GetOrCreateShader<MyShaderBindings>("MyShaderBindings");
@@ -405,6 +430,22 @@ namespace OpenRA.Graphics
 			imo.RenderData.Shader.SetVec("DepthPreviewParams", contrast, offset);
 		}
 
+		void UpdateSunPos(in vec3 sunRelativePos, in vec3 groundPos)
+		{
+			SunPos = sunRelativePos + groundPos;
+			SunDir = glm.Normalized(-sunRelativePos);
+			SunRight = vec3.Cross(SunDir, WorldUp);
+			SunUp = vec3.Cross(SunRight, SunDir);
+			SunView = mat4.LookAt(SunPos, groundPos, SunUp);
+		}
+
+		void UpdateSunProject(float radius)
+		{
+			var halfView = radius * SunCos;
+			var far = radius * SunSin + SunPos.z / SunCos;
+			SunProjection = mat4.Ortho(halfView, -halfView, -halfView, halfView, 0, far);
+		}
+
 		public void PrepareToRender(WorldRenderer wr)
 		{
 			// projection and view
@@ -425,14 +466,22 @@ namespace OpenRA.Graphics
 					-viewPortSize.Y * MeterPerPixHalf, viewPortSize.Y * MeterPerPixHalf);
 
 				var heightMeter = ortho.Item4 / SinCameraPitch + (MaxTerrainHeight - (ortho.Item4 / TanCameraPitch * CosCameraPitch));
-
 				var far = heightMeter / CosCameraPitch + TanCameraPitch * ortho.Item4 + 100f;
-
 				Projection = mat4.Ortho(ortho.Item1, ortho.Item2, ortho.Item3, ortho.Item4, far/8, far);
 
 				var viewPoint = new vec3((float)viewport.CenterPosition.X / WPosPerMeter, (float)viewport.CenterPosition.Y / WPosPerMeter, 0);
-				CameraPos = new vec3((float)viewport.CenterPosition.X / WPosPerMeter, ((float)viewport.CenterPosition.Y) / WPosPerMeter + TanCameraPitch * heightMeter, heightMeter);
+				CameraPos = new vec3(viewPoint.x, viewPoint.y + TanCameraPitch * heightMeter, heightMeter);
 				View = mat4.LookAt(CameraPos, viewPoint, CameraUp);
+
+				// light params
+				AmbientColor = wr.TerrainLighting.GetGlobalAmbient();
+				SunColor = wr.TerrainLighting.GetGlobalDirectLight();
+				AmbientIntencity = wr.TerrainLighting.GetGlobalAmbientIntencity();
+				FrameShadowBias = 1.0f / heightMeter;
+
+				var sunRelativePos = heightMeter * SunPosHeightOne;
+				UpdateSunPos(sunRelativePos, viewPoint);
+				UpdateSunProject(MathF.Sqrt(ortho.Item1 * ortho.Item1 * 4));
 
 				if (ShowDebugInfo)
 				{
@@ -446,14 +495,14 @@ namespace OpenRA.Graphics
 				}
 			}
 
-			// render test box
-			{
-				// draw parent test box
-				var parentMat = DrawOneTestBox(TestPos, TestRot, 2);
+			//// render test box
+			//{
+			//	// draw parent test box
+			//	var parentMat = DrawOneTestBox(TestPos, TestRot, 2);
 
-				// draw child test box
-				DrawOneTestBox(parentMat, new vec3(0, -4, 0), new vec3(0, 0, 0));
-			}
+			//	// draw child test box
+			//	DrawOneTestBox(parentMat, new vec3(0, -4, 0), new vec3(0, 0, 0));
+			//}
 
 			return;
 		}

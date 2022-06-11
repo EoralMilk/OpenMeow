@@ -400,6 +400,10 @@ namespace OpenRA.Traits
 	{
 		event Action<MPos> CellChanged;
 		float3 TintAt(WPos pos);
+		float3 GetGlobalDirectLight();
+		float3 GetGlobalAmbient();
+		float GetGlobalAmbientIntencity();
+
 	}
 
 	public interface IRenderAboveShroud
