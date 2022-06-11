@@ -918,7 +918,8 @@
 		VTOL: true
 		Pitch: -64
 		PitchSpeed: 16
-		Roll: 56
+		Roll: -56
+		IdleRoll: -32
 		RollSpeed: 14
 	Voiced:
 		VoiceSet: Heli

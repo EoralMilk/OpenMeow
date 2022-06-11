@@ -59,6 +59,7 @@ hvr:
 	muzzle: gunfire
 		Length: *
 		IgnoreWorldTint: True
+	icon: hovricon
 
 lpst.gdi:
 	Inherits@defaults: ^VehicleBase

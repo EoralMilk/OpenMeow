@@ -2,7 +2,7 @@
 	ReloadDelay: 60
 	Range: 6c0
 	MinRange: 0c512
-	ValidTargets: Ground, Air
+	ValidTargets: Ground, Water, Air, Trees
 	Projectile: Missile
 		MaximumLaunchSpeed: 96
 		Blockable: false
@@ -27,7 +27,7 @@
 		Spread: 108
 		Falloff: 100, 50, 25, 12, 6, 3, 0
 		Damage: 2500
-		ValidTargets: Ground, Air
+		ValidTargets: Ground, Water, Air
 		Versus:
 			None: 25
 			Wood: 65
@@ -66,12 +66,12 @@ MammothTusk:
 	Inherits: ^DefaultMissile
 	ReloadDelay: 80
 	Report: misl1.aud
-	ValidTargets: Air
+	# ValidTargets: Ground, Water, Air
 	Burst: 2
 	Warhead@1Dam: SpreadDamage
 		Spread: 144
 		Damage: 4000
-		ValidTargets: Air
+		# ValidTargets: Air
 		Versus:
 			None: 100
 			Wood: 85

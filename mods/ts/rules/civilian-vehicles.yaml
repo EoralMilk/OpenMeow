@@ -3,6 +3,11 @@
 	Inherits@VOXELS: ^VoxelActor
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Buildable:
+		Queue: Air
+		BuildPaletteOrder: 1
+		Prerequisites: ~none
+		Description: Mammoth Tank
 	Valued:
 		Cost: 1700
 	Tooltip:

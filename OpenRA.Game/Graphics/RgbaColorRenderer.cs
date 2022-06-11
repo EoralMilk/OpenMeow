@@ -19,20 +19,25 @@ namespace OpenRA.Graphics
 	public class RgbaColorRenderer
 	{
 		static readonly float3 ScreenOffset = new float3(0.5f, 0.5f, 0);
-		static float3 Offset;
+		static float3 CamUpOffset;
+		static float3 CamRightOffset;
+		static float3 ViewZOffset;
 
 		readonly SpriteRenderer parent;
 		readonly Vertex[] vertices = new Vertex[6];
+		readonly Vertex[] verticesDouble = new Vertex[12];
 
 		public RgbaColorRenderer(SpriteRenderer parent)
 		{
 			this.parent = parent;
 		}
 
-		public void UpdateWorldRenderOffset()
+		public void UpdateWorldRenderOffset(World3DRenderer wr)
 		{
-			var offset = Game.Renderer.World3DRenderer.InverseCameraFrontMeterPerWPos * 100;
-			Offset = new float3(offset.x, offset.y, offset.z);
+			var offset = wr.InverseCameraFrontMeterPerWPos * 100;
+			ViewZOffset = new float3(offset.x, offset.y, offset.z);
+			CamUpOffset = new float3(wr.CameraUp.x, wr.CameraUp.y, wr.CameraUp.z);
+			CamRightOffset = new float3(wr.CameraRight.x, wr.CameraRight.y, wr.CameraRight.z);
 		}
 
 		public void DrawScreenLine(in float3 start, in float3 end, float width, Color startColor, Color endColor, BlendMode blendMode = BlendMode.Alpha)
@@ -47,8 +52,9 @@ namespace OpenRA.Graphics
 
 		void DrawLine(in float3 start, in float3 end, float width, Color startColor, Color endColor, BlendMode blendMode = BlendMode.Alpha, bool world = false)
 		{
-			var delta = (end - start) / (end - start).XY.Length;
-			var corner = width / 2 * new float3(-delta.Y, delta.X, delta.Z);
+			//var delta = (end - start) / (end - start).XY.Length;
+			var corner = width / 2 * CamUpOffset;
+			var cormorUp = width / 2 * CamRightOffset;
 
 			startColor = Util.PremultiplyAlpha(startColor);
 			var sr = startColor.R / 255.0f;
@@ -64,12 +70,20 @@ namespace OpenRA.Graphics
 
 			if (world)
 			{
-				vertices[0] = new Vertex(start - corner + Offset, sr, sg, sb, sa, 0, 0);
-				vertices[1] = new Vertex(start + corner +Offset, sr, sg, sb, sa, 0, 0);
-				vertices[2] = new Vertex(end + corner + Offset, er, eg, eb, ea, 0, 0);
-				vertices[3] = new Vertex(end + corner + Offset, er, eg, eb, ea, 0, 0);
-				vertices[4] = new Vertex(end - corner + Offset, er, eg, eb, ea, 0, 0);
-				vertices[5] = new Vertex(start - corner + Offset, sr, sg, sb, sa, 0, 0);
+				verticesDouble[0] = new Vertex(start - corner + ViewZOffset, sr, sg, sb, sa, 0, 0);
+				verticesDouble[1] = new Vertex(start + corner + ViewZOffset, sr, sg, sb, sa, 0, 0);
+				verticesDouble[2] = new Vertex(end + corner + ViewZOffset, er, eg, eb, ea, 0, 0);
+				verticesDouble[3] = new Vertex(end + corner + ViewZOffset, er, eg, eb, ea, 0, 0);
+				verticesDouble[4] = new Vertex(end - corner + ViewZOffset, er, eg, eb, ea, 0, 0);
+				verticesDouble[5] = new Vertex(start - corner + ViewZOffset, sr, sg, sb, sa, 0, 0);
+
+				verticesDouble[6] = new Vertex(start - cormorUp + ViewZOffset, sr, sg, sb, sa, 0, 0);
+				verticesDouble[7] = new Vertex(start + cormorUp + ViewZOffset, sr, sg, sb, sa, 0, 0);
+				verticesDouble[8] = new Vertex(end + cormorUp + ViewZOffset, er, eg, eb, ea, 0, 0);
+				verticesDouble[9] = new Vertex(end + cormorUp + ViewZOffset, er, eg, eb, ea, 0, 0);
+				verticesDouble[10] = new Vertex(end - cormorUp + ViewZOffset, er, eg, eb, ea, 0, 0);
+				verticesDouble[11] = new Vertex(start - cormorUp + ViewZOffset, sr, sg, sb, sa, 0, 0);
+				parent.DrawRGBAVertices(verticesDouble, blendMode);
 			}
 			else
 			{
@@ -79,9 +93,8 @@ namespace OpenRA.Graphics
 				vertices[3] = new Vertex(end + corner + ScreenOffset, er, eg, eb, ea, 0, 0);
 				vertices[4] = new Vertex(end - corner + ScreenOffset, er, eg, eb, ea, 0, 0);
 				vertices[5] = new Vertex(start - corner + ScreenOffset, sr, sg, sb, sa, 0, 0);
+				parent.DrawRGBAVertices(vertices, blendMode);
 			}
-
-			parent.DrawRGBAVertices(vertices, blendMode);
 		}
 
 		public void DrawScreenLine(in float3 start, in float3 end, float width, Color color, BlendMode blendMode = BlendMode.Alpha)
@@ -107,12 +120,12 @@ namespace OpenRA.Graphics
 
 			if (world)
 			{
-				vertices[0] = new Vertex(start - corner + Offset, r, g, b, a, 0, 0);
-				vertices[1] = new Vertex(start + corner + Offset, r, g, b, a, 0, 0);
-				vertices[2] = new Vertex(end + corner + Offset, r, g, b, a, 0, 0);
-				vertices[3] = new Vertex(end + corner + Offset, r, g, b, a, 0, 0);
-				vertices[4] = new Vertex(end - corner + Offset, r, g, b, a, 0, 0);
-				vertices[5] = new Vertex(start - corner + Offset, r, g, b, a, 0, 0);
+				vertices[0] = new Vertex(start - corner + ViewZOffset, r, g, b, a, 0, 0);
+				vertices[1] = new Vertex(start + corner + ViewZOffset, r, g, b, a, 0, 0);
+				vertices[2] = new Vertex(end + corner + ViewZOffset, r, g, b, a, 0, 0);
+				vertices[3] = new Vertex(end + corner + ViewZOffset, r, g, b, a, 0, 0);
+				vertices[4] = new Vertex(end - corner + ViewZOffset, r, g, b, a, 0, 0);
+				vertices[5] = new Vertex(start - corner + ViewZOffset, r, g, b, a, 0, 0);
 			}
 			else
 			{
@@ -214,12 +227,12 @@ namespace OpenRA.Graphics
 				// Fill segment
 				if (world)
 				{
-					vertices[0] = new Vertex(ca + Offset, r, g, b, a, 0, 0);
-					vertices[1] = new Vertex(cb + Offset, r, g, b, a, 0, 0);
-					vertices[2] = new Vertex(cc + Offset, r, g, b, a, 0, 0);
-					vertices[3] = new Vertex(cc + Offset, r, g, b, a, 0, 0);
-					vertices[4] = new Vertex(cd + Offset, r, g, b, a, 0, 0);
-					vertices[5] = new Vertex(ca + Offset, r, g, b, a, 0, 0);
+					vertices[0] = new Vertex(ca + ViewZOffset, r, g, b, a, 0, 0);
+					vertices[1] = new Vertex(cb + ViewZOffset, r, g, b, a, 0, 0);
+					vertices[2] = new Vertex(cc + ViewZOffset, r, g, b, a, 0, 0);
+					vertices[3] = new Vertex(cc + ViewZOffset, r, g, b, a, 0, 0);
+					vertices[4] = new Vertex(cd + ViewZOffset, r, g, b, a, 0, 0);
+					vertices[5] = new Vertex(ca + ViewZOffset, r, g, b, a, 0, 0);
 				}
 				else
 				{
@@ -305,12 +318,12 @@ namespace OpenRA.Graphics
 			var cb = color.B / 255.0f;
 			var ca = color.A / 255.0f;
 
-			vertices[0] = new Vertex(a + Offset, cr, cg, cb, ca, 0, 0);
-			vertices[1] = new Vertex(b + Offset, cr, cg, cb, ca, 0, 0);
-			vertices[2] = new Vertex(c + Offset, cr, cg, cb, ca, 0, 0);
-			vertices[3] = new Vertex(c + Offset, cr, cg, cb, ca, 0, 0);
-			vertices[4] = new Vertex(d + Offset, cr, cg, cb, ca, 0, 0);
-			vertices[5] = new Vertex(a + Offset, cr, cg, cb, ca, 0, 0);
+			vertices[0] = new Vertex(a + ViewZOffset, cr, cg, cb, ca, 0, 0);
+			vertices[1] = new Vertex(b + ViewZOffset, cr, cg, cb, ca, 0, 0);
+			vertices[2] = new Vertex(c + ViewZOffset, cr, cg, cb, ca, 0, 0);
+			vertices[3] = new Vertex(c + ViewZOffset, cr, cg, cb, ca, 0, 0);
+			vertices[4] = new Vertex(d + ViewZOffset, cr, cg, cb, ca, 0, 0);
+			vertices[5] = new Vertex(a + ViewZOffset, cr, cg, cb, ca, 0, 0);
 			parent.DrawRGBAVertices(vertices, blendMode);
 		}
 

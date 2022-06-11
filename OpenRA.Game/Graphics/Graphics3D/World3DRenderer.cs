@@ -207,6 +207,8 @@ namespace OpenRA.Graphics
 		public readonly vec3 WorldUp = new vec3(0, 0, 1);
 		public readonly float CameraPitch = 60.0f;
 		public readonly vec3 CameraUp;
+		public readonly vec3 CameraRight;
+
 		public readonly vec3 InverseCameraFront;
 		public readonly vec3 InverseCameraFrontMeterPerWPos;
 
@@ -261,6 +263,7 @@ namespace OpenRA.Graphics
 			CosCameraPitch = (float)Math.Cos(glm.Radians(CameraPitch));
 			SinCameraPitch = (float)Math.Sin(glm.Radians(CameraPitch));
 			CameraUp = glm.Normalized(new vec3(0, -1, TanCameraPitch));
+			CameraRight = new vec3(1, 0, 0);
 			InverseCameraFront = glm.Normalized(new vec3(0, 1, 1/TanCameraPitch));
 			InverseCameraFrontMeterPerWPos = InverseCameraFront / WPosPerMeter;
 
@@ -486,7 +489,7 @@ namespace OpenRA.Graphics
 
 				var sunRelativePos = heightMeter * SunPosHeightOne;
 				UpdateSunPos(sunRelativePos, viewPoint);
-				UpdateSunProject(MathF.Sqrt(ortho.Item1 * ortho.Item1 * 4));
+				UpdateSunProject(MathF.Sqrt(ortho.Item1 * ortho.Item1 * 5));
 
 				if (ShowDebugInfo)
 				{

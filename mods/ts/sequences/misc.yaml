@@ -135,6 +135,7 @@ explosion:
 		Offset: 0, 0, 24
 		AlphaFade: True
 		IgnoreWorldTint: True
+		BlendMode: Additive
 	building: twlt070
 		Offset: 0, 0, 36
 	ionring: ring1
@@ -175,15 +176,19 @@ explosion:
 		IgnoreWorldTint: False
 		AlphaFade: False
 		Alpha: 0.5
+		BlendMode: Alpha
 	large_watersplash: h2o_exp1
 		Offset: 0, 0, 39
 		IgnoreWorldTint: False
 		AlphaFade: False
 		Alpha: 0.5
+		BlendMode: Alpha
 	water_piff: w_piff
 		IgnoreWorldTint: False
+		BlendMode: Alpha
 	water_piffs: w_piffs
 		IgnoreWorldTint: False
+		BlendMode: Alpha
 	piff: piff
 		IgnoreWorldTint: False
 	piffs: piffpiff
@@ -285,6 +290,7 @@ crystal4:
 		ZOffset: 1023
 		Offset: 0, 0, 4
 		MeshType: Plane
+		BlendMode: Additive
 
 
 torpedo:
@@ -294,6 +300,7 @@ torpedo:
 		Offset: 0, 0, 8
 		IgnoreWorldTint: True
 		MeshType: Plane
+		BlendMode: Additive
 
 
 flameall:
@@ -305,6 +312,7 @@ flameall:
 		Offset: 0, 0, 24
 		IgnoreWorldTint: True
 		Alpha: 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0.9, 0.8, 0.7, 0.6, 0.5, 0.4, 0.3, 0.2, 0.1
+		BlendMode: Additive
 
 largesmoke:
 	idle: lgrysmk1
