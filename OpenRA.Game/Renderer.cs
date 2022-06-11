@@ -181,8 +181,8 @@ namespace OpenRA
 
 			if (worldShadowDepthTexture == null || worldShadowBuffer == null)
 			{
-				worldShadowBuffer = Context.CreateFrameBuffer(new Size(2048,2048));
-				worldShadowTexture = worldShadowBuffer.Texture;
+				worldShadowBuffer = Context.CreateDepthFrameBuffer(new Size(2048,2048));
+				//worldShadowTexture = worldShadowBuffer.Texture;
 				worldShadowDepthTexture = worldShadowBuffer.DepthTexture;
 			}
 

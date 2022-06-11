@@ -263,6 +263,9 @@ void main()
 	// Discard any transparent fragments (both color and depth)
 	if (c.a == 0.0)
 		discard;
+	if (RenderDepthBuffer){
+		return;
+	}
 
 	if (vRGBAFraction.r > 0.0 && vTexMetadata.s > 0.0)
 		c = ColorShift(c, vTexMetadata.s);

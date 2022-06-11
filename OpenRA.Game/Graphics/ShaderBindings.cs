@@ -43,7 +43,7 @@ namespace OpenRA.Graphics
 
 		public void SetCommonParaments(IShader shader, World3DRenderer w3dr, bool sunCamera)
 		{
-			// Set By SpriteRenderer
+			shader.SetBool("RenderDepthBuffer", sunCamera);
 		}
 	}
 

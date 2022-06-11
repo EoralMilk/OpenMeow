@@ -75,6 +75,11 @@ void main()
 	vec4 color = texture(Palette, vec2(dot(x, vChannelMask), PaletteRows.x));
 	if (color.a < 0.01)
 		discard;
+
+	if (RenderDepthBuffer){
+		return;
+	}
+
 	if (vTint.a < 0.0f)
 		color = vec4(vTint.rgb, -vTint.a);
 	else

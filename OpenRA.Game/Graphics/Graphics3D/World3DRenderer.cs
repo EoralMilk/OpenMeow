@@ -42,6 +42,7 @@ namespace OpenRA.Graphics
 		{
 			shader.SetInt("material.diffuse", 0);
 			shader.SetFloat("material.shininess", 32.0f);
+			shader.SetBool("RenderDepthBuffer", sunCamera);
 
 			if (sunCamera)
 			{
