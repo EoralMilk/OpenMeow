@@ -29,7 +29,6 @@ namespace OpenRA.Graphics
 		readonly bool[] ignoreTint;
 		readonly HashSet<int> dirtyRows = new HashSet<int>();
 		readonly int rowStride;
-		readonly int maxVerticesPerCell = 12;
 		readonly bool restrictToBounds;
 
 		readonly WorldRenderer worldRenderer;
@@ -47,7 +46,7 @@ namespace OpenRA.Graphics
 
 			map = world.Map;
 
-			rowStride = maxVerticesPerCell * map.MapSize.X;
+			rowStride = Game.Renderer.MaxVerticesPerMesh * map.MapSize.X;
 
 			vertices = new Vertex[rowStride * map.MapSize.Y];
 			palettes = new PaletteReference[map.MapSize.X * map.MapSize.Y];
@@ -67,7 +66,7 @@ namespace OpenRA.Graphics
 			for (var i = 0; i < vertices.Length; i++)
 			{
 				var v = vertices[i];
-				var p = palettes[i / maxVerticesPerCell]?.TextureIndex ?? 0;
+				var p = palettes[i / Game.Renderer.MaxVerticesPerMesh]?.TextureIndex ?? 0;
 				vertices[i] = new Vertex(v.X, v.Y, v.Z, v.S, v.T, v.U, v.V, p, v.C, v.R, v.G, v.B, v.A);
 			}
 
@@ -101,10 +100,10 @@ namespace OpenRA.Graphics
 
 		void UpdateTint(MPos uv)
 		{
-			var offset = rowStride * uv.V + maxVerticesPerCell * uv.U;
+			var offset = rowStride * uv.V + Game.Renderer.MaxVerticesPerMesh * uv.U;
 			if (ignoreTint[offset])
 			{
-				for (var i = 0; i < maxVerticesPerCell; i++)
+				for (var i = 0; i < Game.Renderer.MaxVerticesPerMesh; i++)
 				{
 					var v = vertices[offset + i];
 					vertices[offset + i] = new Vertex(v.X, v.Y, v.Z, v.S, v.T, v.U, v.V, v.P, v.C, v.A * float3.Ones, v.A);
@@ -129,7 +128,7 @@ namespace OpenRA.Graphics
 
 			// Apply tint directly to the underlying vertices
 			// This saves us from having to re-query the sprite information, which has not changed
-			for (var i = 0; i < maxVerticesPerCell; i++)
+			for (var i = 0; i < Game.Renderer.MaxVerticesPerMesh; i++)
 			{
 				var v = vertices[offset + i];
 				vertices[offset + i] = new Vertex(v.X, v.Y, v.Z, v.S, v.T, v.U, v.V, v.P, v.C, v.A * weights[CornerVertexMap[i % 6]], v.A);
@@ -187,7 +186,7 @@ namespace OpenRA.Graphics
 				return;
 
 			// Note that since the maximum number of vertices per cell is used here, null values may appear in the vertices array 
-			var offset = rowStride * uv.V + maxVerticesPerCell * uv.U;
+			var offset = rowStride * uv.V + Game.Renderer.MaxVerticesPerMesh * uv.U;
 
 			var viewOffset = Game.Renderer.World3DRenderer.InverseCameraFrontMeterPerWPos * (zOffset - 15);
 

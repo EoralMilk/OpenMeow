@@ -60,7 +60,6 @@ namespace OpenRA
 		ITexture worldShadowDepthTexture;
 		ITexture worldShadowTexture;
 
-
 		//Sheet worldSheet;
 		//Sprite worldSprite;
 		int worldDownscaleFactor = 1;
@@ -84,6 +83,8 @@ namespace OpenRA
 
 		Dictionary<string, IShader> orderedMeshShaders;
 		Dictionary<string, IOrderedMesh> orderedMeshes;
+
+		public readonly int MaxVerticesPerMesh = 12;
 		public Renderer(IPlatform platform, GraphicSettings graphicSettings)
 		{
 			this.platform = platform;

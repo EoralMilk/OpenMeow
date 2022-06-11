@@ -62,7 +62,7 @@ namespace OpenRA.Graphics
 		{
 			renderer.CurrentBatchRenderer = this;
 
-			if (s.BlendMode != currentBlend || nv + maxVerticesPerMesh > renderer.TempBufferSize)
+			if (s.BlendMode != currentBlend || nv + renderer.MaxVerticesPerMesh > renderer.TempBufferSize)
 				Flush();
 
 			currentBlend = s.BlendMode;
