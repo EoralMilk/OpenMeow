@@ -93,6 +93,7 @@ namespace OpenRA
 			"Sequences", "ModelSequences", "Cursors", "Chrome", "Assemblies", "ChromeLayout", "Weapons",
 			"Voices", "Notifications", "Music", "Translations", "TileSets", "ChromeMetrics", "Missions", "Hotkeys",
 			"ServerTraits", "LoadScreen", "SupportsMapsFrom", "SoundFormats", "SpriteFormats", "ModelFormats", "VideoFormats",
+			"DefaultOrderGenerator",
 			"RequiresMods", "PackageFormats"
 		};
 
