@@ -69,6 +69,7 @@ bridge1:
 		UseTilesetExtension: true
 		ZRamp: 1
 		Offset: 0, -13, 49
+		MeshType: Plane
 
 bridge2:
 	idle: bridge
@@ -78,6 +79,7 @@ bridge2:
 		UseTilesetExtension: true
 		ZRamp: 1
 		Offset: 0, -25, 49
+		MeshType: Plane
 
 railbrdg1:
 	idle: railbrdg
@@ -86,6 +88,7 @@ railbrdg1:
 		UseTilesetExtension: true
 		ZRamp: 1
 		Offset: 0, -13, 49
+		MeshType: Plane
 
 railbrdg2:
 	idle: railbrdg
@@ -95,3 +98,4 @@ railbrdg2:
 		UseTilesetExtension: true
 		ZRamp: 1
 		Offset: 0, -25, 49
+		MeshType: Plane

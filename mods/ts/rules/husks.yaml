@@ -17,7 +17,8 @@ A10.Husk:
 		TurnSpeed: 12
 		Speed: 168
 	FallsToEarth:
-		MaximumSpinSpeed: 24
+		MaximumSpinSpeed: 2
+		Moves: true
 	RenderSprites:
 		Image: a10
 	-WithModelBody:

@@ -238,18 +238,22 @@ explosion:
 		Length: 8
 		Tick: 360
 		IgnoreWorldTint: False
+		BlendMode: Alpha
 	droppod2_explosion: droppod2
 		Length: 8
 		Tick: 360
 		IgnoreWorldTint: False
+		BlendMode: Alpha
 	droppody_explosion: droppody
 		Length: 8
 		Tick: 360
 		IgnoreWorldTint: False
+		BlendMode: Alpha
 	droppody2_explosion: droppody2
 		Length: 8
 		Tick: 360
 		IgnoreWorldTint: False
+		BlendMode: Alpha
 
 discus:
 	idle:

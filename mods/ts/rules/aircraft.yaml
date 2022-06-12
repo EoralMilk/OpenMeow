@@ -370,6 +370,8 @@ ORCATRAN:
 	SpawnActorOnDeath@EMP:
 		Actor: ORCATRAN.Husk.EMP
 		RequiresCondition: empdisable
+	Selectable:
+		Bounds: 1327, 1930, 0, -482
 
 TRNSPORT:
 	Inherits: ^EMPableAircraft

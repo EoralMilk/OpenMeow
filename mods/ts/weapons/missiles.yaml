@@ -14,7 +14,7 @@
 		RangeLimit: 15c0
 		Palette: ra
 		MinimumLaunchSpeed: 75
-		Speed: 216
+		Speed: 300
 		Acceleration: 96
 		MinimumLaunchAngle: 128
 		MaximumLaunchAngle: 192
