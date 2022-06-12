@@ -271,6 +271,11 @@ pulsball:
 		ZOffset: 1023
 		Offset: 0, 0, 24
 
+zbomb:
+	idle:
+		Facings: 32
+		Scale: 0.55
+
 dragon:
 	idle:
 		Facings: 32

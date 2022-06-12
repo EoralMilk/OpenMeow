@@ -53,6 +53,7 @@ namespace OpenRA.Mods.Cnc.Graphics
 
 			sheetBuilder = CreateSheetBuilder();
 		}
+
 		public bool TryLoadModel(IReadOnlyFileSystem fileSystem, string filename, out IModel model)
 		{
 			return TryLoadModel(fileSystem, filename, null, out model);

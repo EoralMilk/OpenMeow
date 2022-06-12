@@ -29,7 +29,7 @@ namespace OpenRA
 		public SpriteRenderer WorldSpriteRenderer { get; private set; }
 		public RgbaSpriteRenderer WorldRgbaSpriteRenderer { get; private set; }
 		public RgbaColorRenderer WorldRgbaColorRenderer { get; private set; }
-		public ModelRenderer WorldModelRenderer { get; private set; }
+		public VxlRenderer WorldVxlRenderer { get; private set; }
 		public RgbaColorRenderer RgbaColorRenderer { get; private set; }
 		public SpriteRenderer SpriteRenderer { get; private set; }
 		public RgbaSpriteRenderer RgbaSpriteRenderer { get; private set; }
@@ -105,7 +105,7 @@ namespace OpenRA
 			WorldSpriteRenderer = new SpriteRenderer(this, Context.CreateUnsharedShader<CombinedShaderBindings>());
 			WorldRgbaSpriteRenderer = new RgbaSpriteRenderer(WorldSpriteRenderer);
 			WorldRgbaColorRenderer = new RgbaColorRenderer(WorldSpriteRenderer);
-			WorldModelRenderer = new ModelRenderer(this);
+			WorldVxlRenderer = new VxlRenderer(this);
 			SpriteRenderer = new SpriteRenderer(this, Context.CreateUnsharedShader<CombinedShaderBindings>());
 			RgbaSpriteRenderer = new RgbaSpriteRenderer(SpriteRenderer);
 			RgbaColorRenderer = new RgbaColorRenderer(SpriteRenderer);
@@ -286,7 +286,7 @@ namespace OpenRA
 
 			if (lastWorldViewport != worldViewport)
 			{
-				WorldModelRenderer.SetViewportParams();
+				WorldVxlRenderer.SetViewportParams();
 
 				lastWorldViewport = worldViewport;
 			}
@@ -387,7 +387,7 @@ namespace OpenRA
 
 			SpriteRenderer.SetPalette(currentPaletteTexture, palette.ColorShifts);
 			WorldSpriteRenderer.SetPalette(currentPaletteTexture, palette.ColorShifts);
-			WorldModelRenderer.SetPalette(currentPaletteTexture);
+			WorldVxlRenderer.SetPalette(currentPaletteTexture);
 		}
 
 		// 最后把ui画出来好吗，画在最顶上
@@ -639,7 +639,7 @@ namespace OpenRA
 
 		public void Dispose()
 		{
-			WorldModelRenderer.Dispose();
+			WorldVxlRenderer.Dispose();
 			tempBuffer.Dispose();
 			fontSheetBuilder?.Dispose();
 			if (Fonts != null)

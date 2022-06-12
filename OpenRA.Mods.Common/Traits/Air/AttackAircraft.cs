@@ -33,6 +33,9 @@ namespace OpenRA.Mods.Common.Traits
 		[Desc("Does this actor cancel its attack activity when it needs to resupply? Setting this to 'false' will make the actor resume attack after reloading.")]
 		public readonly bool AbortOnResupply = true;
 
+		[Desc("When a unit needs to attack a target, it will try to turn to the target even if it is within the firing Angle.")]
+		public readonly bool RotateToFullOnTarget = false;
+
 		public override object Create(ActorInitializer init) { return new AttackAircraft(init.Self, this); }
 	}
 

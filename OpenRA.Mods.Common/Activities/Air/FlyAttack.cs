@@ -176,8 +176,10 @@ namespace OpenRA.Mods.Common.Activities
 				QueueChild(new FlyAttackRun(target, lastVisibleMaximumRange, attackAircraft));
 
 			// Turn to face the target if required.
-			else if (!attackAircraft.TargetInFiringArc(self, target, attackAircraft.Info.FacingTolerance))
+			else if (!attackAircraft.TargetInFiringArc(self, target, attackAircraft.Info.FacingTolerance) || attackAircraft.Info.RotateToFullOnTarget)
+			{
 				aircraft.Facing = Util.TickFacing(aircraft.Facing, desiredFacing, aircraft.TurnSpeed);
+			}
 
 			return false;
 		}

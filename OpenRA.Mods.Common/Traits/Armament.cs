@@ -64,6 +64,8 @@ namespace OpenRA.Mods.Common.Traits
 		[Desc("Condition to grant while reloading.")]
 		public readonly string ReloadingCondition = null;
 
+		[Desc("Tolerance for attack angle. Range [0, 512], 512 covers 360 degrees. 1023 Means to use attack trait value. Only influence self fire checking.")]
+		public readonly WAngle FacingTolerance = new WAngle(1023);
 		public WeaponInfo WeaponInfo { get; private set; }
 		public WDist ModifiedRange { get; private set; }
 
@@ -101,6 +103,9 @@ namespace OpenRA.Mods.Common.Traits
 			if (WeaponInfo.Burst > 1 && WeaponInfo.BurstDelays.Length > 1 && (WeaponInfo.BurstDelays.Length != WeaponInfo.Burst - 1))
 				throw new YamlException($"Weapon '{weaponToLower}' has an invalid number of BurstDelays, must be single entry or Burst - 1.");
 
+			if (FacingTolerance.Angle > 512 && FacingTolerance.Angle != 1023)
+				throw new YamlException("Facing tolerance must be in range of [0, 512], 512 covers 360 degrees.");
+
 			base.RulesetLoaded(rules, ai);
 		}
 	}
@@ -111,6 +116,7 @@ namespace OpenRA.Mods.Common.Traits
 		public readonly Barrel[] Barrels;
 
 		readonly Actor self;
+		IFacing facing;
 		Turreted turret;
 		BodyOrientation coords;
 		INotifyBurstComplete[] notifyBurstComplete;
@@ -126,6 +132,7 @@ namespace OpenRA.Mods.Common.Traits
 		int ticksSinceLastShot;
 		int currentBarrel;
 		readonly int barrelCount;
+		readonly bool hasFacingTolerance;
 
 		readonly List<(int Ticks, int Burst, Action<int> Func)> delayedActions = new List<(int, int, Action<int>)>();
 
@@ -137,6 +144,8 @@ namespace OpenRA.Mods.Common.Traits
 			: base(info)
 		{
 			this.self = self;
+
+			hasFacingTolerance = info.FacingTolerance.Angle != 1023;
 
 			Weapon = info.WeaponInfo;
 			Burst = Weapon.Burst;
@@ -175,7 +184,7 @@ namespace OpenRA.Mods.Common.Traits
 			reloadModifiers = self.TraitsImplementing<IReloadModifier>().ToArray().Select(m => m.GetReloadModifier());
 			damageModifiers = self.TraitsImplementing<IFirepowerModifier>().ToArray().Select(m => m.GetFirepowerModifier());
 			inaccuracyModifiers = self.TraitsImplementing<IInaccuracyModifier>().ToArray().Select(m => m.GetInaccuracyModifier());
-
+			facing = self.TraitOrDefault<IFacing>();
 			base.Created(self);
 		}
 
@@ -247,6 +256,12 @@ namespace OpenRA.Mods.Common.Traits
 
 			if (!Weapon.IsValidAgainst(target, self.World, self))
 				return false;
+
+			if (hasFacingTolerance && facing != null)
+			{
+				var delta = target.CenterPosition - self.CenterPosition;
+				return Util.FacingWithinTolerance(facing.Facing, delta.Yaw, Info.FacingTolerance);
+			}
 
 			return true;
 		}

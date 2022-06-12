@@ -50,6 +50,13 @@ hvr:
 stnk:
 	idle:
 
+a10:
+	idle:
+
+a10husk:
+	idle:
+		Length: *
+
 orca:
 	idle:
 

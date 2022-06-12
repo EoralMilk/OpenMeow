@@ -120,6 +120,86 @@ DSHP:
 	SpawnActorOnDeath:
 		Actor: DSHP.Husk
 
+A10:
+	Inherits: ^EMPableAircraft
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Valued:
+		Cost: 1500
+	Tooltip:
+		Name: A10 "Thunder" Armoured Attacker
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		Queue: Air
+		BuildPaletteOrder: 100
+		Prerequisites: ~none
+		Description: Armoured assult-bomber craft\nwith Naplam bombs and Vulcan cannon.\n  Strong vs Ground Target\n  Weak vs Aircraft
+	Selectable:
+		Bounds: 905, 1448
+	Voiced:
+		VoiceSet: Scrin
+	Aircraft:
+		VTOL: false
+		Pitch: 0
+		PitchSpeed: 15
+		# IdleBehavior: Land
+		Roll: -66
+		RollSpeed: 10
+		CruiseAltitude: 5c0
+		TurnSpeed: 12
+		Speed: 170
+		IdleTurnSpeed: 6
+		IdleSpeed: 170
+		TakeoffSounds: dropup1.aud
+		LandingSounds: dropdwn1.aud
+		CanHover: false
+		CanSlide: false
+	Health:
+		HP: 28000
+	Armor:
+		Type: Light
+	RevealsShroud:
+		Range: 2c0
+		Type: CenterPosition
+	Armament@GUNS:
+		Weapon: A10Vulcan
+		LocalOffset: 1440,0,145
+		MuzzleSequence: muzzle
+		FacingTolerance: 40
+	Armament@BOMBS:
+		Weapon: A10Napalm
+		FacingTolerance: 512
+		LocalOffset: 0,-256,43, 0,256,43
+	AttackAircraft:
+		Voice: Attack
+		FacingTolerance: 512
+		PersistentTargeting: true
+		PauseOnCondition: empdisable
+		AttackType: Strafe
+		StrafeRunLength: 17c0
+		RotateToFullOnTarget: true
+	RenderSprites:
+	DeathSounds:
+	SpawnActorOnDeath:
+		Actor: A10.Husk
+		RequiresCondition: !empdisable
+	SpawnActorOnDeath@EMP:
+		Actor: A10.Husk.EMP
+		RequiresCondition: empdisable
+	Rearmable:
+		RearmActors: gahpad, nahpad
+	RenderModels:
+		Scale: 1
+	# WithAmmoPipsDecoration:
+	# 	Position: BottomLeft
+	# 	RequiresSelection: true
+	# 	Margin: 4, 5
+	# 	PipCount: 3
+	# 	FullSequence: pip-ammo
+	# 	EmptySequence: pip-ammoempty
+	# 	Palette: pips
+
 ORCA:
 	Inherits: ^EMPableAircraft
 	Inherits@EXPERIENCE: ^GainsExperience
@@ -139,7 +219,7 @@ ORCA:
 		Bounds: 905, 1448
 	Aircraft:
 		TurnSpeed: 20
-		Speed: 186
+		Speed: 206
 		TakeoffSounds: orcaup1.aud
 		LandingSounds: orcadwn1.aud
 		AltitudeVelocity: 128
@@ -202,7 +282,7 @@ ORCAB:
 		CruiseAltitude: 5c512
 		TurnSpeed: 12
 		IdleTurnSpeed: 4
-		Speed: 96
+		Speed: 126
 		IdleSpeed: 72
 		CruisingCondition: cruising
 		TakeoffSounds: orcaup1.aud
@@ -316,6 +396,7 @@ TRNSPORT:
 		LocalOffset: 0,0,-317
 		BeforeLoadDelay: 10
 		BeforeUnloadDelay: 10
+		CarryableAnyCamp: true
 	Health:
 		HP: 17500
 	Armor:
@@ -355,9 +436,9 @@ SCRIN:
 	Aircraft:
 		CruiseAltitude: 5c0
 		TurnSpeed: 15
-		Speed: 200
+		Speed: 245
 		IdleTurnSpeed: 6
-		IdleSpeed: 100
+		IdleSpeed: 140
 		TakeoffSounds: dropup1.aud
 		LandingSounds: dropdwn1.aud
 		CanHover: false

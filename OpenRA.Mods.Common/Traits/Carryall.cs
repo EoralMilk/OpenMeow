@@ -71,6 +71,8 @@ namespace OpenRA.Mods.Common.Traits
 			"A dictionary of [actor name]: [condition].")]
 		public readonly Dictionary<string, string> CarryableConditions = new Dictionary<string, string>();
 
+		public readonly bool CarryableAnyCamp = false;
+
 		[VoiceReference]
 		public readonly string Voice = "Action";
 
@@ -383,6 +385,7 @@ namespace OpenRA.Mods.Common.Traits
 
 		class CarryallPickupOrderTargeter : UnitOrderTargeter
 		{
+
 			public CarryallPickupOrderTargeter(CarryallInfo info)
 				: base("PickupUnit", 5, info.PickUpCursor, false, true)
 			{
@@ -390,7 +393,10 @@ namespace OpenRA.Mods.Common.Traits
 
 			static bool CanTarget(Actor self, Actor target)
 			{
-				if (target == null || !target.AppearsFriendlyTo(self))
+				if (target == null)
+					return false;
+				var carryall = self.TraitOrDefault<Carryall>();
+				if (!carryall.Info.CarryableAnyCamp && !target.AppearsFriendlyTo(self))
 					return false;
 
 				var carryable = target.TraitOrDefault<Carryable>();

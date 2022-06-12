@@ -25,6 +25,48 @@ FireballLauncher:
 		SmudgeType: SmallScorch
 		InvalidTargets: Vehicle, Building, Wall
 
+A10Napalm:
+	ReloadDelay: 100
+	Burst: 8
+	BurstDelays: 6
+	Range: 5c0
+	TargetActorCenter: true
+	ValidTargets: Ground, Trees
+	Projectile: GravityBomb
+		Velocity: 72, 0, -90
+		Acceleration: 0, 0, -8
+		Shadow: true
+		Palette: ra
+		Image: zbomb
+		Palette: player
+		IsPlayerPalette: true
+	Warhead@1Dam: SpreadDamage
+		Spread: 512
+		Falloff: 100, 50, 25, 12, 6, 3, 0
+		Damage: 16000
+		Versus:
+			None: 200
+			Wood: 90
+			Light: 75
+			Heavy: 32
+			Concrete: 100
+		DamageTypes: Prone100Percent, TriggerProne, ExplosionDeath
+		ValidTargets: Ground, Trees
+	Warhead@2Eff: CreateEffect
+		Explosions: large_brnl
+		ImpactSounds: expnew09.aud
+		ValidTargets: Ground, Trees, Air
+	Warhead@3EffWater: CreateEffect
+		Explosions: small_watersplash
+		ExplosionPalette: player
+		ImpactSounds: ssplash3.aud
+		ValidTargets: Water
+		InvalidTargets: Vehicle
+	Warhead@4Smu: LeaveSmudge
+		SmudgeType: LargeScorch
+		InvalidTargets: Vehicle, Building, Wall
+
+
 Bomb:
 	ReloadDelay: 60
 	Burst: 5
@@ -35,9 +77,11 @@ Bomb:
 	Projectile: GravityBomb
 		Velocity: 72, 0, -90
 		Acceleration: 0, 0, -8
-		Image: 120mm
 		Shadow: true
 		Palette: ra
+		Image: zbomb
+		Palette: player
+		IsPlayerPalette: true
 	Warhead@1Dam: SpreadDamage
 		Spread: 512
 		Falloff: 100, 50, 25, 12, 6, 3, 0

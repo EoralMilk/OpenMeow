@@ -17,14 +17,14 @@ using OpenRA.Primitives;
 
 namespace OpenRA.Graphics
 {
-	public class ModelRenderProxy
+	public class VxlRenderProxy
 	{
 		public readonly Sprite Sprite;
 		public readonly Sprite ShadowSprite;
 		public readonly float ShadowDirection;
 		public readonly float3[] ProjectedShadowBounds;
 
-		public ModelRenderProxy(Sprite sprite, Sprite shadowSprite, float3[] projectedShadowBounds, float shadowDirection)
+		public VxlRenderProxy(Sprite sprite, Sprite shadowSprite, float3[] projectedShadowBounds, float shadowDirection)
 		{
 			Sprite = sprite;
 			ShadowSprite = shadowSprite;
@@ -33,20 +33,15 @@ namespace OpenRA.Graphics
 		}
 	}
 
-
-
-	public sealed class ModelRenderer : IDisposable
+	public sealed class VxlRenderer : IDisposable
 	{
 		// Static constants
-		static readonly float[] ShadowDiffuse = new float[] { 0, 0, 0 };
-		static readonly float[] ShadowAmbient = new float[] { 1, 1, 1 };
 		static readonly float2 SpritePadding = new float2(2, 2);
 		static readonly float[] ZeroVector = new float[] { 0, 0, 0, 1 };
 		static readonly float[] ZVector = new float[] { 0, 0, 1, 1 };
 		static readonly float[] FlipMtx = Util.ScaleMatrix(1, -1, 1);
 		static readonly float[] ShadowScaleFlipMtx = Util.ScaleMatrix(2, -2, 2);
 		static readonly float[] GroundNormal = { 0, 0, 1, 1 };
-		static float[] WorldLightDir = new float[] { 0, 0, -1 };
 		readonly Renderer renderer;
 
 		readonly Dictionary<Sheet, IFrameBuffer> mappedBuffers = new Dictionary<Sheet, IFrameBuffer>();
@@ -56,9 +51,8 @@ namespace OpenRA.Graphics
 		SheetBuilder sheetBuilderForFrame;
 		bool isInFrame;
 		ITexture palette;
-		float[] view;
 
-		public ModelRenderer(Renderer renderer)
+		public VxlRenderer(Renderer renderer)
 		{
 			this.renderer = renderer;
 		}
@@ -71,16 +65,9 @@ namespace OpenRA.Graphics
 		public void SetViewportParams()
 		{
 			var a = 2f / renderer.SheetSize;
-			view = new[]
-			{
-				a, 0, 0, 0,
-				0, -a, 0, 0,
-				0, 0, -2 * a, 0,
-				-1, 1, 0, 1
-			};
 		}
 
-		public ModelRenderProxy RenderAsync(
+		public VxlRenderProxy RenderAsync(
 					WorldRenderer wr, IEnumerable<ModelAnimation> models, in WRot camera, float scale,
 					in WRot groundOrientation, in WRot lightSource, float[] lightAmbientColor, float[] lightDiffuseColor,
 					PaletteReference color, PaletteReference normals, PaletteReference shadowPalette)
@@ -230,7 +217,7 @@ namespace OpenRA.Graphics
 
 			var screenLightVector = Util.MatrixVectorMultiply(invShadowTransform, ZVector);
 			screenLightVector = Util.MatrixVectorMultiply(cameraTransform, screenLightVector);
-			return new ModelRenderProxy(sprite, shadowSprite, screenCorners, -screenLightVector[2] / screenLightVector[1]);
+			return new VxlRenderProxy(sprite, shadowSprite, screenCorners, -screenLightVector[2] / screenLightVector[1]);
 		}
 
 		GlmSharp.mat4 rotFix = new GlmSharp.mat4(new GlmSharp.quat(new GlmSharp.vec3(0,0, -0.5f * (float)Math.PI)));

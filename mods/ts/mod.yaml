@@ -262,7 +262,7 @@ SupportsMapsFrom: ts
 
 SoundFormats: Aud, Wav
 
-SpriteFormats: ShpTS, TmpTS, ShpTD
+SpriteFormats: ShpTS, TmpTS, ShpTD, PngSheet
 
 ModelFormats: Vxl
 

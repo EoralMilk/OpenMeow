@@ -9,6 +9,28 @@ DSHP.Husk:
 	RenderModels:
 		Image: dshp
 
+A10.Husk:
+	Inherits: ^AircraftHusk
+	Tooltip:
+		Name: A10 "Thunder" Armoured Attacker
+	Aircraft:
+		TurnSpeed: 12
+		Speed: 168
+	FallsToEarth:
+		MaximumSpinSpeed: 24
+	RenderSprites:
+		Image: a10
+	-WithModelBody:
+	WithModelWalkerBody:
+		TickRate: 2
+	RenderModels:
+		Image: a10husk
+		Scale: 1
+
+A10.Husk.EMP:
+	Inherits: A10.Husk
+	Inherits@EMP: ^EmpVisualEffects
+
 ORCA.Husk:
 	Inherits: ^AircraftHusk
 	Tooltip:

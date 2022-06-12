@@ -1,3 +1,10 @@
+a10:
+	Inherits: ^VehicleOverlays
+	icon: a10_icon.png
+		UseTilesetCode: false
+	 	AddExtension: false
+		Offset: 0, 0, 0
+
 orca:
 	Inherits: ^VehicleOverlays
 	icon: orcaicon

@@ -136,7 +136,7 @@ namespace OpenRA.Mods.Common.Graphics
 
 			var viewOffset = Game.Renderer.World3DRenderer.InverseCameraFrontMeterPerWPos * zOffset;
 
-			Game.Renderer.WorldModelRenderer.RenderDirectly(
+			Game.Renderer.WorldVxlRenderer.RenderDirectly(
 				wr, model.pos, viewOffset, draw, model.scale, t, a,
 				model.palette, model.normalsPalette);
 
@@ -146,67 +146,15 @@ namespace OpenRA.Mods.Common.Graphics
 		class FinalizedModelRenderable : IFinalizedRenderable
 		{
 			readonly ModelRenderable model;
-			readonly ModelRenderProxy renderProxy;
 			public BlendMode BlendMode => BlendMode.Alpha;
 
 			public FinalizedModelRenderable(WorldRenderer wr, ModelRenderable model)
 			{
-
 				this.model = model;
-				//var draw = model.models.Where(v => v.IsVisible);
-
-				//var map = wr.World.Map;
-				//var groundOrientation = map.TerrainOrientation(map.CellContaining(model.pos));
-				//renderProxy = Game.Renderer.WorldModelRenderer.RenderAsync(
-				//	wr, draw, model.camera, model.scale, groundOrientation, model.lightSource,
-				//	model.lightAmbientColor, model.lightDiffuseColor,
-				//	model.palette, model.normalsPalette, model.shadowPalette);
 			}
 
 			public void Render(WorldRenderer wr)
 			{
-				//var map = wr.World.Map;
-				//var groundPos = model.pos - new WVec(0, 0, map.DistanceAboveTerrain(model.pos).Length);
-				//var tileScale = map.Grid.Type == MapGridType.RectangularIsometric ? 1448f : 1024f;
-
-				//var groundZ = map.Grid.TileSize.Height * (groundPos.Z - model.pos.Z) / tileScale;
-				//var pxOrigin = wr.Render3DPosition(model.pos);
-
-				//// HACK: We don't have enough texture channels to pass the depth data to the shader
-				//// so for now just offset everything forward so that the back corner is rendered at pos.
-				//pxOrigin -= new float3(0, 0, Screen3DBounds(wr).Z.X);
-
-				//// HACK: The previous hack isn't sufficient for the ramp type that is half flat and half
-				//// sloped towards the camera. Offset it by another half cell to avoid clipping.
-				//var cell = map.CellContaining(model.pos);
-				//if (map.Ramp.Contains(cell) && map.Ramp[cell] == 7)
-				//	pxOrigin += new float3(0, 0, 0.5f * map.Grid.TileSize.Height);
-
-				//var shadowOrigin = pxOrigin - groundZ * (new float2(renderProxy.ShadowDirection, 1));
-
-				//var psb = renderProxy.ProjectedShadowBounds;
-				//var sa = shadowOrigin + psb[0];
-				//var sb = shadowOrigin + psb[2];
-				//var sc = shadowOrigin + psb[1];
-				//var sd = shadowOrigin + psb[3];
-
-				//var wrsr = Game.Renderer.WorldRgbaSpriteRenderer;
-				//var t = model.tint;
-				//if (wr.TerrainLighting != null && (model.tintModifiers & TintModifiers.IgnoreWorldTint) == 0)
-				//	t *= wr.TerrainLighting.TintAt(model.pos);
-
-				//// Shader interprets negative alpha as a flag to use the tint colour directly instead of multiplying the sprite colour
-				//var a = model.alpha;
-				//if ((model.tintModifiers & TintModifiers.ReplaceColor) != 0)
-				//	a *= -1;
-
-				//var viewOffset = Game.Renderer.World3DRenderer.InverseCameraFrontMeterPerWPos * (5);
-
-				////wrsr.DrawSprite(renderProxy.ShadowSprite, sa, sb, sc, sd, t, a);
-				////wrsr.DrawSprite(renderProxy.Sprite, pxOrigin - 0.5f * renderProxy.Sprite.Size, 1f, t, a);
-				//wrsr.DrawCardSprite(renderProxy.Sprite, model.pos, viewOffset, 1f, t, a);
-
-				//Console.WriteLine("vxl render");
 			}
 
 			public void RenderDebugGeometry(WorldRenderer wr)
