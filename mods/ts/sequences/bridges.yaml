@@ -70,6 +70,7 @@ bridge1:
 		ZRamp: 1
 		Offset: 0, -13, 49
 		MeshType: Plane
+		ZOffset: 3310
 
 bridge2:
 	idle: bridge
@@ -80,6 +81,7 @@ bridge2:
 		ZRamp: 1
 		Offset: 0, -25, 49
 		MeshType: Plane
+		ZOffset: 3310
 
 railbrdg1:
 	idle: railbrdg
@@ -89,6 +91,7 @@ railbrdg1:
 		ZRamp: 1
 		Offset: 0, -13, 49
 		MeshType: Plane
+		ZOffset: 3310
 
 railbrdg2:
 	idle: railbrdg
@@ -99,3 +102,4 @@ railbrdg2:
 		ZRamp: 1
 		Offset: 0, -25, 49
 		MeshType: Plane
+		ZOffset: 3310

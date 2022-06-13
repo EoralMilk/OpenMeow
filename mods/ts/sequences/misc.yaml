@@ -135,7 +135,7 @@ explosion:
 		Offset: 0, 0, 24
 		AlphaFade: True
 		IgnoreWorldTint: True
-		BlendMode: Additive
+		BlendMode: ScreenAdditive #Additive
 	building: twlt070
 		Offset: 0, 0, 36
 	ionring: ring1
@@ -167,7 +167,7 @@ explosion:
 		Tick: 100
 		IgnoreWorldTint: False
 	pulse_explosion: pulsefx2
-		BlendMode: Additive
+		BlendMode: ScreenAdditive
 		ZRamp: 1
 		Tick: 80
 		MeshType: Plane
@@ -271,7 +271,7 @@ canister:
 pulsball:
 	idle:
 		Length: *
-		BlendMode: Additive
+		BlendMode: ScreenAdditive
 		ZOffset: 1023
 		Offset: 0, 0, 24
 
@@ -299,7 +299,7 @@ crystal4:
 		ZOffset: 1023
 		Offset: 0, 0, 4
 		MeshType: Plane
-		BlendMode: Additive
+		BlendMode: ScreenAdditive
 
 
 torpedo:
@@ -309,7 +309,7 @@ torpedo:
 		Offset: 0, 0, 8
 		IgnoreWorldTint: True
 		MeshType: Plane
-		BlendMode: Additive
+		BlendMode: ScreenAdditive
 
 
 flameall:
@@ -321,7 +321,7 @@ flameall:
 		Offset: 0, 0, 24
 		IgnoreWorldTint: True
 		Alpha: 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0.9, 0.8, 0.7, 0.6, 0.5, 0.4, 0.3, 0.2, 0.1
-		BlendMode: Additive
+		BlendMode: ScreenAdditive
 
 largesmoke:
 	idle: lgrysmk1
@@ -343,6 +343,8 @@ large_smoke_trail:
 		ZOffset: 1023
 		Offset: 0, 0, 24
 		AlphaFade: True
+		BlendMode: ScreenAdditive
+
 
 small_smoke_trail:
 	idle: smokey2
@@ -350,6 +352,8 @@ small_smoke_trail:
 		ZOffset: 1023
 		Offset: 0, 0, 24
 		AlphaFade: True
+		BlendMode: ScreenAdditive
+
 
 largefire:
 	idle: fire1
@@ -722,15 +726,15 @@ tuntop02:
 tuntop03:
 	Inherits: ^tuntop
 	idle:
+		Offset: 24, -49, 0
 		MeshType: Plane
-		Offset: 24, -49, 49
 		ZOffset: 4096
 
 tuntop04:
 	Inherits: ^tuntop
 	idle:
+		Offset: -24, -49, 0
 		MeshType: Plane
-		Offset: -24, -49, 49
 		ZOffset: 4096
 
 dig:

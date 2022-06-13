@@ -39,7 +39,7 @@ A10Vulcan:
 		ContrailWidth: 44
 		ContrailColor: F0D05C
 		ContrailDelay: 0
-		ContrailBlendMode: Additive
+		ContrailBlendMode: ScreenAdditive
 		Speed: 1100
 		LaunchAngle: 10
 		ZOffset: 1024

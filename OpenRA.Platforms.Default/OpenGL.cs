@@ -124,6 +124,10 @@ namespace OpenRA.Platforms.Default
 		public const int GL_ONE_MINUS_DST_ALPHA = 0x0305;
 		public const int GL_DST_COLOR = 0x0306;
 		public const int GL_ONE_MINUS_DST_COLOR = 0x0307;
+		public const int GL_CONSTANT_COLOR = 0x8001;
+		public const int GL_ONE_MINUS_CONSTANT_COLOR = 0x8002;
+		public const int GL_CONSTANT_ALPHA = 0x8003;
+		public const int GL_ONE_MINUS_CONSTANT_ALPHA = 0x8004;
 
 		// GL_ARB_imaging
 		public const int GL_FUNC_ADD = 0x8006;
@@ -430,6 +434,9 @@ namespace OpenRA.Platforms.Default
 		public delegate void BlendFunc(int sfactor, int dfactor);
 		public static BlendFunc glBlendFunc { get; private set; }
 
+		public delegate void BlendColor(float r, float g, float b, float a);
+		public static BlendColor glBlendColor { get; private set; }
+
 		public delegate void DepthFunc(int func);
 		public static DepthFunc glDepthFunc { get; private set; }
 
@@ -623,6 +630,7 @@ namespace OpenRA.Platforms.Default
 				glBlendEquation = Bind<BlendEquation>("glBlendEquation");
 				glBlendEquationSeparate = Bind<BlendEquationSeparate>("glBlendEquationSeparate");
 				glBlendFunc = Bind<BlendFunc>("glBlendFunc");
+				glBlendColor = Bind<BlendColor>("glBlendColor");
 				glDepthFunc = Bind<DepthFunc>("glDepthFunc");
 				glDepthMask = Bind<DepthMask>("glDepthMask");
 				glCullFace = Bind<CullFace>("glCullFace");

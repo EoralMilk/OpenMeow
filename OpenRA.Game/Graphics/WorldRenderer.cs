@@ -40,7 +40,7 @@ namespace OpenRA.Graphics
 		readonly bool enableDepthBuffer;
 
 		readonly List<IFinalizedRenderable> preparedRenderables = new List<IFinalizedRenderable>();
-		readonly List<IFinalizedRenderable>[] preparedBlendRenderables = new List<IFinalizedRenderable>[10];
+		readonly List<IFinalizedRenderable>[] preparedBlendRenderables = new List<IFinalizedRenderable>[11];
 
 		readonly List<IFinalizedRenderable> preparedOverlayRenderables = new List<IFinalizedRenderable>();
 		readonly List<IFinalizedRenderable> preparedAnnotationRenderables = new List<IFinalizedRenderable>();

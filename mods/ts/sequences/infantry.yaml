@@ -248,7 +248,7 @@ cyborg:
 	emp-overlay: emp_fx01
 		Length: *
 		ZOffset: 512
-		BlendMode: Additive
+		BlendMode: ScreenAdditive
 		IgnoreWorldTint: True
 	icon: cybiicon
 
@@ -308,7 +308,7 @@ cyc2:
 	emp-overlay: emp_fx01
 		Length: *
 		ZOffset: 512
-		BlendMode: Additive
+		BlendMode: ScreenAdditive
 		IgnoreWorldTint: True
 	icon: cybcicon
 

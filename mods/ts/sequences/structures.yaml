@@ -60,7 +60,7 @@ gacnst:
 		Offset: 0, 0, 37
 		UseTilesetCode: false
 		ZOffset: 512
-		BlendMode: Additive
+		BlendMode: ScreenAdditive
 		IgnoreWorldTint: True
 		-DepthSprite:
 	icon: facticon
@@ -132,7 +132,7 @@ gapowr:
 		Offset: 0, 0, 25
 		UseTilesetCode: false
 		ZOffset: 512
-		BlendMode: Additive
+		BlendMode: ScreenAdditive
 		IgnoreWorldTint: True
 		-DepthSprite:
 	icon: powricon
@@ -190,7 +190,7 @@ gapile:
 		Offset: 0, 0, 25
 		UseTilesetCode: false
 		ZOffset: 512
-		BlendMode: Additive
+		BlendMode: ScreenAdditive
 		IgnoreWorldTint: True
 		-DepthSprite:
 	icon: brrkicon
@@ -277,7 +277,7 @@ gaweap:
 		Offset: 0, 0, 23
 		UseTilesetCode: false
 		ZOffset: 512
-		BlendMode: Additive
+		BlendMode: ScreenAdditive
 		IgnoreWorldTint: True
 		-DepthSprite:
 	icon: weapicon
@@ -323,7 +323,7 @@ napowr:
 		Offset: 0, 0, 25
 		UseTilesetCode: false
 		ZOffset: 512
-		BlendMode: Additive
+		BlendMode: ScreenAdditive
 		IgnoreWorldTint: True
 		-DepthSprite:
 	icon: npwricon
@@ -370,7 +370,7 @@ naapwr:
 		Offset: 0, 0, 31
 		UseTilesetCode: false
 		ZOffset: 512
-		BlendMode: Additive
+		BlendMode: ScreenAdditive
 		IgnoreWorldTint: True
 		-DepthSprite:
 	icon: apwricon
@@ -415,7 +415,7 @@ nahand:
 		Offset: 0, 0, 31
 		UseTilesetCode: false
 		ZOffset: 512
-		BlendMode: Additive
+		BlendMode: ScreenAdditive
 		IgnoreWorldTint: True
 		-DepthSprite:
 	icon: handicon
@@ -493,7 +493,7 @@ naweap:
 		Offset: 0, 0, 31
 		UseTilesetCode: false
 		ZOffset: 512
-		BlendMode: Additive
+		BlendMode: ScreenAdditive
 		IgnoreWorldTint: True
 		-DepthSprite:
 	icon: nwepicon
@@ -530,7 +530,7 @@ naradr:
 		Offset: 0, 0, 25
 		UseTilesetCode: false
 		ZOffset: 512
-		BlendMode: Additive
+		BlendMode: ScreenAdditive
 		IgnoreWorldTint: True
 		-DepthSprite:
 	icon: nradicon
@@ -576,7 +576,7 @@ natech:
 		Offset: 0, 0, 25
 		UseTilesetCode: false
 		ZOffset: 512
-		BlendMode: Additive
+		BlendMode: ScreenAdditive
 		IgnoreWorldTint: True
 		-DepthSprite:
 	icon: ntchicon
@@ -614,7 +614,7 @@ natmpl:
 		Offset: 0, 0, 43
 		UseTilesetCode: false
 		ZOffset: 512
-		BlendMode: Additive
+		BlendMode: ScreenAdditive
 		IgnoreWorldTint: True
 		-DepthSprite:
 	icon: tmplicon
@@ -653,7 +653,7 @@ garadr:
 		Offset: 0, 0, 25
 		UseTilesetCode: false
 		ZOffset: 512
-		BlendMode: Additive
+		BlendMode: ScreenAdditive
 		IgnoreWorldTint: True
 		-DepthSprite:
 	icon: radricon
@@ -700,7 +700,7 @@ gatech:
 		Offset: 0, 0, 31
 		UseTilesetCode: false
 		ZOffset: 512
-		BlendMode: Additive
+		BlendMode: ScreenAdditive
 		IgnoreWorldTint: True
 		-DepthSprite:
 	icon: techicon
@@ -782,7 +782,7 @@ gagate_a:
 		Offset: 0, 0, 25
 		UseTilesetCode: false
 		ZOffset: 512
-		BlendMode: Additive
+		BlendMode: ScreenAdditive
 		IgnoreWorldTint: True
 		-DepthSprite:
 	icon: gateicon
@@ -826,7 +826,7 @@ gagate_b:
 		Offset: 0, 0, 25
 		UseTilesetCode: false
 		ZOffset: 512
-		BlendMode: Additive
+		BlendMode: ScreenAdditive
 		IgnoreWorldTint: True
 		-DepthSprite:
 	icon: gat2icon
@@ -875,7 +875,7 @@ nagate_a:
 		Offset: 0, 0, 25
 		UseTilesetCode: false
 		ZOffset: 512
-		BlendMode: Additive
+		BlendMode: ScreenAdditive
 		IgnoreWorldTint: True
 		-DepthSprite:
 	icon: ngaticon
@@ -920,7 +920,7 @@ nagate_b:
 		Offset: 0, 0, 25
 		UseTilesetCode: false
 		ZOffset: 512
-		BlendMode: Additive
+		BlendMode: ScreenAdditive
 		IgnoreWorldTint: True
 		-DepthSprite:
 	icon: nga2icon
@@ -986,7 +986,7 @@ napost:
 		Offset: 0, 0, 25
 		UseTilesetCode: false
 		ZOffset: 512
-		BlendMode: Additive
+		BlendMode: ScreenAdditive
 		IgnoreWorldTint: True
 		-DepthSprite:
 	icon: lasricon
@@ -1036,7 +1036,7 @@ nafnce:
 		Offset: 0, 0, 13
 		UseTilesetCode: false
 		ZOffset: 512
-		BlendMode: Additive
+		BlendMode: ScreenAdditive
 		IgnoreWorldTint: True
 		-DepthSprite:
 
@@ -1077,7 +1077,7 @@ gaicbm:
 		Offset: 0, 0, 13
 		UseTilesetCode: false
 		ZOffset: 512
-		BlendMode: Additive
+		BlendMode: ScreenAdditive
 		IgnoreWorldTint: True
 		-DepthSprite:
 	make: gaicbmmk
@@ -1113,7 +1113,7 @@ naobel:
 		Offset: 0, 0, 25
 		UseTilesetCode: false
 		ZOffset: 512
-		BlendMode: Additive
+		BlendMode: ScreenAdditive
 		IgnoreWorldTint: True
 		-DepthSprite:
 	icon: obliicon
@@ -1143,7 +1143,7 @@ nalasr:
 		Offset: 0, 0, 13
 		UseTilesetCode: false
 		ZOffset: 512
-		BlendMode: Additive
+		BlendMode: ScreenAdditive
 		IgnoreWorldTint: True
 		-DepthSprite:
 	icon: plticon
@@ -1181,7 +1181,7 @@ nasam:
 		Offset: 0, 0, 2
 		UseTilesetCode: false
 		ZOffset: 512
-		BlendMode: Additive
+		BlendMode: ScreenAdditive
 		IgnoreWorldTint: True
 	icon: samicon
 		Offset: 0, 0
@@ -1211,7 +1211,7 @@ napuls.gdi:
 		Offset: 0, 0, 25
 		UseTilesetCode: false
 		ZOffset: 512
-		BlendMode: Additive
+		BlendMode: ScreenAdditive
 		-DepthSprite:
 	icon: sidebar-gdi|empicon
 		Offset: 0, 0
@@ -1242,7 +1242,7 @@ napuls.nod:
 		Offset: 0, 0, 25
 		UseTilesetCode: false
 		ZOffset: 512
-		BlendMode: Additive
+		BlendMode: ScreenAdditive
 		IgnoreWorldTint: True
 		IgnoreWorldTint: True
 		-DepthSprite:
@@ -1281,7 +1281,7 @@ nastlh:
 		Offset: 0, 0, 31
 		UseTilesetCode: false
 		ZOffset: 512
-		BlendMode: Additive
+		BlendMode: ScreenAdditive
 		IgnoreWorldTint: True
 		-DepthSprite:
 	icon: clckicon
@@ -1354,7 +1354,7 @@ gactwr:
 		Offset: 0, 0, 13
 		UseTilesetCode: false
 		ZOffset: 512
-		BlendMode: Additive
+		BlendMode: ScreenAdditive
 		IgnoreWorldTint: True
 		-DepthSprite:
 	icon: towricon
@@ -1461,7 +1461,7 @@ gahpad:
 		Offset: 0, 0, 2
 		UseTilesetCode: false
 		ZOffset: 512
-		BlendMode: Additive
+		BlendMode: ScreenAdditive
 		IgnoreWorldTint: True
 	icon: heliicon
 		Offset: 0, 0
@@ -1540,7 +1540,7 @@ nahpad:
 		Offset: 0, 0, 2
 		UseTilesetCode: false
 		ZOffset: 512
-		BlendMode: Additive
+		BlendMode: ScreenAdditive
 		IgnoreWorldTint: True
 	icon: nhpdicon
 		Offset: 0, 0
@@ -1602,7 +1602,7 @@ proc.gdi:
 		Offset: 0, 0, 21
 		UseTilesetCode: false
 		ZOffset: 512
-		BlendMode: Additive
+		BlendMode: ScreenAdditive
 		IgnoreWorldTint: True
 		-DepthSprite:
 	icon: sidebar-gdi|reficon
@@ -1666,7 +1666,7 @@ proc.nod:
 		Offset: 0, 0, 21
 		UseTilesetCode: false
 		ZOffset: 512
-		BlendMode: Additive
+		BlendMode: ScreenAdditive
 		IgnoreWorldTint: True
 		-DepthSprite:
 	icon: sidebar-nod|reficon
@@ -1734,7 +1734,7 @@ nawast:
 		Offset: 0, 0, 25
 		UseTilesetCode: false
 		ZOffset: 512
-		BlendMode: Additive
+		BlendMode: ScreenAdditive
 		IgnoreWorldTint: True
 		-DepthSprite:
 	icon: wasticon
@@ -1784,7 +1784,7 @@ gasilo.gdi:
 		Offset: 0, 0, 25
 		UseTilesetCode: false
 		ZOffset: 512
-		BlendMode: Additive
+		BlendMode: ScreenAdditive
 		IgnoreWorldTint: True
 		-DepthSprite:
 	icon: sidebar-gdi|siloicon
@@ -1834,7 +1834,7 @@ gasilo.nod:
 		Offset: 0, 0, 25
 		UseTilesetCode: false
 		ZOffset: 512
-		BlendMode: Additive
+		BlendMode: ScreenAdditive
 		IgnoreWorldTint: True
 		-DepthSprite:
 	icon: sidebar-nod|siloicon
@@ -1956,7 +1956,7 @@ gadept.gdi:
 		Offset: 0, 0, 8
 		UseTilesetCode: false
 		ZOffset: 512
-		BlendMode: Additive
+		BlendMode: ScreenAdditive
 		IgnoreWorldTint: True
 	icon: sidebar-gdi|fixicon
 		Offset: 0, 0
@@ -2076,7 +2076,7 @@ gadept.nod:
 		Offset: 0, 0, 8
 		UseTilesetCode: false
 		ZOffset: 512
-		BlendMode: Additive
+		BlendMode: ScreenAdditive
 		IgnoreWorldTint: True
 	icon: sidebar-nod|fixicon
 		Offset: 76, 66
@@ -2139,7 +2139,7 @@ namisl:
 		Offset: 0, 0, 25
 		UseTilesetCode: false
 		ZOffset: 512
-		BlendMode: Additive
+		BlendMode: ScreenAdditive
 		IgnoreWorldTint: True
 		-DepthSprite:
 	icon: msslicon
@@ -2243,7 +2243,7 @@ gaplug:
 		Offset: 0, 0, 31
 		UseTilesetCode: false
 		ZOffset: 512
-		BlendMode: Additive
+		BlendMode: ScreenAdditive
 		IgnoreWorldTint: True
 		-DepthSprite:
 	icon: plugicon

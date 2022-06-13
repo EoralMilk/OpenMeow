@@ -7,6 +7,8 @@
 		Blockable: true
 		DamageActorsInLine: true
 		BeamColor: 0080FFC8
+		HelixColor: 0080FFC8
+		BeamBlendMode: ScreenAdditive
 	Warhead@1Dam: SpreadDamage
 		Range: 0, 32
 		Falloff: 100, 100

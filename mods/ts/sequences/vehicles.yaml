@@ -8,7 +8,7 @@
 	emp-overlay: emp_fx01
 		Offset: 0, 0, 24
 		Length: *
-		BlendMode: Additive
+		BlendMode: ScreenAdditive
 		IgnoreWorldTint: True
 
 mcv.gdi:
