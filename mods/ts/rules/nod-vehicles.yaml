@@ -80,6 +80,21 @@ BIKE:
 		RequiresCondition: !inside-tunnel && !rank-elite
 	LeavesTrails@VEINS:
 		RequiresCondition: !inside-tunnel && !rank-elite
+	WithMesh@body:
+		Sequence: body
+	WithMesh@hair:
+		Sequence: hair
+	WithMesh@cater:
+		Sequence: cater
+	WithMesh@skirt:
+		Sequence: skirt-split
+	WithMesh@sweater:
+		Sequence: sweater
+	RenderMeshes:
+		Image: rumya
+		ZOffset: 15
+		Scale: 6
+
 
 TTNK:
 	Inherits: ^Tank

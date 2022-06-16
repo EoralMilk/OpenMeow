@@ -49,6 +49,9 @@ Packages:
 	~ecache01.mix
 	ts|bits
 	ts|uibits
+	ts|meshes
+	ts|materials
+	ts|textures
 
 MapFolders:
 	ts|maps: System
@@ -105,6 +108,9 @@ Sequences:
 
 ModelSequences:
 	ts|sequences/voxels.yaml
+
+MeshSequences:
+	ts|sequences/meshes.yaml
 
 TileSets:
 	ts|tilesets/temperate.yaml
@@ -266,6 +272,8 @@ SpriteFormats: ShpTS, TmpTS, ShpTD, PngSheet
 
 ModelFormats: Vxl
 
+MeshFormats: Mes
+
 VideoFormats: Vqa
 
 TerrainFormat: DefaultTerrain
@@ -279,6 +287,8 @@ SpriteSequenceFormat: TilesetSpecificSpriteSequence
 		SNOW: a
 
 ModelSequenceFormat: DefaultModelSequence
+
+MeshSequenceFormat: DefaultMeshSequence
 
 AssetBrowser:
 	SpriteExtensions: .shp, .tem, .sno

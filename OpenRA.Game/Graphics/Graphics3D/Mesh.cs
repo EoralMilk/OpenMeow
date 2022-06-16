@@ -1,12 +1,41 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Numerics;
+using OpenRA.FileSystem;
+using OpenRA.Primitives;
 
-namespace OpenRA.Graphics.Graphics3D
+namespace OpenRA.Graphics
 {
+
+	public class MeshInstance
+	{
+		public IOrderedMesh OrderedMesh { get; }
+
+		public readonly Func<WVec> OffsetFunc;
+		public readonly Func<WRot> RotationFunc;
+		public readonly Func<bool> IsVisible;
+
+		public MeshInstance(IOrderedMesh mesh, Func<WVec> offset, Func<WRot> rotation, Func<bool> isVisible)
+		{
+			OrderedMesh = mesh;
+			OffsetFunc = offset;
+			RotationFunc = rotation;
+			IsVisible = isVisible;
+		}
+
+		public Rectangle ScreenBounds(WPos wPos, WorldRenderer wr, float scale)
+		{
+			var minX = float.MaxValue;
+			var minY = float.MaxValue;
+			var maxX = float.MinValue;
+			var maxY = float.MinValue;
+
+			return Rectangle.FromLTRB((int)minX, (int)minY, (int)maxX, (int)maxY);
+		}
+	}
+
 	public interface IOrderedMesh
 	{
-		MeshRenderData RenderData { get; }
 		string Name { get; }
 		void AddInstanceData(float[] data, int dataCount);
 		void Flush();
@@ -14,30 +43,14 @@ namespace OpenRA.Graphics.Graphics3D
 		void SetPalette(ITexture pal);
 	}
 
-	public struct MeshInstanceData
-	{
-		// 用于记录Mesh应该读取哪个存储在贴图中的skeleton实例的数据, 负数表示不使用骨架数据
-		// 一般来说实际上一类的mesh是否使用skeleton是统一的。
-		public float DrawId;
-
-		// 当不使用skeleton数据时，这个meshinstance的坐标位置
-		public float[] Transform;
-
-		public MeshInstanceData(float drawid, float[] trans)
-		{
-			DrawId = drawid;
-			Transform = trans;
-		}
-	}
-
-	public readonly struct MeshRenderData
+	public readonly struct CombinedMeshRenderData
 	{
 		public readonly int Start;
 		public readonly int Count;
 		public readonly IShader Shader;
 		public readonly IVertexBuffer VertexBuffer;
 		public readonly Dictionary<string, ITexture> Textures;
-		public MeshRenderData(int start, int count, IShader shader, IVertexBuffer vertexBuffer, Dictionary<string, ITexture> textures)
+		public CombinedMeshRenderData(int start, int count, IShader shader, IVertexBuffer vertexBuffer, Dictionary<string, ITexture> textures)
 		{
 			Start = start;
 			Count = count;
@@ -46,4 +59,79 @@ namespace OpenRA.Graphics.Graphics3D
 			Textures = textures;
 		}
 	}
+
+	public interface IMaterial
+	{
+		FaceCullFunc FaceCullFunc { get; }
+		void SetShader(IShader shader);
+	}
+
+	public class CommonMaterial : IMaterial
+	{
+		public readonly string Name;
+		public readonly bool HasDiffuseMap;
+		public readonly float3 DiffuseTint;
+		public readonly ITexture DiffuseMap;
+		public readonly bool HasSpecularMap;
+		public readonly float3 SpecularTint;
+		public readonly ITexture SpecularMap;
+		public readonly float Shininess;
+		readonly FaceCullFunc faceCullFunc;
+		public FaceCullFunc FaceCullFunc => faceCullFunc;
+		public CommonMaterial(string name, bool hasDiffuseMap, float3 diffuseTint, ITexture diffuseMap, bool hasSpecularMap, float3 specularTint, ITexture specularMap, float shininess, FaceCullFunc faceCullFunc)
+		{
+			Name = name;
+			HasDiffuseMap = hasDiffuseMap;
+			DiffuseTint = diffuseTint;
+			DiffuseMap = diffuseMap;
+			HasSpecularMap = hasSpecularMap;
+			SpecularTint = specularTint;
+			SpecularMap = specularMap;
+			Shininess = shininess;
+			this.faceCullFunc = faceCullFunc;
+		}
+
+		public void SetShader(IShader shader)
+		{
+			// diffuse
+			shader.SetBool("material.hasDiffuseMap", HasDiffuseMap);
+			shader.SetVec("material.diffuseTint", DiffuseTint.X, DiffuseTint.Y, DiffuseTint.Z);
+			if (HasDiffuseMap)
+				shader.SetTexture("material.diffuse", DiffuseMap);
+
+			// specular
+			shader.SetBool("material.hasSpecularMap", HasSpecularMap);
+			shader.SetVec("material.specularTint", SpecularTint.X, SpecularTint.Y, SpecularTint.Z);
+			if (HasSpecularMap)
+				shader.SetTexture("material.specular", SpecularMap);
+			shader.SetFloat("material.shininess", Shininess);
+		}
+	}
+
+	// Multiple OrderMesh can use same MeshVertexData
+	public class MeshVertexData
+	{
+		public readonly int Start;
+		public readonly int Count;
+		public readonly IShader Shader;
+		public readonly IVertexBuffer VertexBuffer;
+		public MeshVertexData(int start, int count, IShader shader, IVertexBuffer vertexBuffer)
+		{
+			Start = start;
+			Count = count;
+			Shader = shader;
+			VertexBuffer = vertexBuffer;
+		}
+	}
+
+	public interface IMeshLoader
+	{
+		bool TryLoadMesh(IReadOnlyFileSystem fileSystem, string filename, MiniYaml definition, MeshCache cache, out IOrderedMesh model);
+	}
+
+	public interface IMeshSequenceLoader
+	{
+		MeshCache CacheMeshes(IMeshLoader[] loaders, IReadOnlyFileSystem fileSystem, ModData modData, IReadOnlyDictionary<string, MiniYamlNode> modelDefinitions);
+	}
+
 }

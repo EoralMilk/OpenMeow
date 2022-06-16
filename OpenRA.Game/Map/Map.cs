@@ -171,6 +171,7 @@ namespace OpenRA
 			new MapField("Rules", "RuleDefinitions", required: false),
 			new MapField("Sequences", "SequenceDefinitions", required: false),
 			new MapField("ModelSequences", "ModelSequenceDefinitions", required: false),
+			new MapField("MeshSequences", "MeshSequenceDefinitions", required: false),
 			new MapField("Weapons", "WeaponDefinitions", required: false),
 			new MapField("Voices", "VoiceDefinitions", required: false),
 			new MapField("Music", "MusicDefinitions", required: false),
@@ -202,6 +203,7 @@ namespace OpenRA
 		public readonly MiniYaml RuleDefinitions;
 		public readonly MiniYaml SequenceDefinitions;
 		public readonly MiniYaml ModelSequenceDefinitions;
+		public readonly MiniYaml MeshSequenceDefinitions;
 		public readonly MiniYaml WeaponDefinitions;
 		public readonly MiniYaml VoiceDefinitions;
 		public readonly MiniYaml MusicDefinitions;
@@ -407,7 +409,7 @@ namespace OpenRA
 			try
 			{
 				Rules = Ruleset.Load(modData, this, Tileset, RuleDefinitions, WeaponDefinitions,
-					VoiceDefinitions, NotificationDefinitions, MusicDefinitions, SequenceDefinitions, ModelSequenceDefinitions);
+					VoiceDefinitions, NotificationDefinitions, MusicDefinitions, SequenceDefinitions, ModelSequenceDefinitions, MeshSequenceDefinitions);
 			}
 			catch (Exception e)
 			{

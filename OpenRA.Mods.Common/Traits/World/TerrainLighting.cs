@@ -22,7 +22,7 @@ namespace OpenRA.Mods.Common.Traits
 	public class TerrainLightingInfo : TraitInfo, ILobbyCustomRulesIgnore
 	{
 		public readonly float Intensity = 1;
-		public readonly float AmbientIntensity = 0.35f;
+		public readonly float AmbientIntensity = 0.45f;
 		public readonly float HeightStep = 0;
 		public readonly float RedTint = 1;
 		public readonly float GreenTint = 1;

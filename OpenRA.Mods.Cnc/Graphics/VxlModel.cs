@@ -125,8 +125,7 @@ namespace OpenRA.Mods.Cnc.Graphics
 		readonly string name;
 		public string Name => name;
 
-		readonly MeshRenderData renderData;
-		public MeshRenderData RenderData => renderData;
+		readonly CombinedMeshRenderData renderData;
 
 		ITexture palette;
 
@@ -136,7 +135,7 @@ namespace OpenRA.Mods.Cnc.Graphics
 
 		bool alphaBlend;
 
-		public OrderedVxlSection(MeshRenderData data, string name)
+		public OrderedVxlSection(CombinedMeshRenderData data, string name)
 		{
 			renderData = data;
 			this.name = name;
@@ -208,7 +207,7 @@ namespace OpenRA.Mods.Cnc.Graphics
 		public float Scale;
 		public float[] Bounds;
 		public byte[] Size;
-		public MeshRenderData RenderData;
+		public CombinedMeshRenderData RenderData;
 	}
 
 	public class VxlModel : IModel

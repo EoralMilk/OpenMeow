@@ -333,11 +333,13 @@ namespace OpenRA
 				if (!sunCamera)
 					orderedMesh.Value.Flush();
 			}
+
+			wr.World.MeshCache.DrawInstances(sunCamera);
 		}
 
-		public void RenderInstance(int start, int numVertices, int numInstance)
+		public void RenderInstance(int start, int numVertices, int numInstance, bool elemented = false)
 		{
-			Context.DrawInstances(PrimitiveType.TriangleList, start, numVertices, numInstance);
+			Context.DrawInstances(PrimitiveType.TriangleList, start, numVertices, numInstance, elemented);
 			PerfHistory.Increment("batches", 1);
 		}
 
@@ -576,6 +578,14 @@ namespace OpenRA
 		{
 			Flush();
 			Context.ClearDepthBuffer();
+		}
+
+		public void SetFaceCull(FaceCullFunc faceCullFunc)
+		{
+			if (faceCullFunc == FaceCullFunc.None)
+				Context.DisableCullFace();
+			else
+				Context.EnableCullFace(faceCullFunc);
 		}
 
 		public void EnableAntialiasingFilter()

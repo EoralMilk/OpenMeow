@@ -60,6 +60,7 @@ namespace OpenRA
 		Front,
 		Back,
 		FrontAndBack,
+		None,
 	}
 
 	public interface IPlatformWindow : IDisposable
@@ -109,7 +110,7 @@ namespace OpenRA
 		void DisableScissor();
 		void Present();
 		void DrawPrimitives(PrimitiveType pt, int firstVertex, int numVertices);
-		void DrawInstances(PrimitiveType pt, int firstVertex, int numVertices, int count);
+		void DrawInstances(PrimitiveType pt, int firstVertex, int numVertices, int count, bool elemented);
 		void Clear();
 		void EnableDepthBuffer(DepthFunc type);
 		void EnableDepthTest(DepthFunc type);
@@ -134,6 +135,9 @@ namespace OpenRA
 	{
 		void SetData(T[] vertices, int length);
 		void SetData(T[] vertices, int offset, int start, int length);
+
+		void SetElementData(uint[] indices, int length);
+		bool HasElementBuffer { get; }
 	}
 
 	public interface IShaderBindings

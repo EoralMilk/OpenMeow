@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using GlmSharp;
 using OpenRA.Graphics.Graphics3D;
+using OpenRA.Primitives;
 using StbImageSharp;
 
 namespace OpenRA.Graphics
@@ -112,8 +113,8 @@ namespace OpenRA.Graphics
 	{
 		public static readonly int MaxInstanceCount = 1024;
 
-		readonly MeshRenderData renderData;
-		public MeshRenderData RenderData => renderData;
+		readonly CombinedMeshRenderData renderData;
+		public CombinedMeshRenderData RenderData => renderData;
 		public string Name => "box";
 
 		//ITexture palette;
@@ -122,7 +123,7 @@ namespace OpenRA.Graphics
 		int instanceCount;
 		public IVertexBuffer<BoxInstanceData> InstanceArrayBuffer;
 
-		public OrderedTestBox(MeshRenderData data)
+		public OrderedTestBox(CombinedMeshRenderData data)
 		{
 			renderData = data;
 			InstanceArrayBuffer = Game.Renderer.CreateVertexBuffer<BoxInstanceData>(MaxInstanceCount);
@@ -239,6 +240,7 @@ namespace OpenRA.Graphics
 
 		readonly Renderer renderer;
 
+		public readonly mat4 ModelRotationFix;
 		public vec3 CameraPos { get; private set; }
 		public readonly float MeterPerPix;
 		public readonly float MeterPerPixHalf;
@@ -278,6 +280,8 @@ namespace OpenRA.Graphics
 			AmbientColor = new float3(0.45f, 0.45f, 0.45f);
 			SunColor = new float3(1, 1, 1) - AmbientColor;
 			SunSpecularColor = new float3(0.25f, 0.25f, 0.25f);
+
+			ModelRotationFix = mat4.Rotate((float)(Math.PI / 2), new vec3(1, 0, 0));
 
 			this.renderer = renderer;
 			IShader shader = renderer.GetOrCreateShader<MyShaderBindings>("MyShaderBindings");
@@ -427,7 +431,7 @@ namespace OpenRA.Graphics
 			textures.Add("material.diffuse", diffuseTexBufferTestBox);
 			textures.Add("material.specular", specularTexBufferTestBox);
 
-			MeshRenderData renderData = new MeshRenderData(0, 36, shader, vertexBufferTestBox, textures);
+			CombinedMeshRenderData renderData = new CombinedMeshRenderData(0, 36, shader, vertexBufferTestBox, textures);
 			imo = new OrderedTestBox(renderData);
 			renderer.UpdateOrderedMeshes("TestBox", imo);
 		}
@@ -562,6 +566,35 @@ namespace OpenRA.Graphics
 			var m = parent * mat4.Translate(pos) * new mat4(new quat(rot)) * mat4.Scale(scale);
 			imo.AddInstanceData(m.Values1D, 16);
 			return m;
+		}
+
+		public void AddInstancesToDraw(
+			in WPos pos, in vec3 viewOffset, IEnumerable<MeshInstance> meshes, float scale,
+			in float3 tint, in float alpha, in Color remap)
+		{
+			var scaleMat = mat4.Scale(scale);
+
+			foreach (var m in meshes)
+			{
+				// Convert screen offset to world offset
+				var offsetVec = Get3DPositionFromWPos(pos + m.OffsetFunc());
+				offsetVec += viewOffset;
+				var offsetTransform = mat4.Translate(offsetVec);
+
+				var rotMat = new mat4(new quat(Get3DRotationFromWRot(m.RotationFunc())));
+
+				var t = offsetTransform * (scaleMat * rotMat);
+
+				float[] data = new float[23] {t[0], t[1], t[2], t[3],
+															t[4], t[5], t[6], t[7],
+															t[8], t[9], t[10], t[11],
+															t[12], t[13], t[14], t[15],
+															tint.X, tint.Y, tint.Z, alpha,
+															remap.R, remap.G, remap.B,
+					};
+
+				m.OrderedMesh.AddInstanceData(data, 23);
+			}
 		}
 
 		public void Dispose()

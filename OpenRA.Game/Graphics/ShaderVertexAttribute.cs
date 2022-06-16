@@ -11,19 +11,36 @@
 
 namespace OpenRA.Graphics
 {
+	public enum AttributeType
+	{
+		Float,
+		Int32,
+		UInt32,
+	}
+
 	public class ShaderVertexAttribute
 	{
 		public readonly string Name;
 		public readonly int Index;
 		public readonly int Components;
 		public readonly int Offset;
-
+		public readonly AttributeType Type = AttributeType.Float;
 		public ShaderVertexAttribute(string name, int index, int components, int offset)
 		{
 			Name = name;
 			Index = index;
 			Components = components;
 			Offset = offset;
+			Type = AttributeType.Float;
+		}
+
+		public ShaderVertexAttribute(string name, int index, int components, int offset, AttributeType type)
+		{
+			Name = name;
+			Index = index;
+			Components = components;
+			Offset = offset;
+			Type = type;
 		}
 	}
 }

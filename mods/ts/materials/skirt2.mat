@@ -1,0 +1,5 @@
+Skirt-2:
+	DiffuseMap: skirt2.png
+	SpecularTint: 0.36, 0.36,0.36
+	Shininess: 16.0
+	FaceCull: None

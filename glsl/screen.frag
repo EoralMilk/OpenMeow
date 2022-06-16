@@ -22,14 +22,10 @@ uniform float AmbientIntencity;
 
 void main()
 {
-    // vec3 rgba = texture(screenTexture, TexCoords).rgba;
     vec3 col = texture(screenTexture, TexCoords).rgb;
 
     if (FrameBufferShadow || FrameBufferPosition){
         float depth = texture(screenDepthTexture, TexCoords).r;
-
-        // FragColor = vec4(depth,depth,depth, 1.0);
-        // return;
 
         if (depth >= 0.99999f)
             discard;

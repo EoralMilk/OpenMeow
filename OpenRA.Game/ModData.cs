@@ -32,9 +32,12 @@ namespace OpenRA
 		public readonly ISoundLoader[] SoundLoaders;
 		public readonly ISpriteLoader[] SpriteLoaders;
 		public readonly IModelLoader[] ModelLoaders;
+		public readonly IMeshLoader[] MeshLoaders;
 		public readonly ITerrainLoader TerrainLoader;
 		public readonly ISpriteSequenceLoader SpriteSequenceLoader;
 		public readonly IModelSequenceLoader ModelSequenceLoader;
+		public readonly IMeshSequenceLoader MeshSequenceLoader;
+
 		public readonly IVideoLoader[] VideoLoaders;
 		public readonly HotkeyManager Hotkeys;
 		public readonly Translation Translation;
@@ -78,6 +81,7 @@ namespace OpenRA
 			SoundLoaders = ObjectCreator.GetLoaders<ISoundLoader>(Manifest.SoundFormats, "sound");
 			SpriteLoaders = ObjectCreator.GetLoaders<ISpriteLoader>(Manifest.SpriteFormats, "sprite");
 			ModelLoaders = ObjectCreator.GetLoaders<IModelLoader>(Manifest.ModelFormats, "model");
+			MeshLoaders = ObjectCreator.GetLoaders<IMeshLoader>(Manifest.MeshFormats, "mesh");
 			VideoLoaders = ObjectCreator.GetLoaders<IVideoLoader>(Manifest.VideoFormats, "video");
 
 			var terrainFormat = Manifest.Get<TerrainFormat>();
@@ -103,7 +107,14 @@ namespace OpenRA
 				throw new InvalidOperationException($"Unable to find a model loader for type '{modelFormat.Type}'.");
 
 			ModelSequenceLoader = (IModelSequenceLoader)modelCtor.Invoke(new[] { this });
-			//ModelSequenceLoader.OnMissingModelError = s => Log.Write("debug", s);
+
+			var meshFormat = Manifest.Get<MeshSequenceFormat>();
+			var meshLoader = ObjectCreator.FindType(meshFormat.Type + "Loader");
+			var meshCtor = meshLoader?.GetConstructor(new[] { typeof(ModData) });
+			if (meshLoader == null || !meshLoader.GetInterfaces().Contains(typeof(IMeshSequenceLoader)) || meshCtor == null)
+				throw new InvalidOperationException($"Unable to find a model loader for type '{meshFormat.Type}'.");
+
+			MeshSequenceLoader = (IMeshSequenceLoader)meshCtor.Invoke(new[] { this });
 
 			Hotkeys = new HotkeyManager(ModFiles, Game.Settings.Keys, Manifest);
 

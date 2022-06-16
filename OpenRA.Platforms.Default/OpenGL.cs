@@ -51,6 +51,7 @@ namespace OpenRA.Platforms.Default
 		// Data types
 		public const int GL_UNSIGNED_BYTE = 0x1401;
 		public const int GL_UNSIGNED_SHORT = 0x1403;
+		public const int GL_INT = 0x1404;
 		public const int GL_UNSIGNED_INT = 0x1405;
 
 		public const int GL_FLOAT = 0x1406;
@@ -147,6 +148,7 @@ namespace OpenRA.Platforms.Default
 		public const int GL_TEXTURE_MAX_LEVEL = 0x813D;
 
 		public const int GL_ARRAY_BUFFER = 0x8892;
+		public const int GL_ELEMENT_ARRAY_BUFFER = 0x8893;
 		public const int GL_STATIC_DRAW = 0x88E4;
 		public const int GL_DYNAMIC_DRAW = 0x88E8;
 
@@ -401,6 +403,9 @@ namespace OpenRA.Platforms.Default
 			int stride, IntPtr pointer);
 		public static VertexAttribPointer glVertexAttribPointer { get; private set; }
 
+		public delegate void VertexAttribIPointer(int index, int size, int type, int stride, IntPtr pointer);
+		public static VertexAttribIPointer glVertexAttribIPointer { get; private set; }
+
 		public delegate void EnableVertexAttribArray(int index);
 		public static EnableVertexAttribArray glEnableVertexAttribArray { get; private set; }
 
@@ -415,6 +420,9 @@ namespace OpenRA.Platforms.Default
 
 		public delegate void DrawArraysInstanced(int mode, int first, int count, int instancesCount);
 		public static DrawArraysInstanced glDrawArraysInstanced { get; private set; }
+
+		public delegate void DrawElementsInstanced(int mode, int count, int type, IntPtr offset, int instancesCount);
+		public static DrawElementsInstanced glDrawElementsInstanced { get; private set; }
 
 		public delegate void ReadBuffer(int mode);
 		public static ReadBuffer glReadBuffer { get; private set; }
@@ -621,11 +629,13 @@ namespace OpenRA.Platforms.Default
 				glDeleteBuffers = Bind<DeleteBuffers>("glDeleteBuffers");
 				glBindAttribLocation = Bind<BindAttribLocation>("glBindAttribLocation");
 				glVertexAttribPointer = Bind<VertexAttribPointer>("glVertexAttribPointer");
+				glVertexAttribIPointer = Bind<VertexAttribIPointer>("glVertexAttribIPointer");
 				glEnableVertexAttribArray = Bind<EnableVertexAttribArray>("glEnableVertexAttribArray");
 				glDisableVertexAttribArray = Bind<DisableVertexAttribArray>("glDisableVertexAttribArray");
 				glVertexAttribDivisor = Bind<VertexAttribDivisor>("glVertexAttribDivisor");
 				glDrawArrays = Bind<DrawArrays>("glDrawArrays");
 				glDrawArraysInstanced = Bind<DrawArraysInstanced>("glDrawArraysInstanced");
+				glDrawElementsInstanced = Bind<DrawElementsInstanced>("glDrawElementsInstanced");
 				glReadBuffer = Bind<ReadBuffer>("glReadBuffer");
 				glBlendEquation = Bind<BlendEquation>("glBlendEquation");
 				glBlendEquationSeparate = Bind<BlendEquationSeparate>("glBlendEquationSeparate");

@@ -317,8 +317,24 @@ namespace OpenRA.Platforms.Default
 		{
 			foreach (var attribute in bindings.Attributes)
 			{
-				OpenGL.glVertexAttribPointer(attribute.Index, attribute.Components, OpenGL.GL_FLOAT, false, bindings.Stride, new IntPtr(attribute.Offset));
-				OpenGL.CheckGLError();
+				switch (attribute.Type)
+				{
+					case AttributeType.Float:
+						OpenGL.glVertexAttribPointer(attribute.Index, attribute.Components, OpenGL.GL_FLOAT, false, bindings.Stride, new IntPtr(attribute.Offset));
+						OpenGL.CheckGLError();
+						break;
+					case AttributeType.Int32:
+						OpenGL.glVertexAttribIPointer(attribute.Index, attribute.Components, OpenGL.GL_INT, bindings.Stride, new IntPtr(attribute.Offset));
+						OpenGL.CheckGLError();
+						break;
+					case AttributeType.UInt32:
+						OpenGL.glVertexAttribIPointer(attribute.Index, attribute.Components, OpenGL.GL_UNSIGNED_INT, bindings.Stride, new IntPtr(attribute.Offset));
+						OpenGL.CheckGLError();
+						break;
+					default:
+						throw new Exception("Not Valide AttributeType");
+				}
+
 				OpenGL.glEnableVertexAttribArray(attribute.Index);
 				OpenGL.CheckGLError();
 			}
@@ -331,8 +347,26 @@ namespace OpenRA.Platforms.Default
 
 			foreach (var attribute in bindings.InstanceAttributes)
 			{
-				OpenGL.glVertexAttribPointer(attribute.Index, attribute.Components, OpenGL.GL_FLOAT, false, bindings.InstanceStrde, new IntPtr(attribute.Offset));
-				OpenGL.CheckGLError();
+				//OpenGL.glVertexAttribPointer(attribute.Index, attribute.Components, OpenGL.GL_FLOAT, false, bindings.InstanceStrde, new IntPtr(attribute.Offset));
+				//OpenGL.CheckGLError();
+				switch (attribute.Type)
+				{
+					case AttributeType.Float:
+						OpenGL.glVertexAttribPointer(attribute.Index, attribute.Components, OpenGL.GL_FLOAT, false, bindings.InstanceStrde, new IntPtr(attribute.Offset));
+						OpenGL.CheckGLError();
+						break;
+					case AttributeType.Int32:
+						OpenGL.glVertexAttribIPointer(attribute.Index, attribute.Components, OpenGL.GL_INT, bindings.InstanceStrde, new IntPtr(attribute.Offset));
+						OpenGL.CheckGLError();
+						break;
+					case AttributeType.UInt32:
+						OpenGL.glVertexAttribIPointer(attribute.Index, attribute.Components, OpenGL.GL_UNSIGNED_INT, bindings.InstanceStrde, new IntPtr(attribute.Offset));
+						OpenGL.CheckGLError();
+						break;
+					default:
+						throw new Exception("Not Valide AttributeType");
+				}
+
 				OpenGL.glEnableVertexAttribArray(attribute.Index);
 				OpenGL.CheckGLError();
 				OpenGL.glVertexAttribDivisor(attribute.Index, 1);

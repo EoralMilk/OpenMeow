@@ -186,11 +186,19 @@ namespace OpenRA.Platforms.Default
 			OpenGL.CheckGLError();
 		}
 
-		public void DrawInstances(PrimitiveType pt, int firstVertex, int numVertices, int count)
+		public void DrawInstances(PrimitiveType pt, int firstVertex, int numVertices, int count, bool elemented)
 		{
 			VerifyThreadAffinity();
-			OpenGL.glDrawArraysInstanced(ModeFromPrimitiveType(pt), firstVertex, numVertices, count);
-			OpenGL.CheckGLError();
+			if (elemented)
+			{
+				OpenGL.glDrawElementsInstanced(ModeFromPrimitiveType(pt), numVertices, OpenGL.GL_UNSIGNED_INT, IntPtr.Zero, count);
+				OpenGL.CheckGLError();
+			}
+			else
+			{
+				OpenGL.glDrawArraysInstanced(ModeFromPrimitiveType(pt), firstVertex, numVertices, count);
+				OpenGL.CheckGLError();
+			}
 		}
 
 		public void Clear()
@@ -259,6 +267,7 @@ namespace OpenRA.Platforms.Default
 				case FaceCullFunc.Front: OpenGL.glCullFace(OpenGL.GL_FRONT); break;
 				case FaceCullFunc.Back: OpenGL.glCullFace(OpenGL.GL_BACK); break;
 				case FaceCullFunc.FrontAndBack: OpenGL.glCullFace(OpenGL.GL_FRONT_AND_BACK); break;
+				case FaceCullFunc.None: OpenGL.glDisable(OpenGL.GL_CULL_FACE); break;
 				default: break;
 			}
 

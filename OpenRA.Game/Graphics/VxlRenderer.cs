@@ -328,21 +328,6 @@ namespace OpenRA.Graphics
 			return tVec;
 		}
 
-		void Render(
-			IOrderedMesh orderedMesh,
-			in GlmSharp.mat4 model,
-			float colorPaletteTextureMidIndex, float normalsPaletteTextureMidIndex)
-		{
-			var currentShader = orderedMesh.RenderData.Shader;
-
-			currentShader.SetTexture("Palette", palette);
-			currentShader.SetVec("PaletteRows", colorPaletteTextureMidIndex, normalsPaletteTextureMidIndex);
-
-			currentShader.SetMatrix("model", model.Values1D);
-
-			renderer.DrawBatch(currentShader, orderedMesh.RenderData.VertexBuffer, orderedMesh.RenderData.Start, orderedMesh.RenderData.Count, PrimitiveType.TriangleList);
-		}
-
 		public void BeginFrame()
 		{
 			if (isInFrame)

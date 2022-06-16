@@ -20,7 +20,10 @@ namespace OpenRA.Platforms.Default
 		static readonly int VertexSize = Marshal.SizeOf(typeof(T));
 		uint buffer;
 		bool disposed;
+		bool hasEbo;
+		public bool HasElementBuffer => hasEbo;
 
+		uint ebo = 0;
 		public VertexBuffer(int size)
 		{
 			OpenGL.glGenBuffers(1, out buffer);
@@ -84,6 +87,36 @@ namespace OpenRA.Platforms.Default
 		{
 			VerifyThreadAffinity();
 			OpenGL.glBindBuffer(OpenGL.GL_ARRAY_BUFFER, buffer);
+			OpenGL.CheckGLError();
+			OpenGL.glBindBuffer(OpenGL.GL_ELEMENT_ARRAY_BUFFER, ebo);
+			OpenGL.CheckGLError();
+		}
+
+		public void SetElementData(uint[] indices, int length)
+		{
+			if (hasEbo)
+				throw new Exception("this Buffer already has ebo");
+
+			Bind();
+
+			hasEbo = true;
+
+			OpenGL.glGenBuffers(1, out ebo);
+			OpenGL.CheckGLError();
+			OpenGL.glBindBuffer(OpenGL.GL_ELEMENT_ARRAY_BUFFER, ebo);
+			OpenGL.CheckGLError();
+
+			var ptr = GCHandle.Alloc(indices, GCHandleType.Pinned);
+
+			try
+			{
+				OpenGL.glBufferData(OpenGL.GL_ELEMENT_ARRAY_BUFFER, new IntPtr(length * sizeof(uint)), ptr.AddrOfPinnedObject(), OpenGL.GL_STATIC_DRAW);
+			}
+			finally
+			{
+				ptr.Free();
+			}
+
 			OpenGL.CheckGLError();
 		}
 

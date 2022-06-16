@@ -131,8 +131,8 @@ namespace OpenRA.Platforms.Default
 					doDrawInstances =
 						tuple =>
 						{
-							var t = (ValueTuple<PrimitiveType, int, int, int>)tuple;
-							context.DrawInstances(t.Item1, t.Item2, t.Item3, t.Item4);
+							var t = (ValueTuple<PrimitiveType, int, int, int, bool>)tuple;
+							context.DrawInstances(t.Item1, t.Item2, t.Item3, t.Item4, t.Item5);
 						};
 					doEnableScissor =
 						tuple =>
@@ -509,9 +509,9 @@ namespace OpenRA.Platforms.Default
 			Post(doDrawPrimitives, (type, firstVertex, numVertices));
 		}
 
-		public void DrawInstances(PrimitiveType type, int firstVertex, int numVertices, int count)
+		public void DrawInstances(PrimitiveType type, int firstVertex, int numVertices, int count, bool elemented)
 		{
-			Post(doDrawInstances, (type, firstVertex, numVertices, count));
+			Post(doDrawInstances, (type, firstVertex, numVertices, count, elemented));
 		}
 
 		public void EnableDepthBuffer(DepthFunc type)
@@ -654,7 +654,9 @@ namespace OpenRA.Platforms.Default
 		readonly Action<object> setData1;
 		readonly Action<object> setData2;
 		readonly Func<object, object> setData3;
+		readonly Action<object> setEboData;
 		readonly Action dispose;
+		readonly Func<bool> getHasEbo;
 
 		public ThreadedVertexBuffer(ThreadedGraphicsContext device, IVertexBuffer<T> vertexBuffer)
 		{
@@ -663,12 +665,23 @@ namespace OpenRA.Platforms.Default
 			setData1 = tuple => { var t = (ValueTuple<T[], int>)tuple; vertexBuffer.SetData(t.Item1, t.Item2); device.ReturnVertices(t.Item1.Cast<object>().ToArray()); };
 			setData2 = tuple => { var t = (ValueTuple<T[], int, int, int>)tuple; vertexBuffer.SetData(t.Item1, t.Item2, t.Item3, t.Item4); device.ReturnVertices(t.Item1.Cast<object>().ToArray()); };
 			setData3 = tuple => { setData2(tuple); return null; };
+			setEboData = tuple => { var t = (ValueTuple<uint[], int>)tuple; vertexBuffer.SetElementData(t.Item1, t.Item2); device.ReturnVertices(t.Item1.Cast<object>().ToArray()); };
 			dispose = vertexBuffer.Dispose;
+			getHasEbo = () => vertexBuffer.HasElementBuffer;
 		}
+
+		public bool HasElementBuffer => getHasEbo();
 
 		public void Bind()
 		{
 			device.Post(bind);
+		}
+
+		public void SetElementData(uint[] indices, int length)
+		{
+			var buffer = device.GetVertices<uint>(length);
+			Array.Copy(indices, buffer, length);
+			device.Post(setEboData, (buffer, length));
 		}
 
 		public void SetData(T[] vertices, int length)

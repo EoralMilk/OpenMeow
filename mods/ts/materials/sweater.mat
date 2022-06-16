@@ -1,0 +1,5 @@
+Sweater:
+	DiffuseMap: sweater.png
+	SpecularTint: 0.36, 0.36,0.36
+	Shininess: 16.0
+	FaceCull: None

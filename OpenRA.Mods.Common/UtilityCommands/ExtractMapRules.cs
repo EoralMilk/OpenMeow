@@ -56,6 +56,7 @@ namespace OpenRA.Mods.Common.UtilityCommands
 			MergeAndPrint(map, "Rules", map.RuleDefinitions);
 			MergeAndPrint(map, "Sequences", map.SequenceDefinitions);
 			MergeAndPrint(map, "ModelSequences", map.ModelSequenceDefinitions);
+			MergeAndPrint(map, "MeshSequences", map.MeshSequenceDefinitions);
 			MergeAndPrint(map, "Weapons", map.WeaponDefinitions);
 			MergeAndPrint(map, "Voices", map.VoiceDefinitions);
 			MergeAndPrint(map, "Music", map.MusicDefinitions);

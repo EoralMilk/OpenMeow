@@ -30,6 +30,7 @@ namespace OpenRA
 		public readonly ITerrainInfo TerrainInfo;
 		public readonly SequenceProvider Sequences;
 		public readonly IReadOnlyDictionary<string, MiniYamlNode> ModelSequences;
+		public readonly IReadOnlyDictionary<string, MiniYamlNode> MeshSequences;
 
 		public Ruleset(
 			IReadOnlyDictionary<string, ActorInfo> actors,
@@ -39,7 +40,8 @@ namespace OpenRA
 			IReadOnlyDictionary<string, MusicInfo> music,
 			ITerrainInfo terrainInfo,
 			SequenceProvider sequences,
-			IReadOnlyDictionary<string, MiniYamlNode> modelSequences)
+			IReadOnlyDictionary<string, MiniYamlNode> modelSequences,
+			IReadOnlyDictionary<string, MiniYamlNode> meshSequences)
 		{
 			Actors = new ActorInfoDictionary(actors);
 			Weapons = weapons;
@@ -49,6 +51,7 @@ namespace OpenRA
 			TerrainInfo = terrainInfo;
 			Sequences = sequences;
 			ModelSequences = modelSequences;
+			MeshSequences = meshSequences;
 
 			foreach (var a in Actors.Values)
 			{
@@ -145,8 +148,11 @@ namespace OpenRA
 				var modelSequences = MergeOrDefault("Manifest,ModelSequences", fs, m.ModelSequences, null, null,
 					k => k);
 
+				var meshSequences = MergeOrDefault("Manifest,MeshSequences", fs, m.MeshSequences, null, null,
+					k => k);
+
 				// The default ruleset does not include a preferred tileset or sequence set
-				ruleset = new Ruleset(actors, weapons, voices, notifications, music, null, null, modelSequences);
+				ruleset = new Ruleset(actors, weapons, voices, notifications, music, null, null, modelSequences, meshSequences);
 			};
 
 			if (modData.IsOnMainThread)
@@ -172,12 +178,12 @@ namespace OpenRA
 			var terrainInfo = modData.DefaultTerrainInfo[tileSet];
 			var sequences = modData.DefaultSequences[tileSet];
 
-			return new Ruleset(dr.Actors, dr.Weapons, dr.Voices, dr.Notifications, dr.Music, terrainInfo, sequences, dr.ModelSequences);
+			return new Ruleset(dr.Actors, dr.Weapons, dr.Voices, dr.Notifications, dr.Music, terrainInfo, sequences, dr.ModelSequences, dr.MeshSequences);
 		}
 
 		public static Ruleset Load(ModData modData, IReadOnlyFileSystem fileSystem, string tileSet,
 			MiniYaml mapRules, MiniYaml mapWeapons, MiniYaml mapVoices, MiniYaml mapNotifications,
-			MiniYaml mapMusic, MiniYaml mapSequences, MiniYaml mapModelSequences)
+			MiniYaml mapMusic, MiniYaml mapSequences, MiniYaml mapModelSequences, MiniYaml mapMeshSequences)
 		{
 			var m = modData.Manifest;
 			var dr = modData.DefaultRules;
@@ -213,7 +219,12 @@ namespace OpenRA
 					modelSequences = MergeOrDefault("ModelSequences", fileSystem, m.ModelSequences, mapModelSequences, dr.ModelSequences,
 						k => k);
 
-				ruleset = new Ruleset(actors, weapons, voices, notifications, music, terrainInfo, sequences, modelSequences);
+				var meshSequences = dr.MeshSequences;
+				if (mapMeshSequences != null)
+					meshSequences = MergeOrDefault("MeshSequences", fileSystem, m.MeshSequences, mapMeshSequences, dr.MeshSequences,
+						k => k);
+
+				ruleset = new Ruleset(actors, weapons, voices, notifications, music, terrainInfo, sequences, modelSequences, meshSequences);
 			};
 
 			if (modData.IsOnMainThread)

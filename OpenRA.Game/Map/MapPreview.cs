@@ -88,6 +88,7 @@ namespace OpenRA
 			public MiniYaml NotificationDefinitions;
 			public MiniYaml SequenceDefinitions;
 			public MiniYaml ModelSequenceDefinitions;
+			public MiniYaml MeshSequenceDefinitions;
 
 			public ActorInfo WorldActorInfo { get; private set; }
 			public ActorInfo PlayerActorInfo { get; private set; }
@@ -118,6 +119,7 @@ namespace OpenRA
 				NotificationDefinitions = LoadRuleSection(yaml, "Notifications");
 				SequenceDefinitions = LoadRuleSection(yaml, "Sequences");
 				ModelSequenceDefinitions = LoadRuleSection(yaml, "ModelSequences");
+				MeshSequenceDefinitions = LoadRuleSection(yaml, "MeshSequences");
 
 				try
 				{
@@ -224,7 +226,7 @@ namespace OpenRA
 		{
 			return Ruleset.Load(modData, this, TileSet, innerData.RuleDefinitions,
 				innerData.WeaponDefinitions, innerData.VoiceDefinitions, innerData.NotificationDefinitions,
-				innerData.MusicDefinitions, innerData.SequenceDefinitions, innerData.ModelSequenceDefinitions);
+				innerData.MusicDefinitions, innerData.SequenceDefinitions, innerData.ModelSequenceDefinitions, innerData.MeshSequenceDefinitions);
 		}
 
 		public MapPreview(ModData modData, string uid, MapGridType gridType, MapCache cache)
@@ -295,7 +297,8 @@ namespace OpenRA
 				{ "Music", map.MusicDefinitions },
 				{ "Notifications", map.NotificationDefinitions },
 				{ "Sequences", map.SequenceDefinitions },
-				{ "ModelSequences", map.ModelSequenceDefinitions }
+				{ "ModelSequences", map.ModelSequenceDefinitions },
+				{ "MeshSequences", map.MeshSequenceDefinitions }
 			});
 		}
 

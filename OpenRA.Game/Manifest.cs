@@ -54,6 +54,17 @@ namespace OpenRA
 		}
 	}
 
+	public sealed class MeshSequenceFormat : IGlobalModData
+	{
+		public readonly string Type;
+		public readonly IReadOnlyDictionary<string, MiniYaml> Metadata;
+		public MeshSequenceFormat(MiniYaml yaml)
+		{
+			Type = yaml.Value;
+			Metadata = new ReadOnlyDictionary<string, MiniYaml>(yaml.ToDictionary());
+		}
+	}
+
 	public class ModMetadata
 	{
 		public string Title;
@@ -72,7 +83,7 @@ namespace OpenRA
 		public readonly ModMetadata Metadata;
 		public readonly string[]
 			Rules, ServerTraits,
-			Sequences, ModelSequences, Cursors, Chrome, Assemblies, ChromeLayout,
+			Sequences, ModelSequences, MeshSequences, Cursors, Chrome, Assemblies, ChromeLayout,
 			Weapons, Voices, Notifications, Music, Translations, TileSets,
 			ChromeMetrics, MapCompatibility, Missions, Hotkeys;
 
@@ -84,15 +95,16 @@ namespace OpenRA
 		public readonly string[] SoundFormats = Array.Empty<string>();
 		public readonly string[] SpriteFormats = Array.Empty<string>();
 		public readonly string[] ModelFormats = { };
+		public readonly string[] MeshFormats = { };
 		public readonly string[] PackageFormats = Array.Empty<string>();
 		public readonly string[] VideoFormats = Array.Empty<string>();
 
 		readonly string[] reservedModuleNames =
 		{
 			"Include", "Metadata", "Folders", "MapFolders", "Packages", "Rules",
-			"Sequences", "ModelSequences", "Cursors", "Chrome", "Assemblies", "ChromeLayout", "Weapons",
+			"Sequences", "ModelSequences", "MeshSequences", "Cursors", "Chrome", "Assemblies", "ChromeLayout", "Weapons",
 			"Voices", "Notifications", "Music", "Translations", "TileSets", "ChromeMetrics", "Missions", "Hotkeys",
-			"ServerTraits", "LoadScreen", "SupportsMapsFrom", "SoundFormats", "SpriteFormats", "ModelFormats", "VideoFormats",
+			"ServerTraits", "LoadScreen", "SupportsMapsFrom", "SoundFormats", "SpriteFormats", "ModelFormats", "MeshFormats", "VideoFormats",
 			"DefaultOrderGenerator",
 			"RequiresMods", "PackageFormats"
 		};
@@ -137,6 +149,7 @@ namespace OpenRA
 			Rules = YamlList(yaml, "Rules");
 			Sequences = YamlList(yaml, "Sequences");
 			ModelSequences = YamlList(yaml, "ModelSequences");
+			MeshSequences = YamlList(yaml, "MeshSequences");
 			Cursors = YamlList(yaml, "Cursors");
 			Chrome = YamlList(yaml, "Chrome");
 			Assemblies = YamlList(yaml, "Assemblies");
@@ -178,6 +191,9 @@ namespace OpenRA
 
 			if (yaml.ContainsKey("ModelFormats"))
 				ModelFormats = FieldLoader.GetValue<string[]>("ModelFormats", yaml["ModelFormats"].Value);
+
+			if (yaml.ContainsKey("MeshFormats"))
+				MeshFormats = FieldLoader.GetValue<string[]>("MeshFormats", yaml["MeshFormats"].Value);
 
 			if (yaml.ContainsKey("VideoFormats"))
 				VideoFormats = FieldLoader.GetValue<string[]>("VideoFormats", yaml["VideoFormats"].Value);
