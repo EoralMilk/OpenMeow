@@ -80,6 +80,20 @@ namespace OpenRA
 			return s.ReadUInt8() | s.ReadUInt8() << 8 | s.ReadUInt8() << 16 | s.ReadUInt8() << 24;
 		}
 
+		public static string ReadUntil(this Stream s, char end = '?')
+		{
+			string str = "";
+			while (true)
+			{
+				var c = s.ReadASCII(1);
+				if (c == end.ToString())
+					break;
+				str += c;
+			}
+
+			return str;
+		}
+
 		public static void Write(this Stream s, int value)
 		{
 			s.WriteArray(BitConverter.GetBytes(value));

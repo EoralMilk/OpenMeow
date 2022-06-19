@@ -20,7 +20,7 @@ namespace OpenRA.Mods.Common.Graphics
 	{
 		public DefaultMeshSequenceLoader(ModData modData) { }
 
-		public MeshCache CacheMeshes(IMeshLoader[] loaders, IReadOnlyFileSystem fileSystem, ModData modData, IReadOnlyDictionary<string, MiniYamlNode> meshSequences)
+		public MeshCache CacheMeshes(IMeshLoader[] loaders, SkeletonCache skeletonCache, IReadOnlyFileSystem fileSystem, ModData modData, IReadOnlyDictionary<string, MiniYamlNode> meshSequences)
 		{
 			var cache = new MeshCache(loaders, fileSystem);
 
@@ -28,10 +28,23 @@ namespace OpenRA.Mods.Common.Graphics
 			{
 				modData.LoadScreen.Display();
 
-				var sequences = unitYaml.Value.ToDictionary();
+				var defines = unitYaml.Value.ToDictionary();
+				SkeletonAsset skeletonType = null;
+				OrderedSkeleton skeleton = null;
+				if (defines.ContainsKey("Skeleton"))
+				{
+					string skeletonFIle = defines["Skeleton"].Value;
+					skeletonType = skeletonCache.UpdateSkeletonAsset(fileSystem, skeletonFIle, defines["Skeleton"], unit);
 
-				foreach (var (sequence, sequenceYaml) in sequences)
-					cache.CacheMesh(unit, sequence, sequenceYaml);
+					skeleton = skeletonCache.UpdateOrderedSkeleton(skeletonType, unit, defines["Skeleton"]);
+				}
+
+				if (defines.ContainsKey("Meshes"))
+				{
+					var sequences = defines["Meshes"].ToDictionary();
+					foreach (var (sequence, sequenceYaml) in sequences)
+						cache.CacheMesh(unit, sequence, sequenceYaml, skeletonType, skeleton);
+				}
 			}
 
 			return cache;

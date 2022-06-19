@@ -15,7 +15,7 @@ in vec4 iModelV3;
 in vec4 iModelV4;
 in vec4 iTint;
 in vec3 iRemap;
-in uint iDrawId;
+in int iDrawId;
 in uint iDrawMask;
 
 out vec2 TexCoords;
@@ -31,47 +31,86 @@ uniform mat4 view;
 uniform mat4 projection;
 uniform mat4 rotationFix;
 
-uniform bool skeletonBinded;
 uniform bool useDQB;
+uniform mat4 BindTransformData[128];
 
 uniform sampler2D boneAnimTexture;
 
 
+mat4 m1, m2, m3 ,m4;
+vec3 s1, s2, s3, s4;
+int next[3];
+
 mat4 GetMat4ById(int id){
-	ivec2 startuv= ivec2(id * 4, int(iDrawId) );
+	ivec2 startuv= ivec2(id * 4, iDrawId);
 
 	vec4 c1 = texelFetch(boneAnimTexture, startuv, 0);
 	vec4 c2 = texelFetch(boneAnimTexture, ivec2(startuv.x + 1,startuv.y), 0);
 	vec4 c3 = texelFetch(boneAnimTexture, ivec2(startuv.x + 2,startuv.y), 0);
 	vec4 c4 = texelFetch(boneAnimTexture, ivec2(startuv.x + 3,startuv.y), 0);
 
-	return mat4(c1,c2,c3,c4);
+	return mat4(c1,c2,c3,c4) * BindTransformData[id];
 }
 
-mat2x4 GetMat2x4ById(int id){
-	ivec2 startuv= ivec2(id * 3, int(iDrawId) );
-
-	vec4 c1 = texelFetch(boneAnimTexture, startuv, 0);
-	vec4 c2 = texelFetch(boneAnimTexture, ivec2(startuv.x + 1,startuv.y), 0);
-
-	return mat2x4(c1,c2);
+// extract quaternion from matrix
+vec4 ExtractRotation(const mat4 mm, const vec3 scale)
+{
+	mat4 m = mat4(mm[0] / scale.x, mm[1] / scale.y, mm[2] / scale.z, vec4(0, 0, 0, 1.0f));
+	vec4 q = vec4(0, 0, 0, 1.0f);
+	float trace = m[0][0] + m[1][1] + m[2][2];
+	if (trace > 0.0f)
+	{
+		float s = sqrt(trace + 1.0f);
+		q.w = s * 0.5f;
+		s = 0.5f / s;
+		q.x = (m[2][1] - m[1][2]) * s;
+		q.y = (m[0][2] - m[2][0]) * s;
+		q.z = (m[1][0] - m[0][1]) * s;
+	}
+	else
+	{
+		int i = 0;
+		if (m[1][1] > m[0][0])
+			i = 1;
+		if (m[2][2] > m[i][i])
+			i = 2;
+		int j = next[i];
+		int k = next[j];
+		float s = sqrt((m[i][i] - (m[j][j] + m[k][k])) + 1.0f);
+		q[i] = s * 0.5f;
+		s = 0.5f / s;
+		q[j] = (m[i][j] + m[j][i]) * s;
+		q[k] = (m[i][k] + m[k][i]) * s;
+		q[3] = (m[j][k] - m[k][j]) * s;
+	}
+	return q;
 }
 
-vec3 GetScaleVecById(int id){
-	ivec2 startuv= ivec2(id * 3 + 2, int(iDrawId) );
-
-	return texelFetch(boneAnimTexture, startuv, 0).rgb;
+vec4 QuatMultiply(const vec4 left, const vec4 right)
+{
+	vec4 result;
+	result.w = left.w * right.w - left.x * right.x - left.y * right.y - left.z * right.z;
+	result.x = left.w * right.x + left.x * right.w + left.y * right.z - left.z * right.y;
+	result.y = left.w * right.y + left.y * right.w + left.z * right.x - left.x * right.z;
+	result.z = left.w * right.z + left.z * right.w + left.x * right.y - left.y * right.x;
+	return result;
 }
 
-mat2x4 GetBoneTransform(ivec4 joints, vec4 weights)
+mat2x4 GetDualQuat(const mat4 m, const vec3 s){
+	vec4 r = ExtractRotation(m,s);
+	vec4 tq = vec4(0, m[3].xyz);
+	return mat2x4(r, QuatMultiply(tq, r) * .5f);
+}
+
+mat2x4 GetBoneTransform(vec4 weights)
 {
 	float sum_weight = weights.x + weights.y + weights.z + weights.w;
 
 	// Fetch bones
-	mat2x4 dq0 = GetMat2x4ById(joints.x);
-	mat2x4 dq1 = GetMat2x4ById(joints.y);
-	mat2x4 dq2 = GetMat2x4ById(joints.z);
-	mat2x4 dq3 = GetMat2x4ById(joints.w);
+	mat2x4 dq0 = GetDualQuat(m1, s1);
+	mat2x4 dq1 = GetDualQuat(m2, s1);
+	mat2x4 dq2 = GetDualQuat(m3, s1);
+	mat2x4 dq3 = GetDualQuat(m4, s1);
 
 	// Ensure all bone transforms are in the same neighbourhood
 	weights.y *= sign(dot(dq0[0], dq1[0]));
@@ -94,9 +133,8 @@ mat2x4 GetBoneTransform(ivec4 joints, vec4 weights)
 
 mat4 GetSkinMatrix()
 {
-	ivec4 joints = aBoneId;// ivec4(aBoneId[0], aBoneId[1], aBoneId[2], aBoneId[3]);
-	vec4 weights = aBoneWidget;//vec4(aBoneWidget[0],aBoneWidget[1],aBoneWidget[2],aBoneWidget[3]);
-	mat2x4 bone = GetBoneTransform(joints, weights);
+	vec4 weights = aBoneWidget;
+	mat2x4 bone = GetBoneTransform(weights);
 
 	vec4 r = bone[0];
 	vec4 t = bone[1];
@@ -135,39 +173,47 @@ void main()
 	}
 
 	mat4 mMatrix = mat4(0.0f);
-	if (skeletonBinded)
+	if (iDrawId != -1)
 	{
 		mat4 scaleMatrix = mat4(0.0f);
 		vec3 scale = vec3(0.0f);
 
-		if (useDQB){
+		if (aBoneWidget[0] == 0.0f){
+			mMatrix =  mat4(iModelV1, iModelV2, iModelV3, iModelV4);
+			mMatrix = mMatrix * rotationFix;
+		}
+		else if (useDQB){
 			// dqs混合 Skin
-			if (aBoneWidget[0] == 0.0f)
-				scaleMatrix = mat4(1.0f);
-			else{
-				for (int i = 0; i < MAX_BONE_LENGTH; i++){
-					scale += GetScaleVecById(aBoneId[i]) * aBoneWidget[i];
-				}
-				scaleMatrix[0][0] = scale[0];
-				scaleMatrix[1][1] = scale[1];
-				scaleMatrix[2][2] = scale[2];
-				scaleMatrix[3][3] = 1.0f;
-			}
+			next[0] = 1;
+			next[1] = 2;
+			next[2] = 0;
+			m1 = GetMat4ById(aBoneId[0]);
+			m2 = GetMat4ById(aBoneId[1]);
+			m3 = GetMat4ById(aBoneId[2]);
+			m4 = GetMat4ById(aBoneId[3]);
+			s1 = vec3(length(m1[0]), length(m1[1]), length(m1[2]));
+			s2 = vec3(length(m1[0]), length(m1[1]), length(m1[2]));
+			s3 = vec3(length(m2[0]), length(m2[1]), length(m2[2]));
+			s4 = vec3(length(m3[0]), length(m3[1]), length(m3[2]));
+			scale= s1 * aBoneWidget[0] + s2 * aBoneWidget[1] + s3 * aBoneWidget[2] + s4 * aBoneWidget[3];
+
+			scaleMatrix[0][0] = scale[0];
+			scaleMatrix[1][1] = scale[1];
+			scaleMatrix[2][2] = scale[2];
+			scaleMatrix[3][3] = 1.0f;
 			mMatrix = GetSkinMatrix() * scaleMatrix;
 		}
 		else{
 			// 线性混合 Skin
 			for (int i = 0; i < MAX_BONE_LENGTH; i++)
 				mMatrix += GetMat4ById(aBoneId[i]) * aBoneWidget[i];
-			if (aBoneWidget[0] == 0.0f)
-				mMatrix = mat4(1.0f);
 		}
 	}
 	else
 	{
 		mMatrix =  mat4(iModelV1, iModelV2, iModelV3, iModelV4);
+		mMatrix = mMatrix * rotationFix;
 	}
-	mMatrix = mMatrix * rotationFix;
 	vec4 fragP = mMatrix * vec4(aVertexPos, 1.0f);
 	vRemap = iRemap;
 	vTint = iTint;

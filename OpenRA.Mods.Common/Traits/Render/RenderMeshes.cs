@@ -24,20 +24,6 @@ namespace OpenRA.Mods.Common.Traits.Render
 		[Desc("Defaults to the actor name.")]
 		public readonly string Image = null;
 
-		//[Desc("Custom palette name")]
-		//[PaletteReference]
-		//public readonly string Palette = null;
-
-		//[PaletteReference]
-		//[Desc("Custom PlayerColorPalette: BaseName")]
-		//public readonly string PlayerPalette = "player";
-
-		//[PaletteReference]
-		//public readonly string NormalsPalette = null;
-
-		//[PaletteReference]
-		//public readonly string ShadowPalette = null;
-
 		[Desc("Change size.")]
 		public readonly float Scale = 1;
 
@@ -46,11 +32,13 @@ namespace OpenRA.Mods.Common.Traits.Render
 		public override object Create(ActorInitializer init) { return new RenderMeshes(init.Self, this); }
 	}
 
-	public class RenderMeshes : IRender, ITick, INotifyOwnerChanged
+	public class RenderMeshes : IRender, ITick, INotifyOwnerChanged, INotifyCreated
 	{
 		public readonly RenderMeshesInfo Info;
 		readonly List<MeshInstance> meshes = new List<MeshInstance>();
 
+		bool hasSkeleton;
+		WithSkeleton withSkeleton;
 		readonly Actor self;
 		readonly BodyOrientation body;
 		Color remap;
@@ -60,6 +48,14 @@ namespace OpenRA.Mods.Common.Traits.Render
 			this.self = self;
 			Info = info;
 			body = self.Trait<BodyOrientation>();
+		}
+
+		public void Created(Actor self)
+		{
+			withSkeleton = self.TraitOrDefault<WithSkeleton>();
+			hasSkeleton = withSkeleton != null;
+			if (withSkeleton == null)
+				Console.WriteLine(Info.Image + " has no withSkeleton");
 		}
 
 		bool initializePalettes = true;
@@ -77,6 +73,9 @@ namespace OpenRA.Mods.Common.Traits.Render
 				remap = self.Owner.Color;
 				initializePalettes = false;
 			}
+
+			if (hasSkeleton)
+				UpdateDrawID(withSkeleton.GetDrawId());
 
 			return new IRenderable[]
 			{
@@ -103,5 +102,14 @@ namespace OpenRA.Mods.Common.Traits.Render
 		{
 			meshes.Remove(m);
 		}
+
+		void UpdateDrawID(int drawId)
+		{
+			foreach (var mesh in meshes)
+			{
+				mesh.DrawId = drawId;
+			}
+		}
+
 	}
 }

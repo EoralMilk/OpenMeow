@@ -52,6 +52,8 @@ Packages:
 	ts|meshes
 	ts|materials
 	ts|textures
+	ts|skeletons
+
 
 MapFolders:
 	ts|maps: System

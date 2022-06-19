@@ -1,6 +1,15 @@
 rumya:
-	body: combined, body
-	hair: h-s2, h-s2
-	cater: catear, catear
-	skirt-split: split_skirt, skirt2
-	sweater: sweater, sweater
+	Skeleton: testArmature
+		# Bones:
+		Anims:
+			test: test
+			rest: rest
+	Meshes:
+		body: combined, body
+		hair: h-s2, h-s2
+		cater: catear, catear
+		skirt-split: split_skirt, skirt2
+		sweater: sweater, sweater
+
+rumya-2:
+	Inherits@defaults: rumya

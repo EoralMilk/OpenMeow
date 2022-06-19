@@ -33,25 +33,27 @@ namespace OpenRA.Graphics
 			this.fileSystem = fileSystem;
 		}
 
-		public void CacheMesh(string unit, string sequence, MiniYaml definition)
+		public void CacheMesh(string unit, string sequence, MiniYaml definition, SkeletonAsset skeletonType, OrderedSkeleton skeleton)
 		{
 			// this is not only meshName, Also can add others info such as texture
 			var name = definition?.Value;
 
-			// meshes key should be name, if multiple units use same meshAsset, they should using same mesh.
-			if (!meshes.ContainsKey(name))
-				meshes.Add(name, LoadMesh(unit, sequence, name, definition));
+			// orderdmesh should be unit unique
+			var dictKey = unit + name;
+
+			if (!meshes.ContainsKey(dictKey))
+				meshes.Add(dictKey, LoadMesh(unit, sequence, name, definition, skeletonType, skeleton));
 
 			if (!meshesRef.ContainsKey(unit))
 				meshesRef.Add(unit, new Dictionary<string, IOrderedMesh>());
 
-			meshesRef[unit].Add(sequence, meshes[name]);
+			meshesRef[unit].Add(sequence, meshes[dictKey]);
 		}
 
-		IOrderedMesh LoadMesh(string unit, string sequence, string fileName, MiniYaml definition)
+		IOrderedMesh LoadMesh(string unit, string sequence, string fileName, MiniYaml definition, SkeletonAsset skeletonType, OrderedSkeleton skeleton)
 		{
 			foreach (var loader in loaders)
-				if (loader.TryLoadMesh(fileSystem, fileName, definition, this, out var mesh))
+				if (loader.TryLoadMesh(fileSystem, fileName, definition, this, skeleton, skeletonType, out var mesh))
 					return mesh;
 
 			throw new InvalidDataException(unit + "." + sequence + " is not a valid mesh file!");

@@ -102,6 +102,7 @@ namespace OpenRA
 				{ typeof(int2), ParseInt2 },
 				{ typeof(float2), ParseFloat2 },
 				{ typeof(float3), ParseFloat3 },
+				{ typeof(float4), ParseFloat4 },
 				{ typeof(Rectangle), ParseRectangle },
 				{ typeof(DateTime), ParseDateTime }
 			};
@@ -444,6 +445,21 @@ namespace OpenRA
 					float.TryParse(parts[2], NumberStyles.Float, NumberFormatInfo.InvariantInfo, out z);
 
 				return new float3(x, y, z);
+			}
+
+			return InvalidValueAction(value, fieldType, fieldName);
+		}
+
+		static object ParseFloat4(string fieldName, Type fieldType, string value, MemberInfo field)
+		{
+			if (value != null)
+			{
+				var parts = value.Split(SplitComma, StringSplitOptions.RemoveEmptyEntries);
+				float.TryParse(parts[0], NumberStyles.Float, NumberFormatInfo.InvariantInfo, out var x);
+				float.TryParse(parts[1], NumberStyles.Float, NumberFormatInfo.InvariantInfo, out var y);
+				float.TryParse(parts[2], NumberStyles.Float, NumberFormatInfo.InvariantInfo, out var z);
+				float.TryParse(parts[3], NumberStyles.Float, NumberFormatInfo.InvariantInfo, out var w);
+				return new float4(x, y, z, w);
 			}
 
 			return InvalidValueAction(value, fieldType, fieldName);

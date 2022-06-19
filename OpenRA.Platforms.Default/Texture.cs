@@ -15,6 +15,7 @@ using OpenRA.Primitives;
 
 namespace OpenRA.Platforms.Default
 {
+
 	sealed class Texture : ThreadAffine, ITextureInternal
 	{
 		uint texture;
@@ -106,6 +107,7 @@ namespace OpenRA.Platforms.Default
 				fixed (float* ptr = &data[0])
 				{
 					PrepareTexture();
+
 					OpenGL.glTexImage2D(OpenGL.GL_TEXTURE_2D, 0, OpenGL.GL_RGBA16F, width, height,
 						0, OpenGL.GL_RGBA, OpenGL.GL_FLOAT, new IntPtr(ptr));
 					OpenGL.CheckGLError();
@@ -187,6 +189,97 @@ namespace OpenRA.Platforms.Default
 
 			Size = new Size(width, height);
 			SetData(IntPtr.Zero, width, height);
+		}
+
+		public void Dispose()
+		{
+			if (disposed)
+				return;
+			disposed = true;
+			OpenGL.glDeleteTextures(1, ref texture);
+		}
+	}
+
+	sealed class InfoTexture : ThreadAffine, ITextureInternal
+	{
+		uint texture;
+		readonly Size size;
+		public uint ID => texture;
+		Size ITexture.Size => size;
+
+		bool disposed;
+
+		public TextureScaleFilter ScaleFilter
+		{
+			get => TextureScaleFilter.Nearest;
+			set => throw new NotImplementedException();
+		}
+
+		public InfoTexture(Size size)
+		{
+			OpenGL.glPixelStorei(OpenGL.GL_UNPACK_ALIGNMENT, 1);
+			OpenGL.CheckGLError();
+
+			OpenGL.glGenTextures(1, out texture);
+			OpenGL.CheckGLError();
+
+			OpenGL.glBindTexture(OpenGL.GL_TEXTURE_2D, texture);
+			OpenGL.CheckGLError();
+
+			OpenGL.glTexImage2D(OpenGL.GL_TEXTURE_2D, 0, OpenGL.GL_RGBA32F, size.Width, size.Height,
+						0, OpenGL.GL_RGBA, OpenGL.GL_FLOAT, IntPtr.Zero);
+			OpenGL.CheckGLError();
+
+			OpenGL.glTexParameteri(OpenGL.GL_TEXTURE_2D, OpenGL.GL_TEXTURE_MAG_FILTER, OpenGL.GL_NEAREST);
+			OpenGL.CheckGLError();
+			OpenGL.glTexParameteri(OpenGL.GL_TEXTURE_2D, OpenGL.GL_TEXTURE_MIN_FILTER, OpenGL.GL_NEAREST);
+			OpenGL.CheckGLError();
+
+			OpenGL.glTexParameterf(OpenGL.GL_TEXTURE_2D, OpenGL.GL_TEXTURE_WRAP_S, OpenGL.GL_CLAMP_TO_EDGE);
+			OpenGL.CheckGLError();
+			OpenGL.glTexParameterf(OpenGL.GL_TEXTURE_2D, OpenGL.GL_TEXTURE_WRAP_T, OpenGL.GL_CLAMP_TO_EDGE);
+			OpenGL.CheckGLError();
+
+			OpenGL.glTexParameteri(OpenGL.GL_TEXTURE_2D, OpenGL.GL_TEXTURE_BASE_LEVEL, 0);
+			OpenGL.CheckGLError();
+			OpenGL.glTexParameteri(OpenGL.GL_TEXTURE_2D, OpenGL.GL_TEXTURE_MAX_LEVEL, 0);
+			OpenGL.CheckGLError();
+
+			this.size = size;
+		}
+
+		byte[] ITexture.GetData()
+		{
+			throw new NotImplementedException();
+		}
+
+		void ITexture.SetData(byte[] colors, int width, int height, TextureType type)
+		{
+			throw new NotImplementedException();
+		}
+
+		public void SetFloatData(float[] data, int width, int height, TextureType type = TextureType.RGBA)
+		{
+			VerifyThreadAffinity();
+
+			unsafe
+			{
+				fixed (float* ptr = &data[0])
+				{
+					OpenGL.glPixelStorei(OpenGL.GL_UNPACK_ALIGNMENT, 1);
+					OpenGL.CheckGLError();
+					OpenGL.glBindTexture(OpenGL.GL_TEXTURE_2D, texture);
+					OpenGL.CheckGLError();
+					OpenGL.glTexImage2D(OpenGL.GL_TEXTURE_2D, 0, OpenGL.GL_RGBA32F, width, height,
+						0, OpenGL.GL_RGBA, OpenGL.GL_FLOAT, new IntPtr(ptr));
+					OpenGL.CheckGLError();
+				}
+			}
+		}
+
+		void ITextureInternal.SetEmpty(int width, int height)
+		{
+			throw new NotImplementedException();
 		}
 
 		public void Dispose()

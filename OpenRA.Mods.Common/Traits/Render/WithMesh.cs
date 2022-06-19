@@ -21,7 +21,7 @@ namespace OpenRA.Mods.Common.Traits.Render
 
 	public class WithMeshInfo : ConditionalTraitInfo, Requires<RenderMeshesInfo>
 	{
-		public readonly string Sequence = "idle";
+		public readonly string Mesh = "idle";
 
 		public override object Create(ActorInitializer init) { return new WithMesh(init.Self, this); }
 	}
@@ -37,7 +37,7 @@ namespace OpenRA.Mods.Common.Traits.Render
 			var body = self.Trait<BodyOrientation>();
 			rm = self.Trait<RenderMeshes>();
 
-			var mesh = self.World.MeshCache.GetMeshSequence(rm.Image, info.Sequence);
+			var mesh = self.World.MeshCache.GetMeshSequence(rm.Image, info.Mesh);
 			meshInstance = new MeshInstance(mesh, () => WVec.Zero,
 				() => body.QuantizeOrientation(self.Orientation),
 				() => !IsTraitDisabled);

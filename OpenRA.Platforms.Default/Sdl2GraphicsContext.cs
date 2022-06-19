@@ -76,6 +76,12 @@ namespace OpenRA.Platforms.Default
 			return new Texture();
 		}
 
+		public ITexture CreateInfoTexture(Size size)
+		{
+			VerifyThreadAffinity();
+			return new InfoTexture(size);
+		}
+
 		public IFrameBuffer CreateDepthFrameBuffer(Size s)
 		{
 			VerifyThreadAffinity();

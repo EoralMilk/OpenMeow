@@ -47,14 +47,16 @@ namespace OpenRA.Platforms.Default
 		Action doDisableCullFace;
 		Action doDisableScissor;
 		Action doPresent;
+
 		Func<string> getGLVersion;
 		Func<ITexture> getCreateTexture;
+
 		Func<object, IFrameBuffer> getCreateFrameBuffer;
 		Func<object, IFrameBuffer> getCreateDepthFrameBuffer;
 		Func<object, IShader> getCreateShader;
 		Func<object, IShader> getCreateUnsharedShader;
 		Func<object, Type, object> getCreateVertexBuffer;
-
+		Func<object, ITexture> getCreateInfoTexture;
 		Action<object> doDrawPrimitives;
 		Action<object> doDrawInstances;
 		Action<object> doEnableScissor;
@@ -116,6 +118,7 @@ namespace OpenRA.Platforms.Default
 						};
 
 					getCreateShader = type => new ThreadedShader(this, context.CreateShader((Type)type));
+					getCreateInfoTexture = size => context.CreateInfoTexture((Size)size);
 					getCreateUnsharedShader = type => new ThreadedShader(this, context.CreateUnsharedShader((Type)type));
 					getCreateVertexBuffer = (length, type) =>
 					{
@@ -469,6 +472,11 @@ namespace OpenRA.Platforms.Default
 		public IFrameBuffer CreateFrameBuffer(Size s, Color clearColor)
 		{
 			return Send(getCreateFrameBuffer, (s, clearColor));
+		}
+
+		public ITexture CreateInfoTexture(Size size)
+		{
+			return Send(getCreateInfoTexture, size);
 		}
 
 		public IShader CreateUnsharedShader<T>()
@@ -833,7 +841,7 @@ namespace OpenRA.Platforms.Default
 			setBool = tuple => { var t = (ValueTuple<string, bool>)tuple; shader.SetBool(t.Item1, t.Item2); };
 			setInt = tuple => { var t = (ValueTuple<string, int>)tuple; shader.SetInt(t.Item1, t.Item2); };
 			setFloat = tuple => { var t = (ValueTuple<string, float>)tuple; shader.SetFloat(t.Item1, t.Item2); };
-			setMatrix = tuple => { var t = (ValueTuple<string, float[]>)tuple; shader.SetMatrix(t.Item1, t.Item2); };
+			setMatrix = tuple => { var t = (ValueTuple<string, float[], int>)tuple; shader.SetMatrix(t.Item1, t.Item2, t.Item3); };
 			setTexture = tuple => { var t = (ValueTuple<string, ITexture>)tuple; shader.SetTexture(t.Item1, t.Item2); };
 			setVec1 = tuple => { var t = (ValueTuple<string, float>)tuple; shader.SetVec(t.Item1, t.Item2); };
 			setVec2 = tuple => { var t = (ValueTuple<string, float[], int>)tuple; shader.SetVec(t.Item1, t.Item2, t.Item3); };
@@ -864,9 +872,9 @@ namespace OpenRA.Platforms.Default
 			device.Post(setFloat, (name, value));
 		}
 
-		public void SetMatrix(string param, float[] mtx)
+		public void SetMatrix(string param, float[] mtx, int count = 1)
 		{
-			device.Post(setMatrix, (param, mtx));
+			device.Post(setMatrix, (param, mtx, count));
 		}
 
 		public void SetTexture(string param, ITexture texture)

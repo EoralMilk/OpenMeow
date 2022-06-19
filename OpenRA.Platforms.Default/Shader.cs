@@ -196,11 +196,26 @@ namespace OpenRA.Platforms.Default
 		public void SetTexture(string name, ITexture t)
 		{
 			VerifyThreadAffinity();
-			if (t == null)
-				return;
+			if (name == "boneAnimTexture")
+			{
+				if (t == null)
+					throw new Exception("boneAnimTexture is null");
 
-			if (samplers.TryGetValue(name, out var texUnit))
-				textures[texUnit] = t;
+				if (samplers.TryGetValue(name, out var texUnit))
+					textures[texUnit] = t;
+				else
+				{
+					throw new Exception("boneAnimTexture not get");
+				}
+			}
+			else
+			{
+				if (t == null)
+					return;
+
+				if (samplers.TryGetValue(name, out var texUnit))
+					textures[texUnit] = t;
+			}
 		}
 
 		public void SetBool(string name, bool value)
@@ -293,10 +308,10 @@ namespace OpenRA.Platforms.Default
 			OpenGL.CheckGLError();
 		}
 
-		public void SetMatrix(string name, float[] mtx)
+		public void SetMatrix(string name, float[] mtx, int count = 1)
 		{
 			VerifyThreadAffinity();
-			if (mtx.Length != 16)
+			if (count == 1 && mtx.Length != 16)
 				throw new InvalidDataException("Invalid 4x4 matrix");
 
 			OpenGL.glUseProgram(program);
@@ -307,7 +322,7 @@ namespace OpenRA.Platforms.Default
 			unsafe
 			{
 				fixed (float* pMtx = mtx)
-					OpenGL.glUniformMatrix4fv(param, 1, false, new IntPtr(pMtx));
+					OpenGL.glUniformMatrix4fv(param, count, false, new IntPtr(pMtx));
 			}
 
 			OpenGL.CheckGLError();

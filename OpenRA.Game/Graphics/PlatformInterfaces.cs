@@ -101,6 +101,7 @@ namespace OpenRA
 	{
 		IVertexBuffer<T> CreateVertexBuffer<T>(int size) where T : struct;
 		ITexture CreateTexture();
+		ITexture CreateInfoTexture(Size size);
 		IFrameBuffer CreateDepthFrameBuffer(Size s);
 		IFrameBuffer CreateFrameBuffer(Size s);
 		IFrameBuffer CreateFrameBuffer(Size s, Color clearColor);
@@ -170,7 +171,7 @@ namespace OpenRA
 		void SetVec(string name, float x, float y, float z);
 		void SetVec(string name, float[] vec, int length);
 		void SetTexture(string param, ITexture texture);
-		void SetMatrix(string param, float[] mtx);
+		void SetMatrix(string param, float[] mtx, int count = 1);
 		void PrepareRender();
 		void LayoutAttributes();
 		void LayoutInstanceArray();

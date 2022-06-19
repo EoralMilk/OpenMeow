@@ -495,6 +495,11 @@ namespace OpenRA
 			return Context.CreateTexture();
 		}
 
+		public ITexture CreateInfoTexture(Size size)
+		{
+			return Context.CreateInfoTexture(size);
+		}
+
 		public void EnableScissor(Rectangle rect)
 		{
 			// Must remain inside the current scissor rect

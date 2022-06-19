@@ -81,17 +81,19 @@ BIKE:
 	LeavesTrails@VEINS:
 		RequiresCondition: !inside-tunnel && !rank-elite
 	WithMesh@body:
-		Sequence: body
+		Mesh: body
 	WithMesh@hair:
-		Sequence: hair
+		Mesh: hair
 	WithMesh@cater:
-		Sequence: cater
+		Mesh: cater
 	WithMesh@skirt:
-		Sequence: skirt-split
+		Mesh: skirt-split
 	WithMesh@sweater:
-		Sequence: sweater
+		Mesh: sweater
+	WithSkeleton:
+		Sequence: test
 	RenderMeshes:
-		Image: rumya
+		Image: rumya-2
 		ZOffset: 15
 		Scale: 6
 

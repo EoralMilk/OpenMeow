@@ -1,0 +1,1019 @@
+Adj_Hips:
+	ID: 0
+	SkinID: 0
+	AnimID: 0
+	Parent: Rig_Hips
+	ParentID: 28
+	RestPoseScale: 1, 1, 1
+	RestPoseRotation: -0.00187798, -7.32747e-14, -8.95495e-10, 0.999998
+	RestPoseTranslation: 1.03251e-14, 6.05942e-08, 6.98492e-09
+	RestPoseInvScale: 1, 1, 1
+	RestPoseInvRotation: 0.00187798, 7.32745e-14, 8.95495e-10, 0.999998
+	RestPoseInvTranslation: -1.02166e-14, -6.05675e-08, -7.21246e-09
+	BindPoseScale: 1.31135, 1.31135, 1.31135
+	BindPoseRotation: -0.073244, -2.37778e-07, -1.74627e-08, 0.997314
+	BindPoseTranslation: -5.82755e-08, -0.852033, 0.122213
+Adj_UpperLeg.R:
+	ID: 1
+	SkinID: 1
+	AnimID: 1
+	Parent: Rig_UpperLeg.R
+	ParentID: 3
+	RestPoseScale: 1, 1, 1
+	RestPoseRotation: 8.40183e-09, -1.34632e-09, -2.79175e-09, 1
+	RestPoseTranslation: -1.38789e-08, -1.01634e-07, -3.83353e-09
+	RestPoseInvScale: 1, 1, 1
+	RestPoseInvRotation: -8.40183e-09, 1.34632e-09, 2.79175e-09, 1
+	RestPoseInvTranslation: 1.38789e-08, 1.01634e-07, 3.83352e-09
+	BindPoseScale: 1.31135, 1.31135, 1.31137
+	BindPoseRotation: 0.999834, -0.000261522, -5.01066e-06, 0.018196
+	BindPoseTranslation: 0.0822948, 0.842099, -0.0312882
+Adj_LowerLeg.R:
+	ID: 2
+	SkinID: 2
+	AnimID: 2
+	Parent: Rig_LowerLeg.R
+	ParentID: 11
+	RestPoseScale: 1, 1, 1
+	RestPoseRotation: -6.59979e-10, -1.20044e-07, -2.31603e-09, 1
+	RestPoseTranslation: 2.57851e-08, -5.1863e-08, -1.03209e-08
+	RestPoseInvScale: 1, 1, 1
+	RestPoseInvRotation: 6.59979e-10, 1.20044e-07, 2.31603e-09, 1
+	RestPoseInvTranslation: -2.57851e-08, 5.1863e-08, 1.03209e-08
+	BindPoseScale: 1.31135, 1.31135, 1.31137
+	BindPoseRotation: 0.999699, 0.00638199, 0.000150903, 0.0237013
+	BindPoseTranslation: 0.0760732, 0.468614, -0.0364405
+Rig_UpperLeg.R:
+	ID: 3
+	SkinID: 3
+	AnimID: 3
+	Parent: Rig_Hips
+	ParentID: 28
+	RestPoseScale: 1, 1, 0.999983
+	RestPoseRotation: 0.998376, -0.000261177, 1.48874e-05, 0.0569598
+	RestPoseTranslation: -0.0818542, -0.0184488, -0.00145263
+	RestPoseInvScale: 1, 1, 1.00002
+	RestPoseInvRotation: 0.998376, -0.000261177, 1.48871e-05, -0.0569598
+	RestPoseInvTranslation: 0.0818447, -0.0182067, -0.00354153
+	BindPoseScale: 1.31135, 1.31135, 1.31137
+	BindPoseRotation: 0.999834, -0.000261525, -5.00937e-06, 0.018196
+	BindPoseTranslation: 0.0822948, 0.842099, -0.0312882
+Adj_LowerLeg.L:
+	ID: 4
+	SkinID: 4
+	AnimID: 4
+	Parent: Rig_LowerLeg.L
+	ParentID: 32
+	RestPoseScale: 1, 1, 1
+	RestPoseRotation: 1.19942e-09, 1.20037e-07, 9.07221e-10, 1
+	RestPoseTranslation: 4.01723e-09, -2.21189e-08, -1.76951e-08
+	RestPoseInvScale: 1, 1, 1
+	RestPoseInvRotation: -1.19942e-09, -1.20037e-07, -9.07221e-10, 1
+	RestPoseInvTranslation: -4.01724e-09, 2.21189e-08, 1.76951e-08
+	BindPoseScale: 1.31135, 1.31135, 1.31137
+	BindPoseRotation: 0.999699, -0.00638199, -0.000150903, 0.0237013
+	BindPoseTranslation: -0.0760732, 0.468614, -0.0364405
+Rig_Foot.L:
+	ID: 5
+	SkinID: 5
+	AnimID: 5
+	Parent: Rig_LowerLeg.L
+	ParentID: 32
+	RestPoseScale: 1, 1, 1
+	RestPoseRotation: 0.723652, -0.00461953, 0.00440589, -0.690135
+	RestPoseTranslation: 7.66704e-09, 0.38332, 1.48891e-10
+	RestPoseInvScale: 1, 1, 1
+	RestPoseInvRotation: 0.723652, -0.00461953, 0.0044059, 0.690135
+	RestPoseInvTranslation: 0.00489391, 0.0181635, -0.382858
+	BindPoseScale: 1.31135, 1.31135, 1.31137
+	BindPoseRotation: 0.707107, -8.53601e-08, -3.6171e-08, -0.707106
+	BindPoseTranslation: -0.077156, 0.0324039, 0.0859476
+Rig_UpperLeg.L:
+	ID: 6
+	SkinID: 6
+	AnimID: 6
+	Parent: Rig_Hips
+	ParentID: 28
+	RestPoseScale: 1, 1, 0.999983
+	RestPoseRotation: 0.998376, 0.000261145, -1.44105e-05, 0.0569598
+	RestPoseTranslation: 0.0818542, -0.0184488, -0.00145255
+	RestPoseInvScale: 1, 1, 1.00002
+	RestPoseInvRotation: 0.998376, 0.000261145, -1.44102e-05, -0.0569598
+	RestPoseInvTranslation: -0.0818447, -0.0182067, -0.00354153
+	BindPoseScale: 1.31135, 1.31135, 1.31137
+	BindPoseRotation: 0.999834, 0.000261519, 5.00982e-06, 0.018196
+	BindPoseTranslation: -0.0822947, 0.842099, -0.0312882
+Adj_Belly:
+	ID: 7
+	SkinID: 7
+	AnimID: 7
+	Parent: Adj_Spine
+	ParentID: 9
+	RestPoseScale: 1, 1, 1
+	RestPoseRotation: 0.706915, 1.20291e-06, 1.03372e-06, 0.707299
+	RestPoseTranslation: 1.55534e-08, 0.00150331, 0.065238
+	RestPoseInvScale: 1, 1, 1
+	RestPoseInvRotation: -0.706915, -1.20291e-06, -1.03372e-06, 0.707299
+	RestPoseInvTranslation: -4.64244e-09, -0.0652388, 0.0014679
+	BindPoseScale: 1.31135, 1.31135, 1.31135
+	BindPoseRotation: 0.716128, 1.10384e-06, 1.13256e-06, -0.697969
+	BindPoseTranslation: -2.98882e-06, -0.0571024, 0.944929
+Adj_Chest:
+	ID: 8
+	SkinID: 8
+	AnimID: 8
+	Parent: Rig_Chest
+	ParentID: 59
+	RestPoseScale: 1, 1, 1
+	RestPoseRotation: 0.00448519, -1.19208e-07, 5.34678e-10, 0.99999
+	RestPoseTranslation: 1.5975e-15, -1.86265e-09, -3.72529e-09
+	RestPoseInvScale: 1, 1, 1
+	RestPoseInvRotation: -0.00448519, 1.19208e-07, -5.34678e-10, 0.99999
+	RestPoseInvTranslation: -7.09324e-16, 1.89599e-09, 3.70843e-09
+	BindPoseScale: 1.31135, 1.31135, 1.31135
+	BindPoseRotation: 0.0547658, 3.28742e-15, 3.32259e-15, 0.998499
+	BindPoseTranslation: 5.08493e-16, -1.03479, -0.133114
+Adj_Spine:
+	ID: 9
+	SkinID: 9
+	AnimID: 9
+	Parent: Rig_Spine
+	ParentID: 30
+	RestPoseScale: 1, 1, 1
+	RestPoseRotation: -0.00216578, -2.38418e-07, 4.10783e-15, 0.999998
+	RestPoseTranslation: 3.33067e-16, 1.68802e-09, -2.11757e-22
+	RestPoseInvScale: 1, 1, 1
+	RestPoseInvRotation: 0.00216578, 2.38418e-07, -4.13559e-15, 0.999998
+	RestPoseInvTranslation: -3.3481e-16, -1.68801e-09, -7.31174e-12
+	BindPoseScale: 1.31135, 1.31135, 1.31135
+	BindPoseRotation: -0.013112, 1.19199e-07, 1.56307e-09, 0.999914
+	BindPoseTranslation: 2.06197e-09, -0.943457, 0.00864853
+Adj_UpperArm.R:
+	ID: 10
+	SkinID: 10
+	AnimID: 10
+	Parent: Rig_UpperArm.R
+	ParentID: 34
+	RestPoseScale: 1, 1, 1
+	RestPoseRotation: -6.55482e-10, -7.45058e-09, -7.96551e-12, 1
+	RestPoseTranslation: -1.40217e-10, -1.6938e-09, -1.42313e-10
+	RestPoseInvScale: 1, 1, 1
+	RestPoseInvRotation: 6.55482e-10, 7.45058e-09, 7.96551e-12, 1
+	RestPoseInvTranslation: 1.40217e-10, 1.6938e-09, 1.42313e-10
+	BindPoseScale: 1.31135, 1.31135, 1.31135
+	BindPoseRotation: 0.5, -0.5, -0.5, 0.5
+	BindPoseTranslation: -0.0254722, -0.108556, -1.25953
+Rig_LowerLeg.R:
+	ID: 11
+	SkinID: 11
+	AnimID: 11
+	Parent: Rig_UpperLeg.R
+	ParentID: 3
+	RestPoseScale: 1, 1, 1
+	RestPoseRotation: 0.00550685, 3.36861e-05, -0.00664524, 0.999963
+	RestPoseTranslation: -4.3638e-09, 0.374165, -5.69908e-09
+	RestPoseInvScale: 1, 1, 1
+	RestPoseInvRotation: -0.00550685, -3.36861e-05, 0.00664524, 0.999963
+	RestPoseInvTranslation: 0.00497251, -0.374109, 0.00412096
+	BindPoseScale: 1.31135, 1.31135, 1.31137
+	BindPoseRotation: 0.999699, 0.00638198, 0.000151023, 0.0237013
+	BindPoseTranslation: 0.0760732, 0.468614, -0.0364405
+Adj_LowerArm.R:
+	ID: 12
+	SkinID: 12
+	AnimID: 12
+	Parent: Rig_LowerArm.R
+	ParentID: 41
+	RestPoseScale: 1, 1, 1
+	RestPoseRotation: 1.75415e-13, -8.35776e-13, -2.03584e-10, 1
+	RestPoseTranslation: -6.0927e-09, -1.52431e-09, -2.89427e-09
+	RestPoseInvScale: 1, 1, 1
+	RestPoseInvRotation: -1.75415e-13, 8.35776e-13, 2.03584e-10, 1
+	RestPoseInvTranslation: 6.09271e-09, 1.52431e-09, 2.89427e-09
+	BindPoseScale: 1.31135, 1.31135, 1.31135
+	BindPoseRotation: -0.499556, 0.500438, 0.500438, -0.499568
+	BindPoseTranslation: -0.0260613, -0.328378, -1.25952
+Rig_Thumb2.R:
+	ID: 13
+	SkinID: 13
+	AnimID: 13
+	Parent: Rig_Thumb1.R
+	ParentID: 15
+	RestPoseScale: 1, 1, 1
+	RestPoseRotation: -0.0201214, -0.0114846, -0.0101341, 0.99968
+	RestPoseTranslation: 1.77151e-07, 0.0465982, 2.58243e-08
+	RestPoseInvScale: 1, 1, 1
+	RestPoseInvRotation: 0.0201214, 0.0114846, 0.0101341, 0.99968
+	RestPoseInvTranslation: 0.000922449, -0.0465509, -0.00188551
+	BindPoseScale: 1.31135, 1.31135, 1.31135
+	BindPoseRotation: 0.156869, 0.296286, 0.717781, -0.610243
+	BindPoseTranslation: -1.32288, -0.368268, 0.0370756
+Adj_Butt.R:
+	ID: 14
+	SkinID: 14
+	AnimID: 14
+	Parent: Adj_HipsThickness
+	ParentID: 24
+	RestPoseScale: 1, 1, 1
+	RestPoseRotation: 8.8818e-16, -4.76837e-07, 0, 1
+	RestPoseTranslation: -0.0747429, 0.0703817, 0.0618603
+	RestPoseInvScale: 1, 1, 1
+	RestPoseInvRotation: -8.8818e-16, 4.76837e-07, 0, 1
+	RestPoseInvTranslation: 0.0747429, -0.0703817, -0.0618604
+	BindPoseScale: 1.31135, 1.31135, 1.31135
+	BindPoseRotation: 0.707107, 1.68587e-07, -1.68587e-07, 0.707107
+	BindPoseTranslation: 0.0747425, -0.0673221, -0.868996
+Rig_Thumb1.R:
+	ID: 15
+	SkinID: 15
+	AnimID: 15
+	Parent: Rig_Hand.R
+	ParentID: 23
+	RestPoseScale: 1, 1, 1
+	RestPoseRotation: 0.178274, -0.581797, 0.301636, 0.733993
+	RestPoseTranslation: -0.0127358, 0.00439331, -0.0114988
+	RestPoseInvScale: 1, 1, 1
+	RestPoseInvRotation: -0.178274, 0.581797, -0.301636, 0.733993
+	RestPoseInvTranslation: 0.0118199, -0.0126225, -0.00383238
+	BindPoseScale: 1.31135, 1.31135, 1.31135
+	BindPoseRotation: 0.163857, 0.316053, 0.719576, -0.596215
+	BindPoseTranslation: -1.33073, -0.293604, 0.0208501
+Rig_ToeBase.L:
+	ID: 16
+	SkinID: 16
+	AnimID: 16
+	Parent: Rig_Foot.L
+	ParentID: 5
+	RestPoseScale: 1, 1, 1
+	RestPoseRotation: 5.86535e-15, 1.18527e-07, 2.29049e-11, 1
+	RestPoseTranslation: 5.47693e-09, 0.110691, 0.0630552
+	RestPoseInvScale: 1, 1, 1
+	RestPoseInvRotation: -5.86535e-15, -1.18527e-07, -2.29049e-11, 1
+	RestPoseInvTranslation: 9.46544e-09, -0.110691, -0.0630552
+	BindPoseScale: 1.31135, 1.31135, 1.31137
+	BindPoseRotation: 0.707107, -1.56543e-09, 4.76561e-08, -0.707106
+	BindPoseTranslation: -0.077156, -0.0782875, 0.0228925
+Rig_Middle2.R:
+	ID: 17
+	SkinID: 17
+	AnimID: 17
+	Parent: Rig_Middle1.R
+	ParentID: 18
+	RestPoseScale: 1, 1, 1
+	RestPoseRotation: 4.21515e-06, -3.91192e-06, -2.03028e-07, 1
+	RestPoseTranslation: -9.93623e-11, 0.0370573, -1.0552e-07
+	RestPoseInvScale: 1, 1, 1
+	RestPoseInvRotation: -4.21515e-06, 3.91192e-06, 2.03028e-07, 1
+	RestPoseInvTranslation: 1.51488e-08, -0.0370573, 4.17924e-07
+	BindPoseScale: 1.31135, 1.31135, 1.31135
+	BindPoseRotation: 0.518324, -0.480976, -0.480976, 0.518329
+	BindPoseTranslation: 0.0148499, -0.648172, -1.25798
+Rig_Middle1.R:
+	ID: 18
+	SkinID: 18
+	AnimID: 18
+	Parent: Rig_Hand.R
+	ParentID: 23
+	RestPoseScale: 1, 1, 1
+	RestPoseRotation: -1.55159e-06, 1.55118e-06, -0.0373508, 0.999302
+	RestPoseTranslation: 0.00570835, 0.0674189, -0.00154305
+	RestPoseInvScale: 1, 1, 1
+	RestPoseInvRotation: 1.55159e-06, -1.55118e-06, 0.0373508, 0.999302
+	RestPoseInvTranslation: -0.000659644, -0.067657, 0.00154283
+	BindPoseScale: 1.31135, 1.31135, 1.31135
+	BindPoseRotation: 0.518328, -0.480976, -0.480976, 0.518325
+	BindPoseTranslation: 0.0148595, -0.611105, -1.25799
+Adj_UpperLeg.L:
+	ID: 19
+	SkinID: 19
+	AnimID: 19
+	Parent: Rig_UpperLeg.L
+	ParentID: 6
+	RestPoseScale: 1, 1, 1
+	RestPoseRotation: 8.40203e-09, 1.03877e-09, -2.71568e-09, 1
+	RestPoseTranslation: 4.53646e-09, -2.8139e-07, -5.04351e-09
+	RestPoseInvScale: 1, 1, 1
+	RestPoseInvRotation: -8.40204e-09, -1.03877e-09, 2.71568e-09, 1
+	RestPoseInvTranslation: -4.53646e-09, 2.8139e-07, 5.0435e-09
+	BindPoseScale: 1.31135, 1.31135, 1.31137
+	BindPoseRotation: 0.999834, 0.000261522, 5.0109e-06, 0.018196
+	BindPoseTranslation: -0.0822947, 0.842099, -0.0312882
+Rig_Index3.R:
+	ID: 20
+	SkinID: 20
+	AnimID: 20
+	Parent: Rig_Index2.R
+	ParentID: 21
+	RestPoseScale: 1, 1, 1
+	RestPoseRotation: 7.11239e-07, -7.45902e-07, -2.2992e-09, 1
+	RestPoseTranslation: -3.72511e-09, 0.0204828, -2.90747e-07
+	RestPoseInvScale: 1, 1, 1
+	RestPoseInvRotation: -7.11239e-07, 7.45902e-07, 2.2992e-09, 1
+	RestPoseInvTranslation: 3.81976e-09, -0.0204828, 3.19884e-07
+	BindPoseScale: 1.31135, 1.31135, 1.31135
+	BindPoseRotation: -0.499789, 0.514424, 0.514439, -0.470034
+	BindPoseTranslation: -0.00621984, -0.625086, -1.27676
+Rig_Index2.R:
+	ID: 21
+	SkinID: 21
+	AnimID: 21
+	Parent: Rig_Index1.R
+	ParentID: 50
+	RestPoseScale: 1, 1, 1
+	RestPoseRotation: -0.0142892, 0.0154441, -0.00977887, 0.999731
+	RestPoseTranslation: -2.9869e-09, 0.0332687, -1.17254e-07
+	RestPoseInvScale: 1, 1, 1
+	RestPoseInvRotation: 0.0142892, -0.0154441, 0.00977887, 0.999731
+	RestPoseInvTranslation: 0.000665168, -0.0332487, -0.000940342
+	BindPoseScale: 1.31135, 1.31135, 1.31135
+	BindPoseRotation: -0.499789, 0.514424, 0.514439, -0.470034
+	BindPoseTranslation: -0.00621793, -0.604601, -1.27676
+Adj_UpperChest:
+	ID: 22
+	SkinID: 22
+	AnimID: 22
+	Parent: Rig_UpperChest
+	ParentID: 44
+	RestPoseScale: 1, 1, 1
+	RestPoseRotation: -3.20375e-07, 7.25254e-15, 1.84537e-16, 1
+	RestPoseTranslation: 2.44592e-17, 1.78115e-08, -1.11759e-07
+	RestPoseInvScale: 1, 1, 1
+	RestPoseInvRotation: 3.20375e-07, -7.25254e-15, -1.84537e-16, 1
+	RestPoseInvTranslation: -2.44608e-17, -1.78115e-08, 1.11759e-07
+	BindPoseScale: 1.31135, 1.31135, 1.31135
+	BindPoseRotation: 0.112129, 9.90053e-15, 4.32702e-15, 0.993694
+	BindPoseTranslation: -1.51515e-15, -1.13578, -0.264241
+Rig_Hand.R:
+	ID: 23
+	SkinID: 23
+	AnimID: 23
+	Parent: Rig_LowerArm.R
+	ParentID: 41
+	RestPoseScale: 1, 1, 1
+	RestPoseRotation: -5.55763e-06, 5.55761e-06, -0.000875617, 1
+	RestPoseTranslation: 7.43967e-10, 0.214685, -2.8939e-09
+	RestPoseInvScale: 1, 1, 1
+	RestPoseInvRotation: 5.55763e-06, -5.55761e-06, 0.000875617, 1
+	RestPoseInvTranslation: 0.000375963, -0.214685, -2.3813e-06
+	BindPoseScale: 1.31135, 1.31135, 1.31135
+	BindPoseRotation: 0.5, -0.5, -0.5, 0.5
+	BindPoseTranslation: -0.0250962, -0.543094, -1.25953
+Adj_HipsThickness:
+	ID: 24
+	SkinID: 24
+	AnimID: 24
+	Parent: Adj_Hips
+	ParentID: 0
+	RestPoseScale: 1, 1, 1
+	RestPoseRotation: 0.756999, -5.63179e-14, 3.60965e-07, -0.653416
+	RestPoseTranslation: -3.49106e-09, -0.0531102, 0.00732129
+	RestPoseInvScale: 1, 1, 1
+	RestPoseInvRotation: 0.756999, -6.57042e-14, 3.60965e-07, 0.653416
+	RestPoseInvTranslation: -2.55632e-08, -0.000516386, 0.05361
+	BindPoseScale: 1.31135, 1.31135, 1.31135
+	BindPoseRotation: 0.707107, -1.68587e-07, 1.68587e-07, 0.707107
+	BindPoseTranslation: 3.84872e-07, 0.00305966, -0.807136
+CatEar_B.L:
+	ID: 25
+	SkinID: 25
+	AnimID: 25
+	Parent: CatEar_A.L
+	ParentID: 35
+	RestPoseScale: 1, 1, 1
+	RestPoseRotation: 1.47149e-07, -3.72528e-09, 3.01749e-07, 1
+	RestPoseTranslation: -9.28412e-09, 0.0848209, -7.04313e-08
+	RestPoseInvScale: 1, 1, 1
+	RestPoseInvRotation: -1.47149e-07, 3.72528e-09, -3.01749e-07, 1
+	RestPoseInvTranslation: -4.1905e-08, -0.0848208, 9.53938e-08
+	BindPoseScale: 1.31135, 1.31135, 1.31135
+	BindPoseRotation: -0.0387533, 0.323897, 0.323897, 0.888076
+	BindPoseTranslation: 0.891969, -1.35942, -0.141607
+CatEar_root.R:
+	ID: 26
+	SkinID: 26
+	AnimID: 26
+	Parent: Rig_Head
+	ParentID: 29
+	RestPoseScale: 1, 1, 1
+	RestPoseRotation: 0.756492, 0.000292887, 0.0074306, -0.653961
+	RestPoseTranslation: -0.0965443, 0.186296, -0.0276255
+	RestPoseInvScale: 1, 1, 1
+	RestPoseInvRotation: 0.756492, 0.000292888, 0.0074306, 0.653961
+	RestPoseInvTranslation: 0.0985828, 0.000599353, -0.187274
+	BindPoseScale: 1.31135, 1.31135, 1.31135
+	BindPoseRotation: 0.707107, -3.70431e-10, -1.15245e-09, 0.707107
+	BindPoseTranslation: 0.0985828, -0.0241117, -1.55884
+CatEar_root.L:
+	ID: 27
+	SkinID: 27
+	AnimID: 27
+	Parent: Rig_Head
+	ParentID: 29
+	RestPoseScale: 1, 1, 1
+	RestPoseRotation: 0.756492, 0.000292886, 0.0074306, -0.653961
+	RestPoseTranslation: 0.100599, 0.184468, -0.0253333
+	RestPoseInvScale: 1, 1, 1
+	RestPoseInvRotation: 0.756492, 0.000292886, 0.0074306, 0.653961
+	RestPoseInvTranslation: -0.0985828, 0.000599375, -0.187274
+	BindPoseScale: 1.31135, 1.31135, 1.31135
+	BindPoseRotation: 0.707107, -1.97563e-09, -1.27593e-09, 0.707107
+	BindPoseTranslation: -0.0985828, -0.0241115, -1.55884
+Rig_Hips:
+	ID: 28
+	SkinID: 28
+	AnimID: 28
+	Parent: Position
+	ParentID: 43
+	RestPoseScale: 1, 1, 1
+	RestPoseRotation: 0.0751168, 2.37745e-07, 1.79092e-08, 0.997175
+	RestPoseTranslation: 3.55271e-14, 0.860746, 0.00357607
+	RestPoseInvScale: 1, 1, 1
+	RestPoseInvRotation: -0.0751168, -2.37745e-07, -1.79092e-08, 0.997175
+	RestPoseInvTranslation: -5.98011e-08, -0.851568, 0.125412
+	BindPoseScale: 1.31135, 1.31135, 1.31135
+	BindPoseRotation: -0.0751168, -2.37745e-07, -1.79093e-08, 0.997175
+	BindPoseTranslation: -5.98011e-08, -0.851568, 0.125412
+Rig_Head:
+	ID: 29
+	SkinID: 29
+	AnimID: 29
+	Parent: Rig_Neck
+	ParentID: 45
+	RestPoseScale: 1, 1, 1
+	RestPoseRotation: 0.0103763, 0.00576445, 0.00469795, 0.999919
+	RestPoseTranslation: -3.72488e-09, 0.073744, 9.35581e-09
+	RestPoseInvScale: 1, 1, 1
+	RestPoseInvRotation: -0.0103763, -0.00576445, -0.00469795, 0.999919
+	RestPoseInvTranslation: -0.000701653, -0.0737249, 0.00152625
+	BindPoseScale: 1.31135, 1.31135, 1.31135
+	BindPoseRotation: -0.0725007, -0.00546133, -0.00504712, 0.997341
+	BindPoseTranslation: -0.0151453, -1.3535, 0.222724
+Rig_Spine:
+	ID: 30
+	SkinID: 30
+	AnimID: 30
+	Parent: Rig_Hips
+	ParentID: 28
+	RestPoseScale: 1, 1, 1
+	RestPoseRotation: -0.0598737, -1.18996e-07, -2.14125e-08, 0.998206
+	RestPoseTranslation: 1.24345e-14, 0.0835558, -1.86265e-09
+	RestPoseInvScale: 1, 1, 1
+	RestPoseInvRotation: 0.0598737, 1.18996e-07, 2.14125e-08, 0.998206
+	RestPoseInvTranslation: 2.38123e-09, -0.0829568, -0.00998764
+	BindPoseScale: 1.31135, 1.31135, 1.31135
+	BindPoseRotation: -0.0152775, -1.19195e-07, -1.82122e-09, 0.999883
+	BindPoseTranslation: -3.03627e-09, -0.94341, 0.0127351
+Rig_ToeBase.R:
+	ID: 31
+	SkinID: 31
+	AnimID: 31
+	Parent: Rig_Foot.R
+	ParentID: 52
+	RestPoseScale: 1, 1, 1
+	RestPoseRotation: 5.82799e-15, -1.18993e-07, -9.26813e-12, 1
+	RestPoseTranslation: 1.99287e-09, 0.110691, 0.0630552
+	RestPoseInvScale: 1, 1, 1
+	RestPoseInvRotation: -5.82799e-15, 1.18993e-07, 9.26813e-12, 1
+	RestPoseInvTranslation: -1.69971e-08, -0.110691, -0.0630552
+	BindPoseScale: 1.31135, 1.31135, 1.31137
+	BindPoseRotation: 0.707107, 1.20593e-09, -4.79869e-08, -0.707106
+	BindPoseTranslation: 0.077156, -0.0782875, 0.0228925
+Rig_LowerLeg.L:
+	ID: 32
+	SkinID: 32
+	AnimID: 32
+	Parent: Rig_UpperLeg.L
+	ParentID: 6
+	RestPoseScale: 1, 1, 1
+	RestPoseRotation: 0.00550685, -3.36864e-05, 0.00664524, 0.999963
+	RestPoseTranslation: 6.63084e-09, 0.374165, -1.39514e-08
+	RestPoseInvScale: 1, 1, 1
+	RestPoseInvRotation: -0.00550685, 3.36864e-05, -0.00664524, 0.999963
+	RestPoseInvTranslation: -0.00497251, -0.374109, 0.00412097
+	BindPoseScale: 1.31135, 1.31135, 1.31137
+	BindPoseRotation: 0.999699, -0.00638198, -0.000151023, 0.0237013
+	BindPoseTranslation: -0.0760732, 0.468614, -0.0364405
+Adj_Neck:
+	ID: 33
+	SkinID: 33
+	AnimID: 33
+	Parent: Rig_Neck
+	ParentID: 45
+	RestPoseScale: 1, 1, 1
+	RestPoseRotation: -4.47035e-08, -1.19209e-07, 7.28584e-15, 1
+	RestPoseTranslation: -1.40997e-14, -2.79397e-09, 3.72529e-09
+	RestPoseInvScale: 1, 1, 1
+	RestPoseInvRotation: 4.47035e-08, 1.19209e-07, -7.28584e-15, 1
+	RestPoseInvTranslation: 1.32115e-14, 2.79397e-09, -3.72529e-09
+	BindPoseScale: 1.31135, 1.31135, 1.31135
+	BindPoseRotation: -0.0621495, 1.20121e-07, 8.55089e-09, 0.998067
+	BindPoseTranslation: 4.96307e-08, -1.28416, 0.194674
+Rig_UpperArm.R:
+	ID: 34
+	SkinID: 34
+	AnimID: 34
+	Parent: Rig_Shoulder.R
+	ParentID: 67
+	RestPoseScale: 1, 1, 1
+	RestPoseRotation: 1.62293e-08, -0.0706149, -4.06965e-08, 0.997504
+	RestPoseTranslation: 0.00172721, 0.0860559, -0.012138
+	RestPoseInvScale: 1, 1, 1
+	RestPoseInvRotation: -1.62293e-08, 0.0706149, 4.06965e-08, 0.997504
+	RestPoseInvTranslation: -9.23046e-09, -0.0860559, 0.0122603
+	BindPoseScale: 1.31135, 1.31135, 1.31135
+	BindPoseRotation: -0.5, 0.5, 0.5, -0.5
+	BindPoseTranslation: -0.0254722, -0.108556, -1.25953
+CatEar_A.L:
+	ID: 35
+	SkinID: 35
+	AnimID: 35
+	Parent: CatEar_root.L
+	ParentID: 27
+	RestPoseScale: 1, 1, 1
+	RestPoseRotation: 0.655367, 0, -0.45806, 0.600562
+	RestPoseTranslation: -3.59543e-08, 3.16762e-08, 3.57978e-08
+	RestPoseInvScale: 1, 1, 1
+	RestPoseInvRotation: 0.655367, 2.27371e-08, -0.45806, -0.600562
+	RestPoseInvTranslation: 5.97872e-08, 4.28928e-10, -1.69897e-09
+	BindPoseScale: 1.31135, 1.31135, 1.31135
+	BindPoseRotation: -0.0387533, 0.323897, 0.323897, 0.888076
+	BindPoseTranslation: 0.89197, -1.2746, -0.141607
+Rig_Bust2.R:
+	ID: 36
+	SkinID: 36
+	AnimID: 36
+	Parent: Rig_Bust1.R
+	ParentID: 42
+	RestPoseScale: 1, 1, 1
+	RestPoseRotation: 4.35081e-08, 0.971479, 1.97865e-07, 0.237127
+	RestPoseTranslation: -1.5716e-07, 0.0574183, 2.34203e-07
+	RestPoseInvScale: 1, 1, 1
+	RestPoseInvRotation: 4.35081e-08, 0.971479, 1.97865e-07, -0.237127
+	RestPoseInvTranslation: -4.18236e-08, -0.0574183, 2.59384e-07
+	BindPoseScale: 1.31135, 1.31135, 1.31135
+	BindPoseRotation: -0.0106608, 0.667461, 0.667461, -0.329968
+	BindPoseTranslation: -0.502594, -0.272861, -1.02576
+Adj_Butt.L:
+	ID: 37
+	SkinID: 37
+	AnimID: 37
+	Parent: Adj_HipsThickness
+	ParentID: 24
+	RestPoseScale: 1, 1, 1
+	RestPoseRotation: 8.88177e-16, 1.58819e-22, 0, 1
+	RestPoseTranslation: 0.0747429, 0.0703817, 0.0618604
+	RestPoseInvScale: 1, 1, 1
+	RestPoseInvRotation: -8.88177e-16, -1.58819e-22, 0, 1
+	RestPoseInvTranslation: -0.0747429, -0.0703817, -0.0618604
+	BindPoseScale: 1.31135, 1.31135, 1.31135
+	BindPoseRotation: 0.707107, -1.68587e-07, 1.68587e-07, 0.707107
+	BindPoseTranslation: -0.0747425, -0.0673221, -0.868996
+Rig_Middle1.L:
+	ID: 38
+	SkinID: 38
+	AnimID: 38
+	Parent: Rig_Hand.L
+	ParentID: 53
+	RestPoseScale: 1, 1, 1
+	RestPoseRotation: -1.55159e-06, -1.55118e-06, 0.0373508, 0.999302
+	RestPoseTranslation: -0.00570835, 0.0674189, -0.00154305
+	RestPoseInvScale: 1, 1, 1
+	RestPoseInvRotation: 1.55159e-06, 1.55118e-06, -0.0373508, 0.999302
+	RestPoseInvTranslation: 0.000659644, -0.067657, 0.00154283
+	BindPoseScale: 1.31135, 1.31135, 1.31135
+	BindPoseRotation: 0.518328, 0.480976, 0.480976, 0.518325
+	BindPoseTranslation: -0.0148595, -0.611105, -1.25799
+Rig_Bust2.L:
+	ID: 39
+	SkinID: 39
+	AnimID: 39
+	Parent: Rig_Bust1.L
+	ParentID: 65
+	RestPoseScale: 1, 1, 1
+	RestPoseRotation: -4.35081e-08, 0.971479, 1.97865e-07, -0.237127
+	RestPoseTranslation: 1.5716e-07, 0.0574183, 2.34203e-07
+	RestPoseInvScale: 1, 1, 1
+	RestPoseInvRotation: -4.35081e-08, 0.971479, 1.97865e-07, 0.237127
+	RestPoseInvTranslation: 4.18236e-08, -0.0574183, 2.59384e-07
+	BindPoseScale: 1.31135, 1.31135, 1.31135
+	BindPoseRotation: 0.0106608, 0.667461, 0.667461, 0.329968
+	BindPoseTranslation: 0.502594, -0.272861, -1.02576
+CatEar_A.R:
+	ID: 40
+	SkinID: 40
+	AnimID: 40
+	Parent: CatEar_root.R
+	ParentID: 26
+	RestPoseScale: 1, 1, 1
+	RestPoseRotation: 0.655367, -2.27371e-08, 0.45806, 0.600562
+	RestPoseTranslation: 5.35477e-10, -7.85783e-08, -2.68514e-08
+	RestPoseInvScale: 1, 1, 1
+	RestPoseInvRotation: 0.655367, 0, 0.45806, -0.600562
+	RestPoseInvTranslation: 5.90434e-08, -4.64423e-10, -5.83909e-08
+	BindPoseScale: 1.31135, 1.31135, 1.31135
+	BindPoseRotation: -0.0387532, -0.323897, -0.323897, 0.888076
+	BindPoseTranslation: -0.89197, -1.2746, -0.141607
+Rig_LowerArm.R:
+	ID: 41
+	SkinID: 41
+	AnimID: 41
+	Parent: Rig_UpperArm.R
+	ParentID: 34
+	RestPoseScale: 1, 1, 1
+	RestPoseRotation: 5.55697e-06, -5.56506e-06, 0.000875616, 1
+	RestPoseTranslation: -1.36715e-10, 0.219853, -4.30532e-10
+	RestPoseInvScale: 1, 1, 1
+	RestPoseInvRotation: -5.55697e-06, 5.56506e-06, -0.000875616, 1
+	RestPoseInvTranslation: -0.000385013, -0.219853, 2.446e-06
+	BindPoseScale: 1.31135, 1.31135, 1.31135
+	BindPoseRotation: -0.499556, 0.500438, 0.500438, -0.499568
+	BindPoseTranslation: -0.0260613, -0.328378, -1.25952
+Rig_Bust1.R:
+	ID: 42
+	SkinID: 42
+	AnimID: 42
+	Parent: Rig_UpperChest
+	ParentID: 44
+	RestPoseScale: 1, 1, 1
+	RestPoseRotation: 0.723302, -0.180169, 0.14937, 0.649663
+	RestPoseTranslation: -0.0537684, -0.0224461, 0.0656281
+	RestPoseInvScale: 1, 1, 1
+	RestPoseInvRotation: 0.723302, -0.180169, 0.14937, -0.649663
+	RestPoseInvTranslation: 0.0168403, -0.084636, -0.0159705
+	BindPoseScale: 1.31135, 1.31135, 1.31135
+	BindPoseRotation: -0.645896, 0.162284, -0.16863, 0.726668
+	BindPoseTranslation: -0.0265251, -0.215443, 1.14197
+Position:
+	ID: 43
+	SkinID: 43
+	AnimID: 43
+	Parent: NO_Parent
+	RestPoseScale: 1, 1, 1
+	RestPoseRotation: 0, 0, 0, 1
+	RestPoseTranslation: 0, 0, 0
+	RestPoseInvScale: 1, 1, 1
+	RestPoseInvRotation: 0, 0, 0, 1
+	RestPoseInvTranslation: -0, 0, -0
+	BindPoseScale: 1.31135, 1.31135, 1.31135
+	BindPoseRotation: 0, 0, 0, 1
+	BindPoseTranslation: -0, 0, -0
+Rig_UpperChest:
+	ID: 44
+	SkinID: 44
+	AnimID: 44
+	Parent: Rig_Chest
+	ParentID: 59
+	RestPoseScale: 1, 1, 1
+	RestPoseRotation: -0.0530612, -1.19041e-07, -6.32538e-09, 0.998591
+	RestPoseTranslation: 3.72092e-16, 0.123831, -1.21072e-08
+	RestPoseInvScale: 1, 1, 1
+	RestPoseInvRotation: 0.0530612, 1.19041e-07, 6.32538e-09, 0.998591
+	RestPoseInvTranslation: 8.88179e-16, -0.123134, -0.0131227
+	BindPoseScale: 1.31135, 1.31135, 1.31135
+	BindPoseRotation: 0.112128, 1.7128e-14, 3.69717e-15, 0.993694
+	BindPoseTranslation: -4.90432e-15, -1.13578, -0.26424
+Rig_Neck:
+	ID: 45
+	SkinID: 45
+	AnimID: 45
+	Parent: Rig_UpperChest
+	ParentID: 44
+	RestPoseScale: 1, 1, 1
+	RestPoseRotation: 0.173669, -1.00682e-09, -1.26295e-09, 0.984804
+	RestPoseTranslation: 2.57881e-16, 0.137509, -0.00791242
+	RestPoseInvScale: 1, 1, 1
+	RestPoseInvRotation: -0.173669, 1.00682e-09, 1.26295e-09, 0.984804
+	RestPoseInvTranslation: 4.02365e-10, -0.126508, 0.0544715
+	BindPoseScale: 1.31135, 1.31135, 1.31135
+	BindPoseRotation: -0.0621495, 1.14211e-09, 1.14209e-09, 0.998067
+	BindPoseTranslation: 3.21674e-09, -1.28416, 0.194675
+Rig_Middle2.L:
+	ID: 46
+	SkinID: 46
+	AnimID: 46
+	Parent: Rig_Middle1.L
+	ParentID: 38
+	RestPoseScale: 1, 1, 1
+	RestPoseRotation: 4.21515e-06, 3.91192e-06, 2.03028e-07, 1
+	RestPoseTranslation: 9.93623e-11, 0.0370573, -1.0552e-07
+	RestPoseInvScale: 1, 1, 1
+	RestPoseInvRotation: -4.21515e-06, -3.91192e-06, -2.03028e-07, 1
+	RestPoseInvTranslation: -1.51488e-08, -0.0370573, 4.17924e-07
+	BindPoseScale: 1.31135, 1.31135, 1.31135
+	BindPoseRotation: 0.518324, 0.480976, 0.480976, 0.518329
+	BindPoseTranslation: -0.0148499, -0.648172, -1.25798
+Rig_Index2.L:
+	ID: 47
+	SkinID: 47
+	AnimID: 47
+	Parent: Rig_Index1.L
+	ParentID: 61
+	RestPoseScale: 1, 1, 1
+	RestPoseRotation: -0.0142892, -0.0154441, 0.00977887, 0.999731
+	RestPoseTranslation: 2.9869e-09, 0.0332687, -1.17254e-07
+	RestPoseInvScale: 1, 1, 1
+	RestPoseInvRotation: 0.0142892, 0.0154441, -0.00977887, 0.999731
+	RestPoseInvTranslation: -0.000665168, -0.0332487, -0.000940342
+	BindPoseScale: 1.31135, 1.31135, 1.31135
+	BindPoseRotation: 0.499789, 0.514424, 0.514439, 0.470034
+	BindPoseTranslation: 0.00621793, -0.604601, -1.27676
+CatEar_B.R:
+	ID: 48
+	SkinID: 48
+	AnimID: 48
+	Parent: CatEar_A.R
+	ParentID: 40
+	RestPoseScale: 1, 1, 1
+	RestPoseRotation: 1.52737e-07, -2.79397e-08, -2.64496e-07, 1
+	RestPoseTranslation: -7.6252e-09, 0.0848208, -7.91624e-09
+	RestPoseInvScale: 1, 1, 1
+	RestPoseInvRotation: -1.52737e-07, 2.79397e-08, 2.64496e-07, 1
+	RestPoseInvTranslation: 5.24946e-08, -0.0848208, 3.38268e-08
+	BindPoseScale: 1.31135, 1.31135, 1.31135
+	BindPoseRotation: -0.0387533, -0.323897, -0.323897, 0.888076
+	BindPoseTranslation: -0.891969, -1.35942, -0.141607
+Rig_Shoulder.L:
+	ID: 49
+	SkinID: 49
+	AnimID: 49
+	Parent: Rig_UpperChest
+	ParentID: 44
+	RestPoseScale: 1, 1, 1
+	RestPoseRotation: 0.478726, 0.478726, 0.520405, -0.520405
+	RestPoseTranslation: 0.0225, 0.109708, -0.0056639
+	RestPoseInvScale: 1, 1, 1
+	RestPoseInvRotation: 0.478726, 0.478726, 0.520405, 0.520405
+	RestPoseInvTranslation: 0.0147812, -0.0225, -0.108855
+	BindPoseScale: 1.31135, 1.31135, 1.31135
+	BindPoseRotation: 0.534059, 0.534059, 0.463444, 0.463444
+	BindPoseTranslation: -0.153948, -0.0225, -1.26269
+Rig_Index1.R:
+	ID: 50
+	SkinID: 50
+	AnimID: 50
+	Parent: Rig_Hand.R
+	ParentID: 23
+	RestPoseScale: 1, 1, 1
+	RestPoseRotation: -1.65053e-11, 4.19637e-10, 0.0393017, 0.999227
+	RestPoseTranslation: -0.0153932, 0.0664899, -0.00154316
+	RestPoseInvScale: 1, 1, 1
+	RestPoseInvRotation: 1.65053e-11, -4.19637e-10, -0.0393017, 0.999227
+	RestPoseInvTranslation: 0.0101233, -0.0674935, 0.00154316
+	BindPoseScale: 1.31135, 1.31135, 1.31135
+	BindPoseRotation: -0.479963, 0.519265, 0.519265, -0.479963
+	BindPoseTranslation: -0.0575514, -0.606938, -1.25799
+Rig_LowerArm.L:
+	ID: 51
+	SkinID: 51
+	AnimID: 51
+	Parent: Rig_UpperArm.L
+	ParentID: 54
+	RestPoseScale: 1, 1, 1
+	RestPoseRotation: 5.55697e-06, 5.56506e-06, -0.000875616, 1
+	RestPoseTranslation: 1.36677e-10, 0.219853, -4.30528e-10
+	RestPoseInvScale: 1, 1, 1
+	RestPoseInvRotation: -5.55697e-06, -5.56506e-06, 0.000875616, 1
+	RestPoseInvTranslation: 0.000385013, -0.219853, 2.446e-06
+	BindPoseScale: 1.31135, 1.31135, 1.31135
+	BindPoseRotation: 0.499556, 0.500438, 0.500438, 0.499568
+	BindPoseTranslation: 0.0260613, -0.328378, -1.25952
+Rig_Foot.R:
+	ID: 52
+	SkinID: 52
+	AnimID: 52
+	Parent: Rig_LowerLeg.R
+	ParentID: 11
+	RestPoseScale: 1, 1, 1
+	RestPoseRotation: 0.723652, 0.00461953, -0.0044059, -0.690135
+	RestPoseTranslation: -4.07099e-10, 0.38332, -6.29117e-10
+	RestPoseInvScale: 1, 1, 1
+	RestPoseInvRotation: 0.723652, 0.00461953, -0.0044059, 0.690135
+	RestPoseInvTranslation: -0.00489392, 0.0181635, -0.382858
+	BindPoseScale: 1.31135, 1.31135, 1.31137
+	BindPoseRotation: 0.707107, 8.534e-08, 3.61604e-08, -0.707106
+	BindPoseTranslation: 0.077156, 0.0324039, 0.0859477
+Rig_Hand.L:
+	ID: 53
+	SkinID: 53
+	AnimID: 53
+	Parent: Rig_LowerArm.L
+	ParentID: 51
+	RestPoseScale: 1, 1, 1
+	RestPoseRotation: -5.55763e-06, -5.55761e-06, 0.000875617, 1
+	RestPoseTranslation: -7.43967e-10, 0.214685, -2.8939e-09
+	RestPoseInvScale: 1, 1, 1
+	RestPoseInvRotation: 5.55763e-06, 5.55761e-06, -0.000875617, 1
+	RestPoseInvTranslation: -0.000375963, -0.214685, -2.3813e-06
+	BindPoseScale: 1.31135, 1.31135, 1.31135
+	BindPoseRotation: 0.5, 0.5, 0.5, 0.5
+	BindPoseTranslation: 0.0250962, -0.543094, -1.25953
+Rig_UpperArm.L:
+	ID: 54
+	SkinID: 54
+	AnimID: 54
+	Parent: Rig_Shoulder.L
+	ParentID: 49
+	RestPoseScale: 1, 1, 1
+	RestPoseRotation: 1.62293e-08, 0.0706149, 4.06965e-08, 0.997504
+	RestPoseTranslation: -0.00172721, 0.0860559, -0.012138
+	RestPoseInvScale: 1, 1, 1
+	RestPoseInvRotation: -1.62293e-08, -0.0706149, -4.06965e-08, 0.997504
+	RestPoseInvTranslation: 9.23046e-09, -0.0860559, 0.0122603
+	BindPoseScale: 1.31135, 1.31135, 1.31135
+	BindPoseRotation: 0.5, 0.5, 0.5, 0.5
+	BindPoseTranslation: 0.0254722, -0.108556, -1.25953
+Rig_Index3.L:
+	ID: 55
+	SkinID: 55
+	AnimID: 55
+	Parent: Rig_Index2.L
+	ParentID: 47
+	RestPoseScale: 1, 1, 1
+	RestPoseRotation: 7.11239e-07, 7.45902e-07, 2.2992e-09, 1
+	RestPoseTranslation: 3.72511e-09, 0.0204828, -2.90747e-07
+	RestPoseInvScale: 1, 1, 1
+	RestPoseInvRotation: -7.11239e-07, -7.45902e-07, -2.2992e-09, 1
+	RestPoseInvTranslation: -3.81976e-09, -0.0204828, 3.19884e-07
+	BindPoseScale: 1.31135, 1.31135, 1.31135
+	BindPoseRotation: 0.499789, 0.514424, 0.514439, 0.470034
+	BindPoseTranslation: 0.00621984, -0.625086, -1.27676
+Rig_Middle3.R:
+	ID: 56
+	SkinID: 56
+	AnimID: 56
+	Parent: Rig_Middle2.R
+	ParentID: 17
+	RestPoseScale: 1, 1, 1
+	RestPoseRotation: -8.19122e-07, 7.60095e-07, -1.09896e-07, 1
+	RestPoseTranslation: 4.62296e-09, 0.022861, -2.08316e-07
+	RestPoseInvScale: 1, 1, 1
+	RestPoseInvRotation: 8.19122e-07, -7.60095e-07, 1.09896e-07, 1
+	RestPoseInvTranslation: 4.01421e-10, -0.022861, 1.70864e-07
+	BindPoseScale: 1.31135, 1.31135, 1.31135
+	BindPoseRotation: 0.518325, -0.480976, -0.480976, 0.518328
+	BindPoseTranslation: 0.014852, -0.671031, -1.25798
+Rig_Middle3.L:
+	ID: 57
+	SkinID: 57
+	AnimID: 57
+	Parent: Rig_Middle2.L
+	ParentID: 46
+	RestPoseScale: 1, 1, 1
+	RestPoseRotation: -8.19122e-07, -7.60095e-07, 1.09896e-07, 1
+	RestPoseTranslation: -4.62296e-09, 0.022861, -2.08316e-07
+	RestPoseInvScale: 1, 1, 1
+	RestPoseInvRotation: 8.19122e-07, 7.60095e-07, -1.09896e-07, 1
+	RestPoseInvTranslation: -4.01421e-10, -0.022861, 1.70864e-07
+	BindPoseScale: 1.31135, 1.31135, 1.31135
+	BindPoseRotation: 0.518325, 0.480976, 0.480976, 0.518328
+	BindPoseTranslation: -0.014852, -0.671031, -1.25798
+Adj_LowerArm.L:
+	ID: 58
+	SkinID: 58
+	AnimID: 58
+	Parent: Rig_LowerArm.L
+	ParentID: 51
+	RestPoseScale: 1, 1, 1
+	RestPoseRotation: 1.75415e-13, 8.35776e-13, 2.03584e-10, 1
+	RestPoseTranslation: 6.0927e-09, -1.52431e-09, -2.89427e-09
+	RestPoseInvScale: 1, 1, 1
+	RestPoseInvRotation: -1.75415e-13, -8.35776e-13, -2.03584e-10, 1
+	RestPoseInvTranslation: -6.09271e-09, 1.52431e-09, 2.89427e-09
+	BindPoseScale: 1.31135, 1.31135, 1.31135
+	BindPoseRotation: 0.499556, 0.500438, 0.500438, 0.499568
+	BindPoseTranslation: 0.0260613, -0.328378, -1.25952
+Rig_Chest:
+	ID: 59
+	SkinID: 59
+	AnimID: 59
+	Parent: Rig_Spine
+	ParentID: 30
+	RestPoseScale: 1, 1, 1
+	RestPoseRotation: -0.0744876, 3.19522e-14, -1.77592e-08, 0.997222
+	RestPoseTranslation: 1.08051e-14, 0.0998263, -4.60701e-08
+	RestPoseInvScale: 1, 1, 1
+	RestPoseInvRotation: 0.0744876, -3.17852e-14, 1.77592e-08, 0.997222
+	RestPoseInvTranslation: 3.53581e-09, -0.0987186, -0.0148303
+	BindPoseScale: 1.31135, 1.31135, 1.31135
+	BindPoseRotation: 0.0592437, -1.19e-07, 7.06241e-09, 0.998244
+	BindPoseTranslation: 3.39486e-08, -1.03355, -0.142391
+Rig_Thumb1.L:
+	ID: 60
+	SkinID: 60
+	AnimID: 60
+	Parent: Rig_Hand.L
+	ParentID: 53
+	RestPoseScale: 1, 1, 1
+	RestPoseRotation: 0.178274, 0.581797, -0.301636, 0.733993
+	RestPoseTranslation: 0.0127358, 0.00439331, -0.0114988
+	RestPoseInvScale: 1, 1, 1
+	RestPoseInvRotation: -0.178274, -0.581797, 0.301636, 0.733993
+	RestPoseInvTranslation: -0.0118199, -0.0126225, -0.00383238
+	BindPoseScale: 1.31135, 1.31135, 1.31135
+	BindPoseRotation: -0.163857, 0.316053, 0.719576, 0.596215
+	BindPoseTranslation: 1.33073, -0.293604, 0.0208501
+Rig_Index1.L:
+	ID: 61
+	SkinID: 61
+	AnimID: 61
+	Parent: Rig_Hand.L
+	ParentID: 53
+	RestPoseScale: 1, 1, 1
+	RestPoseRotation: -1.65053e-11, -4.19637e-10, -0.0393017, 0.999227
+	RestPoseTranslation: 0.0153932, 0.0664899, -0.00154316
+	RestPoseInvScale: 1, 1, 1
+	RestPoseInvRotation: 1.65053e-11, 4.19637e-10, 0.0393017, 0.999227
+	RestPoseInvTranslation: -0.0101233, -0.0674935, 0.00154316
+	BindPoseScale: 1.31135, 1.31135, 1.31135
+	BindPoseRotation: 0.479963, 0.519265, 0.519265, 0.479963
+	BindPoseTranslation: 0.0575514, -0.606938, -1.25799
+Rig_Thumb3.L:
+	ID: 62
+	SkinID: 62
+	AnimID: 62
+	Parent: Rig_Thumb2.L
+	ParentID: 64
+	RestPoseScale: 1, 1, 1
+	RestPoseRotation: -4.74975e-07, -2.99886e-07, -1.9744e-07, 1
+	RestPoseTranslation: -9.82545e-08, 0.0286632, 5.58796e-09
+	RestPoseInvScale: 1, 1, 1
+	RestPoseInvRotation: 4.74975e-07, 2.99886e-07, 1.9744e-07, 1
+	RestPoseInvTranslation: 1.09573e-07, -0.0286632, -3.28166e-08
+	BindPoseScale: 1.31135, 1.31135, 1.31135
+	BindPoseRotation: -0.156869, 0.296286, 0.717782, 0.610243
+	BindPoseTranslation: 1.32288, -0.396931, 0.0370744
+Rig_Thumb3.R:
+	ID: 63
+	SkinID: 63
+	AnimID: 63
+	Parent: Rig_Thumb2.R
+	ParentID: 13
+	RestPoseScale: 1, 1, 1
+	RestPoseRotation: -4.74975e-07, 2.99886e-07, 1.9744e-07, 1
+	RestPoseTranslation: 9.82545e-08, 0.0286632, 5.58796e-09
+	RestPoseInvScale: 1, 1, 1
+	RestPoseInvRotation: 4.74975e-07, -2.99886e-07, -1.9744e-07, 1
+	RestPoseInvTranslation: -1.09573e-07, -0.0286632, -3.28166e-08
+	BindPoseScale: 1.31135, 1.31135, 1.31135
+	BindPoseRotation: 0.156869, 0.296286, 0.717782, -0.610243
+	BindPoseTranslation: -1.32288, -0.396931, 0.0370744
+Rig_Thumb2.L:
+	ID: 64
+	SkinID: 64
+	AnimID: 64
+	Parent: Rig_Thumb1.L
+	ParentID: 60
+	RestPoseScale: 1, 1, 1
+	RestPoseRotation: -0.0201214, 0.0114846, 0.0101341, 0.99968
+	RestPoseTranslation: -1.77151e-07, 0.0465982, 2.58243e-08
+	RestPoseInvScale: 1, 1, 1
+	RestPoseInvRotation: 0.0201214, -0.0114846, -0.0101341, 0.99968
+	RestPoseInvTranslation: -0.000922449, -0.0465509, -0.00188551
+	BindPoseScale: 1.31135, 1.31135, 1.31135
+	BindPoseRotation: -0.156869, 0.296286, 0.717781, 0.610243
+	BindPoseTranslation: 1.32288, -0.368268, 0.0370756
+Rig_Bust1.L:
+	ID: 65
+	SkinID: 65
+	AnimID: 65
+	Parent: Rig_UpperChest
+	ParentID: 44
+	RestPoseScale: 1, 1, 1
+	RestPoseRotation: 0.723302, 0.180169, -0.14937, 0.649663
+	RestPoseTranslation: 0.0537684, -0.0224461, 0.0656281
+	RestPoseInvScale: 1, 1, 1
+	RestPoseInvRotation: 0.723302, 0.180169, -0.14937, -0.649663
+	RestPoseInvTranslation: -0.0168403, -0.084636, -0.0159705
+	BindPoseScale: 1.31135, 1.31135, 1.31135
+	BindPoseRotation: -0.645896, -0.162284, 0.16863, 0.726668
+	BindPoseTranslation: 0.0265251, -0.215443, 1.14197
+Adj_UpperArm.L:
+	ID: 66
+	SkinID: 66
+	AnimID: 66
+	Parent: Rig_UpperArm.L
+	ParentID: 54
+	RestPoseScale: 1, 1, 1
+	RestPoseRotation: -6.55475e-10, 7.45058e-09, 8.02235e-12, 1
+	RestPoseTranslation: 1.40205e-10, -1.6938e-09, -1.42311e-10
+	RestPoseInvScale: 1, 1, 1
+	RestPoseInvRotation: 6.55475e-10, -7.45058e-09, -8.02235e-12, 1
+	RestPoseInvTranslation: -1.40205e-10, 1.6938e-09, 1.42311e-10
+	BindPoseScale: 1.31135, 1.31135, 1.31135
+	BindPoseRotation: 0.5, 0.5, 0.5, 0.5
+	BindPoseTranslation: 0.0254722, -0.108556, -1.25953
+Rig_Shoulder.R:
+	ID: 67
+	SkinID: 67
+	AnimID: 67
+	Parent: Rig_UpperChest
+	ParentID: 44
+	RestPoseScale: 1, 1, 1
+	RestPoseRotation: -0.478726, 0.478726, 0.520405, 0.520405
+	RestPoseTranslation: -0.0225, 0.109708, -0.0056639
+	RestPoseInvScale: 1, 1, 1
+	RestPoseInvRotation: -0.478726, 0.478726, 0.520405, -0.520405
+	RestPoseInvTranslation: -0.0147812, -0.0225, -0.108855
+	BindPoseScale: 1.31135, 1.31135, 1.31135
+	BindPoseRotation: -0.534059, 0.534059, 0.463444, -0.463444
+	BindPoseTranslation: 0.153948, -0.0225, -1.26269

@@ -51,6 +51,7 @@ namespace OpenRA
 		public readonly MersenneTwister LocalRandom;
 		public readonly ModelCache ModelCache;
 		public readonly MeshCache MeshCache;
+		public readonly SkeletonCache SkeletonCache = new SkeletonCache();
 		public LongBitSet<PlayerBitMask> AllPlayersMask = default(LongBitSet<PlayerBitMask>);
 		public readonly LongBitSet<PlayerBitMask> NoPlayersMask = default(LongBitSet<PlayerBitMask>);
 
@@ -210,7 +211,7 @@ namespace OpenRA
 			LocalRandom = new MersenneTwister();
 
 			ModelCache = modData.ModelSequenceLoader.CacheModels(modData.ModelLoaders, map, modData, map.Rules.ModelSequences);
-			MeshCache = modData.MeshSequenceLoader.CacheMeshes(modData.MeshLoaders, map, modData, map.Rules.MeshSequences);
+			MeshCache = modData.MeshSequenceLoader.CacheMeshes(modData.MeshLoaders, SkeletonCache, map, modData, map.Rules.MeshSequences);
 
 			var worldActorType = type == WorldType.Editor ? SystemActors.EditorWorld : SystemActors.World;
 			WorldActor = CreateActor(worldActorType.ToString(), new TypeDictionary());
@@ -441,6 +442,9 @@ namespace OpenRA
 				using (new PerfSample("tick_actors"))
 					foreach (var a in actors.Values)
 						a.Tick();
+
+				// after actor tick ,we should update skeleton info?
+				SkeletonCache.UpdateAllSkeletonTexture();
 
 				ApplyToActorsWithTraitTimed<ITick>((actor, trait) => trait.Tick(actor), "Trait");
 

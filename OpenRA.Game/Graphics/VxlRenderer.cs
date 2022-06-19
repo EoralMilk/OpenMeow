@@ -266,7 +266,7 @@ namespace OpenRA.Graphics
 					};
 
 					// vxl instance data needed
-					iom.AddInstanceData(data, 24);
+					iom.AddInstanceData(data, 24, Array.Empty<int>(), 0);
 					iom.SetPalette(palette);
 				}
 			}

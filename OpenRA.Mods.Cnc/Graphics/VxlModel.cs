@@ -125,6 +125,8 @@ namespace OpenRA.Mods.Cnc.Graphics
 		readonly string name;
 		public string Name => name;
 
+		public OrderedSkeleton Skeleton { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+
 		readonly CombinedMeshRenderData renderData;
 
 		ITexture palette;
@@ -144,7 +146,7 @@ namespace OpenRA.Mods.Cnc.Graphics
 			instanceCount = 0;
 		}
 
-		public void AddInstanceData(float[] data, int dataCount)
+		public void AddInstanceData(in float[] data, int dataCount, in int[] dataInt, int dataintCount)
 		{
 			if (instanceCount == MaxInstanceCount)
 				throw new Exception("Instance Count bigger than MaxInstanceCount");

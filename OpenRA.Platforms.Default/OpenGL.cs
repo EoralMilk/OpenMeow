@@ -165,6 +165,7 @@ namespace OpenRA.Platforms.Default
 		public const int GL_ACTIVE_UNIFORMS = 0x8B86;
 
 		public const int GL_RGBA16F = 0x881A;
+		public const int GL_RGBA32F = 0x8814;
 
 		// OpenGL 4.3
 		public const int GL_DEBUG_OUTPUT = 0x92E0;
@@ -176,6 +177,9 @@ namespace OpenRA.Platforms.Default
 		public const int GL_DEBUG_SOURCE_THIRD_PARTY = 0x8249;
 		public const int GL_DEBUG_SOURCE_APPLICATION = 0x824A;
 		public const int GL_DEBUG_SOURCE_OTHER = 0x824B;
+
+		// PixelAlignment
+		public const int GL_UNPACK_ALIGNMENT = 0x0CF5;
 
 		static readonly Dictionary<int, string> DebugSourceToText = new Dictionary<int, string>
 		{
@@ -476,6 +480,9 @@ namespace OpenRA.Platforms.Default
 		public delegate void ActiveTexture(int texture);
 		public static ActiveTexture glActiveTexture { get; private set; }
 
+		public delegate void PixelStorei(int alignment, int para);
+		public static PixelStorei glPixelStorei { get; private set; }
+
 		public delegate void TexImage2D(int target, int level, int internalFormat,
 			int width, int height, int border, int format, int type, IntPtr pixels);
 		public static TexImage2D glTexImage2D { get; private set; }
@@ -651,6 +658,7 @@ namespace OpenRA.Platforms.Default
 				glIsTexture = Bind<IsTexture>("glIsTexture");
 				glBindTexture = Bind<BindTexture>("glBindTexture");
 				glActiveTexture = Bind<ActiveTexture>("glActiveTexture");
+				glPixelStorei = Bind<PixelStorei>("glPixelStorei");
 				glTexImage2D = Bind<TexImage2D>("glTexImage2D");
 				glTexParameteri = Bind<TexParameteri>("glTexParameteri");
 				glTexParameterf = Bind<TexParameterf>("glTexParameterf");

@@ -14,13 +14,16 @@ namespace OpenRA.Graphics
 		public readonly Func<WVec> OffsetFunc;
 		public readonly Func<WRot> RotationFunc;
 		public readonly Func<bool> IsVisible;
-
+		public int DrawId;
+		public int DrawMask;
 		public MeshInstance(IOrderedMesh mesh, Func<WVec> offset, Func<WRot> rotation, Func<bool> isVisible)
 		{
 			OrderedMesh = mesh;
 			OffsetFunc = offset;
 			RotationFunc = rotation;
 			IsVisible = isVisible;
+			DrawId = -1;
+			DrawMask = -1;
 		}
 
 		public Rectangle ScreenBounds(WPos wPos, WorldRenderer wr, float scale)
@@ -37,7 +40,8 @@ namespace OpenRA.Graphics
 	public interface IOrderedMesh
 	{
 		string Name { get; }
-		void AddInstanceData(float[] data, int dataCount);
+		OrderedSkeleton Skeleton { get; set; }
+		void AddInstanceData(in float[] data, int dataCount, in int[] dataInt, int dataIntCount);
 		void Flush();
 		void DrawInstances();
 		void SetPalette(ITexture pal);
@@ -126,12 +130,12 @@ namespace OpenRA.Graphics
 
 	public interface IMeshLoader
 	{
-		bool TryLoadMesh(IReadOnlyFileSystem fileSystem, string filename, MiniYaml definition, MeshCache cache, out IOrderedMesh model);
+		bool TryLoadMesh(IReadOnlyFileSystem fileSystem, string filename, MiniYaml definition, MeshCache cache, OrderedSkeleton skeleton, SkeletonAsset skeletonType, out IOrderedMesh model);
 	}
 
 	public interface IMeshSequenceLoader
 	{
-		MeshCache CacheMeshes(IMeshLoader[] loaders, IReadOnlyFileSystem fileSystem, ModData modData, IReadOnlyDictionary<string, MiniYamlNode> modelDefinitions);
+		MeshCache CacheMeshes(IMeshLoader[] loaders, SkeletonCache skeletonCache, IReadOnlyFileSystem fileSystem, ModData modData, IReadOnlyDictionary<string, MiniYamlNode> modelDefinitions);
 	}
 
 }

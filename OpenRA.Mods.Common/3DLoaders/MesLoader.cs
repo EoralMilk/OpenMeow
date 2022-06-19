@@ -113,7 +113,7 @@ namespace OpenRA.Mods.Common.Graphics
 		float RemapX, RemapY, RemapZ;
 		int DrawId;
 		uint DrawMask;
-		public MeshInstanceData(float[] data)
+		public MeshInstanceData(in float[] data)
 		{
 			t0 = data[0];
 			t1 = data[1];
@@ -139,11 +139,11 @@ namespace OpenRA.Mods.Common.Graphics
 			RemapY = data[21];
 			RemapZ = data[22];
 
-			DrawId = 0;
+			DrawId = -1;
 			DrawMask = 0xFFFFFFFF;
 		}
 
-		public MeshInstanceData(float[] data, int id, uint mask)
+		public MeshInstanceData(in float[] data, int id, uint mask)
 		{
 			t0 = data[0];
 			t1 = data[1];
@@ -178,6 +178,8 @@ namespace OpenRA.Mods.Common.Graphics
 	{
 		public static readonly int MaxInstanceCount = 1024;
 
+		public OrderedSkeleton Skeleton { get; set; }
+		readonly bool useDQB = false;
 		readonly MeshVertexData renderData;
 		public IMaterial Material;
 		readonly string name;
@@ -187,9 +189,11 @@ namespace OpenRA.Mods.Common.Graphics
 		int instanceCount;
 		public IVertexBuffer<MeshInstanceData> InstanceArrayBuffer;
 
-		public OrderedMesh(string name, MeshVertexData data, IMaterial material)
+		public OrderedMesh(string name, MeshVertexData data, IMaterial material, bool useDQB, OrderedSkeleton skeleton)
 		{
 			this.name = name;
+			this.useDQB = useDQB;
+			Skeleton = skeleton;
 			renderData = data;
 			InstanceArrayBuffer = Game.Renderer.CreateVertexBuffer<MeshInstanceData>(MaxInstanceCount);
 			instancesToDraw = new MeshInstanceData[MaxInstanceCount];
@@ -197,18 +201,17 @@ namespace OpenRA.Mods.Common.Graphics
 			Material = material;
 		}
 
-		public void AddInstanceData(float[] data, int dataCount)
+		public void AddInstanceData(in float[] data, int dataCount, in int[] dataInt, int dataIntCount)
 		{
 			if (instanceCount == MaxInstanceCount)
 				throw new Exception("Instance Count bigger than MaxInstanceCount");
 
-			if (dataCount != 23)
+			if (dataCount != 23 || dataIntCount != 2)
 				throw new Exception("AddInstanceData params length unright");
 
-			MeshInstanceData instanceData = new MeshInstanceData(data);
+			MeshInstanceData instanceData = new MeshInstanceData(data, dataInt[0], (uint)dataInt[1]);
 			instancesToDraw[instanceCount] = instanceData;
 			instanceCount++;
-			//Console.WriteLine("instanceCount: " + instanceCount);
 		}
 
 		public void Flush()
@@ -227,6 +230,12 @@ namespace OpenRA.Mods.Common.Graphics
 				return;
 
 			Game.Renderer.SetFaceCull(Material.FaceCullFunc);
+			if (Skeleton != null)
+			{
+				renderData.Shader.SetBool("useDQB", useDQB);
+				renderData.Shader.SetTexture("boneAnimTexture", Skeleton.BoneAnimTexture);
+				renderData.Shader.SetMatrix("BindTransformData", Skeleton.SkeletonAsset.BindTransformData, 128);
+			}
 
 			Material.SetShader(renderData.Shader);
 
@@ -258,7 +267,7 @@ namespace OpenRA.Mods.Common.Graphics
 
 		}
 
-		public bool TryLoadMesh(IReadOnlyFileSystem fileSystem, string filename, MiniYaml definition, MeshCache cache, out IOrderedMesh mesh)
+		public bool TryLoadMesh(IReadOnlyFileSystem fileSystem, string filename, MiniYaml definition, MeshCache cache, OrderedSkeleton skeleton, SkeletonAsset skeletonType, out IOrderedMesh mesh)
 		{
 			var fields = (filename).Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
 
@@ -298,27 +307,30 @@ namespace OpenRA.Mods.Common.Graphics
 				return false;
 			}
 
+			// key should be name + skeletonType because the skin info can be modified by skeletonType
+			var dictKey = name + (skeletonType != null ? skeletonType.Name : "");
+
 			MeshVertexData meshVertex;
 
-			if (!cache.HasMeshData(name))
+			if (!cache.HasMeshData(dictKey))
 			{
 				MeshReader reader;
 				using (var s = fileSystem.Open(name))
-					reader = new MeshReader(s);
+					reader = new MeshReader(s, skeletonType);
 
 				meshVertex = reader.CreateMeshData();
-				cache.AddOrGetMeshData(name, meshVertex);
+				cache.AddOrGetMeshData(dictKey, meshVertex);
 			}
 			else
 			{
-				meshVertex = cache.GetMeshData(name);
+				meshVertex = cache.GetMeshData(dictKey);
 				if (meshVertex == null)
 				{
 					throw new Exception("Can not GetMeshData from MeshCache");
 				}
 			}
 
-			mesh = new OrderedMesh(name, meshVertex, material);
+			mesh = new OrderedMesh(name, meshVertex, material, false, skeleton);
 
 			return true;
 		}
@@ -331,27 +343,33 @@ namespace OpenRA.Mods.Common.Graphics
 
 	class MeshReader
 	{
-		int vertexCount;
-		int indicesCount;
-		int boneCount;
+		readonly int vertexCount;
+		readonly int indicesCount;
+		readonly int boneCount;
 
-		string skeletonType;
-		MesVertex[] vertices;
-		uint[] indices;
+		readonly string skeletonType;
+		readonly MesVertex[] vertices;
+		readonly uint[] indices;
 
-		public MeshReader(Stream s)
+		public MeshReader(Stream s, SkeletonAsset skeleton)
 		{
 			if (!s.ReadASCII(8).StartsWith("Ora_Mesh"))
 				throw new InvalidDataException("Invalid mesh header");
 
-			skeletonType = "";
+			skeletonType = s.ReadUntil('?');
 
-			while (true)
+			Console.WriteLine("skinBoneIndexName using to match skin to skeleton, still in WIP");
+			Dictionary<int, string> skinBoneIndexName = new Dictionary<int, string>();
+
+			if (skeletonType != "null_skeleton")
 			{
-				var c = s.ReadASCII(1);
-				if (c == "?")
-					break;
-				skeletonType += c;
+				int skinBoneCount = s.ReadInt32();
+				for (int i = 0; i < skinBoneCount; ++i)
+				{
+					int skinBoneIndex = s.ReadInt32();
+					string skinBoneName = s.ReadUntil('?');
+					skinBoneIndexName.Add(skinBoneIndex, skinBoneName);
+				}
 			}
 
 			vertexCount = s.ReadInt32();
@@ -377,6 +395,14 @@ namespace OpenRA.Mods.Common.Graphics
 				RenderMask = s.ReadUInt32();
 				BoneId1 = s.ReadInt32(); BoneId2 = s.ReadInt32(); BoneId3 = s.ReadInt32(); BoneId4 = s.ReadInt32();
 				BoneWeight1 = s.ReadFloat(); BoneWeight2 = s.ReadFloat(); BoneWeight3 = s.ReadFloat(); BoneWeight4 = s.ReadFloat();
+
+				if (skeleton != null && skeletonType == skeleton.Name)
+				{
+					BoneId1 = skeleton.GetSkinBoneIdByName(skinBoneIndexName[BoneId1]);
+					BoneId2 = skeleton.GetSkinBoneIdByName(skinBoneIndexName[BoneId2]);
+					BoneId3 = skeleton.GetSkinBoneIdByName(skinBoneIndexName[BoneId3]);
+					BoneId4 = skeleton.GetSkinBoneIdByName(skinBoneIndexName[BoneId4]);
+				}
 
 				vertices[i] = new MesVertex(X, Y, Z, NX, NY, NZ, U, V, RenderMask,
 					BoneId1, BoneId2, BoneId3, BoneId4,
