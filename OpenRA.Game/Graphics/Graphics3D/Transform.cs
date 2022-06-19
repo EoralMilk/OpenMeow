@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 using GlmSharp;
@@ -100,7 +101,14 @@ namespace OpenRA.Graphics
 		public static Transformation Blend(in Transformation a, in Transformation b, float blend)
 		{
 			var s = vec3.Lerp(a.Scale, b.Scale, blend);
-			var r = quat.SLerp(a.Rotation, b.Rotation, blend);
+
+			// Milk: GlmSharp的SLerp有问题，不清楚是怎么回事，总之不要用quat.SLerp
+			var qs = Quaternion.Slerp(new Quaternion(a.Rotation.x, a.Rotation.y, a.Rotation.z, a.Rotation.w),
+										new Quaternion(b.Rotation.x, b.Rotation.y, b.Rotation.z, b.Rotation.w),
+										blend);
+			var r = new quat(qs.X, qs.Y, qs.Z, qs.W);
+
+			//var r = quat.Lerp(a.Rotation, b.Rotation, blend).Normalized;
 			var p = vec3.Lerp(a.Position, b.Position, blend);
 
 			return new Transformation(s, r, p);

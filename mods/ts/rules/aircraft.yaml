@@ -567,7 +567,6 @@ APACHE:
 	WithMesh@sweater:
 		Mesh: sweater
 	WithSkeleton:
-		Sequence: test
 	RenderMeshes:
 		Image: rumya-2
 		ZOffset: 15

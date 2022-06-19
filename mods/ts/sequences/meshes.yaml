@@ -13,3 +13,9 @@ rumya:
 
 rumya-2:
 	Inherits@defaults: rumya
+	Skeleton: testArmature
+		Anims:
+			test: rest
+			rest: test
+	Meshes:
+		skirt-split: flake_skirt, skirt3

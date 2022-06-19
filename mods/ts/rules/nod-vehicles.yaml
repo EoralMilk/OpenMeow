@@ -91,9 +91,8 @@ BIKE:
 	WithMesh@sweater:
 		Mesh: sweater
 	WithSkeleton:
-		Sequence: test
 	RenderMeshes:
-		Image: rumya-2
+		Image: rumya
 		ZOffset: 15
 		Scale: 6
 

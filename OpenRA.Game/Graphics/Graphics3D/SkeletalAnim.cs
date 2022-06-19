@@ -112,6 +112,7 @@ namespace OpenRA.Graphics
 					{
 						vec3 scale = ReadVec3(s);
 						quat rotation = ReadQuat(s);
+						rotation = rotation.Normalized;
 						vec3 translation = ReadVec3(s);
 						Frames[i].Trans[skeleton.BoneNameAnimIndex[boneIdtoNames[j]]] = new Transformation(scale, rotation, translation);
 					}

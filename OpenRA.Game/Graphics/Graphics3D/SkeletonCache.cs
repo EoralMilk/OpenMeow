@@ -42,22 +42,21 @@ namespace OpenRA.Graphics
 			if (!HasSkeletonAsset(assetname))
 			{
 				var skeletonAsset = new SkeletonAsset(fileSystem, assetname);
-
-				var info = skeletonDefine.ToDictionary();
-				if (info.ContainsKey("Anims"))
-				{
-					var animsInfo = info["Anims"].ToDictionary();
-					foreach (var animDefine in animsInfo)
-					{
-						skeletonAsset.TryAddAnimation(fileSystem, animDefine.Key, animDefine.Value.Value);
-					}
-				}
-				else
-				{
-					Console.WriteLine("Unit " + unit + " has no animations");
-				}
-
 				assets.Add(assetname, skeletonAsset);
+			}
+
+			var info = skeletonDefine.ToDictionary();
+			if (info.ContainsKey("Anims"))
+			{
+				var animsInfo = info["Anims"].ToDictionary();
+				foreach (var animDefine in animsInfo)
+				{
+					assets[assetname].TryAddAnimation(fileSystem, unit, animDefine.Key, animDefine.Value.Value);
+				}
+			}
+			else
+			{
+				Console.WriteLine("Unit " + unit + " has no animations");
 			}
 
 			return assets[assetname];

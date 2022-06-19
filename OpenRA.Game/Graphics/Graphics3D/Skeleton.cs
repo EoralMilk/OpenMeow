@@ -326,6 +326,9 @@ namespace OpenRA.Graphics
 
 		public Dictionary<string, SkeletalAnim> Animations = new Dictionary<string, SkeletalAnim>();
 
+		// unit sequence to anims
+		public Dictionary<string, Dictionary<string, SkeletalAnim>> AnimationsRef = new Dictionary<string, Dictionary<string, SkeletalAnim>>();
+
 		public SkeletonAsset(IReadOnlyFileSystem fileSystem, string filename)
 		{
 			Name = filename;
@@ -389,21 +392,50 @@ namespace OpenRA.Graphics
 			}
 		}
 
-		public bool TryAddAnimation(IReadOnlyFileSystem fileSystem, string sequence, string filename)
+		public bool TryAddAnimation(in IReadOnlyFileSystem fileSystem, in string unit, in string sequence, in string filename)
 		{
 			var fields = (filename).Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
 			var file = fields[0].Trim();
 
-			if (Animations.ContainsKey(sequence))
+			if (Animations.ContainsKey(file))
 			{
+				if (!AnimationsRef.ContainsKey(unit))
+				{
+					AnimationsRef.Add(unit, new Dictionary<string, SkeletalAnim>());
+				}
+
+				AnimationsRef[unit].Add(sequence, Animations[file]);
+
 				return false;
 			}
 			else
 			{
 				SkeletalAnim anim = new SkeletalAnim(fileSystem, sequence, file, this);
-				Animations.Add(sequence, anim);
+				Animations.Add(file, anim);
+
+				if (!AnimationsRef.ContainsKey(unit))
+				{
+					AnimationsRef.Add(unit, new Dictionary<string, SkeletalAnim>());
+				}
+
+				AnimationsRef[unit].Add(sequence, Animations[file]);
+
 				return true;
 			}
+		}
+
+		public SkeletalAnim GetSkeletalAnim(in string unit, in string sequence)
+		{
+			if (!AnimationsRef.ContainsKey(unit))
+			{
+				throw new Exception("Unit " + unit + " has no any sequence defined");
+			}
+			else if (!AnimationsRef[unit].ContainsKey(sequence))
+			{
+				throw new Exception("Unit " + unit + " has no anim for sequence " + sequence);
+			}
+
+			return AnimationsRef[unit][sequence];
 		}
 
 		public int GetBoneIdByName(string boneName)

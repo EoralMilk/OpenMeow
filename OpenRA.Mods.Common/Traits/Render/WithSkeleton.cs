@@ -21,7 +21,8 @@ namespace OpenRA.Mods.Common.Traits.Render
 
 	public class WithSkeletonInfo : ConditionalTraitInfo, Requires<RenderMeshesInfo>
 	{
-		public readonly string Sequence = "idle";
+		public readonly string Sequence = "rest";
+		public readonly string Sequence2 = "test";
 
 		public override object Create(ActorInitializer init) { return new WithSkeleton(init.Self, this); }
 	}
@@ -32,17 +33,25 @@ namespace OpenRA.Mods.Common.Traits.Render
 		readonly SkeletonInstance skeleton;
 		readonly SkeletalAnim[] skeletalAnims;
 		readonly SkeletalAnim currentAnim;
+		readonly SkeletalAnim targetAnim;
+
 		readonly RenderMeshes rm;
 		public bool Draw;
 		int tick = 0;
 		int frameTick = 0;
+		int frameTick2 = 0;
+
 		readonly float scale = 1;
 		readonly Actor self;
 		readonly BodyOrientation body;
+		readonly IMove move;
+		float blend;
+		MovementType lastType;
 		public WithSkeleton(Actor self, WithSkeletonInfo info)
 			: base(info)
 		{
 			body = self.Trait<BodyOrientation>();
+			move = self.Trait<IMove>();
 			this.self = self;
 
 			rm = self.Trait<RenderMeshes>();
@@ -53,24 +62,10 @@ namespace OpenRA.Mods.Common.Traits.Render
 
 			skeleton = orderedSkeleton.CreateInstance();
 
-			if (orderedSkeleton.SkeletonAsset.Animations.ContainsKey(info.Sequence))
-			{
-				currentAnim = orderedSkeleton.SkeletonAsset.Animations[info.Sequence];
-			}
-			else if (orderedSkeleton.SkeletonAsset.Animations.Count > 0)
-			{
-				Console.WriteLine("Unit WithSkeleton: " + rm.Image + "dose not find animation: " + info.Sequence);
-				int i = 0;
-				skeletalAnims = new SkeletalAnim[orderedSkeleton.SkeletonAsset.Animations.Count];
-				foreach (var anim in orderedSkeleton.SkeletonAsset.Animations)
-				{
-					skeletalAnims[i] = anim.Value;
-					i++;
-				}
+			currentAnim = orderedSkeleton.SkeletonAsset.GetSkeletalAnim(rm.Image, info.Sequence);
+			targetAnim = orderedSkeleton.SkeletonAsset.GetSkeletalAnim(rm.Image, info.Sequence2);
 
-				currentAnim = skeletalAnims[0];
-			}
-			else
+			if (orderedSkeleton.SkeletonAsset.Animations.Count == 0)
 			{
 				throw new Exception("unit " + rm.Image + " has no animation");
 			}
@@ -87,10 +82,36 @@ namespace OpenRA.Mods.Common.Traits.Render
 
 			skeleton.SetOffset(self.CenterPosition, body.QuantizeOrientation(self.Orientation), scale);
 
-			if (currentAnim != null)
+			if (currentAnim != null && targetAnim != null)
 			{
-				frameTick = tick % currentAnim.Frames.Length;
-				skeleton.UpdateOffset(currentAnim.Frames[frameTick]);
+				if (move.CurrentMovementTypes != MovementType.None)
+				{
+					blend = blend >= 1.0 ? 1.0f : blend + 0.02f;
+				}
+				else
+				{
+					blend = blend <= 0.0 ? 0.0f : blend - 0.02f;
+				}
+
+				if (blend > 0.99)
+				{
+					frameTick = 0;
+					frameTick2 = (frameTick2 + 1) % targetAnim.Frames.Length;
+				}
+				else if (blend < 0.01)
+				{
+					frameTick2 = 0;
+					frameTick = (frameTick + 1) % currentAnim.Frames.Length;
+				}
+				else
+				{
+					frameTick = (frameTick + 1) % currentAnim.Frames.Length;
+					frameTick2 = (frameTick2 + 1) % targetAnim.Frames.Length;
+				}
+
+				Frame result = new Frame(currentAnim.Frames[frameTick].Length);
+				BlendFrame(currentAnim.Frames[frameTick], targetAnim.Frames[frameTick2], blend, ref result);
+				skeleton.UpdateOffset(result);
 			}
 
 			if (Draw)
@@ -105,6 +126,23 @@ namespace OpenRA.Mods.Common.Traits.Render
 			}
 
 			tick++;
+		}
+
+		void BlendFrame(in Frame frameA, in Frame frameB, float alpha, ref Frame result)
+		{
+			if (alpha < 0.01)
+			{
+				result = frameA;
+			}
+			else if (alpha > 0.99)
+			{
+				result = frameB;
+			}
+
+			for (int i = 0; i < frameA.Length; i++)
+			{
+				result.Trans[i] = Transformation.Blend(frameA.Trans[i], frameB.Trans[i], alpha);
+			}
 		}
 
 		public int GetDrawId()
