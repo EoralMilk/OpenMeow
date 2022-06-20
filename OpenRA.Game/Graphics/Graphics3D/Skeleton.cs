@@ -92,6 +92,10 @@ namespace OpenRA.Graphics
 	public class SkeletonInstance
 	{
 		public readonly BoneInstance[] Bones;
+		bool hasUpdated = false;
+		bool hasUpdatedLast = false;
+		public readonly mat4[] LastSkeletonPose;
+
 		readonly SkeletonAsset asset;
 		readonly OrderedSkeleton skeleton;
 
@@ -122,6 +126,7 @@ namespace OpenRA.Graphics
 			{
 				Bones[i] = new BoneInstance(boneAssets[i]);
 			}
+			LastSkeletonPose = new mat4[boneSize];
 		}
 
 		void UpdateInner(int id, in Frame animFrame)
@@ -159,11 +164,26 @@ namespace OpenRA.Graphics
 			{
 				UpdateInner(i, animFrame);
 			}
+
+			hasUpdated = true;
+		}
+
+		public void UpdateLastPose()
+		{
+			if (hasUpdated)
+				for (int i = 0; i < boneSize; i++)
+				{
+					LastSkeletonPose[i] = Bones[i].CurrentPose;
+				}
+			else
+				return;
+
+			hasUpdatedLast = true;
 		}
 
 		public void ProcessManagerData()
 		{
-			if (DrawID == -1)
+			if (DrawID == -1 || !hasUpdatedLast)
 				return;
 			if (DrawID >= SkeletonAsset.AnimTextureHeight)
 				throw new Exception("ProcessManagerData: Skeleton Instance drawId out of range: might be too many skeleton to draw!");
@@ -173,7 +193,7 @@ namespace OpenRA.Graphics
 			int y = DrawID * dataWidth;
 			for (int x = 0; x < dataWidth; x += 16)
 			{
-				mat4 m = Bones[asset.SkinBonesIndices[i]].CurrentPose;
+				mat4 m = LastSkeletonPose[asset.SkinBonesIndices[i]];
 				skeleton.AnimTransformData[y + x + 0] = m.Column0[0];
 				skeleton.AnimTransformData[y + x + 1] = m.Column0[1];
 				skeleton.AnimTransformData[y + x + 2] = m.Column0[2];
@@ -196,7 +216,11 @@ namespace OpenRA.Graphics
 					break;
 				}
 			}
+		}
 
+		public bool CanGetPose()
+		{
+			return hasUpdatedLast && hasUpdated;
 		}
 	}
 

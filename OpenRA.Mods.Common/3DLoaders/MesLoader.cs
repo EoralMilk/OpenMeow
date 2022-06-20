@@ -108,11 +108,11 @@ namespace OpenRA.Mods.Common.Graphics
 
 	public struct MeshInstanceData
 	{
-		float t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15;
-		float TintX, TintY, TintZ, TintW;
-		float RemapX, RemapY, RemapZ;
-		int DrawId;
-		uint DrawMask;
+		public float t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15;
+		public float TintX, TintY, TintZ, TintW;
+		public float RemapX, RemapY, RemapZ;
+		public int DrawId;
+		public uint DrawMask;
 		public MeshInstanceData(in float[] data)
 		{
 			t0 = data[0];
@@ -183,6 +183,8 @@ namespace OpenRA.Mods.Common.Graphics
 		readonly MeshVertexData renderData;
 		public IMaterial Material;
 		readonly string name;
+		public readonly bool IsCloth = false;
+		public IMaterial BodyMaterial;
 		public string Name => name;
 
 		readonly MeshInstanceData[] instancesToDraw;
@@ -199,6 +201,20 @@ namespace OpenRA.Mods.Common.Graphics
 			instancesToDraw = new MeshInstanceData[MaxInstanceCount];
 			instanceCount = 0;
 			Material = material;
+		}
+
+		public OrderedMesh(string name, MeshVertexData data, IMaterial material, IMaterial bodyMaterial, bool useDQB, OrderedSkeleton skeleton)
+		{
+			IsCloth = true;
+			this.name = name;
+			this.useDQB = useDQB;
+			Skeleton = skeleton;
+			renderData = data;
+			InstanceArrayBuffer = Game.Renderer.CreateVertexBuffer<MeshInstanceData>(MaxInstanceCount);
+			instancesToDraw = new MeshInstanceData[MaxInstanceCount];
+			instanceCount = 0;
+			Material = material;
+			BodyMaterial = bodyMaterial;
 		}
 
 		public void AddInstanceData(in float[] data, int dataCount, in int[] dataInt, int dataIntCount)
@@ -237,7 +253,12 @@ namespace OpenRA.Mods.Common.Graphics
 				renderData.Shader.SetMatrix("BindTransformData", Skeleton.SkeletonAsset.BindTransformData, 128);
 			}
 
-			Material.SetShader(renderData.Shader);
+			renderData.Shader.SetBool("isCloth", IsCloth);
+			Material.SetShader(renderData.Shader, "mainMaterial");
+			if (IsCloth)
+			{
+				BodyMaterial.SetShader(renderData.Shader, "bodyMaterial");
+			}
 
 			renderData.Shader.PrepareRender();
 
@@ -271,28 +292,62 @@ namespace OpenRA.Mods.Common.Graphics
 		{
 			var fields = (filename).Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
 
-			if (fields.Length <= 1)
-			{
-				throw new Exception(filename + " Need Material (sequence: MeshName, Material)");
-			}
-
-			// material
-			var materialName = fields[1].Trim();
 			IMaterial material;
-			if (!cache.HasMaterial(materialName))
-			{
-				var matReader = new MaterialReader(fileSystem, materialName);
 
-				material = matReader.CreateMaterial();
-				cache.AddOrGetMaterial(materialName, material);
+			var info = definition.ToDictionary();
+			if (info.ContainsKey("Material"))
+			{
+				// material
+				var materialName = info["Material"].Value.Trim();
+				if (!cache.HasMaterial(materialName))
+				{
+					var matReader = new MaterialReader(fileSystem, cache, materialName);
+
+					material = matReader.CreateMaterial();
+					cache.AddOrGetMaterial(materialName, material);
+				}
+				else
+				{
+					material = cache.GetMaterial(materialName);
+					if (material == null)
+					{
+						throw new Exception("Can not GetMaterial from MeshCache");
+					}
+				}
 			}
 			else
 			{
-				material = cache.GetMaterial(materialName);
-				if (material == null)
+				throw new Exception("Mesh " + fields[0].Trim() + " has no Material");
+			}
+
+			IMaterial bodyMaterial;
+			bool isCloth = false;
+			if (info.ContainsKey("BodyMaterial"))
+			{
+				isCloth = true;
+
+				// body material
+				var materialName = info["BodyMaterial"].Value.Trim();
+				if (!cache.HasMaterial(materialName))
 				{
-					throw new Exception("Can not GetMaterial from MeshCache");
+					var matReader = new MaterialReader(fileSystem, cache, materialName);
+
+					bodyMaterial = matReader.CreateMaterial();
+					cache.AddOrGetMaterial(materialName, bodyMaterial);
 				}
+				else
+				{
+					bodyMaterial = cache.GetMaterial(materialName);
+					if (bodyMaterial == null)
+					{
+						throw new Exception("Can not Get Body Material from MeshCache");
+					}
+				}
+			}
+			else
+			{
+				isCloth = false;
+				bodyMaterial = null;
 			}
 
 			// mesh
@@ -330,7 +385,10 @@ namespace OpenRA.Mods.Common.Graphics
 				}
 			}
 
-			mesh = new OrderedMesh(name, meshVertex, material, false, skeleton);
+			if (isCloth)
+				mesh = new OrderedMesh(name, meshVertex, material, bodyMaterial, useDQB: false, skeleton: skeleton);
+			else
+				mesh = new OrderedMesh(name, meshVertex, material, false, skeleton);
 
 			return true;
 		}
@@ -436,8 +494,14 @@ namespace OpenRA.Mods.Common.Graphics
 		readonly ITexture diffuseTex;
 		readonly ITexture specularTex;
 		readonly FaceCullFunc faceCullFunc;
-		public MaterialReader(IReadOnlyFileSystem fileSystem, string filename)
+		readonly IReadOnlyFileSystem fileSystem;
+		readonly MeshCache cache;
+		readonly string filename;
+		public MaterialReader(IReadOnlyFileSystem fileSystem, MeshCache cache, string filename)
 		{
+			this.fileSystem = fileSystem;
+			this.cache = cache;
+			this.filename = filename;
 			if (!fileSystem.Exists(filename))
 				filename += ".mat";
 
@@ -470,19 +534,7 @@ namespace OpenRA.Mods.Common.Graphics
 			{
 				// texture
 				diffMapName = diffMapName.Trim();
-				if (!fileSystem.Exists(diffMapName))
-				{
-					throw new Exception(filename + " Can not find texture " + diffMapName);
-				}
-
-				ImageResult image;
-				using (var ss = fileSystem.Open(diffMapName))
-				{
-					image = ImageResult.FromStream(ss, ColorComponents.RedGreenBlueAlpha);
-				}
-
-				diffuseTex = Game.Renderer.CreateTexture();
-				diffuseTex.SetData(image.Data, image.Width, image.Height, TextureType.RGBA);
+				PrepareTexture(diffMapName, out diffuseTex);
 			}
 
 			if (specMapName == "NO_TEXTURE")
@@ -493,19 +545,32 @@ namespace OpenRA.Mods.Common.Graphics
 			{
 				// texture
 				specMapName = specMapName.Trim();
-				if (!fileSystem.Exists(specMapName))
+				PrepareTexture(specMapName, out specularTex);
+			}
+		}
+
+		void PrepareTexture(string name, out ITexture texture)
+		{
+			if (cache.HasTexture(name))
+			{
+				texture = cache.GetTexture(name);
+			}
+			else
+			{
+				if (!fileSystem.Exists(name))
 				{
-					throw new Exception(filename + " Can not find texture " + specMapName);
+					throw new Exception(filename + " Can not find texture " + name);
 				}
 
 				ImageResult image;
-				using (var ss = fileSystem.Open(specMapName))
+				using (var ss = fileSystem.Open(name))
 				{
 					image = ImageResult.FromStream(ss, ColorComponents.RedGreenBlueAlpha);
 				}
 
-				specularTex = Game.Renderer.CreateTexture();
-				specularTex.SetData(image.Data, image.Width, image.Height, TextureType.RGBA);
+				texture = Game.Renderer.CreateTexture();
+				texture.SetData(image.Data, image.Width, image.Height, TextureType.RGBA);
+				cache.AddOrGetTexture(name, texture);
 			}
 		}
 

@@ -1,0 +1,33 @@
+rumya:
+	Skeleton: testArmature
+		# Bones:
+		Anims:
+			idle: stand
+			walk: catwalk
+	Meshes:
+		body: combined
+			Material: body
+		hair: lp-hair_s2
+			Material: h-s2
+		cater: lp-CatEar
+			Material: catear
+		skirt-split: SplitSkirt
+			Material: skirt2
+			BodyMaterial: body
+		sweater: RedCollarSweater
+			Material: sweater
+			BodyMaterial: body
+
+rumya-2:
+	Inherits@defaults: rumya
+	Skeleton: testArmature
+		# Bones:
+		Anims:
+			idle: catidle
+			walk: catcrawl
+	Meshes:
+		skirt-split: SportShorts
+			Material: sportshorts
+			BodyMaterial: body
+		hair: lp-hair_pt1
+			Material: h-pt1

@@ -16,14 +16,14 @@ namespace OpenRA.Graphics
 		public readonly Func<bool> IsVisible;
 		public int DrawId;
 		public int DrawMask;
-		public MeshInstance(IOrderedMesh mesh, Func<WVec> offset, Func<WRot> rotation, Func<bool> isVisible)
+		public MeshInstance(IOrderedMesh mesh, Func<WVec> offset, Func<WRot> rotation, Func<bool> isVisible, int modifyMask = -1)
 		{
 			OrderedMesh = mesh;
 			OffsetFunc = offset;
 			RotationFunc = rotation;
 			IsVisible = isVisible;
 			DrawId = -1;
-			DrawMask = -1;
+			DrawMask = modifyMask;
 		}
 
 		public Rectangle ScreenBounds(WPos wPos, WorldRenderer wr, float scale)
@@ -67,7 +67,7 @@ namespace OpenRA.Graphics
 	public interface IMaterial
 	{
 		FaceCullFunc FaceCullFunc { get; }
-		void SetShader(IShader shader);
+		void SetShader(IShader shader, in string matname);
 	}
 
 	public class CommonMaterial : IMaterial
@@ -95,20 +95,20 @@ namespace OpenRA.Graphics
 			this.faceCullFunc = faceCullFunc;
 		}
 
-		public void SetShader(IShader shader)
+		public virtual void SetShader(IShader shader, in string matname)
 		{
 			// diffuse
-			shader.SetBool("material.hasDiffuseMap", HasDiffuseMap);
-			shader.SetVec("material.diffuseTint", DiffuseTint.X, DiffuseTint.Y, DiffuseTint.Z);
+			shader.SetBool(matname + ".hasDiffuseMap", HasDiffuseMap);
+			shader.SetVec(matname + ".diffuseTint", DiffuseTint.X, DiffuseTint.Y, DiffuseTint.Z);
 			if (HasDiffuseMap)
-				shader.SetTexture("material.diffuse", DiffuseMap);
+				shader.SetTexture(matname + ".diffuse", DiffuseMap);
 
 			// specular
-			shader.SetBool("material.hasSpecularMap", HasSpecularMap);
-			shader.SetVec("material.specularTint", SpecularTint.X, SpecularTint.Y, SpecularTint.Z);
+			shader.SetBool(matname + ".hasSpecularMap", HasSpecularMap);
+			shader.SetVec(matname + ".specularTint", SpecularTint.X, SpecularTint.Y, SpecularTint.Z);
 			if (HasSpecularMap)
-				shader.SetTexture("material.specular", SpecularMap);
-			shader.SetFloat("material.shininess", Shininess);
+				shader.SetTexture(matname + ".specular", SpecularMap);
+			shader.SetFloat(matname + ".shininess", Shininess);
 		}
 	}
 

@@ -556,21 +556,7 @@ APACHE:
 	# WithShadow:
 	WithModelBody:
 		ShowShadow: False
-	WithMesh@body:
-		Mesh: body
-	WithMesh@hair:
-		Mesh: hair
-	WithMesh@cater:
-		Mesh: cater
-	WithMesh@skirt:
-		Mesh: skirt-split
-	WithMesh@sweater:
-		Mesh: sweater
-	WithSkeleton:
-	RenderMeshes:
-		Image: rumya-2
-		ZOffset: 15
-		Scale: 6
+
 
 HUNTER:
 	Inherits@2: ^ExistsInWorld

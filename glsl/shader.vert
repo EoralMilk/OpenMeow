@@ -25,6 +25,7 @@ out vec3 FragPos;
 out vec3 vRemap;
 out vec4 vTint;
 
+flat out uint drawPart;
 flat out int isDraw;
 
 uniform mat4 view;
@@ -163,7 +164,7 @@ mat4 GetSkinMatrix()
 
 void main()
 {
-	if ((aDrawPart & iDrawMask) == uint(0x00000000))
+	if ((aDrawPart & iDrawMask) == uint(0))
 	{
 		isDraw = 0;
 		return;
@@ -171,6 +172,7 @@ void main()
 	else{
 		isDraw = 1;
 	}
+	drawPart = aDrawPart;
 
 	mat4 mMatrix = mat4(0.0f);
 	if (iDrawId != -1)
@@ -215,7 +217,7 @@ void main()
 		mMatrix = mMatrix * rotationFix;
 	}
 	vec4 fragP = mMatrix * vec4(aVertexPos, 1.0f);
-	vRemap = iRemap;
+	vRemap = vec3(float(iRemap.x) / 255.0f, float(iRemap.y) / 255.0f, float(iRemap.z) / 255.0f);
 	vTint = iTint;
 	gl_Position = projection * view * fragP;
 	FragPos = fragP.xyz;

@@ -26,7 +26,9 @@ struct DirLight {
 
 uniform DirLight dirLight;
 
-uniform Material material;
+uniform bool isCloth;
+uniform Material mainMaterial;
+uniform Material bodyMaterial;
 out vec4 FragColor;
 
 in vec3 Normal;
@@ -34,6 +36,8 @@ in vec3 FragPos;
 in vec2 TexCoords;
 in vec4 vTint;
 in vec3 vRemap;
+
+flat in uint drawPart;
 flat in int isDraw;
 
 uniform vec3 viewPos;
@@ -41,7 +45,7 @@ uniform bool EnableDepthPreview;
 uniform vec2 DepthPreviewParams;
 uniform bool RenderDepthBuffer;
 
-vec4 CalcDirLight(DirLight light, vec3 normal, vec3 viewDir)
+vec4 CalcDirLight(DirLight light, vec3 normal, vec3 viewDir, const Material material)
 {
 	vec3 lightDir = normalize(-light.direction);
 	// diffuse
@@ -60,8 +64,8 @@ vec4 CalcDirLight(DirLight light, vec3 normal, vec3 viewDir)
 		if (color.a == 0.0)
 			discard;
 		
-		// Hack: remap color used when alpha is in 0.45 to 0.55
-		if (color.a < 0.55 && color.a > 0.45)
+		// Hack: remap color used use alpha channel to store tint color
+		if (color.a < 0.55)
 			color = vec4(vRemap * color.rgb, 1.0);
 
 		ambient = ambient * color.rgb;
@@ -97,10 +101,19 @@ void main()
 	if (isDraw == 0)
 		discard;
 	
+	bool flag = false;
+	if (isCloth && ((drawPart & uint(0x1FF)) !=  uint(0))){
+		flag = true;
+	}
+
 	vec3 norm = normalize(Normal);
 	vec3 viewDir = normalize(viewPos - FragPos);
+	vec4 result;
+	if (flag)
+		result = CalcDirLight(dirLight, norm, viewDir, bodyMaterial);
+	else
+		result = CalcDirLight(dirLight, norm, viewDir, mainMaterial);
 
-	vec4 result = CalcDirLight(dirLight, norm, viewDir);
 
 	if (EnableDepthPreview)
 	{

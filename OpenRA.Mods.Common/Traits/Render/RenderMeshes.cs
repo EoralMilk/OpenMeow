@@ -39,10 +39,11 @@ namespace OpenRA.Mods.Common.Traits.Render
 
 		bool hasSkeleton;
 		WithSkeleton withSkeleton;
+		WithMeshBody meshBody;
 		readonly Actor self;
 		readonly BodyOrientation body;
 		Color remap;
-
+		int drawId;
 		public RenderMeshes(Actor self, RenderMeshesInfo info)
 		{
 			this.self = self;
@@ -53,6 +54,7 @@ namespace OpenRA.Mods.Common.Traits.Render
 		public void Created(Actor self)
 		{
 			withSkeleton = self.TraitOrDefault<WithSkeleton>();
+			meshBody = self.TraitOrDefault<WithMeshBody>();
 			hasSkeleton = withSkeleton != null;
 			if (withSkeleton == null)
 				Console.WriteLine(Info.Image + " has no withSkeleton");
@@ -63,7 +65,6 @@ namespace OpenRA.Mods.Common.Traits.Render
 
 		void ITick.Tick(Actor self)
 		{
-
 		}
 
 		IEnumerable<IRenderable> IRender.Render(Actor self, WorldRenderer wr)
@@ -75,7 +76,15 @@ namespace OpenRA.Mods.Common.Traits.Render
 			}
 
 			if (hasSkeleton)
-				UpdateDrawID(withSkeleton.GetDrawId());
+			{
+				drawId = withSkeleton.GetDrawId();
+				if (drawId == -1)
+					return Array.Empty<IRenderable>();
+				foreach (var mesh in meshes)
+				{
+					mesh.DrawId = drawId;
+				}
+			}
 
 			return new IRenderable[]
 			{
@@ -102,14 +111,5 @@ namespace OpenRA.Mods.Common.Traits.Render
 		{
 			meshes.Remove(m);
 		}
-
-		void UpdateDrawID(int drawId)
-		{
-			foreach (var mesh in meshes)
-			{
-				mesh.DrawId = drawId;
-			}
-		}
-
 	}
 }

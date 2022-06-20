@@ -23,6 +23,8 @@ namespace OpenRA.Graphics
 		readonly IMeshLoader[] loaders;
 		readonly IReadOnlyFileSystem fileSystem;
 		readonly Dictionary<string, IMaterial> materials = new Dictionary<string, IMaterial>();
+		readonly Dictionary<string, ITexture> textures = new Dictionary<string, ITexture>();
+
 		readonly Dictionary<string, MeshVertexData> meshDatas = new Dictionary<string, MeshVertexData>();
 		readonly Dictionary<string, IOrderedMesh> meshes = new Dictionary<string, IOrderedMesh>();
 		readonly Dictionary<string, Dictionary<string, IOrderedMesh>> meshesRef = new Dictionary<string, Dictionary<string, IOrderedMesh>>();
@@ -131,6 +133,34 @@ namespace OpenRA.Graphics
 			}
 
 			return materials[name];
+		}
+
+		public bool HasTexture(string name)
+		{
+			if (textures.ContainsKey(name))
+				return true;
+			else
+				return false;
+		}
+
+		public ITexture GetTexture(string name)
+		{
+			if (!textures.ContainsKey(name))
+			{
+				return null;
+			}
+
+			return textures[name];
+		}
+
+		public ITexture AddOrGetTexture(string name, ITexture texture)
+		{
+			if (!textures.ContainsKey(name))
+			{
+				textures.Add(name, texture);
+			}
+
+			return textures[name];
 		}
 
 		public void DrawInstances(bool sunCamera)

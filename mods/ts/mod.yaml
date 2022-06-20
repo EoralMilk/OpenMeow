@@ -87,6 +87,8 @@ Rules:
 	ts|rules/trees.yaml
 	ts|rules/bridges.yaml
 
+	ts|3dtest/testrulse.yaml
+
 Weapons:
 	ts|weapons/ballisticweapons.yaml
 	ts|weapons/energyweapons.yaml
@@ -112,7 +114,7 @@ ModelSequences:
 	ts|sequences/voxels.yaml
 
 MeshSequences:
-	ts|sequences/meshes.yaml
+	ts|3dtest/meshes.yaml
 
 TileSets:
 	ts|tilesets/temperate.yaml

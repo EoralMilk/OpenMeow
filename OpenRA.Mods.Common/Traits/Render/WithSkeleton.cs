@@ -23,6 +23,7 @@ namespace OpenRA.Mods.Common.Traits.Render
 	{
 		public readonly string Sequence = "rest";
 		public readonly string Sequence2 = "test";
+		public readonly float BlendSpeed = 0.03f;
 
 		public override object Create(ActorInitializer init) { return new WithSkeleton(init.Self, this); }
 	}
@@ -80,17 +81,19 @@ namespace OpenRA.Mods.Common.Traits.Render
 		{
 			Draw = !IsTraitDisabled;
 
+			skeleton.UpdateLastPose();
+
 			skeleton.SetOffset(self.CenterPosition, body.QuantizeOrientation(self.Orientation), scale);
 
 			if (currentAnim != null && targetAnim != null)
 			{
 				if (move.CurrentMovementTypes != MovementType.None)
 				{
-					blend = blend >= 1.0 ? 1.0f : blend + 0.02f;
+					blend = blend >= 1.0 ? 1.0f : blend + Info.BlendSpeed;
 				}
 				else
 				{
-					blend = blend <= 0.0 ? 0.0f : blend - 0.02f;
+					blend = blend <= 0.0 ? 0.0f : blend - Info.BlendSpeed;
 				}
 
 				if (blend > 0.99)
@@ -130,14 +133,14 @@ namespace OpenRA.Mods.Common.Traits.Render
 
 		void BlendFrame(in Frame frameA, in Frame frameB, float alpha, ref Frame result)
 		{
-			if (alpha < 0.01)
-			{
-				result = frameA;
-			}
-			else if (alpha > 0.99)
-			{
-				result = frameB;
-			}
+			//if (alpha < 0.01)
+			//{
+			//	result = frameA;
+			//}
+			//else if (alpha > 0.99)
+			//{
+			//	result = frameB;
+			//}
 
 			for (int i = 0; i < frameA.Length; i++)
 			{
@@ -147,9 +150,10 @@ namespace OpenRA.Mods.Common.Traits.Render
 
 		public int GetDrawId()
 		{
-			if (tick == 0)
-				SelfTick();
-			return skeleton.DrawID;
+			if (skeleton.CanGetPose())
+				return skeleton.DrawID;
+			else
+				return -1;
 		}
 
 	}
