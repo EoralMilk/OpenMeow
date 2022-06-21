@@ -23,7 +23,7 @@ namespace OpenRA.Mods.Common.Graphics
 			new ShaderVertexAttribute("aTexCoords", 2, 2, 6 * sizeof(float)),
 			new ShaderVertexAttribute("aDrawPart", 3, 1, 8 * sizeof(float), AttributeType.UInt32),
 			new ShaderVertexAttribute("aBoneId", 4, 4, 9 * sizeof(float), AttributeType.Int32),
-			new ShaderVertexAttribute("aBoneWidget", 5, 4, 13 * sizeof(float)),
+			new ShaderVertexAttribute("aBoneWeights", 5, 4, 13 * sizeof(float)),
 		};
 		public bool Instanced => true;
 
@@ -385,10 +385,12 @@ namespace OpenRA.Mods.Common.Graphics
 				}
 			}
 
+			var useDQB = ReadYamlInfo.LoadField(info, "UseDQBSkin", false);
+
 			if (isCloth)
-				mesh = new OrderedMesh(name, meshVertex, material, bodyMaterial, useDQB: false, skeleton: skeleton);
+				mesh = new OrderedMesh(name, meshVertex, material, bodyMaterial, useDQB, skeleton: skeleton);
 			else
-				mesh = new OrderedMesh(name, meshVertex, material, false, skeleton);
+				mesh = new OrderedMesh(name, meshVertex, material, useDQB, skeleton);
 
 			return true;
 		}

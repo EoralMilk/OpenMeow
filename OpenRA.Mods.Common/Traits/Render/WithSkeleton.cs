@@ -96,12 +96,12 @@ namespace OpenRA.Mods.Common.Traits.Render
 					blend = blend <= 0.0 ? 0.0f : blend - Info.BlendSpeed;
 				}
 
-				if (blend > 0.99)
+				if (blend == 1.0)
 				{
 					frameTick = 0;
 					frameTick2 = (frameTick2 + 1) % targetAnim.Frames.Length;
 				}
-				else if (blend < 0.01)
+				else if (blend == 0)
 				{
 					frameTick2 = 0;
 					frameTick = (frameTick + 1) % currentAnim.Frames.Length;
@@ -133,14 +133,14 @@ namespace OpenRA.Mods.Common.Traits.Render
 
 		void BlendFrame(in Frame frameA, in Frame frameB, float alpha, ref Frame result)
 		{
-			//if (alpha < 0.01)
-			//{
-			//	result = frameA;
-			//}
-			//else if (alpha > 0.99)
-			//{
-			//	result = frameB;
-			//}
+			if (alpha == 0)
+			{
+				result = frameA;
+			}
+			else if (alpha == 1.0)
+			{
+				result = frameB;
+			}
 
 			for (int i = 0; i < frameA.Length; i++)
 			{

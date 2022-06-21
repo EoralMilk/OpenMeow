@@ -3,7 +3,7 @@ RUTEST:
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Valued:
-		Cost: 600
+		Cost: 500
 	Tooltip:
 		Name: Test 1
 	GivesExperience:
@@ -15,12 +15,15 @@ RUTEST:
 		Prerequisites: ~naweap, ~techlevel.low
 		Description: Fast scout vehicle, armed with\nrockets.\n  Strong vs Vehicles\n  Weak vs Infantry, Aircraft
 	Mobile:
-		TurnSpeed: 32
+		TurnSpeed: 44
 		Speed: 100
+		Locomotor: tracked
+		# AlwaysTurnInPlace: true
+		TerrainOrientationAdjustmentMargin: 112
 	Health:
-		HP: 50000
+		HP: 100000
 	Armor:
-		Type: Wood
+		Type: Heavy
 	RevealsShroud:
 		RequiresCondition: !inside-tunnel
 		Range: 5c0
@@ -36,13 +39,13 @@ RUTEST:
 	AttackFrontal:
 		Voice: Attack
 		PauseOnCondition: empdisable
-		FacingTolerance: 0
+		FacingTolerance: 10
 	DamagedByTerrain@VEINS:
 		RequiresCondition: !inside-tunnel && !rank-elite
 	LeavesTrails@VEINS:
 		RequiresCondition: !inside-tunnel && !rank-elite
 	BodyOrientation:
-		QuantizedFacings: 0
+		QuantizedFacings: 1024
 	WithMeshBody@body:
 		Mesh: body
 	WithMesh@hair:
@@ -66,13 +69,20 @@ RUTEST:
 	RenderSprites:
 		Image: bike
 
-# RUTEST2:
-#   Inherits: RUTEST
-# 	RenderMeshes:
-# 		Image: rumya-2
-# 		ZOffset: 15
-# 		Scale: 6
-# 	Tooltip:
-# 		Name: Test 2
-# 	RenderSprites:
-# 		Image: bike
+
+RUTEST2:
+	Inherits: RUTEST
+	RenderMeshes:
+		Image: rumya-2
+		ZOffset: 15
+		Scale: 6
+	Tooltip:
+		Name: Test 2
+	Health:
+		HP: 150000
+	Mobile:
+		TurnSpeed: 34
+		Speed: 88
+		Locomotor: tracked
+		# AlwaysTurnInPlace: true
+		TerrainOrientationAdjustmentMargin: 312

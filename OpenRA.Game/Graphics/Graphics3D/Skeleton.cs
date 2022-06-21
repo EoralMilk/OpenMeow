@@ -112,7 +112,6 @@ namespace OpenRA.Graphics
 			var offsetTransform = mat4.Translate(offsetVec);
 			var rotMat = new mat4(new quat(Game.Renderer.World3DRenderer.Get3DRotationFromWRot(wRot + Game.Renderer.World3DRenderer.WRotRotationFix)));
 			offset = offsetTransform * (scaleMat * rotMat);
-
 		}
 
 		public SkeletonInstance(in BoneAsset[] boneAssets, in SkeletonAsset asset, in OrderedSkeleton skeleton)

@@ -7,6 +7,7 @@ rumya:
 	Meshes:
 		body: combined
 			Material: body
+			UseDQBSkin: true
 		hair: lp-hair_s2
 			Material: h-s2
 		cater: lp-CatEar
@@ -14,9 +15,11 @@ rumya:
 		skirt-split: SplitSkirt
 			Material: skirt2
 			BodyMaterial: body
+			UseDQBSkin: true
 		sweater: RedCollarSweater
 			Material: sweater
 			BodyMaterial: body
+			UseDQBSkin: true
 
 rumya-2:
 	Inherits@defaults: rumya
@@ -28,6 +31,5 @@ rumya-2:
 	Meshes:
 		skirt-split: SportShorts
 			Material: sportshorts
-			BodyMaterial: body
 		hair: lp-hair_pt1
 			Material: h-pt1

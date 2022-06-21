@@ -2,12 +2,16 @@
 
 #define MAX_BONE_LENGTH 4
 
+#ifdef GL_ES
+precision highp float;
+#endif
+
 in vec3 aVertexPos;
 in vec3 aNormal;
 in vec2 aTexCoords;
 in uint aDrawPart;
 in ivec4 aBoneId;
-in vec4 aBoneWidget;
+in vec4 aBoneWeights;
 
 in vec4 iModelV1;
 in vec4 iModelV2;
@@ -40,7 +44,7 @@ uniform sampler2D boneAnimTexture;
 
 mat4 m1, m2, m3 ,m4;
 vec3 s1, s2, s3, s4;
-int next[3];
+mat4 mMatrix = mat4(0.0f);
 
 mat4 GetMat4ById(int id){
 	ivec2 startuv= ivec2(id * 4, iDrawId);
@@ -50,57 +54,102 @@ mat4 GetMat4ById(int id){
 	vec4 c3 = texelFetch(boneAnimTexture, ivec2(startuv.x + 2,startuv.y), 0);
 	vec4 c4 = texelFetch(boneAnimTexture, ivec2(startuv.x + 3,startuv.y), 0);
 
-	return mat4(c1,c2,c3,c4) * BindTransformData[id];
+	return  mat4(c1,c2,c3,c4) * BindTransformData[id];
 }
 
 // extract quaternion from matrix
 vec4 ExtractRotation(const mat4 mm, const vec3 scale)
 {
-	mat4 m = mat4(mm[0] / scale.x, mm[1] / scale.y, mm[2] / scale.z, vec4(0, 0, 0, 1.0f));
-	vec4 q = vec4(0, 0, 0, 1.0f);
-	float trace = m[0][0] + m[1][1] + m[2][2];
-	if (trace > 0.0f)
+	mat3 m;
+	m[0] = mm[0].xyz / scale.x;
+	m[1] = mm[1].xyz / scale.y;
+	m[2] = mm[2].xyz / scale.z;
+
+	float fourXSquaredMinus1 = m[0][0] - m[1][1] - m[2][2];
+	float fourYSquaredMinus1 = m[1][1] - m[0][0] - m[2][2];
+	float fourZSquaredMinus1 = m[2][2] - m[0][0] - m[1][1];
+	float fourWSquaredMinus1 = m[0][0] + m[1][1] + m[2][2];
+	int biggestIndex = 0;
+	float fourBiggestSquaredMinus1 = fourWSquaredMinus1;
+	if(fourXSquaredMinus1 > fourBiggestSquaredMinus1)
 	{
-		float s = sqrt(trace + 1.0f);
-		q.w = s * 0.5f;
-		s = 0.5f / s;
-		q.x = (m[2][1] - m[1][2]) * s;
-		q.y = (m[0][2] - m[2][0]) * s;
-		q.z = (m[1][0] - m[0][1]) * s;
+		fourBiggestSquaredMinus1 = fourXSquaredMinus1;
+		biggestIndex = 1;
+	}
+	if(fourYSquaredMinus1 > fourBiggestSquaredMinus1)
+	{
+		fourBiggestSquaredMinus1 = fourYSquaredMinus1;
+		biggestIndex = 2;
+	}
+	if(fourZSquaredMinus1 > fourBiggestSquaredMinus1)
+	{
+		fourBiggestSquaredMinus1 = fourZSquaredMinus1;
+		biggestIndex = 3;
+	}
+
+	float biggestVal = sqrt(fourBiggestSquaredMinus1 + 1.0) * 0.5;
+	float mult = 0.25 / biggestVal;
+	vec4 result;
+	switch(biggestIndex)
+	{
+		case 0: 
+			result[3] = biggestVal;
+			result[0] = (m[1][2] - m[2][1]) * mult;
+			result[1] = (m[2][0] - m[0][2]) * mult;
+			result[2] = (m[0][1] - m[1][0]) * mult;
+			return result;
+		case 1:
+			result[3] = (m[1][2] - m[2][1]) * mult;
+			result[0] = biggestVal;
+			result[1] = (m[0][1] + m[1][0]) * mult;
+			result[2] = (m[2][0] + m[0][2]) * mult;
+			return result; 
+		case 2: 
+			result[3] = (m[2][0] - m[0][2]) * mult;
+			result[0] = (m[0][1] + m[1][0]) * mult;
+			result[1] = biggestVal;
+			result[2] = (m[1][2] + m[2][1]) * mult;
+			return result;
+		default: 
+			result[3] = (m[0][1] - m[1][0]) * mult;
+			result[0] = (m[2][0] + m[0][2]) * mult;
+			result[1] = (m[1][2] + m[2][1]) * mult;
+			result[2] = biggestVal;
+			return result;
+	}
+}
+
+
+
+
+vec4 NormaliseQuat(vec4 q)
+{
+	float len = length(q);
+	if (len > 0.0)
+	{
+		return q / len;
 	}
 	else
 	{
-		int i = 0;
-		if (m[1][1] > m[0][0])
-			i = 1;
-		if (m[2][2] > m[i][i])
-			i = 2;
-		int j = next[i];
-		int k = next[j];
-		float s = sqrt((m[i][i] - (m[j][j] + m[k][k])) + 1.0f);
-		q[i] = s * 0.5f;
-		s = 0.5f / s;
-		q[j] = (m[i][j] + m[j][i]) * s;
-		q[k] = (m[i][k] + m[k][i]) * s;
-		q[3] = (m[j][k] - m[k][j]) * s;
+		return vec4(0.0, 0.0, 0.0, 1.0);
 	}
-	return q;
 }
+
 
 vec4 QuatMultiply(const vec4 left, const vec4 right)
 {
 	vec4 result;
-	result.w = left.w * right.w - left.x * right.x - left.y * right.y - left.z * right.z;
-	result.x = left.w * right.x + left.x * right.w + left.y * right.z - left.z * right.y;
-	result.y = left.w * right.y + left.y * right.w + left.z * right.x - left.x * right.z;
-	result.z = left.w * right.z + left.z * right.w + left.x * right.y - left.y * right.x;
+	result[3] = left[3] * right[3] - left[0] * right[0] - left[1] * right[1] - left[2] * right[2];
+	result[0] = left[3] * right[0] + left[0] * right[3] + left[1] * right[2] - left[2] * right[1];
+	result[1] = left[3] * right[1] + left[1] * right[3] + left[2] * right[0] - left[0] * right[2];
+	result[2] = left[3] * right[2] + left[2] * right[3] + left[0] * right[1] - left[1] * right[0];
 	return result;
 }
 
 mat2x4 GetDualQuat(const mat4 m, const vec3 s){
 	vec4 r = ExtractRotation(m,s);
-	vec4 tq = vec4(0, m[3].xyz);
-	return mat2x4(r, QuatMultiply(tq, r) * .5f);
+	vec4 tq = vec4(m[3].xyz, 0);
+	return mat2x4(r, QuatMultiply(tq, r* 0.5f));
 }
 
 mat2x4 GetBoneTransform(vec4 weights)
@@ -134,8 +183,7 @@ mat2x4 GetBoneTransform(vec4 weights)
 
 mat4 GetSkinMatrix()
 {
-	vec4 weights = aBoneWidget;
-	mat2x4 bone = GetBoneTransform(weights);
+	mat2x4 bone = GetBoneTransform(aBoneWeights);
 
 	vec4 r = bone[0];
 	vec4 t = bone[1];
@@ -174,41 +222,36 @@ void main()
 	}
 	drawPart = aDrawPart;
 
-	mat4 mMatrix = mat4(0.0f);
 	if (iDrawId != -1)
 	{
-		mat4 scaleMatrix = mat4(0.0f);
-		vec3 scale = vec3(0.0f);
-
-		if (aBoneWidget[0] == 0.0f){
+		if (aBoneWeights[0] == 0.0f){
 			mMatrix =  mat4(iModelV1, iModelV2, iModelV3, iModelV4);
 			mMatrix = mMatrix * rotationFix;
 		}
 		else if (useDQB){
-			// dqs混合 Skin
-			next[0] = 1;
-			next[1] = 2;
-			next[2] = 0;
+			// dqbs Skin
+			mat4 scaleMatrix = mat4(0.0f);
+			vec3 scale = vec3(0.0f);
 			m1 = GetMat4ById(aBoneId[0]);
 			m2 = GetMat4ById(aBoneId[1]);
 			m3 = GetMat4ById(aBoneId[2]);
 			m4 = GetMat4ById(aBoneId[3]);
-			s1 = vec3(length(m1[0]), length(m1[1]), length(m1[2]));
-			s2 = vec3(length(m1[0]), length(m1[1]), length(m1[2]));
-			s3 = vec3(length(m2[0]), length(m2[1]), length(m2[2]));
-			s4 = vec3(length(m3[0]), length(m3[1]), length(m3[2]));
-			scale= s1 * aBoneWidget[0] + s2 * aBoneWidget[1] + s3 * aBoneWidget[2] + s4 * aBoneWidget[3];
+			s1 = vec3(length(m1[0].xyz), length(m1[1].xyz), length(m1[2].xyz));
+			s2 = vec3(length(m2[0].xyz), length(m2[1].xyz), length(m2[2].xyz));
+			s3 = vec3(length(m3[0].xyz), length(m3[1].xyz), length(m3[2].xyz));
+			s4 = vec3(length(m4[0].xyz), length(m4[1].xyz), length(m4[2].xyz));
+			scale= s1 * aBoneWeights[0] + s2 * aBoneWeights[1] + s3 * aBoneWeights[2] + s4 * aBoneWeights[3];
 
 			scaleMatrix[0][0] = scale[0];
 			scaleMatrix[1][1] = scale[1];
 			scaleMatrix[2][2] = scale[2];
 			scaleMatrix[3][3] = 1.0f;
-			mMatrix = GetSkinMatrix() * scaleMatrix;
+			mMatrix = GetSkinMatrix() *  scaleMatrix;
 		}
 		else{
-			// 线性混合 Skin
+			// LBS Skin
 			for (int i = 0; i < MAX_BONE_LENGTH; i++)
-				mMatrix += GetMat4ById(aBoneId[i]) * aBoneWidget[i];
+				mMatrix += GetMat4ById(aBoneId[i]) * aBoneWeights[i];
 		}
 	}
 	else
