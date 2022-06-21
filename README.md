@@ -1,6 +1,6 @@
-# OpenRA
+# OpenMeow
 
-- 克隆自OpenRA引擎，本仓库用来实验3D素材。
+- 基于OpenRA的拥有3D化渲染与素材支持以及一系列拓展功能的的isometric视角RTS游戏引擎。
 
 A Libre/Free Real Time Strategy game engine supporting early Westwood classics.
 
