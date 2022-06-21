@@ -15,7 +15,6 @@ using System.Linq;
 using System.Threading;
 using OpenRA.FileFormats;
 using OpenRA.Graphics;
-using OpenRA.Graphics.Graphics3D;
 using OpenRA.Primitives;
 using OpenRA.Support;
 

@@ -12,7 +12,6 @@
 using System;
 using System.Collections.Generic;
 using OpenRA.FileSystem;
-using OpenRA.Graphics.Graphics3D;
 using OpenRA.Primitives;
 
 namespace OpenRA.Graphics

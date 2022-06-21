@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using GlmSharp;
 using OpenRA.FileSystem;
+using TrueSync;
 
 namespace OpenRA.Graphics
 {
@@ -14,11 +15,11 @@ namespace OpenRA.Graphics
 		public int AnimId;
 		public string ParentName;
 		public int ParentId;
-		public mat4 RestPose;
-		public mat4 RestPoseInv;
+		public TSMatrix4x4 RestPose;
+		public TSMatrix4x4 RestPoseInv;
 		public mat4 BindPose;
 
-		public BoneAsset(string name, int id, int skinId, int animId, string parentName, int parentId, mat4 restPose, mat4 restPoseInv, mat4 bindPose)
+		public BoneAsset(string name, int id, int skinId, int animId, string parentName, int parentId, TSMatrix4x4 restPose, TSMatrix4x4 restPoseInv, mat4 bindPose)
 		{
 			Name = name;
 			Id = id;
@@ -34,37 +35,33 @@ namespace OpenRA.Graphics
 
 	public struct BoneInstance
 	{
-		public readonly string Name;
 		public readonly int Id;
 		public readonly int AnimId;
 
 		public readonly int ParentId;
-		public readonly mat4 BaseRestPoseInv;
-		public readonly mat4 BindPose;
+		public readonly TSMatrix4x4 BaseRestPoseInv;
 
 		public bool ModifiedRest;
-		public mat4 RestPose;
-		public mat4 CurrentPose;
+		public TSMatrix4x4 RestPose;
+		public TSMatrix4x4 CurrentPose;
 
 		public BoneInstance(in BoneAsset asset)
 		{
-			Name = asset.Name;
 			Id = asset.Id;
 			AnimId = asset.AnimId;
 			ParentId = asset.ParentId;
 			RestPose = asset.RestPose;
 			BaseRestPoseInv = asset.RestPoseInv;
-			BindPose = asset.BindPose;
 			ModifiedRest = false;
 			CurrentPose = RestPose;
 		}
 
-		public void UpdateOffset(in mat4 parent)
+		public void UpdateOffset(in TSMatrix4x4 parent)
 		{
 			CurrentPose = parent * RestPose;
 		}
 
-		public void UpdateOffset(in mat4 parent, in mat4 anim)
+		public void UpdateOffset(in TSMatrix4x4 parent, in TSMatrix4x4 anim)
 		{
 			if (ModifiedRest)
 				CurrentPose = parent * (anim * BaseRestPoseInv) * RestPose;
@@ -78,9 +75,9 @@ namespace OpenRA.Graphics
 		public readonly string Name;
 		public readonly int Id;
 		public readonly int AnimId;
-		public readonly mat4 RestPose;
+		public readonly TSMatrix4x4 RestPose;
 
-		public ModifiedBoneRestPose(in BoneAsset asset, mat4 modifiedPose)
+		public ModifiedBoneRestPose(in BoneAsset asset, TSMatrix4x4 modifiedPose)
 		{
 			Name = asset.Name;
 			Id = asset.Id;
@@ -94,7 +91,7 @@ namespace OpenRA.Graphics
 		public readonly BoneInstance[] Bones;
 		bool hasUpdated = false;
 		bool hasUpdatedLast = false;
-		public readonly mat4[] LastSkeletonPose;
+		public readonly TSMatrix4x4[] LastSkeletonPose;
 
 		readonly SkeletonAsset asset;
 		readonly OrderedSkeleton skeleton;
@@ -102,15 +99,15 @@ namespace OpenRA.Graphics
 		readonly int boneSize;
 		readonly bool[] updateFlags;
 
-		mat4 offset;
+		TSMatrix4x4 offset;
 		public int DrawID = -1;
 
 		public void SetOffset(WPos wPos, WRot wRot, float scale)
 		{
-			var scaleMat = mat4.Scale(scale);
+			var scaleMat = TSMatrix4x4.Scale(FP.FromFloat(scale));
 			var offsetVec = Game.Renderer.World3DRenderer.Get3DPositionFromWPos(wPos);
-			var offsetTransform = mat4.Translate(offsetVec);
-			var rotMat = new mat4(new quat(Game.Renderer.World3DRenderer.Get3DRotationFromWRot(wRot + Game.Renderer.World3DRenderer.WRotRotationFix)));
+			var offsetTransform = TSMatrix4x4.Translate(offsetVec);
+			var rotMat = TSMatrix4x4.Rotate(Game.Renderer.World3DRenderer.Get3DRotationFromWRot(wRot));
 			offset = offsetTransform * (scaleMat * rotMat);
 		}
 
@@ -125,7 +122,8 @@ namespace OpenRA.Graphics
 			{
 				Bones[i] = new BoneInstance(boneAssets[i]);
 			}
-			LastSkeletonPose = new mat4[boneSize];
+
+			LastSkeletonPose = new TSMatrix4x4[boneSize];
 		}
 
 		void UpdateInner(int id, in Frame animFrame)
@@ -136,7 +134,7 @@ namespace OpenRA.Graphics
 			if (Bones[id].ParentId == -1)
 			{
 				if (animFrame.Length > Bones[id].AnimId)
-					Bones[id].UpdateOffset(offset, Transformation.Mat4by(animFrame.Trans[Bones[id].AnimId]));
+					Bones[id].UpdateOffset(offset, animFrame.Trans[Bones[id].AnimId].Matrix);
 				else
 					Bones[id].UpdateOffset(offset);
 				updateFlags[id] = true;
@@ -145,7 +143,7 @@ namespace OpenRA.Graphics
 			{
 				UpdateInner(Bones[id].ParentId, animFrame);
 				if (animFrame.Length > Bones[id].AnimId)
-					Bones[id].UpdateOffset(Bones[Bones[id].ParentId].CurrentPose, Transformation.Mat4by(animFrame.Trans[Bones[id].AnimId]));
+					Bones[id].UpdateOffset(Bones[Bones[id].ParentId].CurrentPose, animFrame.Trans[Bones[id].AnimId].Matrix);
 				else
 					Bones[id].UpdateOffset(Bones[Bones[id].ParentId].CurrentPose);
 				updateFlags[id] = true;
@@ -192,23 +190,26 @@ namespace OpenRA.Graphics
 			int y = DrawID * dataWidth;
 			for (int x = 0; x < dataWidth; x += 16)
 			{
-				mat4 m = LastSkeletonPose[asset.SkinBonesIndices[i]];
-				skeleton.AnimTransformData[y + x + 0] = m.Column0[0];
-				skeleton.AnimTransformData[y + x + 1] = m.Column0[1];
-				skeleton.AnimTransformData[y + x + 2] = m.Column0[2];
-				skeleton.AnimTransformData[y + x + 3] = m.Column0[3];
-				skeleton.AnimTransformData[y + x + 4] = m.Column1[0];
-				skeleton.AnimTransformData[y + x + 5] = m.Column1[1];
-				skeleton.AnimTransformData[y + x + 6] = m.Column1[2];
-				skeleton.AnimTransformData[y + x + 7] = m.Column1[3];
-				skeleton.AnimTransformData[y + x + 8] = m.Column2[0];
-				skeleton.AnimTransformData[y + x + 9] = m.Column2[1];
-				skeleton.AnimTransformData[y + x + 10] = m.Column2[2];
-				skeleton.AnimTransformData[y + x + 11] = m.Column2[3];
-				skeleton.AnimTransformData[y + x + 12] = m.Column3[0];
-				skeleton.AnimTransformData[y + x + 13] = m.Column3[1];
-				skeleton.AnimTransformData[y + x + 14] = m.Column3[2];
-				skeleton.AnimTransformData[y + x + 15] = m.Column3[3];
+				var c0 = LastSkeletonPose[asset.SkinBonesIndices[i]].Column0;
+				var c1 = LastSkeletonPose[asset.SkinBonesIndices[i]].Column1;
+				var c2 = LastSkeletonPose[asset.SkinBonesIndices[i]].Column2;
+				var c3 = LastSkeletonPose[asset.SkinBonesIndices[i]].Column3;
+				skeleton.AnimTransformData[y + x + 0] = (float)c0.x;
+				skeleton.AnimTransformData[y + x + 1] = (float)c0.y;
+				skeleton.AnimTransformData[y + x + 2] = (float)c0.z;
+				skeleton.AnimTransformData[y + x + 3] = (float)c0.w;
+				skeleton.AnimTransformData[y + x + 4] = (float)c1.x;
+				skeleton.AnimTransformData[y + x + 5] = (float)c1.y;
+				skeleton.AnimTransformData[y + x + 6] = (float)c1.z;
+				skeleton.AnimTransformData[y + x + 7] = (float)c1.w;
+				skeleton.AnimTransformData[y + x + 8] = (float)c2.x;
+				skeleton.AnimTransformData[y + x + 9] = (float)c2.y;
+				skeleton.AnimTransformData[y + x + 10] = (float)c2.z;
+				skeleton.AnimTransformData[y + x + 11] = (float)c2.w;
+				skeleton.AnimTransformData[y + x + 12] = (float)c3.x;
+				skeleton.AnimTransformData[y + x + 13] = (float)c3.y;
+				skeleton.AnimTransformData[y + x + 14] = (float)c3.z;
+				skeleton.AnimTransformData[y + x + 15] = (float)c3.w;
 				i++;
 				if (i >= asset.SkinBonesIndices.Length)
 				{
@@ -255,7 +256,7 @@ namespace OpenRA.Graphics
 					if (asset.BonesDict.ContainsKey(boneDefine.Key))
 					{
 						var boneInfo = boneDefine.Value.ToDictionary();
-						var restPose = ReadYamlInfo.LoadMat4(boneInfo, "RestPose");
+						var restPose = ReadYamlInfo.LoadFixPointMat4(boneInfo, "RestPose");
 						modifiedBoneRestPoses.Add(new ModifiedBoneRestPose(asset.BonesDict[boneDefine.Key], restPose));
 					}
 					else
@@ -523,8 +524,8 @@ namespace OpenRA.Graphics
 				var animId = ReadYamlInfo.LoadField(info, "AnimID", -1);
 				var parentName = ReadYamlInfo.LoadField(info, "Parent", "NO_Parent");
 				var parentID = ReadYamlInfo.LoadField(info, "ParentID", -1);
-				mat4 restPose = ReadYamlInfo.LoadMat4(info, "RestPose");
-				mat4 restPoseInv = ReadYamlInfo.LoadMat4(info, "RestPoseInv");
+				var restPose = ReadYamlInfo.LoadFixPointMat4(info, "RestPose");
+				var restPoseInv = ReadYamlInfo.LoadFixPointMat4(info, "RestPoseInv");
 				mat4 bindPose = ReadYamlInfo.LoadMat4(info, "BindPose");
 				BoneAsset bone = new BoneAsset(name, id, skinid, animId, parentName, parentID, restPose, restPoseInv, bindPose);
 				bonesDict.Add(bone.Name, bone);
@@ -560,6 +561,17 @@ namespace OpenRA.Graphics
 			mat4 tm = mat4.Translate(new vec3(t.X, t.Y, t.Z));
 			mat4 rm = new mat4(new quat(r.X,r.Y,r.Z,r.W));
 			mat4 sm = mat4.Scale(new vec3(s.X, s.Y, s.Z));
+			return tm * (sm * rm);
+		}
+
+		public static TSMatrix4x4 LoadFixPointMat4(Dictionary<string, MiniYaml> d, string key)
+		{
+			float3 s = LoadField(d, key + "Scale", float3.Ones);
+			float4 r = LoadField(d, key + "Rotation", float4.Identity);
+			float3 t = LoadField(d, key + "Translation", float3.Zero);
+			var tm = TSMatrix4x4.Translate((FP)t.X, (FP)t.Y, (FP)t.Z);
+			var rm = TSMatrix4x4.Rotate(new TSQuaternion((FP)r.X, (FP)r.Y, (FP)r.Z, (FP)r.W));
+			var sm = TSMatrix4x4.Scale((FP)s.X, (FP)s.Y, (FP)s.Z);
 			return tm * (sm * rm);
 		}
 	}

@@ -12,7 +12,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using OpenRA.Graphics.Graphics3D;
 using OpenRA.Primitives;
 
 namespace OpenRA.Graphics
@@ -235,11 +234,11 @@ namespace OpenRA.Graphics
 			foreach (var m in models)
 			{
 				// Convert screen offset to world offset
-				var offsetVec = w3dr.Get3DPositionFromWPos(pos + m.OffsetFunc());
+				var offsetVec = w3dr.Get3DRenderPositionFromWPos(pos + m.OffsetFunc());
 				offsetVec += viewOffset;
 				var offsetTransform = GlmSharp.mat4.Translate(offsetVec);
 
-				var rotMat = new GlmSharp.mat4(new GlmSharp.quat(w3dr.Get3DRotationFromWRot(m.RotationFunc())));
+				var rotMat = new GlmSharp.mat4(new GlmSharp.quat(w3dr.Get3DRenderRotationFromWRot(m.RotationFunc())));
 
 				var worldTransform = offsetTransform * (scaleMat * rotMat * rotFix) ;
 

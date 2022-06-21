@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using OpenRA.FileSystem;
 using OpenRA.Graphics;
-using OpenRA.Graphics.Graphics3D;
-using OpenRA.Primitives;
 using StbImageSharp;
 
 namespace OpenRA.Mods.Common.Graphics
@@ -52,7 +49,7 @@ namespace OpenRA.Mods.Common.Graphics
 		public void SetCommonParaments(IShader shader, World3DRenderer w3dr, bool sunCamera)
 		{
 			shader.SetBool("RenderDepthBuffer", sunCamera);
-			shader.SetMatrix("rotationFix", w3dr.ModelRotationFix.Values1D);
+			shader.SetMatrix("rotationFix", w3dr.ModelRenderRotationFix.Values1D);
 			if (sunCamera)
 			{
 				shader.SetMatrix("projection", w3dr.SunProjection.Values1D);

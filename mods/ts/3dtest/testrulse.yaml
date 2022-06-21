@@ -86,3 +86,96 @@ RUTEST2:
 		Locomotor: tracked
 		# AlwaysTurnInPlace: true
 		TerrainOrientationAdjustmentMargin: 312
+
+
+
+RUTEST3:
+	Inherits: ^EMPableAircraft
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Valued:
+		Cost: 1500
+	Tooltip:
+		Name: Test fly
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		Queue: Air
+		BuildPaletteOrder: 0
+		Prerequisites: ~nahpad, natech
+		Description: Advanced fighter-bomber craft\nwith twin plasma cannons.\n  Strong vs Buildings, Vehicles\n  Weak vs Infantry, Aircraft
+	Selectable:
+		Bounds: 905, 1448
+	Voiced:
+		VoiceSet: Scrin
+	Aircraft:
+		CruiseAltitude: 5c0
+		TurnSpeed: 15
+		Speed: 245
+		IdleTurnSpeed: 6
+		IdleSpeed: 140
+		TakeoffSounds: dropup1.aud
+		LandingSounds: dropdwn1.aud
+		CanHover: false
+		CanSlide: false
+	Health:
+		HP: 100000
+	Armor:
+		Type: Light
+	RevealsShroud:
+		Range: 2c0
+		Type: CenterPosition
+	Armament:
+		Weapon: Proton
+		PauseOnCondition: !ammo
+	AttackAircraft:
+		Voice: Attack
+		FacingTolerance: 80
+		PersistentTargeting: false
+		PauseOnCondition: empdisable
+	AmmoPool:
+		Ammo: 15
+		ReloadCount: 5
+		AmmoCondition: ammo
+	RenderSprites:
+	DeathSounds:
+	SpawnActorOnDeath:
+		Actor: SCRIN.Husk
+		RequiresCondition: !empdisable
+	SpawnActorOnDeath@EMP:
+		Actor: SCRIN.Husk.EMP
+		RequiresCondition: empdisable
+	Rearmable:
+		RearmActors: gahpad, nahpad
+	WithAmmoPipsDecoration:
+		Position: BottomLeft
+		RequiresSelection: true
+		Margin: 4, 5
+		PipCount: 3
+		FullSequence: pip-ammo
+		EmptySequence: pip-ammoempty
+		Palette: pips
+	WithMeshBody@body:
+		Mesh: body
+	WithMesh@hair:
+		Mesh: hair
+	WithMesh@cater:
+		Mesh: cater
+	WithMeshCloth@skirt:
+		Mesh: skirt-split
+		Mask: 4
+	WithMeshCloth@sweater:
+		Mesh: sweater
+		Mask: 2
+	WithSkeleton:
+		Sequence: idle
+		Sequence2: walk
+		BlendSpeed: 0.06
+	RenderMeshes:
+		Image: rumya-2
+		ZOffset: 15
+		Scale: 6
+	RenderSprites:
+		Image: scrin
+	-RenderModels:
+	-WithModelBody:

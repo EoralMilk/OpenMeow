@@ -14,7 +14,6 @@ using System.Collections.Generic;
 using System.Linq;
 using OpenRA.FileSystem;
 using OpenRA.Graphics;
-using OpenRA.Graphics.Graphics3D;
 using OpenRA.Mods.Cnc.FileFormats;
 using OpenRA.Primitives;
 

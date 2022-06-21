@@ -18,7 +18,6 @@ using OpenRA.Traits;
 
 namespace OpenRA.Mods.Common.Traits.Render
 {
-
 	public class WithSkeletonInfo : ConditionalTraitInfo, Requires<RenderMeshesInfo>
 	{
 		public readonly string Sequence = "rest";
@@ -47,7 +46,7 @@ namespace OpenRA.Mods.Common.Traits.Render
 		readonly BodyOrientation body;
 		readonly IMove move;
 		float blend;
-		MovementType lastType;
+
 		public WithSkeleton(Actor self, WithSkeletonInfo info)
 			: base(info)
 		{

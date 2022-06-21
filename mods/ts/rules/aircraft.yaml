@@ -144,7 +144,7 @@ A10:
 		Pitch: 0
 		PitchSpeed: 15
 		# IdleBehavior: Land
-		Roll: -66
+		Roll: 66
 		RollSpeed: 10
 		CruiseAltitude: 5c0
 		TurnSpeed: 12
@@ -503,7 +503,7 @@ APACHE:
 	Aircraft:
 		Pitch: -32
 		PitchSpeed: 8
-		Roll: -16
+		Roll: 16
 		RollSpeed: 8
 		TurnSpeed: 20
 		Speed: 130

@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using GlmSharp;
 using OpenRA.FileSystem;
+using TrueSync;
 
 namespace OpenRA.Graphics
 {
@@ -24,11 +21,11 @@ namespace OpenRA.Graphics
 
 	public class FrameBaked
 	{
-		public mat4[] Trans;
+		public TSMatrix4x4[] Trans;
 
 		public FrameBaked(int size)
 		{
-			Trans = new mat4[size];
+			Trans = new TSMatrix4x4[size];
 		}
 	}
 
@@ -110,10 +107,10 @@ namespace OpenRA.Graphics
 
 					if (skeleton != null && skeleton.BoneNameAnimIndex.ContainsKey(boneIdtoNames[j]))
 					{
-						vec3 scale = ReadVec3(s);
-						quat rotation = ReadQuat(s);
-						rotation = rotation.Normalized;
-						vec3 translation = ReadVec3(s);
+						var scale = ReadVec3(s);
+						var rotation = ReadQuat(s);
+						rotation.Normalize();
+						var translation = ReadVec3(s);
 						Frames[i].Trans[skeleton.BoneNameAnimIndex[boneIdtoNames[j]]] = new Transformation(scale, rotation, translation);
 					}
 					else
@@ -124,18 +121,18 @@ namespace OpenRA.Graphics
 			}
 		}
 
-		vec3 ReadVec3(Stream s)
+		TSVector ReadVec3(Stream s)
 		{
 			float x, y, z;
 			x = s.ReadFloat(); y = s.ReadFloat(); z = s.ReadFloat();
-			return new vec3(x, y, z);
+			return new TSVector(FP.FromFloat(x), FP.FromFloat(y), FP.FromFloat(z));
 		}
 
-		quat ReadQuat(Stream s)
+		TSQuaternion ReadQuat(Stream s)
 		{
 			float x, y, z, w;
 			x = s.ReadFloat(); y = s.ReadFloat(); z = s.ReadFloat(); w = s.ReadFloat();
-			return new quat(x, y, z, w);
+			return new TSQuaternion(FP.FromFloat(x), FP.FromFloat(y), FP.FromFloat(z), FP.FromFloat(w));
 		}
 	}
 }

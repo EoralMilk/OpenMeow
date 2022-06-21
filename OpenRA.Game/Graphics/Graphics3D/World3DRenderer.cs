@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using GlmSharp;
-using OpenRA.Graphics.Graphics3D;
 using OpenRA.Primitives;
-using StbImageSharp;
+using TrueSync;
 
 namespace OpenRA.Graphics
 {
@@ -46,7 +44,7 @@ namespace OpenRA.Graphics
 
 		readonly Renderer renderer;
 
-		public readonly mat4 ModelRotationFix;
+		public readonly mat4 ModelRenderRotationFix;
 		public readonly WRot WRotRotationFix;
 
 		public vec3 CameraPos { get; private set; }
@@ -66,7 +64,7 @@ namespace OpenRA.Graphics
 			SinCameraPitch = (float)Math.Sin(glm.Radians(CameraPitch));
 			CameraUp = glm.Normalized(new vec3(0, -1, TanCameraPitch));
 			CameraRight = new vec3(1, 0, 0);
-			InverseCameraFront = glm.Normalized(new vec3(0, 1, 1/TanCameraPitch));
+			InverseCameraFront = glm.Normalized(new vec3(0, 1, 1 / TanCameraPitch));
 			InverseCameraFrontMeterPerWPos = InverseCameraFront / WPosPerMeter;
 
 			MaxTerrainHeight = mapGrid.MaximumTerrainHeight * 724 * 2f / WPosPerMeterHeight;
@@ -81,7 +79,7 @@ namespace OpenRA.Graphics
 			SunColor = new float3(1, 1, 1) - AmbientColor;
 			SunSpecularColor = new float3(0.25f, 0.25f, 0.25f);
 
-			ModelRotationFix = mat4.Rotate((float)(Math.PI / 2), new vec3(1, 0, 0));
+			ModelRenderRotationFix = mat4.Rotate((float)(Math.PI / 2), new vec3(1, 0, 0));
 			WRotRotationFix = new WRot(WAngle.Zero, new WAngle(-256), WAngle.Zero);
 			this.renderer = renderer;
 		}
@@ -123,7 +121,7 @@ namespace OpenRA.Graphics
 
 				var heightMeter = ortho.Item4 / SinCameraPitch + (MaxTerrainHeight - (ortho.Item4 / TanCameraPitch * CosCameraPitch));
 				var far = heightMeter / CosCameraPitch + TanCameraPitch * ortho.Item4 + 100f;
-				Projection = mat4.Ortho(ortho.Item1, ortho.Item2, ortho.Item3, ortho.Item4, far/8, far);
+				Projection = mat4.Ortho(ortho.Item1, ortho.Item2, ortho.Item3, ortho.Item4, far / 8, far);
 
 				var viewPoint = new vec3((float)viewport.CenterPosition.X / WPosPerMeter, (float)viewport.CenterPosition.Y / WPosPerMeter, 0);
 				CameraPos = new vec3(viewPoint.x, viewPoint.y + TanCameraPitch * heightMeter, heightMeter);
@@ -163,30 +161,50 @@ namespace OpenRA.Graphics
 			return;
 		}
 
-		public vec3 Get3DPositionFromWPos(WPos pos)
+		public TSVector Get3DPositionFromWPos(WPos pos)
 		{
-			return new vec3((float)pos.X / WPosPerMeter, (float)pos.Y / WPosPerMeter, (float)pos.Z / WPosPerMeterHeight);
+			return new TSVector(FP.FromFloat((float)pos.X / WPosPerMeter),
+												FP.FromFloat((float)pos.Y / WPosPerMeter),
+												FP.FromFloat((float)pos.Z / WPosPerMeterHeight));
 		}
 
-		public vec3 Get3DRotationFromWRot(WRot rot)
+		public vec3 Get3DRenderPositionFromWPos(WPos pos)
 		{
-			return -(new vec3(rot.Pitch.Angle / 512.0f * (float)Math.PI, rot.Roll.Angle / 512.0f * (float)Math.PI, rot.Yaw.Angle / 512.0f * (float)Math.PI));
+			return new vec3((float)pos.X / WPosPerMeter,
+										(float)pos.Y / WPosPerMeter,
+										(float)pos.Z / WPosPerMeterHeight);
+		}
+
+		public TSQuaternion Get3DRotationFromWRot(WRot rot)
+		{
+			return TSQuaternion.EulerRad(
+															FP.FromFloat(-256- rot.Yaw.Angle / 512.0f * (float)Math.PI),
+															FP.FromFloat((-256 - rot.Pitch.Angle) / 512.0f * (float)Math.PI),
+															FP.FromFloat((-256 - rot.Roll.Angle) / 512.0f * (float)Math.PI)
+															);
+		}
+
+		public vec3 Get3DRenderRotationFromWRot(WRot rot)
+		{
+			return -(new vec3(rot.Pitch.Angle / 512.0f * (float)Math.PI,
+										-rot.Roll.Angle / 512.0f * (float)Math.PI,
+										rot.Yaw.Angle / 512.0f * (float)Math.PI));
 		}
 
 		public void AddInstancesToDraw(
-			in WPos pos, in vec3 viewOffset, IEnumerable<MeshInstance> meshes, float scale,
+			in WPos pos, float zOffset, IEnumerable<MeshInstance> meshes, float scale,
 			in float3 tint, in float alpha, in Color remap)
 		{
 			var scaleMat = mat4.Scale(scale);
-
+			var viewOffset = Game.Renderer.World3DRenderer.InverseCameraFrontMeterPerWPos * zOffset;
 			foreach (var m in meshes)
 			{
 				// Convert screen offset to world offset
-				var offsetVec = Get3DPositionFromWPos(pos + m.OffsetFunc());
+				var offsetVec = Get3DRenderPositionFromWPos(pos + m.OffsetFunc());
 				offsetVec += viewOffset;
 				var offsetTransform = mat4.Translate(offsetVec);
 
-				var rotMat = new mat4(new quat(Get3DRotationFromWRot(m.RotationFunc())));
+				var rotMat = new mat4(new quat(Get3DRenderRotationFromWRot(m.RotationFunc())));
 
 				var t = offsetTransform * (scaleMat * rotMat);
 

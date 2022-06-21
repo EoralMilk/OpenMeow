@@ -7,6 +7,15 @@
     <PackageReference Include="System.Runtime.Loader" Version="4.3.0" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Remove="Graphics\Graphics3D\BlendTreeNode\**" />
+    <EmbeddedResource Remove="Graphics\Graphics3D\BlendTreeNode\**" />
+    <None Remove="Graphics\Graphics3D\BlendTreeNode\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="Graphics\Graphics3D\BlendTree.cs" />
+    <Compile Remove="Graphics\Graphics3D\ModelBase.cs" />
+  </ItemGroup>
+  <ItemGroup>
     <PackageReference Include="Fluent.Net" Version="1.0.52" />
     <PackageReference Include="OpenRA-Eluant" Version="1.0.18" />
     <PackageReference Include="Mono.NAT" Version="3.0.3" />
