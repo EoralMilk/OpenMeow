@@ -12,6 +12,7 @@
 using System;
 using System.Collections.Generic;
 using OpenRA.Graphics;
+using OpenRA.Mods.Common.Activities;
 using OpenRA.Mods.Common.Graphics;
 using OpenRA.Primitives;
 using OpenRA.Traits;
@@ -23,18 +24,17 @@ namespace OpenRA.Mods.Common.Traits.Render
 		public readonly string Sequence = "rest";
 		public readonly string Sequence2 = "test";
 		public readonly float BlendSpeed = 0.03f;
-
 		public override object Create(ActorInitializer init) { return new WithSkeleton(init.Self, this); }
 	}
 
 	public class WithSkeleton : ConditionalTrait<WithSkeletonInfo>, ITick
 	{
-		readonly OrderedSkeleton orderedSkeleton;
-		readonly SkeletonInstance skeleton;
-		readonly SkeletalAnim[] skeletalAnims;
+		public readonly OrderedSkeleton OrderedSkeleton;
+		public readonly SkeletonInstance Skeleton;
 		readonly SkeletalAnim currentAnim;
 		readonly SkeletalAnim targetAnim;
 		World3DRenderer w3dr;
+		AttachPointManager attachManager;
 
 		readonly RenderMeshes rm;
 		public bool Draw;
@@ -42,8 +42,9 @@ namespace OpenRA.Mods.Common.Traits.Render
 		int frameTick = 0;
 		int frameTick2 = 0;
 
-		readonly float scale = 1;
+		public readonly float Scale = 1;
 		readonly Actor self;
+		readonly IFacing myFacing;
 		readonly BodyOrientation body;
 		readonly IMove move;
 		float blend;
@@ -53,20 +54,21 @@ namespace OpenRA.Mods.Common.Traits.Render
 		{
 			body = self.Trait<BodyOrientation>();
 			move = self.Trait<IMove>();
+			myFacing = self.Trait<IFacing>();
 			this.self = self;
 
 			rm = self.Trait<RenderMeshes>();
-			scale = rm.Info.Scale;
-			orderedSkeleton = self.World.SkeletonCache.GetOrderedSkeleton(rm.Image);
-			if (orderedSkeleton == null)
+			Scale = rm.Info.Scale;
+			OrderedSkeleton = self.World.SkeletonCache.GetOrderedSkeleton(rm.Image);
+			if (OrderedSkeleton == null)
 				throw new Exception("orderedSkeleton is null");
 
-			skeleton = orderedSkeleton.CreateInstance();
+			Skeleton = OrderedSkeleton.CreateInstance();
 
-			currentAnim = orderedSkeleton.SkeletonAsset.GetSkeletalAnim(rm.Image, info.Sequence);
-			targetAnim = orderedSkeleton.SkeletonAsset.GetSkeletalAnim(rm.Image, info.Sequence2);
+			currentAnim = OrderedSkeleton.SkeletonAsset.GetSkeletalAnim(rm.Image, info.Sequence);
+			targetAnim = OrderedSkeleton.SkeletonAsset.GetSkeletalAnim(rm.Image, info.Sequence2);
 
-			if (orderedSkeleton.SkeletonAsset.Animations.Count == 0)
+			if (OrderedSkeleton.SkeletonAsset.Animations.Count == 0)
 			{
 				throw new Exception("unit " + rm.Image + " has no animation");
 			}
@@ -75,6 +77,7 @@ namespace OpenRA.Mods.Common.Traits.Render
 		protected override void Created(Actor self)
 		{
 			w3dr = Game.Renderer.World3DRenderer;
+			attachManager = self.TraitOrDefault<AttachPointManager>();
 		}
 
 		void ITick.Tick(Actor self)
@@ -86,9 +89,10 @@ namespace OpenRA.Mods.Common.Traits.Render
 		{
 			Draw = !IsTraitDisabled;
 
-			skeleton.UpdateLastPose();
+			Skeleton.UpdateLastPose();
 
-			skeleton.SetOffset(self.CenterPosition, body.QuantizeOrientation(self.Orientation), scale);
+			if (attachManager == null || !attachManager.HasParent)
+				Skeleton.SetOffset(self.CenterPosition, myFacing.Orientation, Scale);
 
 			if (currentAnim != null && targetAnim != null)
 			{
@@ -119,18 +123,18 @@ namespace OpenRA.Mods.Common.Traits.Render
 
 				Frame result = new Frame(currentAnim.Frames[frameTick].Length);
 				BlendFrame(currentAnim.Frames[frameTick], targetAnim.Frames[frameTick2], blend, ref result);
-				skeleton.UpdateOffset(result);
+				Skeleton.UpdateOffset(result);
 			}
 
 			if (Draw)
 			{
 				// update my skeletonInstance drawId
-				orderedSkeleton.AddInstance(skeleton);
-				skeleton.ProcessManagerData();
+				OrderedSkeleton.AddInstance(Skeleton);
+				Skeleton.ProcessManagerData();
 			}
 			else
 			{
-				skeleton.DrawID = -1;
+				Skeleton.DrawID = -1;
 			}
 
 			tick++;
@@ -155,23 +159,28 @@ namespace OpenRA.Mods.Common.Traits.Render
 
 		public int GetDrawId()
 		{
-			if (skeleton.CanGetPose())
-				return skeleton.DrawID;
+			if (Skeleton.CanGetPose())
+				return Skeleton.DrawID;
 			else
 				return -1;
 		}
 
 		public int GetBoneId(string boneName)
 		{
-			if (orderedSkeleton.SkeletonAsset.BonesDict.ContainsKey(boneName))
-				return orderedSkeleton.SkeletonAsset.BonesDict[boneName].Id;
+			if (OrderedSkeleton.SkeletonAsset.BonesDict.ContainsKey(boneName))
+				return OrderedSkeleton.SkeletonAsset.BonesDict[boneName].Id;
 			else
 				return -1;
 		}
 
 		public WPos GetWPosFromBoneId(int id)
 		{
-			return skeleton.BoneWPos(id, w3dr);
+			return Skeleton.BoneWPos(id, w3dr);
+		}
+
+		public WRot GetWRotFromBoneId(int id)
+		{
+			return Skeleton.BoneWRot(id, w3dr);
 		}
 	}
 }

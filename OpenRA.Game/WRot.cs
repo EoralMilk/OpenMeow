@@ -10,6 +10,8 @@
 #endregion
 
 using System;
+using GlmSharp;
+using TrueSync;
 
 namespace OpenRA
 {
@@ -51,6 +53,33 @@ namespace OpenRA
 			w = (int)((cr * cp * cy + sr * sp * sy) / 1048576);
 		}
 
+		public static WRot LookAt(in TSVector start, in TSVector end)
+		{
+			return FromQuat(TSQuaternion.LookRotation(end - start));
+		}
+
+		public TSQuaternion ToQuat()
+		{
+			WRot rot = new WRot(Pitch - new WAngle(256), -Roll, Yaw);
+
+			return new TSQuaternion((FP)rot.x / (FP)1024, (FP)rot.y / (FP)1024, (FP)rot.z / (FP)1024, (FP)rot.w / (FP)1024);
+		}
+
+		public quat ToRenderQuat()
+		{
+			WRot rot = new WRot(Pitch - new WAngle(256), -Roll, Yaw);
+
+			return new quat((float)rot.x / 1024, (float)rot.y / 1024, (float)rot.z / 1024, (float)rot.w / 1024);
+		}
+
+		public static WRot FromQuat(in TSQuaternion quat)
+		{
+			var v = quat.eulerAngles;
+			return new WRot(new WAngle((int)(v.y * 512 / 180)),
+				new WAngle((int)(v.x * 512 / 180)),
+				new WAngle((int)(v.z * 512 / 180)));
+		}
+
 		/// <summary>
 		/// Construct a rotation from an axis and angle.
 		/// The axis is expected to be normalized to length 1024
@@ -66,7 +95,7 @@ namespace OpenRA
 			(Roll, Pitch, Yaw) = QuaternionToEuler(x, y, z, w);
 		}
 
-		WRot(int x, int y, int z, int w)
+		public WRot(int x, int y, int z, int w)
 		{
 			this.x = x;
 			this.y = y;
@@ -157,7 +186,7 @@ namespace OpenRA
 			var lsq = x * x + y * y + z * z + w * w;
 
 			// Quaternion components use 10 bits, so there's no risk of overflow
-			#pragma warning disable SA1115 // Allow blank lines to visually separate matrix rows
+#pragma warning disable SA1115 // Allow blank lines to visually separate matrix rows
 			mtx = new Int32Matrix4x4(
 				lsq - 2 * (y * y + z * z),
 				2 * (x * y + z * w),
@@ -178,7 +207,7 @@ namespace OpenRA
 				0,
 				0,
 				lsq);
-			#pragma warning restore SA1115
+#pragma warning restore SA1115
 		}
 
 		public Int32Matrix4x4 AsMatrix()

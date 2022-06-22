@@ -221,7 +221,11 @@ namespace OpenRA.Mods.Common.Traits
 			set => orientation = orientation.WithYaw(value);
 		}
 
-		public WRot Orientation => orientation.Rotate(terrainRampOrientation);
+		public WRot Orientation // => orientation.Rotate(terrainRampOrientation);
+		{
+			get => orientation.Rotate(terrainRampOrientation);
+			set => orientation = value;
+		}
 
 		public WAngle TurnSpeed => Info.TurnSpeed;
 
@@ -241,11 +245,14 @@ namespace OpenRA.Mods.Common.Traits
 
 		[Sync]
 		public WPos CenterPosition { get; private set; }
-
+		public bool OccupySpace { get; set; }
 		public CPos TopLeft => ToCell;
 
 		public (CPos, SubCell)[] OccupiedCells()
 		{
+			if (!OccupySpace)
+				return Array.Empty<(CPos, SubCell)>();
+
 			if (FromCell == ToCell)
 				return new[] { (FromCell, FromSubCell) };
 
@@ -260,6 +267,7 @@ namespace OpenRA.Mods.Common.Traits
 		public Mobile(ActorInitializer init, MobileInfo info)
 			: base(info)
 		{
+			OccupySpace = true;
 			self = init.Self;
 
 			speedModifiers = Exts.Lazy(() => self.TraitsImplementing<ISpeedModifier>().ToArray().Select(x => x.GetSpeedModifier()));
@@ -479,11 +487,14 @@ namespace OpenRA.Mods.Common.Traits
 		}
 
 		// Sets the location (fromCell, toCell, FromSubCell, ToSubCell) and CenterPosition
-		public void SetPosition(Actor self, WPos pos)
+		public void SetPosition(Actor self, WPos pos, bool useCenterPose = false)
 		{
 			var cell = self.World.Map.CellContaining(pos);
 			SetLocation(cell, FromSubCell, cell, FromSubCell);
-			SetCenterPosition(self, self.World.Map.CenterOfSubCell(cell, FromSubCell) + new WVec(0, 0, self.World.Map.DistanceAboveTerrain(pos).Length));
+			if (useCenterPose)
+				SetCenterPosition(self, pos);
+			else
+				SetCenterPosition(self, self.World.Map.CenterOfSubCell(cell, FromSubCell) + new WVec(0, 0, self.World.Map.DistanceAboveTerrain(pos).Length));
 			FinishedMoving(self);
 		}
 

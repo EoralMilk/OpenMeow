@@ -25,7 +25,9 @@ namespace OpenRA.Mods.Common.Activities
 		{
 			pos = self.TraitOrDefault<IPositionable>();
 
-			fallVector = new WVec(0, 0, self.Info.TraitInfo<ParachutableInfo>().FallRate);
+			var parachutableInfo = self.Info.TraitInfoOrDefault<ParachutableInfo>();
+
+			fallVector = new WVec(0, 0, parachutableInfo == null ? 30 : parachutableInfo.FallRate);
 			IsInterruptible = false;
 		}
 

@@ -226,7 +226,7 @@ void main()
 	{
 		if (aBoneWeights[0] == 0.0f){
 			mMatrix =  mat4(iModelV1, iModelV2, iModelV3, iModelV4);
-			mMatrix = mMatrix * rotationFix;
+			// mMatrix = mMatrix * rotationFix;
 		}
 		else if (useDQB){
 			// dqbs Skin
@@ -257,7 +257,7 @@ void main()
 	else
 	{
 		mMatrix =  mat4(iModelV1, iModelV2, iModelV3, iModelV4);
-		mMatrix = mMatrix * rotationFix;
+		// mMatrix = mMatrix * rotationFix;
 	}
 	vec4 fragP = mMatrix * vec4(aVertexPos, 1.0f);
 	vRemap = vec3(float(iRemap.x) / 255.0f, float(iRemap.y) / 255.0f, float(iRemap.z) / 255.0f);

@@ -9,6 +9,7 @@
  */
 #endregion
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using OpenRA.Mods.Common.Activities;
@@ -86,6 +87,7 @@ namespace OpenRA.Mods.Common.Traits
 
 		public Crate(ActorInitializer init, CrateInfo info)
 		{
+			OccupySpace = true;
 			self = init.Self;
 			this.info = info;
 
@@ -176,16 +178,25 @@ namespace OpenRA.Mods.Common.Traits
 		}
 
 		public CPos TopLeft => Location;
-		public (CPos, SubCell)[] OccupiedCells() { return new[] { (Location, SubCell.FullCell) }; }
+		public (CPos, SubCell)[] OccupiedCells()
+		{
+			if (!OccupySpace)
+				return Array.Empty<(CPos, SubCell)>();
+			return new[] { (Location, SubCell.FullCell) };
+		}
 
 		public WPos CenterPosition { get; private set; }
+		public bool OccupySpace { get; set; }
 
 		// Sets the location (Location) and position (CenterPosition)
-		public void SetPosition(Actor self, WPos pos)
+		public void SetPosition(Actor self, WPos pos, bool useCenterPose = false)
 		{
 			var cell = self.World.Map.CellContaining(pos);
 			SetLocation(self, cell);
-			SetCenterPosition(self, self.World.Map.CenterOfCell(cell) + new WVec(WDist.Zero, WDist.Zero, self.World.Map.DistanceAboveTerrain(pos)));
+			if (useCenterPose)
+				SetCenterPosition(self, pos);
+			else
+				SetCenterPosition(self, self.World.Map.CenterOfCell(cell) + new WVec(WDist.Zero, WDist.Zero, self.World.Map.DistanceAboveTerrain(pos)));
 		}
 
 		// Sets the location (Location) and position (CenterPosition)

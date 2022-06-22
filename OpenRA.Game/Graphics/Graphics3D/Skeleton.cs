@@ -102,13 +102,27 @@ namespace OpenRA.Graphics
 		TSMatrix4x4 offset;
 		public int DrawID = -1;
 
+		TSVector offsetVec;
+		FP offsetScale;
+		TSQuaternion offsetRot;
+
+		TSMatrix4x4 scaleMat;
+		TSMatrix4x4 translateMat;
+		TSMatrix4x4 rotMat;
 		public void SetOffset(WPos wPos, WRot wRot, float scale)
 		{
-			var scaleMat = TSMatrix4x4.Scale(FP.FromFloat(scale));
-			var offsetVec = Game.Renderer.World3DRenderer.Get3DPositionFromWPos(wPos);
-			var offsetTransform = TSMatrix4x4.Translate(offsetVec);
-			var rotMat = TSMatrix4x4.Rotate(Game.Renderer.World3DRenderer.Get3DRotationFromWRot(wRot));
-			offset = offsetTransform * (scaleMat * rotMat);
+			offsetScale = FP.FromFloat(scale);
+			scaleMat = TSMatrix4x4.Scale(offsetScale);
+			offsetVec = Game.Renderer.World3DRenderer.Get3DPositionFromWPos(wPos);
+			translateMat = TSMatrix4x4.Translate(offsetVec);
+			offsetRot = Game.Renderer.World3DRenderer.Get3DRotationFromWRot(wRot);
+			rotMat = TSMatrix4x4.Rotate(offsetRot);
+			offset = translateMat * (scaleMat * rotMat);
+		}
+
+		public void SetOffset(in TSMatrix4x4 matrix)
+		{
+			offset = matrix;
 		}
 
 		public TSMatrix4x4 BoneOffsetMat(int id)
@@ -119,6 +133,11 @@ namespace OpenRA.Graphics
 		public WPos BoneWPos(int id, in World3DRenderer w3dr)
 		{
 			return w3dr.GetWPosFromMatrix(Bones[id].CurrentPose);
+		}
+
+		public WRot BoneWRot(int id, in World3DRenderer w3dr)
+		{
+			return w3dr.GetWRotFromMatrix(Bones[id].CurrentPose);
 		}
 
 		public SkeletonInstance(in BoneAsset[] boneAssets, in SkeletonAsset asset, in OrderedSkeleton skeleton)

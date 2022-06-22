@@ -36,11 +36,12 @@ namespace OpenRA.Mods.Common.Traits
 
 		[Sync]
 		readonly WPos position;
-
+		public bool OccupySpace { get; set; }
 		readonly (CPos, SubCell)[] occupied;
 
 		public Immobile(ActorInitializer init, ImmobileInfo info)
 		{
+			OccupySpace = true;
 			location = init.GetValue<LocationInit, CPos>();
 			position = init.World.Map.CenterOfCell(location);
 
@@ -52,7 +53,12 @@ namespace OpenRA.Mods.Common.Traits
 
 		public CPos TopLeft => location;
 		public WPos CenterPosition => position;
-		public (CPos, SubCell)[] OccupiedCells() { return occupied; }
+		public (CPos, SubCell)[] OccupiedCells()
+		{
+			if (!OccupySpace)
+				return Array.Empty<(CPos, SubCell)>();
+			return occupied;
+		}
 
 		void INotifyAddedToWorld.AddedToWorld(Actor self)
 		{

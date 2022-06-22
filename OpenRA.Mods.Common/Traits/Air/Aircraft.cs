@@ -256,11 +256,15 @@ namespace OpenRA.Mods.Common.Traits
 			set => orientation = orientation.WithRoll(value);
 		}
 
-		public WRot Orientation => orientation;
+		public WRot Orientation
+		{
+			get => orientation;
+			set => orientation = value;
+		}
 
 		[Sync]
 		public WPos CenterPosition { get; private set; }
-
+		public bool OccupySpace { get; set; }
 		public CPos TopLeft => self.World.Map.CellContaining(CenterPosition);
 		public WAngle TurnSpeed => IsTraitDisabled || IsTraitPaused ? WAngle.Zero : Info.TurnSpeed;
 		public WAngle? IdleTurnSpeed => IsTraitDisabled || IsTraitPaused ? null : Info.IdleTurnSpeed;
@@ -307,6 +311,7 @@ namespace OpenRA.Mods.Common.Traits
 		public Aircraft(ActorInitializer init, AircraftInfo info)
 			: base(info)
 		{
+			OccupySpace = true;
 			self = init.Self;
 
 			var locationInit = init.GetOrDefault<LocationInit>();
@@ -622,6 +627,9 @@ namespace OpenRA.Mods.Common.Traits
 
 		public (CPos Cell, SubCell SubCell)[] OccupiedCells()
 		{
+			if (!OccupySpace)
+				return Array.Empty<(CPos, SubCell)>();
+
 			if (!self.IsAtGroundLevel())
 				return landingCells.Select(c => (c, SubCell.FullCell)).ToArray();
 
@@ -797,7 +805,7 @@ namespace OpenRA.Mods.Common.Traits
 			SetPosition(self, self.World.Map.CenterOfCell(cell) + new WVec(0, 0, CenterPosition.Z));
 		}
 
-		public void SetPosition(Actor self, WPos pos)
+		public void SetPosition(Actor self, WPos pos, bool useCenterPose = false)
 		{
 			CenterPosition = pos;
 

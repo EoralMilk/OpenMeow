@@ -73,11 +73,15 @@ namespace OpenRA.Mods.Cnc.Traits
 			set => orientation = orientation.WithYaw(value);
 		}
 
-		public WRot Orientation => orientation;
+		public WRot Orientation
+		{
+			get => orientation;
+			set => orientation = value;
+		}
 
 		[Sync]
 		public WPos CenterPosition { get; private set; }
-
+		public bool OccupySpace { get; set; }
 		public CPos TopLeft => self.World.Map.CellContaining(CenterPosition);
 
 		// Isn't used anyway
@@ -89,6 +93,7 @@ namespace OpenRA.Mods.Cnc.Traits
 		{
 			Info = info;
 			self = init.Self;
+			OccupySpace = true;
 
 			var locationInit = init.GetOrDefault<LocationInit>();
 			if (locationInit != null)
@@ -143,7 +148,12 @@ namespace OpenRA.Mods.Cnc.Traits
 
 		int MovementSpeed => OpenRA.Mods.Common.Util.ApplyPercentageModifiers(Info.Speed, speedModifiers);
 
-		public (CPos, SubCell)[] OccupiedCells() { return new[] { (TopLeft, SubCell.FullCell) }; }
+		public (CPos, SubCell)[] OccupiedCells() {
+			if (OccupySpace)
+				return new[] { (TopLeft, SubCell.FullCell) };
+			else
+				return System.Array.Empty<(CPos, SubCell)>();
+		}
 
 		WVec MoveStep(WAngle facing)
 		{
@@ -178,7 +188,7 @@ namespace OpenRA.Mods.Cnc.Traits
 			SetPosition(self, self.World.Map.CenterOfCell(cell));
 		}
 
-		public void SetPosition(Actor self, WPos pos)
+		public void SetPosition(Actor self, WPos pos, bool useCenterPose = false)
 		{
 			if (self.IsInWorld)
 				self.World.ActorMap.RemoveInfluence(self, this);

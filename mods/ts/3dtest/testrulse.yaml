@@ -19,7 +19,6 @@ RUTEST:
 		Speed: 100
 		Locomotor: tracked
 		# AlwaysTurnInPlace: true
-		TerrainOrientationAdjustmentMargin: 112
 	Health:
 		HP: 100000
 	Armor:
@@ -32,12 +31,12 @@ RUTEST:
 		Weapon: BikeMissile
 		RequiresCondition: !rank-elite
 		# LocalOffset: -153,-204,509, -153,204,509
-		FromBonePose: a-s-Rig_Hand.R, a-s-Rig_Hand.L
+		# FromBonePose: a-s-Rig_Hand.R, a-s-Rig_Hand.L
 	Armament@ELITE:
 		Weapon: HoverMissile
 		RequiresCondition: rank-elite
 		# LocalOffset: -153,-204,509, -153,204,509
-		FromBonePose: a-s-Rig_Hand.R, a-s-Rig_Hand.L
+		# FromBonePose: a-s-Rig_Hand.R, a-s-Rig_Hand.L
 	AttackFrontal:
 		Voice: Attack
 		PauseOnCondition: empdisable
@@ -70,7 +69,9 @@ RUTEST:
 		Scale: 6
 	RenderSprites:
 		Image: bike
-
+	AttachPointManager:
+	AttachPoint@first:
+		BoneAttach: a-s-Rig_Hand.R
 
 RUTEST2:
 	Inherits: RUTEST
@@ -87,9 +88,28 @@ RUTEST2:
 		Speed: 88
 		Locomotor: tracked
 		# AlwaysTurnInPlace: true
-		TerrainOrientationAdjustmentMargin: 312
+	AttachPoint@first:
+		BoneAttach: a-s-Rig_Head
 
 
+RUTESTSmall:
+	Inherits: RUTEST
+	RenderMeshes:
+		Image: rumya
+		ZOffset: 15
+		Scale: 1
+	Tooltip:
+		Name: Test 3
+	Health:
+		HP: 50000
+	Mobile:
+		TurnSpeed: 34
+		Speed: 65
+		Locomotor: foot
+		# AlwaysTurnInPlace: true
+		TerrainOrientationAdjustmentMargin: -1
+	-AttachPointManager:
+	-AttachPoint@first:
 
 RUTEST3:
 	Inherits: ^EMPableAircraft
@@ -175,10 +195,13 @@ RUTEST3:
 		Sequence2: walk
 		BlendSpeed: 0.06
 	RenderMeshes:
-		Image: rumya-2
+		Image: rumya
 		ZOffset: 15
 		Scale: 6
 	RenderSprites:
 		Image: scrin
 	-RenderModels:
 	-WithModelBody:
+	AttachPointManager:
+	AttachPoint@first:
+		BoneAttach: a-s-Rig_Hand.R

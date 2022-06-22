@@ -278,6 +278,7 @@ namespace OpenRA.Traits
 	{
 		WPos CenterPosition { get; }
 		CPos TopLeft { get; }
+		bool OccupySpace { get; set; }
 		(CPos Cell, SubCell SubCell)[] OccupiedCells();
 	}
 
@@ -296,7 +297,7 @@ namespace OpenRA.Traits
 	{
 		WAngle TurnSpeed { get; }
 		WAngle Facing { get; set; }
-		WRot Orientation { get; }
+		WRot Orientation { get; set; }
 	}
 
 	public interface IFacingInfo : ITraitInfoInterface { WAngle GetInitialFacing(); }

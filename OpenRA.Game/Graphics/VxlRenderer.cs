@@ -219,7 +219,7 @@ namespace OpenRA.Graphics
 			return new VxlRenderProxy(sprite, shadowSprite, screenCorners, -screenLightVector[2] / screenLightVector[1]);
 		}
 
-		GlmSharp.mat4 rotFix = new GlmSharp.mat4(new GlmSharp.quat(new GlmSharp.vec3(0,0, -0.5f * (float)Math.PI)));
+		GlmSharp.mat4 rotFix = new GlmSharp.mat4(new GlmSharp.quat(new GlmSharp.vec3(0, -0.5f * (float)Math.PI, -0.5f * (float)Math.PI)));
 
 		public void RenderDirectly(
 			WorldRenderer wr, in WPos pos,in GlmSharp.vec3 viewOffset, IEnumerable<ModelAnimation> models, float scale,
@@ -238,7 +238,7 @@ namespace OpenRA.Graphics
 				offsetVec += viewOffset;
 				var offsetTransform = GlmSharp.mat4.Translate(offsetVec);
 
-				var rotMat = new GlmSharp.mat4(new GlmSharp.quat(w3dr.Get3DRenderRotationFromWRot(m.RotationFunc())));
+				var rotMat = new GlmSharp.mat4(w3dr.Get3DRenderRotationFromWRot(m.RotationFunc()));
 
 				var worldTransform = offsetTransform * (scaleMat * rotMat * rotFix) ;
 
@@ -246,9 +246,6 @@ namespace OpenRA.Graphics
 				for (uint i = 0; i < m.Model.Sections; i++)
 				{
 					var t = m.Model.TransformationMatrix(i, frame);
-					//t[12] /= w3dr.WPosPerMeter;
-					//t[13] /= w3dr.WPosPerMeter;
-					//t[14] /= w3dr.WPosPerMeter;
 					t = Util.MatrixMultiply(worldTransform.Values1D, t);
 
 					// ugly fix normal palette bug temply

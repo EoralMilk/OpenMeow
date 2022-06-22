@@ -280,9 +280,11 @@ namespace OpenRA.Mods.Common.Traits
 
 		public CPos TopLeft => topLeft;
 		public WPos CenterPosition { get; }
+		public bool OccupySpace { get; set; }
 
 		public Building(ActorInitializer init, BuildingInfo info)
 		{
+			OccupySpace = true;
 			self = init.Self;
 			topLeft = init.GetValue<LocationInit, CPos>();
 			Info = info;
@@ -299,7 +301,12 @@ namespace OpenRA.Mods.Common.Traits
 			CenterPosition = init.World.Map.CenterOfCell(topLeft) + Info.CenterOffset(init.World);
 		}
 
-		public (CPos, SubCell)[] OccupiedCells() { return occupiedCells; }
+		public (CPos, SubCell)[] OccupiedCells()
+		{
+			if (!OccupySpace)
+				return Array.Empty<(CPos, SubCell)>();
+			return occupiedCells;
+		}
 
 		public CPos[] TransitOnlyCells() { return transitOnlyCells; }
 

@@ -34,6 +34,24 @@ namespace OpenRA.Graphics
 			return new TSVector(matrix.Column0.xyz.magnitude, matrix.Column1.xyz.magnitude, matrix.Column2.xyz.magnitude);
 		}
 
+		public static TSMatrix4x4 MatWithOutScale(TSMatrix4x4 matrix)
+		{
+			var s = new TSVector(matrix.Column0.xyz.magnitude, matrix.Column1.xyz.magnitude, matrix.Column2.xyz.magnitude);
+			matrix.M11 /= s.x; matrix.M12 /= s.y; matrix.M13 /= s.z;
+			matrix.M21 /= s.x; matrix.M22 /= s.y; matrix.M23 /= s.z;
+			matrix.M31 /= s.x; matrix.M32 /= s.y; matrix.M33 /= s.z;
+			return matrix;
+		}
+
+		public static TSMatrix4x4 MatWithNewScale(TSMatrix4x4 matrix, float scale)
+		{
+			var s = new TSVector(matrix.Column0.xyz.magnitude, matrix.Column1.xyz.magnitude, matrix.Column2.xyz.magnitude) / scale;
+			matrix.M11 /= s.x; matrix.M12 /= s.y; matrix.M13 /= s.z;
+			matrix.M21 /= s.x; matrix.M22 /= s.y; matrix.M23 /= s.z;
+			matrix.M31 /= s.x; matrix.M32 /= s.y; matrix.M33 /= s.z;
+			return matrix;
+		}
+
 		// 获取旋转四元数
 		public static TSQuaternion MatRotation(in TSMatrix4x4 matrix)
 		{

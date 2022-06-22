@@ -9,6 +9,7 @@
  */
 #endregion
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using OpenRA.Mods.Common.Activities;
@@ -66,7 +67,7 @@ namespace OpenRA.Mods.Common.Traits
 
 		[Sync]
 		public WPos CenterPosition { get; private set; }
-
+		public bool OccupySpace { get; set; }
 		WRot orientation;
 
 		[Sync]
@@ -76,12 +77,17 @@ namespace OpenRA.Mods.Common.Traits
 			set => orientation = orientation.WithYaw(value);
 		}
 
-		public WRot Orientation => orientation;
+		public WRot Orientation
+		{
+			get => orientation;
+			set => orientation = value;
+		}
 
 		public WAngle TurnSpeed => WAngle.Zero;
 
 		public Husk(ActorInitializer init, HuskInfo info)
 		{
+			OccupySpace = true;
 			this.info = info;
 			self = init.Self;
 
@@ -115,7 +121,13 @@ namespace OpenRA.Mods.Common.Traits
 			return true;
 		}
 
-		public (CPos, SubCell)[] OccupiedCells() { return new[] { (TopLeft, SubCell.FullCell) }; }
+		public (CPos, SubCell)[] OccupiedCells()
+		{
+			if (!OccupySpace)
+				return Array.Empty<(CPos, SubCell)>();
+			return new[] { (TopLeft, SubCell.FullCell) };
+		}
+
 		public bool IsLeavingCell(CPos location, SubCell subCell = SubCell.Any) { return false; }
 		public SubCell GetValidSubCell(SubCell preferred = SubCell.Any) { return SubCell.FullCell; }
 		public SubCell GetAvailableSubCell(CPos cell, SubCell preferredSubCell = SubCell.Any, Actor ignoreActor = null, BlockedByActor check = BlockedByActor.All)
@@ -148,7 +160,7 @@ namespace OpenRA.Mods.Common.Traits
 					n.CenterPositionChanged(self, 0, 0);
 		}
 
-		public void SetPosition(Actor self, WPos pos)
+		public void SetPosition(Actor self, WPos pos, bool useCenterPose = false)
 		{
 			self.World.ActorMap.RemoveInfluence(self, this);
 			CenterPosition = pos;

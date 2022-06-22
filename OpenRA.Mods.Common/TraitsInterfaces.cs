@@ -788,7 +788,7 @@ namespace OpenRA.Mods.Common.Traits
 		SubCell GetValidSubCell(SubCell preferred = SubCell.Any);
 		SubCell GetAvailableSubCell(CPos location, SubCell preferredSubCell = SubCell.Any, Actor ignoreActor = null, BlockedByActor check = BlockedByActor.All);
 		void SetPosition(Actor self, CPos cell, SubCell subCell = SubCell.Any);
-		void SetPosition(Actor self, WPos pos);
+		void SetPosition(Actor self, WPos pos, bool useCenterPose = false);
 		void SetCenterPosition(Actor self, WPos pos);
 	}
 

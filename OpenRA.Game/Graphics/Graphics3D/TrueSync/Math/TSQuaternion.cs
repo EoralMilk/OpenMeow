@@ -98,6 +98,30 @@ namespace TrueSync
 			}
 		}
 
+		public TSVector eulerRad
+		{
+			get
+			{
+				TSVector result = new TSVector();
+
+				FP ysqr = y * y;
+				FP t0 = -2.0f * (ysqr + z * z) + 1.0f;
+				FP t1 = +2.0f * (x * y - w * z);
+				FP t2 = -2.0f * (x * z + w * y);
+				FP t3 = +2.0f * (y * z - w * x);
+				FP t4 = -2.0f * (x * x + ysqr) + 1.0f;
+
+				t2 = t2 > 1.0f ? 1.0f : t2;
+				t2 = t2 < -1.0f ? -1.0f : t2;
+
+				result.x = FP.Atan2(t3, t4);
+				result.y = FP.Asin(t2);
+				result.z = FP.Atan2(t1, t0);
+
+				return result * -1;
+			}
+		}
+
 		public static FP Angle(TSQuaternion a, TSQuaternion b)
 		{
 			TSQuaternion aInv = TSQuaternion.Inverse(a);
@@ -227,10 +251,10 @@ namespace TrueSync
 			return rotation;
 		}
 
-		public static TSQuaternion EulerRad(FP x, FP y, FP z)
+		public static TSQuaternion EulerRad(FP pitch, FP yaw, FP roll)
 		{
 			TSQuaternion rotation;
-			TSQuaternion.CreateFromYawPitchRoll(y, x, z, out rotation);
+			TSQuaternion.CreateFromYawPitchRoll(yaw, pitch, roll, out rotation);
 
 			return rotation;
 		}

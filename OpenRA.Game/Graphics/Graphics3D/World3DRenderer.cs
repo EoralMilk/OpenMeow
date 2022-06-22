@@ -80,7 +80,7 @@ namespace OpenRA.Graphics
 			SunSpecularColor = new float3(0.25f, 0.25f, 0.25f);
 
 			ModelRenderRotationFix = mat4.Rotate((float)(Math.PI / 2), new vec3(1, 0, 0));
-			WRotRotationFix = new WRot(WAngle.Zero, new WAngle(-256), WAngle.Zero);
+			WRotRotationFix = new WRot(new WAngle(-256), WAngle.Zero, WAngle.Zero);
 			this.renderer = renderer;
 		}
 
@@ -168,13 +168,6 @@ namespace OpenRA.Graphics
 												FP.FromFloat((float)pos.Z / WPosPerMeterHeight));
 		}
 
-		public WPos GetWPosFromMatrix(in TSMatrix4x4 matrix)
-		{
-			return new WPos((int)((float)matrix.M14 * WPosPerMeter),
-										(int)((float)matrix.M24 * WPosPerMeter),
-										(int)((float)matrix.M34 * WPosPerMeterHeight));
-		}
-
 		public vec3 Get3DRenderPositionFromWPos(WPos pos)
 		{
 			return new vec3((float)pos.X / WPosPerMeter,
@@ -182,20 +175,31 @@ namespace OpenRA.Graphics
 										(float)pos.Z / WPosPerMeterHeight);
 		}
 
-		public TSQuaternion Get3DRotationFromWRot(WRot rot)
+		public WPos GetWPosFromMatrix(in TSMatrix4x4 matrix)
 		{
-			return TSQuaternion.EulerRad(
-															FP.FromFloat(-256- rot.Yaw.Angle / 512.0f * (float)Math.PI),
-															FP.FromFloat((-256 - rot.Pitch.Angle) / 512.0f * (float)Math.PI),
-															FP.FromFloat((-256 - rot.Roll.Angle) / 512.0f * (float)Math.PI)
-															);
+			return new WPos((int)(matrix.M14 * WPosPerMeter),
+										(int)(matrix.M24 * WPosPerMeter),
+										(int)(matrix.M34 * WPosPerMeterHeight));
 		}
 
-		public vec3 Get3DRenderRotationFromWRot(WRot rot)
+		// x yaw;
+		public WRot GetWRotFromMatrix(in TSMatrix4x4 matrix)
 		{
-			return -(new vec3(rot.Pitch.Angle / 512.0f * (float)Math.PI,
-										-rot.Roll.Angle / 512.0f * (float)Math.PI,
-										rot.Yaw.Angle / 512.0f * (float)Math.PI));
+			var q = Transformation.MatRotation(in matrix);
+			return WRot.FromQuat(q);
+		}
+
+		public TSQuaternion Get3DRotationFromWRot(in WRot rot)
+		{
+			return rot.ToQuat();
+		}
+
+		public quat Get3DRenderRotationFromWRot(in WRot rot)
+		{
+			//return -(new vec3(rot.Pitch.Angle / 512.0f * (float)Math.PI,
+			//							-rot.Roll.Angle / 512.0f * (float)Math.PI,
+			//							rot.Yaw.Angle / 512.0f * (float)Math.PI));
+			return rot.ToRenderQuat();
 		}
 
 		public void AddInstancesToDraw(
@@ -211,7 +215,7 @@ namespace OpenRA.Graphics
 				offsetVec += viewOffset;
 				var offsetTransform = mat4.Translate(offsetVec);
 
-				var rotMat = new mat4(new quat(Get3DRenderRotationFromWRot(m.RotationFunc())));
+				var rotMat = new mat4(Get3DRenderRotationFromWRot(m.RotationFunc()));
 
 				var t = offsetTransform * (scaleMat * rotMat);
 
