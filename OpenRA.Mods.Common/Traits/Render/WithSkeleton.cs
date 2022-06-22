@@ -34,6 +34,7 @@ namespace OpenRA.Mods.Common.Traits.Render
 		readonly SkeletalAnim[] skeletalAnims;
 		readonly SkeletalAnim currentAnim;
 		readonly SkeletalAnim targetAnim;
+		World3DRenderer w3dr;
 
 		readonly RenderMeshes rm;
 		public bool Draw;
@@ -69,6 +70,11 @@ namespace OpenRA.Mods.Common.Traits.Render
 			{
 				throw new Exception("unit " + rm.Image + " has no animation");
 			}
+		}
+
+		protected override void Created(Actor self)
+		{
+			w3dr = Game.Renderer.World3DRenderer;
 		}
 
 		void ITick.Tick(Actor self)
@@ -155,5 +161,17 @@ namespace OpenRA.Mods.Common.Traits.Render
 				return -1;
 		}
 
+		public int GetBoneId(string boneName)
+		{
+			if (orderedSkeleton.SkeletonAsset.BonesDict.ContainsKey(boneName))
+				return orderedSkeleton.SkeletonAsset.BonesDict[boneName].Id;
+			else
+				return -1;
+		}
+
+		public WPos GetWPosFromBoneId(int id)
+		{
+			return skeleton.BoneWPos(id, w3dr);
+		}
 	}
 }

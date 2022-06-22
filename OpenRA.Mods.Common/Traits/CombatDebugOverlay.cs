@@ -114,8 +114,8 @@ namespace OpenRA.Mods.Common.Traits
 						Yaw = b.Yaw
 					};
 
-					var muzzle = self.CenterPosition + a.MuzzleOffset(self, b);
-					var endMuzzle = self.CenterPosition + a.MuzzleOffset(self, barrelEnd);
+					var muzzle = a.MuzzleWPos(self, b);
+					var endMuzzle = a.MuzzleWPos(self, barrelEnd);
 					yield return new LineAnnotationRenderable(muzzle, endMuzzle, 1, Color.White);
 				}
 			}

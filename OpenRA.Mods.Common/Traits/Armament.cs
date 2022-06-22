@@ -13,12 +13,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using OpenRA.GameRules;
+using OpenRA.Mods.Common.Traits.Render;
 using OpenRA.Traits;
 
 namespace OpenRA.Mods.Common.Traits
 {
 	public class Barrel
 	{
+		public int BoneId;
 		public WVec Offset;
 		public WAngle Yaw;
 	}
@@ -38,6 +40,8 @@ namespace OpenRA.Mods.Common.Traits
 
 		[Desc("Time (in frames) until the weapon can fire again.")]
 		public readonly int FireDelay = 0;
+
+		public readonly string[] FromBonePose = Array.Empty<string>();
 
 		[Desc("Muzzle position relative to turret or body, (forward, right, up) triples.",
 			"If weapon Burst = 1, it cycles through all listed offsets, otherwise the offset corresponding to current burst is used.")]
@@ -122,6 +126,10 @@ namespace OpenRA.Mods.Common.Traits
 		INotifyBurstComplete[] notifyBurstComplete;
 		INotifyAttack[] notifyAttacks;
 
+		WithSkeleton withSkeleton;
+		bool useBonePose;
+		int[] BoneIds;
+
 		int conditionToken = Actor.InvalidConditionToken;
 
 		IEnumerable<int> rangeModifiers;
@@ -151,17 +159,41 @@ namespace OpenRA.Mods.Common.Traits
 			Burst = Weapon.Burst;
 
 			var barrels = new List<Barrel>();
-			for (var i = 0; i < info.LocalOffset.Length; i++)
+
+			if (info.FromBonePose.Length > 0)
 			{
-				barrels.Add(new Barrel
+				useBonePose = true;
+				BoneIds = new int[info.FromBonePose.Length];
+				for (var i = 0; i < info.FromBonePose.Length; i++)
 				{
-					Offset = info.LocalOffset[i],
-					Yaw = info.LocalYaw.Length > i ? info.LocalYaw[i] : WAngle.Zero
-				});
+					barrels.Add(new Barrel
+					{
+						BoneId = -1,
+						Offset = WVec.Zero,
+						Yaw = info.LocalYaw.Length > i ? info.LocalYaw[i] : WAngle.Zero
+					});
+				}
+			}
+			else
+			{
+				useBonePose = false;
+			}
+
+			if (!useBonePose)
+			{
+				for (var i = 0; i < info.LocalOffset.Length; i++)
+				{
+					barrels.Add(new Barrel
+					{
+						BoneId = -1,
+						Offset = info.LocalOffset[i],
+						Yaw = info.LocalYaw.Length > i ? info.LocalYaw[i] : WAngle.Zero
+					});
+				}
 			}
 
 			if (barrels.Count == 0)
-				barrels.Add(new Barrel { Offset = WVec.Zero, Yaw = WAngle.Zero });
+				barrels.Add(new Barrel { BoneId = -1, Offset = WVec.Zero, Yaw = WAngle.Zero });
 
 			barrelCount = barrels.Count;
 
@@ -179,6 +211,21 @@ namespace OpenRA.Mods.Common.Traits
 			coords = self.Trait<BodyOrientation>();
 			notifyBurstComplete = self.TraitsImplementing<INotifyBurstComplete>().ToArray();
 			notifyAttacks = self.TraitsImplementing<INotifyAttack>().ToArray();
+			if (useBonePose)
+			{
+				withSkeleton = self.Trait<WithSkeleton>();
+				for (int i = 0; i < Info.FromBonePose.Length; i++)
+				{
+					BoneIds[i] = withSkeleton.GetBoneId(Info.FromBonePose[i]);
+					if (BoneIds[i] == -1)
+					{
+						throw new Exception(self.Info.Name + " can't find bone " + Info.FromBonePose[i] + " from current skeleton");
+					}
+
+					Barrels[i].BoneId = BoneIds[i];
+				}
+
+			}
 
 			rangeModifiers = self.TraitsImplementing<IRangeModifier>().ToArray().Select(m => m.GetRangeModifier());
 			reloadModifiers = self.TraitsImplementing<IReloadModifier>().ToArray().Select(m => m.GetReloadModifier());
@@ -295,7 +342,7 @@ namespace OpenRA.Mods.Common.Traits
 			foreach (var na in notifyAttacks)
 				na.PreparingAttack(self, target, this, barrel);
 
-			Func<WPos> muzzlePosition = () => self.CenterPosition + MuzzleOffset(self, barrel);
+			Func<WPos> muzzlePosition = () => MuzzleWPos(self, barrel);
 			Func<WAngle> muzzleFacing = () => MuzzleOrientation(self, barrel).Yaw;
 			var muzzleOrientation = WRot.FromYaw(muzzleFacing());
 
@@ -384,9 +431,12 @@ namespace OpenRA.Mods.Common.Traits
 
 		public virtual bool IsReloading => FireDelay > 0 || IsTraitDisabled;
 
-		public WVec MuzzleOffset(Actor self, Barrel b)
+		public WPos MuzzleWPos(Actor self, Barrel b)
 		{
-			return CalculateMuzzleOffset(self, b);
+			if (useBonePose)
+				return withSkeleton.GetWPosFromBoneId(b.BoneId);
+
+			return self.CenterPosition + CalculateMuzzleOffset(self, b);
 		}
 
 		protected virtual WVec CalculateMuzzleOffset(Actor self, Barrel b)

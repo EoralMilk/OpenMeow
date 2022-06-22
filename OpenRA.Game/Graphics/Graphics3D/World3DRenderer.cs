@@ -168,6 +168,13 @@ namespace OpenRA.Graphics
 												FP.FromFloat((float)pos.Z / WPosPerMeterHeight));
 		}
 
+		public WPos GetWPosFromMatrix(in TSMatrix4x4 matrix)
+		{
+			return new WPos((int)((float)matrix.M14 * WPosPerMeter),
+										(int)((float)matrix.M24 * WPosPerMeter),
+										(int)((float)matrix.M34 * WPosPerMeterHeight));
+		}
+
 		public vec3 Get3DRenderPositionFromWPos(WPos pos)
 		{
 			return new vec3((float)pos.X / WPosPerMeter,

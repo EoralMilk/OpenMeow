@@ -111,6 +111,16 @@ namespace OpenRA.Graphics
 			offset = offsetTransform * (scaleMat * rotMat);
 		}
 
+		public TSMatrix4x4 BoneOffsetMat(int id)
+		{
+			return Bones[id].CurrentPose;
+		}
+
+		public WPos BoneWPos(int id, in World3DRenderer w3dr)
+		{
+			return w3dr.GetWPosFromMatrix(Bones[id].CurrentPose);
+		}
+
 		public SkeletonInstance(in BoneAsset[] boneAssets, in SkeletonAsset asset, in OrderedSkeleton skeleton)
 		{
 			this.asset = asset;

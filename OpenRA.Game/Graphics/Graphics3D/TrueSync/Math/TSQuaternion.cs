@@ -164,7 +164,7 @@ namespace TrueSync
 
 		public static TSQuaternion FastSlerp(TSQuaternion from, TSQuaternion to, FP t)
 		{
-			t = TSMath.Clamp(t, 0, 1);
+			//t = TSMath.Clamp(t, 0, 1);
 
 			// notice that some time the abs value can be a littile biger than one
 			FP dot = Dot(from, to);
@@ -186,7 +186,7 @@ namespace TrueSync
 			}
 			else
 			{
-				return Lerp(from, to, t);
+				return LerpUnclamped(from, to, t);
 			}
 		}
 

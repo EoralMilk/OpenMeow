@@ -363,31 +363,43 @@ namespace TrueSync
 		/// Performs multiplication without checking for overflow.
 		/// Useful for performance-critical code where the values are guaranteed not to cause overflow
 		/// </summary>
-		public static FP FastMul(FP x, FP y)
+		//public static FP FastMul(FP x, FP y)
+		//{
+		//	var xl = x._serializedValue;
+		//	var yl = y._serializedValue;
+
+		//	var xlo = (ulong)(xl & 0x00000000FFFFFFFF);
+		//	var xhi = xl >> FRACTIONAL_PLACES;
+		//	var ylo = (ulong)(yl & 0x00000000FFFFFFFF);
+		//	var yhi = yl >> FRACTIONAL_PLACES;
+
+		//	var lolo = xlo * ylo;
+		//	var lohi = (long)xlo * yhi;
+		//	var hilo = xhi * (long)ylo;
+		//	var hihi = xhi * yhi;
+
+		//	var loResult = lolo >> FRACTIONAL_PLACES;
+		//	var midResult1 = lohi;
+		//	var midResult2 = hilo;
+		//	var hiResult = hihi << FRACTIONAL_PLACES;
+
+		//	var sum = (long)loResult + midResult1 + midResult2 + hiResult;
+		//	FP result;// = default(FP);
+		//	result._serializedValue = sum;
+		//	return result;
+		//	//return new FP(sum);
+		//}
+		public static FP FastMul(in FP x, in FP y)
 		{
-			var xl = x._serializedValue;
-			var yl = y._serializedValue;
+			var xlo = (ulong)(x._serializedValue & 0x00000000FFFFFFFF);
+			var xhi = x._serializedValue >> FRACTIONAL_PLACES;
+			var ylo = (ulong)(y._serializedValue & 0x00000000FFFFFFFF);
+			var yhi = y._serializedValue >> FRACTIONAL_PLACES;
 
-			var xlo = (ulong)(xl & 0x00000000FFFFFFFF);
-			var xhi = xl >> FRACTIONAL_PLACES;
-			var ylo = (ulong)(yl & 0x00000000FFFFFFFF);
-			var yhi = yl >> FRACTIONAL_PLACES;
-
-			var lolo = xlo * ylo;
-			var lohi = (long)xlo * yhi;
-			var hilo = xhi * (long)ylo;
-			var hihi = xhi * yhi;
-
-			var loResult = lolo >> FRACTIONAL_PLACES;
-			var midResult1 = lohi;
-			var midResult2 = hilo;
-			var hiResult = hihi << FRACTIONAL_PLACES;
-
-			var sum = (long)loResult + midResult1 + midResult2 + hiResult;
+			var sum = (long)((xlo * ylo) >> FRACTIONAL_PLACES) + ((long)xlo * yhi) + (xhi * (long)ylo) + ((xhi * yhi) << FRACTIONAL_PLACES);
 			FP result;// = default(FP);
 			result._serializedValue = sum;
 			return result;
-			//return new FP(sum);
 		}
 
 		//[MethodImplAttribute(MethodImplOptions.AggressiveInlining)] 

@@ -415,7 +415,6 @@ namespace OpenRA.Mods.Common.Graphics
 
 			skeletonType = s.ReadUntil('?');
 
-			Console.WriteLine("skinBoneIndexName using to match skin to skeleton, still in WIP");
 			Dictionary<int, string> skinBoneIndexName = new Dictionary<int, string>();
 
 			if (skeletonType != "null_skeleton")

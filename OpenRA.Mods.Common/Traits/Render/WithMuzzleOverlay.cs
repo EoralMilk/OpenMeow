@@ -30,7 +30,7 @@ namespace OpenRA.Mods.Common.Traits.Render
 	class WithMuzzleOverlay : ConditionalTrait<WithMuzzleOverlayInfo>, INotifyAttack, IRender, ITick
 	{
 		readonly Dictionary<Barrel, bool> visible = new Dictionary<Barrel, bool>();
-		readonly Dictionary<Barrel, AnimationWithOffset> anims = new Dictionary<Barrel, AnimationWithOffset>();
+		readonly Dictionary<Barrel, AnimationWithWPos> anims = new Dictionary<Barrel, AnimationWithWPos>();
 		readonly Func<WAngle> getFacing;
 		readonly Armament[] armaments;
 
@@ -62,8 +62,8 @@ namespace OpenRA.Mods.Common.Traits.Render
 					var muzzleFlash = new Animation(self.World, render.GetImage(self), getFacing);
 					visible.Add(barrel, false);
 					anims.Add(barrel,
-						new AnimationWithOffset(muzzleFlash,
-							() => info.IgnoreOffset ? WVec.Zero : arm.MuzzleOffset(self, barrel),
+						new AnimationWithWPos(muzzleFlash,
+							() => info.IgnoreOffset ? self.CenterPosition : arm.MuzzleWPos(self, barrel),
 							() => IsTraitDisabled || !visible[barrel],
 							p => RenderUtils.ZOffsetFromCenter(self, p, 2)));
 				}
