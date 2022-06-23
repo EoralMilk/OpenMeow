@@ -1,0 +1,5 @@
+Hair-dpt2:
+	DiffuseMap: h-dpt2.png
+	SpecularTint: 0.56, 0.56,0.56
+	Shininess: 32.0
+	FaceCull: None

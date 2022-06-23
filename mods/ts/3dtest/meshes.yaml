@@ -8,8 +8,8 @@ rumya:
 		body: combined
 			Material: body
 			UseDQBSkin: true
-		hair: lp-hair_s2
-			Material: h-s2
+		hair: lp-hair_dpt1
+			Material: h-dpt1
 		cater: lp-CatEar
 			Material: catear
 		skirt-split: SplitSkirt
@@ -31,5 +31,5 @@ rumya-2:
 	Meshes:
 		skirt-split: SportShorts
 			Material: sportshorts
-		hair: lp-hair_pt1
-			Material: h-pt1
+		hair: lp-hair_pt2
+			Material: h-pt2
