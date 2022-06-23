@@ -1,6 +1,7 @@
 ﻿using System;
+using TrueSync;
 
-namespace OpenRA.Graphics.Graphics3D
+namespace OpenRA.Graphics
 {
 	/// <summary>
 	/// 混合9个动画，主要用来实现8向移动动画混合
@@ -11,12 +12,12 @@ namespace OpenRA.Graphics.Graphics3D
 	/// (-1,-1) (0,-1) (1,-1)
 	/// 必须按预定顺序输入
 	/// </summary>
-	class Blend9Pos : BlendNode
+	public class Blend9Pos : BlendNode
 	{
 		public BlendTreeNode[] InPutNodes { get { return inPutNodes; } }
 		BlendTreeNode[] inPutNodes = new BlendTreeNode[9];
 
-		public float2 BlendPos;
+		public TSVector2 BlendPos;
 
 		public Blend9Pos(string name, uint id, BlendTree blendTree, AnimMask animMask, BlendTreeNode[] inPutNodes)
 			: base(name, id, blendTree, animMask)
@@ -30,7 +31,7 @@ namespace OpenRA.Graphics.Graphics3D
 				return outPut;
 			tick = optick;
 
-			int2 pos = new int2((int)(BlendPos.X * 1024), (int)(BlendPos.Y * 1024));
+			int2 pos = new int2((int)(BlendPos.x * 1024), (int)(BlendPos.y * 1024));
 			var inPutValues = new BlendTreeNodeOutPut[9];
 
 			for (int i = 0; i < 9; i++)
@@ -42,7 +43,7 @@ namespace OpenRA.Graphics.Graphics3D
 			}
 
 			// 在顶点或水平或竖直线段上
-			if (pos.X == MathF.Abs(1024) || pos.Y == MathF.Abs(1024) || pos.X == 0 || pos.Y == 0)
+			if (pos.X == FP.Abs(1024) || pos.Y == FP.Abs(1024) || pos.X == 0 || pos.Y == 0)
 			{
 				// 在顶点上
 				if (pos == new int2(-1024, 1024))
@@ -67,95 +68,95 @@ namespace OpenRA.Graphics.Graphics3D
 				// 在竖直与水平线上
 				if (pos.X == -1024)
 				{
-					if (BlendPos.Y < 0)
-						return outPut = BlendTreeUtil.Blend(inPutValues[3], inPutValues[6], MathF.Abs(BlendPos.Y), animMask);
+					if (BlendPos.y < 0)
+						return outPut = blendTree.Blend(inPutValues[3], inPutValues[6], FP.Abs(BlendPos.y), animMask);
 					else
-						return outPut = BlendTreeUtil.Blend(inPutValues[3], inPutValues[0], BlendPos.Y, animMask);
+						return outPut = blendTree.Blend(inPutValues[3], inPutValues[0], BlendPos.y, animMask);
 				}
 				else if (pos.X == 0)
 				{
-					if (BlendPos.Y < 0)
-						return outPut = BlendTreeUtil.Blend(inPutValues[4], inPutValues[7], MathF.Abs(BlendPos.Y), animMask);
+					if (BlendPos.y < 0)
+						return outPut = blendTree.Blend(inPutValues[4], inPutValues[7], FP.Abs(BlendPos.y), animMask);
 					else
-						return outPut = BlendTreeUtil.Blend(inPutValues[4], inPutValues[1], BlendPos.Y, animMask);
+						return outPut = blendTree.Blend(inPutValues[4], inPutValues[1], BlendPos.y, animMask);
 				}
 				else if (pos.X == 1024)
 				{
-					if (BlendPos.Y < 0)
-						return outPut = BlendTreeUtil.Blend(inPutValues[5], inPutValues[8], MathF.Abs(BlendPos.Y), animMask);
+					if (BlendPos.y < 0)
+						return outPut = blendTree.Blend(inPutValues[5], inPutValues[8], FP.Abs(BlendPos.y), animMask);
 					else
-						return outPut = BlendTreeUtil.Blend(inPutValues[5], inPutValues[2], BlendPos.Y, animMask);
+						return outPut = blendTree.Blend(inPutValues[5], inPutValues[2], BlendPos.y, animMask);
 				}
 				else if (pos.Y == 1024)
 				{
-					if (BlendPos.X < 0)
-						return outPut = BlendTreeUtil.Blend(inPutValues[1], inPutValues[0], MathF.Abs(BlendPos.X), animMask);
+					if (BlendPos.x < 0)
+						return outPut = blendTree.Blend(inPutValues[1], inPutValues[0], FP.Abs(BlendPos.x), animMask);
 					else
-						return outPut = BlendTreeUtil.Blend(inPutValues[1], inPutValues[2], BlendPos.X, animMask);
+						return outPut = blendTree.Blend(inPutValues[1], inPutValues[2], BlendPos.x, animMask);
 				}
 				else if (pos.Y == 0)
 				{
-					if (BlendPos.X < 0)
-						return outPut = BlendTreeUtil.Blend(inPutValues[4], inPutValues[3], MathF.Abs(BlendPos.X), animMask);
+					if (BlendPos.x < 0)
+						return outPut = blendTree.Blend(inPutValues[4], inPutValues[3], FP.Abs(BlendPos.x), animMask);
 					else
-						return outPut = BlendTreeUtil.Blend(inPutValues[4], inPutValues[5], BlendPos.X, animMask);
+						return outPut = blendTree.Blend(inPutValues[4], inPutValues[5], BlendPos.x, animMask);
 				}
 				else if (pos.Y == -1024)
 				{
-					if (BlendPos.X < 0)
-						return outPut = BlendTreeUtil.Blend(inPutValues[7], inPutValues[6], MathF.Abs(BlendPos.X), animMask);
+					if (BlendPos.x < 0)
+						return outPut = blendTree.Blend(inPutValues[7], inPutValues[6], FP.Abs(BlendPos.x), animMask);
 					else
-						return outPut = BlendTreeUtil.Blend(inPutValues[7], inPutValues[8], BlendPos.X, animMask);
+						return outPut = blendTree.Blend(inPutValues[7], inPutValues[8], BlendPos.x, animMask);
 				}
 			}
 			else if (-pos.X == pos.Y)
 			{
 				// 在斜对角线上
-				if (BlendPos.X < 0)
-					return outPut = BlendTreeUtil.Blend(inPutValues[4], inPutValues[0], BlendPos.Y, animMask);
+				if (BlendPos.x < 0)
+					return outPut = blendTree.Blend(inPutValues[4], inPutValues[0], BlendPos.y, animMask);
 				else
-					return outPut = BlendTreeUtil.Blend(inPutValues[4], inPutValues[8], BlendPos.X, animMask);
+					return outPut = blendTree.Blend(inPutValues[4], inPutValues[8], BlendPos.x, animMask);
 			}
 			else if (pos.X == pos.Y)
 			{
 				// 在斜对角线上
-				if (BlendPos.X > 0)
-					return outPut = BlendTreeUtil.Blend(inPutValues[4], inPutValues[2], BlendPos.X, animMask);
+				if (BlendPos.x > 0)
+					return outPut = blendTree.Blend(inPutValues[4], inPutValues[2], BlendPos.x, animMask);
 				else
-					return outPut = BlendTreeUtil.Blend(inPutValues[4], inPutValues[6], BlendPos.Y, animMask);
+					return outPut = blendTree.Blend(inPutValues[4], inPutValues[6], BlendPos.y, animMask);
 			}
-			else if (MathF.Abs(BlendPos.X) > MathF.Abs(BlendPos.Y))
+			else if (FP.Abs(BlendPos.x) > FP.Abs(BlendPos.y))
 			{
-				if (BlendPos.X < 0)
+				if (BlendPos.x < 0)
 				{
-					if (BlendPos.Y < 0)
-						return outPut = BlendTreeUtil.Blend(BlendTreeUtil.Blend(inPutValues[4], inPutValues[3], MathF.Abs(BlendPos.X), animMask), inPutValues[6], (BlendPos.Y * BlendPos.Y) / MathF.Abs(BlendPos.X), animMask);
+					if (BlendPos.y < 0)
+						return outPut = blendTree.Blend(blendTree.Blend(inPutValues[4], inPutValues[3], FP.Abs(BlendPos.x), animMask), inPutValues[6], (BlendPos.y * BlendPos.y) / FP.Abs(BlendPos.x), animMask);
 					else
-						return outPut = BlendTreeUtil.Blend(BlendTreeUtil.Blend(inPutValues[4], inPutValues[3], MathF.Abs(BlendPos.X), animMask), inPutValues[0], (BlendPos.Y * BlendPos.Y) / MathF.Abs(BlendPos.X), animMask);
+						return outPut = blendTree.Blend(blendTree.Blend(inPutValues[4], inPutValues[3], FP.Abs(BlendPos.x), animMask), inPutValues[0], (BlendPos.y * BlendPos.y) / FP.Abs(BlendPos.x), animMask);
 				}
 				else
 				{
-					if (BlendPos.Y < 0)
-						return outPut = BlendTreeUtil.Blend(BlendTreeUtil.Blend(inPutValues[4], inPutValues[5], BlendPos.X, animMask), inPutValues[8], (BlendPos.Y * BlendPos.Y) / BlendPos.X, animMask);
+					if (BlendPos.y < 0)
+						return outPut = blendTree.Blend(blendTree.Blend(inPutValues[4], inPutValues[5], BlendPos.x, animMask), inPutValues[8], (BlendPos.y * BlendPos.y) / BlendPos.x, animMask);
 					else
-						return outPut = BlendTreeUtil.Blend(BlendTreeUtil.Blend(inPutValues[4], inPutValues[5], BlendPos.X, animMask), inPutValues[2], (BlendPos.Y * BlendPos.Y) / BlendPos.X, animMask);
+						return outPut = blendTree.Blend(blendTree.Blend(inPutValues[4], inPutValues[5], BlendPos.x, animMask), inPutValues[2], (BlendPos.y * BlendPos.y) / BlendPos.x, animMask);
 				}
 			}
 			else
 			{
-				if (BlendPos.Y < 0)
+				if (BlendPos.y < 0)
 				{
-					if (BlendPos.X < 0)
-						return outPut = BlendTreeUtil.Blend(BlendTreeUtil.Blend(inPutValues[4], inPutValues[7], MathF.Abs(BlendPos.Y), animMask), inPutValues[6], (BlendPos.X * BlendPos.X) / MathF.Abs(BlendPos.Y), animMask);
+					if (BlendPos.x < 0)
+						return outPut = blendTree.Blend(blendTree.Blend(inPutValues[4], inPutValues[7], FP.Abs(BlendPos.y), animMask), inPutValues[6], (BlendPos.x * BlendPos.x) / FP.Abs(BlendPos.y), animMask);
 					else
-						return outPut = BlendTreeUtil.Blend(BlendTreeUtil.Blend(inPutValues[4], inPutValues[7], MathF.Abs(BlendPos.Y), animMask), inPutValues[8], (BlendPos.X * BlendPos.X) / MathF.Abs(BlendPos.Y), animMask);
+						return outPut = blendTree.Blend(blendTree.Blend(inPutValues[4], inPutValues[7], FP.Abs(BlendPos.y), animMask), inPutValues[8], (BlendPos.x * BlendPos.x) / FP.Abs(BlendPos.y), animMask);
 				}
 				else
 				{
-					if (BlendPos.X < 0)
-						return outPut = BlendTreeUtil.Blend(BlendTreeUtil.Blend(inPutValues[4], inPutValues[1], BlendPos.Y, animMask), inPutValues[0], (BlendPos.X * BlendPos.X) / BlendPos.Y, animMask);
+					if (BlendPos.x < 0)
+						return outPut = blendTree.Blend(blendTree.Blend(inPutValues[4], inPutValues[1], BlendPos.y, animMask), inPutValues[0], (BlendPos.x * BlendPos.x) / BlendPos.y, animMask);
 					else
-						return outPut = BlendTreeUtil.Blend(BlendTreeUtil.Blend(inPutValues[4], inPutValues[1], BlendPos.Y, animMask), inPutValues[2], (BlendPos.X * BlendPos.X) / BlendPos.Y, animMask);
+						return outPut = blendTree.Blend(blendTree.Blend(inPutValues[4], inPutValues[1], BlendPos.y, animMask), inPutValues[2], (BlendPos.x * BlendPos.x) / BlendPos.y, animMask);
 				}
 			}
 

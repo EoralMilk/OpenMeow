@@ -33,6 +33,13 @@ namespace OpenRA.Graphics
 	{
 		public readonly string Name;
 		public readonly string Sequence;
+		public int Length
+		{
+			get
+			{
+				return Frames.Length;
+			}
+		}
 
 		public readonly Frame[] Frames;
 
@@ -64,11 +71,24 @@ namespace OpenRA.Graphics
 
 	public class Frame
 	{
-		public Transformation[] Trans;
-		public int Length => Trans.Length;
+		public Transformation[] Transformations;
+		public int Length => Transformations.Length;
+
+		public Transformation this[int index]
+		{
+			get
+			{
+				return Transformations[index];
+			}
+			set
+			{
+				Transformations[index] = value;
+			}
+		}
+
 		public Frame(int size)
 		{
-			Trans = new Transformation[size];
+			Transformations = new Transformation[size];
 		}
 	}
 
@@ -111,7 +131,7 @@ namespace OpenRA.Graphics
 						var rotation = ReadQuat(s);
 						rotation.Normalize();
 						var translation = ReadVec3(s);
-						Frames[i].Trans[skeleton.BoneNameAnimIndex[boneIdtoNames[j]]] = new Transformation(scale, rotation, translation);
+						Frames[i].Transformations[skeleton.BoneNameAnimIndex[boneIdtoNames[j]]] = new Transformation(scale, rotation, translation);
 					}
 					else
 					{

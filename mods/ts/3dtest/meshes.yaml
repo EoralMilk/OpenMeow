@@ -2,7 +2,7 @@ rumya:
 	Skeleton: testArmature
 		# Bones:
 		Anims:
-			idle: stand
+			stand: stand
 			walk: catwalk
 	Meshes:
 		body: combined
@@ -26,7 +26,7 @@ rumya-2:
 	Skeleton: testArmature
 		# Bones:
 		Anims:
-			idle: catidle
+			stand: catidle
 			walk: catcrawl
 	Meshes:
 		skirt-split: SportShorts

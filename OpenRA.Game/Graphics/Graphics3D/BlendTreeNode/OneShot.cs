@@ -1,6 +1,7 @@
 ﻿using System;
+using TrueSync;
 
-namespace OpenRA.Graphics.Graphics3D
+namespace OpenRA.Graphics
 {
 	/// <summary>
 	/// 混合一个动画，一次激活播放一遍Shot动画。
@@ -8,7 +9,7 @@ namespace OpenRA.Graphics.Graphics3D
 	/// Recover：恢复到Shot之前的状态，Shot动画不会继续覆盖输入
 	/// Keep：Shot播放完毕后保持Shot的最后一帧不变，继续覆盖输入
 	/// </summary>
-	class OneShot : BlendNode
+	public class OneShot : BlendNode
 	{
 		public enum ShotEndType
 		{
@@ -25,7 +26,7 @@ namespace OpenRA.Graphics.Graphics3D
 
 		bool runShot = false;
 		int shotTick = 0;
-		float fadeBlend = 0.0f;
+		FP fadeBlend = 0.0f;
 
 		ShotEndType shotEndType = ShotEndType.Recover;
 
@@ -60,47 +61,38 @@ namespace OpenRA.Graphics.Graphics3D
 				return outPut;
 			tick = optick;
 
-			var inPutValue = inPutNode.UpdateOutPut(optick, run, step);
-
 			var shotValue = shot.UpdateOutPut(optick, runShot, step);
 
-			if (!run)
+			if (runShot && shotEndType == ShotEndType.Recover)
 			{
-				shotTick = 0;
-			}
-			else
-			{
-				if (runShot && shotEndType == ShotEndType.Recover)
+				if (shot.KeepingEnd)
 				{
-					if (shot.KeepingEnd)
-					{
-						shotTick = Math.Max(shotTick - 1, 0);
-					}
-					else
-					{
-						shotTick = Math.Min(shotTick + 1, FadeTick);
-					}
-
-					fadeBlend = (float)shotTick / FadeTick;
+					shotTick = Math.Max(shotTick - 1, 0);
 				}
-				else if (runShot && shotEndType == ShotEndType.Keep)
+				else
 				{
-					if (shot.KeepingEnd)
-					{
-						fadeBlend = 1.0f;
-						shotTick = FadeTick;
-					}
-					else
-					{
-						shotTick = Math.Min(shotTick + 1, FadeTick);
-						fadeBlend = (float)shotTick / FadeTick;
-					}
+					shotTick = Math.Min(shotTick + 1, FadeTick);
 				}
 
-				runShot = shotTick != 0;
+				fadeBlend = (FP)shotTick / FadeTick;
+				outPut = blendTree.Blend(inPutNode.UpdateOutPut(optick, run, step), shotValue, fadeBlend, animMask);
+			}
+			else if (runShot && shotEndType == ShotEndType.Keep)
+			{
+				if (shot.KeepingEnd)
+				{
+					fadeBlend = (FP)1.0f;
+					shotTick = FadeTick;
+				}
+				else
+				{
+					shotTick = Math.Min(shotTick + 1, FadeTick);
+					fadeBlend = (FP)shotTick / FadeTick;
+					outPut = blendTree.Blend(inPutNode.UpdateOutPut(optick, run, step), shotValue, fadeBlend, animMask);
+				}
 			}
 
-			outPut = BlendTreeUtil.Blend(inPutValue, shotValue, fadeBlend, animMask);
+			runShot = shotTick != 0;
 
 			return outPut;
 		}

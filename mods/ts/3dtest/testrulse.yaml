@@ -60,16 +60,15 @@ RUTEST:
 		Mesh: sweater
 		Mask: 2
 	WithSkeleton:
-		Sequence: idle
-		Sequence2: walk
-		BlendSpeed: 0.06
+		Stand: stand
+		Walk: walk
 	RenderMeshes:
 		Image: rumya
 		ZOffset: 15
 		Scale: 6
 	RenderSprites:
 		Image: bike
-	AttachPointManager:
+	AttachManager:
 	AttachPoint@first:
 		BoneAttach: a-s-Rig_Hand.R
 
@@ -92,12 +91,12 @@ RUTEST2:
 		BoneAttach: a-s-Rig_Head
 
 
-RUTESTSmall:
+RUTEST3:
 	Inherits: RUTEST
 	RenderMeshes:
 		Image: rumya
 		ZOffset: 15
-		Scale: 1
+		Scale: 6
 	Tooltip:
 		Name: Test 3
 	Health:
@@ -105,13 +104,13 @@ RUTESTSmall:
 	Mobile:
 		TurnSpeed: 34
 		Speed: 65
-		Locomotor: foot
+		# Locomotor: foot
 		# AlwaysTurnInPlace: true
-		TerrainOrientationAdjustmentMargin: -1
-	-AttachPointManager:
+		# TerrainOrientationAdjustmentMargin: -1
+	AttachManager:
 	-AttachPoint@first:
 
-RUTEST3:
+RUTEST4:
 	Inherits: ^EMPableAircraft
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
@@ -191,9 +190,8 @@ RUTEST3:
 		Mesh: sweater
 		Mask: 2
 	WithSkeleton:
-		Sequence: idle
-		Sequence2: walk
-		BlendSpeed: 0.06
+		Stand: stand
+		Walk: walk
 	RenderMeshes:
 		Image: rumya
 		ZOffset: 15
@@ -202,6 +200,6 @@ RUTEST3:
 		Image: scrin
 	-RenderModels:
 	-WithModelBody:
-	AttachPointManager:
+	AttachManager:
 	AttachPoint@first:
 		BoneAttach: a-s-Rig_Hand.R

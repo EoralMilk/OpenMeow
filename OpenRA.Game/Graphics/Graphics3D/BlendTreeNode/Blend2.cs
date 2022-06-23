@@ -1,18 +1,19 @@
 ﻿using System;
+using TrueSync;
 
-namespace OpenRA.Graphics.Graphics3D
+namespace OpenRA.Graphics
 {
 	/// <summary>
 	/// 基础的混合节点。
 	/// 混合两个输入节点的Mat4[]数据，输出一个混合后的Mat4[]数据
 	/// 它会试图在更新输出时对输入节点的UpdateFrame进行调用
 	/// </summary>
-	class Blend2 : BlendNode
+	public class Blend2 : BlendNode
 	{
 		public BlendTreeNode InPutNodeA { get { return inPutNode1; } }
 		public BlendTreeNode InPutNodeB { get { return inPutNode2; } }
 
-		public float BlendValue = 0.0f;
+		public FP BlendValue = 0.0f;
 		BlendTreeNode inPutNode1;
 		BlendTreeNode inPutNode2;
 
@@ -32,7 +33,7 @@ namespace OpenRA.Graphics.Graphics3D
 			var inPutValue1 = inPutNode1.UpdateOutPut(optick, run, step);
 			var inPutValue2 = inPutNode2.UpdateOutPut(optick, run, step);
 
-			outPut = BlendTreeUtil.Blend(inPutValue1, inPutValue2, BlendValue, animMask);
+			outPut = blendTree.Blend(inPutValue1, inPutValue2, BlendValue, animMask);
 
 			return outPut;
 		}

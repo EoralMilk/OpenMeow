@@ -162,8 +162,8 @@ namespace OpenRA.Graphics
 
 			if (Bones[id].ParentId == -1)
 			{
-				if (animFrame.Length > Bones[id].AnimId)
-					Bones[id].UpdateOffset(offset, animFrame.Trans[Bones[id].AnimId].Matrix);
+				if (Bones[id].AnimId != -1 && animFrame.Length > Bones[id].AnimId)
+					Bones[id].UpdateOffset(offset, animFrame.Transformations[Bones[id].AnimId].Matrix);
 				else
 					Bones[id].UpdateOffset(offset);
 				updateFlags[id] = true;
@@ -171,8 +171,8 @@ namespace OpenRA.Graphics
 			else
 			{
 				UpdateInner(Bones[id].ParentId, animFrame);
-				if (animFrame.Length > Bones[id].AnimId)
-					Bones[id].UpdateOffset(Bones[Bones[id].ParentId].CurrentPose, animFrame.Trans[Bones[id].AnimId].Matrix);
+				if (Bones[id].AnimId != -1 && animFrame.Length > Bones[id].AnimId)
+					Bones[id].UpdateOffset(Bones[Bones[id].ParentId].CurrentPose, animFrame.Transformations[Bones[id].AnimId].Matrix);
 				else
 					Bones[id].UpdateOffset(Bones[Bones[id].ParentId].CurrentPose);
 				updateFlags[id] = true;
@@ -371,6 +371,7 @@ namespace OpenRA.Graphics
 		/// Key is Bone's Name, Value is Bone's AnimId
 		/// </summary>
 		public readonly Dictionary<string, int> BoneNameAnimIndex = new Dictionary<string, int>();
+		public readonly Dictionary<string, int> BoneNameSkinIndex = new Dictionary<string, int>();
 
 		/// <summary>
 		/// the array order by skin bone's skinId, value is bone's common id
@@ -405,10 +406,24 @@ namespace OpenRA.Graphics
 				Bones[bone.Value.Id] = bone.Value;
 			}
 
-			foreach (var bone in Bones)
+			// reordered the skeleton anim and skin id
+			int animid = 0;
+			int skinid = 0;
+			for (int i = 0; i < Bones.Length; i++)
 			{
-				if (bone.AnimId != -1)
-					BoneNameAnimIndex.Add(bone.Name, bone.AnimId);
+				if (Bones[i].AnimId != -1)
+				{
+					Bones[i].AnimId = animid;
+					BoneNameAnimIndex.Add(Bones[i].Name, Bones[i].AnimId);
+					animid++;
+				}
+
+				if (Bones[i].SkinId != -1)
+				{
+					Bones[i].SkinId = skinid;
+					BoneNameSkinIndex.Add(Bones[i].Name, Bones[i].SkinId);
+					skinid++;
+				}
 			}
 
 			List<BoneAsset> skinBones = new List<BoneAsset>();
@@ -549,14 +564,15 @@ namespace OpenRA.Graphics
 				var info = node.Value.ToDictionary();
 				var name = node.Key;
 				var id = ReadYamlInfo.LoadField(info, "ID", -1);
-				var skinid = ReadYamlInfo.LoadField(info, "SkinID", -1);
-				var animId = ReadYamlInfo.LoadField(info, "AnimID", -1);
+				var skin = ReadYamlInfo.LoadField(info, "Skin", false);
+				var anim = ReadYamlInfo.LoadField(info, "Anim", false);
+
 				var parentName = ReadYamlInfo.LoadField(info, "Parent", "NO_Parent");
 				var parentID = ReadYamlInfo.LoadField(info, "ParentID", -1);
 				var restPose = ReadYamlInfo.LoadFixPointMat4(info, "RestPose");
 				var restPoseInv = ReadYamlInfo.LoadFixPointMat4(info, "RestPoseInv");
 				mat4 bindPose = ReadYamlInfo.LoadMat4(info, "BindPose");
-				BoneAsset bone = new BoneAsset(name, id, skinid, animId, parentName, parentID, restPose, restPoseInv, bindPose);
+				BoneAsset bone = new BoneAsset(name, id, (skin ? 1 : -1), (anim ? 1 : -1), parentName, parentID, restPose, restPoseInv, bindPose);
 				bonesDict.Add(bone.Name, bone);
 				if (bone.ParentId == -1 && parentName == "NO_Parent")
 				{
@@ -588,7 +604,7 @@ namespace OpenRA.Graphics
 			float4 r = LoadField(d, key + "Rotation", float4.Identity);
 			float3 t = LoadField(d, key + "Translation", float3.Zero);
 			mat4 tm = mat4.Translate(new vec3(t.X, t.Y, t.Z));
-			mat4 rm = new mat4(new quat(r.X,r.Y,r.Z,r.W));
+			mat4 rm = new mat4(new quat(r.X, r.Y, r.Z, r.W));
 			mat4 sm = mat4.Scale(new vec3(s.X, s.Y, s.Z));
 			return tm * (sm * rm);
 		}

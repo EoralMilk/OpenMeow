@@ -6,20 +6,20 @@ using OpenRA.Traits;
 
 namespace OpenRA.Mods.Common.Traits.Render
 {
-	public class AttachPointManagerInfo : TraitInfo
+	public class AttachManagerInfo : TraitInfo
 	{
-		public override object Create(ActorInitializer init) { return new AttachPointManager(init.Self, this); }
+		public override object Create(ActorInitializer init) { return new AttachManager(init.Self, this); }
 	}
 
-	public class AttachPointManager
+	public class AttachManager
 	{
 		readonly Actor self;
-		public readonly AttachPointManagerInfo Info;
+		public readonly AttachManagerInfo Info;
 		readonly List<Actor> attachments = new List<Actor>();
 		Actor parent;
 		public bool HasParent { get => parent != null; }
 
-		public AttachPointManager(Actor self, AttachPointManagerInfo info)
+		public AttachManager(Actor self, AttachManagerInfo info)
 		{
 			this.self = self;
 			Info = info;
@@ -31,11 +31,17 @@ namespace OpenRA.Mods.Common.Traits.Render
 				return false;
 
 			attachments.Add(attachment);
-			var occupySpace = attachment.TraitOrDefault<IOccupySpace>();
-			if (occupySpace != null)
-				occupySpace.OccupySpace = false;
+			//var occupySpace = attachment.TraitOrDefault<IOccupySpace>();
+			//if (occupySpace != null)
+			//	occupySpace.OccupySpace = false;
+			var mobile = attachment.TraitOrDefault<Mobile>();
+			if (mobile != null)
+			{
+				mobile.TerrainOrientationAdjustmentMargin = -1;
+				mobile.CurrentMovementTypes = MovementType.None;
+			}
 
-			var am = attachment.TraitOrDefault<AttachPointManager>();
+			var am = attachment.TraitOrDefault<AttachManager>();
 			if (am != null)
 				am.parent = self;
 			return true;
@@ -47,11 +53,16 @@ namespace OpenRA.Mods.Common.Traits.Render
 				throw new Exception("the attachment " + attachment.Info.Name + attachment.ActorID + " to release is null");
 
 			attachments.Remove(attachment);
-			var occupySpace = attachment.TraitOrDefault<IOccupySpace>();
-			if (occupySpace != null)
-				occupySpace.OccupySpace = true;
+			//var occupySpace = attachment.TraitOrDefault<IOccupySpace>();
+			//if (occupySpace != null)
+			//	occupySpace.OccupySpace = true;
+			var mobile = attachment.TraitOrDefault<Mobile>();
+			if (mobile != null)
+			{
+				mobile.TerrainOrientationAdjustmentMargin = mobile.Info.TerrainOrientationAdjustmentMargin.Length;
+			}
 
-			var am = attachment.TraitOrDefault<AttachPointManager>();
+			var am = attachment.TraitOrDefault<AttachManager>();
 			if (am != null)
 				am.parent = null;
 			return true;
@@ -66,7 +77,7 @@ namespace OpenRA.Mods.Common.Traits.Render
 				return true;
 			else
 			{
-				var am = parent.TraitOrDefault<AttachPointManager>();
+				var am = parent.TraitOrDefault<AttachManager>();
 				if (am != null)
 					return am.IsParent(actor);
 				else
@@ -78,13 +89,13 @@ namespace OpenRA.Mods.Common.Traits.Render
 		}
 	}
 
-	public class AttachPointInfo : ConditionalTraitInfo, Requires<AttachPointManagerInfo>, Requires<WithSkeletonInfo>
+	public class AttachPointInfo : ConditionalTraitInfo, Requires<AttachManagerInfo>, Requires<WithSkeletonInfo>
 	{
 		public readonly string BoneAttach = null;
 		public override object Create(ActorInitializer init) { return new AttachPoint(init.Self, this); }
 	}
 
-	public class AttachPoint : ConditionalTrait<AttachPointInfo>, ITick, INotifyAttack
+	public class AttachPoint : ConditionalTrait<AttachPointInfo>, ITick, INotifyAttack, INotifyKilled
 	{
 		int attachBoneId = -1;
 		WithSkeleton withSkeleton;
@@ -102,7 +113,7 @@ namespace OpenRA.Mods.Common.Traits.Render
 		IPositionable ap;
 		IFacing ar;
 		WithSkeleton aws;
-		readonly AttachPointManager manager;
+		readonly AttachManager manager;
 		World3DRenderer w3dr;
 		public AttachPoint(Actor self, AttachPointInfo info)
 			: base(info)
@@ -115,7 +126,7 @@ namespace OpenRA.Mods.Common.Traits.Render
 			if (attachBoneId == -1)
 				throw new Exception("can't find bone " + info.BoneAttach + " in skeleton.");
 
-			manager = self.Trait<AttachPointManager>();
+			manager = self.Trait<AttachManager>();
 			w3dr = Game.Renderer.World3DRenderer;
 		}
 
@@ -134,14 +145,14 @@ namespace OpenRA.Mods.Common.Traits.Render
 		{
 			AttachActor(target.Actor);
 
-			if (actor != null && !actor.IsDead && actor.IsInWorld)
-			{
-				var from = w3dr.Get3DPositionFromWPos(actor.CenterPosition);
-				var to = w3dr.Get3DPositionFromWPos(target.CenterPosition);
-				WRot rot = WRot.LookAt(from, to);
-				if (ar != null)
-					ar.Orientation = rot;
-			}
+			//if (actor != null && !actor.IsDead && actor.IsInWorld)
+			//{
+			//	var from = w3dr.Get3DPositionFromWPos(actor.CenterPosition);
+			//	var to = w3dr.Get3DPositionFromWPos(target.CenterPosition);
+			//	WRot rot = WRot.LookAt(from, to);
+			//	if (ar != null)
+			//		ar.Orientation = rot;
+			//}
 		}
 
 		void AttachActor(Actor target)
@@ -149,8 +160,7 @@ namespace OpenRA.Mods.Common.Traits.Render
 			if (target == null || target.IsDead || !target.IsInWorld || attachBoneId == -1)
 				return;
 
-			if (actor != null && !actor.IsDead && actor.IsInWorld)
-				ReleaseAttach();
+			ReleaseAttach();
 
 			if (!manager.AddAttachment(target))
 				return;
@@ -172,6 +182,9 @@ namespace OpenRA.Mods.Common.Traits.Render
 			else
 			{
 				ap?.SetPosition(actor, withSkeleton.GetWPosFromBoneId(attachBoneId), true);
+
+				if (ar != null)
+					ar.Orientation = withSkeleton.GetWRotFromBoneId(attachBoneId);
 			}
 		}
 
@@ -197,6 +210,11 @@ namespace OpenRA.Mods.Common.Traits.Render
 
 		void INotifyAttack.PreparingAttack(Actor self, in Target target, Armament a, Barrel barrel)
 		{
+		}
+
+		void INotifyKilled.Killed(Actor self, AttackInfo e)
+		{
+			ReleaseAttach();
 		}
 	}
 }

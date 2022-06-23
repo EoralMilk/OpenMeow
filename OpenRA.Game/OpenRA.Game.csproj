@@ -7,12 +7,6 @@
     <PackageReference Include="System.Runtime.Loader" Version="4.3.0" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Remove="Graphics\Graphics3D\BlendTreeNode\**" />
-    <EmbeddedResource Remove="Graphics\Graphics3D\BlendTreeNode\**" />
-    <None Remove="Graphics\Graphics3D\BlendTreeNode\**" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Remove="Graphics\Graphics3D\BlendTree.cs" />
     <Compile Remove="Graphics\Graphics3D\ModelBase.cs" />
   </ItemGroup>
   <ItemGroup>

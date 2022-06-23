@@ -21,9 +21,9 @@ namespace OpenRA.Mods.Common.Traits.Render
 {
 	public class WithSkeletonInfo : ConditionalTraitInfo, Requires<RenderMeshesInfo>
 	{
-		public readonly string Sequence = "rest";
-		public readonly string Sequence2 = "test";
-		public readonly float BlendSpeed = 0.03f;
+		public readonly string Stand = "stand";
+		public readonly string Walk = "walk";
+		public readonly int Stand2WalkTick = 10;
 		public override object Create(ActorInitializer init) { return new WithSkeleton(init.Self, this); }
 	}
 
@@ -31,10 +31,11 @@ namespace OpenRA.Mods.Common.Traits.Render
 	{
 		public readonly OrderedSkeleton OrderedSkeleton;
 		public readonly SkeletonInstance Skeleton;
-		readonly SkeletalAnim currentAnim;
-		readonly SkeletalAnim targetAnim;
+		readonly SkeletalAnim stand;
+		readonly SkeletalAnim walk;
+		readonly BlendTree blendTree;
 		World3DRenderer w3dr;
-		AttachPointManager attachManager;
+		AttachManager attachManager;
 
 		readonly RenderMeshes rm;
 		public bool Draw;
@@ -47,8 +48,11 @@ namespace OpenRA.Mods.Common.Traits.Render
 		readonly IFacing myFacing;
 		readonly BodyOrientation body;
 		readonly IMove move;
-		float blend;
 
+		// nodes
+		readonly Switch switchNode;
+		readonly AnimationNode animNode1;
+		readonly AnimationNode animNode2;
 		public WithSkeleton(Actor self, WithSkeletonInfo info)
 			: base(info)
 		{
@@ -65,19 +69,27 @@ namespace OpenRA.Mods.Common.Traits.Render
 
 			Skeleton = OrderedSkeleton.CreateInstance();
 
-			currentAnim = OrderedSkeleton.SkeletonAsset.GetSkeletalAnim(rm.Image, info.Sequence);
-			targetAnim = OrderedSkeleton.SkeletonAsset.GetSkeletalAnim(rm.Image, info.Sequence2);
+			stand = OrderedSkeleton.SkeletonAsset.GetSkeletalAnim(rm.Image, info.Stand);
+			walk = OrderedSkeleton.SkeletonAsset.GetSkeletalAnim(rm.Image, info.Walk);
 
 			if (OrderedSkeleton.SkeletonAsset.Animations.Count == 0)
 			{
 				throw new Exception("unit " + rm.Image + " has no animation");
 			}
+
+			blendTree = new BlendTree();
+			var animMask = new AnimMask("all", OrderedSkeleton.SkeletonAsset.BoneNameAnimIndex.Count);
+			animNode1 = new AnimationNode(info.Stand, 0, blendTree, animMask, stand);
+			animNode2 = new AnimationNode(info.Walk, 1, blendTree, animMask, walk);
+			switchNode = new Switch("Stand2Walk", 2, blendTree, animMask, animNode1, animNode2, info.Stand2WalkTick);
+			blendTree.InitTree(switchNode);
+
 		}
 
 		protected override void Created(Actor self)
 		{
 			w3dr = Game.Renderer.World3DRenderer;
-			attachManager = self.TraitOrDefault<AttachPointManager>();
+			attachManager = self.TraitOrDefault<AttachManager>();
 		}
 
 		void ITick.Tick(Actor self)
@@ -94,37 +106,12 @@ namespace OpenRA.Mods.Common.Traits.Render
 			if (attachManager == null || !attachManager.HasParent)
 				Skeleton.SetOffset(self.CenterPosition, myFacing.Orientation, Scale);
 
-			if (currentAnim != null && targetAnim != null)
-			{
-				if (move.CurrentMovementTypes != MovementType.None)
-				{
-					blend = blend >= 1.0 ? 1.0f : blend + Info.BlendSpeed;
-				}
-				else
-				{
-					blend = blend <= 0.0 ? 0.0f : blend - Info.BlendSpeed;
-				}
+			if (move.CurrentMovementTypes != MovementType.None)
+				switchNode.SetFlag(true);
+			else
+				switchNode.SetFlag(false);
 
-				if (blend == 1.0)
-				{
-					frameTick = 0;
-					frameTick2 = (frameTick2 + 1) % targetAnim.Frames.Length;
-				}
-				else if (blend == 0)
-				{
-					frameTick2 = 0;
-					frameTick = (frameTick + 1) % currentAnim.Frames.Length;
-				}
-				else
-				{
-					frameTick = (frameTick + 1) % currentAnim.Frames.Length;
-					frameTick2 = (frameTick2 + 1) % targetAnim.Frames.Length;
-				}
-
-				Frame result = new Frame(currentAnim.Frames[frameTick].Length);
-				BlendFrame(currentAnim.Frames[frameTick], targetAnim.Frames[frameTick2], blend, ref result);
-				Skeleton.UpdateOffset(result);
-			}
+			Skeleton.UpdateOffset(blendTree.GetOutPut().OutPutFrame);
 
 			if (Draw)
 			{
@@ -153,7 +140,7 @@ namespace OpenRA.Mods.Common.Traits.Render
 
 			for (int i = 0; i < frameA.Length; i++)
 			{
-				result.Trans[i] = Transformation.Blend(frameA.Trans[i], frameB.Trans[i], alpha);
+				result.Transformations[i] = Transformation.Blend(frameA.Transformations[i], frameB.Transformations[i], alpha);
 			}
 		}
 

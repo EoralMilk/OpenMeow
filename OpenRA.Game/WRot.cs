@@ -53,10 +53,10 @@ namespace OpenRA
 			w = (int)((cr * cp * cy + sr * sp * sy) / 1048576);
 		}
 
-		public static WRot LookAt(in TSVector start, in TSVector end)
-		{
-			return FromQuat(TSQuaternion.LookRotation(end - start));
-		}
+		//public static WRot LookAt(in TSVector start, in TSVector end)
+		//{
+		//	return FromQuat(TSQuaternion.LookRotation(end - start));
+		//}
 
 		public TSQuaternion ToQuat()
 		{
@@ -72,13 +72,14 @@ namespace OpenRA
 			return new quat((float)rot.x / 1024, (float)rot.y / 1024, (float)rot.z / 1024, (float)rot.w / 1024);
 		}
 
-		public static WRot FromQuat(in TSQuaternion quat)
-		{
-			var v = quat.eulerAngles;
-			return new WRot(new WAngle((int)(v.y * 512 / 180)),
-				new WAngle((int)(v.x * 512 / 180)),
-				new WAngle((int)(v.z * 512 / 180)));
-		}
+		//public static WRot FromQuat(in TSQuaternion quat)
+		//{
+		//	var v = quat.eulerAngles;
+		//	return new WRot(
+		//		new WAngle((int)(v.y * 512 / 180)),
+		//		new WAngle(256 + (int)(v.x * 512 / 180)),
+		//		new WAngle((int)(v.z * 512 / 180)));
+		//}
 
 		/// <summary>
 		/// Construct a rotation from an axis and angle.

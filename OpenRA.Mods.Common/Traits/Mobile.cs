@@ -193,6 +193,7 @@ namespace OpenRA.Mods.Common.Traits
 		#endregion
 
 		WRot terrainRampOrientation = WRot.None;
+		public int TerrainOrientationAdjustmentMargin;
 		WAngle oldFacing;
 		WRot orientation;
 		WPos oldPos;
@@ -269,6 +270,7 @@ namespace OpenRA.Mods.Common.Traits
 		{
 			OccupySpace = true;
 			self = init.Self;
+			TerrainOrientationAdjustmentMargin = Info.TerrainOrientationAdjustmentMargin.Length;
 
 			speedModifiers = Exts.Lazy(() => self.TraitsImplementing<ISpeedModifier>().ToArray().Select(x => x.GetSpeedModifier()));
 
@@ -517,7 +519,7 @@ namespace OpenRA.Mods.Common.Traits
 
 		public void SetTerrainRampOrientation(WRot orientation)
 		{
-			if (Info.TerrainOrientationAdjustmentMargin.Length >= 0)
+			if (TerrainOrientationAdjustmentMargin >= 0)
 				terrainRampOrientation = orientation;
 		}
 

@@ -32,19 +32,19 @@ Players:
 		Faction: nod
 		LockColor: True
 		Color: FE1100
-		Enemies: GDI, Creeps
+		Enemies: GDI, Creeps, Multi0
 	PlayerReference@GDI:
 		Name: GDI
 		LockFaction: True
 		Faction: gdi
 		LockColor: True
 		Color: EEEE66
-		Enemies: Nod, Creeps
+		Enemies: Nod, Creeps, Multi0
 	PlayerReference@Multi0:
 		Name: Multi0
 		Playable: True
 		Faction: Random
-		Enemies: Creeps
+		Enemies: Creeps, Nod, GDI
 
 Actors:
 	Actor0: tibtre01

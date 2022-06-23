@@ -1,28 +1,28 @@
 ﻿using System;
 
-namespace OpenRA.Graphics.Graphics3D
+namespace OpenRA.Graphics
 {
 	/// <summary>
 	/// 储存动画，输出动画当前帧的变换矩阵
 	/// 没有输出节点控制的话它不会更新帧数
 	/// 基本的叶节点，一般只能有一个输出节点，没有输入节点
 	/// </summary>
-	class AnimationNode : LeafNode
+	public class AnimationNode : LeafNode
 	{
 		public string AnimationName { get { return animation.Name; } }
 		public int CurrentFrame { get { return frame; } }
 
 		bool backwards;
-		Animation animation;
+		SkeletalAnim animation;
 
-		public AnimationNode(string name, uint id, BlendTree blendTree, AnimMask animMask, Animation animation)
+		public AnimationNode(string name, uint id, BlendTree blendTree, AnimMask animMask, SkeletalAnim animation)
 			: base(name, id, blendTree, animMask)
 		{
 			this.animation = animation;
 			this.frame = 0;
 		}
 
-		public void ChangeAnimation(Animation animation)
+		public void ChangeAnimation(SkeletalAnim animation)
 		{
 			this.animation = animation;
 			frame = 0;
@@ -37,11 +37,11 @@ namespace OpenRA.Graphics.Graphics3D
 			if (!run)
 			{
 				frame = 0;
-				outPut = new BlendTreeNodeOutPut(animation.Frames[frame].Transformations, animMask);
+				outPut = new BlendTreeNodeOutPut(animation.Frames[frame], animMask);
 			}
 			else
 			{
-				outPut = new BlendTreeNodeOutPut(animation.Frames[frame].Transformations, animMask);
+				outPut = new BlendTreeNodeOutPut(animation.Frames[frame], animMask);
 
 				if (NodePlayType == PlayType.Loop)
 					frame = (frame + step) % animation.Frames.Length;

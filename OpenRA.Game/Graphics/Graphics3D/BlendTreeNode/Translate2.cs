@@ -1,22 +1,23 @@
 ﻿using System;
+using TrueSync;
 
-namespace OpenRA.Graphics.Graphics3D
+namespace OpenRA.Graphics
 {
 	/// <summary>
 	/// 在A与B两个状态之间做切换，分别有一个过渡动画用于在从A到B或者从B到A的过程中播放
 	/// 切换状态的过程中不接受新的切换指令
 	/// </summary>
-	class Translate2: BlendNode
+	public class Translate2 : BlendNode
 	{
 		public BlendTreeNode InPutNodeA { get { return inPutNode1; } }
 		public BlendTreeNode InPutNodeB { get { return inPutNode2; } }
 		public LeafNode TransAtoB { get { return transAtoB; } }
 		public LeafNode TransBtoA { get { return transBtoA; } }
-		public float TranslateBlendRatio = 0.1f;
+		public FP TranslateBlendRatio = 0.1f;
 
 		bool flag = false;
 		bool translating = false;
-		float blendValue = 0.0f;
+		FP blendValue = 0.0f;
 		BlendTreeNode inPutNode1;
 		LeafNode transAtoB;
 		BlendTreeNode inPutNode2;
@@ -70,7 +71,7 @@ namespace OpenRA.Graphics.Graphics3D
 
 					blendValue = ratio < TranslateBlendRatio ? ratio / TranslateBlendRatio : (1.0f - ratio) < TranslateBlendRatio ? (1.0f - ratio) / TranslateBlendRatio : 1.0f;
 
-					outPut = BlendTreeUtil.Blend(inPutValue1, inPutValue2, blendValue, animMask);
+					outPut = blendTree.Blend(inPutValue1, inPutValue2, blendValue, animMask);
 					return outPut;
 				}
 				else
@@ -86,7 +87,7 @@ namespace OpenRA.Graphics.Graphics3D
 
 					blendValue = ratio < TranslateBlendRatio ? ratio / TranslateBlendRatio : (1.0f - ratio) < TranslateBlendRatio ? (1.0f - ratio) / TranslateBlendRatio : 1.0f;
 
-					outPut = BlendTreeUtil.Blend(inPutValue1, inPutValue2, blendValue, animMask);
+					outPut = blendTree.Blend(inPutValue1, inPutValue2, blendValue, animMask);
 					return outPut;
 				}
 			}
@@ -95,13 +96,13 @@ namespace OpenRA.Graphics.Graphics3D
 				if (flag)
 				{
 					var inPutValue = inPutNode2.UpdateOutPut(optick, run, step);
-					outPut = new BlendTreeNodeOutPut(inPutValue.OutPutTransform, animMask);
+					outPut = new BlendTreeNodeOutPut(inPutValue.OutPutFrame, animMask);
 					return outPut;
 				}
 				else
 				{
 					var inPutValue = inPutNode1.UpdateOutPut(optick, run, step);
-					outPut = new BlendTreeNodeOutPut(inPutValue.OutPutTransform, animMask);
+					outPut = new BlendTreeNodeOutPut(inPutValue.OutPutFrame, animMask);
 					return outPut;
 				}
 			}

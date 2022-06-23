@@ -19,7 +19,6 @@ namespace OpenRA.Graphics
 
 		public readonly int WPosPerMeter = 256;
 		readonly float height = 256 * 200;
-		public float HeightOverlay = 50;
 		public readonly float TanCameraPitch;
 		public readonly float CosCameraPitch;
 		public readonly float SinCameraPitch;
@@ -182,11 +181,19 @@ namespace OpenRA.Graphics
 										(int)(matrix.M34 * WPosPerMeterHeight));
 		}
 
+		public int rollAdd = 0;
+		public int pitchAdd = 256;
+		public int yawAdd = 0;
+
 		// x yaw;
 		public WRot GetWRotFromMatrix(in TSMatrix4x4 matrix)
 		{
 			var q = Transformation.MatRotation(in matrix);
-			return WRot.FromQuat(q);
+			var v = q.eulerAngles;
+			return new WRot(
+				new WAngle(rollAdd + (int)(v.y * 512 / 180)),
+				new WAngle(pitchAdd + (int)(v.x * 512 / 180)),
+				new WAngle(yawAdd + (int)(v.z * 512 / 180)));
 		}
 
 		public TSQuaternion Get3DRotationFromWRot(in WRot rot)

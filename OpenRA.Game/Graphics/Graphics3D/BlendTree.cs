@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using TrueSync;
 
-namespace OpenRA.Graphics.Graphics3D
+namespace OpenRA.Graphics
 {
 	/// <summary>
 	/// 混合树：
@@ -13,24 +14,63 @@ namespace OpenRA.Graphics.Graphics3D
 	/// 如果一个节点不接受后续节点控制，那么它可以有任意个输入节点，也可以有任意个输出节点。
 	/// 不过不论如何，一个节点一般只会有一种输出数据，即使有有多个节点接受其输出，它们获得的数据也是一样的。
 	/// </summary>
-	class BlendTree
+	public class BlendTree
 	{
-		string name;
-		short tick;
-		BlendTreeNode finalOutPut; // 最后的输出节点, 也就是根节点
+		/// <summary>
+		/// 仅用于控制整棵树的所有节点只更新一次
+		/// </summary>
+		short currentTick;
+		public BlendTreeNode FinalOutPut { get; private set; } // 最后的输出节点, 也就是根节点
+		public bool RunBlend = true;
+
+		public BlendTree()
+		{
+			RunBlend = true;
+			currentTick = 0;
+		}
+
+		public void InitTree(BlendTreeNode finalOutPut)
+		{
+			FinalOutPut = finalOutPut;
+			RunBlend = true;
+			currentTick = 0;
+		}
+
 		public BlendTreeNodeOutPut GetOutPut()
 		{
-			tick++;
+			currentTick++;
 
 			// step 可以用于跳步，当这一帧滞后时，可以选择跳过几帧动画
-			return finalOutPut.UpdateOutPut(tick, true, 1);
+			return FinalOutPut.UpdateOutPut(currentTick, true, 1);
+		}
+
+		public BlendTreeNodeOutPut Blend(in BlendTreeNodeOutPut inPutValue1, in BlendTreeNodeOutPut inPutValue2, FP t, in AnimMask animMask)
+		{
+			if (!RunBlend)
+				return inPutValue1;
+
+			var outPut = new Frame(inPutValue1.OutPutFrame.Length);
+			//var outPut = new Transformation[inPutValue1.OutPutTransform.Length];
+
+			for (int i = 0; i < inPutValue1.OutPutFrame.Length; i++)
+			{
+				if (inPutValue1.AnimMask.Mask[i] && inPutValue2.AnimMask.Mask[i])
+					outPut[i] = Transformation.Blend(inPutValue1.OutPutFrame[i], inPutValue2.OutPutFrame[i], t);
+				else if (inPutValue1.AnimMask.Mask[i])
+					outPut[i] = inPutValue1.OutPutFrame[i];
+				else if (inPutValue2.AnimMask.Mask[i])
+					outPut[i] = inPutValue2.OutPutFrame[i];
+				else
+					outPut[i] = Transformation.Identify;
+			}
+
+			return new BlendTreeNodeOutPut(outPut, animMask);
 		}
 	}
 
-	abstract class BlendTreeNode
+	public abstract class BlendTreeNode
 	{
 		public string Name { get { return name; } }
-		public uint ID { get { return id; } }
 		public BlendTree BlendTree { get { return blendTree; } }
 
 		protected string name;
@@ -56,7 +96,7 @@ namespace OpenRA.Graphics.Graphics3D
 	/// <summary>
 	/// BlendTree做混合工作的节点基类
 	/// </summary>
-	abstract class BlendNode : BlendTreeNode
+	public abstract class BlendNode : BlendTreeNode
 	{
 		public BlendNode(string name, uint id, BlendTree blendTree, AnimMask mask)
 			: base(name, id, blendTree, mask) { }
@@ -65,7 +105,7 @@ namespace OpenRA.Graphics.Graphics3D
 	/// <summary>
 	/// BlendTree叶节点基类
 	/// </summary>
-	abstract class LeafNode : BlendTreeNode
+	public abstract class LeafNode : BlendTreeNode
 	{
 		public enum PlayType
 		{
@@ -101,50 +141,11 @@ namespace OpenRA.Graphics.Graphics3D
 	}
 
 	/// <summary>
-	/// 一个动画Asset，它应该作为资产存在，可以被BlendTreeNode引用
-	/// 但是不能被其直接修改
-	/// 因为BlendTreeNode应该自己在本地生成一个动画实例用来做更新数据等操作
-	/// </summary>
-	struct Animation
-	{
-		public string Name;
-		public AnimFrame[] Frames;
-		public int Length
-		{
-			get
-			{
-				return Frames.Length;
-			}
-		}
-	}
-
-	/// <summary>
-	/// 动画帧
-	/// </summary>
-	struct AnimFrame
-	{
-		/// <summary>
-		/// RestPose Based SRT
-		/// </summary>
-		public Transformation[] Transformations;
-
-		public AnimFrame(int length)
-		{
-			Transformations = new Transformation[length];
-		}
-
-		public AnimFrame(Transformation[] srts)
-		{
-			Transformations = srts;
-		}
-	}
-
-	/// <summary>
 	/// 节点输出
 	/// </summary>
-	struct BlendTreeNodeOutPut
+	public struct BlendTreeNodeOutPut
 	{
-		public Transformation[] OutPutTransform;
+		public Frame OutPutFrame;
 		public AnimMask AnimMask;
 
 		// 到这个输出为止，全部动画长度的最小公倍数
@@ -154,20 +155,17 @@ namespace OpenRA.Graphics.Graphics3D
 		// 复制构造函数
 		public BlendTreeNodeOutPut(BlendTreeNodeOutPut op)
 		{
-			OutPutTransform = op.OutPutTransform;
+			OutPutFrame = op.OutPutFrame;
 			AnimMask = op.AnimMask;
 
 			// FrameLCM = op.FrameLCM;
 			// UpdateLCM = op.UpdateLCM;
 		}
 
-		public BlendTreeNodeOutPut(Transformation[] srts, AnimMask animMask) //, int frameLCM = 0, bool updateLCM = false)
+		public BlendTreeNodeOutPut(in Frame srts, in AnimMask animMask)
 		{
-			OutPutTransform = srts;
+			OutPutFrame = srts;
 			AnimMask = animMask;
-
-			// FrameLCM = frameLCM;
-			// UpdateLCM = updateLCM;
 		}
 	}
 
@@ -175,7 +173,7 @@ namespace OpenRA.Graphics.Graphics3D
 	/// 动画遮罩，控制哪些骨骼播放动画，哪些不播放
 	/// 它应该被BlendTreeNode作为修改输出动画Mat4数据的依据
 	/// </summary>
-	class AnimMask
+	public class AnimMask
 	{
 		public string Name;
 		public bool[] Mask;
@@ -217,25 +215,6 @@ namespace OpenRA.Graphics.Graphics3D
 			}
 
 			return lcm;
-		}
-
-		public static BlendTreeNodeOutPut Blend(BlendTreeNodeOutPut inPutValue1, BlendTreeNodeOutPut inPutValue2, float t, AnimMask animMask)
-		{
-			var outPutMat = new Transformation[inPutValue1.OutPutTransform.Length];
-
-			for (int i = 0; i < inPutValue1.OutPutTransform.Length; i++)
-			{
-				if (inPutValue1.AnimMask.Mask[i] && inPutValue2.AnimMask.Mask[i])
-					outPutMat[i] = Transformation.Blend(inPutValue1.OutPutTransform[i], inPutValue2.OutPutTransform[i], t);
-				else if (inPutValue1.AnimMask.Mask[i])
-					outPutMat[i] = inPutValue1.OutPutTransform[i];
-				else if (inPutValue2.AnimMask.Mask[i])
-					outPutMat[i] = inPutValue2.OutPutTransform[i];
-				else
-					outPutMat[i] = Transformation.Identify;
-			}
-
-			return new BlendTreeNodeOutPut(outPutMat, animMask);
 		}
 
 	}

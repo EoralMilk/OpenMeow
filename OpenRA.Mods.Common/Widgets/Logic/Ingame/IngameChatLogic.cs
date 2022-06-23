@@ -125,9 +125,16 @@ namespace OpenRA.Mods.Common.Widgets.Logic
 					if (chatText.Text.StartsWith("-"))
 					{
 						var ss = chatText.Text;
-						var ff = float.Parse(ss.Substring(1));
+						var ii = int.Parse(ss.Substring(2));
 						if (Game.Renderer.World3DRenderer != null)
-							Game.Renderer.World3DRenderer.HeightOverlay = ff;
+						{
+							if (chatText.Text.StartsWith("-r"))
+								Game.Renderer.World3DRenderer.rollAdd = ii;
+							else if (chatText.Text.StartsWith("-p"))
+								Game.Renderer.World3DRenderer.pitchAdd = ii;
+							else if (chatText.Text.StartsWith("-y"))
+								Game.Renderer.World3DRenderer.yawAdd = ii;
+						}
 					}
 
 					if (!chatText.Text.StartsWith("/", StringComparison.Ordinal))
