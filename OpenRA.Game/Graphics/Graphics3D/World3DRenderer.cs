@@ -167,6 +167,13 @@ namespace OpenRA.Graphics
 												FP.FromFloat((float)pos.Z / WPosPerMeterHeight));
 		}
 
+		public TSVector Get3DPositionFromWVec(WVec vec)
+		{
+			return new TSVector(FP.FromFloat((float)vec.X / WPosPerMeter),
+												FP.FromFloat((float)vec.Y / WPosPerMeter),
+												FP.FromFloat((float)vec.Z / WPosPerMeterHeight));
+		}
+
 		public vec3 Get3DRenderPositionFromWPos(WPos pos)
 		{
 			return new vec3((float)pos.X / WPosPerMeter,
@@ -209,33 +216,49 @@ namespace OpenRA.Graphics
 			return rot.ToRenderQuat();
 		}
 
-		public void AddInstancesToDraw(
-			in WPos pos, float zOffset, IEnumerable<MeshInstance> meshes, float scale,
+		public void AddInstancesToDraw(float zOffset, IEnumerable<MeshInstance> meshes, float scale,
 			in float3 tint, in float alpha, in Color remap)
 		{
 			var scaleMat = mat4.Scale(scale);
 			var viewOffset = Game.Renderer.World3DRenderer.InverseCameraFrontMeterPerWPos * zOffset;
 			foreach (var m in meshes)
 			{
-				// Convert screen offset to world offset
-				var offsetVec = Get3DRenderPositionFromWPos(pos + m.OffsetFunc());
-				offsetVec += viewOffset;
-				var offsetTransform = mat4.Translate(offsetVec);
+				if (m.UseMatrix)
+				{
+					TSMatrix4x4 t = m.Matrix();
+					float[] data = new float[23] { (float)t.M11, (float)t.M21, (float)t.M31, (float)t.M41,
+																(float)t.M12, (float)t.M22, (float)t.M32, (float)t.M42,
+																(float)t.M13, (float)t.M23, (float)t.M33, (float)t.M43,
+																(float)t.M14, (float)t.M24, (float)t.M34, (float)t.M44,
+																tint.X, tint.Y, tint.Z, alpha,
+																remap.R, remap.G, remap.B,
+					};
+					int[] dataint = new int[2] { m.DrawId, m.DrawMask };
 
-				var rotMat = new mat4(Get3DRenderRotationFromWRot(m.RotationFunc()));
+					m.OrderedMesh.AddInstanceData(data, 23, dataint, 2);
+				}
+				else
+				{
+					// Convert screen offset to world offset
+					var offsetVec = Get3DRenderPositionFromWPos(m.PoistionFunc());
+					offsetVec += viewOffset;
+					var offsetTransform = mat4.Translate(offsetVec);
 
-				var t = offsetTransform * (scaleMat * rotMat);
+					var rotMat = new mat4(Get3DRenderRotationFromWRot(m.RotationFunc()));
 
-				float[] data = new float[23] {t[0], t[1], t[2], t[3],
+					var t = offsetTransform * (scaleMat * rotMat);
+
+					float[] data = new float[23] {t[0], t[1], t[2], t[3],
 															t[4], t[5], t[6], t[7],
 															t[8], t[9], t[10], t[11],
 															t[12], t[13], t[14], t[15],
 															tint.X, tint.Y, tint.Z, alpha,
 															remap.R, remap.G, remap.B,
 					};
-				int[] dataint = new int[2] { m.DrawId, m.DrawMask };
+					int[] dataint = new int[2] { m.DrawId, m.DrawMask };
 
-				m.OrderedMesh.AddInstanceData(data, 23, dataint, 2);
+					m.OrderedMesh.AddInstanceData(data, 23, dataint, 2);
+				}
 			}
 		}
 

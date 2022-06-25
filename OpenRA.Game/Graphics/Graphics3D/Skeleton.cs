@@ -7,7 +7,7 @@ using TrueSync;
 
 namespace OpenRA.Graphics
 {
-	public struct BoneAsset
+	public class BoneAsset
 	{
 		public string Name;
 		public int Id;
@@ -86,6 +86,11 @@ namespace OpenRA.Graphics
 		}
 	}
 
+	public interface IBonePoseModifyer
+	{
+		void CalculateIK(ref TSMatrix4x4 self);
+	}
+
 	public class SkeletonInstance
 	{
 		public readonly BoneInstance[] Bones;
@@ -99,7 +104,7 @@ namespace OpenRA.Graphics
 		readonly int boneSize;
 		readonly bool[] updateFlags;
 
-		TSMatrix4x4 offset;
+		public TSMatrix4x4 Offset { get; private set; }
 		public int DrawID = -1;
 
 		TSVector offsetVec;
@@ -109,6 +114,14 @@ namespace OpenRA.Graphics
 		TSMatrix4x4 scaleMat;
 		TSMatrix4x4 translateMat;
 		TSMatrix4x4 rotMat;
+		readonly Dictionary<int, IBonePoseModifyer> inverseKinematics = new Dictionary<int, IBonePoseModifyer>();
+		IBonePoseModifyer currentIK;
+
+		public void AddInverseKinematic(int id ,in IBonePoseModifyer ik)
+		{
+			inverseKinematics.Add(id, ik);
+		}
+
 		public void SetOffset(WPos wPos, WRot wRot, float scale)
 		{
 			offsetScale = FP.FromFloat(scale);
@@ -117,17 +130,22 @@ namespace OpenRA.Graphics
 			translateMat = TSMatrix4x4.Translate(offsetVec);
 			offsetRot = Game.Renderer.World3DRenderer.Get3DRotationFromWRot(wRot);
 			rotMat = TSMatrix4x4.Rotate(offsetRot);
-			offset = translateMat * (scaleMat * rotMat);
+			Offset = translateMat * (scaleMat * rotMat);
 		}
 
 		public void SetOffset(in TSMatrix4x4 matrix)
 		{
-			offset = matrix;
+			Offset = matrix;
 		}
 
 		public TSMatrix4x4 BoneOffsetMat(int id)
 		{
-			return Bones[id].CurrentPose;
+			return LastSkeletonPose[id];
+		}
+
+		public TSMatrix4x4 SetBoneOffsetMat(int id, in TSMatrix4x4 mat)
+		{
+			return LastSkeletonPose[id] = mat;
 		}
 
 		public WPos BoneWPos(int id, in World3DRenderer w3dr)
@@ -162,16 +180,27 @@ namespace OpenRA.Graphics
 
 			if (Bones[id].ParentId == -1)
 			{
-				if (Bones[id].AnimId != -1 && animFrame.Length > Bones[id].AnimId)
-					Bones[id].UpdateOffset(offset, animFrame.Transformations[Bones[id].AnimId].Matrix);
+				if (inverseKinematics.TryGetValue(id, out currentIK))
+				{
+					Bones[id].UpdateOffset(Offset);
+					currentIK.CalculateIK(ref Bones[id].CurrentPose);
+				}
+				else if (Bones[id].AnimId != -1 && animFrame.Length > Bones[id].AnimId)
+					Bones[id].UpdateOffset(Offset, animFrame.Transformations[Bones[id].AnimId].Matrix);
 				else
-					Bones[id].UpdateOffset(offset);
+					Bones[id].UpdateOffset(Offset);
 				updateFlags[id] = true;
 			}
 			else
 			{
 				UpdateInner(Bones[id].ParentId, animFrame);
-				if (Bones[id].AnimId != -1 && animFrame.Length > Bones[id].AnimId)
+
+				if (inverseKinematics.TryGetValue(id, out currentIK))
+				{
+					Bones[id].UpdateOffset(Bones[Bones[id].ParentId].CurrentPose);
+					currentIK.CalculateIK(ref Bones[id].CurrentPose);
+				}
+				else if (Bones[id].AnimId != -1 && animFrame.Length > Bones[id].AnimId)
 					Bones[id].UpdateOffset(Bones[Bones[id].ParentId].CurrentPose, animFrame.Transformations[Bones[id].AnimId].Matrix);
 				else
 					Bones[id].UpdateOffset(Bones[Bones[id].ParentId].CurrentPose);
@@ -318,9 +347,9 @@ namespace OpenRA.Graphics
 				}
 
 				PreBakedAnimations.Add(animName, bakedAnim);
-
-				BoneAnimTexture = Game.Renderer.CreateInfoTexture(new Primitives.Size(SkeletonAsset.AnimTextureWidth, SkeletonAsset.AnimTextureHeight));
 			}
+
+			BoneAnimTexture = Game.Renderer.CreateInfoTexture(new Primitives.Size(SkeletonAsset.AnimTextureWidth, SkeletonAsset.AnimTextureHeight));
 		}
 
 		public void UpdateAnimTextureData()
@@ -414,6 +443,7 @@ namespace OpenRA.Graphics
 				if (Bones[i].AnimId != -1)
 				{
 					Bones[i].AnimId = animid;
+					BonesDict[Bones[i].Name].AnimId = animid;
 					BoneNameAnimIndex.Add(Bones[i].Name, Bones[i].AnimId);
 					animid++;
 				}
@@ -421,6 +451,7 @@ namespace OpenRA.Graphics
 				if (Bones[i].SkinId != -1)
 				{
 					Bones[i].SkinId = skinid;
+					BonesDict[Bones[i].Name].SkinId = skinid;
 					BoneNameSkinIndex.Add(Bones[i].Name, Bones[i].SkinId);
 					skinid++;
 				}

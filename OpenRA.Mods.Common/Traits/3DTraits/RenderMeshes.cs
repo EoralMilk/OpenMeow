@@ -1,15 +1,4 @@
-﻿#region Copyright & License Information
-/*
- * Copyright 2007-2022 The OpenRA Developers (see AUTHORS)
- * This file is part of OpenRA, which is free software. It is made
- * available to you under the terms of the GNU General Public License
- * as published by the Free Software Foundation, either version 3 of
- * the License, or (at your option) any later version. For more
- * information, see COPYING.
- */
-#endregion
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using OpenRA.Graphics;
@@ -17,7 +6,7 @@ using OpenRA.Mods.Common.Graphics;
 using OpenRA.Primitives;
 using OpenRA.Traits;
 
-namespace OpenRA.Mods.Common.Traits.Render
+namespace OpenRA.Mods.Common.Traits.Trait3D
 {
 	public class RenderMeshesInfo : TraitInfo, Requires<BodyOrientationInfo>
 	{
@@ -36,28 +25,30 @@ namespace OpenRA.Mods.Common.Traits.Render
 	{
 		public readonly RenderMeshesInfo Info;
 		readonly List<MeshInstance> meshes = new List<MeshInstance>();
-
+		public readonly World3DRenderer W3dr;
 		bool hasSkeleton;
-		WithSkeleton withSkeleton;
+		readonly Dictionary<string, WithSkeleton> withSkeletons = new Dictionary<string, WithSkeleton>();
 		WithMeshBody meshBody;
 		readonly Actor self;
 		readonly BodyOrientation body;
 		Color remap;
-		int drawId;
 		public RenderMeshes(Actor self, RenderMeshesInfo info)
 		{
 			this.self = self;
 			Info = info;
 			body = self.Trait<BodyOrientation>();
+			W3dr = Game.Renderer.World3DRenderer;
 		}
 
 		public void Created(Actor self)
 		{
-			withSkeleton = self.TraitOrDefault<WithSkeleton>();
+			foreach (var ws in self.TraitsImplementing<WithSkeleton>())
+			{
+				withSkeletons.Add(ws.Name, ws);
+			}
+
 			meshBody = self.TraitOrDefault<WithMeshBody>();
-			hasSkeleton = withSkeleton != null;
-			if (withSkeleton == null)
-				Console.WriteLine(Info.Image + " has no withSkeleton");
+			hasSkeleton = withSkeletons.Count > 0;
 		}
 
 		bool initializePalettes = true;
@@ -77,12 +68,13 @@ namespace OpenRA.Mods.Common.Traits.Render
 
 			if (hasSkeleton)
 			{
-				drawId = withSkeleton.GetDrawId();
-				if (drawId == -1)
-					return Array.Empty<IRenderable>();
 				foreach (var mesh in meshes)
 				{
-					mesh.DrawId = drawId;
+					if (mesh.SkeletonBinded != null)
+					{
+						if (withSkeletons.ContainsKey(mesh.SkeletonBinded))
+							mesh.DrawId = withSkeletons[mesh.SkeletonBinded].GetDrawId();
+					}
 				}
 			}
 

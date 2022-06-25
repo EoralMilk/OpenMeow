@@ -33,3 +33,11 @@ rumya-2:
 			Material: sportshorts
 		hair: lp-hair_pt2
 			Material: h-pt2
+
+turret-test:
+	Skeleton: turret_skeleton
+		Anims:
+			test: turret_test
+	Meshes:
+		turret: turret_test
+			Material: turret

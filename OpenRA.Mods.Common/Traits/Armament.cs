@@ -14,6 +14,7 @@ using System.Collections.Generic;
 using System.Linq;
 using OpenRA.GameRules;
 using OpenRA.Mods.Common.Traits.Render;
+using OpenRA.Mods.Common.Traits.Trait3D;
 using OpenRA.Traits;
 
 namespace OpenRA.Mods.Common.Traits
@@ -41,6 +42,7 @@ namespace OpenRA.Mods.Common.Traits
 		[Desc("Time (in frames) until the weapon can fire again.")]
 		public readonly int FireDelay = 0;
 
+		public readonly string SkeletonToUse = null;
 		public readonly string[] FromBonePose = Array.Empty<string>();
 
 		[Desc("Muzzle position relative to turret or body, (forward, right, up) triples.",
@@ -160,7 +162,7 @@ namespace OpenRA.Mods.Common.Traits
 
 			var barrels = new List<Barrel>();
 
-			if (info.FromBonePose.Length > 0)
+			if (info.FromBonePose.Length > 0 && info.SkeletonToUse != null)
 			{
 				useBonePose = true;
 				BoneIds = new int[info.FromBonePose.Length];
@@ -213,7 +215,9 @@ namespace OpenRA.Mods.Common.Traits
 			notifyAttacks = self.TraitsImplementing<INotifyAttack>().ToArray();
 			if (useBonePose)
 			{
-				withSkeleton = self.Trait<WithSkeleton>();
+				withSkeleton = self.TraitsImplementing<WithSkeleton>().Single(w => w.Info.Name == Info.SkeletonToUse);
+				if (withSkeleton == null)
+					throw new Exception(self.Info.Name + " Armament Can not find skeleton " + Info.SkeletonToUse);
 				for (int i = 0; i < Info.FromBonePose.Length; i++)
 				{
 					BoneIds[i] = withSkeleton.GetBoneId(Info.FromBonePose[i]);

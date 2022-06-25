@@ -214,7 +214,7 @@ namespace TrueSync
 			}
 		}
 
-		public static TSQuaternion RotateTowards(TSQuaternion from, TSQuaternion to, FP maxDegreesDelta)
+		public static TSQuaternion RotateTowards(in TSQuaternion from, TSQuaternion to, FP maxDegreesDelta)
 		{
 			FP dot = Dot(from, to);
 
@@ -224,19 +224,27 @@ namespace TrueSync
 				dot = -dot;
 			}
 
-			FP halfTheta = FP.Acos(dot);
-			FP theta = halfTheta * 2;
+			if (dot < 1)
+			{
 
-			maxDegreesDelta *= FP.Deg2Rad;
+				FP halfTheta = FP.Acos(dot);
+				FP theta = halfTheta * 2;
 
-			if (maxDegreesDelta >= theta)
+				maxDegreesDelta *= FP.Deg2Rad;
+
+				if (maxDegreesDelta >= theta)
+				{
+					return to;
+				}
+
+				maxDegreesDelta /= theta;
+
+				return Multiply(Multiply(from, FP.Sin((1 - maxDegreesDelta) * halfTheta)) + Multiply(to, FP.Sin(maxDegreesDelta * halfTheta)), 1 / FP.Sin(halfTheta));
+			}
+			else
 			{
 				return to;
 			}
-
-			maxDegreesDelta /= theta;
-
-			return Multiply(Multiply(from, FP.Sin((1 - maxDegreesDelta) * halfTheta)) + Multiply(to, FP.Sin(maxDegreesDelta * halfTheta)), 1 / FP.Sin(halfTheta));
 		}
 
 		public static TSQuaternion Euler(FP x, FP y, FP z)

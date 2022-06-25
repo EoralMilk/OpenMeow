@@ -293,6 +293,12 @@ namespace OpenRA.Traits
 		bool IsBlocking(Actor self, CPos cell);
 	}
 
+	public interface IWithSkeleton
+	{
+		void UpdateSkeleton();
+		void UpdateDrawInfo();
+	}
+
 	public interface IFacing
 	{
 		WAngle TurnSpeed { get; }

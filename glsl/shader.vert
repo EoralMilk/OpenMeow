@@ -212,7 +212,7 @@ mat4 GetSkinMatrix()
 
 void main()
 {
-	if ((aDrawPart & iDrawMask) == uint(0))
+	if ((aDrawPart & iDrawMask) == uint(0)|| iDrawId == -2)
 	{
 		isDraw = 0;
 		return;

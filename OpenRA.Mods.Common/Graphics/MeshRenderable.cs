@@ -94,7 +94,7 @@ namespace OpenRA.Mods.Common.Graphics
 
 			var map = wr.World.Map;
 
-			Game.Renderer.World3DRenderer.AddInstancesToDraw(renderable.pos, zOffset, draw, renderable.scale, t, a, remap);
+			Game.Renderer.World3DRenderer.AddInstancesToDraw(zOffset, draw, renderable.scale, t, a, remap);
 
 			return new FinalizedMeshRenderable(wr, this);
 		}

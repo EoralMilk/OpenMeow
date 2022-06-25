@@ -43,7 +43,7 @@ namespace OpenRA.Graphics
 			return matrix;
 		}
 
-		public static TSMatrix4x4 MatWithNewScale(TSMatrix4x4 matrix, float scale)
+		public static TSMatrix4x4 MatWithNewScale(TSMatrix4x4 matrix, FP scale)
 		{
 			var s = new TSVector(matrix.Column0.xyz.magnitude, matrix.Column1.xyz.magnitude, matrix.Column2.xyz.magnitude) / scale;
 			matrix.M11 /= s.x; matrix.M12 /= s.y; matrix.M13 /= s.z;

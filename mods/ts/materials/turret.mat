@@ -1,0 +1,6 @@
+TurretTest:
+	DiffuseMap: turret_bake.png
+	DiffuseTint: 1.2, 1.2, 1.2
+	SpecularTint: 0.85, 0.85,0.85
+	Shininess: 32.0
+

@@ -1,5 +1,37 @@
+^WithMeshTest:
+	WithMeshBody@body:
+		Mesh: body
+		SkeletonBinded: body
+	WithMesh@hair:
+		Mesh: hair
+		SkeletonBinded: body
+	WithMesh@cater:
+		Mesh: cater
+		SkeletonBinded: body
+	WithMeshCloth@skirt:
+		Mesh: skirt-split
+		Mask: 4
+		SkeletonBinded: body
+	WithMeshCloth@sweater:
+		Mesh: sweater
+		Mask: 2
+		SkeletonBinded: body
+	WithSkeleton:
+		Stand: stand
+		Walk: walk
+	RenderMeshes:
+		Image: rumya
+		ZOffset: 15
+		Scale: 6
+	AttachManager:
+	AttachPoint@first:
+		BoneAttach: a-s-Rig_Hand.R
+
+
+
 RUTEST:
 	Inherits: ^Vehicle
+	Inherits@meshtest: ^WithMeshTest
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Valued:
@@ -30,6 +62,7 @@ RUTEST:
 	Armament@PRIMARY:
 		Weapon: BikeMissile
 		RequiresCondition: !rank-elite
+		# SkeletonToUse: body
 		# LocalOffset: -153,-204,509, -153,204,509
 		# FromBonePose: a-s-Rig_Hand.R, a-s-Rig_Hand.L
 	Armament@ELITE:
@@ -40,37 +73,16 @@ RUTEST:
 	AttackFrontal:
 		Voice: Attack
 		PauseOnCondition: empdisable
-		FacingTolerance: 10
+		FacingTolerance: 25
 	DamagedByTerrain@VEINS:
 		RequiresCondition: !inside-tunnel && !rank-elite
 	LeavesTrails@VEINS:
 		RequiresCondition: !inside-tunnel && !rank-elite
 	BodyOrientation:
-		QuantizedFacings: 1024
-	WithMeshBody@body:
-		Mesh: body
-	WithMesh@hair:
-		Mesh: hair
-	WithMesh@cater:
-		Mesh: cater
-	WithMeshCloth@skirt:
-		Mesh: skirt-split
-		Mask: 4
-	WithMeshCloth@sweater:
-		Mesh: sweater
-		Mask: 2
-	WithSkeleton:
-		Stand: stand
-		Walk: walk
-	RenderMeshes:
-		Image: rumya
-		ZOffset: 15
-		Scale: 6
+		QuantizedFacings: 0
 	RenderSprites:
 		Image: bike
-	AttachManager:
-	AttachPoint@first:
-		BoneAttach: a-s-Rig_Hand.R
+
 
 RUTEST2:
 	Inherits: RUTEST
@@ -87,8 +99,28 @@ RUTEST2:
 		Speed: 88
 		Locomotor: tracked
 		# AlwaysTurnInPlace: true
+	AttackFrontal:
+		FacingTolerance: 512
 	AttachPoint@first:
-		BoneAttach: a-s-Rig_Head
+		BoneAttach: firepose #a-s-Rig_Head
+		Skeleton: turret
+
+	WithSkeleton@turret:
+		SkeletonDefine: turret-test
+		Name: turret
+		Stand: test
+		Walk: test
+	TurretAttachment@1:
+		SkeletonBinded: body
+		AttachingBone: s-Adj_Butt.R
+		AttachmentSkeleton: turret
+		TurretBone: a-s-Base
+		BarrelBone: a-s-Barrel
+		FireBone: firepose
+		Scale: 5
+		Mesh: turret
+		# Offset: 0, 32, 0
+		# BarrelOffset: 0, 256, 0
 
 
 RUTEST3:
@@ -107,11 +139,14 @@ RUTEST3:
 		# Locomotor: foot
 		# AlwaysTurnInPlace: true
 		# TerrainOrientationAdjustmentMargin: -1
-	AttachManager:
+	-AttachManager:
 	-AttachPoint@first:
+	-WithSkeleton:
+
 
 RUTEST4:
 	Inherits: ^EMPableAircraft
+	Inherits@meshtest: ^WithMeshTest
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Valued:
@@ -149,6 +184,7 @@ RUTEST4:
 	Armament:
 		Weapon: Proton
 		PauseOnCondition: !ammo
+		SkeletonToUse: body
 		FromBonePose: a-s-Rig_Hand.R, a-s-Rig_Hand.L
 	AttackAircraft:
 		Voice: Attack
@@ -177,29 +213,7 @@ RUTEST4:
 		FullSequence: pip-ammo
 		EmptySequence: pip-ammoempty
 		Palette: pips
-	WithMeshBody@body:
-		Mesh: body
-	WithMesh@hair:
-		Mesh: hair
-	WithMesh@cater:
-		Mesh: cater
-	WithMeshCloth@skirt:
-		Mesh: skirt-split
-		Mask: 4
-	WithMeshCloth@sweater:
-		Mesh: sweater
-		Mask: 2
-	WithSkeleton:
-		Stand: stand
-		Walk: walk
-	RenderMeshes:
-		Image: rumya
-		ZOffset: 15
-		Scale: 6
 	RenderSprites:
 		Image: scrin
 	-RenderModels:
 	-WithModelBody:
-	AttachManager:
-	AttachPoint@first:
-		BoneAttach: a-s-Rig_Hand.R

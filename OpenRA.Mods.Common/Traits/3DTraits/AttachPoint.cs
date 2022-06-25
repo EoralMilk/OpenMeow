@@ -1,19 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using OpenRA.Graphics;
 using OpenRA.Mods.Common.Activities;
 using OpenRA.Traits;
 
-namespace OpenRA.Mods.Common.Traits.Render
+namespace OpenRA.Mods.Common.Traits.Trait3D
 {
-	public class AttachManagerInfo : TraitInfo
+	public class AttachManagerInfo : TraitInfo, Requires<WithSkeletonInfo>
 	{
+		public readonly string MainSkeleton = "body";
 		public override object Create(ActorInitializer init) { return new AttachManager(init.Self, this); }
 	}
 
 	public class AttachManager
 	{
 		readonly Actor self;
+		public readonly WithSkeleton MainSkeleton;
 		public readonly AttachManagerInfo Info;
 		readonly List<Actor> attachments = new List<Actor>();
 		Actor parent;
@@ -23,6 +26,7 @@ namespace OpenRA.Mods.Common.Traits.Render
 		{
 			this.self = self;
 			Info = info;
+			MainSkeleton = self.TraitsImplementing<WithSkeleton>().Single(w => w.Info.Name == info.MainSkeleton);
 		}
 
 		public bool AddAttachment(Actor attachment)
@@ -91,28 +95,29 @@ namespace OpenRA.Mods.Common.Traits.Render
 
 	public class AttachPointInfo : ConditionalTraitInfo, Requires<AttachManagerInfo>, Requires<WithSkeletonInfo>
 	{
+		public readonly string Skeleton = "body";
 		public readonly string BoneAttach = null;
 		public override object Create(ActorInitializer init) { return new AttachPoint(init.Self, this); }
 	}
 
-	public class AttachPoint : ConditionalTrait<AttachPointInfo>, ITick, INotifyAttack, INotifyKilled
+	public class AttachPoint : ConditionalTrait<AttachPointInfo>, ITick, INotifyAttack, INotifyKilled, IModifySkeletonOffset
 	{
-		int attachBoneId = -1;
-		WithSkeleton withSkeleton;
+		readonly int attachBoneId = -1;
+		public readonly WithSkeleton MainSkeleton;
 
 		// this actor attached to other's with matrix
 		public bool Attached = false;
 
-		// this actor scale
-		public readonly float Scale = 1;
 		readonly Actor self;
 		readonly IFacing myFacing;
 		readonly BodyOrientation body;
 
-		Actor actor;
-		IPositionable ap;
-		IFacing ar;
-		WithSkeleton aws;
+		Actor attachmentActor;
+		IPositionable attachmentPositionable;
+		IFacing attachmentFacing;
+		AttachManager attachmentAM;
+		float attachmentScale = 1;
+		WithSkeleton attachmentSkeleton;
 		readonly AttachManager manager;
 		World3DRenderer w3dr;
 		public AttachPoint(Actor self, AttachPointInfo info)
@@ -121,8 +126,8 @@ namespace OpenRA.Mods.Common.Traits.Render
 			body = self.Trait<BodyOrientation>();
 			myFacing = self.Trait<IFacing>();
 			this.self = self;
-			withSkeleton = self.Trait<WithSkeleton>();
-			attachBoneId = withSkeleton.GetBoneId(Info.BoneAttach);
+			MainSkeleton = self.TraitsImplementing<WithSkeleton>().Single(w => w.Info.Name == info.Skeleton);
+			attachBoneId = MainSkeleton.GetBoneId(Info.BoneAttach);
 			if (attachBoneId == -1)
 				throw new Exception("can't find bone " + info.BoneAttach + " in skeleton.");
 
@@ -137,22 +142,13 @@ namespace OpenRA.Mods.Common.Traits.Render
 
 		void SelfTick()
 		{
-			if (actor != null && !actor.IsDead && actor.IsInWorld)
+			if (attachmentActor != null && !attachmentActor.IsDead && attachmentActor.IsInWorld)
 				TickAttach();
 		}
 
 		void INotifyAttack.Attacking(Actor self, in Target target, Armament a, Barrel barrel)
 		{
 			AttachActor(target.Actor);
-
-			//if (actor != null && !actor.IsDead && actor.IsInWorld)
-			//{
-			//	var from = w3dr.Get3DPositionFromWPos(actor.CenterPosition);
-			//	var to = w3dr.Get3DPositionFromWPos(target.CenterPosition);
-			//	WRot rot = WRot.LookAt(from, to);
-			//	if (ar != null)
-			//		ar.Orientation = rot;
-			//}
 		}
 
 		void AttachActor(Actor target)
@@ -165,46 +161,49 @@ namespace OpenRA.Mods.Common.Traits.Render
 			if (!manager.AddAttachment(target))
 				return;
 
-			actor = target;
-			ap = actor.TraitOrDefault<IPositionable>();
-			ar = actor.TraitOrDefault<IFacing>();
-			aws = actor.TraitOrDefault<WithSkeleton>();
+			attachmentActor = target;
+			attachmentPositionable = attachmentActor.TraitOrDefault<IPositionable>();
+			attachmentFacing = attachmentActor.TraitOrDefault<IFacing>();
+			attachmentAM = attachmentActor.TraitOrDefault<AttachManager>();
+			if (attachmentAM != null)
+			{
+				attachmentSkeleton = attachmentAM.MainSkeleton;
+				attachmentSkeleton.ModifySkeletonOffset = this;
+				attachmentScale = attachmentSkeleton.Scale;
+			}
+
 			TickAttach();
 		}
 
 		void TickAttach()
 		{
-			if (aws != null)
-			{
-				aws.Skeleton.SetOffset(Transformation.MatWithNewScale(withSkeleton.Skeleton.BoneOffsetMat(attachBoneId), aws.Scale));
-				ap?.SetPosition(actor, withSkeleton.GetWPosFromBoneId(attachBoneId), true);
-			}
-			else
-			{
-				ap?.SetPosition(actor, withSkeleton.GetWPosFromBoneId(attachBoneId), true);
-
-				if (ar != null)
-					ar.Orientation = withSkeleton.GetWRotFromBoneId(attachBoneId);
-			}
+			attachmentPositionable?.SetPosition(attachmentActor, MainSkeleton.GetWPosFromBoneId(attachBoneId), true);
+			if (attachmentFacing != null)
+				attachmentFacing.Orientation = MainSkeleton.GetWRotFromBoneId(attachBoneId);
 		}
 
 		void ReleaseAttach()
 		{
-			if (actor == null || actor.IsDead || !actor.IsInWorld)
+			if (attachmentActor == null || attachmentActor.IsDead || !attachmentActor.IsInWorld)
 				return;
 
-			if (manager.ReleaseAttachment(actor))
+			if (manager.ReleaseAttachment(attachmentActor))
 			{
 				TickAttach();
-				if (ar != null)
-					ar.Orientation = WRot.None.WithYaw(withSkeleton.GetWRotFromBoneId(attachBoneId).Yaw);
+				if (attachmentFacing != null)
+					attachmentFacing.Orientation = WRot.None.WithYaw(MainSkeleton.GetWRotFromBoneId(attachBoneId).Yaw);
 
-				if (actor.World.Map.DistanceAboveTerrain(actor.CenterPosition) > WDist.Zero)
+				if (attachmentSkeleton != null)
 				{
-					actor.QueueActivity(new Parachute(actor));
+					attachmentSkeleton.ModifySkeletonOffset = null;
 				}
 
-				actor = null;
+				if (attachmentActor.World.Map.DistanceAboveTerrain(attachmentActor.CenterPosition) > WDist.Zero)
+				{
+					attachmentActor.QueueActivity(new Parachute(attachmentActor));
+				}
+
+				attachmentActor = null;
 			}
 		}
 
@@ -215,6 +214,11 @@ namespace OpenRA.Mods.Common.Traits.Render
 		void INotifyKilled.Killed(Actor self, AttackInfo e)
 		{
 			ReleaseAttach();
+		}
+
+		public void UpdateOffset(in SkeletonInstance self)
+		{
+			self.SetOffset(Transformation.MatWithNewScale(MainSkeleton.Skeleton.BoneOffsetMat(attachBoneId), attachmentScale));
 		}
 	}
 }

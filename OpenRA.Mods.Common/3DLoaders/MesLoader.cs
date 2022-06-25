@@ -454,10 +454,30 @@ namespace OpenRA.Mods.Common.Graphics
 
 				if (skeleton != null && skeletonType == skeleton.Name)
 				{
-					BoneId1 = skeleton.GetSkinBoneIdByName(skinBoneIndexName[BoneId1]);
-					BoneId2 = skeleton.GetSkinBoneIdByName(skinBoneIndexName[BoneId2]);
-					BoneId3 = skeleton.GetSkinBoneIdByName(skinBoneIndexName[BoneId3]);
-					BoneId4 = skeleton.GetSkinBoneIdByName(skinBoneIndexName[BoneId4]);
+					if (skinBoneIndexName.ContainsKey(BoneId1))
+						BoneId1 = skeleton.GetSkinBoneIdByName(skinBoneIndexName[BoneId1]);
+					else if (BoneWeight1 == 0.0f)
+						BoneId1 = 0;
+					else
+						throw new Exception("Not valid mesh data");
+					if (skinBoneIndexName.ContainsKey(BoneId2))
+						BoneId2 = skeleton.GetSkinBoneIdByName(skinBoneIndexName[BoneId2]);
+					else if (BoneWeight2 == 0.0f)
+						BoneId2 = 0;
+					else
+						throw new Exception("Not valid mesh data");
+					if (skinBoneIndexName.ContainsKey(BoneId3))
+						BoneId3 = skeleton.GetSkinBoneIdByName(skinBoneIndexName[BoneId3]);
+					else if (BoneWeight3 == 0.0f)
+						BoneId3 = 0;
+					else
+						throw new Exception("Not valid mesh data");
+					if (skinBoneIndexName.ContainsKey(BoneId4))
+						BoneId4 = skeleton.GetSkinBoneIdByName(skinBoneIndexName[BoneId4]);
+					else if (BoneWeight4 == 0.0f)
+						BoneId4 = 0;
+					else
+						throw new Exception("Not valid mesh data");
 				}
 
 				vertices[i] = new MesVertex(X, Y, Z, NX, NY, NZ, U, V, RenderMask,

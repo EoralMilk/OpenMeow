@@ -104,6 +104,8 @@ namespace OpenRA
 
 		internal SyncHash[] SyncHashes { get; }
 
+		readonly IWithSkeleton[] skeletons;
+
 		readonly IFacing facing;
 		readonly IHealth health;
 		readonly IResolveOrder[] resolveOrders;
@@ -144,7 +146,7 @@ namespace OpenRA
 					throw new NotImplementedException("No rules definition for unit " + name);
 
 				Info = world.Map.Rules.Actors[name];
-
+				var skeletonsList = new List<IWithSkeleton>();
 				var resolveOrdersList = new List<IResolveOrder>();
 				var renderModifiersList = new List<IRenderModifier>();
 				var rendersList = new List<IRender>();
@@ -170,6 +172,7 @@ namespace OpenRA
 					{ if (trait is IEffectiveOwner t) EffectiveOwner = t; }
 					{ if (trait is IFacing t) facing = t; }
 					{ if (trait is IHealth t) health = t; }
+					{ if (trait is IWithSkeleton t) skeletonsList.Add(t); }
 					{ if (trait is IResolveOrder t) resolveOrdersList.Add(t); }
 					{ if (trait is IRenderModifier t) renderModifiersList.Add(t); }
 					{ if (trait is IRender t) rendersList.Add(t); }
@@ -183,6 +186,7 @@ namespace OpenRA
 					{ if (trait is ISync t) syncHashesList.Add(new SyncHash(t)); }
 				}
 
+				skeletons = skeletonsList.ToArray();
 				resolveOrders = resolveOrdersList.ToArray();
 				renderModifiers = renderModifiersList.ToArray();
 				renders = rendersList.ToArray();
@@ -255,6 +259,24 @@ namespace OpenRA
 
 			if (addToWorld)
 				World.Add(this);
+		}
+
+		public void UpdateSkeleton()
+		{
+			if (!Disposed && IsInWorld)
+			{
+				foreach (var s in skeletons)
+					s.UpdateSkeleton();
+			}
+		}
+
+		public void UpdateSkeletonDrawInfo()
+		{
+			if (!Disposed && IsInWorld)
+			{
+				foreach (var s in skeletons)
+					s.UpdateDrawInfo();
+			}
 		}
 
 		public void Tick()

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Numerics;
 using OpenRA.FileSystem;
 using OpenRA.Primitives;
+using TrueSync;
 
 namespace OpenRA.Graphics
 {
@@ -11,19 +12,35 @@ namespace OpenRA.Graphics
 	{
 		public IOrderedMesh OrderedMesh { get; }
 
-		public readonly Func<WVec> OffsetFunc;
+		public readonly Func<WPos> PoistionFunc;
 		public readonly Func<WRot> RotationFunc;
 		public readonly Func<bool> IsVisible;
+		public readonly Func<TSMatrix4x4> Matrix;
+		public readonly bool UseMatrix = false;
+		public readonly string SkeletonBinded = null;
+
 		public int DrawId;
 		public int DrawMask;
-		public MeshInstance(IOrderedMesh mesh, Func<WVec> offset, Func<WRot> rotation, Func<bool> isVisible, int modifyMask = -1)
+		public MeshInstance(IOrderedMesh mesh, Func<WPos> offset, Func<WRot> rotation, Func<bool> isVisible, string skeleton = null)
 		{
 			OrderedMesh = mesh;
-			OffsetFunc = offset;
+			PoistionFunc = offset;
 			RotationFunc = rotation;
 			IsVisible = isVisible;
 			DrawId = -1;
-			DrawMask = modifyMask;
+			DrawMask = -1;
+			SkeletonBinded = skeleton;
+		}
+
+		public MeshInstance(IOrderedMesh mesh, Func<TSMatrix4x4> matrix, Func<bool> isVisible, string skeleton = null)
+		{
+			OrderedMesh = mesh;
+			UseMatrix = true;
+			Matrix = matrix;
+			IsVisible = isVisible;
+			DrawId = -1;
+			DrawMask = -1;
+			SkeletonBinded = skeleton;
 		}
 
 		public Rectangle ScreenBounds(WPos wPos, WorldRenderer wr, float scale)
