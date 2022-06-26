@@ -187,30 +187,32 @@ namespace OpenRA.Graphics
 
 			if (Bones[id].ParentId == -1)
 			{
-				if (inverseKinematics.TryGetValue(id, out currentIK))
-				{
-					Bones[id].UpdateOffset(Offset);
-					currentIK.CalculateIK(ref Bones[id].CurrentPose);
-				}
-				else if (Bones[id].AnimId != -1 && animFrame.Length > Bones[id].AnimId)
+				if (Bones[id].AnimId != -1 && animFrame.Length > Bones[id].AnimId)
 					Bones[id].UpdateOffset(Offset, animFrame.Transformations[Bones[id].AnimId].Matrix);
 				else
 					Bones[id].UpdateOffset(Offset);
+
+				if (inverseKinematics.TryGetValue(id, out currentIK))
+				{
+					currentIK.CalculateIK(ref Bones[id].CurrentPose);
+				}
+
 				updateFlags[id] = true;
 			}
 			else
 			{
 				UpdateInner(Bones[id].ParentId, animFrame);
 
-				if (inverseKinematics.TryGetValue(id, out currentIK))
-				{
-					Bones[id].UpdateOffset(Bones[Bones[id].ParentId].CurrentPose);
-					currentIK.CalculateIK(ref Bones[id].CurrentPose);
-				}
-				else if (Bones[id].AnimId != -1 && animFrame.Length > Bones[id].AnimId)
+				if (Bones[id].AnimId != -1 && animFrame.Length > Bones[id].AnimId)
 					Bones[id].UpdateOffset(Bones[Bones[id].ParentId].CurrentPose, animFrame.Transformations[Bones[id].AnimId].Matrix);
 				else
 					Bones[id].UpdateOffset(Bones[Bones[id].ParentId].CurrentPose);
+
+				if (inverseKinematics.TryGetValue(id, out currentIK))
+				{
+					currentIK.CalculateIK(ref Bones[id].CurrentPose);
+				}
+
 				updateFlags[id] = true;
 			}
 		}
