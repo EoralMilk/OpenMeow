@@ -22,10 +22,10 @@
 	RenderMeshes:
 		Image: rumya
 		ZOffset: 15
-		Scale: 6
+		Scale: 8
 	AttachManager:
-	AttachPoint@first:
-		BoneAttach: a-s-Rig_Hand.R
+	# AttachPoint@first:
+	# 	BoneAttach: a-s-Rig_Hand.R
 
 
 
@@ -59,21 +59,45 @@ RUTEST:
 		RequiresCondition: !inside-tunnel
 		Range: 5c0
 		MaxHeightDelta: 3
-	Armament@PRIMARY:
-		Weapon: BikeMissile
-		RequiresCondition: !rank-elite
-		# SkeletonToUse: body
-		# LocalOffset: -153,-204,509, -153,204,509
-		# FromBonePose: a-s-Rig_Hand.R, a-s-Rig_Hand.L
-	Armament@ELITE:
-		Weapon: HoverMissile
-		RequiresCondition: rank-elite
-		# LocalOffset: -153,-204,509, -153,204,509
-		# FromBonePose: a-s-Rig_Hand.R, a-s-Rig_Hand.L
-	AttackFrontal:
+	AttackAttachmentTurreted:
+		Turrets: turret1, turret2
 		Voice: Attack
-		PauseOnCondition: empdisable
-		FacingTolerance: 25
+	WithSkeleton@turret1:
+		SkeletonDefine: turret-test
+		Name: turret_skeleton1
+	TurretAttachment@1:
+		Name: turret1
+		SkeletonBinded: body
+		AttachingBone: a-s-Rig_Hand.R
+		AttachmentSkeleton: turret_skeleton1
+		TurretBone: a-s-Base
+		BarrelBone: a-s-Barrel
+		Scale: 4
+		Mesh: turret
+	AttachedArmament@1:
+		Weapon: TestVulcan
+		SkeletonToUse: turret_skeleton1
+		FromBonePose: firepose
+		FacingTolerance: 40
+		Turret: turret1
+	WithSkeleton@turret2:
+		SkeletonDefine: turret-test
+		Name: turret_skeleton2
+	TurretAttachment@2:
+		Name: turret2
+		SkeletonBinded: body
+		AttachingBone: a-s-Rig_Hand.L
+		AttachmentSkeleton: turret_skeleton2
+		TurretBone: a-s-Base
+		BarrelBone: a-s-Barrel
+		Scale: 4
+		Mesh: turret
+	AttachedArmament@2:
+		Weapon: TestVulcan
+		SkeletonToUse: turret_skeleton2
+		FromBonePose: firepose
+		FacingTolerance: 40
+		Turret: turret2
 	DamagedByTerrain@VEINS:
 		RequiresCondition: !inside-tunnel && !rank-elite
 	LeavesTrails@VEINS:
@@ -88,8 +112,8 @@ RUTEST2:
 	Inherits: RUTEST
 	RenderMeshes:
 		Image: rumya-2
-		ZOffset: 15
-		Scale: 6
+		ZOffset: 0
+		Scale: 8
 	Tooltip:
 		Name: Test 2
 	Health:
@@ -99,28 +123,49 @@ RUTEST2:
 		Speed: 88
 		Locomotor: tracked
 		# AlwaysTurnInPlace: true
-	AttackFrontal:
-		FacingTolerance: 512
-	AttachPoint@first:
-		BoneAttach: firepose #a-s-Rig_Head
-		Skeleton: turret
+	# -WithMeshCloth@skirt:
+	# -WithMeshCloth@sweater:
 
-	WithSkeleton@turret:
+	AttackAttachmentTurreted:
+		Turrets: turret1, turret2
+		Voice: Attack
+	WithSkeleton@turret1:
 		SkeletonDefine: turret-test
-		Name: turret
-		Stand: test
-		Walk: test
+		Name: turret_skeleton1
 	TurretAttachment@1:
+		Name: turret1
 		SkeletonBinded: body
 		AttachingBone: s-Adj_Butt.R
-		AttachmentSkeleton: turret
+		AttachmentSkeleton: turret_skeleton1
 		TurretBone: a-s-Base
 		BarrelBone: a-s-Barrel
-		FireBone: firepose
-		Scale: 5
+		Scale: 3
 		Mesh: turret
-		# Offset: 0, 32, 0
-		# BarrelOffset: 0, 256, 0
+	AttachedArmament@1:
+		Weapon: TestVulcan
+		SkeletonToUse: turret_skeleton1
+		FromBonePose: firepose
+		FacingTolerance: 40
+		Turret: turret1
+
+	WithSkeleton@turret2:
+		SkeletonDefine: turret-test
+		Name: turret_skeleton2
+	TurretAttachment@2:
+		Name: turret2
+		SkeletonBinded: body
+		AttachingBone: s-Adj_Butt.L
+		AttachmentSkeleton: turret_skeleton2
+		TurretBone: a-s-Base
+		BarrelBone: a-s-Barrel
+		Scale: 3
+		Mesh: turret
+	AttachedArmament@2:
+		Weapon: TestVulcan
+		SkeletonToUse: turret_skeleton2
+		FromBonePose: firepose
+		FacingTolerance: 40
+		Turret: turret2
 
 
 RUTEST3:
@@ -140,7 +185,6 @@ RUTEST3:
 		# AlwaysTurnInPlace: true
 		# TerrainOrientationAdjustmentMargin: -1
 	-AttachManager:
-	-AttachPoint@first:
 	-WithSkeleton:
 
 

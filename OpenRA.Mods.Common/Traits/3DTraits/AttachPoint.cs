@@ -31,6 +31,9 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 
 		public bool AddAttachment(Actor attachment)
 		{
+			//if (attachment.TraitOrDefault<AttachManager>() == null)
+			//	return false;
+
 			if (IsParent(attachment))
 				return false;
 
@@ -100,7 +103,7 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 		public override object Create(ActorInitializer init) { return new AttachPoint(init.Self, this); }
 	}
 
-	public class AttachPoint : ConditionalTrait<AttachPointInfo>, ITick, INotifyAttack, INotifyKilled, IModifySkeletonOffset
+	public class AttachPoint : ConditionalTrait<AttachPointInfo>, ITick, INotifyAttack, INotifyKilled
 	{
 		readonly int attachBoneId = -1;
 		public readonly WithSkeleton MainSkeleton;
@@ -116,7 +119,6 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 		IPositionable attachmentPositionable;
 		IFacing attachmentFacing;
 		AttachManager attachmentAM;
-		float attachmentScale = 1;
 		WithSkeleton attachmentSkeleton;
 		readonly AttachManager manager;
 		World3DRenderer w3dr;
@@ -168,8 +170,7 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 			if (attachmentAM != null)
 			{
 				attachmentSkeleton = attachmentAM.MainSkeleton;
-				attachmentSkeleton.ModifySkeletonOffset = this;
-				attachmentScale = attachmentSkeleton.Scale;
+				attachmentSkeleton.SetParent(MainSkeleton, attachBoneId);
 			}
 
 			TickAttach();
@@ -195,7 +196,7 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 
 				if (attachmentSkeleton != null)
 				{
-					attachmentSkeleton.ModifySkeletonOffset = null;
+					attachmentSkeleton.ReleaseFromParent();
 				}
 
 				if (attachmentActor.World.Map.DistanceAboveTerrain(attachmentActor.CenterPosition) > WDist.Zero)
@@ -214,11 +215,6 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 		void INotifyKilled.Killed(Actor self, AttackInfo e)
 		{
 			ReleaseAttach();
-		}
-
-		public void UpdateOffset(in SkeletonInstance self)
-		{
-			self.SetOffset(Transformation.MatWithNewScale(MainSkeleton.Skeleton.BoneOffsetMat(attachBoneId), attachmentScale));
 		}
 	}
 }

@@ -20,11 +20,6 @@ using TrueSync;
 
 namespace OpenRA.Mods.Common.Traits.Trait3D
 {
-	public interface IModifySkeletonOffset
-	{
-		void UpdateOffset(in SkeletonInstance self);
-	}
-
 	public class WithSkeletonInfo : ConditionalTraitInfo, Requires<RenderMeshesInfo>
 	{
 		public readonly string SkeletonDefine = null;
@@ -44,19 +39,19 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 
 		readonly BlendTree blendTree;
 		World3DRenderer w3dr;
-		IModifySkeletonOffset modifySkeletonOffset;
-		public IModifySkeletonOffset ModifySkeletonOffset
-		{
-            get
-            {
-                return modifySkeletonOffset;
-            }
+		//IModifySkeletonOffset modifySkeletonOffset;
+		//public IModifySkeletonOffset ModifySkeletonOffset
+		//{
+  //          get
+  //          {
+  //              return modifySkeletonOffset;
+  //          }
 
-            set
-            {
-				modifySkeletonOffset = value;
-            }
-		}
+  //          set
+  //          {
+		//		modifySkeletonOffset = value;
+  //          }
+		//}
 
 		readonly RenderMeshes rm;
 		public bool Draw;
@@ -151,22 +146,105 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 
 		public WPos GetWPosFromBoneId(int id)
 		{
+			CallForUpdate();
 			return Skeleton.BoneWPos(id, w3dr);
 		}
 
 		public WRot GetWRotFromBoneId(int id)
 		{
+			CallForUpdate();
 			return Skeleton.BoneWRot(id, w3dr);
+		}
+
+		bool hasUpdated;
+		WithSkeleton parent = null;
+		int parentBoneId = -1;
+		FP scaleAsChild = 1;
+		readonly List<WithSkeleton> children = new List<WithSkeleton>();
+
+		public bool SetParent(WithSkeleton parent, int boneId, float scaleOverride = 0.0f)
+		{
+			if (HasChild(parent))
+				return false;
+			if (boneId == -1)
+				throw new Exception("Can't set parnet on a bone which id is -1");
+
+			ReleaseFromParent();
+
+			this.parent = parent;
+			parentBoneId = boneId;
+			scaleAsChild = scaleOverride == 0.0f ? Scale : scaleOverride;
+			parent.children.Add(this);
+			return true;
+		}
+
+		public void ReleaseFromParent()
+		{
+			if (parent == null)
+				return;
+
+			parent.children.Remove(this);
+			parent = null;
+			parentBoneId = -1;
+			scaleAsChild = 1;
+		}
+
+		public bool HasChild(WithSkeleton skeleton)
+		{
+			if (children.Count == 0)
+				return false;
+
+			foreach (var ws in children)
+			{
+				if (ws == skeleton)
+					return true;
+				else
+					ws.HasChild(parent);
+			}
+
+			return false;
+		}
+
+		public bool CallForUpdate()
+		{
+			if (parent == null)
+			{
+				if (!hasUpdated)
+				{
+					UpdateSkeleton();
+					UpdateDrawInfo();
+				}
+				else
+					return true;
+			}
+			else
+				parent.CallForUpdate();
+			return false;
+		}
+
+		public void UpdateOffset(in SkeletonInstance skeleton)
+		{
+			skeleton.SetOffset(self.CenterPosition, myFacing.Orientation, Scale);
 		}
 
 		public void UpdateSkeleton()
 		{
+			hasUpdated = false;
 			Draw = !IsTraitDisabled;
 
-			if (ModifySkeletonOffset == null)
+			if (parent != null)
+				return;
+
+			UpdateSkeletonInner();
+			hasUpdated = true;
+		}
+
+		void UpdateSkeletonInner()
+		{
+			if (parent == null)
 				Skeleton.SetOffset(self.CenterPosition, myFacing.Orientation, Scale);
 			else
-				ModifySkeletonOffset.UpdateOffset(Skeleton);
+				Skeleton.SetOffset(Transformation.MatWithNewScale(parent.Skeleton.BoneOffsetMat(parentBoneId), scaleAsChild));
 
 			if (hasAnim)
 			{
@@ -180,10 +258,22 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 			else
 				Skeleton.UpdateOffset(new Frame(0));
 
+			// TODO: this is using for multiple thread in future
 			Skeleton.UpdateLastPose();
+
+			foreach (var child in children)
+				child.UpdateSkeletonInner();
 		}
 
 		public void UpdateDrawInfo()
+		{
+			if (parent != null)
+				return;
+
+			UpdateDrawInfoInner();
+		}
+
+		void UpdateDrawInfoInner()
 		{
 			if (Draw)
 			{
@@ -195,7 +285,9 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 			{
 				Skeleton.DrawID = -1;
 			}
-		}
 
+			foreach (var child in children)
+				child.UpdateDrawInfoInner();
+		}
 	}
 }

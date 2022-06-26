@@ -17,7 +17,7 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 		public override object Create(ActorInitializer init) { return new MeshAttachment(init.Self, this); }
 	}
 
-	public class MeshAttachment : WithMesh, ITick, IModifySkeletonOffset
+	public class MeshAttachment : WithMesh, ITick
 	{
 		protected readonly int AttachBoneId = -1;
 		protected readonly WithSkeleton MainSkeleton;
@@ -40,19 +40,21 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 				AttachmentSkeleton = self.TraitsImplementing<WithSkeleton>().Single(w => w.Info.Name == info.AttachmentSkeleton);
 			if (info.AttachmentSkeleton != null && AttachmentSkeleton == null)
 				throw new Exception(self.Info.Name + " Mesh Attachment Can not find attachment skeleton " + info.AttachmentSkeleton);
+
+			AttachBoneId = MainSkeleton.GetBoneId(info.AttachingBone);
+			if (AttachBoneId == -1)
+				throw new Exception("can't find bone " + info.AttachingBone + " in skeleton.");
+
 			if (AttachmentSkeleton != null)
 			{
 				image = AttachmentSkeleton.Image;
-				AttachmentSkeleton.ModifySkeletonOffset = this;
+				AttachmentSkeleton.SetParent(MainSkeleton, AttachBoneId, Scale);
 			}
 			else
 			{
 				image = RenderMeshes.Image;
 			}
 
-			AttachBoneId = MainSkeleton.GetBoneId(info.AttachingBone);
-			if (AttachBoneId == -1)
-				throw new Exception("can't find bone " + info.AttachingBone + " in skeleton.");
 			if (!replaceMeshInit)
 			{
 				var mesh = self.World.MeshCache.GetMeshSequence(image, info.Mesh);
@@ -72,11 +74,6 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 
 			//tick = (tick + 1) % 60;
 			//mat = TSMatrix4x4.RotateY((FP)tick * FP.Pi / 30);
-		}
-
-		public void UpdateOffset(in SkeletonInstance skeleton)
-		{
-			skeleton.SetOffset(Transformation.MatWithNewScale(MainSkeleton.Skeleton.BoneOffsetMat(AttachBoneId), Scale));
 		}
 	}
 }

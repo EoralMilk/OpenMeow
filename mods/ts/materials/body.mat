@@ -1,6 +1,6 @@
 BodyCombined:
 	DiffuseMap: bodybake2.png
-	DiffuseTint: 1.2, 1.2, 1.2
+	DiffuseTint: 1.2, 1.15, 1
 	SpecularTint: 0.45, 0.45,0.45
-	Shininess: 16.0
+	Shininess: 32.0
 

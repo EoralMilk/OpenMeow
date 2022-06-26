@@ -26,6 +26,7 @@
 
 A10Vulcan:
 	Inherits: ^MG
+	ValidTargets: Ground, Water, Air
 	ReloadDelay: 100
 	MinRange: 4c512
 	Burst: 15
@@ -47,6 +48,31 @@ A10Vulcan:
 		Damage: 5000
 		Spread: 0c372
 
+
+
+TestVulcan:
+	Inherits: A10Vulcan
+	ReloadDelay: 50
+	MinRange: 0c512
+	Burst: 10
+	BurstDelays: 3
+	Range: 10c0
+	Report: cygun1.aud
+	FirstBurstTargetOffset: -3000,0,0
+	FollowingBurstTargetOffset: 600,0,0
+	Projectile: Bullet
+		ContrailLength: 3
+		ContrailWidth: 44
+		ContrailColor: F0D05C
+		ContrailDelay: 0
+		ContrailBlendMode: ScreenAdditive
+		Speed: 1100
+		LaunchAngle: 10
+		ZOffset: 1024
+	Warhead@1Dam: SpreadDamage
+		Damage: 3000
+		Spread: 0c372
+		ValidTargets: Ground, Water, Air
 
 Minigun:
 	Inherits: ^MG

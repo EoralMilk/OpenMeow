@@ -42,9 +42,6 @@ namespace OpenRA.Mods.Common.Traits
 		[Desc("Time (in frames) until the weapon can fire again.")]
 		public readonly int FireDelay = 0;
 
-		public readonly string SkeletonToUse = null;
-		public readonly string[] FromBonePose = Array.Empty<string>();
-
 		[Desc("Muzzle position relative to turret or body, (forward, right, up) triples.",
 			"If weapon Burst = 1, it cycles through all listed offsets, otherwise the offset corresponding to current burst is used.")]
 		public readonly WVec[] LocalOffset = Array.Empty<WVec>();
@@ -119,7 +116,7 @@ namespace OpenRA.Mods.Common.Traits
 	public class Armament : PausableConditionalTrait<ArmamentInfo>, ITick
 	{
 		public readonly WeaponInfo Weapon;
-		public readonly Barrel[] Barrels;
+		public Barrel[] Barrels { get; protected set; }
 
 		readonly Actor self;
 		IFacing facing;
@@ -127,10 +124,6 @@ namespace OpenRA.Mods.Common.Traits
 		BodyOrientation coords;
 		INotifyBurstComplete[] notifyBurstComplete;
 		INotifyAttack[] notifyAttacks;
-
-		WithSkeleton withSkeleton;
-		bool useBonePose;
-		int[] BoneIds;
 
 		int conditionToken = Actor.InvalidConditionToken;
 
@@ -141,7 +134,7 @@ namespace OpenRA.Mods.Common.Traits
 
 		int ticksSinceLastShot;
 		int currentBarrel;
-		readonly int barrelCount;
+		protected int barrelCount;
 		readonly bool hasFacingTolerance;
 
 		readonly List<(int Ticks, int Burst, Action<int> Func)> delayedActions = new List<(int, int, Action<int>)>();
@@ -150,7 +143,7 @@ namespace OpenRA.Mods.Common.Traits
 		public int FireDelay { get; protected set; }
 		public int Burst { get; protected set; }
 
-		public Armament(Actor self, ArmamentInfo info)
+		public Armament(Actor self, ArmamentInfo info, bool replaceBarrel = false)
 			: base(info)
 		{
 			this.self = self;
@@ -160,29 +153,10 @@ namespace OpenRA.Mods.Common.Traits
 			Weapon = info.WeaponInfo;
 			Burst = Weapon.Burst;
 
-			var barrels = new List<Barrel>();
+			if (!replaceBarrel)
+			{
+				var barrels = new List<Barrel>();
 
-			if (info.FromBonePose.Length > 0 && info.SkeletonToUse != null)
-			{
-				useBonePose = true;
-				BoneIds = new int[info.FromBonePose.Length];
-				for (var i = 0; i < info.FromBonePose.Length; i++)
-				{
-					barrels.Add(new Barrel
-					{
-						BoneId = -1,
-						Offset = WVec.Zero,
-						Yaw = info.LocalYaw.Length > i ? info.LocalYaw[i] : WAngle.Zero
-					});
-				}
-			}
-			else
-			{
-				useBonePose = false;
-			}
-
-			if (!useBonePose)
-			{
 				for (var i = 0; i < info.LocalOffset.Length; i++)
 				{
 					barrels.Add(new Barrel
@@ -192,14 +166,14 @@ namespace OpenRA.Mods.Common.Traits
 						Yaw = info.LocalYaw.Length > i ? info.LocalYaw[i] : WAngle.Zero
 					});
 				}
+
+				if (barrels.Count == 0)
+					barrels.Add(new Barrel { BoneId = -1, Offset = WVec.Zero, Yaw = WAngle.Zero });
+
+				barrelCount = barrels.Count;
+
+				Barrels = barrels.ToArray();
 			}
-
-			if (barrels.Count == 0)
-				barrels.Add(new Barrel { BoneId = -1, Offset = WVec.Zero, Yaw = WAngle.Zero });
-
-			barrelCount = barrels.Count;
-
-			Barrels = barrels.ToArray();
 		}
 
 		public virtual WDist MaxRange()
@@ -213,24 +187,6 @@ namespace OpenRA.Mods.Common.Traits
 			coords = self.Trait<BodyOrientation>();
 			notifyBurstComplete = self.TraitsImplementing<INotifyBurstComplete>().ToArray();
 			notifyAttacks = self.TraitsImplementing<INotifyAttack>().ToArray();
-			if (useBonePose)
-			{
-				withSkeleton = self.TraitsImplementing<WithSkeleton>().Single(w => w.Info.Name == Info.SkeletonToUse);
-				if (withSkeleton == null)
-					throw new Exception(self.Info.Name + " Armament Can not find skeleton " + Info.SkeletonToUse);
-				for (int i = 0; i < Info.FromBonePose.Length; i++)
-				{
-					BoneIds[i] = withSkeleton.GetBoneId(Info.FromBonePose[i]);
-					if (BoneIds[i] == -1)
-					{
-						throw new Exception(self.Info.Name + " can't find bone " + Info.FromBonePose[i] + " from current skeleton");
-					}
-
-					Barrels[i].BoneId = BoneIds[i];
-				}
-
-			}
-
 			rangeModifiers = self.TraitsImplementing<IRangeModifier>().ToArray().Select(m => m.GetRangeModifier());
 			reloadModifiers = self.TraitsImplementing<IReloadModifier>().ToArray().Select(m => m.GetReloadModifier());
 			damageModifiers = self.TraitsImplementing<IFirepowerModifier>().ToArray().Select(m => m.GetFirepowerModifier());
@@ -437,13 +393,10 @@ namespace OpenRA.Mods.Common.Traits
 
 		public WPos MuzzleWPos(Actor self, Barrel b)
 		{
-			if (useBonePose)
-				return withSkeleton.GetWPosFromBoneId(b.BoneId);
-
-			return self.CenterPosition + CalculateMuzzleOffset(self, b);
+			return CalculateMuzzleWPos(self, b);
 		}
 
-		protected virtual WVec CalculateMuzzleOffset(Actor self, Barrel b)
+		protected virtual WPos CalculateMuzzleWPos(Actor self, Barrel b)
 		{
 			// Weapon offset in turret coordinates
 			var localOffset = b.Offset + new WVec(-Recoil, WDist.Zero, WDist.Zero);
@@ -456,7 +409,7 @@ namespace OpenRA.Mods.Common.Traits
 				localOffset = localOffset.Rotate(bodyOrientation);
 
 			// Body coordinates to world coordinates
-			return coords.LocalToWorld(localOffset);
+			return self.CenterPosition + coords.LocalToWorld(localOffset);
 		}
 
 		public WRot MuzzleOrientation(Actor self, Barrel b)

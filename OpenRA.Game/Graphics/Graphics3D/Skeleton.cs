@@ -114,6 +114,7 @@ namespace OpenRA.Graphics
 		TSMatrix4x4 scaleMat;
 		TSMatrix4x4 translateMat;
 		TSMatrix4x4 rotMat;
+
 		readonly Dictionary<int, IBonePoseModifyer> inverseKinematics = new Dictionary<int, IBonePoseModifyer>();
 		IBonePoseModifyer currentIK;
 
@@ -148,11 +149,17 @@ namespace OpenRA.Graphics
 			return LastSkeletonPose[id] = mat;
 		}
 
+		/// <summary>
+		/// don't directly use this if you dom't know about how the skeleton update
+		/// </summary>
 		public WPos BoneWPos(int id, in World3DRenderer w3dr)
 		{
 			return w3dr.GetWPosFromMatrix(Bones[id].CurrentPose);
 		}
 
+		/// <summary>
+		/// don't directly use this if you dom't know about how the skeleton update
+		/// </summary>
 		public WRot BoneWRot(int id, in World3DRenderer w3dr)
 		{
 			return w3dr.GetWRotFromMatrix(Bones[id].CurrentPose);

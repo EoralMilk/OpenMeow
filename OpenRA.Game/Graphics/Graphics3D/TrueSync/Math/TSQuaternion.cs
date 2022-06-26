@@ -125,7 +125,7 @@ namespace TrueSync
 		public static FP Angle(TSQuaternion a, TSQuaternion b)
 		{
 			TSQuaternion aInv = TSQuaternion.Inverse(a);
-			TSQuaternion f = b * aInv;
+			TSQuaternion f = (b * aInv).Normalize();
 
 			FP angle = FP.Acos(f.w) * 2 * FP.Rad2Deg;
 
