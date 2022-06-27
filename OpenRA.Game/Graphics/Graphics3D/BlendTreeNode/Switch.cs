@@ -33,7 +33,7 @@ namespace OpenRA.Graphics
 			this.flag = flag;
 		}
 
-		public override BlendTreeNodeOutPut UpdateOutPut(short optick, bool run, int step)
+		public override BlendTreeNodeOutPut UpdateOutPut(short optick, bool run, int step, bool resolve = true)
 		{
 			if (optick == tick)
 				return outPut;
@@ -47,6 +47,9 @@ namespace OpenRA.Graphics
 			{
 				blendValue = TSMath.Max(blendValue - (FP)1.0f / SwitchTick, (FP)0.0f);
 			}
+
+			if (!resolve)
+				return outPut;
 
 			if (blendValue > (FP)0.999f)
 			{

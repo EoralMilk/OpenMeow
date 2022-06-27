@@ -446,15 +446,15 @@ namespace OpenRA
 						a.UpdateSkeleton();
 					}
 
-				// after actor tick ,we should update skeleton info?
-				SkeletonCache.UpdateAllSkeletonTexture();
-
 				ApplyToActorsWithTraitTimed<ITick>((actor, trait) => trait.Tick(actor), "Trait");
 
 				foreach (var a in actors.Values)
 				{
 					a.UpdateSkeletonDrawInfo();
 				}
+
+				// after actor tick ,we should update skeleton info?
+				SkeletonCache.UpdateAllSkeletonTexture();
 
 				effects.DoTimed(e => e.Tick(this), "Effect");
 			}

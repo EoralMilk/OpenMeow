@@ -305,8 +305,6 @@ namespace OpenRA
 		// call by world renderer before draw 3d meshes
 		public void UpdateShadowBuffer(WorldRenderer wr)
 		{
-			Game.Renderer.World3DRenderer.PrepareToRender(wr);
-
 			worldShadowBuffer.Bind();
 			Game.Renderer.Context.EnableDepthBuffer(DepthFunc.LessEqual);
 			Draw3DMeshesInstance(wr, true);
@@ -314,6 +312,18 @@ namespace OpenRA
 			worldShadowBuffer.Unbind();
 			Game.Renderer.Context.Clear();
 			worldBuffer.Bind();
+		}
+
+		public void Flush3DMeshesInstance(WorldRenderer wr)
+		{
+			// vxl
+			foreach (var orderedMesh in orderedMeshes)
+			{
+				orderedMesh.Value.Flush();
+			}
+
+			// mesh
+			wr.World.MeshCache.FlushInstances();
 		}
 
 		public void Draw3DMeshesInstance(WorldRenderer wr, bool sunCamera)
@@ -326,14 +336,14 @@ namespace OpenRA
 				shader.Value.SetVec("DepthPreviewParams", depthPreview3dParams.X, depthPreview3dParams.Y);
 			}
 
+			// vxl
 			foreach (var orderedMesh in orderedMeshes)
 			{
 				orderedMesh.Value.DrawInstances();
-				if (!sunCamera)
-					orderedMesh.Value.Flush();
 			}
 
-			wr.World.MeshCache.DrawInstances(sunCamera);
+			// mesh
+			wr.World.MeshCache.DrawInstances();
 		}
 
 		public void RenderInstance(int start, int numVertices, int numInstance, bool elemented = false)

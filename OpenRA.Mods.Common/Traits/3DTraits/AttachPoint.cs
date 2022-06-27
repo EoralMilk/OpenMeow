@@ -173,7 +173,7 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 				attachmentSkeleton.SetParent(MainSkeleton, attachBoneId);
 			}
 
-			TickAttach();
+			MainSkeleton.CallForUpdate();
 		}
 
 		void TickAttach()

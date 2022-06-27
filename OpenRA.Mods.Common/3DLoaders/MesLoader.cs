@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.IO;
 using OpenRA.FileSystem;
 using OpenRA.Graphics;
+using OpenRA.Primitives;
 using StbImageSharp;
+using TrueSync;
 
 namespace OpenRA.Mods.Common.Graphics
 {
@@ -173,8 +175,7 @@ namespace OpenRA.Mods.Common.Graphics
 
 	class OrderedMesh : IOrderedMesh
 	{
-		public static readonly int MaxInstanceCount = 1024;
-
+		public static readonly int MaxInstanceCount = 4096;
 		public OrderedSkeleton Skeleton { get; set; }
 		readonly bool useDQB = false;
 		readonly MeshVertexData renderData;
@@ -187,6 +188,7 @@ namespace OpenRA.Mods.Common.Graphics
 		readonly MeshInstanceData[] instancesToDraw;
 		int instanceCount;
 		public IVertexBuffer<MeshInstanceData> InstanceArrayBuffer;
+		public Rectangle BoundingRec => renderData.BoundingRec;
 
 		public OrderedMesh(string name, MeshVertexData data, IMaterial material, bool useDQB, OrderedSkeleton skeleton)
 		{
@@ -246,6 +248,9 @@ namespace OpenRA.Mods.Common.Graphics
 			if (Skeleton != null)
 			{
 				renderData.Shader.SetBool("useDQB", useDQB);
+				renderData.Shader.SetInt("skinBoneCount", Skeleton.SkeletonAsset.SkinBonesIndices.Length);
+				renderData.Shader.SetInt("skinBoneTexWidth", SkeletonAsset.AnimTextureWidth);
+
 				renderData.Shader.SetTexture("boneAnimTexture", Skeleton.BoneAnimTexture);
 				renderData.Shader.SetMatrix("BindTransformData", Skeleton.SkeletonAsset.BindTransformData, 128);
 			}
@@ -407,7 +412,7 @@ namespace OpenRA.Mods.Common.Graphics
 		readonly string skeletonType;
 		readonly MesVertex[] vertices;
 		readonly uint[] indices;
-
+		readonly TSVector min, max;
 		public MeshReader(Stream s, SkeletonAsset skeleton)
 		{
 			if (!s.ReadASCII(8).StartsWith("Ora_Mesh"))
@@ -446,6 +451,14 @@ namespace OpenRA.Mods.Common.Graphics
 				float BoneWeight1, BoneWeight2, BoneWeight3, BoneWeight4;
 
 				X = s.ReadFloat(); Y = s.ReadFloat(); Z = s.ReadFloat();
+				min.x = TSMath.Min(min.x, X);
+				min.y = TSMath.Min(min.y, Y);
+				min.z = TSMath.Min(min.z, Z);
+
+				max.x = TSMath.Max(max.x, X);
+				max.y = TSMath.Max(max.y, Y);
+				max.z = TSMath.Max(max.z, Z);
+
 				U = s.ReadFloat(); V = s.ReadFloat();
 				NX = s.ReadFloat(); NY = s.ReadFloat(); NZ = s.ReadFloat();
 				RenderMask = s.ReadUInt32();
@@ -492,13 +505,21 @@ namespace OpenRA.Mods.Common.Graphics
 			}
 		}
 
+		public Rectangle CalculateBoundingBox(World3DRenderer w3dr)
+		{
+			if (w3dr == null)
+				throw new Exception("CalculateBoundingBox: need World3DRenderer");
+			var r = (int)((max - min).magnitude * w3dr.PixPerMeter) + 1;
+			return Rectangle.FromLTRB(-r, -r, r, r);
+		}
+
 		public MeshVertexData CreateMeshData()
 		{
 			IVertexBuffer<MesVertex> vertexBuffer = Game.Renderer.CreateVertexBuffer<MesVertex>(vertexCount);
 			vertexBuffer.SetData(vertices, vertexCount);
 			vertexBuffer.SetElementData(indices, indicesCount);
 			IShader shader = Game.Renderer.GetOrCreateShader<MeshShaderBindings>("MeshShaderBindings");
-			MeshVertexData renderData = new MeshVertexData(0, indicesCount, shader, vertexBuffer);
+			MeshVertexData renderData = new MeshVertexData(0, indicesCount, shader, vertexBuffer, CalculateBoundingBox(Game.Renderer.World3DRenderer));
 			return renderData;
 		}
 	}

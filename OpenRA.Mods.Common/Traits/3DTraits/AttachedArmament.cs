@@ -207,7 +207,7 @@ namespace OpenRA.Mods.Common.Traits
 			var delayedTarget = target;
 			withSkeleton.CallForUpdate();
 
-			ScheduleDelayedAction(Info.FireDelay, Burst, (burst) =>
+			ScheduleDelayedAction(Info.FireDelay + 1, Burst, (burst) =>
 			{
 				Func<WPos> muzzlePosition = () => MuzzleWPos(self, barrel);
 				Func<WAngle> muzzleFacing = () => MuzzleOrientation(self, barrel).Yaw;

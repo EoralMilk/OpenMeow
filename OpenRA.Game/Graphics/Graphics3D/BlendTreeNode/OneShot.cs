@@ -55,7 +55,7 @@ namespace OpenRA.Graphics
 			fadeBlend = 0;
 		}
 
-		public override BlendTreeNodeOutPut UpdateOutPut(short optick, bool run, int step)
+		public override BlendTreeNodeOutPut UpdateOutPut(short optick, bool run, int step, bool resolve = true)
 		{
 			if (optick == tick)
 				return outPut;
@@ -75,7 +75,8 @@ namespace OpenRA.Graphics
 				}
 
 				fadeBlend = (FP)shotTick / FadeTick;
-				outPut = blendTree.Blend(inPutNode.UpdateOutPut(optick, run, step), shotValue, fadeBlend, animMask);
+				if (resolve)
+					outPut = blendTree.Blend(inPutNode.UpdateOutPut(optick, run, step), shotValue, fadeBlend, animMask);
 			}
 			else if (runShot && shotEndType == ShotEndType.Keep)
 			{
@@ -88,7 +89,8 @@ namespace OpenRA.Graphics
 				{
 					shotTick = Math.Min(shotTick + 1, FadeTick);
 					fadeBlend = (FP)shotTick / FadeTick;
-					outPut = blendTree.Blend(inPutNode.UpdateOutPut(optick, run, step), shotValue, fadeBlend, animMask);
+					if (resolve)
+						outPut = blendTree.Blend(inPutNode.UpdateOutPut(optick, run, step), shotValue, fadeBlend, animMask);
 				}
 			}
 

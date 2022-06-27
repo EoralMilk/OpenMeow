@@ -57,7 +57,7 @@ RUTEST:
 		Type: Heavy
 	RevealsShroud:
 		RequiresCondition: !inside-tunnel
-		Range: 5c0
+		Range: 15c0
 		MaxHeightDelta: 3
 	AttackAttachmentTurreted:
 		Turrets: turret1, turret2
@@ -166,26 +166,6 @@ RUTEST2:
 		FromBonePose: firepose
 		FacingTolerance: 40
 		Turret: turret2
-
-
-RUTEST3:
-	Inherits: RUTEST
-	RenderMeshes:
-		Image: rumya
-		ZOffset: 15
-		Scale: 6
-	Tooltip:
-		Name: Test 3
-	Health:
-		HP: 50000
-	Mobile:
-		TurnSpeed: 34
-		Speed: 65
-		# Locomotor: foot
-		# AlwaysTurnInPlace: true
-		# TerrainOrientationAdjustmentMargin: -1
-	-AttachManager:
-	-WithSkeleton:
 
 
 RUTEST4:

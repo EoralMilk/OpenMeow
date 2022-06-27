@@ -40,19 +40,27 @@ uniform bool useDQB;
 uniform mat4 BindTransformData[128];
 
 uniform sampler2D boneAnimTexture;
-
+uniform int skinBoneCount;
+uniform int skinBoneTexWidth;
 
 mat4 m1, m2, m3 ,m4;
 vec3 s1, s2, s3, s4;
 mat4 mMatrix = mat4(0.0f);
 
+int animTexoffset;
 mat4 GetMat4ById(int id){
-	ivec2 startuv= ivec2(id * 4, iDrawId);
-
-	vec4 c1 = texelFetch(boneAnimTexture, startuv, 0);
-	vec4 c2 = texelFetch(boneAnimTexture, ivec2(startuv.x + 1,startuv.y), 0);
-	vec4 c3 = texelFetch(boneAnimTexture, ivec2(startuv.x + 2,startuv.y), 0);
-	vec4 c4 = texelFetch(boneAnimTexture, ivec2(startuv.x + 3,startuv.y), 0);
+	int y = (animTexoffset + id * 4) / skinBoneTexWidth;
+	int x = (animTexoffset + id * 4) % skinBoneTexWidth;
+	vec4 c1 = texelFetch(boneAnimTexture, ivec2(x, y), 0);
+	y = (animTexoffset + id * 4 + 1) / skinBoneTexWidth;
+	x = (animTexoffset + id * 4 + 1) % skinBoneTexWidth;
+	vec4 c2 = texelFetch(boneAnimTexture, ivec2(x, y), 0);
+	y = (animTexoffset + id * 4 + 2) / skinBoneTexWidth;
+	x = (animTexoffset + id * 4 + 2) % skinBoneTexWidth;
+	vec4 c3 = texelFetch(boneAnimTexture, ivec2(x, y), 0);
+	y = (animTexoffset + id * 4 + 3) / skinBoneTexWidth;
+	x = (animTexoffset + id * 4 + 3) % skinBoneTexWidth;
+	vec4 c4 = texelFetch(boneAnimTexture, ivec2(x, y), 0);
 
 	return  mat4(c1,c2,c3,c4) * BindTransformData[id];
 }
@@ -224,6 +232,7 @@ void main()
 
 	if (iDrawId != -1)
 	{
+		animTexoffset = iDrawId * skinBoneCount * 4;
 		if (aBoneWeights[0] == 0.0f){
 			mMatrix =  mat4(iModelV1, iModelV2, iModelV3, iModelV4);
 			// mMatrix = mMatrix * rotationFix;

@@ -14,6 +14,7 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 		public readonly string TurretBone = null;
 		[Desc("Number of ticks before turret is realigned. (-1 turns off realignment)")]
 		public readonly int RealignDelay = 40;
+		public readonly float RotationSpeed = 2.0f;
 		public override object Create(ActorInitializer init) { return new TurretAttachment(init.Self, this); }
 	}
 
@@ -41,7 +42,7 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 			if (TurretBoneId == -1)
 				throw new Exception("can't find turret bone " + info.TurretBone + " in skeleton.");
 
-			turretIk = new TurretIK(RenderMeshes.W3dr, 5);
+			turretIk = new TurretIK(RenderMeshes.W3dr, info.RotationSpeed);
 			AttachmentSkeleton.Skeleton.AddInverseKinematic(TurretBoneId, turretIk);
 			if (info.BarrelBone != null)
 			{
@@ -50,7 +51,7 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 				if (BarrelBoneId == -1)
 					throw new Exception("can't find barrel bone " + info.BarrelBone + " in skeleton.");
 
-				barrelIk = new BarrelIk(RenderMeshes.W3dr, 5);
+				barrelIk = new BarrelIk(RenderMeshes.W3dr, info.RotationSpeed);
 				AttachmentSkeleton.Skeleton.AddInverseKinematic(BarrelBoneId, barrelIk);
 			}
 

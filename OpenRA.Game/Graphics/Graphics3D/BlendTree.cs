@@ -36,12 +36,12 @@ namespace OpenRA.Graphics
 			currentTick = 0;
 		}
 
-		public BlendTreeNodeOutPut GetOutPut()
+		public BlendTreeNodeOutPut GetOutPut(bool resolve = true)
 		{
 			currentTick++;
 
 			// step 可以用于跳步，当这一帧滞后时，可以选择跳过几帧动画
-			return FinalOutPut.UpdateOutPut(currentTick, true, 1);
+			return FinalOutPut.UpdateOutPut(currentTick, true, 1, resolve);
 		}
 
 		public BlendTreeNodeOutPut Blend(in BlendTreeNodeOutPut inPutValue1, in BlendTreeNodeOutPut inPutValue2, FP t, in AnimMask animMask)
@@ -90,7 +90,7 @@ namespace OpenRA.Graphics
 			this.animMask = mask;
 		}
 
-		public abstract BlendTreeNodeOutPut UpdateOutPut(short tick, bool run, int step);
+		public abstract BlendTreeNodeOutPut UpdateOutPut(short tick, bool run, int step, bool resolve = true);
 	}
 
 	/// <summary>

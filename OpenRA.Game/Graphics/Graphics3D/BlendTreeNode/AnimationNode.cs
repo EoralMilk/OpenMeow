@@ -28,7 +28,7 @@ namespace OpenRA.Graphics
 			frame = 0;
 		}
 
-		public override BlendTreeNodeOutPut UpdateOutPut(short optick, bool run, int step)
+		public override BlendTreeNodeOutPut UpdateOutPut(short optick, bool run, int step, bool resolve = true)
 		{
 			if (optick == tick)
 				return outPut;

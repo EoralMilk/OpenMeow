@@ -47,6 +47,7 @@ namespace OpenRA.Graphics
 		public readonly WRot WRotRotationFix;
 
 		public vec3 CameraPos { get; private set; }
+		public readonly float PixPerMeter;
 		public readonly float MeterPerPix;
 		public readonly float MeterPerPixHalf;
 		public mat4 Projection;
@@ -54,6 +55,7 @@ namespace OpenRA.Graphics
 
 		public World3DRenderer(Renderer renderer, MapGrid mapGrid)
 		{
+			PixPerMeter = (float)(mapGrid.TileSize.Width / 1.4142135d) / (1024 / WPosPerMeter);
 			MeterPerPix = (float)((1024 / WPosPerMeter) / (mapGrid.TileSize.Width / 1.4142135d));
 			MeterPerPixHalf = MeterPerPix / 2.0f;
 

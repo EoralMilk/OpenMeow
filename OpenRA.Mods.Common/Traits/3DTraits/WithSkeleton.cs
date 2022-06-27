@@ -39,23 +39,26 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 
 		readonly BlendTree blendTree;
 		World3DRenderer w3dr;
-		//IModifySkeletonOffset modifySkeletonOffset;
-		//public IModifySkeletonOffset ModifySkeletonOffset
-		//{
-  //          get
-  //          {
-  //              return modifySkeletonOffset;
-  //          }
-
-  //          set
-  //          {
-		//		modifySkeletonOffset = value;
-  //          }
-		//}
 
 		readonly RenderMeshes rm;
 		public bool Draw;
 		int tick = 0;
+		public int Drawtick = 0;
+
+		int lastUpdateTick = 0;
+		int lastDrawtick = 0;
+
+		bool toUpdate = false;
+		/// <summary>
+		/// WIP
+		/// </summary>
+		public bool ToUpdateSkeleton
+		{
+			get
+			{
+				return Draw || toUpdate;
+			}
+		}
 
 		public readonly float Scale = 1;
 		readonly Actor self;
@@ -119,19 +122,20 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 		void ITick.Tick(Actor self)
 		{
 			SelfTick();
+			Console.WriteLine("Skeleton: " + skeletonUpdate);
+			skeletonUpdate = 0;
 		}
 
 		void SelfTick()
 		{
-			Draw = !IsTraitDisabled;
-
 			tick++;
+			Drawtick++;
 		}
 
 		public int GetDrawId()
 		{
-			if (Skeleton.CanGetPose() && tick > 2)
-				return Skeleton.DrawID;
+			if (Skeleton.CanGetPose() && Drawtick > 2)
+				return Skeleton.DrawID == -1 ? -2 : Skeleton.DrawID;
 			else
 				return -2;
 		}
@@ -156,7 +160,7 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 			return Skeleton.BoneWRot(id, w3dr);
 		}
 
-		bool hasUpdated;
+		public bool HasUpdated { get; private set; }
 		WithSkeleton parent = null;
 		int parentBoneId = -1;
 		FP scaleAsChild = 1;
@@ -205,21 +209,14 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 			return false;
 		}
 
-		public bool CallForUpdate()
+		public void CallForUpdate()
 		{
-			if (parent == null)
+			toUpdate = true;
+
+			if (parent != null)
 			{
-				if (!hasUpdated)
-				{
-					UpdateSkeleton();
-					UpdateDrawInfo();
-				}
-				else
-					return true;
-			}
-			else
 				parent.CallForUpdate();
-			return false;
+			}
 		}
 
 		public void UpdateOffset(in SkeletonInstance skeleton)
@@ -229,40 +226,70 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 
 		public void UpdateSkeleton()
 		{
-			hasUpdated = false;
-			Draw = !IsTraitDisabled;
+			HasUpdated = false;
 
 			if (parent != null)
 				return;
 
-			UpdateSkeletonInner();
-			hasUpdated = true;
+			UpdateSkeletonInner(ToUpdateSkeleton);
 		}
 
-		void UpdateSkeletonInner()
+		public static int skeletonUpdate;
+
+		void UpdateSkeletonInner(bool callbyParent)
 		{
-			if (parent == null)
-				Skeleton.SetOffset(self.CenterPosition, myFacing.Orientation, Scale);
-			else
-				Skeleton.SetOffset(Transformation.MatWithNewScale(parent.Skeleton.BoneOffsetMat(parentBoneId), scaleAsChild));
-
-			if (hasAnim)
+			if (lastUpdateTick == tick)
 			{
-				if (move.CurrentMovementTypes != MovementType.None)
-					switchNode.SetFlag(true);
-				else
-					switchNode.SetFlag(false);
+				HasUpdated = true;
+				toUpdate = false;
 
-				Skeleton.UpdateOffset(blendTree.GetOutPut().OutPutFrame);
+				foreach (var child in children)
+					child.UpdateSkeletonInner(callbyParent);
+				return;
+			}
+
+			lastUpdateTick = tick;
+
+			if (ToUpdateSkeleton || callbyParent)
+			{
+				skeletonUpdate++;
+				if (parent == null)
+					Skeleton.SetOffset(self.CenterPosition, myFacing.Orientation, Scale);
+				else
+					Skeleton.SetOffset(Transformation.MatWithNewScale(parent.Skeleton.BoneOffsetMat(parentBoneId), scaleAsChild));
+
+				if (hasAnim)
+				{
+					if (move.CurrentMovementTypes != MovementType.None)
+						switchNode.SetFlag(true);
+					else
+						switchNode.SetFlag(false);
+
+					Skeleton.UpdateOffset(blendTree.GetOutPut().OutPutFrame);
+				}
+				else
+					Skeleton.UpdateOffset(new Frame(0));
+
+				// TODO: this is using for multiple thread in future
+				Skeleton.UpdateLastPose();
+				HasUpdated = true;
+				toUpdate = false;
 			}
 			else
-				Skeleton.UpdateOffset(new Frame(0));
+			{
+				if (hasAnim)
+				{
+					if (move.CurrentMovementTypes != MovementType.None)
+						switchNode.SetFlag(true);
+					else
+						switchNode.SetFlag(false);
 
-			// TODO: this is using for multiple thread in future
-			Skeleton.UpdateLastPose();
+					blendTree.GetOutPut(false);
+				}
+			}
 
 			foreach (var child in children)
-				child.UpdateSkeletonInner();
+				child.UpdateSkeletonInner(callbyParent);
 		}
 
 		public void UpdateDrawInfo()
@@ -270,12 +297,21 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 			if (parent != null)
 				return;
 
-			UpdateDrawInfoInner();
+			UpdateDrawInfoInner(Draw);
 		}
 
-		void UpdateDrawInfoInner()
+		void UpdateDrawInfoInner(bool callbyParent)
 		{
-			if (Draw)
+			if (lastDrawtick == Drawtick)
+			{
+				foreach (var child in children)
+					child.UpdateDrawInfoInner(callbyParent);
+				return;
+			}
+
+			lastDrawtick = Drawtick;
+
+			if (Draw || callbyParent)
 			{
 				// update my skeletonInstance drawId
 				OrderedSkeleton.AddInstance(Skeleton);
@@ -287,7 +323,7 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 			}
 
 			foreach (var child in children)
-				child.UpdateDrawInfoInner();
+				child.UpdateDrawInfoInner(callbyParent);
 		}
 	}
 }

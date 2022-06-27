@@ -135,6 +135,7 @@ namespace OpenRA.Mods.Cnc.Graphics
 		public IVertexBuffer<VxlInstanceData> InstanceArrayBuffer;
 
 		bool alphaBlend;
+		public Rectangle BoundingRec { get; }
 
 		public OrderedVxlSection(CombinedMeshRenderData data, string name)
 		{

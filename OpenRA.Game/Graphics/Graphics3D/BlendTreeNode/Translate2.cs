@@ -49,7 +49,7 @@ namespace OpenRA.Graphics
 			}
 		}
 
-		public override BlendTreeNodeOutPut UpdateOutPut(short optick, bool run, int step)
+		public override BlendTreeNodeOutPut UpdateOutPut(short optick, bool run, int step, bool resolve = true)
 		{
 			if (optick == tick)
 				return outPut;
@@ -70,8 +70,8 @@ namespace OpenRA.Graphics
 					}
 
 					blendValue = ratio < TranslateBlendRatio ? ratio / TranslateBlendRatio : (1.0f - ratio) < TranslateBlendRatio ? (1.0f - ratio) / TranslateBlendRatio : 1.0f;
-
-					outPut = blendTree.Blend(inPutValue1, inPutValue2, blendValue, animMask);
+					if (resolve)
+						outPut = blendTree.Blend(inPutValue1, inPutValue2, blendValue, animMask);
 					return outPut;
 				}
 				else
@@ -86,8 +86,8 @@ namespace OpenRA.Graphics
 					}
 
 					blendValue = ratio < TranslateBlendRatio ? ratio / TranslateBlendRatio : (1.0f - ratio) < TranslateBlendRatio ? (1.0f - ratio) / TranslateBlendRatio : 1.0f;
-
-					outPut = blendTree.Blend(inPutValue1, inPutValue2, blendValue, animMask);
+					if (resolve)
+						outPut = blendTree.Blend(inPutValue1, inPutValue2, blendValue, animMask);
 					return outPut;
 				}
 			}
@@ -96,13 +96,15 @@ namespace OpenRA.Graphics
 				if (flag)
 				{
 					var inPutValue = inPutNode2.UpdateOutPut(optick, run, step);
-					outPut = new BlendTreeNodeOutPut(inPutValue.OutPutFrame, animMask);
+					if (resolve)
+						outPut = new BlendTreeNodeOutPut(inPutValue.OutPutFrame, animMask);
 					return outPut;
 				}
 				else
 				{
 					var inPutValue = inPutNode1.UpdateOutPut(optick, run, step);
-					outPut = new BlendTreeNodeOutPut(inPutValue.OutPutFrame, animMask);
+					if (resolve)
+						outPut = new BlendTreeNodeOutPut(inPutValue.OutPutFrame, animMask);
 					return outPut;
 				}
 			}

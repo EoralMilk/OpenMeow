@@ -891,7 +891,7 @@ namespace TrueSync
 
 			if (x.RawValue == 0) return PiOver2;
 
-			var result = Atan(Sqrt(One - x * x) / x);
+			var result = Atan(Sqrt(OneBigger - x * x) / x);
 			return x.RawValue < 0 ? result + Pi : result;
 		}
 

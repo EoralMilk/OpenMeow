@@ -28,15 +28,13 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 		public readonly World3DRenderer W3dr;
 		bool hasSkeleton;
 		readonly Dictionary<string, WithSkeleton> withSkeletons = new Dictionary<string, WithSkeleton>();
-		WithMeshBody meshBody;
 		readonly Actor self;
-		readonly BodyOrientation body;
 		Color remap;
+		bool inScreen = false;
 		public RenderMeshes(Actor self, RenderMeshesInfo info)
 		{
 			this.self = self;
 			Info = info;
-			body = self.Trait<BodyOrientation>();
 			W3dr = Game.Renderer.World3DRenderer;
 		}
 
@@ -47,7 +45,6 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 				withSkeletons.Add(ws.Name, ws);
 			}
 
-			meshBody = self.TraitOrDefault<WithMeshBody>();
 			hasSkeleton = withSkeletons.Count > 0;
 		}
 
@@ -56,6 +53,30 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 
 		void ITick.Tick(Actor self)
 		{
+			foreach (var wskv in withSkeletons)
+			{
+				if (!wskv.Value.Draw)
+					wskv.Value.Drawtick = 1;
+				wskv.Value.Draw = inScreen;
+			}
+
+			//Console.WriteLine("Draw Count: " + RenderMeshes.drawCount);
+			//Console.WriteLine("Max DrawId: " + RenderMeshes.maxDrawId);
+
+			RenderMeshes.drawCount = 0;
+			RenderMeshes.maxDrawId = 0;
+			inScreen = false;
+		}
+
+		static int drawCount;
+		static int maxDrawId;
+
+		/// <summary>
+		/// call WithSkeletons for update
+		/// </summary>
+		public void CallWhenInSceen()
+		{
+			inScreen = true;
 		}
 
 		IEnumerable<IRenderable> IRender.Render(Actor self, WorldRenderer wr)
@@ -73,14 +94,18 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 					if (mesh.SkeletonBinded != null)
 					{
 						if (withSkeletons.ContainsKey(mesh.SkeletonBinded))
+						{
 							mesh.DrawId = withSkeletons[mesh.SkeletonBinded].GetDrawId();
+							if (maxDrawId < mesh.DrawId)
+								maxDrawId = mesh.DrawId;
+						}
 					}
 				}
 			}
 
 			return new IRenderable[]
 			{
-				new MeshRenderable(meshes, self.CenterPosition, Info.ZOffset, remap, Info.Scale)
+				new MeshRenderable(meshes, self.CenterPosition, Info.ZOffset, remap, Info.Scale, this)
 			};
 		}
 

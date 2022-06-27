@@ -163,13 +163,19 @@ namespace OpenRA.Graphics
 			return textures[name];
 		}
 
-		public void DrawInstances(bool sunCamera)
+		public void FlushInstances()
+		{
+			foreach (var orderedMesh in meshes)
+			{
+				orderedMesh.Value.Flush();
+			}
+		}
+
+		public void DrawInstances()
 		{
 			foreach (var orderedMesh in meshes)
 			{
 				orderedMesh.Value.DrawInstances();
-				if (!sunCamera)
-					orderedMesh.Value.Flush();
 			}
 		}
 

@@ -13,6 +13,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using OpenRA.Graphics;
+using OpenRA.Mods.Common.Traits.Trait3D;
 using OpenRA.Primitives;
 
 namespace OpenRA.Mods.Common.Graphics
@@ -28,15 +29,15 @@ namespace OpenRA.Mods.Common.Graphics
 		readonly float alpha;
 		readonly float3 tint;
 		readonly TintModifiers tintModifiers;
-
+		public readonly RenderMeshes RenderMeshes;
 		public MeshRenderable(
-			IEnumerable<MeshInstance> meshes, WPos pos, int zOffset, in Color remap, float scale)
-			: this(meshes, pos, zOffset, remap, scale, 1f, float3.Ones, TintModifiers.None)
+			IEnumerable<MeshInstance> meshes, WPos pos, int zOffset, in Color remap, float scale, RenderMeshes renderMeshes)
+			: this(meshes, pos, zOffset, remap, scale, 1f, float3.Ones, TintModifiers.None, renderMeshes)
 		{ }
 
 		public MeshRenderable(
 			IEnumerable<MeshInstance> meshes, WPos pos, int zOffset, in Color remap, float scale,
-			float alpha, in float3 tint, TintModifiers tintModifiers)
+			float alpha, in float3 tint, TintModifiers tintModifiers, RenderMeshes renderMeshes)
 		{
 			this.meshes = meshes;
 			this.pos = pos;
@@ -46,6 +47,7 @@ namespace OpenRA.Mods.Common.Graphics
 			this.alpha = alpha;
 			this.tint = tint;
 			this.tintModifiers = tintModifiers;
+			this.RenderMeshes = renderMeshes;
 		}
 
 		public WPos Pos => pos;
@@ -57,30 +59,30 @@ namespace OpenRA.Mods.Common.Graphics
 		public TintModifiers TintModifiers => tintModifiers;
 		public IRenderable WithZOffset(int newOffset)
 		{
-			return new MeshRenderable(meshes, pos, newOffset, remap, scale, alpha, tint, tintModifiers);
+			return new MeshRenderable(meshes, pos, newOffset, remap, scale, alpha, tint, tintModifiers, RenderMeshes);
 		}
 
 		public IRenderable OffsetBy(in WVec vec)
 		{
-			return new MeshRenderable(meshes, pos + vec, zOffset, remap, scale, alpha, tint, tintModifiers);
+			return new MeshRenderable(meshes, pos + vec, zOffset, remap, scale, alpha, tint, tintModifiers, RenderMeshes);
 		}
 
 		public IRenderable AsDecoration() { return this; }
 
 		public IModifyableRenderable WithAlpha(float newAlpha)
 		{
-			return new MeshRenderable(meshes, pos, zOffset, remap, scale, newAlpha, tint, tintModifiers);
+			return new MeshRenderable(meshes, pos, zOffset, remap, scale, newAlpha, tint, tintModifiers, RenderMeshes);
 		}
 
 		public IModifyableRenderable WithTint(in float3 newTint, TintModifiers newTintModifiers)
 		{
-			return new MeshRenderable(meshes, pos, zOffset, remap, scale, alpha, newTint, newTintModifiers);
+			return new MeshRenderable(meshes, pos, zOffset, remap, scale, alpha, newTint, newTintModifiers, RenderMeshes);
 		}
 
 		public IFinalizedRenderable PrepareRender(WorldRenderer wr)
 		{
 			var renderable = this;
-
+			RenderMeshes.CallWhenInSceen();
 			var t = renderable.tint;
 			if (wr.TerrainLighting != null && (renderable.tintModifiers & TintModifiers.IgnoreWorldTint) == 0)
 				t *= wr.TerrainLighting.TintAt(renderable.pos);
@@ -111,6 +113,22 @@ namespace OpenRA.Mods.Common.Graphics
 
 			public void Render(WorldRenderer wr)
 			{
+				// var renderable = mesh;
+				// mesh.RenderMeshes.CallWhenInSceen();
+				// var t = renderable.tint;
+				// if (wr.TerrainLighting != null && (renderable.tintModifiers & TintModifiers.IgnoreWorldTint) == 0)
+				// 	t *= wr.TerrainLighting.TintAt(renderable.pos);
+
+				// // Shader interprets negative alpha as a flag to use the tint colour directly instead of multiplying the sprite colour
+				// var a = renderable.alpha;
+				// if ((renderable.tintModifiers & TintModifiers.ReplaceColor) != 0)
+				// 	a *= -1;
+
+				// var draw = renderable.meshes.Where(v => v.IsVisible());
+
+				// var map = wr.World.Map;
+
+				// Game.Renderer.World3DRenderer.AddInstancesToDraw(mesh.zOffset, draw, renderable.scale, t, a, mesh.remap);
 			}
 
 			public void RenderDebugGeometry(WorldRenderer wr)

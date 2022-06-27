@@ -45,12 +45,12 @@ namespace OpenRA.Graphics
 
 		public Rectangle ScreenBounds(WPos wPos, WorldRenderer wr, float scale)
 		{
-			var minX = float.MaxValue;
-			var minY = float.MaxValue;
-			var maxX = float.MinValue;
-			var maxY = float.MinValue;
+			var spos = wr.Screen3DPxPosition(wPos);
 
-			return Rectangle.FromLTRB((int)minX, (int)minY, (int)maxX, (int)maxY);
+			return Rectangle.FromLTRB(	(int)(spos.X + OrderedMesh.BoundingRec.Left * scale),
+															(int)(spos.Y + OrderedMesh.BoundingRec.Top * scale),
+															(int)(spos.X + OrderedMesh.BoundingRec.Right * scale),
+															(int)(spos.Y + OrderedMesh.BoundingRec.Bottom * scale));
 		}
 	}
 
@@ -62,6 +62,8 @@ namespace OpenRA.Graphics
 		void Flush();
 		void DrawInstances();
 		void SetPalette(ITexture pal);
+
+		Rectangle BoundingRec { get; }
 	}
 
 	public readonly struct CombinedMeshRenderData
@@ -136,12 +138,14 @@ namespace OpenRA.Graphics
 		public readonly int Count;
 		public readonly IShader Shader;
 		public readonly IVertexBuffer VertexBuffer;
-		public MeshVertexData(int start, int count, IShader shader, IVertexBuffer vertexBuffer)
+		public readonly Rectangle BoundingRec;
+		public MeshVertexData(int start, int count, IShader shader, IVertexBuffer vertexBuffer, Rectangle bound)
 		{
 			Start = start;
 			Count = count;
 			Shader = shader;
 			VertexBuffer = vertexBuffer;
+			BoundingRec = bound;
 		}
 	}
 

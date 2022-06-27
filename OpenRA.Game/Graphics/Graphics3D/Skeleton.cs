@@ -249,10 +249,11 @@ namespace OpenRA.Graphics
 		{
 			if (DrawID == -1 || !hasUpdatedLast)
 				return;
-			if (DrawID >= SkeletonAsset.AnimTextureHeight)
+			int dataWidth = asset.SkinBonesIndices.Length * 16;
+
+			if ((DrawID * dataWidth) >= skeleton.AnimTransformData.Length)
 				throw new Exception("ProcessManagerData: Skeleton Instance drawId out of range: might be too many skeleton to draw!");
 
-			int dataWidth = SkeletonAsset.AnimTextureWidth * 4;
 			int i = 0;
 			int y = DrawID * dataWidth;
 			for (int x = 0; x < dataWidth; x += 16)
