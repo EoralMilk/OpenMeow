@@ -78,6 +78,8 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 
 		public bool FacingWithInTolerance(in WAngle facingTolerance)
 		{
+			if (!MainSkeleton.HasUpdated)
+				return false;
 			deg = (FP)facingTolerance.Angle / 512 * 180;
 
 			if (hasBarrel)

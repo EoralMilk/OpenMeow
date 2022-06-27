@@ -122,7 +122,7 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 		void ITick.Tick(Actor self)
 		{
 			SelfTick();
-			Console.WriteLine("Skeleton: " + skeletonUpdate);
+			//Console.WriteLine("Skeleton: " + skeletonUpdate);
 			skeletonUpdate = 0;
 		}
 
