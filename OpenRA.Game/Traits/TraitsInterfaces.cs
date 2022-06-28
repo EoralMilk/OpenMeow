@@ -297,6 +297,7 @@ namespace OpenRA.Traits
 	{
 		void UpdateSkeleton();
 		void UpdateDrawInfo();
+		void SkeletonTick();
 	}
 
 	public interface IFacing

@@ -25,21 +25,35 @@ namespace OpenRA.Graphics
 			this.inPutNodes = inPutNodes;
 		}
 
-		public override BlendTreeNodeOutPut UpdateOutPut(short optick, bool run, int step, bool resolve = true)
+		int2 pos;
+		public override void UpdateTick(short optick, bool run, int step)
 		{
 			if (optick == tick)
-				return outPut;
+				return;
 			tick = optick;
+
+			pos = new int2((int)(BlendPos.x * 1024), (int)(BlendPos.y * 1024));
+
+			for (int i = 0; i < 9; i++)
+			{
+				if (inPutNodes[i] != null)
+					inPutNodes[i].UpdateTick(optick, run, step);
+				else
+					throw new Exception("Blend9Pos error: inPutNodes[" + i + "] is null");
+			}
+		}
+
+		public override BlendTreeNodeOutPut UpdateOutPut(short optick, bool resolve = true)
+		{
 			if (!resolve)
 				return outPut;
 
-			int2 pos = new int2((int)(BlendPos.x * 1024), (int)(BlendPos.y * 1024));
 			var inPutValues = new BlendTreeNodeOutPut[9];
 
 			for (int i = 0; i < 9; i++)
 			{
 				if (inPutNodes[i] != null)
-					inPutValues[i] = inPutNodes[i].UpdateOutPut(optick, run, step);
+					inPutValues[i] = inPutNodes[i].UpdateOutPut(optick, resolve);
 				else
 					throw new Exception("Blend9Pos error: inPutNodes[" + i + "] is null");
 			}

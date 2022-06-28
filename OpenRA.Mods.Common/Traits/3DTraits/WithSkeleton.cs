@@ -44,9 +44,8 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 		public bool Draw;
 		int tick = 0;
 		public int Drawtick = 0;
-
-		int lastUpdateTick = 0;
 		int lastDrawtick = 0;
+		bool created = false;
 
 		bool toUpdate = false;
 		/// <summary>
@@ -117,19 +116,36 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 		protected override void Created(Actor self)
 		{
 			w3dr = Game.Renderer.World3DRenderer;
+			SkeletonTick();
+			created = true;
 		}
 
 		void ITick.Tick(Actor self)
 		{
-			SelfTick();
-			//Console.WriteLine("Skeleton: " + skeletonUpdate);
+			tick++;
+			Drawtick++;
 			skeletonUpdate = 0;
 		}
 
-		void SelfTick()
+		WPos lastSelfPos;
+		WRot lastSelfRot;
+		float lastScale;
+
+		public void SkeletonTick()
 		{
-			tick++;
-			Drawtick++;
+			if (hasAnim)
+			{
+				if (move.CurrentMovementTypes != MovementType.None)
+					switchNode.SetFlag(true);
+				else
+					switchNode.SetFlag(false);
+
+				blendTree.UpdateTick();
+			}
+
+			lastSelfPos = self.CenterPosition;
+			lastSelfRot = myFacing.Orientation;
+			lastScale = Scale;
 		}
 
 		public int GetDrawId()
@@ -213,6 +229,9 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 		{
 			toUpdate = true;
 
+			if (!created)
+				return;
+
 			if (parent != null)
 			{
 				parent.CallForUpdate();
@@ -228,7 +247,9 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 		{
 			HasUpdated = false;
 
-			if (parent != null)
+			SkeletonTick();
+
+			if (parent != null || !created)
 				return;
 
 			UpdateSkeletonInner(ToUpdateSkeleton);
@@ -236,36 +257,23 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 
 		public static int skeletonUpdate;
 
+		/// <summary>
+		/// notice that! the ik and some other trait which can update skeleton need to use the last tick anim params
+		/// </summary>
 		void UpdateSkeletonInner(bool callbyParent)
 		{
-			if (lastUpdateTick == tick)
-			{
-				HasUpdated = true;
-				toUpdate = false;
-
-				foreach (var child in children)
-					child.UpdateSkeletonInner(callbyParent);
-				return;
-			}
-
-			lastUpdateTick = tick;
-
-			if (ToUpdateSkeleton || callbyParent)
+			if ((ToUpdateSkeleton || callbyParent))
 			{
 				skeletonUpdate++;
 				if (parent == null)
-					Skeleton.SetOffset(self.CenterPosition, myFacing.Orientation, Scale);
+					Skeleton.SetOffset(lastSelfPos, lastSelfRot, lastScale);
 				else
 					Skeleton.SetOffset(Transformation.MatWithNewScale(parent.Skeleton.BoneOffsetMat(parentBoneId), scaleAsChild));
 
 				if (hasAnim)
 				{
-					if (move.CurrentMovementTypes != MovementType.None)
-						switchNode.SetFlag(true);
-					else
-						switchNode.SetFlag(false);
-
-					Skeleton.UpdateOffset(blendTree.GetOutPut().OutPutFrame);
+					// if HasUpdated we should use the lastOutPut to save performance
+					Skeleton.UpdateOffset(blendTree.GetOutPut(!HasUpdated).OutPutFrame);
 				}
 				else
 					Skeleton.UpdateOffset(new Frame(0));
@@ -275,18 +283,6 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 				HasUpdated = true;
 				toUpdate = false;
 			}
-			else
-			{
-				if (hasAnim)
-				{
-					if (move.CurrentMovementTypes != MovementType.None)
-						switchNode.SetFlag(true);
-					else
-						switchNode.SetFlag(false);
-
-					blendTree.GetOutPut(false);
-				}
-			}
 
 			foreach (var child in children)
 				child.UpdateSkeletonInner(callbyParent);
@@ -294,7 +290,7 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 
 		public void UpdateDrawInfo()
 		{
-			if (parent != null)
+			if (parent != null || !created)
 				return;
 
 			UpdateDrawInfoInner(Draw);

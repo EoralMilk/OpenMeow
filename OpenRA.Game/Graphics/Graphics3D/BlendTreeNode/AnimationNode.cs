@@ -28,21 +28,18 @@ namespace OpenRA.Graphics
 			frame = 0;
 		}
 
-		public override BlendTreeNodeOutPut UpdateOutPut(short optick, bool run, int step, bool resolve = true)
+		public override void UpdateTick(short optick, bool run, int step)
 		{
 			if (optick == tick)
-				return outPut;
+				return;
 			tick = optick;
 
 			if (!run)
 			{
 				frame = 0;
-				outPut = new BlendTreeNodeOutPut(animation.Frames[frame], animMask);
 			}
 			else
 			{
-				outPut = new BlendTreeNodeOutPut(animation.Frames[frame], animMask);
-
 				if (NodePlayType == PlayType.Loop)
 					frame = (frame + step) % animation.Frames.Length;
 				else if (NodePlayType == PlayType.Once)
@@ -67,7 +64,11 @@ namespace OpenRA.Graphics
 					}
 				}
 			}
+		}
 
+		public override BlendTreeNodeOutPut UpdateOutPut(short optick, bool resolve = true)
+		{
+			outPut = new BlendTreeNodeOutPut(animation.Frames[frame], animMask);
 			return outPut;
 		}
 

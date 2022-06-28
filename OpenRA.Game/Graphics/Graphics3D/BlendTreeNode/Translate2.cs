@@ -49,6 +49,67 @@ namespace OpenRA.Graphics
 			}
 		}
 
+		public override void UpdateTick(short optick, bool run, int step)
+		{
+			if (optick == tick)
+				return;
+			tick = optick;
+
+			if (translating)
+			{
+				if (flag)
+				{
+					var ratio = transAtoB.GetRatio();
+
+					ratio < TranslateBlendRatio ? inPutNode1.UpdateTick(optick, run, step) : transAtoB.UpdateTick(optick, run, step);
+					ratio < TranslateBlendRatio ? transAtoB.UpdateTick(optick, run, step) : inPutNode2.UpdateTick(optick, run, step);
+
+					if (transAtoB.KeepingEnd)
+					{
+						translating = false;
+					}
+
+					blendValue = ratio < TranslateBlendRatio ? ratio / TranslateBlendRatio : (1.0f - ratio) < TranslateBlendRatio ? (1.0f - ratio) / TranslateBlendRatio : 1.0f;
+					if (resolve)
+						outPut = blendTree.Blend(inPutValue1, inPutValue2, blendValue, animMask);
+					return outPut;
+				}
+				else
+				{
+					var ratio = transBtoA.GetRatio();
+					var inPutValue1 = ratio < TranslateBlendRatio ? inPutNode2.UpdateOutPut(optick, run, step) : transBtoA.UpdateOutPut(optick, run, step);
+					var inPutValue2 = ratio < TranslateBlendRatio ? transBtoA.UpdateOutPut(optick, run, step) : inPutNode1.UpdateOutPut(optick, run, step);
+
+					if (transAtoB.KeepingEnd)
+					{
+						translating = false;
+					}
+
+					blendValue = ratio < TranslateBlendRatio ? ratio / TranslateBlendRatio : (1.0f - ratio) < TranslateBlendRatio ? (1.0f - ratio) / TranslateBlendRatio : 1.0f;
+					if (resolve)
+						outPut = blendTree.Blend(inPutValue1, inPutValue2, blendValue, animMask);
+					return outPut;
+				}
+			}
+			else
+			{
+				if (flag)
+				{
+					var inPutValue = inPutNode2.UpdateOutPut(optick, run, step);
+					if (resolve)
+						outPut = new BlendTreeNodeOutPut(inPutValue.OutPutFrame, animMask);
+					return outPut;
+				}
+				else
+				{
+					var inPutValue = inPutNode1.UpdateOutPut(optick, run, step);
+					if (resolve)
+						outPut = new BlendTreeNodeOutPut(inPutValue.OutPutFrame, animMask);
+					return outPut;
+				}
+			}
+		}
+
 		public override BlendTreeNodeOutPut UpdateOutPut(short optick, bool run, int step, bool resolve = true)
 		{
 			if (optick == tick)

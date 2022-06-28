@@ -22,7 +22,7 @@ namespace OpenRA.Graphics
 		short currentTick;
 		public BlendTreeNode FinalOutPut { get; private set; } // 最后的输出节点, 也就是根节点
 		public bool RunBlend = true;
-
+		BlendTreeNodeOutPut lastOutPut;
 		public BlendTree()
 		{
 			RunBlend = true;
@@ -36,12 +36,27 @@ namespace OpenRA.Graphics
 			currentTick = 0;
 		}
 
-		public BlendTreeNodeOutPut GetOutPut(bool resolve = true)
+		public void UpdateTick(int runTick = 1)
 		{
 			currentTick++;
 
 			// step 可以用于跳步，当这一帧滞后时，可以选择跳过几帧动画
-			return FinalOutPut.UpdateOutPut(currentTick, true, 1, resolve);
+			FinalOutPut.UpdateTick(currentTick, true, runTick);
+		}
+
+		bool hasOutPut;
+		public BlendTreeNodeOutPut GetOutPut(bool resolve = true)
+		{
+			if (resolve)
+			{
+				lastOutPut = FinalOutPut.UpdateOutPut(currentTick, true);
+				hasOutPut = true;
+			}
+
+			if (!hasOutPut)
+				throw new Exception("must update before get the last out put");
+
+			return lastOutPut;
 		}
 
 		public BlendTreeNodeOutPut Blend(in BlendTreeNodeOutPut inPutValue1, in BlendTreeNodeOutPut inPutValue2, FP t, in AnimMask animMask)
@@ -90,7 +105,9 @@ namespace OpenRA.Graphics
 			this.animMask = mask;
 		}
 
-		public abstract BlendTreeNodeOutPut UpdateOutPut(short tick, bool run, int step, bool resolve = true);
+		public abstract void UpdateTick(short tick, bool run, int step);
+
+		public abstract BlendTreeNodeOutPut UpdateOutPut(short tick, bool resolve = true);
 	}
 
 	/// <summary>

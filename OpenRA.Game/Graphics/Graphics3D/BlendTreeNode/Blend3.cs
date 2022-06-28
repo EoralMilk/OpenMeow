@@ -27,17 +27,25 @@ namespace OpenRA.Graphics
 			this.inPutNodeLow = inPutNodeLow;
 		}
 
-		public override BlendTreeNodeOutPut UpdateOutPut(short optick, bool run, int step, bool resolve = true)
+		public override void UpdateTick(short optick, bool run, int step)
 		{
 			if (optick == tick)
-				return outPut;
+				return;
 			tick = optick;
+
+			inPutNodeMid.UpdateTick(optick, run, step);
+			inPutNodeHigh.UpdateTick(optick, run, step);
+			inPutNodeLow.UpdateTick(optick, run, step);
+		}
+
+		public override BlendTreeNodeOutPut UpdateOutPut(short optick, bool resolve = true)
+		{
 			if (!resolve)
 				return outPut;
 
-			var inPutValueMid = inPutNodeMid.UpdateOutPut(optick, run, step);
-			var inPutValueHigh = inPutNodeHigh.UpdateOutPut(optick, run, step);
-			var inPutValueLow = inPutNodeLow.UpdateOutPut(optick, run, step);
+			var inPutValueMid = inPutNodeMid.UpdateOutPut(optick, resolve);
+			var inPutValueHigh = inPutNodeHigh.UpdateOutPut(optick, resolve);
+			var inPutValueLow = inPutNodeLow.UpdateOutPut(optick, resolve);
 
 			if (BlendValue > 0)
 				outPut = blendTree.Blend(inPutValueMid, inPutValueHigh, BlendValue, animMask);

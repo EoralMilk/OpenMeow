@@ -33,10 +33,10 @@ namespace OpenRA.Graphics
 			this.flag = flag;
 		}
 
-		public override BlendTreeNodeOutPut UpdateOutPut(short optick, bool run, int step, bool resolve = true)
+		public override void UpdateTick(short optick, bool run, int step)
 		{
 			if (optick == tick)
-				return outPut;
+				return;
 			tick = optick;
 
 			if (flag)
@@ -48,23 +48,42 @@ namespace OpenRA.Graphics
 				blendValue = TSMath.Max(blendValue - (FP)1.0f / SwitchTick, (FP)0.0f);
 			}
 
+			if (blendValue > (FP)0.999f)
+			{
+				inPutNode2.UpdateTick(optick, run, step);
+				inPutNode1.UpdateTick(optick, false, step);
+			}
+			else if (blendValue < (FP)0.001f)
+			{
+				inPutNode1.UpdateTick(optick, run, step);
+				inPutNode2.UpdateTick(optick, false, step);
+			}
+			else
+			{
+				inPutNode1.UpdateTick(optick, run, step);
+				inPutNode2.UpdateTick(optick, run, step);
+			}
+		}
+
+		public override BlendTreeNodeOutPut UpdateOutPut(short optick, bool resolve = true)
+		{
 			if (!resolve)
 				return outPut;
 
 			if (blendValue > (FP)0.999f)
 			{
-				outPut = inPutNode2.UpdateOutPut(optick, run, step);
-				inPutNode1.UpdateOutPut(optick, false, step);
+				outPut = inPutNode2.UpdateOutPut(optick, resolve);
+				inPutNode1.UpdateOutPut(optick, resolve);
 			}
 			else if (blendValue < (FP)0.001f)
 			{
-				outPut = inPutNode1.UpdateOutPut(optick, run, step);
-				inPutNode2.UpdateOutPut(optick, false, step);
+				outPut = inPutNode1.UpdateOutPut(optick, resolve);
+				inPutNode2.UpdateOutPut(optick, resolve);
 			}
 			else
 			{
-				var inPutValue1 = inPutNode1.UpdateOutPut(optick, run, step);
-				var inPutValue2 = inPutNode2.UpdateOutPut(optick, run, step);
+				var inPutValue1 = inPutNode1.UpdateOutPut(optick, resolve);
+				var inPutValue2 = inPutNode2.UpdateOutPut(optick, resolve);
 				outPut = blendTree.Blend(inPutValue1, inPutValue2, blendValue, animMask);
 			}
 
