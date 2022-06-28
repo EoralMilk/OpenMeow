@@ -59,6 +59,7 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 		}
 
 		FP deg;
+		[Sync]
 		int realignTick = 0;
 		public bool FacingTarget(in Target target, in WPos targetPos)
 		{
@@ -78,10 +79,9 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 
 		public bool FacingWithInTolerance(in WAngle facingTolerance)
 		{
-			if (!MainSkeleton.HasUpdated)
-				return false;
+			//if (!MainSkeleton.HasUpdated)
+			//	return false;
 			deg = (FP)facingTolerance.Angle / 512 * 180;
-
 			if (hasBarrel)
 			{
 				return barrelIk.FacingWithInTolerance(deg) && turretIk.FacingWithInTolerance(deg);
@@ -126,6 +126,7 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 		TSVector localDir;
 		TSQuaternion yawRot;
 		TSQuaternion offsetedTurBaseRot;
+
 		public TurretIK(in World3DRenderer w3dr, in FP speed)
 		{
 			this.w3dr = w3dr;
@@ -183,6 +184,7 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 		TSVector localDir;
 		TSQuaternion pitchRot;
 		TSQuaternion offsetedBarrelBaseRot;
+
 		public BarrelIk(in World3DRenderer w3dr, in FP speed)
 		{
 			this.w3dr = w3dr;

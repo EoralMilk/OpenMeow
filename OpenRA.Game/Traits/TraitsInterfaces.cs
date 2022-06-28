@@ -300,9 +300,10 @@ namespace OpenRA.Traits
 		void SkeletonTick();
 	}
 
-	public interface ISkeletonArmament
+	public interface IUpdateWithSkeleton
 	{
-		void DelayedCheckFire(Actor self);
+		void UpdateEarly(Actor self);
+		void UpdateLate(Actor self);
 	}
 
 	public interface IFacing

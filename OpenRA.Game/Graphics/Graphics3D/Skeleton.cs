@@ -154,7 +154,7 @@ namespace OpenRA.Graphics
 		/// </summary>
 		public WPos BoneWPos(int id, in World3DRenderer w3dr)
 		{
-			return w3dr.GetWPosFromMatrix(Bones[id].CurrentPose);
+			return w3dr.GetWPosFromMatrix(LastSkeletonPose[id]);
 		}
 
 		/// <summary>
@@ -162,7 +162,7 @@ namespace OpenRA.Graphics
 		/// </summary>
 		public WRot BoneWRot(int id, in World3DRenderer w3dr)
 		{
-			return w3dr.GetWRotFromMatrix(Bones[id].CurrentPose);
+			return w3dr.GetWRotFromMatrix(LastSkeletonPose[id]);
 		}
 
 		public SkeletonInstance(in BoneAsset[] boneAssets, in SkeletonAsset asset, in OrderedSkeleton skeleton)

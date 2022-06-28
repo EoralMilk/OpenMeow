@@ -46,8 +46,7 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 		public int Drawtick = 0;
 		int lastDrawtick = 0;
 		bool created = false;
-		[Sync]
-		bool toUpdate = false;
+		int toUpdate = 0;
 		/// <summary>
 		/// WIP
 		/// </summary>
@@ -55,7 +54,7 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 		{
 			get
 			{
-				return Draw || toUpdate;
+				return Draw || (toUpdate > 0);
 			}
 		}
 
@@ -131,12 +130,6 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 		WRot lastSelfRot;
 		float lastScale;
 
-		[Sync]
-		int blendValue;
-		[Sync]
-		int frame1, frame2;
-		[Sync]
-		int skeletonTick = 0;
 		public void SkeletonTick()
 		{
 			if (!created)
@@ -150,10 +143,6 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 					switchNode.SetFlag(false);
 
 				blendTree.UpdateTick();
-
-				blendValue = (int)switchNode.BlendValue._serializedValue;
-				frame1 = animNode1.CurrentFrame;
-				frame2 = animNode2.CurrentFrame;
 			}
 
 			lastSelfPos = self.CenterPosition;
@@ -179,13 +168,13 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 
 		public WPos GetWPosFromBoneId(int id)
 		{
-			CallForUpdate();
+			//CallForUpdate();
 			return Skeleton.BoneWPos(id, w3dr);
 		}
 
 		public WRot GetWRotFromBoneId(int id)
 		{
-			CallForUpdate();
+			//CallForUpdate();
 			return Skeleton.BoneWRot(id, w3dr);
 		}
 
@@ -238,9 +227,9 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 			return false;
 		}
 
-		public void CallForUpdate()
+		public void CallForUpdate(int tickForUpdate = 2)
 		{
-			toUpdate = true;
+			toUpdate = tickForUpdate;
 
 			if (!created)
 				return;
@@ -261,18 +250,6 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 			HasUpdated = false;
 
 			SkeletonTick();
-
-			if (hasAnim && toUpdate)
-			{
-				blendValue = (int)switchNode.BlendValue._serializedValue;
-				frame1 = animNode1.CurrentFrame;
-				frame2 = animNode2.CurrentFrame;
-			}
-
-			if (toUpdate)
-			{
-				skeletonTick = tick;
-			}
 
 			if (parent != null || !created)
 				return;
@@ -305,7 +282,8 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 				// TODO: this is using for multiple thread in future
 				Skeleton.UpdateLastPose();
 				HasUpdated = true;
-				toUpdate = false;
+				if (toUpdate > 0)
+					toUpdate--;
 			}
 
 			foreach (var child in children)

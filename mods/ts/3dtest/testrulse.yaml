@@ -77,7 +77,7 @@ RUTEST:
 	AttachedArmament@1:
 		Weapon: TestVulcan
 		SkeletonToUse: turret_skeleton1
-		FromBonePose: firepose
+		FromBonePose: a-s-Barrel
 		FacingTolerance: 40
 		Turret: turret1
 	WithSkeleton@turret2:
@@ -95,7 +95,7 @@ RUTEST:
 	AttachedArmament@2:
 		Weapon: TestVulcan
 		SkeletonToUse: turret_skeleton2
-		FromBonePose: firepose
+		FromBonePose: a-s-Barrel
 		FacingTolerance: 40
 		Turret: turret2
 	DamagedByTerrain@VEINS:
