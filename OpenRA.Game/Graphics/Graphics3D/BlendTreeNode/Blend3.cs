@@ -14,7 +14,7 @@ namespace OpenRA.Graphics
 		public BlendTreeNode InPutNodeHigh { get { return inPutNodeHigh; } }
 		public BlendTreeNode InPutNodeLow { get { return inPutNodeLow; } }
 
-		public FP BlendValue = 0.0f;
+		public FP BlendValue = FP.Zero;
 		BlendTreeNode inPutNodeMid;
 		BlendTreeNode inPutNodeHigh;
 		BlendTreeNode inPutNodeLow;

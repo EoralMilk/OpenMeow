@@ -81,7 +81,7 @@ namespace OpenRA.Graphics
 			{
 				if (shot.KeepingEnd)
 				{
-					fadeBlend = (FP)1.0f;
+					fadeBlend = FP.One;
 					shotTick = FadeTick;
 				}
 				else

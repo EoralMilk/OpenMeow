@@ -15,7 +15,8 @@ namespace OpenRA.Graphics
 		public BlendTreeNode InPutNodeB { get { return inPutNode2; } }
 
 		bool flag = false;
-		FP blendValue = 0.0f;
+		public FP BlendValue { get => blendValue; }
+		FP blendValue = FP.Zero;
 		public int SwitchTick = 10;
 		readonly BlendTreeNode inPutNode1;
 		readonly BlendTreeNode inPutNode2;
@@ -41,19 +42,19 @@ namespace OpenRA.Graphics
 
 			if (flag)
 			{
-				blendValue = TSMath.Min(blendValue + (FP)1.0f / SwitchTick, (FP)1.0f);
+				blendValue = TSMath.Min(blendValue + FP.One / SwitchTick, FP.One);
 			}
 			else
 			{
-				blendValue = TSMath.Max(blendValue - (FP)1.0f / SwitchTick, (FP)0.0f);
+				blendValue = TSMath.Max(blendValue - FP.One / SwitchTick, FP.Zero);
 			}
 
-			if (blendValue > (FP)0.999f)
+			if (blendValue >= FP.One)
 			{
 				inPutNode2.UpdateTick(optick, run, step);
 				inPutNode1.UpdateTick(optick, false, step);
 			}
-			else if (blendValue < (FP)0.001f)
+			else if (blendValue <= FP.Zero)
 			{
 				inPutNode1.UpdateTick(optick, run, step);
 				inPutNode2.UpdateTick(optick, false, step);
@@ -70,12 +71,12 @@ namespace OpenRA.Graphics
 			if (!resolve)
 				return outPut;
 
-			if (blendValue > (FP)0.999f)
+			if (blendValue >= FP.One)
 			{
 				outPut = inPutNode2.UpdateOutPut(optick, resolve);
 				inPutNode1.UpdateOutPut(optick, resolve);
 			}
-			else if (blendValue < (FP)0.001f)
+			else if (blendValue <= FP.Zero)
 			{
 				outPut = inPutNode1.UpdateOutPut(optick, resolve);
 				inPutNode2.UpdateOutPut(optick, resolve);

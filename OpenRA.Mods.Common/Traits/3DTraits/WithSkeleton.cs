@@ -46,7 +46,7 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 		public int Drawtick = 0;
 		int lastDrawtick = 0;
 		bool created = false;
-
+		[Sync]
 		bool toUpdate = false;
 		/// <summary>
 		/// WIP
@@ -116,8 +116,8 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 		protected override void Created(Actor self)
 		{
 			w3dr = Game.Renderer.World3DRenderer;
-			SkeletonTick();
 			created = true;
+			SkeletonTick();
 		}
 
 		void ITick.Tick(Actor self)
@@ -131,8 +131,17 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 		WRot lastSelfRot;
 		float lastScale;
 
+		[Sync]
+		int blendValue;
+		[Sync]
+		int frame1, frame2;
+		[Sync]
+		int skeletonTick = 0;
 		public void SkeletonTick()
 		{
+			if (!created)
+				return;
+
 			if (hasAnim)
 			{
 				if (move.CurrentMovementTypes != MovementType.None)
@@ -141,6 +150,10 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 					switchNode.SetFlag(false);
 
 				blendTree.UpdateTick();
+
+				blendValue = (int)switchNode.BlendValue._serializedValue;
+				frame1 = animNode1.CurrentFrame;
+				frame2 = animNode2.CurrentFrame;
 			}
 
 			lastSelfPos = self.CenterPosition;
@@ -248,6 +261,18 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 			HasUpdated = false;
 
 			SkeletonTick();
+
+			if (hasAnim && toUpdate)
+			{
+				blendValue = (int)switchNode.BlendValue._serializedValue;
+				frame1 = animNode1.CurrentFrame;
+				frame2 = animNode2.CurrentFrame;
+			}
+
+			if (toUpdate)
+			{
+				skeletonTick = tick;
+			}
 
 			if (parent != null || !created)
 				return;

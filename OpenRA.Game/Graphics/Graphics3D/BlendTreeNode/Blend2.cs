@@ -13,7 +13,7 @@ namespace OpenRA.Graphics
 		public BlendTreeNode InPutNodeA { get { return inPutNode1; } }
 		public BlendTreeNode InPutNodeB { get { return inPutNode2; } }
 
-		public FP BlendValue = 0.0f;
+		public FP BlendValue = FP.Zero;
 		BlendTreeNode inPutNode1;
 		BlendTreeNode inPutNode2;
 
