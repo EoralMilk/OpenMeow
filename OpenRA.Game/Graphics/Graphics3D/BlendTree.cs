@@ -54,7 +54,7 @@ namespace OpenRA.Graphics
 			}
 
 			if (!hasOutPut)
-				throw new Exception("must update before get the last out put");
+				lastOutPut = FinalOutPut.UpdateOutPut(currentTick, true);
 
 			return lastOutPut;
 		}

@@ -119,6 +119,11 @@ namespace OpenRA.Mods.Common.Traits
 
 		protected override void Tick(Actor self)
 		{
+			// keep empty
+		}
+
+		void TickEarly(Actor self)
+		{
 			// We need to disable conditions if IsTraitDisabled is true, so we have to update conditions before the return below.
 			UpdateCondition(self);
 
@@ -144,9 +149,44 @@ namespace OpenRA.Mods.Common.Traits
 			delayedActions.RemoveAll(a => a.Ticks <= 0);
 		}
 
+		protected new void ScheduleDelayedAction(int t, int b, Action<int> a)
+		{
+			if (t > 0)
+				delayedActions.Add((t, b, a));
+			else
+				a(b);
+		}
+
+		// Note: facing is only used by the legacy positioning code
+		// The world coordinate model uses Actor.Orientation
+		public override Barrel CheckFire(Actor self, IFacing facing, in Target target)
+		{
+			if (turret != null)
+			{
+				turret.FacingTarget(target, attack.GetTargetPosition(self.CenterPosition, target));
+			}
+
+			withSkeleton.CallForUpdate();
+
+			if (hasFacingTolerance && facing != null)
+			{
+				delayedFaceAngle = facing.Facing;
+			}
+
+			delayedTarget = target;
+			delayedIFacing = facing;
+			needDelayedCheckFire = true;
+			lastIsReloading = IsReloading;
+			lastTraitPaused = IsTraitPaused;
+			return delayedBarrel;
+		}
+
+		bool lastIsReloading;
+		bool lastTraitPaused;
+
 		protected bool CanFire(Actor self, in Target target)
 		{
-			if (IsReloading || IsTraitPaused)
+			if (lastIsReloading || lastTraitPaused)
 				return false;
 
 			if (turret != null && !turret.FacingWithInTolerance(Info.FacingTolerance))
@@ -162,60 +202,24 @@ namespace OpenRA.Mods.Common.Traits
 			if (hasFacingTolerance && facing != null)
 			{
 				var delta = target.CenterPosition - self.CenterPosition;
-				return Util.FacingWithinTolerance(facing.Facing, delta.Yaw, Info.FacingTolerance);
+				return Util.FacingWithinTolerance(delayedFaceAngle, delta.Yaw, Info.FacingTolerance);
 			}
 
 			return true;
 		}
 
-		protected new void ScheduleDelayedAction(int t, int b, Action<int> a)
-		{
-			if (t > 0)
-				delayedActions.Add((t, b, a));
-			else
-				a(b);
-		}
-
-		// Note: facing is only used by the legacy positioning code
-		// The world coordinate model uses Actor.Orientation
-		public override Barrel CheckFire(Actor self, IFacing facing, in Target target)
-		{
-			//if (!CanFire(self, target))
-			//	return null;
-
-			//if (ticksSinceLastShot >= Weapon.ReloadDelay)
-			//	Burst = Weapon.Burst;
-
-			//ticksSinceLastShot = 0;
-
-			//// If Weapon.Burst == 1, cycle through all LocalOffsets, otherwise use the offset corresponding to current Burst
-			//currentBarrel %= barrelCount;
-			//var barrel = Weapon.Burst == 1 ? Barrels[currentBarrel] : Barrels[Burst % Barrels.Length];
-			//currentBarrel++;
-
-			//FireBarrel(self, facing, target, barrel);
-
-			//UpdateBurst(self, target);
-
-			//return barrel;
-			if (turret != null)
-			{
-				turret.FacingTarget(target, attack.GetTargetPosition(self.CenterPosition, target));
-			}
-
-			withSkeleton.CallForUpdate();
-			delayedTarget = target;
-			delayedfacing = facing;
-			needDelayedCheckFire = true;
-			return delayedBarrel;
-		}
-
+		[Sync]
 		bool needDelayedCheckFire = false;
-		IFacing delayedfacing;
+		[Sync]
+		WAngle delayedFaceAngle;
+		[Sync]
 		Target delayedTarget;
+		IFacing delayedIFacing;
 		Barrel delayedBarrel = null;
 		public void DelayedCheckFire(Actor self)
 		{
+			TickEarly(self);
+
 			if (!needDelayedCheckFire)
 			{
 				delayedBarrel = null;
@@ -240,7 +244,7 @@ namespace OpenRA.Mods.Common.Traits
 			delayedBarrel = Weapon.Burst == 1 ? Barrels[currentBarrel] : Barrels[Burst % Barrels.Length];
 			currentBarrel++;
 
-			FireBarrel(self, delayedfacing, delayedTarget, delayedBarrel);
+			FireBarrel(self, delayedIFacing, delayedTarget, delayedBarrel);
 
 			UpdateBurst(self, delayedTarget);
 

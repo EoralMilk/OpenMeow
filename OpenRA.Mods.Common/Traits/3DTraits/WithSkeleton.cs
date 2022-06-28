@@ -272,8 +272,7 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 
 				if (hasAnim)
 				{
-					// if HasUpdated we should use the lastOutPut to save performance
-					Skeleton.UpdateOffset(blendTree.GetOutPut(!HasUpdated).OutPutFrame);
+					Skeleton.UpdateOffset(blendTree.GetOutPut().OutPutFrame);
 				}
 				else
 					Skeleton.UpdateOffset(new Frame(0));
