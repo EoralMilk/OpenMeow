@@ -95,6 +95,7 @@ namespace OpenRA.Graphics
 	public interface IBonePoseModifier
 	{
 		InverseKinematicState IKState { get; }
+		void InitIK(ref TSMatrix4x4 self);
 		void CalculateIK(ref TSMatrix4x4 self);
 	}
 
@@ -128,6 +129,7 @@ namespace OpenRA.Graphics
 		public void AddInverseKinematic(int id ,in IBonePoseModifier ik)
 		{
 			inverseKinematics.Add(id, ik);
+			ik.InitIK(ref Bones[id].CurrentPose);
 		}
 
 		public void SetOffset(WPos wPos, WRot wRot, float scale)
