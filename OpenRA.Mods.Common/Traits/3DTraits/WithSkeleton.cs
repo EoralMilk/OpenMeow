@@ -36,6 +36,25 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 		public readonly SkeletonInstance Skeleton;
 		public readonly string Name;
 		public readonly string Image;
+		readonly List<IBonePoseModifier> bonePoseModifiers = new List<IBonePoseModifier>();
+
+		public void AddBonePoseModifier(int id, IBonePoseModifier ik)
+		{
+			bonePoseModifiers.Add(ik);
+			Skeleton.AddInverseKinematic(id, ik);
+		}
+
+		public void CheckIKUpdate()
+		{
+			foreach (var ik in bonePoseModifiers)
+			{
+				if (ik.IKState != InverseKinematicState.Keeping)
+				{
+					CallForUpdate();
+					break;
+				}
+			}
+		}
 
 		readonly BlendTree blendTree;
 		World3DRenderer w3dr;
@@ -47,6 +66,7 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 		int lastDrawtick = 0;
 		bool created = false;
 		int toUpdate = 0;
+		public int ToUpdateTick { get => toUpdate; }
 		/// <summary>
 		/// WIP
 		/// </summary>
@@ -123,7 +143,6 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 		{
 			tick++;
 			Drawtick++;
-			skeletonUpdate = 0;
 		}
 
 		WPos lastSelfPos;
@@ -168,13 +187,11 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 
 		public WPos GetWPosFromBoneId(int id)
 		{
-			//CallForUpdate();
 			return Skeleton.BoneWPos(id, w3dr);
 		}
 
 		public WRot GetWRotFromBoneId(int id)
 		{
-			//CallForUpdate();
 			return Skeleton.BoneWRot(id, w3dr);
 		}
 
@@ -250,6 +267,7 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 			HasUpdated = false;
 
 			SkeletonTick();
+			CheckIKUpdate();
 
 			if (parent != null || !created)
 				return;
@@ -257,16 +275,13 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 			UpdateSkeletonInner(ToUpdateSkeleton);
 		}
 
-		public static int skeletonUpdate;
-
 		/// <summary>
 		/// notice that! the ik and some other trait which can update skeleton need to use the last tick anim params
 		/// </summary>
 		void UpdateSkeletonInner(bool callbyParent)
 		{
-			if ((ToUpdateSkeleton || callbyParent))
+			if (callbyParent)
 			{
-				skeletonUpdate++;
 				if (parent == null)
 					Skeleton.SetOffset(lastSelfPos, lastSelfRot, lastScale);
 				else

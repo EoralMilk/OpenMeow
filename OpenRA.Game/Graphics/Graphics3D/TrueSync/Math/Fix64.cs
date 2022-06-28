@@ -889,7 +889,7 @@ namespace TrueSync
 				throw new ArgumentOutOfRangeException("Must between -FP.OneBigger: [" + OneBigger._serializedValue + "] and FP.OneBigger", "x: [" + x._serializedValue + "]");
 			}
 
-			TSMath.Clamp(x, -FP.One, FP.One);
+			x = TSMath.Clamp(x, -FP.One, FP.One);
 
 			if (x.RawValue == 0) return PiOver2;
 

@@ -43,7 +43,7 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 				throw new Exception("can't find turret bone " + info.TurretBone + " in skeleton.");
 
 			turretIk = new TurretIK(RenderMeshes.W3dr, info.RotationSpeed);
-			AttachmentSkeleton.Skeleton.AddInverseKinematic(TurretBoneId, turretIk);
+			AttachmentSkeleton.AddBonePoseModifier(TurretBoneId, turretIk);
 			if (info.BarrelBone != null)
 			{
 				hasBarrel = true;
@@ -52,14 +52,13 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 					throw new Exception("can't find barrel bone " + info.BarrelBone + " in skeleton.");
 
 				barrelIk = new BarrelIk(RenderMeshes.W3dr, info.RotationSpeed);
-				AttachmentSkeleton.Skeleton.AddInverseKinematic(BarrelBoneId, barrelIk);
+				AttachmentSkeleton.AddBonePoseModifier(BarrelBoneId, barrelIk);
 			}
 
 			realignDelay = info.RealignDelay;
 		}
 
 		FP deg;
-		[Sync]
 		int realignTick = 0;
 		public bool FacingTarget(in Target target, in WPos targetPos)
 		{
@@ -79,8 +78,6 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 
 		public bool FacingWithInTolerance(in WAngle facingTolerance)
 		{
-			//if (!MainSkeleton.HasUpdated)
-			//	return false;
 			deg = (FP)facingTolerance.Angle / 512 * 180;
 			if (hasBarrel)
 			{
@@ -110,7 +107,7 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 		Realign
 	}
 
-	class TurretIK : IBonePoseModifyer
+	class TurretIK : IBonePoseModifier
 	{
 		readonly World3DRenderer w3dr;
 		public WPos TargetPos;
@@ -126,6 +123,18 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 		TSVector localDir;
 		TSQuaternion yawRot;
 		TSQuaternion offsetedTurBaseRot;
+		public TSMatrix4x4 selfMatrix;
+
+		public InverseKinematicState IKState
+		{
+			get
+			{
+				if (State == AimState.Keep)
+					return InverseKinematicState.Keeping;
+				else
+					return InverseKinematicState.Resolving;
+			}
+		}
 
 		public TurretIK(in World3DRenderer w3dr, in FP speed)
 		{
@@ -143,6 +152,7 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 				else
 					State = AimState.Keep;
 				self = self * TSMatrix4x4.Rotate(forward);
+				selfMatrix = self;
 			}
 			else if (State == AimState.Aim)
 			{
@@ -159,6 +169,7 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 				else
 					State = AimState.Keep;
 				self = self * TSMatrix4x4.Rotate(forward);
+				selfMatrix = self;
 			}
 		}
 
@@ -168,7 +179,7 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 		}
 	}
 
-	class BarrelIk : IBonePoseModifyer
+	class BarrelIk : IBonePoseModifier
 	{
 		readonly World3DRenderer w3dr;
 		public WPos TargetPos;
@@ -184,6 +195,19 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 		TSVector localDir;
 		TSQuaternion pitchRot;
 		TSQuaternion offsetedBarrelBaseRot;
+
+		public TSMatrix4x4 selfMatrix;
+
+		public InverseKinematicState IKState
+		{
+			get
+			{
+				if (State == AimState.Keep)
+					return InverseKinematicState.Keeping;
+				else
+					return InverseKinematicState.Resolving;
+			}
+		}
 
 		public BarrelIk(in World3DRenderer w3dr, in FP speed)
 		{
@@ -201,6 +225,7 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 				else
 					State = AimState.Keep;
 				self = self * TSMatrix4x4.Rotate(forward);
+				selfMatrix = self;
 			}
 			else if (State == AimState.Aim)
 			{
@@ -217,6 +242,7 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 				else
 					State = AimState.Keep;
 				self = self * TSMatrix4x4.Rotate(forward);
+				selfMatrix = self;
 			}
 		}
 

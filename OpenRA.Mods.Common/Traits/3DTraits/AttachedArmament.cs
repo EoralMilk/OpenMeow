@@ -157,6 +157,115 @@ namespace OpenRA.Mods.Common.Traits
 				a(b);
 		}
 
+		// Note: facing is only used by the legacy positioning code
+		// The world coordinate model uses Actor.Orientation
+		public override Barrel CheckFire(Actor self, IFacing facing, in Target target)
+		{
+			if (hasFacingTolerance && facing != null)
+			{
+				delayedFaceAngle = facing.Facing;
+			}
+
+			delayedTarget = target;
+			delayedIFacing = facing;
+			needDelayedCheckFire = true;
+			lastIsReloading = IsReloading;
+			lastTraitPaused = IsTraitPaused;
+			return delayedBarrel;
+		}
+
+		bool lastIsReloading;
+		bool lastTraitPaused;
+
+		protected bool CanFire(Actor self, in Target target)
+		{
+			if (lastIsReloading || lastTraitPaused)
+				return false;
+
+			if (turret != null && !turret.FacingWithInTolerance(Info.FacingTolerance))
+				return false;
+
+			if ((!target.IsInRange(self.CenterPosition, MaxRange()))
+				|| (Weapon.MinRange != WDist.Zero && target.IsInRange(self.CenterPosition, Weapon.MinRange)))
+				return false;
+
+			if (!Weapon.IsValidAgainst(target, self.World, self))
+				return false;
+
+			if (hasFacingTolerance && facing != null)
+			{
+				var delta = target.CenterPosition - self.CenterPosition;
+				return Util.FacingWithinTolerance(delayedFaceAngle, delta.Yaw, Info.FacingTolerance);
+			}
+
+			return true;
+		}
+
+		public void UpdateEarly(Actor self)
+		{
+			if (!needDelayedCheckFire)
+				return;
+
+			if (turret != null)
+			{
+				turret.FacingTarget(delayedTarget, attack.GetTargetPosition(self.CenterPosition, delayedTarget));
+			}
+			else
+			{
+				withSkeleton.CallForUpdate();
+			}
+		}
+
+		bool needDelayedCheckFire = false;
+		WAngle delayedFaceAngle;
+		Target delayedTarget;
+		IFacing delayedIFacing;
+		Barrel delayedBarrel = null;
+		public void UpdateLate(Actor self)
+		{
+			if (!needDelayedCheckFire || withSkeleton.ToUpdateTick <= 0)
+			{
+				delayedBarrel = null;
+			}
+			else
+			{
+				needDelayedCheckFire = false;
+
+				if (!CanFire(self, delayedTarget))
+				{
+					delayedBarrel = null;
+				}
+				else
+				{
+					if (ticksSinceLastShot >= Weapon.ReloadDelay)
+						Burst = Weapon.Burst;
+
+					ticksSinceLastShot = 0;
+
+					// If Weapon.Burst == 1, cycle through all LocalOffsets, otherwise use the offset corresponding to current Burst
+					currentBarrel %= barrelCount;
+					delayedBarrel = Weapon.Burst == 1 ? Barrels[currentBarrel] : Barrels[Burst % Barrels.Length];
+					currentBarrel++;
+
+					FireBarrel(self, delayedIFacing, delayedTarget, delayedBarrel);
+
+					UpdateBurst(self, delayedTarget);
+				}
+			}
+
+			TickEarly(self);
+		}
+
+		protected override WPos CalculateMuzzleWPos(Actor self, Barrel b)
+		{
+			return withSkeleton.GetWPosFromBoneId(b.BoneId);
+		}
+
+		protected override WRot CalculateMuzzleOrientation(Actor self, Barrel b)
+		{
+			return withSkeleton.GetWRotFromBoneId(b.BoneId);
+		}
+
 		protected override void FireBarrel(Actor self, IFacing facing, in Target target, Barrel barrel)
 		{
 			foreach (var na in notifyAttacks)
@@ -226,128 +335,5 @@ namespace OpenRA.Mods.Common.Traits
 			});
 		}
 
-		// Note: facing is only used by the legacy positioning code
-		// The world coordinate model uses Actor.Orientation
-		public override Barrel CheckFire(Actor self, IFacing facing, in Target target)
-		{
-			if (hasFacingTolerance && facing != null)
-			{
-				delayedFaceAngle = facing.Facing;
-			}
-
-			if (turret != null)
-			{
-				turret.FacingTarget(delayedTarget, attack.GetTargetPosition(self.CenterPosition, delayedTarget));
-			}
-			else
-			{
-				withSkeleton.CallForUpdate();
-			}
-
-			delayedTarget = target;
-			delayedIFacing = facing;
-			needDelayedCheckFire = true;
-			lastIsReloading = IsReloading;
-			lastTraitPaused = IsTraitPaused;
-			return delayedBarrel;
-		}
-
-		bool lastIsReloading;
-		bool lastTraitPaused;
-
-		protected bool CanFire(Actor self, in Target target)
-		{
-			if (lastIsReloading || lastTraitPaused)
-				return false;
-
-			if (turret != null && !turret.FacingWithInTolerance(Info.FacingTolerance))
-				return false;
-
-			if ((!target.IsInRange(self.CenterPosition, MaxRange()))
-				|| (Weapon.MinRange != WDist.Zero && target.IsInRange(self.CenterPosition, Weapon.MinRange)))
-				return false;
-
-			if (!Weapon.IsValidAgainst(target, self.World, self))
-				return false;
-
-			if (hasFacingTolerance && facing != null)
-			{
-				var delta = target.CenterPosition - self.CenterPosition;
-				return Util.FacingWithinTolerance(delayedFaceAngle, delta.Yaw, Info.FacingTolerance);
-			}
-
-			return true;
-		}
-
-		public void UpdateEarly(Actor self)
-		{
-		}
-
-		[Sync]
-		bool needDelayedCheckFire = false;
-		[Sync]
-		WAngle delayedFaceAngle;
-		[Sync]
-		Target delayedTarget;
-		[Sync]
-		bool canFire;
-		IFacing delayedIFacing;
-		Barrel delayedBarrel = null;
-		public void UpdateLate(Actor self)
-		{
-			if (!needDelayedCheckFire)
-			{
-				delayedBarrel = null;
-			}
-			else
-			{
-				needDelayedCheckFire = false;
-
-				if (!CanFire(self, delayedTarget))
-				{
-					delayedBarrel = null;
-					canFire = false;
-				}
-				else
-				{
-					canFire = true;
-
-					if (ticksSinceLastShot >= Weapon.ReloadDelay)
-						Burst = Weapon.Burst;
-
-					ticksSinceLastShot = 0;
-
-					// If Weapon.Burst == 1, cycle through all LocalOffsets, otherwise use the offset corresponding to current Burst
-					currentBarrel %= barrelCount;
-					delayedBarrel = Weapon.Burst == 1 ? Barrels[currentBarrel] : Barrels[Burst % Barrels.Length];
-					currentBarrel++;
-
-					FireBarrel(self, delayedIFacing, delayedTarget, delayedBarrel);
-
-					UpdateBurst(self, delayedTarget);
-				}
-			}
-
-			TickEarly(self);
-		}
-
-		[Sync]
-		int calcount = 0;
-		[Sync]
-		WPos syncFirePos;
-		[Sync]
-		WRot syncFireRot;
-		protected override WPos CalculateMuzzleWPos(Actor self, Barrel b)
-		{
-			calcount++;
-			syncFirePos = withSkeleton.GetWPosFromBoneId(b.BoneId);
-			return syncFirePos;
-		}
-
-		protected override WRot CalculateMuzzleOrientation(Actor self, Barrel b)
-		{
-			syncFireRot = withSkeleton.GetWRotFromBoneId(b.BoneId);
-			return syncFireRot;
-		}
 	}
 }

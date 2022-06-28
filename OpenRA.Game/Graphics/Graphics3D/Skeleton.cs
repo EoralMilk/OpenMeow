@@ -86,8 +86,15 @@ namespace OpenRA.Graphics
 		}
 	}
 
-	public interface IBonePoseModifyer
+	public enum InverseKinematicState
 	{
+		Keeping,
+		Resolving,
+	}
+
+	public interface IBonePoseModifier
+	{
+		InverseKinematicState IKState { get; }
 		void CalculateIK(ref TSMatrix4x4 self);
 	}
 
@@ -115,10 +122,10 @@ namespace OpenRA.Graphics
 		TSMatrix4x4 translateMat;
 		TSMatrix4x4 rotMat;
 
-		readonly Dictionary<int, IBonePoseModifyer> inverseKinematics = new Dictionary<int, IBonePoseModifyer>();
-		IBonePoseModifyer currentIK;
+		readonly Dictionary<int, IBonePoseModifier> inverseKinematics = new Dictionary<int, IBonePoseModifier>();
+		IBonePoseModifier currentIK;
 
-		public void AddInverseKinematic(int id ,in IBonePoseModifyer ik)
+		public void AddInverseKinematic(int id ,in IBonePoseModifier ik)
 		{
 			inverseKinematics.Add(id, ik);
 		}

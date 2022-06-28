@@ -29,12 +29,12 @@ A10Vulcan:
 	ValidTargets: Ground, Water
 	ReloadDelay: 100
 	MinRange: 4c512
-	Burst: 15
-	BurstDelays: 3
+	Burst: 30
+	BurstDelays: 1
 	Range: 10c0
 	Report: cygun1.aud
 	FirstBurstTargetOffset: -3000,0,0
-	FollowingBurstTargetOffset: 600,0,0
+	FollowingBurstTargetOffset: 300,0,0
 	Projectile: Bullet
 		ContrailLength: 3
 		ContrailWidth: 44
@@ -46,7 +46,7 @@ A10Vulcan:
 		ZOffset: 1024
 		Inaccuracy: 1c0
 	Warhead@1Dam: SpreadDamage
-		Damage: 5000
+		Damage: 2000
 		Spread: 0c372
 
 
@@ -56,7 +56,7 @@ TestVulcan:
 	ValidTargets: Ground, Water, Air
 	ReloadDelay: 3
 	MinRange: 0c512
-	Range: 50c0
+	Range: 12c0
 	Report: cygun1.aud
 	Projectile: Bullet
 		ContrailLength: 3
@@ -69,7 +69,7 @@ TestVulcan:
 		ZOffset: 1024
 		Inaccuracy: 1c0
 	Warhead@1Dam: SpreadDamage
-		Damage: 30
+		Damage: 1200
 		Spread: 0c372
 		ValidTargets: Ground, Water, Air
 
