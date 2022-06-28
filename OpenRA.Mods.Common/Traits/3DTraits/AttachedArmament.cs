@@ -29,10 +29,11 @@ namespace OpenRA.Mods.Common.Traits
 
 	}
 
-	public class AttachedArmament : Armament
+	public class AttachedArmament : Armament, ISkeletonArmament
 	{
 		readonly WithSkeleton withSkeleton;
 		TurretAttachment turret;
+		AttackBase attack;
 		IFacing facing;
 		BodyOrientation coords;
 		INotifyBurstComplete[] notifyBurstComplete;
@@ -91,6 +92,7 @@ namespace OpenRA.Mods.Common.Traits
 		protected override void Created(Actor self)
 		{
 			turret = self.TraitsImplementing<TurretAttachment>().FirstOrDefault(t => t.Name == Info.Turret);
+			attack = self.TraitsImplementing<AttackBase>().First();
 			coords = self.Trait<BodyOrientation>();
 			notifyBurstComplete = self.TraitsImplementing<INotifyBurstComplete>().ToArray();
 			notifyAttacks = self.TraitsImplementing<INotifyAttack>().ToArray();
@@ -142,7 +144,7 @@ namespace OpenRA.Mods.Common.Traits
 			delayedActions.RemoveAll(a => a.Ticks <= 0);
 		}
 
-		protected override bool CanFire(Actor self, in Target target)
+		protected bool CanFire(Actor self, in Target target)
 		{
 			if (IsReloading || IsTraitPaused)
 				return false;
@@ -178,8 +180,55 @@ namespace OpenRA.Mods.Common.Traits
 		// The world coordinate model uses Actor.Orientation
 		public override Barrel CheckFire(Actor self, IFacing facing, in Target target)
 		{
-			if (!CanFire(self, target))
-				return null;
+			//if (!CanFire(self, target))
+			//	return null;
+
+			//if (ticksSinceLastShot >= Weapon.ReloadDelay)
+			//	Burst = Weapon.Burst;
+
+			//ticksSinceLastShot = 0;
+
+			//// If Weapon.Burst == 1, cycle through all LocalOffsets, otherwise use the offset corresponding to current Burst
+			//currentBarrel %= barrelCount;
+			//var barrel = Weapon.Burst == 1 ? Barrels[currentBarrel] : Barrels[Burst % Barrels.Length];
+			//currentBarrel++;
+
+			//FireBarrel(self, facing, target, barrel);
+
+			//UpdateBurst(self, target);
+
+			//return barrel;
+			if (turret != null)
+			{
+				turret.FacingTarget(target, attack.GetTargetPosition(self.CenterPosition, target));
+			}
+
+			withSkeleton.CallForUpdate();
+			delayedTarget = target;
+			delayedfacing = facing;
+			needDelayedCheckFire = true;
+			return delayedBarrel;
+		}
+
+		bool needDelayedCheckFire = false;
+		IFacing delayedfacing;
+		Target delayedTarget;
+		Barrel delayedBarrel = null;
+		public void DelayedCheckFire(Actor self)
+		{
+			if (!needDelayedCheckFire)
+			{
+				delayedBarrel = null;
+				return;
+			}
+
+			needDelayedCheckFire = false;
+
+			if (!CanFire(self, delayedTarget))
+			{
+				delayedBarrel = null;
+				return;
+			}
 
 			if (ticksSinceLastShot >= Weapon.ReloadDelay)
 				Burst = Weapon.Burst;
@@ -188,14 +237,14 @@ namespace OpenRA.Mods.Common.Traits
 
 			// If Weapon.Burst == 1, cycle through all LocalOffsets, otherwise use the offset corresponding to current Burst
 			currentBarrel %= barrelCount;
-			var barrel = Weapon.Burst == 1 ? Barrels[currentBarrel] : Barrels[Burst % Barrels.Length];
+			delayedBarrel = Weapon.Burst == 1 ? Barrels[currentBarrel] : Barrels[Burst % Barrels.Length];
 			currentBarrel++;
 
-			FireBarrel(self, facing, target, barrel);
+			FireBarrel(self, delayedfacing, delayedTarget, delayedBarrel);
 
-			UpdateBurst(self, target);
+			UpdateBurst(self, delayedTarget);
 
-			return barrel;
+			return;
 		}
 
 		protected override void FireBarrel(Actor self, IFacing facing, in Target target, Barrel barrel)

@@ -300,6 +300,11 @@ namespace OpenRA.Traits
 		void SkeletonTick();
 	}
 
+	public interface ISkeletonArmament
+	{
+		void DelayedCheckFire(Actor self);
+	}
+
 	public interface IFacing
 	{
 		WAngle TurnSpeed { get; }

@@ -69,7 +69,7 @@ TestVulcan:
 		ZOffset: 1024
 		Inaccuracy: 1c0
 	Warhead@1Dam: SpreadDamage
-		Damage: 3000
+		Damage: 30
 		Spread: 0c372
 		ValidTargets: Ground, Water, Air
 

@@ -105,6 +105,7 @@ namespace OpenRA
 		internal SyncHash[] SyncHashes { get; }
 
 		readonly IWithSkeleton[] skeletons;
+		readonly ISkeletonArmament[] skeletonArmaments;
 
 		readonly IFacing facing;
 		readonly IHealth health;
@@ -147,6 +148,7 @@ namespace OpenRA
 
 				Info = world.Map.Rules.Actors[name];
 				var skeletonsList = new List<IWithSkeleton>();
+				var sklArmamentsList = new List<ISkeletonArmament>();
 				var resolveOrdersList = new List<IResolveOrder>();
 				var renderModifiersList = new List<IRenderModifier>();
 				var rendersList = new List<IRender>();
@@ -173,6 +175,7 @@ namespace OpenRA
 					{ if (trait is IFacing t) facing = t; }
 					{ if (trait is IHealth t) health = t; }
 					{ if (trait is IWithSkeleton t) skeletonsList.Add(t); }
+					{ if (trait is ISkeletonArmament t) sklArmamentsList.Add(t); }
 					{ if (trait is IResolveOrder t) resolveOrdersList.Add(t); }
 					{ if (trait is IRenderModifier t) renderModifiersList.Add(t); }
 					{ if (trait is IRender t) rendersList.Add(t); }
@@ -187,6 +190,7 @@ namespace OpenRA
 				}
 
 				skeletons = skeletonsList.ToArray();
+				skeletonArmaments = sklArmamentsList.ToArray();
 				resolveOrders = resolveOrdersList.ToArray();
 				renderModifiers = renderModifiersList.ToArray();
 				renders = rendersList.ToArray();
@@ -267,6 +271,8 @@ namespace OpenRA
 			{
 				foreach (var s in skeletons)
 					s.UpdateSkeleton();
+				foreach (var arm in skeletonArmaments)
+					arm.DelayedCheckFire(this);
 			}
 		}
 

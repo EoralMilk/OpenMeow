@@ -249,7 +249,7 @@ namespace OpenRA.Mods.Common.Traits
 				a(b);
 		}
 
-		protected virtual bool CanFire(Actor self, in Target target)
+		bool CanFire(Actor self, in Target target)
 		{
 			if (IsReloading || IsTraitPaused)
 				return false;

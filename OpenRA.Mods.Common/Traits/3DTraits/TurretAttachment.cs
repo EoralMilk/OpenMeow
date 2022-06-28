@@ -163,12 +163,7 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 
 		public bool FacingWithInTolerance(in FP deg)
 		{
-			var end = w3dr.Get3DPositionFromWPos(TargetPos);
-			var dir = end - start;
-			var localDir = offsetedTurBaseRot * dir;
-			var yawRot = TSQuaternion.FromToRotation(TSVector.forward, new TSVector(localDir.x, 0, localDir.z));
-
-			return FP.Abs(TSQuaternion.Angle(forward, yawRot)) <= deg;
+			return State == AimState.Aim && FP.Abs(TSQuaternion.Angle(forward, yawRot)) <= deg;
 		}
 	}
 
@@ -225,12 +220,7 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 
 		public bool FacingWithInTolerance(in FP deg)
 		{
-			var end = w3dr.Get3DPositionFromWPos(TargetPos);
-			var dir = end - start;
-			var localDir = offsetedBarrelBaseRot * dir;
-			var pitchRot = TSQuaternion.FromToRotation(TSVector.up, new TSVector(0, localDir.y, localDir.z));
-
-			return FP.Abs(TSQuaternion.Angle(forward, pitchRot)) <= deg;
+			return State == AimState.Aim && FP.Abs(TSQuaternion.Angle(forward, pitchRot)) <= deg;
 		}
 
 	}
