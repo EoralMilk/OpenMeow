@@ -16,9 +16,13 @@
 		Mesh: sweater
 		Mask: 2
 		SkeletonBinded: body
-	WithSkeleton:
+	BlendTreeHandler:
+		SkeletonToUse: body
 		Stand: stand
 		Walk: walk
+		Guard: guard
+	WithSkeleton:
+		Name: body
 	RenderMeshes:
 		Image: rumya
 		ZOffset: 15
@@ -117,7 +121,7 @@ RUTEST2:
 	Tooltip:
 		Name: Test 2
 	Health:
-		HP: 150000
+		HP: 1500000
 	Mobile:
 		TurnSpeed: 34
 		Speed: 88
@@ -129,31 +133,34 @@ RUTEST2:
 	AttackAttachmentTurreted:
 		Turrets: turret1, turret2
 		Voice: Attack
-	# WithSkeleton@turret1:
-	# 	SkeletonDefine: turret-test
-	# 	Name: turret_skeleton1
-	# TurretAttachment@1:
-	# 	Name: turret1
-	# 	SkeletonBinded: body
-	# 	AttachingBone: s-Adj_Butt.R
-	# 	AttachmentSkeleton: turret_skeleton1
-	# 	TurretBone: a-s-Base
-	# 	BarrelBone: a-s-Barrel
-	# 	Scale: 5
-	# 	Mesh: turret
-	# 	RotationSpeed: 2.0
-	# 	InitTurretAngle: -90
-	# 	TurretRotationMin: -180
-	# 	TurretRoataionMax: 0
-	# 	InitBarrelAngle: 45
-	# 	BarrelMaxDepression: 15
-	# 	BarrelMaxElevation: 80
-	# AttachedArmament@1:
-	# 	Weapon: TestVulcan
-	# 	SkeletonToUse: turret_skeleton1
-	# 	FromBonePose: firepose
-	# 	FacingTolerance: 40
-	# 	Turret: turret1
+	WithSkeleton@turret1:
+		SkeletonDefine: turret-test
+		Name: turret_skeleton1
+	TurretAttachment@1:
+		Name: turret1
+		SkeletonBinded: body
+		AttachingBone: s-Adj_Butt.R
+		AttachmentSkeleton: turret_skeleton1
+		TurretBone: a-s-Base
+		BarrelBone: a-s-Barrel
+		Scale: 6
+		Mesh: turret
+		RotationSpeed: 3
+		BarrelRotationSpeed: 5
+		InitTurretAngle: -90
+		TurretRotationMin: -180
+		TurretRoataionMax: 0
+		InitBarrelAngle: 45
+		BarrelMaxDepression: 15
+		BarrelMaxElevation: 80
+		TurretFireAngleLimitation: true
+		BarrelFireAngleLimitation: false
+	AttachedArmament@1:
+		Weapon: TestVulcan
+		SkeletonToUse: turret_skeleton1
+		FromBonePose: firepose
+		FacingTolerance: 40
+		Turret: turret1
 
 	WithSkeleton@turret2:
 		SkeletonDefine: turret-test
@@ -165,15 +172,18 @@ RUTEST2:
 		AttachmentSkeleton: turret_skeleton2
 		TurretBone: a-s-Base
 		BarrelBone: a-s-Barrel
-		Scale: 7
+		Scale: 6
 		Mesh: turret
-		RotationSpeed: 2.0
+		RotationSpeed: 3
+		BarrelRotationSpeed: 5
 		InitTurretAngle: 90
 		TurretRotationMin: 0
 		TurretRoataionMax: 180
 		InitBarrelAngle: 45
 		BarrelMaxDepression: 15
 		BarrelMaxElevation: 80
+		TurretFireAngleLimitation: true
+		BarrelFireAngleLimitation: false
 	AttachedArmament@2:
 		Weapon: TestVulcan
 		SkeletonToUse: turret_skeleton2

@@ -300,6 +300,11 @@ namespace OpenRA.Traits
 		void SkeletonTick();
 	}
 
+	public interface IPrepareForAttack
+	{
+		bool PrepareForAttack();
+	}
+
 	public interface IUpdateWithSkeleton
 	{
 		void UpdateEarly(Actor self);

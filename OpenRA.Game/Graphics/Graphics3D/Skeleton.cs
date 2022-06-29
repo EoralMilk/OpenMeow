@@ -125,7 +125,7 @@ namespace OpenRA.Graphics
 
 		readonly Dictionary<int, IBonePoseModifier> inverseKinematics = new Dictionary<int, IBonePoseModifier>();
 		IBonePoseModifier currentIK;
-
+		public static Frame EmptyFrame = new Frame(0);
 		public void AddInverseKinematic(int id ,in IBonePoseModifier ik)
 		{
 			inverseKinematics.Add(id, ik);
@@ -187,16 +187,19 @@ namespace OpenRA.Graphics
 			}
 
 			LastSkeletonPose = new TSMatrix4x4[boneSize];
+			UpdateOffset();
+			UpdateLastPose();
 		}
 
-		void UpdateInner(int id, in Frame animFrame)
+		void UpdateInner(int id, in Frame animFrame, in AnimMask animMask)
 		{
 			if (updateFlags[id] == true)
 				return;
 
 			if (Bones[id].ParentId == -1)
 			{
-				if (Bones[id].AnimId != -1 && animFrame.Length > Bones[id].AnimId)
+				// animMask length should be same as frame length (&& animMask.Length > Bones[id].AnimId) no need
+				if (Bones[id].AnimId != -1 && animFrame.Length > Bones[id].AnimId && animMask[Bones[id].AnimId])
 					Bones[id].UpdateOffset(Offset, animFrame.Transformations[Bones[id].AnimId].Matrix);
 				else
 					Bones[id].UpdateOffset(Offset);
@@ -210,9 +213,10 @@ namespace OpenRA.Graphics
 			}
 			else
 			{
-				UpdateInner(Bones[id].ParentId, animFrame);
+				UpdateInner(Bones[id].ParentId, animFrame, animMask);
 
-				if (Bones[id].AnimId != -1 && animFrame.Length > Bones[id].AnimId)
+				// animMask length should be same as frame length
+				if (Bones[id].AnimId != -1 && animFrame.Length > Bones[id].AnimId && animMask[Bones[id].AnimId])
 					Bones[id].UpdateOffset(Bones[Bones[id].ParentId].CurrentPose, animFrame.Transformations[Bones[id].AnimId].Matrix);
 				else
 					Bones[id].UpdateOffset(Bones[Bones[id].ParentId].CurrentPose);
@@ -226,7 +230,7 @@ namespace OpenRA.Graphics
 			}
 		}
 
-		public void UpdateOffset(in Frame animFrame)
+		public void UpdateOffset(in Frame animFrame = null, in AnimMask animMask = null)
 		{
 			for (int i = 0; i < boneSize; i++)
 			{
@@ -235,7 +239,22 @@ namespace OpenRA.Graphics
 
 			for (int i = 0; i < boneSize; i++)
 			{
-				UpdateInner(i, animFrame);
+				UpdateInner(i, animFrame == null ? EmptyFrame : animFrame, animMask == null ? asset.AllValidMask : animMask);
+			}
+
+			hasUpdated = true;
+		}
+
+		public void UpdateOffset(in BlendTreeNodeOutPut treeNodeOutPut)
+		{
+			for (int i = 0; i < boneSize; i++)
+			{
+				updateFlags[i] = false;
+			}
+
+			for (int i = 0; i < boneSize; i++)
+			{
+				UpdateInner(i, treeNodeOutPut.OutPutFrame, treeNodeOutPut.AnimMask);
 			}
 
 			hasUpdated = true;
@@ -431,6 +450,7 @@ namespace OpenRA.Graphics
 		// unit sequence to anims
 		public Dictionary<string, Dictionary<string, SkeletalAnim>> AnimationsRef = new Dictionary<string, Dictionary<string, SkeletalAnim>>();
 
+		public readonly AnimMask AllValidMask;
 		public SkeletonAsset(IReadOnlyFileSystem fileSystem, string filename)
 		{
 			Name = filename;
@@ -508,6 +528,8 @@ namespace OpenRA.Graphics
 			{
 				SkinBonesIndices[bone.SkinId] = bone.Id;
 			}
+
+			AllValidMask = new AnimMask("all", Bones.Length);
 		}
 
 		public bool TryAddAnimation(in IReadOnlyFileSystem fileSystem, in string unit, in string sequence, in string filename)

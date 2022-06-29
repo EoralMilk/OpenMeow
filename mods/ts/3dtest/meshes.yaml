@@ -4,6 +4,7 @@ rumya:
 		Anims:
 			stand: stand
 			walk: catwalk
+			guard: rest
 	Meshes:
 		body: combined
 			Material: body

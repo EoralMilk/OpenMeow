@@ -98,6 +98,7 @@ Weapons:
 	ts|weapons/otherweapons.yaml
 	ts|weapons/smallguns.yaml
 	ts|weapons/superweapons.yaml
+	ts|3dtest/weapons.yaml
 
 Sequences:
 	ts|sequences/aircraft.yaml

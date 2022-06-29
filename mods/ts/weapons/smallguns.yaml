@@ -22,57 +22,6 @@
 		ValidTargets: Water
 		InvalidTargets: Vehicle
 
-
-
-A10Vulcan:
-	Inherits: ^MG
-	ValidTargets: Ground, Water
-	ReloadDelay: 100
-	MinRange: 4c512
-	Burst: 30
-	BurstDelays: 1
-	Range: 10c0
-	Report: cygun1.aud
-	FirstBurstTargetOffset: -3000,0,0
-	FollowingBurstTargetOffset: 300,0,0
-	Projectile: Bullet
-		ContrailLength: 3
-		ContrailWidth: 44
-		ContrailColor: F0D05C
-		ContrailDelay: 0
-		ContrailBlendMode: ScreenAdditive
-		Speed: 1100
-		LaunchAngle: 10
-		ZOffset: 1024
-		Inaccuracy: 1c0
-	Warhead@1Dam: SpreadDamage
-		Damage: 2000
-		Spread: 0c372
-
-
-
-TestVulcan:
-	Inherits: ^MG
-	ValidTargets: Ground, Water, Air
-	ReloadDelay: 3
-	MinRange: 0c512
-	Range: 12c0
-	Report: cygun1.aud
-	Projectile: Bullet
-		ContrailLength: 3
-		ContrailWidth: 44
-		ContrailColor: F0D05C
-		ContrailDelay: 0
-		ContrailBlendMode: ScreenAdditive
-		Speed: 1100
-		LaunchAngle: 10
-		ZOffset: 1024
-		Inaccuracy: 1c0
-	Warhead@1Dam: SpreadDamage
-		Damage: 1200
-		Spread: 0c372
-		ValidTargets: Ground, Water, Air
-
 Minigun:
 	Inherits: ^MG
 	ReloadDelay: 21

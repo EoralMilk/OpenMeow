@@ -20,13 +20,16 @@ using TrueSync;
 
 namespace OpenRA.Mods.Common.Traits.Trait3D
 {
+	public interface IBlendTreeHandler
+	{
+		BlendTreeNodeOutPut GetResult();
+		void UpdateTick();
+	}
+
 	public class WithSkeletonInfo : ConditionalTraitInfo, Requires<RenderMeshesInfo>
 	{
 		public readonly string SkeletonDefine = null;
 		public readonly string Name = "body";
-		public readonly string Stand = null;
-		public readonly string Walk = null;
-		public readonly int Stand2WalkTick = 10;
 		public override object Create(ActorInitializer init) { return new WithSkeleton(init.Self, this); }
 	}
 
@@ -51,14 +54,13 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 				if (ik.IKState != InverseKinematicState.Keeping)
 				{
 					CallForUpdate();
+					//ikUpdate++;
 					break;
 				}
 			}
 		}
 
-		readonly BlendTree blendTree;
-		World3DRenderer w3dr;
-
+		readonly World3DRenderer w3dr;
 		readonly RenderMeshes rm;
 		public bool Draw;
 		int tick = 0;
@@ -67,6 +69,7 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 		bool created = false;
 		int toUpdate = 0;
 		public int ToUpdateTick { get => toUpdate; }
+
 		/// <summary>
 		/// WIP
 		/// </summary>
@@ -81,24 +84,13 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 		public readonly float Scale = 1;
 		readonly Actor self;
 		readonly IFacing myFacing;
-		readonly BodyOrientation body;
-		readonly IMove move;
 
-		// nodes
-		readonly Switch switchNode;
-		readonly AnimationNode animNode1;
-		readonly AnimationNode animNode2;
+		public IBlendTreeHandler BlendTreeHandler;
 
-		// temp test
-		readonly bool hasAnim = true;
-		readonly SkeletalAnim stand;
-		readonly SkeletalAnim walk;
 		public WithSkeleton(Actor self, WithSkeletonInfo info)
 			: base(info)
 		{
 			Name = info.Name;
-			body = self.Trait<BodyOrientation>();
-			move = self.Trait<IMove>();
 			myFacing = self.Trait<IFacing>();
 			this.self = self;
 
@@ -111,38 +103,27 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 
 			Skeleton = OrderedSkeleton.CreateInstance();
 
-			if (info.Stand == null || info.Walk == null)
-				hasAnim = false;
-			else
-			{
-				stand = OrderedSkeleton.SkeletonAsset.GetSkeletalAnim(Image, info.Stand);
-				walk = OrderedSkeleton.SkeletonAsset.GetSkeletalAnim(Image, info.Walk);
-
-				if (OrderedSkeleton.SkeletonAsset.Animations.Count == 0)
-				{
-					throw new Exception("unit " + Image + " has no animation");
-				}
-
-				blendTree = new BlendTree();
-				var animMask = new AnimMask("all", OrderedSkeleton.SkeletonAsset.BoneNameAnimIndex.Count);
-				animNode1 = new AnimationNode(info.Stand, 0, blendTree, animMask, stand);
-				animNode2 = new AnimationNode(info.Walk, 1, blendTree, animMask, walk);
-				switchNode = new Switch("Stand2Walk", 2, blendTree, animMask, animNode1, animNode2, info.Stand2WalkTick);
-				blendTree.InitTree(switchNode);
-			}
+			w3dr = Game.Renderer.World3DRenderer;
+			created = true;
+			UpdateSkeleton();
 		}
 
 		protected override void Created(Actor self)
 		{
-			w3dr = Game.Renderer.World3DRenderer;
-			created = true;
-			SkeletonTick();
+			UpdateSkeleton();
 		}
+
+		//static int skeletonUpdate = 0;
+		//static int ikUpdate = 0;
 
 		void ITick.Tick(Actor self)
 		{
 			tick++;
 			Drawtick++;
+			//if (skeletonUpdate != 0)
+			//	Console.WriteLine("SkeletonUpdate: " + skeletonUpdate + " ikUpdate: " + ikUpdate);
+			//skeletonUpdate = 0;
+			//ikUpdate = 0;
 		}
 
 		WPos lastSelfPos;
@@ -154,15 +135,8 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 			if (!created)
 				return;
 
-			if (hasAnim)
-			{
-				if (move.CurrentMovementTypes != MovementType.None)
-					switchNode.SetFlag(true);
-				else
-					switchNode.SetFlag(false);
-
-				blendTree.UpdateTick();
-			}
+			if (BlendTreeHandler != null)
+				BlendTreeHandler.UpdateTick();
 
 			lastSelfPos = self.CenterPosition;
 			lastSelfRot = myFacing.Orientation;
@@ -287,18 +261,20 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 				else
 					Skeleton.SetOffset(Transformation.MatWithNewScale(parent.Skeleton.BoneOffsetMat(parentBoneId), scaleAsChild));
 
-				if (hasAnim)
+				if (BlendTreeHandler != null)
 				{
-					Skeleton.UpdateOffset(blendTree.GetOutPut().OutPutFrame);
+					Skeleton.UpdateOffset(BlendTreeHandler.GetResult());
 				}
 				else
-					Skeleton.UpdateOffset(new Frame(0));
+					Skeleton.UpdateOffset();
 
 				// TODO: this is using for multiple thread in future
 				Skeleton.UpdateLastPose();
 				HasUpdated = true;
 				if (toUpdate > 0)
 					toUpdate--;
+
+				//skeletonUpdate++;
 			}
 
 			foreach (var child in children)

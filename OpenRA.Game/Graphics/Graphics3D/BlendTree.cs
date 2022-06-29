@@ -76,7 +76,10 @@ namespace OpenRA.Graphics
 				else if (inPutValue2.AnimMask.Mask[i])
 					outPut[i] = inPutValue2.OutPutFrame[i];
 				else
+				{
 					outPut[i] = Transformation.Identify;
+					animMask[i] = false;
+				}
 			}
 
 			return new BlendTreeNodeOutPut(outPut, animMask);
@@ -194,6 +197,19 @@ namespace OpenRA.Graphics
 	{
 		public string Name;
 		public bool[] Mask;
+
+		public int Length => Mask.Length;
+		public bool this[int index]
+		{
+			get
+			{
+				return Mask[index];
+			}
+			set
+			{
+				Mask[index] = value;
+			}
+		}
 
 		public AnimMask(string name, bool[] mask)
 		{
