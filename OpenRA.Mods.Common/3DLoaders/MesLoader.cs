@@ -558,12 +558,12 @@ namespace OpenRA.Mods.Common.Graphics
 			var info = node.Value.ToDictionary();
 
 			name = node.Key;
-			diffuseTint = LoadField(info, "DiffuseTint", float3.Ones);
-			specularTint = LoadField(info, "SpecularTint", float3.Ones);
-			string diffMapName = LoadField(info, "DiffuseMap", "NO_TEXTURE");
-			string specMapName = LoadField(info, "SpecularMap", "NO_TEXTURE");
-			shininess = LoadField(info, "Shininess", 0.0f);
-			faceCullFunc = LoadField(info, "FaceCull", FaceCullFunc.Front);
+			diffuseTint = ReadYamlInfo.LoadField(info, "DiffuseTint", float3.Ones);
+			specularTint = ReadYamlInfo.LoadField(info, "SpecularTint", float3.Ones);
+			string diffMapName = ReadYamlInfo.LoadField(info, "DiffuseMap", "NO_TEXTURE");
+			string specMapName = ReadYamlInfo.LoadField(info, "SpecularMap", "NO_TEXTURE");
+			shininess = ReadYamlInfo.LoadField(info, "Shininess", 0.0f);
+			faceCullFunc = ReadYamlInfo.LoadField(info, "FaceCull", FaceCullFunc.Front);
 
 			if (diffMapName == "NO_TEXTURE")
 			{
@@ -616,14 +616,6 @@ namespace OpenRA.Mods.Common.Graphics
 		public CommonMaterial CreateMaterial()
 		{
 			return new CommonMaterial(name, diffuseTex != null, diffuseTint, diffuseTex, specularTex != null, specularTint, specularTex, shininess, faceCullFunc);
-		}
-
-		T LoadField<T>(Dictionary<string, MiniYaml> d, string key, T fallback)
-		{
-			if (d.TryGetValue(key, out var value))
-				return FieldLoader.GetValue<T>(key, value.Value);
-
-			return fallback;
 		}
 	}
 

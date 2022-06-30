@@ -1,0 +1,71 @@
+# auto generate mask: 
+a-Rig_Spine:
+	Using: true
+a-Rig_Chest:
+	Using: true
+a-Rig_UpperChest:
+	Using: true
+s-Rig_Bust1.L:
+	Using: true
+s-Rig_Bust2.L:
+	Using: true
+s-Rig_Bust1.R:
+	Using: true
+s-Rig_Bust2.R:
+	Using: true
+a-Rig_Neck:
+	Using: true
+a-s-Rig_Head:
+	Using: true
+a-s-Rig_Shoulder.L:
+	Using: true
+a-Rig_UpperArm.L:
+	Using: true
+a-Rig_LowerArm.L:
+	Using: true
+a-s-Rig_Hand.L:
+	Using: true
+a-s-Rig_Index1.L:
+	Using: true
+a-s-Rig_Index2.L:
+	Using: true
+a-s-Rig_Index3.L:
+	Using: true
+a-s-Rig_Middle1.L:
+	Using: true
+a-s-Rig_Middle2.L:
+	Using: true
+a-s-Rig_Middle3.L:
+	Using: true
+a-s-Rig_Thumb1.L:
+	Using: true
+a-s-Rig_Thumb2.L:
+	Using: true
+a-s-Rig_Thumb3.L:
+	Using: true
+a-s-Rig_Shoulder.R:
+	Using: true
+a-Rig_UpperArm.R:
+	Using: true
+a-Rig_LowerArm.R:
+	Using: true
+a-s-Rig_Hand.R:
+	Using: true
+a-s-Rig_Index1.R:
+	Using: true
+a-s-Rig_Index2.R:
+	Using: true
+a-s-Rig_Index3.R:
+	Using: true
+a-s-Rig_Middle1.R:
+	Using: true
+a-s-Rig_Middle2.R:
+	Using: true
+a-s-Rig_Middle3.R:
+	Using: true
+a-s-Rig_Thumb1.R:
+	Using: true
+a-s-Rig_Thumb2.R:
+	Using: true
+a-s-Rig_Thumb3.R:
+	Using: true

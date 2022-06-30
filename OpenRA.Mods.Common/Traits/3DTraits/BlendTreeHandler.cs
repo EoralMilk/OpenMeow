@@ -15,8 +15,11 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 		public readonly string Stand = null;
 		public readonly string Walk = null;
 		public readonly string Guard = null;
+		public readonly string UpperMask = null;
 
 		public readonly int Stand2WalkTick = 10;
+		public readonly int GuardBlendTick = 80;
+
 		public override object Create(ActorInitializer init) { return new BlendTreeHandler(init.Self, this); }
 	}
 
@@ -63,16 +66,21 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 				throw new Exception("unit " + withSkeleton.Image + " has no animation");
 			}
 
+			if (info.UpperMask == null)
+				throw new Exception("Need UpperrMask");
+
 			blendTree = new BlendTree();
-			var animMask = new AnimMask("all", withSkeleton.OrderedSkeleton.SkeletonAsset.BoneNameAnimIndex.Count);
-			standAnim = new AnimationNode(info.Stand, 0, blendTree, animMask, stand);
-			walkAnim = new AnimationNode(info.Walk, 1, blendTree, animMask, walk);
-			guardAnim = new AnimationNode(info.Guard, 2, blendTree, animMask, guard);
-			moveSwitch = new Switch("Stand2Walk", 10, blendTree, animMask, standAnim, walkAnim, info.Stand2WalkTick);
-			guardBlend2 = new Blend2("GuardBlend", 11, blendTree, animMask, moveSwitch, guardAnim);
+			var uppermask = withSkeleton.OrderedSkeleton.SkeletonAsset.GetAnimMask(withSkeleton.Image, info.UpperMask);
+			var allvalidmask = withSkeleton.OrderedSkeleton.SkeletonAsset.AllValidMask;
+			standAnim = new AnimationNode(info.Stand, 0, blendTree, allvalidmask, stand);
+			walkAnim = new AnimationNode(info.Walk, 1, blendTree, allvalidmask, walk);
+			guardAnim = new AnimationNode(info.Guard, 2, blendTree, uppermask, guard);
+			moveSwitch = new Switch("Stand2Walk", 10, blendTree, allvalidmask, standAnim, walkAnim, info.Stand2WalkTick);
+			guardBlend2 = new Blend2("GuardBlend", 11, blendTree, allvalidmask, moveSwitch, guardAnim);
 			blendTree.InitTree(guardBlend2);
 
 			withSkeleton.BlendTreeHandler = this;
+			guardBlendSpeed = FP.One / info.GuardBlendTick;
 		}
 
 		public BlendTreeNodeOutPut GetResult()
@@ -85,7 +93,7 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 			blendTree.UpdateTick();
 		}
 
-		FP guardBlendSpeed = 0.1f;
+		FP guardBlendSpeed;
 		int guardTick = 0;
 		readonly int guardTime = 50;
 		public bool PrepareForAttack()

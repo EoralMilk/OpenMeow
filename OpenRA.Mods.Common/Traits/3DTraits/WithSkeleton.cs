@@ -231,11 +231,6 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 			}
 		}
 
-		public void UpdateOffset(in SkeletonInstance skeleton)
-		{
-			skeleton.SetOffset(self.CenterPosition, myFacing.Orientation, Scale);
-		}
-
 		public void UpdateSkeleton()
 		{
 			HasUpdated = false;

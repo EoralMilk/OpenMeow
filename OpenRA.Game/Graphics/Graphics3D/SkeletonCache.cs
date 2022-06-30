@@ -54,9 +54,14 @@ namespace OpenRA.Graphics
 					assets[assetname].TryAddAnimation(fileSystem, unit, animDefine.Key, animDefine.Value.Value);
 				}
 			}
-			else
+
+			if (info.ContainsKey("Masks"))
 			{
-				Console.WriteLine("Unit " + unit + " has no animations");
+				var masksinfo = info["Masks"].ToDictionary();
+				foreach (var mask in masksinfo)
+				{
+					assets[assetname].TryAddMask(fileSystem, unit, mask.Key, mask.Value.Value);
+				}
 			}
 
 			return assets[assetname];

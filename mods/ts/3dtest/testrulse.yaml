@@ -21,6 +21,7 @@
 		Stand: stand
 		Walk: walk
 		Guard: guard
+		UpperMask: upper
 	WithSkeleton:
 		Name: body
 	RenderMeshes:
@@ -154,7 +155,7 @@ RUTEST2:
 		BarrelMaxDepression: 15
 		BarrelMaxElevation: 80
 		TurretFireAngleLimitation: true
-		BarrelFireAngleLimitation: false
+		BarrelFireAngleLimitation: true
 	AttachedArmament@1:
 		Weapon: TestVulcan
 		SkeletonToUse: turret_skeleton1
@@ -183,7 +184,7 @@ RUTEST2:
 		BarrelMaxDepression: 15
 		BarrelMaxElevation: 80
 		TurretFireAngleLimitation: true
-		BarrelFireAngleLimitation: false
+		BarrelFireAngleLimitation: true
 	AttachedArmament@2:
 		Weapon: TestVulcan
 		SkeletonToUse: turret_skeleton2
@@ -191,10 +192,67 @@ RUTEST2:
 		FacingTolerance: 40
 		Turret: turret2
 
+	# WithSkeleton@turret3:
+	# 	SkeletonDefine: turret-test
+	# 	Name: turret_skeleton3
+	# TurretAttachment@3:
+	# 	Name: turret3
+	# 	SkeletonBinded: body
+	# 	AttachingBone: s-Rig_Bust2.R
+	# 	AttachmentSkeleton: turret_skeleton3
+	# 	TurretBone: a-s-Base
+	# 	BarrelBone: a-s-Barrel
+	# 	Scale: 6
+	# 	Mesh: turret
+	# 	RotationSpeed: 3
+	# 	BarrelRotationSpeed: 5
+	# 	InitTurretAngle: 90
+	# 	TurretRotationMin: 0
+	# 	TurretRoataionMax: 180
+	# 	InitBarrelAngle: 45
+	# 	BarrelMaxDepression: 15
+	# 	BarrelMaxElevation: 80
+	# 	TurretFireAngleLimitation: true
+	# 	BarrelFireAngleLimitation: true
+	# AttachedArmament@3:
+	# 	Weapon: TestVulcan
+	# 	SkeletonToUse: turret_skeleton3
+	# 	FromBonePose: firepose
+	# 	FacingTolerance: 40
+	# 	Turret: turret3
+
+	# WithSkeleton@turret4:
+	# 	SkeletonDefine: turret-test
+	# 	Name: turret_skeleton4
+	# TurretAttachment@4:
+	# 	Name: turret4
+	# 	SkeletonBinded: body
+	# 	AttachingBone: s-Rig_Bust2.L
+	# 	AttachmentSkeleton: turret_skeleton4
+	# 	TurretBone: a-s-Base
+	# 	BarrelBone: a-s-Barrel
+	# 	Scale: 6
+	# 	Mesh: turret
+	# 	RotationSpeed: 3
+	# 	BarrelRotationSpeed: 5
+	# 	InitTurretAngle: -90
+	# 	TurretRotationMin: -180
+	# 	TurretRoataionMax: 0
+	# 	InitBarrelAngle: 45
+	# 	BarrelMaxDepression: 15
+	# 	BarrelMaxElevation: 80
+	# 	TurretFireAngleLimitation: true
+	# 	BarrelFireAngleLimitation: true
+	# AttachedArmament@4:
+	# 	Weapon: TestVulcan
+	# 	SkeletonToUse: turret_skeleton4
+	# 	FromBonePose: firepose
+	# 	FacingTolerance: 40
+	# 	Turret: turret4
 
 RUTEST4:
 	Inherits: ^EMPableAircraft
-	Inherits@meshtest: ^WithMeshTest
+	# Inherits@meshtest: ^WithMeshTest
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Valued:
@@ -265,3 +323,24 @@ RUTEST4:
 		Image: scrin
 	-RenderModels:
 	-WithModelBody:
+	WithMeshBody@body:
+		Mesh: body
+		SkeletonBinded: body
+	WithMesh@hair:
+		Mesh: hair
+		SkeletonBinded: body
+	WithMesh@cater:
+		Mesh: cater
+		SkeletonBinded: body
+	WithMeshCloth@skirt:
+		Mesh: skirt-split
+		Mask: 4
+		SkeletonBinded: body
+	WithMeshCloth@sweater:
+		Mesh: sweater
+		Mask: 2
+		SkeletonBinded: body
+	RenderMeshes:
+		Image: rumya-2
+		ZOffset: 15
+		Scale: 8

@@ -446,9 +446,12 @@ namespace OpenRA.Graphics
 		public readonly int[] SkinBonesIndices;
 
 		public Dictionary<string, SkeletalAnim> Animations = new Dictionary<string, SkeletalAnim>();
+		public Dictionary<string, AnimMask> Masks = new Dictionary<string, AnimMask>();
 
 		// unit sequence to anims
 		public Dictionary<string, Dictionary<string, SkeletalAnim>> AnimationsRef = new Dictionary<string, Dictionary<string, SkeletalAnim>>();
+		// unit mask ref
+		public Dictionary<string, Dictionary<string, AnimMask>> MasksRef = new Dictionary<string, Dictionary<string, AnimMask>>();
 
 		public readonly AnimMask AllValidMask;
 		public SkeletonAsset(IReadOnlyFileSystem fileSystem, string filename)
@@ -564,6 +567,69 @@ namespace OpenRA.Graphics
 			}
 		}
 
+		public bool TryAddMask(in IReadOnlyFileSystem fileSystem, in string unit, in string sequence, in string filename)
+		{
+			var fields = (filename).Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+			var file = fields[0].Trim();
+
+			if (Masks.ContainsKey(file))
+			{
+				if (!MasksRef.ContainsKey(unit))
+				{
+					MasksRef.Add(unit, new Dictionary<string, AnimMask>());
+				}
+
+				MasksRef[unit].Add(sequence, Masks[file]);
+
+				return false;
+			}
+			else
+			{
+				var maskFile = file;
+				if (!fileSystem.Exists(maskFile))
+					maskFile += ".skm";
+
+				if (!fileSystem.Exists(maskFile))
+					throw new Exception("Can not find AnimMask");
+
+				List<MiniYamlNode> nodes = MiniYaml.FromStream(fileSystem.Open(maskFile));
+				bool[] maskValue = new bool[BoneNameAnimIndex.Count];
+				for (int i = 0; i < maskValue.Length; i++)
+					maskValue[i] = false;
+
+				foreach (var node in nodes)
+				{
+					var info = node.Value.ToDictionary();
+					var name = node.Key;
+					bool animUse = ReadYamlInfo.LoadField(info, "Using", false);
+					BoneAsset bone;
+					if (BonesDict.TryGetValue(name, out bone))
+					{
+						// if the bone is not a anim bone, skip, which means this boneMask won't be used
+						if (bone.AnimId == -1)
+							continue;
+						maskValue[bone.AnimId] = animUse;
+					}
+					else
+					{
+						throw new FileLoadException("The AnimMask: " + maskFile + " has boneMask: " + name + " which can't find in Skeleton: " + Name);
+					}
+				}
+
+				AnimMask mask = new AnimMask(sequence, maskValue);
+				Masks.Add(file, mask);
+
+				if (!MasksRef.ContainsKey(unit))
+				{
+					MasksRef.Add(unit, new Dictionary<string, AnimMask>());
+				}
+
+				MasksRef[unit].Add(sequence, Masks[file]);
+
+				return true;
+			}
+		}
+
 		public SkeletalAnim GetSkeletalAnim(in string unit, in string sequence)
 		{
 			if (!AnimationsRef.ContainsKey(unit))
@@ -576,6 +642,20 @@ namespace OpenRA.Graphics
 			}
 
 			return AnimationsRef[unit][sequence];
+		}
+
+		public AnimMask GetAnimMask(in string unit, in string sequence)
+		{
+			if (!MasksRef.ContainsKey(unit))
+			{
+				throw new Exception("Unit " + unit + " has no any mask defined");
+			}
+			else if (!MasksRef[unit].ContainsKey(sequence))
+			{
+				throw new Exception("Unit " + unit + " has no mask for sequence " + sequence);
+			}
+
+			return MasksRef[unit][sequence];
 		}
 
 		public int GetBoneIdByName(string boneName)
@@ -657,39 +737,6 @@ namespace OpenRA.Graphics
 				}
 			}
 
-		}
-	}
-
-	public class ReadYamlInfo
-	{
-		public static T LoadField<T>(Dictionary<string, MiniYaml> d, string key, T fallback)
-		{
-			if (d.TryGetValue(key, out var value))
-				return FieldLoader.GetValue<T>(key, value.Value);
-
-			return fallback;
-		}
-
-		public static mat4 LoadMat4(Dictionary<string, MiniYaml> d, string key)
-		{
-			float3 s = LoadField(d, key + "Scale", float3.Ones);
-			float4 r = LoadField(d, key + "Rotation", float4.Identity);
-			float3 t = LoadField(d, key + "Translation", float3.Zero);
-			mat4 tm = mat4.Translate(new vec3(t.X, t.Y, t.Z));
-			mat4 rm = new mat4(new quat(r.X, r.Y, r.Z, r.W));
-			mat4 sm = mat4.Scale(new vec3(s.X, s.Y, s.Z));
-			return tm * (sm * rm);
-		}
-
-		public static TSMatrix4x4 LoadFixPointMat4(Dictionary<string, MiniYaml> d, string key)
-		{
-			float3 s = LoadField(d, key + "Scale", float3.Ones);
-			float4 r = LoadField(d, key + "Rotation", float4.Identity);
-			float3 t = LoadField(d, key + "Translation", float3.Zero);
-			var tm = TSMatrix4x4.Translate((FP)t.X, (FP)t.Y, (FP)t.Z);
-			var rm = TSMatrix4x4.Rotate(new TSQuaternion((FP)r.X, (FP)r.Y, (FP)r.Z, (FP)r.W));
-			var sm = TSMatrix4x4.Scale((FP)s.X, (FP)s.Y, (FP)s.Z);
-			return tm * (sm * rm);
 		}
 	}
 

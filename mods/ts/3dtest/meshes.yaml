@@ -1,6 +1,8 @@
 rumya:
 	Skeleton: testArmature
 		# Bones:
+		Masks:
+			upper: upper
 		Anims:
 			stand: stand
 			walk: catwalk
