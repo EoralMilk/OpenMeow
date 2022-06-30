@@ -20,10 +20,10 @@ E2:
 		Speed: 56
 	Armament:
 		Weapon: Grenade
-		LocalOffset: 0,0,785
+		LocalOffset: 0,0,454
 		FireDelay: 5
 	TakeCover:
-		ProneOffset: 160,128,-555
+		ProneOffset: 160,128,0 #-555
 	AttackFrontal:
 		Voice: Attack
 		FacingTolerance: 0
@@ -244,9 +244,9 @@ GHOST:
 		Range: 6c0
 	Armament:
 		Weapon: LtRail
-		LocalOffset: 120,0,543
+		LocalOffset: 120,0,313
 	TakeCover:
-		ProneOffset: 256,32,-384
+		ProneOffset: 256,32,0 #-384
 	Crushable:
 		CrushSound: squishy2.aud
 	AttackFrontal:

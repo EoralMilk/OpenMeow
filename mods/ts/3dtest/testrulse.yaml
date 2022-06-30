@@ -49,7 +49,7 @@ RUTEST:
 	Buildable:
 		Queue: Vehicle
 		BuildPaletteOrder: 0
-		Prerequisites: ~naweap, ~techlevel.low
+		Prerequisites: ~none
 		Description: Fast scout vehicle, armed with\nrockets.\n  Strong vs Vehicles\n  Weak vs Infantry, Aircraft
 	Mobile:
 		TurnSpeed: 44

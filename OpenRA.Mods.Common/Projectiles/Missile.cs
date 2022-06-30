@@ -495,7 +495,7 @@ namespace OpenRA.Mods.Common.Projectiles
 				if (!world.Map.Contains(world.Map.CellContaining(posProbe)))
 					break;
 
-				var ht = world.Map.Height[world.Map.CellContaining(posProbe)] * 512;
+				var ht = world.Map.Height[world.Map.CellContaining(posProbe)] * MapGrid.MapHeightStep;
 
 				curDist += stepSize;
 				if (ht > predClfHgt)

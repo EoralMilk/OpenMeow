@@ -390,7 +390,7 @@ namespace OpenRA.Graphics
 		// Conversion between world and screen coordinates
 		public float2 ScreenPosition(WPos pos)
 		{
-			return new float2((float)TileSize.Width * pos.X / TileScale, (float)TileSize.Height * (pos.Y - pos.Z) / TileScale);
+			return new float2((float)TileSize.Width * pos.X / TileScale, (float)TileSize.Height * (pos.Y - 1.73205f * pos.Z) / TileScale);
 		}
 
 		public float3 Render3DPosition(WPos pos)
@@ -407,7 +407,7 @@ namespace OpenRA.Graphics
 			// * Increasing the world y coordinate increases screen y and z coordinates equally.
 			// * Increases the world z coordinate decreases screen y but doesn't change screen z.
 			var z = pos.Y * (float)TileSize.Height / TileScale;
-			return new float3((float)TileSize.Width * pos.X / TileScale, (float)TileSize.Height * (pos.Y - pos.Z) / TileScale, z);
+			return new float3((float)TileSize.Width * pos.X / TileScale, (float)TileSize.Height * (pos.Y - 1.73205f * pos.Z) / TileScale, z);
 		}
 
 		public int2 ScreenPxPosition(WPos pos)

@@ -36,10 +36,10 @@ namespace OpenRA
 			{
 				Corners = new[]
 				{
-					new WVec(0, -724, 724 * (int)tl),
-					new WVec(724, 0, 724 * (int)tr),
-					new WVec(0, 724, 724 * (int)br),
-					new WVec(-724, 0, 724 * (int)bl),
+					new WVec(0, -724, MapGrid.MapHeightStep * (int)tl),
+					new WVec(724, 0, MapGrid.MapHeightStep * (int)tr),
+					new WVec(0, 724, MapGrid.MapHeightStep * (int)br),
+					new WVec(-724, 0, MapGrid.MapHeightStep * (int)bl),
 				};
 			}
 			else
@@ -102,6 +102,7 @@ namespace OpenRA
 
 	public class MapGrid : IGlobalModData
 	{
+		public const int MapHeightStep = 418;
 		public readonly MapGridType Type = MapGridType.Rectangular;
 		public readonly Size TileSize = new Size(24, 24);
 		public readonly byte MaximumTerrainHeight = 0;

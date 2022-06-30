@@ -95,9 +95,10 @@ namespace OpenRA.Mods.Common.Projectiles
 			pos += velocity;
 			velocity += acceleration;
 
-			if (pos.Z <= args.PassiveTarget.Z)
+			// pos.Z <= args.PassiveTarget.Z , why don't use the terrain for explode check?
+			if (world.Map.DistanceAboveTerrain(pos).Length <= 0) 
 			{
-				pos += new WVec(0, 0, args.PassiveTarget.Z - pos.Z);
+				// pos += new WVec(0, 0, args.PassiveTarget.Z - pos.Z);
 				world.AddFrameEndTask(w => w.Remove(this));
 
 				var warheadArgs = new WarheadArgs(args)

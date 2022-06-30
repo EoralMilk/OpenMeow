@@ -3,6 +3,11 @@
 		Offset: 0, 0, 16
 		ShadowZOffset: 5
 		ZOffset: 5
+	icon: xxicon
+		Facings: 1
+		Length: 1
+		Start: 0
+		ShadowStart: 0
 
 ^BasicInfantry:
 	Inherits@defaults: ^InfantryBase
@@ -560,3 +565,4 @@ flameguy:
 		Length: 104
 		ShadowStart: 192
 		AlphaFade: True
+

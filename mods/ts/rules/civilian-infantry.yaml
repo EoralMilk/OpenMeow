@@ -1,5 +1,9 @@
 WEEDGUY:
 	Inherits: ^Soldier
+	Buildable:
+		Queue: Infantry
+		BuildPaletteOrder: 0
+		Prerequisites: ~none
 	Valued:
 		Cost: 300
 	Tooltip:
@@ -14,9 +18,9 @@ WEEDGUY:
 		CrushSound: squishy2.aud
 	Armament:
 		Weapon: FireballLauncher
-		LocalOffset: 317,0,453
+		LocalOffset: 317,0,262
 	TakeCover:
-		ProneOffset: 128,0,-320
+		ProneOffset: 128,0,0 #-320
 	AttackFrontal:
 		Voice: Attack
 		FacingTolerance: 0
@@ -32,6 +36,10 @@ UMAGON:
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@EXPHOSPITAL: ^InfantryExperienceHospitalOverrides
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Buildable:
+		Queue: Infantry
+		BuildPaletteOrder: 0
+		Prerequisites: ~none
 	Valued:
 		Cost: 400
 	Tooltip:
@@ -57,6 +65,10 @@ UMAGON:
 
 CHAMSPY:
 	Inherits: ^Soldier
+	Buildable:
+		Queue: Infantry
+		BuildPaletteOrder: 0
+		Prerequisites: ~none
 	Valued:
 		Cost: 700
 	DisguiseTooltip:
@@ -93,6 +105,10 @@ MUTANT:
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@EXPHOSPITAL: ^InfantryExperienceHospitalOverrides
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Buildable:
+		Queue: Infantry
+		BuildPaletteOrder: 0
+		Prerequisites: ~none
 	Valued:
 		Cost: 100
 	Tooltip:
@@ -121,6 +137,10 @@ MWMN:
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@EXPHOSPITAL: ^InfantryExperienceHospitalOverrides
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Buildable:
+		Queue: Infantry
+		BuildPaletteOrder: 0
+		Prerequisites: ~none
 	Valued:
 		Cost: 100
 	Tooltip:
@@ -149,6 +169,10 @@ MUTANT3:
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@EXPHOSPITAL: ^InfantryExperienceHospitalOverrides
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Buildable:
+		Queue: Infantry
+		BuildPaletteOrder: 0
+		Prerequisites: ~none
 	Valued:
 		Cost: 100
 	Tooltip:
@@ -177,6 +201,10 @@ MUTANT3:
 TRATOS:
 	Inherits: ^Soldier
 	Inherits@2: ^HealsOnTiberium
+	Buildable:
+		Queue: Infantry
+		BuildPaletteOrder: 0
+		Prerequisites: ~none
 	Valued:
 		Cost: 100
 	Tooltip:
@@ -192,6 +220,10 @@ TRATOS:
 
 OXANNA:
 	Inherits: ^Soldier
+	Buildable:
+		Queue: Infantry
+		BuildPaletteOrder: 0
+		Prerequisites: ~none
 	Valued:
 		Cost: 100
 	Tooltip:
@@ -209,6 +241,10 @@ OXANNA:
 
 SLAV:
 	Inherits: ^Soldier
+	Buildable:
+		Queue: Infantry
+		BuildPaletteOrder: 0
+		Prerequisites: ~none
 	Valued:
 		Cost: 100
 	Tooltip:
@@ -227,6 +263,10 @@ SLAV:
 CIV1:
 	Inherits: ^CivilianInfantry
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Buildable:
+		Queue: Infantry
+		BuildPaletteOrder: 0
+		Prerequisites: ~none
 	WithSplitAttackPaletteInfantryBody:
 		DefaultAttackSequence: attack
 		Palette: player-nomuzzle
@@ -242,17 +282,29 @@ CIV1:
 
 CIV2:
 	Inherits: ^CivilianInfantry
+	Buildable:
+		Queue: Infantry
+		BuildPaletteOrder: 0
+		Prerequisites: ~none
 	Voiced:
 		VoiceSet: Civilian2
 
 CIV3:
 	Inherits: ^CivilianInfantry
+	Buildable:
+		Queue: Infantry
+		BuildPaletteOrder: 0
+		Prerequisites: ~none
 	Voiced:
 		VoiceSet: Civilian3
 
 CTECH:
 	Inherits: CIV3
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Buildable:
+		Queue: Infantry
+		BuildPaletteOrder: 0
+		Prerequisites: ~none
 	RenderSprites:
 		Image: civ3
 	WithSplitAttackPaletteInfantryBody:

@@ -27,11 +27,11 @@
 		TurnSpeed: 12
 	Armament@PRIMARY:
 		Weapon: 120mmx
-		LocalOffset: 707,85,509, 707,-120,509
+		LocalOffset: 707,85,264, 707,-120,264
 		MuzzleSequence: muzzle
 	Armament@SECONDARY:
 		Weapon: MammothTusk
-		LocalOffset: 0,283,580, 0,-283,580
+		LocalOffset: 0,283,335, 0,-283,335
 	AttackTurreted:
 		Voice: Attack
 		PauseOnCondition: empdisable

@@ -59,7 +59,7 @@ namespace OpenRA.Graphics
 			MeterPerPix = (float)((1024 / WPosPerMeter) / (mapGrid.TileSize.Width / 1.4142135d));
 			MeterPerPixHalf = MeterPerPix / 2.0f;
 
-			WPosPerMeterHeight = 1773.62f / (1024.0f / WPosPerMeter);
+			WPosPerMeterHeight = WPosPerMeter ;// 1773.62f / (1024.0f / WPosPerMeter);
 			TanCameraPitch = (float)Math.Tan(glm.Radians(CameraPitch));
 			CosCameraPitch = (float)Math.Cos(glm.Radians(CameraPitch));
 			SinCameraPitch = (float)Math.Sin(glm.Radians(CameraPitch));
@@ -68,7 +68,7 @@ namespace OpenRA.Graphics
 			InverseCameraFront = glm.Normalized(new vec3(0, 1, 1 / TanCameraPitch));
 			InverseCameraFrontMeterPerWPos = InverseCameraFront / WPosPerMeter;
 
-			MaxTerrainHeight = mapGrid.MaximumTerrainHeight * 724 * 2f / WPosPerMeterHeight;
+			MaxTerrainHeight = mapGrid.MaximumTerrainHeight * MapGrid.MapHeightStep * 2f / WPosPerMeterHeight;
 
 			UpdateSunPos(SunPosOne, vec3.Zero);
 			var chordPow = (SunPosOne.x * SunPosOne.x + SunPosOne.y * SunPosOne.y) + (SunPosOne.z * SunPosOne.z);

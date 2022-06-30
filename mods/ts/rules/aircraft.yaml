@@ -164,13 +164,13 @@ A10:
 		Type: CenterPosition
 	Armament@GUNS:
 		Weapon: A10Vulcan
-		LocalOffset: 1440,0,145
+		LocalOffset: 1440,0,84
 		MuzzleSequence: muzzle
 		FacingTolerance: 40
 	Armament@BOMBS:
 		Weapon: A10Napalm
 		FacingTolerance: 512
-		LocalOffset: 0,-256,43, 0,256,43
+		LocalOffset: 0,-256,27, 0,256,27
 	AttackAircraft:
 		Voice: Attack
 		FacingTolerance: 512
@@ -395,7 +395,7 @@ TRNSPORT:
 		LandingSounds: dropdwn1.aud
 	Carryall:
 		Voice: Move
-		LocalOffset: 0,0,-317
+		LocalOffset: 0,0,-243
 		BeforeLoadDelay: 10
 		BeforeUnloadDelay: 10
 		CarryableAnyCamp: true
@@ -529,11 +529,11 @@ APACHE:
 		Ammo: 12
 		AmmoCondition: ammo
 	WithIdleOverlay@ROTORAIR:
-		Offset: 85,0,598
+		Offset: 85,0,346
 		Sequence: rotor
 		RequiresCondition: airborne
 	WithIdleOverlay@ROTORGROUND:
-		Offset: 85,0,598
+		Offset: 85,0,346
 		Sequence: slow-rotor
 		RequiresCondition: !airborne
 	RenderSprites:

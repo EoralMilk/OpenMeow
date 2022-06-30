@@ -60,14 +60,14 @@ namespace OpenRA
 
 		public TSQuaternion ToQuat()
 		{
-			WRot rot = new WRot(Pitch - new WAngle(256), -Roll, -Yaw);
+			WRot rot = new WRot(Pitch - new WAngle(256), Roll, -Yaw);
 
 			return new TSQuaternion((FP)rot.x / (FP)1024, (FP)rot.y / (FP)1024, (FP)rot.z / (FP)1024, (FP)rot.w / (FP)1024);
 		}
 
 		public quat ToRenderQuat()
 		{
-			WRot rot = new WRot(Pitch - new WAngle(256), -Roll, -Yaw);
+			WRot rot = new WRot(Pitch - new WAngle(256), Roll, -Yaw);
 
 			return new quat((float)rot.x / 1024, (float)rot.y / 1024, (float)rot.z / 1024, (float)rot.w / 1024);
 		}
