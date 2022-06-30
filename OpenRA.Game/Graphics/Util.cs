@@ -47,7 +47,7 @@ namespace OpenRA.Graphics
 			float2 leftRight = scale * r.LeftRight;
 			float2 topBottom = scale * r.TopBottom; // In general, both top and bottom are positive
 
-			var position = new vec3((float)inPos.X / Game.Renderer.World3DRenderer.WPosPerMeter, (float)inPos.Y / Game.Renderer.World3DRenderer.WPosPerMeter, (float)inPos.Z / Game.Renderer.World3DRenderer.WPosPerMeterHeight);
+			var position = Game.Renderer.World3DRenderer.Get3DRenderPositionFromWPos(inPos);
 			position += viewOffset;
 
 			// sprite only has horizental part
@@ -218,7 +218,7 @@ namespace OpenRA.Graphics
 			float2 leftRight = scale * r.LeftRight;
 			float2 topBottom = scale * r.TopBottom; // In general, both top and bottom are positive
 
-			var position = new vec3((float)inPos.X / Game.Renderer.World3DRenderer.WPosPerMeter, (float)inPos.Y / Game.Renderer.World3DRenderer.WPosPerMeter, (float)inPos.Z / Game.Renderer.World3DRenderer.WPosPerMeterHeight);
+			var position = Game.Renderer.World3DRenderer.Get3DRenderPositionFromWPos(inPos);
 			position += viewOffset;
 
 			float3 leftBack = new float3(position.x + leftRight.X, position.y + r.leftBack.Y, position.z);
@@ -282,7 +282,7 @@ namespace OpenRA.Graphics
 			float2 leftRight = scale * r.LeftRight;
 			float2 topBottom = scale * r.TopBottom; // In general, both top and bottom are positive
 
-			var position = new vec3((float)inPos.X / Game.Renderer.World3DRenderer.WPosPerMeter, (float)inPos.Y / Game.Renderer.World3DRenderer.WPosPerMeter, (float)inPos.Z / Game.Renderer.World3DRenderer.WPosPerMeterHeight);
+			var position = Game.Renderer.World3DRenderer.Get3DRenderPositionFromWPos(inPos);
 			position += viewOffset;
 
 			float3 leftTop = new float3(position.x + leftRight.X, position.y, position.z + r.leftTop.Z);

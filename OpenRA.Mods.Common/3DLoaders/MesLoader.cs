@@ -563,7 +563,7 @@ namespace OpenRA.Mods.Common.Graphics
 			string diffMapName = ReadYamlInfo.LoadField(info, "DiffuseMap", "NO_TEXTURE");
 			string specMapName = ReadYamlInfo.LoadField(info, "SpecularMap", "NO_TEXTURE");
 			shininess = ReadYamlInfo.LoadField(info, "Shininess", 0.0f);
-			faceCullFunc = ReadYamlInfo.LoadField(info, "FaceCull", FaceCullFunc.Front);
+			faceCullFunc = ReadYamlInfo.LoadField(info, "FaceCull", FaceCullFunc.Back);
 
 			if (diffMapName == "NO_TEXTURE")
 			{

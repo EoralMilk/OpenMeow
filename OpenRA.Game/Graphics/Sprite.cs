@@ -85,7 +85,7 @@ namespace OpenRA.Graphics
 				Ssizehalf = Game.Renderer.World3DRenderer.MeterPerPix * Size / 2;
 				Soffset = Game.Renderer.World3DRenderer.MeterPerPix * Offset;
 
-				LeftRight = new float2(Soffset.X - Ssizehalf.X, Soffset.X + Ssizehalf.X);
+				LeftRight = new float2(-(Soffset.X - Ssizehalf.X), -(Soffset.X + Ssizehalf.X));
 				TopBottom = new float2(Ssizehalf.Y - Soffset.Y, Soffset.Y + Ssizehalf.Y);
 
 				if (SpriteMeshType == SpriteMeshType.Plane || (SpriteMeshType == SpriteMeshType.Card && TopBottom.X < 0))

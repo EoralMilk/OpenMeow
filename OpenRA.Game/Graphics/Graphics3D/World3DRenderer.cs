@@ -25,7 +25,7 @@ namespace OpenRA.Graphics
 		public readonly float WPosPerMeterHeight;
 		public readonly float MaxTerrainHeight;
 
-		public readonly vec3 SunPosHeightOne = new vec3(-2.39773f, 1.0f, 3.51021f);
+		public readonly vec3 SunPosOne = new vec3(2.39773f, 1.0f, 3.51021f);
 		public readonly float SunCos;
 		public readonly float SunSin;
 
@@ -70,11 +70,11 @@ namespace OpenRA.Graphics
 
 			MaxTerrainHeight = mapGrid.MaximumTerrainHeight * 724 * 2f / WPosPerMeterHeight;
 
-			UpdateSunPos(SunPosHeightOne, vec3.Zero);
-			var chordPow = (SunPosHeightOne.x * SunPosHeightOne.x + SunPosHeightOne.y * SunPosHeightOne.y) + (SunPosHeightOne.z * SunPosHeightOne.z);
+			UpdateSunPos(SunPosOne, vec3.Zero);
+			var chordPow = (SunPosOne.x * SunPosOne.x + SunPosOne.y * SunPosOne.y) + (SunPosOne.z * SunPosOne.z);
 			var chord = MathF.Sqrt(chordPow);
-			SunCos = SunPosHeightOne.z / chord;
-			SunSin = (SunPosHeightOne.x * SunPosHeightOne.x + SunPosHeightOne.y * SunPosHeightOne.y) / chord;
+			SunCos = SunPosOne.z / chord;
+			SunSin = (SunPosOne.x * SunPosOne.x + SunPosOne.y * SunPosOne.y) / chord;
 
 			AmbientColor = new float3(0.45f, 0.45f, 0.45f);
 			SunColor = new float3(1, 1, 1) - AmbientColor;
@@ -98,7 +98,7 @@ namespace OpenRA.Graphics
 		{
 			var halfView = radius * SunCos;
 			var far = radius * SunSin + SunPos.z / SunCos;
-			SunProjection = mat4.Ortho(halfView, -halfView, -halfView, halfView, 0, far);
+			SunProjection = mat4.Ortho(-halfView, halfView, -halfView, halfView, 0, far);
 		}
 
 		public void PrepareToRender(WorldRenderer wr)
@@ -117,14 +117,14 @@ namespace OpenRA.Graphics
 
 				Viewport viewport = wr.Viewport;
 				var viewPortSize = (1f / viewport.Zoom * new float2(Game.Renderer.NativeResolution));
-				var ortho = (viewPortSize.X * MeterPerPixHalf, -viewPortSize.X * MeterPerPixHalf,
-					-viewPortSize.Y * MeterPerPixHalf, viewPortSize.Y * MeterPerPixHalf);
+				var ortho = (-viewPortSize.X * MeterPerPixHalf, viewPortSize.X * MeterPerPixHalf,
+									-viewPortSize.Y * MeterPerPixHalf, viewPortSize.Y * MeterPerPixHalf);
 
 				var heightMeter = ortho.Item4 / SinCameraPitch + (MaxTerrainHeight - (ortho.Item4 / TanCameraPitch * CosCameraPitch));
 				var far = heightMeter / CosCameraPitch + TanCameraPitch * ortho.Item4 + 100f;
 				Projection = mat4.Ortho(ortho.Item1, ortho.Item2, ortho.Item3, ortho.Item4, far / 8, far);
 
-				var viewPoint = new vec3((float)viewport.CenterPosition.X / WPosPerMeter, (float)viewport.CenterPosition.Y / WPosPerMeter, 0);
+				var viewPoint = Get3DRenderPositionFromWPos(viewport.CenterPosition);// new vec3((float)viewport.CenterPosition.X / WPosPerMeter, (float)viewport.CenterPosition.Y / WPosPerMeter, 0);
 				CameraPos = new vec3(viewPoint.x, viewPoint.y + TanCameraPitch * heightMeter, heightMeter);
 				View = mat4.LookAt(CameraPos, viewPoint, CameraUp);
 
@@ -134,7 +134,7 @@ namespace OpenRA.Graphics
 				AmbientIntencity = wr.TerrainLighting.GetGlobalAmbientIntencity();
 				FrameShadowBias = 1.0f / heightMeter;
 
-				var sunRelativePos = heightMeter * SunPosHeightOne;
+				var sunRelativePos = heightMeter * SunPosOne;
 				UpdateSunPos(sunRelativePos, viewPoint);
 				UpdateSunProject(MathF.Sqrt(ortho.Item1 * ortho.Item1 * 5));
 
@@ -164,28 +164,28 @@ namespace OpenRA.Graphics
 
 		public TSVector Get3DPositionFromWPos(WPos pos)
 		{
-			return new TSVector(FP.FromFloat((float)pos.X / WPosPerMeter),
+			return new TSVector(-FP.FromFloat((float)pos.X / WPosPerMeter),
 												FP.FromFloat((float)pos.Y / WPosPerMeter),
 												FP.FromFloat((float)pos.Z / WPosPerMeterHeight));
 		}
 
 		public TSVector Get3DPositionFromWVec(WVec vec)
 		{
-			return new TSVector(FP.FromFloat((float)vec.X / WPosPerMeter),
+			return new TSVector(-FP.FromFloat((float)vec.X / WPosPerMeter),
 												FP.FromFloat((float)vec.Y / WPosPerMeter),
 												FP.FromFloat((float)vec.Z / WPosPerMeterHeight));
 		}
 
 		public vec3 Get3DRenderPositionFromWPos(WPos pos)
 		{
-			return new vec3((float)pos.X / WPosPerMeter,
+			return new vec3(-(float)pos.X / WPosPerMeter,
 										(float)pos.Y / WPosPerMeter,
 										(float)pos.Z / WPosPerMeterHeight);
 		}
 
 		public WPos GetWPosFromMatrix(in TSMatrix4x4 matrix)
 		{
-			return new WPos((int)(matrix.M14 * WPosPerMeter),
+			return new WPos(-(int)(matrix.M14 * WPosPerMeter),
 										(int)(matrix.M24 * WPosPerMeter),
 										(int)(matrix.M34 * WPosPerMeterHeight));
 		}
