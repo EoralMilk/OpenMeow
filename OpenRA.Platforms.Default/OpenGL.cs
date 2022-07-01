@@ -480,6 +480,9 @@ namespace OpenRA.Platforms.Default
 		public delegate void ActiveTexture(int texture);
 		public static ActiveTexture glActiveTexture { get; private set; }
 
+		public delegate void CopyTexSubImage2D(int target, int level, int xoffset, int yoffset, int x, int y, int width, int height);
+		public static CopyTexSubImage2D glCopyTexSubImage2D { get; private set; }
+
 		public delegate void PixelStorei(int alignment, int para);
 		public static PixelStorei glPixelStorei { get; private set; }
 
@@ -658,6 +661,7 @@ namespace OpenRA.Platforms.Default
 				glIsTexture = Bind<IsTexture>("glIsTexture");
 				glBindTexture = Bind<BindTexture>("glBindTexture");
 				glActiveTexture = Bind<ActiveTexture>("glActiveTexture");
+				glCopyTexSubImage2D = Bind<CopyTexSubImage2D>("glCopyTexSubImage2D");
 				glPixelStorei = Bind<PixelStorei>("glPixelStorei");
 				glTexImage2D = Bind<TexImage2D>("glTexImage2D");
 				glTexParameteri = Bind<TexParameteri>("glTexParameteri");

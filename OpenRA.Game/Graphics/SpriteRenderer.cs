@@ -280,6 +280,15 @@ namespace OpenRA.Graphics
 			}
 		}
 
+		public void SetShadowParams()
+		{
+			if (Game.Renderer.World3DRenderer != null)
+			{
+				Game.Renderer.SetShadowParams(shader, Game.Renderer.World3DRenderer);
+				Game.Renderer.SetLightParams(shader, Game.Renderer.World3DRenderer);
+			}
+		}
+
 		public void SetDepthPreview(bool enabled, float contrast, float offset)
 		{
 			shader.SetBool("EnableDepthPreview", enabled);

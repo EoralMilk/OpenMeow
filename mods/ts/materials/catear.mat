@@ -1,4 +1,11 @@
 CatEar-1:
-	DiffuseMap: ear.png
-	SpecularTint: 0.56, 0.56,0.56
-	Shininess: 32.0
+	# DiffuseMap: ear.png
+	# SpecularTint: 0.56, 0.56,0.56
+	# Shininess: 32.0
+
+	
+	Type: PBR
+	# PBR
+	Roughness: 1
+	Metallic: 0
+	AlbedoMap: ear.png

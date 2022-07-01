@@ -256,10 +256,22 @@ namespace OpenRA.Mods.Common.Graphics
 			}
 
 			renderData.Shader.SetBool("isCloth", IsCloth);
-			Material.SetShader(renderData.Shader, "mainMaterial");
+			renderData.Shader.SetBool("usePBR", Material is PBRMaterial);
+			if (Material is PBRMaterial)
+			{
+				Material.SetShader(renderData.Shader, "pbrMaterial");
+			}
+			else
+				Material.SetShader(renderData.Shader, "mainMaterial");
 			if (IsCloth)
 			{
-				BodyMaterial.SetShader(renderData.Shader, "bodyMaterial");
+				renderData.Shader.SetBool("usePBRBody", BodyMaterial is PBRMaterial);
+				if (BodyMaterial is PBRMaterial)
+				{
+					BodyMaterial.SetShader(renderData.Shader, "pbrBodyMaterial");
+				}
+				else
+					BodyMaterial.SetShader(renderData.Shader, "bodyMaterial");
 			}
 
 			renderData.Shader.PrepareRender();
@@ -524,14 +536,36 @@ namespace OpenRA.Mods.Common.Graphics
 		}
 	}
 
+	public enum MaterialType
+	{
+		BlinnPhong,
+		PBR
+	}
+
 	class MaterialReader
 	{
 		readonly string name;
+		readonly MaterialType materialType;
+
+		// Blinn-Phong
 		readonly float3 diffuseTint;
 		readonly float3 specularTint;
 		readonly float shininess;
+		readonly string diffMapName;
+		readonly string specMapName;
 		readonly ITexture diffuseTex;
 		readonly ITexture specularTex;
+
+		// PBR
+		readonly float3 albedoTint;
+		readonly float roughness;
+		readonly float metallic;
+		readonly float ao;
+		readonly ITexture albedoTex;
+		readonly ITexture roughnessTex;
+		readonly ITexture matallicTex;
+		readonly ITexture aoTex;
+
 		readonly FaceCullFunc faceCullFunc;
 		readonly IReadOnlyFileSystem fileSystem;
 		readonly MeshCache cache;
@@ -558,34 +592,96 @@ namespace OpenRA.Mods.Common.Graphics
 			var info = node.Value.ToDictionary();
 
 			name = node.Key;
-			diffuseTint = ReadYamlInfo.LoadField(info, "DiffuseTint", float3.Ones);
-			specularTint = ReadYamlInfo.LoadField(info, "SpecularTint", float3.Ones);
-			string diffMapName = ReadYamlInfo.LoadField(info, "DiffuseMap", "NO_TEXTURE");
-			string specMapName = ReadYamlInfo.LoadField(info, "SpecularMap", "NO_TEXTURE");
-			shininess = ReadYamlInfo.LoadField(info, "Shininess", 0.0f);
+
+			materialType = ReadYamlInfo.LoadField(info, "Type", MaterialType.BlinnPhong);
+			if (materialType == MaterialType.BlinnPhong)
+			{
+				diffuseTint = ReadYamlInfo.LoadField(info, "DiffuseTint", float3.Ones);
+				specularTint = ReadYamlInfo.LoadField(info, "SpecularTint", float3.Ones);
+				diffMapName = ReadYamlInfo.LoadField(info, "DiffuseMap", "NO_TEXTURE");
+				specMapName = ReadYamlInfo.LoadField(info, "SpecularMap", "NO_TEXTURE");
+				shininess = ReadYamlInfo.LoadField(info, "Shininess", 0.0f);
+
+				if (diffMapName == "NO_TEXTURE")
+				{
+					diffuseTex = null;
+				}
+				else
+				{
+					// texture
+					diffMapName = diffMapName.Trim();
+					PrepareTexture(diffMapName, out diffuseTex);
+				}
+
+				if (specMapName == "NO_TEXTURE")
+				{
+					specularTex = null;
+				}
+				else
+				{
+					// texture
+					specMapName = specMapName.Trim();
+					PrepareTexture(specMapName, out specularTex);
+				}
+			}
+			else if (materialType == MaterialType.PBR)
+			{
+				albedoTint = ReadYamlInfo.LoadField(info, "AlbedoTint", float3.Ones);
+				roughness = ReadYamlInfo.LoadField(info, "Roughness", 1f);
+				metallic = ReadYamlInfo.LoadField(info, "Metallic", 1f);
+				ao = ReadYamlInfo.LoadField(info, "AO", 1f);
+				var albedoTexName = ReadYamlInfo.LoadField(info, "AlbedoMap", "NO_TEXTURE");
+				var roughnessTexName = ReadYamlInfo.LoadField(info, "RoughnessMap", "NO_TEXTURE");
+				var metallicTexName = ReadYamlInfo.LoadField(info, "MetallicMap", "NO_TEXTURE");
+				var aoTexName = ReadYamlInfo.LoadField(info, "AOMap", "NO_TEXTURE");
+
+				if (albedoTexName == "NO_TEXTURE")
+				{
+					albedoTex = null;
+				}
+				else
+				{
+					// texture
+					albedoTexName = albedoTexName.Trim();
+					PrepareTexture(albedoTexName, out albedoTex);
+				}
+
+				if (roughnessTexName == "NO_TEXTURE")
+				{
+					roughnessTex = null;
+				}
+				else
+				{
+					// texture
+					roughnessTexName = roughnessTexName.Trim();
+					PrepareTexture(roughnessTexName, out roughnessTex);
+				}
+
+				if (metallicTexName == "NO_TEXTURE")
+				{
+					matallicTex = null;
+				}
+				else
+				{
+					// texture
+					metallicTexName = metallicTexName.Trim();
+					PrepareTexture(metallicTexName, out matallicTex);
+				}
+
+				if (aoTexName == "NO_TEXTURE")
+				{
+					aoTex = null;
+				}
+				else
+				{
+					// texture
+					aoTexName = aoTexName.Trim();
+					PrepareTexture(aoTexName, out aoTex);
+				}
+			}
+
 			faceCullFunc = ReadYamlInfo.LoadField(info, "FaceCull", FaceCullFunc.Back);
 
-			if (diffMapName == "NO_TEXTURE")
-			{
-				diffuseTex = null;
-			}
-			else
-			{
-				// texture
-				diffMapName = diffMapName.Trim();
-				PrepareTexture(diffMapName, out diffuseTex);
-			}
-
-			if (specMapName == "NO_TEXTURE")
-			{
-				specularTex = null;
-			}
-			else
-			{
-				// texture
-				specMapName = specMapName.Trim();
-				PrepareTexture(specMapName, out specularTex);
-			}
 		}
 
 		void PrepareTexture(string name, out ITexture texture)
@@ -613,9 +709,14 @@ namespace OpenRA.Mods.Common.Graphics
 			}
 		}
 
-		public CommonMaterial CreateMaterial()
+		public IMaterial CreateMaterial()
 		{
-			return new CommonMaterial(name, diffuseTex != null, diffuseTint, diffuseTex, specularTex != null, specularTint, specularTex, shininess, faceCullFunc);
+			if (materialType == MaterialType.BlinnPhong)
+				return new BlinnPhongMaterial(name, diffuseTex != null, diffuseTint, diffuseTex, specularTex != null, specularTint, specularTex, shininess, faceCullFunc);
+			else if (materialType == MaterialType.PBR)
+				return new PBRMaterial(name, albedoTex != null, albedoTint, albedoTex, roughnessTex != null, roughness, roughnessTex, matallicTex != null, metallic, matallicTex, aoTex != null, ao, aoTex, faceCullFunc);
+			else
+				throw new Exception("Not valid Material Type");
 		}
 	}
 

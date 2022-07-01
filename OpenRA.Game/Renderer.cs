@@ -51,7 +51,7 @@ namespace OpenRA
 		ITexture screenTexture;
 		IFrameBuffer screenBuffer;
 		Sprite screenSprite;
-
+		Size worldBufferSize;
 		IFrameBuffer worldBuffer;
 		ITexture worldTexture;
 		ITexture worldDepthTexture;
@@ -225,7 +225,6 @@ namespace OpenRA
 			// reaching the framebuffer size limits (typically 16k). We therefore clamp the maximum framebuffer size to
 			// twice the window surface size, which strikes a reasonable balance between rendering quality and performance.
 			// Mods that use the depth buffer must instead limit their artwork resolution or maximum zoom-out levels.
-			Size worldBufferSize;
 			if (depthMargin == 0)
 			{
 				var surfaceSize = Window.SurfaceSize;
@@ -245,6 +244,7 @@ namespace OpenRA
 				worldBuffer.Texture.ScaleFilter = TextureScaleFilter.Linear;
 				worldTexture = worldBuffer.Texture;
 				worldDepthTexture = worldBuffer.DepthTexture;
+
 				//worldSheet = new Sheet(SheetType.BGRA, worldBuffer.Texture);
 
 				// Invalidate cached state to force a shader update
@@ -282,6 +282,7 @@ namespace OpenRA
 			//}
 
 			WorldSpriteRenderer.SetCameraParams();
+			WorldSpriteRenderer.SetShadowParams();
 
 			if (lastWorldViewport != worldViewport)
 			{
@@ -326,6 +327,26 @@ namespace OpenRA
 			wr.World.MeshCache.FlushInstances();
 		}
 
+		public void SetLightParams(IShader shader, World3DRenderer w3dr)
+		{
+			shader.SetVec("dirLight.direction", w3dr.SunDir.x, w3dr.SunDir.y, w3dr.SunDir.z);
+			shader.SetVec("dirLight.ambient", w3dr.AmbientColor.X, w3dr.AmbientColor.Y, w3dr.AmbientColor.Z);
+			shader.SetVec("dirLight.diffuse", w3dr.SunColor.X, w3dr.SunColor.Y, w3dr.SunColor.Z);
+			shader.SetVec("dirLight.specular", w3dr.SunSpecularColor.X, w3dr.SunSpecularColor.Y, w3dr.SunSpecularColor.Z);
+		}
+
+		public void SetShadowParams(IShader shader, World3DRenderer w3dr)
+		{
+			shader.SetTexture("ShadowDepthTexture", worldShadowDepthTexture);
+			var sunVP = w3dr.SunProjection * w3dr.SunView;
+			var invCameraVP = (w3dr.Projection * w3dr.View).Inverse;
+			shader.SetMatrix("SunVP", sunVP.Values1D);
+			shader.SetMatrix("InvCameraVP", invCameraVP.Values1D);
+			shader.SetFloat("ShadowBias", w3dr.FrameShadowBias);
+			shader.SetFloat("AmbientIntencity", w3dr.AmbientIntencity);
+			shader.SetVec("ViewPort", worldBufferSize.Width, worldBufferSize.Height);
+		}
+
 		public void Draw3DMeshesInstance(WorldRenderer wr, bool sunCamera)
 		{
 			// 首先对所有的3d用shader的通用参数进行赋值
@@ -334,6 +355,10 @@ namespace OpenRA
 				shader.Value.SetCommonParaments(World3DRenderer, sunCamera);
 				shader.Value.SetBool("EnableDepthPreview", enable3DDepthPreview);
 				shader.Value.SetVec("DepthPreviewParams", depthPreview3dParams.X, depthPreview3dParams.Y);
+				if (!sunCamera)
+				{
+					SetShadowParams(shader.Value, World3DRenderer);
+				}
 			}
 
 			// vxl
@@ -361,7 +386,7 @@ namespace OpenRA
 				worldBuffer.Unbind();
 
 				ScreenRenderer.SetAntialiasingPixelsPerTexel(Window.SurfaceSize.Height * 1f / worldTexture.Size.Height);
-				ScreenRenderer.SetShadowParams(worldShadowDepthTexture, worldDepthTexture, World3DRenderer);
+				//ScreenRenderer.SetShadowParams(worldShadowDepthTexture, worldDepthTexture, World3DRenderer);
 				ScreenRenderer.DrawScreen(worldTexture);
 				ScreenRenderer.SetAntialiasingPixelsPerTexel(0);
 			}

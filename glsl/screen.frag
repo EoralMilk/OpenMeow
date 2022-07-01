@@ -1,7 +1,7 @@
 #version {VERSION}
 
 #ifdef GL_ES
-precision mediump float;
+precision highp float;
 #endif
 
 in vec2 TexCoords;
@@ -34,10 +34,10 @@ void main()
 	if (FrameBufferShadow || FrameBufferPosition){
 		float depth = texture(screenDepthTexture, TexCoords).r;
 
-		if (depth >= 0.99999f)
+		if (depth >= 0.99999)
 			discard;
 
-		vec4 fragP = InvCameraVP * vec4(TexCoords.x * 2.0f-1.0f, TexCoords.y * 2.0f-1.0f, depth * 2.0f - 1.0f, 1.0f);
+		vec4 fragP = InvCameraVP * vec4(TexCoords.x * 2.0 - 1.0, TexCoords.y * 2.0 - 1.0, depth * 2.0 - 1.0, 1.0);
 		fragP = fragP / fragP.w;
 
 		if (FrameBufferShadow){
@@ -50,7 +50,7 @@ void main()
 			// float closestDepth = texture(sunDepthTexture, projCoords.xy).r;
 
 			float shadow = 0.0f;
-			float bias = FrameShadowBias * 0.01f;
+			float bias = FrameShadowBias * 0.025f;
 
 			if(projCoords.z <= 1.0f)
 			{

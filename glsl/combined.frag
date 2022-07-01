@@ -60,6 +60,52 @@ in vec4 vTint;
 out vec4 fragColor;
 #endif
 
+
+struct DirLight {
+	vec3 direction;
+	vec3 ambient;
+	vec3 diffuse;
+	vec3 specular;
+};
+
+uniform DirLight dirLight;
+uniform sampler2D ShadowDepthTexture;
+uniform mat4 SunVP;
+uniform mat4 InvCameraVP;
+uniform float ShadowBias;
+uniform float AmbientIntencity;
+uniform vec2 ViewPort;
+
+float CalShadow(DirLight light){
+	vec4 FragPos = InvCameraVP * vec4(gl_FragCoord.x/ViewPort.x * 2.0 - 1.0, gl_FragCoord.y/ViewPort.y * 2.0 - 1.0, gl_FragCoord.z * 2.0 - 1.0, 1.0);
+	FragPos = FragPos / FragPos.w;
+	
+	vec4 fragPosLightSpace = SunVP * FragPos;
+	vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
+	projCoords = projCoords * 0.5f + 0.5f;
+	float currentDepth = projCoords.z;
+
+	float shadow = 0.0f;
+	float bias = ShadowBias * 0.025f;
+
+	if(projCoords.z <= 1.0f)
+	{
+		vec2 texelSize = 1.0f / vec2(textureSize(ShadowDepthTexture, 0));
+		for(int x = -1; x <= 1; ++x)
+		{
+			for(int y = -1; y <= 1; ++y)
+			{
+				float pcfDepth = texture(ShadowDepthTexture, projCoords.xy + vec2(x, y) * texelSize).r; 
+				shadow += currentDepth - bias > pcfDepth ? 1.0f : 0.0f;        
+			}
+		}
+		shadow /= 9.0f;
+	}
+
+	return shadow;
+}
+
+
 vec3 rgb2hsv(vec3 c)
 {
 	// From http://lolengine.net/blog/2013/07/27/rgb-to-hsv-in-glsl
@@ -290,6 +336,9 @@ void main()
 	}
 	else
 	{
+
+		c = vec4(c.rgb * (1.0f - max(CalShadow(dirLight) - AmbientIntencity, 0.0f)), c.a);
+		// c = c * (1.0f - CalShadow(dirLight));
 		// A negative tint alpha indicates that the tint should replace the colour instead of multiplying it
 		if (vTint.a < 0.0)
 			c = vec4(vTint.rgb, -vTint.a);

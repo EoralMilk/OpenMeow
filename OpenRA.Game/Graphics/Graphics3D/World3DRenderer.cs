@@ -98,7 +98,7 @@ namespace OpenRA.Graphics
 		{
 			var halfView = radius * SunCos;
 			var far = radius * SunSin + SunPos.z / SunCos;
-			SunProjection = mat4.Ortho(-halfView, halfView, -halfView, halfView, 0, far);
+			SunProjection = mat4.Ortho(-halfView, halfView, -halfView, halfView, far / 8, far);
 		}
 
 		public void PrepareToRender(WorldRenderer wr)
@@ -136,7 +136,7 @@ namespace OpenRA.Graphics
 
 				var sunRelativePos = heightMeter * 1.2f * SunPosOne;
 				UpdateSunPos(sunRelativePos, viewPoint);
-				UpdateSunProject(MathF.Sqrt(ortho.Item1 * ortho.Item1 * 5));
+				UpdateSunProject(MathF.Sqrt(ortho.Item1 * ortho.Item1 * 6));
 
 				if (ShowDebugInfo)
 				{

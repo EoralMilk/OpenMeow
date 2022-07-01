@@ -40,6 +40,43 @@ struct DirLight {
 uniform DirLight dirLight;
 uniform vec3 viewPos;
 
+uniform sampler2D ShadowDepthTexture;
+uniform mat4 SunVP;
+uniform mat4 InvCameraVP;
+uniform float ShadowBias;
+uniform float AmbientIntencity;
+uniform vec2 ViewPort;
+
+float CalShadow(DirLight light){
+	vec4 FragPos = InvCameraVP * vec4(gl_FragCoord.x/ViewPort.x * 2.0 - 1.0, gl_FragCoord.y/ViewPort.y * 2.0 - 1.0, gl_FragCoord.z * 2.0 - 1.0, 1.0);
+	FragPos = FragPos / FragPos.w;
+	
+	vec4 fragPosLightSpace = SunVP * FragPos;
+	vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
+	projCoords = projCoords * 0.5f + 0.5f;
+	float currentDepth = projCoords.z;
+
+	float shadow = 0.0f;
+	float bias = ShadowBias * 0.025f;
+
+	if(projCoords.z <= 1.0f)
+	{
+		vec2 texelSize = 1.0f / vec2(textureSize(ShadowDepthTexture, 0));
+		for(int x = -1; x <= 1; ++x)
+		{
+			for(int y = -1; y <= 1; ++y)
+			{
+				float pcfDepth = texture(ShadowDepthTexture, projCoords.xy + vec2(x, y) * texelSize).r; 
+				shadow += currentDepth - bias > pcfDepth ? 1.0f : 0.0f;        
+			}
+		}
+		shadow /= 9.0f;
+	}
+
+	return shadow;
+}
+
+
 // Strangely, the VXL is too bright when scale smaller , so make color darker
 vec3 CalcDirLight(DirLight light, vec3 normal, vec3 viewDir, vec3 color)
 {
@@ -50,10 +87,11 @@ vec3 CalcDirLight(DirLight light, vec3 normal, vec3 viewDir, vec3 color)
 	vec3 reflectDir = reflect(-lightDir, normal);
 	float spec = pow(max(dot(viewDir, reflectDir), 0.0), 0.5f);
 	// merge
+	float shadowMul = (1.0f - CalShadow(light));
 	vec3 ambient  = light.ambient  * color * 1.2f;
-	vec3 diffuse  = light.diffuse  * diff * color  * 0.4f;
-	vec3 specular = light.specular * spec * 0.13f;
-	return (ambient + diffuse) + specular;
+	vec3 diffuse  = light.diffuse  * diff * color  * 0.4f * shadowMul;
+	vec3 specular = light.specular * spec * 0.13f * shadowMul;
+	return ambient + diffuse + specular;
 }
 
 void main()

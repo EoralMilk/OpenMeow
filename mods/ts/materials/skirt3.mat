@@ -1,5 +1,10 @@
 Skirt-3:
-	DiffuseMap: skirt3.png
-	SpecularTint: 0.36, 0.36,0.36
-	Shininess: 16.0
+	# DiffuseMap: skirt3.png
+	# SpecularTint: 0.36, 0.36,0.36
+	# Shininess: 16.0
 	FaceCull: None
+	Type: PBR
+	# PBR
+	Roughness: 0.82
+	Metallic: 0
+	AlbedoMap: skirt3.png

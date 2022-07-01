@@ -288,8 +288,8 @@ namespace OpenRA.Graphics
 
 			for (var i = 0; i < preparedBlendRenderables.Length; i++)
 			{
-				if (i == 2)
-					Game.Renderer.EnableDepthWrite(false);
+				//if (i == 2)
+				//	Game.Renderer.EnableDepthWrite(false);
 
 				if (preparedBlendRenderables[i].Count > 0)
 				{

@@ -89,7 +89,7 @@ namespace OpenRA.Graphics
 		void SetShader(IShader shader, in string matname);
 	}
 
-	public class CommonMaterial : IMaterial
+	public class BlinnPhongMaterial : IMaterial
 	{
 		public readonly string Name;
 		public readonly bool HasDiffuseMap;
@@ -101,7 +101,7 @@ namespace OpenRA.Graphics
 		public readonly float Shininess;
 		readonly FaceCullFunc faceCullFunc;
 		public FaceCullFunc FaceCullFunc => faceCullFunc;
-		public CommonMaterial(string name, bool hasDiffuseMap, float3 diffuseTint, ITexture diffuseMap, bool hasSpecularMap, float3 specularTint, ITexture specularMap, float shininess, FaceCullFunc faceCullFunc)
+		public BlinnPhongMaterial(string name, bool hasDiffuseMap, float3 diffuseTint, ITexture diffuseMap, bool hasSpecularMap, float3 specularTint, ITexture specularMap, float shininess, FaceCullFunc faceCullFunc)
 		{
 			Name = name;
 			HasDiffuseMap = hasDiffuseMap;
@@ -128,6 +128,73 @@ namespace OpenRA.Graphics
 			if (HasSpecularMap)
 				shader.SetTexture(matname + ".specular", SpecularMap);
 			shader.SetFloat(matname + ".shininess", Shininess);
+		}
+	}
+
+	public class PBRMaterial : IMaterial
+	{
+		public readonly string Name;
+		public readonly bool HasAlbedoMap;
+		public readonly float3 AlbedoTint;
+		public readonly ITexture AlbedoMap;
+		public readonly bool HasRoughnessMap;
+		public readonly float Roughness;
+		public readonly ITexture RoughnessMap;
+		public readonly bool HasMetallicMap;
+		public readonly float Metallic;
+		public readonly ITexture MetallicMap;
+		public readonly bool HasAOMap;
+		public readonly float AO;
+		public readonly ITexture AOMap;
+		readonly FaceCullFunc faceCullFunc;
+		public FaceCullFunc FaceCullFunc => faceCullFunc;
+		public PBRMaterial(string name, bool hasAlbedoMap, float3 albedoTint, ITexture albedoMap,
+			bool hasRoughnessMap, float roughness, ITexture roughnessMap,
+			bool hasMetallicMap, float metallic, ITexture metallicMap,
+			bool hasAOMap, float ao, ITexture aoMap,
+			FaceCullFunc faceCullFunc)
+		{
+			Name = name;
+			HasAlbedoMap = hasAlbedoMap;
+			AlbedoTint = albedoTint;
+			AlbedoMap = albedoMap;
+			HasRoughnessMap = hasRoughnessMap;
+			Roughness = roughness;
+			RoughnessMap = roughnessMap;
+			HasMetallicMap = hasMetallicMap;
+			Metallic = metallic;
+			MetallicMap = metallicMap;
+			HasAOMap = hasAOMap;
+			AO = ao;
+			AOMap = aoMap;
+			this.faceCullFunc = faceCullFunc;
+		}
+
+		public virtual void SetShader(IShader shader, in string matname)
+		{
+			// albedo
+			shader.SetBool(matname + ".hasAlbedoMap", HasAlbedoMap);
+			shader.SetVec(matname + ".albedoTint", AlbedoTint.X, AlbedoTint.Y, AlbedoTint.Z);
+			if (HasAlbedoMap)
+				shader.SetTexture(matname + ".albedoMap", AlbedoMap);
+
+			// roughness
+			shader.SetBool(matname + ".hasRoughnessMap", HasRoughnessMap);
+			shader.SetFloat(matname + ".roughness", Roughness);
+			if (HasRoughnessMap)
+				shader.SetTexture(matname + ".roughnessMap", RoughnessMap);
+
+			// matallic
+			shader.SetBool(matname + ".hasMetallicMap", HasMetallicMap);
+			shader.SetFloat(matname + ".metallic", Metallic);
+			if (HasMetallicMap)
+				shader.SetTexture(matname + ".metallicMap", MetallicMap);
+
+			// ao
+			shader.SetBool(matname + ".hasAOMap", HasAOMap);
+			shader.SetFloat(matname + ".ao", AO);
+			if (HasAOMap)
+				shader.SetTexture(matname + ".aoMap", AOMap);
 		}
 	}
 
