@@ -51,6 +51,11 @@ doggie:
 		Start: 109
 		Length: 10
 		ShadowStart: 228
+	icon: xxicon
+		Facings: 1
+		Length: 1
+		Start: 0
+		ShadowStart: 0
 
 vissml:
 	idle:
@@ -58,6 +63,11 @@ vissml:
 		ShadowStart: 90
 		Tick: 80
 		Offset: 0, 0, 16
+	icon: xxicon
+		Facings: 1
+		Length: 1
+		Start: 0
+		ShadowStart: 0
 
 vislrg:
 	idle:
@@ -77,7 +87,12 @@ vislrg:
 		Length: 5
 		Tick: 80
 		Offset: 0, 0, 16
-#		ShadowStart: 40 # TODO: enable shadow frames
+		# ShadowStart: 40 # TODO: enable shadow frames
+	icon: xxicon
+		Facings: 1
+		Length: 1
+		Start: 0
+		ShadowStart: 0
 
 floater:
 	idle:
@@ -97,3 +112,8 @@ floater:
 		Tick: 100
 		Offset: 0, 0, 16
 		IgnoreWorldTint: True
+	icon: xxicon
+		Facings: 1
+		Length: 1
+		Start: 0
+		ShadowStart: 0

@@ -3,6 +3,10 @@ DOGGIE:
 	Inherits@2: ^RegularInfantryDeath
 	Inherits@3: ^HealsOnTiberium
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Buildable:
+		Queue: Infantry
+		BuildPaletteOrder: 0
+		Prerequisites: ~none
 	MapEditorData:
 		Categories: Critter
 	Tooltip:
@@ -59,6 +63,10 @@ DOGGIE:
 
 VISC_SML:
 	Inherits: ^Visceroid
+	Buildable:
+		Queue: Infantry
+		BuildPaletteOrder: 0
+		Prerequisites: ~none
 	Tooltip:
 		Name: Baby Visceroid
 	Health:
@@ -83,6 +91,10 @@ VISC_LRG:
 	Inherits: ^Visceroid
 	Inherits@CRATESTATS: ^CrateStatModifiers
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Buildable:
+		Queue: Infantry
+		BuildPaletteOrder: 0
+		Prerequisites: ~none
 	Tooltip:
 		Name: Adult Visceroid
 	Health:
@@ -112,6 +124,10 @@ JFISH:
 	Inherits: ^Visceroid
 	Inherits@CRATESTATS: ^CrateStatModifiers
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Buildable:
+		Queue: Infantry
+		BuildPaletteOrder: 0
+		Prerequisites: ~none
 	Tooltip:
 		Name: Tiberium Floater
 	Health:

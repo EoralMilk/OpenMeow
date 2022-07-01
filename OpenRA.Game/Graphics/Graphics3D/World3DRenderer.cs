@@ -134,7 +134,7 @@ namespace OpenRA.Graphics
 				AmbientIntencity = wr.TerrainLighting.GetGlobalAmbientIntencity();
 				FrameShadowBias = 1.0f / heightMeter;
 
-				var sunRelativePos = heightMeter * SunPosOne;
+				var sunRelativePos = heightMeter * 1.2f * SunPosOne;
 				UpdateSunPos(sunRelativePos, viewPoint);
 				UpdateSunProject(MathF.Sqrt(ortho.Item1 * ortho.Item1 * 5));
 
