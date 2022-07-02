@@ -110,18 +110,30 @@ namespace OpenRA.Platforms.Default
 			OpenGL.glBindFramebuffer(OpenGL.GL_FRAMEBUFFER, framebuffer);
 			OpenGL.CheckGLError();
 
-			depthTexture = new DepthTexture(size);
-			depth = depthTexture.id;
-
-			OpenGL.glFramebufferTexture2D(OpenGL.GL_FRAMEBUFFER, OpenGL.GL_DEPTH_ATTACHMENT, OpenGL.GL_TEXTURE_2D, depth, 0);
-			OpenGL.CheckGLError();
-
 			if (onlyDepth)
 			{
+				depthTexture = new DepthTexture(size);
+				depth = depthTexture.id;
+
+				OpenGL.glFramebufferTexture2D(OpenGL.GL_FRAMEBUFFER, OpenGL.GL_DEPTH_ATTACHMENT, OpenGL.GL_TEXTURE_2D, depth, 0);
+				OpenGL.CheckGLError();
 				OpenGL.glReadBuffer(OpenGL.GL_NONE);
 			}
 			else
 			{
+				OpenGL.glGenRenderbuffers(1, out depth);
+				OpenGL.CheckGLError();
+
+				OpenGL.glBindRenderbuffer(OpenGL.GL_RENDERBUFFER, depth);
+				OpenGL.CheckGLError();
+
+				var glDepth = OpenGL.Profile == GLProfile.Embedded ? OpenGL.GL_DEPTH_COMPONENT16 : OpenGL.GL_DEPTH_COMPONENT;
+				OpenGL.glRenderbufferStorage(OpenGL.GL_RENDERBUFFER, glDepth, size.Width, size.Height);
+				OpenGL.CheckGLError();
+
+				OpenGL.glFramebufferRenderbuffer(OpenGL.GL_FRAMEBUFFER, OpenGL.GL_DEPTH_ATTACHMENT, OpenGL.GL_RENDERBUFFER, depth);
+				OpenGL.CheckGLError();
+
 				// Color
 				this.texture = texture;
 				texture.SetEmpty(size.Width, size.Height);

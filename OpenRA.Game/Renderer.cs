@@ -243,7 +243,7 @@ namespace OpenRA
 				// Pixel art scaling mode is a customized bilinear sampling
 				worldBuffer.Texture.ScaleFilter = TextureScaleFilter.Linear;
 				worldTexture = worldBuffer.Texture;
-				worldDepthTexture = worldBuffer.DepthTexture;
+				//worldDepthTexture = worldBuffer.DepthTexture;
 
 				//worldSheet = new Sheet(SheetType.BGRA, worldBuffer.Texture);
 
