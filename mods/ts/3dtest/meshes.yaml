@@ -1,5 +1,6 @@
 rumya:
 	Skeleton: testArmature
+		UseDynamicAdjBonePose: false
 		# Bones:
 		Masks:
 			upper: upper
