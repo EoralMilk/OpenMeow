@@ -25,6 +25,7 @@ rumya:
 			BodyMaterial: body
 			UseDQBSkin: true
 
+
 rumya-2:
 	Inherits@defaults: rumya
 	Skeleton: testArmature
@@ -37,6 +38,7 @@ rumya-2:
 			Material: sportshorts
 		hair: lp-hair_pt2
 			Material: h-pt2
+
 
 turret-test:
 	Skeleton: turret_skeleton
