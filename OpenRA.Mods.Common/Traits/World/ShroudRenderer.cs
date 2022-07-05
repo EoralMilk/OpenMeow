@@ -186,6 +186,7 @@ namespace OpenRA.Mods.Common.Traits
 				//var screen = wr.Screen3DPosition(pos - new WVec(0, 0, pos.Z));
 				var variant = (byte)Game.CosmeticRandom.Next(info.ShroudVariants.Length);
 				tileInfos[uv] = new TileInfo(pos - new WVec(0, 0, pos.Z), variant);
+				//tileInfos[uv] = new TileInfo(pos - new WVec(0, 0, pos.Z), variant);
 			}
 
 			// All tiles are visible in the editor

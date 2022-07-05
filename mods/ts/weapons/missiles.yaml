@@ -19,7 +19,7 @@
 		MinimumLaunchAngle: 128
 		MaximumLaunchAngle: 192
 		VerticalRateOfTurn: 100
-		CruiseAltitude: 5c512
+		CruiseAltitude: 3c512
 		AllowSnapping: true
 		TerrainHeightAware: true
 		ContrailLength: 10

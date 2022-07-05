@@ -212,7 +212,8 @@ namespace OpenRA.Traits
 			var maxLimit = maxRange.LengthSquared;
 
 			// Project actor position into the shroud plane
-			var projectedPos = pos - new WVec(0, pos.Z, pos.Z);
+			// the terrian height is not 724!!!
+			var projectedPos = pos - new WVec(0, (int)(pos.Z * MapGrid.MapHeightToYPos), pos.Z);
 			var projectedCell = map.CellContaining(projectedPos);
 			var projectedHeight = pos.Z / 512;
 

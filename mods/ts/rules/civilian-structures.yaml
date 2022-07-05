@@ -1689,10 +1689,10 @@ INBLULMP:
 
 TSTLAMP:
 	Inherits: GALITE
-	WithIdleOverlay@LIGHTING:
-		Sequence: lighting
-		Palette: alpha
-		RequiresCondition: !empdisable
+	# WithIdleOverlay@LIGHTING:
+	# 	Sequence: lighting
+	# 	Palette: alpha
+	# 	RequiresCondition: !empdisable
 
 GAICBM:
 	Inherits: ^Building
