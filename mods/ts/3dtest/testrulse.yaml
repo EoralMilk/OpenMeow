@@ -344,19 +344,3 @@ RUTEST4:
 		Image: rumya-2
 		ZOffset: 15
 		Scale: 8
-
-SL:
-	Inherits: HVR
-	Mobile:
-		TurnSpeed: 20
-		Speed: 113
-		PauseOnCondition: empdisable || loading || being-captured || carried
-		Locomotor: amphibious
-	RenderSprites:
-		Image: bike
-	RenderModels:
-		Scale: 1
-		LightScale: 0.3
-		SpecularScale: 0.11
-		AmbientScale: 1
-	-Hovers:
