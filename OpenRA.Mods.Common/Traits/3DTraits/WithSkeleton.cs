@@ -30,6 +30,7 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 	{
 		public readonly string SkeletonDefine = null;
 		public readonly string Name = "body";
+		public readonly bool OnlyUpdateForDraw = false;
 		public override object Create(ActorInitializer init) { return new WithSkeleton(init.Self, this); }
 	}
 
@@ -66,13 +67,9 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 		int tick = 0;
 		public int Drawtick = 0;
 		int lastDrawtick = 0;
-		bool created = false;
 		int toUpdate = 0;
 		public int ToUpdateTick { get => toUpdate; }
 
-		/// <summary>
-		/// WIP
-		/// </summary>
 		public bool ToUpdateSkeleton
 		{
 			get
@@ -84,6 +81,7 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 		public readonly float Scale = 1;
 		readonly Actor self;
 		readonly IFacing myFacing;
+		public readonly bool OnlyUpdateForDraw;
 
 		public IBlendTreeHandler BlendTreeHandler;
 
@@ -93,7 +91,7 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 			Name = info.Name;
 			myFacing = self.Trait<IFacing>();
 			this.self = self;
-
+			this.OnlyUpdateForDraw = info.OnlyUpdateForDraw;
 			rm = self.Trait<RenderMeshes>();
 			Scale = rm.Info.Scale;
 			Image = info.SkeletonDefine == null ? rm.Image : info.SkeletonDefine;
@@ -104,7 +102,6 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 			Skeleton = OrderedSkeleton.CreateInstance();
 
 			w3dr = Game.Renderer.World3DRenderer;
-			created = true;
 			UpdateSkeleton();
 		}
 
@@ -132,9 +129,6 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 
 		public void SkeletonTick()
 		{
-			if (!created)
-				return;
-
 			if (BlendTreeHandler != null)
 				BlendTreeHandler.UpdateTick();
 
@@ -220,10 +214,10 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 
 		public void CallForUpdate(int tickForUpdate = 2)
 		{
-			toUpdate = tickForUpdate;
+			if (OnlyUpdateForDraw)
+				throw new Exception("This WithSkeleton " + Name + " is OnlyUpdateForDraw, Can't CallForUpdate by logic");
 
-			if (!created)
-				return;
+			toUpdate = tickForUpdate;
 
 			if (parent != null)
 			{
@@ -238,7 +232,7 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 			SkeletonTick();
 			CheckIKUpdate();
 
-			if (parent != null || !created)
+			if (parent != null)
 				return;
 
 			UpdateSkeletonInner(ToUpdateSkeleton);
@@ -249,36 +243,46 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 		/// </summary>
 		void UpdateSkeletonInner(bool callbyParent)
 		{
-			if (callbyParent)
+			if (OnlyUpdateForDraw)
 			{
-				if (parent == null)
-					Skeleton.SetOffset(lastSelfPos, lastSelfRot, lastScale);
-				else
-					Skeleton.SetOffset(Transformation.MatWithNewScale(parent.Skeleton.BoneOffsetMat(parentBoneId), scaleAsChild));
-
-				if (BlendTreeHandler != null)
+				if (Draw)
 				{
-					Skeleton.UpdateOffset(BlendTreeHandler.GetResult());
+					UpdateDirectly();
 				}
-				else
-					Skeleton.UpdateOffset();
-
-				// TODO: this is using for multiple thread in future
-				Skeleton.UpdateLastPose();
-				HasUpdated = true;
-				if (toUpdate > 0)
-					toUpdate--;
-
-				//skeletonUpdate++;
+			}
+			else if (callbyParent)
+			{
+				UpdateDirectly();
 			}
 
 			foreach (var child in children)
 				child.UpdateSkeletonInner(callbyParent);
 		}
 
+		void UpdateDirectly()
+		{
+			if (parent == null)
+				Skeleton.SetOffset(lastSelfPos, lastSelfRot, lastScale);
+			else
+				Skeleton.SetOffset(Transformation.MatWithNewScale(parent.Skeleton.BoneOffsetMat(parentBoneId), scaleAsChild));
+
+			if (BlendTreeHandler != null)
+			{
+				Skeleton.UpdateOffset(BlendTreeHandler.GetResult());
+			}
+			else
+				Skeleton.UpdateOffset();
+
+			// TODO: this is using for multiple thread in future
+			Skeleton.UpdateLastPose();
+			HasUpdated = true;
+			if (toUpdate > 0)
+				toUpdate--;
+		}
+
 		public void UpdateDrawInfo()
 		{
-			if (parent != null || !created)
+			if (parent != null)
 				return;
 
 			UpdateDrawInfoInner(Draw);
