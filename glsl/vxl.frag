@@ -26,6 +26,7 @@ in vec2 PaletteRows;
 in mat4 inverseViewProjection;
 in vec2 VplInfo;
 in vec4 vTint;
+in vec3 vLightModify;
 out vec4 fragColor;
 // #endif
 
@@ -88,9 +89,9 @@ vec3 CalcDirLight(DirLight light, vec3 normal, vec3 viewDir, vec3 color)
 	float spec = pow(max(dot(viewDir, reflectDir), 0.0), 0.5f);
 	// merge
 	float shadowMul = (1.0f - CalShadow(light));
-	vec3 ambient  = light.ambient  * color * 1.2f;
-	vec3 diffuse  = light.diffuse  * diff * color  * 0.4f * shadowMul;
-	vec3 specular = light.specular * spec * 0.13f * shadowMul;
+	vec3 ambient  = light.ambient  * color * vLightModify.y;
+	vec3 diffuse  = light.diffuse  * diff * color  * vLightModify.x * shadowMul;
+	vec3 specular = light.specular * spec * vLightModify.z * shadowMul;
 	return ambient + diffuse + specular;
 }
 

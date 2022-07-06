@@ -34,7 +34,7 @@ namespace OpenRA.Mods.Cnc.Graphics
 
 		public bool Instanced => true;
 
-		public int InstanceStrde => (24 * sizeof(float));
+		public int InstanceStrde => (27 * sizeof(float));
 
 		public IEnumerable<ShaderVertexAttribute> InstanceAttributes { get; } = new[]
 		{
@@ -45,7 +45,9 @@ namespace OpenRA.Mods.Cnc.Graphics
 
 			new ShaderVertexAttribute("iPaletteRows", 8, 2, 16 * sizeof(float)),
 			new ShaderVertexAttribute("iVplInfo", 9, 2, 18 * sizeof(float)),
-			new ShaderVertexAttribute("iVertexTint", 10, 4, 20 * sizeof(float))
+			new ShaderVertexAttribute("iVertexTint", 10, 4, 20 * sizeof(float)),
+			new ShaderVertexAttribute("iLightModify", 11, 3, 24 * sizeof(float))
+
 		};
 
 		public VxlShaderBindings()
@@ -86,7 +88,7 @@ namespace OpenRA.Mods.Cnc.Graphics
 		float normalsPaletteTextureMidIndex;
 		float vplstart, palettecount;
 		float tintX, tintY, tintZ, tintW;
-
+		float lightScale, ambientScale, specularScale;
 		public VxlInstanceData(float[] data)
 		{
 			this.t0 = data[0];
@@ -114,6 +116,9 @@ namespace OpenRA.Mods.Cnc.Graphics
 			tintY = data[21];
 			tintZ = data[22];
 			tintW = data[23];
+			lightScale = data[24];
+			ambientScale = data[25];
+			specularScale = data[26];
 		}
 	}
 
@@ -151,7 +156,7 @@ namespace OpenRA.Mods.Cnc.Graphics
 			if (instanceCount == MaxInstanceCount)
 				throw new Exception("Instance Count bigger than MaxInstanceCount");
 
-			if (dataCount != 24)
+			if (dataCount != 27)
 				throw new Exception("AddInstanceData params length unright");
 
 			VxlInstanceData instanceData = new VxlInstanceData(data);

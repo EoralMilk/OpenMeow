@@ -221,8 +221,8 @@ namespace OpenRA.Graphics
 
 		GlmSharp.mat4 rotFix = new GlmSharp.mat4(new GlmSharp.quat(new GlmSharp.vec3(0, -0.5f * (float)Math.PI, -0.5f * (float)Math.PI)));
 
-		public void RenderDirectly(
-			WorldRenderer wr, in WPos pos,in GlmSharp.vec3 viewOffset, IEnumerable<ModelAnimation> models, float scale,
+		public void CreateRenderInstance(
+			WorldRenderer wr, in WPos pos,in GlmSharp.vec3 viewOffset, IEnumerable<ModelAnimation> models, float scale, float lightScale, float ambientScale, float specularScale,
 			in float3 tint, in float alpha, PaletteReference color, PaletteReference normals)
 		{
 			//// Correct for inverted y-axis
@@ -252,17 +252,18 @@ namespace OpenRA.Graphics
 					normals = FixNoramlPalette(wr, m.Model);
 
 					var iom = m.Model.RenderData(i);
-					float[] data = new float[24] {t[0], t[1], t[2], t[3],
+					float[] data = new float[27] {t[0], t[1], t[2], t[3],
 																t[4], t[5], t[6], t[7],
 																t[8], t[9], t[10], t[11],
 																t[12], t[13], t[14], t[15],
 																color.TextureMidIndex, normals.TextureMidIndex,
 																color.VplStartIndex(), color.HardwardPaletteHeight() ,
-																tint.X, tint.Y, tint.Z, alpha
+																tint.X, tint.Y, tint.Z, alpha,
+																lightScale, ambientScale, specularScale
 					};
 
 					// vxl instance data needed
-					iom.AddInstanceData(data, 24, Array.Empty<int>(), 0);
+					iom.AddInstanceData(data, 27, Array.Empty<int>(), 0);
 					iom.SetPalette(palette);
 				}
 			}

@@ -23,7 +23,9 @@ namespace OpenRA.Mods.Common.Graphics
 		readonly WPos pos;
 		readonly int zOffset;
 		readonly WRot camera;
-		readonly WRot lightSource;
+		public readonly float LightScale = 0.4f;
+		public readonly float SpecularScale = 0.13f;
+		public readonly float AmbientScale = 1.12f;
 		readonly float[] lightAmbientColor;
 		readonly float[] lightDiffuseColor;
 		readonly PaletteReference palette;
@@ -36,16 +38,15 @@ namespace OpenRA.Mods.Common.Graphics
 
 		public ModelRenderable(
 			IEnumerable<ModelAnimation> models, WPos pos, int zOffset, in WRot camera, float scale,
-			in WRot lightSource, float[] lightAmbientColor, float[] lightDiffuseColor,
+			float[] lightAmbientColor, float[] lightDiffuseColor, float lightScale, float ambientScale, float specularScale,
 			PaletteReference color, PaletteReference normals, PaletteReference shadow)
-			: this(models, pos, zOffset, camera, scale,
-				lightSource, lightAmbientColor, lightDiffuseColor,
+			: this(models, pos, zOffset, camera, scale, lightAmbientColor, lightDiffuseColor, lightScale, ambientScale, specularScale,
 				color, normals, shadow, 1f,
 				float3.Ones, TintModifiers.None) { }
 
 		public ModelRenderable(
-			IEnumerable<ModelAnimation> models, WPos pos, int zOffset, in WRot camera, float scale,
-			in WRot lightSource, float[] lightAmbientColor, float[] lightDiffuseColor,
+			IEnumerable<ModelAnimation> models, WPos pos, int zOffset, in WRot camera, float scale, float[] lightAmbientColor, float[] lightDiffuseColor,
+			float lightScale, float ambientScale, float specularScale,
 			PaletteReference color, PaletteReference normals, PaletteReference shadow,
 			float alpha, in float3 tint, TintModifiers tintModifiers)
 		{
@@ -54,7 +55,9 @@ namespace OpenRA.Mods.Common.Graphics
 			this.zOffset = zOffset;
 			this.scale = scale;
 			this.camera = camera;
-			this.lightSource = lightSource;
+			LightScale = lightScale;
+			AmbientScale = ambientScale;
+			SpecularScale = specularScale;
 			this.lightAmbientColor = lightAmbientColor;
 			this.lightDiffuseColor = lightDiffuseColor;
 			palette = color;
@@ -78,7 +81,7 @@ namespace OpenRA.Mods.Common.Graphics
 		{
 			return new ModelRenderable(
 				models, pos, zOffset, camera, scale,
-				lightSource, lightAmbientColor, lightDiffuseColor,
+				lightAmbientColor, lightDiffuseColor,	LightScale, AmbientScale, SpecularScale, 
 				newPalette, normalsPalette, shadowPalette, alpha, tint, tintModifiers);
 		}
 
@@ -86,7 +89,7 @@ namespace OpenRA.Mods.Common.Graphics
 		{
 			return new ModelRenderable(
 				models, pos, newOffset, camera, scale,
-				lightSource, lightAmbientColor, lightDiffuseColor,
+				lightAmbientColor, lightDiffuseColor, LightScale, AmbientScale, SpecularScale,
 				palette, normalsPalette, shadowPalette, alpha, tint, tintModifiers);
 		}
 
@@ -94,7 +97,7 @@ namespace OpenRA.Mods.Common.Graphics
 		{
 			return new ModelRenderable(
 				models, pos + vec, zOffset, camera, scale,
-				lightSource, lightAmbientColor, lightDiffuseColor,
+				lightAmbientColor, lightDiffuseColor, LightScale, AmbientScale, SpecularScale,
 				palette, normalsPalette, shadowPalette, alpha, tint, tintModifiers);
 		}
 
@@ -104,7 +107,7 @@ namespace OpenRA.Mods.Common.Graphics
 		{
 			return new ModelRenderable(
 				models, pos, zOffset, camera, scale,
-				lightSource, lightAmbientColor, lightDiffuseColor,
+				lightAmbientColor, lightDiffuseColor, LightScale, AmbientScale, SpecularScale,
 				palette, normalsPalette, shadowPalette, newAlpha, tint, tintModifiers);
 		}
 
@@ -112,7 +115,7 @@ namespace OpenRA.Mods.Common.Graphics
 		{
 			return new ModelRenderable(
 				models, pos, zOffset, camera, scale,
-				lightSource, lightAmbientColor, lightDiffuseColor,
+				lightAmbientColor, lightDiffuseColor, LightScale, AmbientScale, SpecularScale,
 				palette, normalsPalette, shadowPalette, alpha, newTint, newTintModifiers);
 		}
 
@@ -136,8 +139,10 @@ namespace OpenRA.Mods.Common.Graphics
 
 			var viewOffset = Game.Renderer.World3DRenderer.InverseCameraFrontMeterPerWPos * zOffset;
 
-			Game.Renderer.WorldVxlRenderer.RenderDirectly(
-				wr, model.pos, viewOffset, draw, model.scale, t, a,
+			Game.Renderer.WorldVxlRenderer.CreateRenderInstance(
+				wr, model.pos, viewOffset, draw, model.scale,
+				LightScale, AmbientScale, SpecularScale,
+				t, a,
 				model.palette, model.normalsPalette);
 
 			return new FinalizedModelRenderable(wr, this);

@@ -26,7 +26,8 @@ in vec4 iModelV3;
 in vec4 iModelV4;
 in vec2 iPaletteRows;
 in vec2 iVplInfo;
-in vec4 iVertexTint;
+in vec4 iTint;
+in vec3 iLightModify;
 
 out vec4 vTexCoord;
 out vec4 vChannelMask;
@@ -36,6 +37,7 @@ out vec2 PaletteRows;
 out mat4 inverseViewProjection;
 out vec2 VplInfo;
 out vec4 vTint;
+out vec3 vLightModify;
 // #endif
 
 vec4 DecodeMask(float x)
@@ -58,5 +60,6 @@ void main()
 	PaletteRows = iPaletteRows;
 	inverseViewProjection = inverse(projection * view);
 	VplInfo = iVplInfo;
-	vTint = iVertexTint;
+	vTint = iTint;
+	vLightModify = iLightModify;
 }

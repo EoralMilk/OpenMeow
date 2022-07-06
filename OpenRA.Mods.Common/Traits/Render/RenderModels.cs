@@ -47,6 +47,10 @@ namespace OpenRA.Mods.Common.Traits.Render
 		[Desc("Change the image size.")]
 		public readonly float Scale = 1;
 
+		public readonly float LightScale = 0.4f;
+		public readonly float SpecularScale = 0.13f;
+		public readonly float AmbientScale = 1.12f;
+
 		public readonly int ZOffset = 1;
 
 		public readonly WAngle LightPitch = WAngle.FromDegrees(50);
@@ -72,8 +76,7 @@ namespace OpenRA.Mods.Common.Traits.Render
 				.SelectMany(rvpi => rvpi.RenderPreviewModels(init, this, image, init.GetOrientation(), facings, palette))
 				.ToArray();
 
-			yield return new ModelPreview(components, WVec.Zero, 0, Scale, LightPitch,
-				LightYaw, LightAmbientColor, LightDiffuseColor, body.CameraPitch,
+			yield return new ModelPreview(components, WVec.Zero, 0, Scale, LightAmbientColor, LightDiffuseColor, body.CameraPitch, LightScale, AmbientScale, SpecularScale,
 				palette, init.WorldRenderer.Palette(NormalsPalette), init.WorldRenderer.Palette(ShadowPalette));
 		}
 	}
@@ -153,7 +156,7 @@ namespace OpenRA.Mods.Common.Traits.Render
 			{
 				new ModelRenderable(
 					components, self.CenterPosition, Info.ZOffset, camera, Info.Scale,
-					lightSource, Info.LightAmbientColor, Info.LightDiffuseColor,
+					Info.LightAmbientColor, Info.LightDiffuseColor, Info.LightScale, Info.AmbientScale, Info.SpecularScale, 
 					colorPalette, normalsPalette, shadowPalette)
 			};
 		}

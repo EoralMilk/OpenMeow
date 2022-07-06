@@ -79,37 +79,37 @@ void main()
 
 	// Blur the pixels when they are bright enough
 	float light = ColorLuminance(col);
-	if (light > 0.825f)
-	{
-		vec2 offsets[9] = vec2[](
-			vec2(-offset,  offset), // lt
-			vec2( 0.0f,    offset), // t
-			vec2( offset,  offset), // rt
-			vec2(-offset,  0.0f),   // l
-			vec2( 0.0f,    0.0f),   // m
-			vec2( offset,  0.0f),   // r
-			vec2(-offset, -offset), // lb
-			vec2( 0.0f,   -offset), // b
-			vec2( offset, -offset)  // rb
-		);
+	// if (light > 0.825f)
+	// {
+	// 	vec2 offsets[9] = vec2[](
+	// 		vec2(-offset,  offset), // lt
+	// 		vec2( 0.0f,    offset), // t
+	// 		vec2( offset,  offset), // rt
+	// 		vec2(-offset,  0.0f),   // l
+	// 		vec2( 0.0f,    0.0f),   // m
+	// 		vec2( offset,  0.0f),   // r
+	// 		vec2(-offset, -offset), // lb
+	// 		vec2( 0.0f,   -offset), // b
+	// 		vec2( offset, -offset)  // rb
+	// 	);
 
-		vec3 sampleTex[9];
-		for(int i = 0; i < 9; i++)
-		{
-			sampleTex[i] = vec3(texture(screenTexture, TexCoords.st + offsets[i]));
-		}
+	// 	vec3 sampleTex[9];
+	// 	for(int i = 0; i < 9; i++)
+	// 	{
+	// 		sampleTex[i] = vec3(texture(screenTexture, TexCoords.st + offsets[i]));
+	// 	}
 
-		// blur
-		float kernel[9] = float[](
-			1.0f / 16.0f, 2.0f / 16.0f, 1.0f / 16.0f,
-			2.0f / 16.0f, 4.0f / 16.0f, 2.0f / 16.0f,
-			1.0f / 16.0f, 2.0f / 16.0f, 1.0f / 16.0f  
-		);
+	// 	// blur
+	// 	float kernel[9] = float[](
+	// 		1.0f / 16.0f, 2.0f / 16.0f, 1.0f / 16.0f,
+	// 		2.0f / 16.0f, 4.0f / 16.0f, 2.0f / 16.0f,
+	// 		1.0f / 16.0f, 2.0f / 16.0f, 1.0f / 16.0f  
+	// 	);
 
-		col = vec3(0.0);
-		for(int i = 0; i < 9; i++)
-			col += sampleTex[i] * kernel[i];
-	}
+	// 	col = vec3(0.0);
+	// 	for(int i = 0; i < 9; i++)
+	// 		col += sampleTex[i] * kernel[i];
+	// }
 	// {
 	// 	ivec2 tex_size = textureSize(screenTexture, 0); // gets size of single texel
 	// 	vec2 tex_offset = vec2(1.0f/float(tex_size.x), 1.0f/float(tex_size.y));

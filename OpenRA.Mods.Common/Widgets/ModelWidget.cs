@@ -191,8 +191,6 @@ namespace OpenRA.Mods.Common.Widgets
 			ModelPreview preview = new ModelPreview(
 				new ModelAnimation[] { animation }, WVec.Zero, 0,
 				cachedScale,
-				new WAngle(cachedLightPitch),
-				new WAngle(cachedLightYaw),
 				cachedLightAmbientColor,
 				cachedLightDiffuseColor,
 				cachedCameraAngle,
