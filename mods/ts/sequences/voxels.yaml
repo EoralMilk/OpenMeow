@@ -9,10 +9,6 @@ apc:
 	idle:
 	water: apcw
 
-sl:
-	idle:
-	turret: sltur
-
 art2:
 	idle:
 	turret: art2tur
