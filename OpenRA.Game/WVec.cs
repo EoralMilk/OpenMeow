@@ -99,6 +99,12 @@ namespace OpenRA
 			return new WVec(WDist.FromPDF(r, samples), WDist.FromPDF(r, samples), WDist.Zero);
 		}
 
+		public static WVec FromPDF(MersenneTwister r, int samples, WDist vertical)
+		{
+			return new WVec(WDist.FromPDF(r, samples), WDist.FromPDF(r, samples), vertical.Length == 0 ? WDist.Zero : vertical.Length * WDist.FromPDF(r, samples));
+		}
+
+
 		public override int GetHashCode() { return X.GetHashCode() ^ Y.GetHashCode() ^ Z.GetHashCode(); }
 
 		public bool Equals(WVec other) { return other == this; }

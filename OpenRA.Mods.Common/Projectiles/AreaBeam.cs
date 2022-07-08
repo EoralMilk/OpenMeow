@@ -89,6 +89,7 @@ namespace OpenRA.Mods.Common.Projectiles
 		readonly Color color;
 		readonly WDist speed;
 		readonly WDist weaponRange;
+		Actor blocker;
 
 		[Sync]
 		WPos headPos;
@@ -217,7 +218,7 @@ namespace OpenRA.Mods.Common.Projectiles
 			}
 
 			// Check for blocking actors
-			if (info.Blockable && BlocksProjectiles.AnyBlockingActorsBetween(world, args.SourceActor.Owner, tailPos, headPos, info.Width, out var blockedPos))
+			if (info.Blockable && BlocksProjectiles.AnyBlockingActorsBetween(world, args.SourceActor.Owner, tailPos, headPos, info.Width, out var blockedPos, out blocker))
 			{
 				headPos = blockedPos;
 				target = headPos;
@@ -241,6 +242,7 @@ namespace OpenRA.Mods.Common.Projectiles
 						// so we just assume a center hit to avoid bogus warhead recalculations.
 						ImpactPosition = a.CenterPosition,
 						DamageModifiers = adjustedModifiers.ToArray(),
+						Blocker = blocker,
 					};
 
 					args.Weapon.Impact(Target.FromActor(a), warheadArgs);

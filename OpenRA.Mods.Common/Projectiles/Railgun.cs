@@ -115,6 +115,8 @@ namespace OpenRA.Mods.Common.Projectiles
 		public readonly Color BeamColor;
 		public readonly Color HelixColor;
 
+		Actor blocker;
+
 		int ticks;
 		bool animationComplete;
 
@@ -155,7 +157,7 @@ namespace OpenRA.Mods.Common.Projectiles
 		{
 			// Check for blocking actors
 			if (info.Blockable && BlocksProjectiles.AnyBlockingActorsBetween(args.SourceActor.World, args.SourceActor.Owner, target, args.Source,
-					info.BeamWidth, out var blockedPos))
+					info.BeamWidth, out var blockedPos, out blocker))
 				target = blockedPos;
 
 			// Note: WAngle.Sin(x) = 1024 * Math.Sin(2pi/1024 * x)
@@ -226,6 +228,7 @@ namespace OpenRA.Mods.Common.Projectiles
 							// FindActorsOnLine guarantees that the beam touches the target's HitShape,
 							// so we just assume a center hit to avoid bogus warhead recalculations.
 							ImpactPosition = a.CenterPosition,
+							Blocker = blocker,
 						};
 
 						args.Weapon.Impact(Target.FromActor(a), warheadArgs);

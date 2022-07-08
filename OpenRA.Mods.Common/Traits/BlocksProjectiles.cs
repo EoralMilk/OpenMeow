@@ -44,7 +44,7 @@ namespace OpenRA.Mods.Common.Traits
 					.Any(Exts.IsTraitEnabled));
 		}
 
-		public static bool AnyBlockingActorsBetween(World world, Player owner, WPos start, WPos end, WDist width, out WPos hit)
+		public static bool AnyBlockingActorsBetween(World world, Player owner, WPos start, WPos end, WDist width, out WPos hit, out Actor blocker)
 		{
 			var actors = world.FindBlockingActorsOnLine(start, end, width);
 			var length = (end - start).Length;
@@ -58,16 +58,30 @@ namespace OpenRA.Mods.Common.Traits
 				if (blockers.Count == 0)
 					continue;
 
-				var hitPos = start.MinimumPointLineProjection(end, a.CenterPosition);
-				var dat = world.Map.DistanceAboveTerrain(hitPos);
-				if ((hitPos - start).Length < length && blockers.Any(t => t.BlockingHeight > dat))
+				var checkPos = start.MinimumPointLineProjection(end, a.CenterPosition);
+				var activeShapes = a.TraitsImplementing<HitShape>().Where(Exts.IsTraitEnabled);
+				foreach (var i in activeShapes)
 				{
-					hit = hitPos;
-					return true;
+					if (i.DistanceFromEdge(a, checkPos).Length <= 0)
+					{
+						var hitPos = i.GetHitPos(a, end);
+						hit = hitPos;
+						blocker = a;
+						return true;
+					}
 				}
+
+				// var hitPos = start.MinimumPointLineProjection(end, a.CenterPosition);
+				// var dat = world.Map.DistanceAboveTerrain(hitPos);
+				// if ((hitPos - start).Length < length && blockers.Any(t => t.BlockingHeight > dat))
+				// {
+				// 	hit = hitPos;
+				// 	return true;
+				// }
 			}
 
 			hit = WPos.Zero;
+			blocker = null;
 			return false;
 		}
 	}

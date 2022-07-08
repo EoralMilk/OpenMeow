@@ -183,6 +183,13 @@ namespace OpenRA.Graphics
 										(float)pos.Z / WPosPerMeterHeight);
 		}
 
+		public WPos GetWPosFromTSVector(in TSVector vec)
+		{
+			return new WPos(-(int)(vec.x * WPosPerMeter),
+										(int)(vec.y * WPosPerMeter),
+										(int)(vec.z * WPosPerMeterHeight));
+		}
+
 		public WPos GetWPosFromMatrix(in TSMatrix4x4 matrix)
 		{
 			return new WPos(-(int)(matrix.M14 * WPosPerMeter),

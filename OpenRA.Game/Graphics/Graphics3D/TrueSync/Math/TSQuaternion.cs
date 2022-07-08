@@ -272,6 +272,12 @@ namespace TrueSync
 			return Euler(eulerAngles.x, eulerAngles.y, eulerAngles.z);
 		}
 
+		public TSQuaternion InvPitch()
+		{
+			TSVector eulerAngles = this.eulerAngles;
+			return Euler(-eulerAngles.x, eulerAngles.y, eulerAngles.z);
+		}
+
 		public static TSQuaternion AngleAxis(FP angle, TSVector axis)
 		{
 			axis = axis * FP.Deg2Rad;
@@ -595,6 +601,16 @@ namespace TrueSync
 			return result;
 		}
 		#endregion
+
+		public static bool operator ==(TSQuaternion value1, TSQuaternion value2)
+		{
+			return value1.x == value2.x && value1.y == value2.y && value1.z == value2.z && value1.w == value2.w;
+		}
+
+		public static bool operator !=(TSQuaternion value1, TSQuaternion value2)
+		{
+			return !(value1 == value2);
+		}
 
 		/**
          *  @brief Rotates a {@link TSVector} by the {@link TSQuanternion}.

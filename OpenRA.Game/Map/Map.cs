@@ -885,6 +885,12 @@ namespace OpenRA
 			return new WPos(724 * (cell.X - cell.Y + 1), 724 * (cell.X + cell.Y + 1), z);
 		}
 
+		public int HeightOfCell(WPos pos)
+		{
+			var cell = CellContaining(pos);
+			return Height.Contains(cell) ? MapGrid.MapHeightStep * Height[cell] + Grid.Ramps[Ramp[cell]].CenterHeightOffset : 0;
+		}
+
 		public WPos CenterOfSubCell(CPos cell, SubCell subCell)
 		{
 			var index = (int)subCell;

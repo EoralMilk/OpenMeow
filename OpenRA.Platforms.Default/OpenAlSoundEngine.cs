@@ -46,10 +46,10 @@ namespace OpenRA.Platforms.Default
 			public OpenAlSound Sound;
 		}
 
-		const int MaxInstancesPerFrame = 3;
+		const int MaxInstancesPerFrame = 16;
 		const int GroupDistance = 2730;
 		const int GroupDistanceSqr = GroupDistance * GroupDistance;
-		const int PoolSize = 32;
+		const int PoolSize = 256;
 
 		readonly Dictionary<uint, PoolSlot> sourcePool = new Dictionary<uint, PoolSlot>(PoolSize);
 		float volume = 1f;

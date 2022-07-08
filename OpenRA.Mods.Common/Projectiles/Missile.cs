@@ -184,6 +184,7 @@ namespace OpenRA.Mods.Common.Projectiles
 		readonly int maxSpeed;
 		readonly WAngle minLaunchAngle;
 		readonly WAngle maxLaunchAngle;
+		Actor blocker;
 
 		readonly float3 shadowColor;
 		readonly float shadowAlpha;
@@ -860,7 +861,7 @@ namespace OpenRA.Mods.Common.Projectiles
 
 			// Check for walls or other blocking obstacles
 			var shouldExplode = false;
-			if (info.Blockable && BlocksProjectiles.AnyBlockingActorsBetween(world, args.SourceActor.Owner, lastPos, pos, info.Width, out var blockedPos))
+			if (info.Blockable && BlocksProjectiles.AnyBlockingActorsBetween(world, args.SourceActor.Owner, lastPos, pos, info.Width, out var blockedPos, out blocker))
 			{
 				pos = blockedPos;
 				shouldExplode = true;
@@ -907,6 +908,7 @@ namespace OpenRA.Mods.Common.Projectiles
 			{
 				ImpactOrientation = new WRot(WAngle.Zero, WAngle.FromFacing(vFacing), WAngle.FromFacing(hFacing)),
 				ImpactPosition = pos,
+				Blocker = blocker,
 			};
 
 			args.Weapon.Impact(Target.FromPos(pos), warheadArgs);

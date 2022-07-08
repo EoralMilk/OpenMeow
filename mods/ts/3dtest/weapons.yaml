@@ -20,8 +20,59 @@ A10Vulcan:
 		ZOffset: 1024
 		Inaccuracy: 1c0
 	Warhead@1Dam: SpreadDamage
-		Damage: 2000
+		Damage: 1000
 		Spread: 0c372
+
+A10Napalm:
+	ReloadDelay: 100
+	Burst: 24
+	BurstDelays: 2
+	Range: 5c0
+	TargetActorCenter: true
+	ValidTargets: Ground, Trees
+	# Projectile: GravityBomb
+	# 	Velocity: 72, 0, -90
+	# 	Acceleration: 0, 0, -8
+	# 	Shadow: true
+	# 	Palette: ra
+	# 	Image: zbomb
+	# 	Palette: player
+	# 	IsPlayerPalette: true
+	Projectile: Bullet
+		Speed: 226
+		Blockable: true
+		Shadow: true
+		LaunchAngle: 60
+		Inaccuracy: 800
+		Image: DISCUS
+		Palette: effect
+		BounceCount: 5
+		Width: 128
+	Warhead@1Dam: SpreadDamage
+		Spread: 512
+		Falloff: 100, 50, 25, 12, 6, 3, 0
+		Damage: 16000
+		Versus:
+			None: 200
+			Wood: 90
+			Light: 75
+			Heavy: 32
+			Concrete: 100
+		DamageTypes: Prone100Percent, TriggerProne, ExplosionDeath
+		ValidTargets: Ground, Trees
+	Warhead@2Eff: CreateEffect
+		Explosions: large_brnl
+		ImpactSounds: expnew09.aud
+		ValidTargets: Ground, Trees, Air
+	Warhead@3EffWater: CreateEffect
+		Explosions: small_watersplash
+		ExplosionPalette: player
+		ImpactSounds: ssplash3.aud
+		ValidTargets: Water
+		InvalidTargets: Vehicle
+	Warhead@4Smu: LeaveSmudge
+		SmudgeType: LargeScorch
+		InvalidTargets: Vehicle, Building, Wall
 
 
 
@@ -33,7 +84,7 @@ TestVulcan:
 	Range: 15c0
 	Report: cygun1.aud
 	Projectile: Bullet
-		ContrailLength: 3
+		ContrailLength: 13
 		ContrailWidth: 44
 		ContrailColor: F0D05C
 		ContrailDelay: 0
@@ -46,3 +97,71 @@ TestVulcan:
 		Damage: 900
 		Spread: 0c372
 		ValidTargets: Ground, Water, Air
+
+
+VectorBooster:
+	Range: 8c0
+	Report: hovrmis1.aud
+	ReloadDelay: 60
+	MinRange: 0c512
+	ValidTargets: Ground, Water, Air, Trees
+	Projectile: VectorBooster
+		RotationSpeed: 15
+		LifeTime: 180
+		ProximitySnapping: true
+		ContrailLength: 12
+		ContrailWidth: 74
+		ContrailColor: F0F0E0B0
+		ContrailDelay: 0
+		ContrailBlendMode: ScreenAdditive
+		Speed: 320
+		LaunchAngle: 128
+		ZOffset: 1024
+		Inaccuracy: 1c0
+		Shadow: true
+		Image: DISCUS
+		Palette: effect
+		TrailImage: small_smoke_trail
+		TrailInterval: 1
+		TrailCount: 0
+		ExplodeUnderThisAltitude: 0
+		UsingScat: true
+		ScatWeapon: Grenade
+		ScatDist: 3c512
+		ScatCount: 3
+		LostTarget: false
+	Warhead@1Dam: SpreadDamage
+		Spread: 108
+		Falloff: 100, 50, 25, 12, 6, 3, 0
+		Damage: 7500
+		ValidTargets: Ground, Water, Air, Trees
+		Versus:
+			None: 25
+			Wood: 65
+			Light: 75
+			Heavy: 100
+			Concrete: 60
+		DamageTypes: Prone50Percent, TriggerProne, SmallExplosionDeath
+	Warhead@2Eff: CreateEffect
+		Explosions: small_clsn
+		ImpactSounds: expnew12.aud
+		ValidTargets: Ground, Air, Trees
+	Warhead@3EffWater: CreateEffect
+		Explosions: small_watersplash
+		ExplosionPalette: player
+		ImpactSounds: ssplash3.aud
+		ValidTargets: Water
+		InvalidTargets: Vehicle
+	Warhead@Smu: LeaveSmudge
+		SmudgeType: SmallCrater
+		InvalidTargets: Vehicle, Building, Wall
+
+VectorBoosterMul:
+	Inherits: VectorBooster
+	Range: 15c0
+	Projectile: VectorBooster
+		UsingScat: true
+		ScatWeapon: VectorBooster
+		ScatDist: 7c512
+		ScatCount: 3
+		LostTarget: false

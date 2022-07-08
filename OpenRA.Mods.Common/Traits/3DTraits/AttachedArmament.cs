@@ -13,6 +13,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using OpenRA.GameRules;
+using OpenRA.Mods.Common.Projectiles;
 using OpenRA.Mods.Common.Traits.Render;
 using OpenRA.Mods.Common.Traits.Trait3D;
 using OpenRA.Traits;
@@ -270,7 +271,6 @@ namespace OpenRA.Mods.Common.Traits
 		{
 			foreach (var na in notifyAttacks)
 				na.PreparingAttack(self, target, this, barrel);
-
 			Func<WPos> muzzlePosition = () => CalculateMuzzleWPos(self, barrel);
 			Func<WAngle> muzzleFacing = () => CalculateMuzzleOrientation(self, barrel).Yaw;
 			var muzzleOrientation = WRot.FromYaw(muzzleFacing());
@@ -295,6 +295,7 @@ namespace OpenRA.Mods.Common.Traits
 			var args = new ProjectileArgs
 			{
 				Weapon = Weapon,
+				Rotation = TrueSync.TSQuaternion.Inverse(withSkeleton.GetQuatFromBoneId(barrel.BoneId)),
 				Facing = muzzleFacing(),
 				CurrentMuzzleFacing = muzzleFacing,
 
@@ -319,7 +320,9 @@ namespace OpenRA.Mods.Common.Traits
 				{
 					var projectile = args.Weapon.Projectile.Create(args);
 					if (projectile != null)
+					{
 						self.World.Add(projectile);
+					}
 
 					if (args.Weapon.Report != null && args.Weapon.Report.Length > 0)
 						Game.Sound.Play(SoundType.World, args.Weapon.Report, self.World, self.CenterPosition);

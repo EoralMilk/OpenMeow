@@ -15,6 +15,7 @@ using System.Linq;
 using OpenRA.Effects;
 using OpenRA.Primitives;
 using OpenRA.Traits;
+using TrueSync;
 
 namespace OpenRA.GameRules
 {
@@ -24,6 +25,7 @@ namespace OpenRA.GameRules
 		public int[] DamageModifiers;
 		public int[] InaccuracyModifiers;
 		public int[] RangeModifiers;
+		public TSQuaternion Rotation = TSQuaternion.identity;
 		public WAngle Facing;
 		public Func<WAngle> CurrentMuzzleFacing;
 		public WPos Source;
@@ -41,6 +43,7 @@ namespace OpenRA.GameRules
 		public WRot ImpactOrientation;
 		public WPos ImpactPosition;
 		public Actor SourceActor;
+		public Actor Blocker;
 		public Target WeaponTarget;
 
 		public WarheadArgs(ProjectileArgs args)
@@ -60,6 +63,7 @@ namespace OpenRA.GameRules
 			DamageModifiers = args.DamageModifiers;
 			Source = args.Source;
 			SourceActor = args.SourceActor;
+			Blocker = args.Blocker;
 			WeaponTarget = args.WeaponTarget;
 		}
 

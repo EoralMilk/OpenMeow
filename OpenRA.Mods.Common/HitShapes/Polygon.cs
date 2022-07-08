@@ -82,6 +82,12 @@ namespace OpenRA.Mods.Common.HitShapes
 			return (ac - ap).LengthSquared;
 		}
 
+		// TODO
+		public WPos GetHitPos(in WPos pos, in WPos origin, in WRot orientation)
+		{
+			return pos;
+		}
+
 		public WDist DistanceFromEdge(in WVec v)
 		{
 			var p = new int2(v.X, v.Y);

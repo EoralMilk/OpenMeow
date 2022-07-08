@@ -116,6 +116,7 @@ namespace OpenRA.Mods.Common.Projectiles
 		int ticks;
 		int interval;
 		bool showHitAnim;
+		Actor blocker;
 
 		[Sync]
 		WPos target;
@@ -160,7 +161,7 @@ namespace OpenRA.Mods.Common.Projectiles
 				target = args.Weapon.TargetActorCenter ? args.GuidedTarget.CenterPosition : args.GuidedTarget.Positions.PositionClosestTo(source);
 
 			// Check for blocking actors
-			if (info.Blockable && BlocksProjectiles.AnyBlockingActorsBetween(world, args.SourceActor.Owner, source, target, info.Width, out var blockedPos))
+			if (info.Blockable && BlocksProjectiles.AnyBlockingActorsBetween(world, args.SourceActor.Owner, source, target, info.Width, out var blockedPos, out blocker))
 			{
 				target = blockedPos;
 			}
@@ -171,6 +172,7 @@ namespace OpenRA.Mods.Common.Projectiles
 				{
 					ImpactOrientation = new WRot(WAngle.Zero, Util.GetVerticalAngle(source, target), args.CurrentMuzzleFacing()),
 					ImpactPosition = target,
+					Blocker = blocker,
 				};
 
 				args.Weapon.Impact(Target.FromPos(target), warheadArgs);

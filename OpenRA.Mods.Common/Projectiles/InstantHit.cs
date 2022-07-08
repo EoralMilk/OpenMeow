@@ -46,6 +46,7 @@ namespace OpenRA.Mods.Common.Projectiles
 		readonly InstantHitInfo info;
 
 		Target target;
+		Actor blocker;
 
 		public InstantHit(InstantHitInfo info, ProjectileArgs args)
 		{
@@ -72,13 +73,14 @@ namespace OpenRA.Mods.Common.Projectiles
 				target = Target.FromPos(args.PassiveTarget);
 
 			// Check for blocking actors
-			if (info.Blockable && BlocksProjectiles.AnyBlockingActorsBetween(world, args.SourceActor.Owner, args.Source, target.CenterPosition, info.Width, out var blockedPos))
+			if (info.Blockable && BlocksProjectiles.AnyBlockingActorsBetween(world, args.SourceActor.Owner, args.Source, target.CenterPosition, info.Width, out var blockedPos, out blocker))
 				target = Target.FromPos(blockedPos);
 
 			var warheadArgs = new WarheadArgs(args)
 			{
 				ImpactOrientation = new WRot(WAngle.Zero, Util.GetVerticalAngle(args.Source, target.CenterPosition), args.Facing),
 				ImpactPosition = target.CenterPosition,
+				Blocker = blocker,
 			};
 
 			args.Weapon.Impact(target, warheadArgs);

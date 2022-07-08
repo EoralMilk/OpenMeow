@@ -134,16 +134,18 @@ Grenade:
 	ReloadDelay: 60
 	Range: 4c512
 	-Report:
-	ValidTargets: Ground, Trees
+	Burst: 5
+	ValidTargets: Ground, Water, Air, Trees
 	Projectile: Bullet
 		Speed: 226
 		Blockable: true
 		Shadow: true
 		LaunchAngle: 60
-		Inaccuracy: 0
+		Inaccuracy: 800
 		Image: DISCUS
 		Palette: effect
-		BounceCount: 2
+		BounceCount: 5
+		Width: 64
 	Warhead@1Dam: SpreadDamage
 		Spread: 154
 		Damage: 4000
@@ -151,8 +153,8 @@ Grenade:
 			Light: 70
 			Concrete: 28
 		DamageTypes: Prone70Percent, TriggerProne, ExplosionDeath
-		ValidTargets: Ground, Trees
+		ValidTargets: Ground, Trees, Air
 	Warhead@2Eff: CreateEffect
 		Explosions: small_grey_explosion
 		ImpactSounds: expnew13.aud
-		ValidTargets: Ground, Trees
+		ValidTargets: Ground, Trees, Air

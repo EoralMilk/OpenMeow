@@ -139,7 +139,7 @@ namespace OpenRA.Graphics
 			scaleMat = TSMatrix4x4.Scale(offsetScale);
 			offsetVec = Game.Renderer.World3DRenderer.Get3DPositionFromWPos(wPos);
 			translateMat = TSMatrix4x4.Translate(offsetVec);
-			offsetRot = Game.Renderer.World3DRenderer.Get3DRotationFromWRot(wRot);
+			offsetRot = wRot.ToQuat();
 			rotMat = TSMatrix4x4.Rotate(offsetRot);
 			Offset = translateMat * (scaleMat * rotMat);
 		}

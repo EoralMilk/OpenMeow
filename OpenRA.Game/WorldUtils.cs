@@ -42,6 +42,14 @@ namespace OpenRA
 				a => (a.CenterPosition - origin).HorizontalLengthSquared <= r.LengthSquared);
 		}
 
+		public static IEnumerable<Actor> FindActorsInRange(this World world, WPos origin, WDist r)
+		{
+			r = r + world.ActorMap.LargestActorRadius;
+			var vec = new WVec(r, r, WDist.Zero);
+			return world.ActorMap.ActorsInBox(origin - vec, origin + vec).Where(
+				a => (a.CenterPosition - origin).LengthSquared <= r.LengthSquared);
+		}
+
 		public static bool ContainsTemporaryBlocker(this World world, CPos cell, Actor ignoreActor = null)
 		{
 			if (!world.RulesContainTemporaryBlocker)

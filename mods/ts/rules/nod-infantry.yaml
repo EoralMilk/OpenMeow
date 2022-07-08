@@ -21,7 +21,7 @@ E3:
 	Mobile:
 		Speed: 56
 	Armament@PRIMARY:
-		Weapon: Bazooka
+		Weapon: VectorBooster #Bazooka
 		LocalOffset: 356,0,558
 	TakeCover:
 		ProneOffset: 52,64,0

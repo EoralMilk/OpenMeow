@@ -154,6 +154,13 @@ namespace OpenRA.Mods.Common.Traits
 			return Info.Type.DistanceFromEdge(pos, origin, orientation);
 		}
 
+		public WPos GetHitPos(Actor self, WPos pos)
+		{
+			var origin = turret != null ? self.CenterPosition + turret.Position(self) : self.CenterPosition;
+			var orientation = turret != null ? turret.WorldOrientation : self.Orientation;
+			return Info.Type.GetHitPos(pos, origin, orientation);
+		}
+
 		public IEnumerable<IRenderable> RenderDebugAnnotations(Actor self)
 		{
 			var targetPosHLine = new WVec(0, 128, 0);

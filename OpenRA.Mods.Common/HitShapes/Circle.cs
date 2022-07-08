@@ -41,6 +41,12 @@ namespace OpenRA.Mods.Common.HitShapes
 				throw new YamlException("VerticalTopOffset must be equal to or higher than VerticalBottomOffset.");
 		}
 
+		// TODO
+		public WPos GetHitPos(in WPos pos, in WPos origin, in WRot orientation)
+		{
+			return pos;
+		}
+
 		public WDist DistanceFromEdge(in WVec v)
 		{
 			return new WDist(Math.Max(0, v.Length - Radius.Length));

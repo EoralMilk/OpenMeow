@@ -186,7 +186,7 @@ RUTEST2:
 		TurretFireAngleLimitation: true
 		BarrelFireAngleLimitation: true
 	AttachedArmament@2:
-		Weapon: TestVulcan
+		Weapon: VectorBoosterMul
 		SkeletonToUse: turret_skeleton2
 		FromBonePose: firepose
 		FacingTolerance: 40

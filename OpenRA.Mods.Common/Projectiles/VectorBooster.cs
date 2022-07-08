@@ -1,4 +1,4 @@
-#region Copyright & License Information
+﻿#region Copyright & License Information
 /*
  * Copyright 2007-2022 The OpenRA Developers (see AUTHORS)
  * This file is part of OpenRA, which is free software. It is made
@@ -20,12 +20,31 @@ using OpenRA.Mods.Common.Traits;
 using OpenRA.Primitives;
 using OpenRA.Support;
 using OpenRA.Traits;
+using TrueSync;
 
 namespace OpenRA.Mods.Common.Projectiles
 {
-	public class BulletInfo : CorporealProjectileInfo, IProjectileInfo, IRulesetLoaded<WeaponInfo>
+	public class VectorBoosterInfo : CorporealProjectileInfo, IProjectileInfo, IRulesetLoaded<WeaponInfo>
 	{
-		[Desc("Up to how many times does this bullet bounce when touching ground without hitting a target.",
+
+		public readonly float RotationSpeed = 15.0f;
+
+		public readonly WDist ProximityRange = new WDist(256);
+
+		public readonly bool ProximitySnapping = false;
+
+		public readonly bool LostTarget = false;
+
+		[Desc("Inaccuracy override when successfully locked onto target. Defaults to Inaccuracy if negative.")]
+		public readonly WDist LockOnInaccuracy = new WDist(-1);
+
+		[Desc("Inaccuracy value in Vertical space.")]
+		public readonly WDist LockOnVerticalInaccuracy = WDist.Zero;
+
+		[Desc("Probability of locking onto and following target.")]
+		public readonly int LockOnProbability = 100;
+
+		[Desc("Up to how many times does this VectorBooster bounce when touching ground without hitting a target.",
 			"0 implies exploding on contact with the originally targeted position.")]
 		public readonly int BounceCount = 0;
 
@@ -53,9 +72,6 @@ namespace OpenRA.Mods.Common.Projectiles
 		[Desc("How far from the target the projectile will split.")]
 		public readonly WDist ScatDist = new WDist(2048);
 
-		[Desc("What percentage of the trajectory will the projectile split over.")]
-		public readonly float ScatFrom = 1f;
-
 		[Desc("sub weapon count.")]
 		public readonly int ScatCount = 5;
 
@@ -77,17 +93,19 @@ namespace OpenRA.Mods.Common.Projectiles
 			}
 		}
 
-		public virtual IProjectile Create(ProjectileArgs args) { return new Bullet(this, args); }
+		public virtual IProjectile Create(ProjectileArgs args) { return new VectorBooster(this, args); }
 	}
 
-	public class Bullet : CorporealProjectile, IProjectile, ISync
+	public class VectorBooster : CorporealProjectile, IProjectile, ISync
 	{
-		readonly BulletInfo info;
+		readonly bool lockOn;
+
+		readonly VectorBoosterInfo info;
 		readonly ProjectileArgs args;
 
 		readonly WAngle facing;
 		readonly WAngle angle;
-		readonly WDist speed;
+		readonly FP speed;
 
 		readonly WeaponInfo scatWeapon;
 
@@ -96,16 +114,19 @@ namespace OpenRA.Mods.Common.Projectiles
 		[Sync]
 		WPos pos, lastPos, target, source;
 
-		int length, scatlength;
-		int ticks, liveTicks;
+		int liveTicks;
 		readonly int lifetime;
-		int remainingBounces;
 
 		public Actor SourceActor { get { return args.SourceActor; } }
 		protected Actor blocker;
 
-		public Bullet(BulletInfo info, ProjectileArgs args)
-			: base(info, args)
+		TSQuaternion currentFacing, desireFacing;
+		TSVector sourcePos, currentPos, targetPos;
+		FP rotationSpeed;
+		readonly int proximityRange;
+
+		public VectorBooster(VectorBoosterInfo info, ProjectileArgs args)
+			:base(info, args)
 		{
 			this.info = info;
 			this.args = args;
@@ -119,55 +140,71 @@ namespace OpenRA.Mods.Common.Projectiles
 				scatWeapon = info.ScatWeaponInfo;
 			}
 
-			if (info.LaunchAngle.Length > 1)
+			if (args.Rotation == TSQuaternion.identity && info.LaunchAngle.Length > 1)
 				angle = new WAngle(world.SharedRandom.Next(info.LaunchAngle[0].Angle, info.LaunchAngle[1].Angle));
 			else
 				angle = info.LaunchAngle[0];
 
 			if (info.Speed.Length > 1)
-				speed = new WDist(world.SharedRandom.Next(info.Speed[0].Length, info.Speed[1].Length));
+				speed = world.SharedRandom.Next(info.Speed[0].Length, info.Speed[1].Length);
 			else
-				speed = info.Speed[0];
+				speed = info.Speed[0].Length;
 
-			target = args.PassiveTarget;
-			if (info.Inaccuracy.Length > 0)
+			if ((int)speed > info.ProximityRange.Length)
+				proximityRange = (int)speed + 2;
+			else
+				proximityRange = info.ProximityRange.Length;
+
+			speed /= Game.Renderer.World3DRenderer.WPosPerMeter;
+
+			if (args.GuidedTarget.Actor != null && args.GuidedTarget.Actor.IsInWorld && !args.GuidedTarget.Actor.IsDead)
 			{
-				var maxInaccuracyOffset = Util.GetProjectileInaccuracy(info.Inaccuracy.Length, info.InaccuracyType, args);
-				offset = WVec.FromPDF(world.SharedRandom, 2, info.VerticalInaccuracy) * maxInaccuracyOffset / 1024;
+				if (world.SharedRandom.Next(100) <= info.LockOnProbability)
+					lockOn = true;
 			}
 
-			target += offset;
+			if (lockOn)
+			{
+				if (info.LockOnInaccuracy.Length > 0)
+				{
+					var maxInaccuracyOffset = Util.GetProjectileInaccuracy(info.LockOnInaccuracy.Length, info.InaccuracyType, args);
+					offset = WVec.FromPDF(world.SharedRandom, 2, info.LockOnVerticalInaccuracy) * maxInaccuracyOffset / 1024;
+				}
+
+				target = args.Weapon.TargetActorCenter ? args.GuidedTarget.CenterPosition + offset : args.GuidedTarget.Positions.PositionClosestTo(args.Source) + offset;
+			}
+			else
+			{
+				if (info.Inaccuracy.Length > 0)
+				{
+					var maxInaccuracyOffset = Util.GetProjectileInaccuracy(info.Inaccuracy.Length, info.InaccuracyType, args);
+					offset = WVec.FromPDF(world.SharedRandom, 2, info.VerticalInaccuracy) * maxInaccuracyOffset / 1024;
+				}
+
+				target = args.PassiveTarget + offset;
+			}
 
 			if (info.AirburstAltitude > WDist.Zero)
 				target += new WVec(WDist.Zero, WDist.Zero, info.AirburstAltitude);
 
 			facing = (target - pos).Yaw;
-			length = Math.Max((target - pos).Length / speed.Length, 1);
-			if (info.UsingScat)
-			{
-				scatlength = Math.Max(((target - pos).Length - info.ScatDist.Length) / speed.Length, 1);
-			}
 
-			remainingBounces = info.BounceCount;
+			rotationSpeed = FP.FromFloat(info.RotationSpeed);
+
+			sourcePos = Game.Renderer.World3DRenderer.Get3DPositionFromWPos(source);
+			currentPos = sourcePos;
+			targetPos = Game.Renderer.World3DRenderer.Get3DPositionFromWPos(target);
+			if (args.Rotation == TSQuaternion.identity)
+				currentFacing = new WRot(new WAngle(0), angle, facing).ToQuat();
+			else
+				currentFacing = args.Rotation;
+			desireFacing = TSQuaternion.FromToRotation(TSVector.forward, targetPos - sourcePos);
+			//facingVec = new WVec(0, -1, 0).Rotate(new WRot(new WAngle(0), angle, facing));
+
 			lifetime = info.LifeTime.Length == 2
 					? world.SharedRandom.Next(info.LifeTime[0], info.LifeTime[1])
 					: info.LifeTime[0];
 			liveTicks = 0;
-		}
-
-		protected override WAngle GetEffectiveFacing()
-		{
-			var at = (float)ticks / (length - 1);
-			var attitude = angle.Tan() * (1 - 2 * at) / (4 * 1024);
-
-			var u = (facing.Angle % 512) / 512f;
-			var scale = 2048 * u * (1 - u);
-
-			var effective = (int)(facing.Angle < 512
-				? facing.Angle - scale * attitude
-				: facing.Angle + scale * attitude);
-
-			return new WAngle(effective);
 		}
 
 		public void Tick(World world)
@@ -179,8 +216,21 @@ namespace OpenRA.Mods.Common.Projectiles
 		protected virtual void SelfTick(World world)
 		{
 			lastPos = pos;
-			bounceHeight = bounceHeight < pos.Z ? pos.Z : bounceHeight;
-			pos = WPos.LerpQuadratic(source, target, angle, ticks, length);
+			currentPos += currentFacing * TSVector.forward * speed;
+			pos = Game.Renderer.World3DRenderer.GetWPosFromTSVector(currentPos);
+
+			if (lockOn && args.GuidedTarget.Actor.IsInWorld && !args.GuidedTarget.Actor.IsDead)
+			{
+				target = args.Weapon.TargetActorCenter ? args.GuidedTarget.CenterPosition + offset : args.GuidedTarget.Positions.PositionClosestTo(args.Source) + offset;
+				targetPos = Game.Renderer.World3DRenderer.Get3DPositionFromWPos(target);
+				desireFacing = TSQuaternion.FromToRotation(TSVector.forward, targetPos - currentPos);
+				currentFacing = TSQuaternion.RotateTowards(currentFacing, desireFacing, rotationSpeed);
+			}
+			else if (!lockOn && !info.LostTarget)
+			{
+				desireFacing = TSQuaternion.FromToRotation(TSVector.forward, targetPos - currentPos);
+				currentFacing = TSQuaternion.RotateTowards(currentFacing, desireFacing, rotationSpeed);
+			}
 
 			if (ShouldExplode(world))
 			{
@@ -189,12 +239,8 @@ namespace OpenRA.Mods.Common.Projectiles
 			}
 
 			liveTicks++;
-			if (bouncingTick > 0)
-				bouncingTick--;
 		}
 
-		int bouncingTick = 0;
-		int bounceHeight = 0;
 		protected virtual bool ShouldExplode(World world)
 		{
 			if (lifetime > 0 && liveTicks > lifetime)
@@ -208,79 +254,31 @@ namespace OpenRA.Mods.Common.Projectiles
 				return true;
 			}
 
-			var flightLengthReached = ticks++ >= length;
-			var shouldBounce = remainingBounces > 0;
-			var dat = world.Map.DistanceAboveTerrain(pos).Length;
-
-			if (flightLengthReached || remainingBounces < info.BounceCount || info.AlwaysDetectTarget)
+			if (info.AlwaysDetectTarget)
 			{
-				// check target at PassiveTargetPos
 				if (AnyValidTargetsInRadius(world, pos, info.Width, args.SourceActor, true))
 					return true;
 			}
 
-			if (shouldBounce && dat <= 0 && bouncingTick <= 0)
+			var distToTarget = (pos - target).Length;
+
+			if (distToTarget < proximityRange)
 			{
-				var cell = world.Map.CellContaining(pos);
-				if (!world.Map.Contains(cell))
-					return true;
-
-				if (info.InvalidBounceTerrain.Contains(world.Map.GetTerrainInfo(cell).Type))
-					return true;
-
-				if (AnyValidTargetsInRadius(world, pos, info.Width, args.SourceActor, true))
-					return true;
-
-				var ph = world.Map.HeightOfCell(pos);
-				// rebounce
-				if (bounceHeight > ph)
-				{
-					//pos = pos - new WVec(0, 0, dat);
-					target += (pos - source) * info.BounceRangeModifier / 100;
-					target = new WPos(target.X, target.Y, (bounceHeight - ph) * info.BounceRangeModifier / 100 + ph);
-				}
-				else
-				{
-					target += (source - pos) * info.BounceRangeModifier / 100;
-					target = new WPos(target.X, target.Y, pos.Z * info.BounceRangeModifier / 100);
-				}
-
-				length = Math.Max((target - pos).Length / speed.Length, 1);
-				if (info.UsingScat)
-				{
-					scatlength = Math.Max(((target - pos).Length - info.ScatDist.Length) / speed.Length, 1);
-				}
-
-				ticks = 0;
-				source = pos;
-				Game.Sound.Play(SoundType.World, info.BounceSound, source);
-				remainingBounces--;
-				bouncingTick = 2;
-				bounceHeight = ph;
+				if (info.ProximitySnapping)
+					pos = target;
+				return true;
 			}
 
 			if (info.UsingScat)
 			{
-				if (ticks >= length * info.ScatFrom && !shouldBounce)
-					return true;
-
-				if (ticks >= scatlength && !shouldBounce)
+				if (distToTarget < info.ScatDist.Length)
 					return true;
 			}
 
-			// Flight length reached / exceeded
-			if (flightLengthReached && !info.OnlyHitToExplode && !shouldBounce)
+			var dat = world.Map.DistanceAboveTerrain(pos).Length;
+
+			if (dat < info.ExplodeUnderThisAltitude.Length || (distToTarget < MathF.Abs(info.ExplodeUnderThisAltitude.Length) && dat < 0))
 				return true;
-
-			// Driving into cell with higher height level
-			if (!shouldBounce)
-			{
-				if (!flightLengthReached && dat < info.ExplodeUnderThisAltitude.Length)
-					return true;
-
-				if (flightLengthReached && dat <= 0)
-					return true;
-			}
 
 			return false;
 		}
@@ -303,6 +301,7 @@ namespace OpenRA.Mods.Common.Projectiles
 				var pArgs = new ProjectileArgs
 				{
 					Weapon = scatWeapon,
+					Rotation = currentFacing,
 					Facing = (target - pos).Yaw,
 					CurrentMuzzleFacing = () => (target - pos).Yaw,
 

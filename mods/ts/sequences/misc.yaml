@@ -341,7 +341,7 @@ large_smoke_trail:
 	idle: smokey
 		Length: *
 		ZOffset: 1023
-		Offset: 0, 0, 24
+		Offset: 0, 0, 0
 		AlphaFade: True
 		BlendMode: ScreenAdditive
 
@@ -350,7 +350,7 @@ small_smoke_trail:
 	idle: smokey2
 		Length: *
 		ZOffset: 1023
-		Offset: 0, 0, 24
+		Offset: 0, 0, 0
 		AlphaFade: True
 		BlendMode: ScreenAdditive
 

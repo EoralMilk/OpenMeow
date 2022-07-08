@@ -104,26 +104,49 @@ namespace OpenRA.Mods.Common.HitShapes
 			};
 		}
 
+		public WPos GetHitPos(in WPos pos, in WPos origin, in WRot orientation)
+		{
+			var ort = orientation + WRot.FromYaw(LocalYaw);
+			var vec = WVec.Zero;
+			if (pos.Z > origin.Z + VerticalTopOffset)
+				vec = (pos - (origin + new WVec(0, 0, VerticalTopOffset))).Rotate(-ort);
+			else if (pos.Z < origin.Z + VerticalBottomOffset)
+				vec = (pos - (origin + new WVec(0, 0, VerticalBottomOffset))).Rotate(-ort);
+			else
+				vec = (pos - new WPos(origin.X, origin.Y, pos.Z)).Rotate(-ort);
+
+			vec = new WVec(
+				Math.Max(Math.Abs(vec.X - center.X) - quadrantSize.X, 0),
+				Math.Max(Math.Abs(vec.Y - center.Y) - quadrantSize.Y, 0),
+				Math.Max(Math.Abs(vec.Z), 0)).Rotate(ort);
+			return pos - vec;
+		}
+
 		public WDist DistanceFromEdge(in WVec v)
 		{
 			var r = new WVec(
 				Math.Max(Math.Abs(v.X - center.X) - quadrantSize.X, 0),
-				Math.Max(Math.Abs(v.Y - center.Y) - quadrantSize.Y, 0), 0);
-
-			return new WDist(r.HorizontalLength);
+				Math.Max(Math.Abs(v.Y - center.Y) - quadrantSize.Y, 0),
+				Math.Max(Math.Abs(v.Z), 0));
+			return new WDist(r.Length);
 		}
 
 		public WDist DistanceFromEdge(WPos pos, WPos origin, WRot orientation)
 		{
 			orientation += WRot.FromYaw(LocalYaw);
+			var vec = (pos - new WPos(origin.X, origin.Y, pos.Z)).Rotate(-orientation);
+			vec = new WVec(vec.X, vec.Y, 0);
 
 			if (pos.Z > origin.Z + VerticalTopOffset)
-				return DistanceFromEdge((pos - (origin + new WVec(0, 0, VerticalTopOffset))).Rotate(-orientation));
+			{
+				vec = (pos - (origin + new WVec(0, 0, VerticalTopOffset))).Rotate(-orientation);
+			}
+			else if (pos.Z < origin.Z + VerticalBottomOffset)
+			{
+				vec = (pos - (origin + new WVec(0, 0, VerticalBottomOffset))).Rotate(-orientation);
+			}
 
-			if (pos.Z < origin.Z + VerticalBottomOffset)
-				return DistanceFromEdge((pos - (origin + new WVec(0, 0, VerticalBottomOffset))).Rotate(-orientation));
-
-			return DistanceFromEdge((pos - new WPos(origin.X, origin.Y, pos.Z)).Rotate(-orientation));
+			return DistanceFromEdge(vec);
 		}
 
 		IEnumerable<IRenderable> IHitShape.RenderDebugOverlay(HitShape hs, WorldRenderer wr, WPos origin, WRot orientation)

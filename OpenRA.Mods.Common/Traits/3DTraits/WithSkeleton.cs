@@ -163,6 +163,11 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 			return Skeleton.BoneWRot(id, w3dr);
 		}
 
+		public TSQuaternion GetQuatFromBoneId(int id)
+		{
+			return Transformation.MatRotation(Skeleton.LastSkeletonPose[id]);
+		}
+
 		public bool HasUpdated { get; private set; }
 		WithSkeleton parent = null;
 		int parentBoneId = -1;
