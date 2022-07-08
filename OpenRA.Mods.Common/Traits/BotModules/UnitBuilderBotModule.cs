@@ -166,7 +166,7 @@ namespace OpenRA.Mods.Common.Traits
 				return null;
 
 			var unit = buildableThings.Random(world.LocalRandom);
-			return HasAdequateAirUnitReloadBuildings(unit) ? unit : null;
+			return unit;
 		}
 
 		ActorInfo ChooseUnitToBuild(ProductionQueue queue)
@@ -183,30 +183,9 @@ namespace OpenRA.Mods.Common.Traits
 			foreach (var unit in Info.UnitsToBuild.Shuffle(world.LocalRandom))
 				if (buildableThings.Any(b => b.Name == unit.Key))
 					if (myUnits.Count(a => a == unit.Key) * 100 < unit.Value * myUnits.Count)
-						if (HasAdequateAirUnitReloadBuildings(world.Map.Rules.Actors[unit.Key]))
 							return world.Map.Rules.Actors[unit.Key];
 
 			return null;
-		}
-
-		// For mods like RA (number of RearmActors must match the number of aircraft)
-		bool HasAdequateAirUnitReloadBuildings(ActorInfo actorInfo)
-		{
-			var aircraftInfo = actorInfo.TraitInfoOrDefault<AircraftInfo>();
-			if (aircraftInfo == null)
-				return true;
-
-			// If actor isn't Rearmable, it doesn't need a RearmActor to reload
-			var rearmableInfo = actorInfo.TraitInfoOrDefault<RearmableInfo>();
-			if (rearmableInfo == null)
-				return true;
-
-			var countOwnAir = AIUtils.CountActorsWithTrait<IPositionable>(actorInfo.Name, player);
-			var countBuildings = rearmableInfo.RearmActors.Sum(b => AIUtils.CountActorsWithTrait<Building>(b, player));
-			if (countOwnAir >= countBuildings)
-				return false;
-
-			return true;
 		}
 
 		List<MiniYamlNode> IGameSaveTraitData.IssueTraitData(Actor self)
