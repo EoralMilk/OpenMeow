@@ -30,7 +30,7 @@ namespace OpenRA.Mods.Common.Activities
 
 		public AttackMoveActivity(Actor self, Func<Activity> getMove, bool assaultMoving = false)
 		{
-			ActivityType = ActivityType.Move;
+			ActivityType = ActivityType.ActivityCoordinator;
 			this.getMove = getMove;
 			autoTarget = self.TraitOrDefault<AutoTarget>();
 			attackMove = self.TraitOrDefault<AttackMove>();

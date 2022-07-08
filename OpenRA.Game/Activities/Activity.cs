@@ -19,7 +19,7 @@ using OpenRA.Traits;
 namespace OpenRA.Activities
 {
 	public enum ActivityState { Queued, Active, Canceling, Done }
-	public enum ActivityType { Undefined, Move, Attack, Ability } // Used for AI module micro-manage and judge squad combat condition
+	public enum ActivityType { Undefined, Move, Attack, Ability, ActivityCoordinator } // Used for AI module micro-manage and judge squad combat condition
 
 	public class TargetLineNode
 	{
