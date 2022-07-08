@@ -101,7 +101,7 @@ namespace OpenRA
 
 		public static WVec FromPDF(MersenneTwister r, int samples, WDist vertical)
 		{
-			return new WVec(WDist.FromPDF(r, samples), WDist.FromPDF(r, samples), vertical.Length == 0 ? WDist.Zero : vertical.Length * WDist.FromPDF(r, samples));
+			return new WVec(WDist.FromPDF(r, samples), WDist.FromPDF(r, samples), vertical.Length == 0 ? WDist.Zero : WDist.FromPDF(r, samples));
 		}
 
 

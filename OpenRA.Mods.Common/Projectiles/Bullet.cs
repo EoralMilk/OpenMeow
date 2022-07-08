@@ -137,6 +137,9 @@ namespace OpenRA.Mods.Common.Projectiles
 			}
 
 			target += offset;
+			var th = world.Map.HeightOfCell(target);
+			if (th > target.Z)
+				target = new WPos(target.X, target.Y, th);
 
 			if (info.AirburstAltitude > WDist.Zero)
 				target += new WVec(WDist.Zero, WDist.Zero, info.AirburstAltitude);

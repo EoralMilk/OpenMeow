@@ -84,20 +84,25 @@ TestVulcan:
 	Range: 15c0
 	Report: cygun1.aud
 	Projectile: Bullet
-		ContrailLength: 13
+		ContrailLength: 6
 		ContrailWidth: 44
-		ContrailColor: F0D05C
+		ContrailColor: F0D05CA0
 		ContrailDelay: 0
 		ContrailBlendMode: ScreenAdditive
 		Speed: 1100
 		LaunchAngle: 10
 		ZOffset: 1024
 		Inaccuracy: 1c0
+		VerticalInaccuracy: 1c0
+		OnlyHitToExplode: true
+		ExplodeUnderThisAltitude: 0
 	Warhead@1Dam: SpreadDamage
 		Damage: 900
 		Spread: 0c372
 		ValidTargets: Ground, Water, Air
-
+	Warhead@2Eff: CreateEffect
+		Explosions: piff
+		ValidTargets: Ground, Air
 
 VectorBooster:
 	Range: 8c0

@@ -636,6 +636,8 @@
 	HitShape:
 		Type: Circle
 			Radius: 128
+			VerticalTopOffset: 512
+			VerticalBottomOffset: 0
 	MapEditorData:
 		Categories: Infantry
 	GrantConditionOnTunnelLayer:
