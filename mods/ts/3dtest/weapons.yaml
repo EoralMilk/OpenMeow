@@ -84,6 +84,7 @@ TestVulcan:
 	Range: 15c0
 	Report: cygun1.aud
 	Projectile: Bullet
+		DetectTargetFromLength: 0.7
 		ContrailLength: 6
 		ContrailWidth: 44
 		ContrailColor: F0D05CA0

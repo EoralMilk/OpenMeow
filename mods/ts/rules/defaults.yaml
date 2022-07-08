@@ -849,6 +849,9 @@
 	EntersTunnels:
 		Voice: Move
 	HitShape:
+		Type: Circle
+			Radius: 368
+			VerticalTopOffset: 612
 	MapEditorData:
 		Categories: Vehicle
 	GrantConditionOnTunnelLayer:
@@ -946,6 +949,9 @@
 	WithModelBody:
 	RevealOnFire:
 	HitShape:
+		Type: Circle
+			Radius: 368
+			VerticalTopOffset: 612
 	MapEditorData:
 		Categories: Aircraft
 	SpawnActorOnDeath:

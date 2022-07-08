@@ -25,6 +25,8 @@ namespace OpenRA.Mods.Common.Projectiles
 {
 	public class BulletInfo : CorporealProjectileInfo, IProjectileInfo, IRulesetLoaded<WeaponInfo>
 	{
+		public readonly float DetectTargetFromLength = 1f;
+
 		[Desc("Up to how many times does this bullet bounce when touching ground without hitting a target.",
 			"0 implies exploding on contact with the originally targeted position.")]
 		public readonly int BounceCount = 0;
@@ -212,10 +214,11 @@ namespace OpenRA.Mods.Common.Projectiles
 			}
 
 			var flightLengthReached = ticks++ >= length;
+			var checkLengthReached = ticks > length * info.DetectTargetFromLength;
 			var shouldBounce = remainingBounces > 0;
 			var dat = world.Map.DistanceAboveTerrain(pos).Length;
 
-			if (flightLengthReached || remainingBounces < info.BounceCount || info.AlwaysDetectTarget)
+			if (checkLengthReached || remainingBounces < info.BounceCount || info.AlwaysDetectTarget)
 			{
 				// check target at PassiveTargetPos
 				if (AnyValidTargetsInRadius(world, pos, info.Width, args.SourceActor, true))
