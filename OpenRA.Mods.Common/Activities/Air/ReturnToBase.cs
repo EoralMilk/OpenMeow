@@ -29,6 +29,7 @@ namespace OpenRA.Mods.Common.Activities
 
 		public ReturnToBase(Actor self, Actor dest = null, bool alwaysLand = false)
 		{
+			ActivityType = ActivityType.Move;
 			this.dest = dest;
 			this.alwaysLand = alwaysLand;
 			aircraft = self.Trait<Aircraft>();

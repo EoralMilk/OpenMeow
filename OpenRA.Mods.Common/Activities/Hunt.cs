@@ -24,6 +24,7 @@ namespace OpenRA.Mods.Common.Activities
 
 		public Hunt(Actor self)
 		{
+			ActivityType = ActivityType.Move;
 			move = self.Trait<IMove>();
 			var attack = self.Trait<AttackBase>();
 			targets = self.World.ActorsHavingTrait<Huntable>().Where(

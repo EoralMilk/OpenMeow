@@ -36,6 +36,7 @@ namespace OpenRA.Mods.Common.Activities
 
 		public FindAndDeliverResources(Actor self, Actor deliverActor = null)
 		{
+			ActivityType = ActivityType.Move;
 			harv = self.Trait<Harvester>();
 			harvInfo = self.Info.TraitInfo<HarvesterInfo>();
 			mobile = self.Trait<Mobile>();
@@ -46,6 +47,7 @@ namespace OpenRA.Mods.Common.Activities
 		public FindAndDeliverResources(Actor self, CPos orderLocation)
 			: this(self, null)
 		{
+			ActivityType = ActivityType.Move;
 			this.orderLocation = orderLocation;
 		}
 

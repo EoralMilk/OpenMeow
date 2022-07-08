@@ -31,6 +31,7 @@ namespace OpenRA.Mods.Common.Activities
 		public Follow(Actor self, in Target target, WDist minRange, WDist maxRange,
 			WPos? initialTargetPosition, Color? targetLineColor = null)
 		{
+			ActivityType = ActivityType.Move;
 			this.target = target;
 			this.minRange = minRange;
 			this.maxRange = maxRange;

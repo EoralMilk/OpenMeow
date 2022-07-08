@@ -33,6 +33,7 @@ namespace OpenRA.Mods.Common.Activities
 
 		protected Enter(Actor self, in Target target, Color? targetLineColor = null)
 		{
+			ActivityType = ActivityType.Move;
 			move = self.Trait<IMove>();
 			this.target = target;
 			this.targetLineColor = targetLineColor;

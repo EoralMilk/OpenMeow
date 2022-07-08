@@ -92,6 +92,7 @@ namespace OpenRA.Mods.Cnc.Traits
 
 			public ChargeAttack(AttackTesla attack, in Target target, bool forceAttack, Color? targetLineColor = null)
 			{
+				ActivityType = ActivityType.Attack;
 				this.attack = attack;
 				this.target = target;
 				this.forceAttack = forceAttack;
@@ -151,6 +152,7 @@ namespace OpenRA.Mods.Cnc.Traits
 
 			public ChargeFire(AttackTesla attack, in Target target)
 			{
+				ActivityType = ActivityType.Attack;
 				this.attack = attack;
 				this.target = target;
 			}

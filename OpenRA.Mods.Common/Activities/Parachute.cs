@@ -23,6 +23,7 @@ namespace OpenRA.Mods.Common.Activities
 
 		public Parachute(Actor self)
 		{
+			ActivityType = ActivityType.Move;
 			pos = self.TraitOrDefault<IPositionable>();
 
 			var parachutableInfo = self.Info.TraitInfoOrDefault<ParachutableInfo>();

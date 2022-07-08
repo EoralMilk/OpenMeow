@@ -110,6 +110,7 @@ namespace OpenRA.Mods.Common.Traits
 
 			public FerryUnit(Actor self, Actor cargo)
 			{
+				ActivityType = ActivityType.Move;
 				this.cargo = cargo;
 				carryable = cargo.Trait<Carryable>();
 				carryallInfo = self.Trait<Carryall>().Info;

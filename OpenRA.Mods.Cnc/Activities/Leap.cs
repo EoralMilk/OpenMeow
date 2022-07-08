@@ -38,6 +38,7 @@ namespace OpenRA.Mods.Cnc.Activities
 
 		public Leap(in Target target, Mobile mobile, Mobile targetMobile, int speed, AttackLeap attack, EdibleByLeap edible)
 		{
+			ActivityType = ActivityType.Move;
 			this.mobile = mobile;
 			this.targetMobile = targetMobile;
 			this.attack = attack;

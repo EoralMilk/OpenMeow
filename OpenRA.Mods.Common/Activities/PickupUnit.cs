@@ -36,6 +36,7 @@ namespace OpenRA.Mods.Common.Activities
 
 		public PickupUnit(Actor self, Actor cargo, int delay, Color? targetLineColor)
 		{
+			ActivityType = ActivityType.Move;
 			this.cargo = cargo;
 			this.delay = delay;
 			this.targetLineColor = targetLineColor;
@@ -130,6 +131,7 @@ namespace OpenRA.Mods.Common.Activities
 
 			public AttachUnit(Actor self, Actor cargo)
 			{
+				ActivityType = ActivityType.Move;
 				this.cargo = cargo;
 				carryable = cargo.Trait<Carryable>();
 				carryall = self.Trait<Carryall>();

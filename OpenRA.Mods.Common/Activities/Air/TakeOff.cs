@@ -21,6 +21,7 @@ namespace OpenRA.Mods.Common.Activities
 
 		public TakeOff(Actor self)
 		{
+			ActivityType = ActivityType.Move;
 			aircraft = self.Trait<Aircraft>();
 			move = self.Trait<IMove>();
 		}

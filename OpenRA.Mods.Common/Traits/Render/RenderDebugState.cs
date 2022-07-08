@@ -90,7 +90,7 @@ namespace OpenRA.Mods.Common.Traits.Render
 				yield break;
 
 			var squads = ai.Squads;
-			var squad = squads.FirstOrDefault(x => x.Units.Contains(self));
+			var squad = squads.FirstOrDefault(x => x.Units.Any(u => u.Actor == self));
 			if (squad == null)
 				yield break;
 

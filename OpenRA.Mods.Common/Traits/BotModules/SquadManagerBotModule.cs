@@ -39,26 +39,29 @@ namespace OpenRA.Mods.Common.Traits
 		[Desc("Own actor types that are prioritized when defending.")]
 		public readonly HashSet<string> ProtectionTypes = new HashSet<string>();
 
+		[Desc("Units that form a guerrilla squad.")]
+		public readonly HashSet<string> GuerrillaTypes = new HashSet<string>();
+
 		[Desc("Minimum number of units AI must have before attacking.")]
 		public readonly int SquadSize = 8;
 
 		[Desc("Random number of up to this many units is added to squad size when creating an attack squad.")]
 		public readonly int SquadSizeRandomBonus = 30;
 
+		[Desc("Possibility of units in GuerrillaTypes to join Guerrilla.")]
+		public readonly int JoinGuerrilla = 50;
+
+		[Desc("Max number of units AI has in guerrilla squad")]
+		public readonly int MaxGuerrillaSize = 10;
+
 		[Desc("Delay (in ticks) between giving out orders to units.")]
 		public readonly int AssignRolesInterval = 50;
-
-		[Desc("Delay (in ticks) between attempting rush attacks.")]
-		public readonly int RushInterval = 600;
 
 		[Desc("Delay (in ticks) between updating squads.")]
 		public readonly int AttackForceInterval = 75;
 
 		[Desc("Minimum delay (in ticks) between creating squads.")]
 		public readonly int MinimumAttackForceDelay = 0;
-
-		[Desc("Radius in cells around enemy BaseBuilder (Construction Yard) where AI scans for targets to rush.")]
-		public readonly int RushAttackScanRadius = 15;
 
 		[Desc("Radius in cells around the base that should be scanned for units to be protected.")]
 		public readonly int ProtectUnitScanRadius = 15;
@@ -81,6 +84,9 @@ namespace OpenRA.Mods.Common.Traits
 
 		[Desc("Enemy target types to never target.")]
 		public readonly BitSet<TargetableType> IgnoredEnemyTargetTypes = default(BitSet<TargetableType>);
+
+		[Desc("Locomotor used by pathfinding leader for squads")]
+		public readonly HashSet<string> SuggestedLeaderLocomotor = new HashSet<string>();
 
 		public override void RulesetLoaded(Ruleset rules, ActorInfo ai)
 		{
@@ -106,9 +112,10 @@ namespace OpenRA.Mods.Common.Traits
 
 		public readonly World World;
 		public readonly Player Player;
+		public readonly int RepeatedAltertTicks = 15;
 
-		readonly Predicate<Actor> unitCannotBeOrdered;
-		readonly List<Actor> unitsHangingAroundTheBase = new List<Actor>();
+		public readonly Predicate<Actor> UnitCannotBeOrdered;
+		readonly List<UnitWposWrapper> unitsHangingAroundTheBase = new List<UnitWposWrapper>();
 
 		// Units that the bot already knows about. Any unit not on this list needs to be given a role.
 		readonly List<Actor> activeUnits = new List<Actor>();
@@ -121,24 +128,33 @@ namespace OpenRA.Mods.Common.Traits
 
 		CPos initialBaseCenter;
 
-		int rushTicks;
 		int assignRolesTicks;
-		int attackForceTicks;
+
+		// int attackForceTicks;
+		int protectionForceTicks;
+		int guerrillaForceTicks;
+		int airForceTicks;
+		int navyForceTicks;
+		int groundForceTicks;
+
 		int minAttackForceDelayTicks;
+
+		int alertedTicks;
 
 		public SquadManagerBotModule(Actor self, SquadManagerBotModuleInfo info)
 			: base(info)
 		{
 			World = self.World;
 			Player = self.Owner;
+			alertedTicks = 0;
 
-			unitCannotBeOrdered = a => a == null || a.Owner != Player || a.IsDead || !a.IsInWorld;
+			UnitCannotBeOrdered = a => a == null || a.Owner != Player || a.IsDead || !a.IsInWorld;
 		}
 
 		// Use for proactive targeting.
 		public bool IsPreferredEnemyUnit(Actor a)
 		{
-			if (a == null || a.IsDead || Player.RelationshipWith(a.Owner) != PlayerRelationship.Enemy || a.Info.HasTraitInfo<HuskInfo>() || a.Info.HasTraitInfo<AircraftInfo>())
+			if (a == null || a.IsDead || Player.RelationshipWith(a.Owner) != PlayerRelationship.Enemy || a.Info.HasTraitInfo<HuskInfo>())
 				return false;
 
 			var targetTypes = a.GetEnabledTargetTypes();
@@ -160,6 +176,21 @@ namespace OpenRA.Mods.Common.Traits
 			return !hasModifier;
 		}
 
+		public bool IsNotUnseenUnit(Actor a)
+		{
+			var isUnseen = false;
+			var visModifiers = a.TraitsImplementing<IDefaultVisibility>();
+			foreach (var v in visModifiers)
+			{
+				if (v.IsVisible(a, Player))
+					return true;
+
+				isUnseen = true;
+			}
+
+			return !isUnseen;
+		}
+
 		protected override void Created(Actor self)
 		{
 			notifyPositionsUpdated = self.Owner.PlayerActor.TraitsImplementing<IBotPositionsUpdated>().ToArray();
@@ -168,13 +199,17 @@ namespace OpenRA.Mods.Common.Traits
 
 		protected override void TraitEnabled(Actor self)
 		{
-			// Avoid all AIs trying to rush in the same tick, randomize their initial rush a little.
-			var smallFractionOfRushInterval = Info.RushInterval / 20;
-			rushTicks = World.LocalRandom.Next(Info.RushInterval - smallFractionOfRushInterval, Info.RushInterval + smallFractionOfRushInterval);
-
 			// Avoid all AIs reevaluating assignments on the same tick, randomize their initial evaluation delay.
 			assignRolesTicks = World.LocalRandom.Next(0, Info.AssignRolesInterval);
-			attackForceTicks = World.LocalRandom.Next(0, Info.AttackForceInterval);
+
+			var attackForceTicks = World.LocalRandom.Next(0, Info.AttackForceInterval);
+
+			protectionForceTicks = attackForceTicks;
+			guerrillaForceTicks = attackForceTicks + 1;
+			airForceTicks = attackForceTicks + 2;
+			navyForceTicks = attackForceTicks + 3;
+			groundForceTicks = attackForceTicks + 4;
+
 			minAttackForceDelayTicks = World.LocalRandom.Next(0, Info.MinimumAttackForceDelay);
 		}
 
@@ -186,30 +221,54 @@ namespace OpenRA.Mods.Common.Traits
 		void IBotTick.BotTick(IBot bot)
 		{
 			AssignRolesToIdleUnits(bot);
+			if (alertedTicks > 0)
+				alertedTicks--;
 		}
 
-		internal Actor FindClosestEnemy(WPos pos)
+		internal Actor FindClosestEnemy(Actor leader, WDist radius)
 		{
-			var units = World.Actors.Where(IsPreferredEnemyUnit);
-			return units.Where(IsNotHiddenUnit).ClosestTo(pos) ?? units.ClosestTo(pos);
+			var mobile = leader.TraitOrDefault<Mobile>();
+			if (mobile == null)
+				return World.FindActorsInCircle(leader.CenterPosition, radius).Where(a => IsPreferredEnemyUnit(a) && IsNotHiddenUnit(a) && IsNotUnseenUnit(a)).ClosestTo(leader.CenterPosition);
+			else
+			{
+				var domainIndex = leader.World.WorldActor.Trait<DomainIndex>();
+				var locomotor = mobile.Locomotor;
+				return World.FindActorsInCircle(leader.CenterPosition, radius).Where(a => IsPreferredEnemyUnit(a) && IsNotHiddenUnit(a) && IsNotUnseenUnit(a) && domainIndex.IsPassable(leader.Location, a.Location, locomotor)).ClosestTo(leader.CenterPosition);
+			}
 		}
 
-		internal Actor FindClosestEnemy(WPos pos, WDist radius)
+		internal Actor FindClosestEnemy(Actor leader)
 		{
-			return World.FindActorsInCircle(pos, radius).Where(a => IsPreferredEnemyUnit(a) && IsNotHiddenUnit(a)).ClosestTo(pos);
+			var mobile = leader.TraitOrDefault<Mobile>();
+			if (mobile == null)
+			{
+				var units = World.Actors.Where(a => IsPreferredEnemyUnit(a));
+				return units.Where(IsNotHiddenUnit).ClosestTo(leader.CenterPosition) ?? units.ClosestTo(leader.CenterPosition);
+			}
+			else
+			{
+				var domainIndex = leader.World.WorldActor.Trait<DomainIndex>();
+				var locomotor = mobile.Locomotor;
+				var units = World.Actors.Where(a => IsPreferredEnemyUnit(a) && domainIndex.IsPassable(leader.Location, a.Location, locomotor));
+				return units.Where(IsNotHiddenUnit).ClosestTo(leader.CenterPosition) ?? units.ClosestTo(leader.CenterPosition);
+			}
 		}
 
 		void CleanSquads()
 		{
 			Squads.RemoveAll(s => !s.IsValid);
-			foreach (var s in Squads)
-				s.Units.RemoveAll(unitCannotBeOrdered);
 		}
 
 		// HACK: Use of this function requires that there is one squad of this type.
 		Squad GetSquadOfType(SquadType type)
 		{
 			return Squads.FirstOrDefault(s => s.Type == type);
+		}
+
+		IEnumerable<Squad> GetSquadsOfType(SquadType type)
+		{
+			return Squads.Where(s => s.Type == type);
 		}
 
 		Squad RegisterNewSquad(IBot bot, SquadType type, Actor target = null)
@@ -219,37 +278,83 @@ namespace OpenRA.Mods.Common.Traits
 			return ret;
 		}
 
+		public void DismissSquad(Squad squad)
+		{
+			foreach (var unit in squad.Units)
+			{
+				unitsHangingAroundTheBase.Add(unit);
+			}
+
+			squad.Units.Clear();
+		}
+
 		void AssignRolesToIdleUnits(IBot bot)
 		{
 			CleanSquads();
 
-			activeUnits.RemoveAll(unitCannotBeOrdered);
-			unitsHangingAroundTheBase.RemoveAll(unitCannotBeOrdered);
-			foreach (var n in notifyIdleBaseUnits)
-				n.UpdatedIdleBaseUnits(unitsHangingAroundTheBase);
-
-			if (--rushTicks <= 0)
+			// Ticks squads
+			if (--protectionForceTicks <= 0)
 			{
-				rushTicks = Info.RushInterval;
-				TryToRushAttack(bot);
+				protectionForceTicks = Info.AttackForceInterval;
+				foreach (var s in GetSquadsOfType(SquadType.Protection))
+				{
+					s.Units.RemoveAll(u => UnitCannotBeOrdered(u.Actor));
+					s.Update();
+				}
 			}
 
-			if (--attackForceTicks <= 0)
+			if (--guerrillaForceTicks <= 0)
 			{
-				attackForceTicks = Info.AttackForceInterval;
-				foreach (var s in Squads)
+				guerrillaForceTicks = Info.AttackForceInterval;
+				foreach (var s in GetSquadsOfType(SquadType.Assault))
+				{
+					s.Units.RemoveAll(u => UnitCannotBeOrdered(u.Actor));
 					s.Update();
+				}
+			}
+
+			if (--airForceTicks <= 0)
+			{
+				airForceTicks = Info.AttackForceInterval;
+				foreach (var s in GetSquadsOfType(SquadType.Air))
+				{
+					s.Units.RemoveAll(u => UnitCannotBeOrdered(u.Actor));
+					s.Update();
+				}
+			}
+
+			if (--navyForceTicks <= 0)
+			{
+				navyForceTicks = Info.AttackForceInterval;
+				foreach (var s in GetSquadsOfType(SquadType.Naval))
+				{
+					s.Units.RemoveAll(u => UnitCannotBeOrdered(u.Actor));
+					s.Update();
+				}
+			}
+
+			if (--groundForceTicks <= 0)
+			{
+				groundForceTicks = Info.AttackForceInterval;
+				foreach (var s in GetSquadsOfType(SquadType.Rush))
+				{
+					s.Units.RemoveAll(u => UnitCannotBeOrdered(u.Actor));
+					s.Update();
+				}
 			}
 
 			if (--assignRolesTicks <= 0)
 			{
 				assignRolesTicks = Info.AssignRolesInterval;
+				unitsHangingAroundTheBase.RemoveAll(u => UnitCannotBeOrdered(u.Actor));
+				activeUnits.RemoveAll(UnitCannotBeOrdered);
 				FindNewUnits(bot);
 			}
 
 			if (--minAttackForceDelayTicks <= 0)
 			{
 				minAttackForceDelayTicks = Info.MinimumAttackForceDelay;
+				unitsHangingAroundTheBase.RemoveAll(u => UnitCannotBeOrdered(u.Actor));
 				CreateAttackForce(bot);
 			}
 		}
@@ -261,15 +366,25 @@ namespace OpenRA.Mods.Common.Traits
 					!Info.ExcludeFromSquadsTypes.Contains(a.Info.Name) &&
 					!activeUnits.Contains(a));
 
+			var guerrillaForce = GetSquadOfType(SquadType.Assault);
+			var guerrillaUpdate = guerrillaForce == null ? true : guerrillaForce.Units.Count <= Info.MaxGuerrillaSize && (World.LocalRandom.Next(100) >= Info.JoinGuerrilla);
+
 			foreach (var a in newUnits)
 			{
-				if (Info.AirUnitsTypes.Contains(a.Info.Name))
+				if (Info.GuerrillaTypes.Contains(a.Info.Name) && guerrillaUpdate)
+				{
+					if (guerrillaForce == null)
+						guerrillaForce = RegisterNewSquad(bot, SquadType.Assault);
+
+					guerrillaForce.Units.Add(new UnitWposWrapper(a));
+				}
+				else if (Info.AirUnitsTypes.Contains(a.Info.Name))
 				{
 					var air = GetSquadOfType(SquadType.Air);
 					if (air == null)
 						air = RegisterNewSquad(bot, SquadType.Air);
 
-					air.Units.Add(a);
+					air.Units.Add(new UnitWposWrapper(a));
 				}
 				else if (Info.NavalUnitsTypes.Contains(a.Info.Name))
 				{
@@ -277,10 +392,10 @@ namespace OpenRA.Mods.Common.Traits
 					if (ships == null)
 						ships = RegisterNewSquad(bot, SquadType.Naval);
 
-					ships.Units.Add(a);
+					ships.Units.Add(new UnitWposWrapper(a));
 				}
 				else
-					unitsHangingAroundTheBase.Add(a);
+					unitsHangingAroundTheBase.Add(new UnitWposWrapper(a));
 
 				activeUnits.Add(a);
 			}
@@ -288,6 +403,16 @@ namespace OpenRA.Mods.Common.Traits
 			// Notifying here rather than inside the loop, should be fine and saves a bunch of notification calls
 			foreach (var n in notifyIdleBaseUnits)
 				n.UpdatedIdleBaseUnits(unitsHangingAroundTheBase);
+
+			var protectSq = GetSquadOfType(SquadType.Protection);
+			if (protectSq != null)
+			{
+				protectSq.Units = unitsHangingAroundTheBase;
+				return;
+			}
+
+			protectSq = RegisterNewSquad(bot, SquadType.Protection, null);
+			protectSq.Units = unitsHangingAroundTheBase;
 		}
 
 		void CreateAttackForce(IBot bot)
@@ -298,7 +423,7 @@ namespace OpenRA.Mods.Common.Traits
 
 			if (unitsHangingAroundTheBase.Count >= randomizedSquadSize)
 			{
-				var attackForce = RegisterNewSquad(bot, SquadType.Assault);
+				var attackForce = RegisterNewSquad(bot, SquadType.Rush);
 
 				foreach (var a in unitsHangingAroundTheBase)
 					attackForce.Units.Add(a);
@@ -309,54 +434,17 @@ namespace OpenRA.Mods.Common.Traits
 			}
 		}
 
-		void TryToRushAttack(IBot bot)
+		void ProtectOwn(Actor attacker)
 		{
-			var allEnemyBaseBuilder = AIUtils.FindEnemiesByCommonName(Info.ConstructionYardTypes, Player);
-
-			var ownUnits = activeUnits
-				.Where(unit => unit.IsIdle && unit.Info.HasTraitInfo<AttackBaseInfo>()
-					&& !Info.AirUnitsTypes.Contains(unit.Info.Name) && !Info.NavalUnitsTypes.Contains(unit.Info.Name) && !Info.ExcludeFromSquadsTypes.Contains(unit.Info.Name)).ToList();
-
-			if (allEnemyBaseBuilder.Count == 0 || ownUnits.Count < Info.SquadSize)
-				return;
-
-			foreach (var b in allEnemyBaseBuilder)
+			foreach (Squad s in Squads.Where(s => s.IsValid))
 			{
-				// Don't rush enemy aircraft!
-				var enemies = World.FindActorsInCircle(b.CenterPosition, WDist.FromCells(Info.RushAttackScanRadius))
-					.Where(unit => IsPreferredEnemyUnit(unit) && unit.Info.HasTraitInfo<AttackBaseInfo>() && !Info.AirUnitsTypes.Contains(unit.Info.Name) && !Info.NavalUnitsTypes.Contains(unit.Info.Name)).ToList();
-
-				if (AttackOrFleeFuzzy.Rush.CanAttack(ownUnits, enemies))
+				if (s.Type != SquadType.Protection)
 				{
-					var target = enemies.Count > 0 ? enemies.Random(World.LocalRandom) : b;
-					var rush = GetSquadOfType(SquadType.Rush);
-					if (rush == null)
-						rush = RegisterNewSquad(bot, SquadType.Rush, target);
-
-					foreach (var a3 in ownUnits)
-						rush.Units.Add(a3);
-
-					return;
+					if ((s.CenterPosition - attacker.CenterPosition).LengthSquared > WDist.FromCells(Info.ProtectUnitScanRadius).LengthSquared)
+						continue;
 				}
-			}
-		}
 
-		void ProtectOwn(IBot bot, Actor attacker)
-		{
-			var protectSq = GetSquadOfType(SquadType.Protection);
-			if (protectSq == null)
-				protectSq = RegisterNewSquad(bot, SquadType.Protection, attacker);
-
-			if (!protectSq.IsTargetValid)
-				protectSq.TargetActor = attacker;
-
-			if (!protectSq.IsValid)
-			{
-				var ownUnits = World.FindActorsInCircle(World.Map.CenterOfCell(GetRandomBaseCenter()), WDist.FromCells(Info.ProtectUnitScanRadius))
-					.Where(unit => unit.Owner == Player && !Info.ProtectionTypes.Contains(unit.Info.Name) && unit.Info.HasTraitInfo<AttackBaseInfo>());
-
-				foreach (var a in ownUnits)
-					protectSq.Units.Add(a);
+				s.TargetActor = attacker;
 			}
 		}
 
@@ -369,15 +457,17 @@ namespace OpenRA.Mods.Common.Traits
 
 		void IBotRespondToAttack.RespondToAttack(IBot bot, Actor self, AttackInfo e)
 		{
-			if (!IsPreferredEnemyUnit(e.Attacker))
+			if (alertedTicks > 0 || !IsPreferredEnemyUnit(e.Attacker))
 				return;
+
+			alertedTicks = RepeatedAltertTicks;
 
 			if (Info.ProtectionTypes.Contains(self.Info.Name))
 			{
 				foreach (var n in notifyPositionsUpdated)
 					n.UpdatedDefenseCenter(e.Attacker.Location);
 
-				ProtectOwn(bot, e.Attacker);
+				ProtectOwn(e.Attacker);
 			}
 		}
 
@@ -391,16 +481,19 @@ namespace OpenRA.Mods.Common.Traits
 				new MiniYamlNode("Squads", "", Squads.Select(s => new MiniYamlNode("Squad", s.Serialize())).ToList()),
 				new MiniYamlNode("InitialBaseCenter", FieldSaver.FormatValue(initialBaseCenter)),
 				new MiniYamlNode("UnitsHangingAroundTheBase", FieldSaver.FormatValue(unitsHangingAroundTheBase
-					.Where(a => !unitCannotBeOrdered(a))
-					.Select(a => a.ActorID)
+					.Where(u => !UnitCannotBeOrdered(u.Actor))
+					.Select(u => u.Actor.ActorID)
 					.ToArray())),
 				new MiniYamlNode("ActiveUnits", FieldSaver.FormatValue(activeUnits
-					.Where(a => !unitCannotBeOrdered(a))
+					.Where(a => !UnitCannotBeOrdered(a))
 					.Select(a => a.ActorID)
 					.ToArray())),
-				new MiniYamlNode("RushTicks", FieldSaver.FormatValue(rushTicks)),
 				new MiniYamlNode("AssignRolesTicks", FieldSaver.FormatValue(assignRolesTicks)),
-				new MiniYamlNode("AttackForceTicks", FieldSaver.FormatValue(attackForceTicks)),
+				new MiniYamlNode("protectionForceTicks", FieldSaver.FormatValue(protectionForceTicks)),
+				new MiniYamlNode("guerrillaForceTicks", FieldSaver.FormatValue(guerrillaForceTicks)),
+				new MiniYamlNode("airForceTicks", FieldSaver.FormatValue(airForceTicks)),
+				new MiniYamlNode("navyForceTicks", FieldSaver.FormatValue(navyForceTicks)),
+				new MiniYamlNode("groundForceTicks", FieldSaver.FormatValue(groundForceTicks)),
 				new MiniYamlNode("MinAttackForceDelayTicks", FieldSaver.FormatValue(minAttackForceDelayTicks)),
 			};
 		}
@@ -418,8 +511,12 @@ namespace OpenRA.Mods.Common.Traits
 			if (unitsHangingAroundTheBaseNode != null)
 			{
 				unitsHangingAroundTheBase.Clear();
-				unitsHangingAroundTheBase.AddRange(FieldLoader.GetValue<uint[]>("UnitsHangingAroundTheBase", unitsHangingAroundTheBaseNode.Value.Value)
-					.Select(a => self.World.GetActorById(a)).Where(a => a != null));
+
+				foreach (var a in FieldLoader.GetValue<uint[]>("UnitsHangingAroundTheBase", unitsHangingAroundTheBaseNode.Value.Value)
+					.Select(a => self.World.GetActorById(a)).Where(a => a != null))
+				{
+					unitsHangingAroundTheBase.Add(new UnitWposWrapper(a));
+				}
 			}
 
 			var activeUnitsNode = data.FirstOrDefault(n => n.Key == "ActiveUnits");
@@ -430,17 +527,29 @@ namespace OpenRA.Mods.Common.Traits
 					.Select(a => self.World.GetActorById(a)).Where(a => a != null));
 			}
 
-			var rushTicksNode = data.FirstOrDefault(n => n.Key == "RushTicks");
-			if (rushTicksNode != null)
-				rushTicks = FieldLoader.GetValue<int>("RushTicks", rushTicksNode.Value.Value);
-
 			var assignRolesTicksNode = data.FirstOrDefault(n => n.Key == "AssignRolesTicks");
 			if (assignRolesTicksNode != null)
 				assignRolesTicks = FieldLoader.GetValue<int>("AssignRolesTicks", assignRolesTicksNode.Value.Value);
 
-			var attackForceTicksNode = data.FirstOrDefault(n => n.Key == "AttackForceTicks");
-			if (attackForceTicksNode != null)
-				attackForceTicks = FieldLoader.GetValue<int>("AttackForceTicks", attackForceTicksNode.Value.Value);
+			var protectionForceTicksNode = data.FirstOrDefault(n => n.Key == "protectionForceTicks");
+			if (protectionForceTicksNode != null)
+				protectionForceTicks = FieldLoader.GetValue<int>("protectionForceTicks", protectionForceTicksNode.Value.Value);
+
+			var guerrillaForceTicksNode = data.FirstOrDefault(n => n.Key == "guerrillaForceTicks");
+			if (guerrillaForceTicksNode != null)
+				guerrillaForceTicks = FieldLoader.GetValue<int>("guerrillaForceTicks", guerrillaForceTicksNode.Value.Value);
+
+			var airForceTicksNode = data.FirstOrDefault(n => n.Key == "airForceTicks");
+			if (airForceTicksNode != null)
+				airForceTicks = FieldLoader.GetValue<int>("airForceTicks", airForceTicksNode.Value.Value);
+
+			var navyForceTicksNode = data.FirstOrDefault(n => n.Key == "navyForceTicks");
+			if (navyForceTicksNode != null)
+				navyForceTicks = FieldLoader.GetValue<int>("navyForceTicks", navyForceTicksNode.Value.Value);
+
+			var groundForceTicksNode = data.FirstOrDefault(n => n.Key == "groundForceTicks");
+			if (groundForceTicksNode != null)
+				groundForceTicks = FieldLoader.GetValue<int>("groundForceTicks", groundForceTicksNode.Value.Value);
 
 			var minAttackForceDelayTicksNode = data.FirstOrDefault(n => n.Key == "MinAttackForceDelayTicks");
 			if (minAttackForceDelayTicksNode != null)

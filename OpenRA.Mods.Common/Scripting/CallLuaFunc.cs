@@ -23,6 +23,7 @@ namespace OpenRA.Mods.Common.Activities
 
 		public CallLuaFunc(LuaFunction function, ScriptContext context)
 		{
+			ActivityType = ActivityType.Undefined;
 			this.function = (LuaFunction)function.CopyReference();
 			this.context = context;
 		}

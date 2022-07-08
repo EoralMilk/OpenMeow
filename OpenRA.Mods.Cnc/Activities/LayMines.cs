@@ -35,6 +35,7 @@ namespace OpenRA.Mods.Cnc.Activities
 
 		public LayMines(Actor self, List<CPos> minefield = null)
 		{
+			ActivityType = ActivityType.Ability;
 			minelayer = self.Trait<Minelayer>();
 			ammoPools = self.TraitsImplementing<AmmoPool>().ToArray();
 			movement = self.Trait<IMove>();

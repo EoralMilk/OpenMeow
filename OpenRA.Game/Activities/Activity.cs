@@ -19,6 +19,7 @@ using OpenRA.Traits;
 namespace OpenRA.Activities
 {
 	public enum ActivityState { Queued, Active, Canceling, Done }
+	public enum ActivityType { Undefined, Move, Attack, Ability } // Used for AI module micro-manage and judge squad combat condition
 
 	public class TargetLineNode
 	{
@@ -48,10 +49,11 @@ namespace OpenRA.Activities
 	 */
 	public abstract class Activity : IActivityInterface
 	{
+		public ActivityType ActivityType { get; protected set; }
 		public ActivityState State { get; private set; }
 
 		Activity childActivity;
-		protected Activity ChildActivity
+		public Activity ChildActivity
 		{
 			get => SkipDoneActivities(childActivity);
 			private set => childActivity = value;
@@ -88,6 +90,7 @@ namespace OpenRA.Activities
 
 		public Activity()
 		{
+			ActivityType = ActivityType.Undefined;
 			IsInterruptible = true;
 			ChildHasPriority = true;
 		}

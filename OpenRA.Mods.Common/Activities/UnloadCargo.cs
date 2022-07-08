@@ -34,11 +34,13 @@ namespace OpenRA.Mods.Common.Activities
 		public UnloadCargo(Actor self, WDist unloadRange, bool unloadAll = true)
 			: this(self, Target.Invalid, unloadRange, unloadAll)
 		{
+			ActivityType = ActivityType.Move;
 			assignTargetOnFirstRun = true;
 		}
 
 		public UnloadCargo(Actor self, in Target destination, WDist unloadRange, bool unloadAll = true)
 		{
+			ActivityType = ActivityType.Move;
 			this.self = self;
 			cargo = self.Trait<Cargo>();
 			notifiers = self.TraitsImplementing<INotifyUnload>().ToArray();

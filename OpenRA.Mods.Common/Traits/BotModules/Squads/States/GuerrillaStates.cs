@@ -1,6 +1,6 @@
 #region Copyright & License Information
 /*
- * Copyright 2007-2022 The OpenRA Developers (see AUTHORS)
+ * Copyright 2007-2020 The OpenRA Developers (see AUTHORS)
  * This file is part of OpenRA, which is free software. It is made
  * available to you under the terms of the GNU General Public License
  * as published by the Free Software Foundation, either version 3 of
@@ -15,40 +15,14 @@ using OpenRA.Traits;
 
 namespace OpenRA.Mods.Common.Traits.BotModules.Squads
 {
-	abstract class NavyStateBase : StateBase
+	abstract class GuerrillaStatesBase : GroundStateBase
 	{
-		protected Actor FindClosestEnemy(Squad owner, Actor leader)
-		{
-			// Navy squad AI can exploit enemy naval production to find path, if any.
-			// (Way better than finding a nearest target which is likely to be on Ground)
-			// You might be tempted to move these lookups into Activate() but that causes null reference exception.
-			var domainIndex = leader.World.WorldActor.Trait<DomainIndex>();
-			var locomotor = leader.Trait<Mobile>().Locomotor;
-
-			var navalProductions = owner.World.ActorsHavingTrait<Building>().Where(a
-				=> owner.SquadManager.Info.NavalProductionTypes.Contains(a.Info.Name)
-				&& domainIndex.IsPassable(leader.Location, a.Location, locomotor)
-				&& a.AppearsHostileTo(leader));
-
-			if (navalProductions.Any())
-			{
-				var nearest = navalProductions.ClosestTo(leader);
-
-				// Return nearest when it is FAR enough.
-				// If the naval production is within MaxBaseRadius, it implies that
-				// this squad is close to enemy territory and they should expect a naval combat;
-				// closest enemy makes more sense in that case.
-				if ((nearest.Location - leader.Location).LengthSquared > owner.SquadManager.Info.MaxBaseRadius * owner.SquadManager.Info.MaxBaseRadius)
-					return nearest;
-			}
-
-			return owner.SquadManager.FindClosestEnemy(leader);
-		}
 	}
 
-	class NavyUnitsIdleState : NavyStateBase, IState
+	class GuerrillaUnitsIdleState : GuerrillaStatesBase, IState
 	{
 		Actor leader;
+		int squadsize;
 
 		public void Activate(Squad owner) { }
 
@@ -57,11 +31,15 @@ namespace OpenRA.Mods.Common.Traits.BotModules.Squads
 			if (!owner.IsValid)
 				return;
 
-			leader = GetPathfindLeader(owner).Actor;
+			if (owner.SquadManager.UnitCannotBeOrdered(leader) || squadsize != owner.Units.Count)
+			{
+				leader = GetPathfindLeader(owner).Actor;
+				squadsize = owner.Units.Count;
+			}
 
 			if (!owner.IsTargetValid)
 			{
-				var closestEnemy = FindClosestEnemy(owner, leader);
+				var closestEnemy = owner.SquadManager.FindClosestEnemy(leader);
 				if (closestEnemy == null)
 					return;
 
@@ -73,17 +51,18 @@ namespace OpenRA.Mods.Common.Traits.BotModules.Squads
 
 			if (enemyUnits.Count == 0)
 			{
-				Retreat(owner, flee: false, rearm: true, repair: true);
+				Retreat(owner, false, true, true);
 				return;
 			}
 
-			if (AttackOrFleeFuzzy.Default.CanAttack(owner.Units.Select(u => u.Actor), enemyUnits))
+			if ((AttackOrFleeFuzzy.Default.CanAttack(owner.Units.Select(u => u.Actor), enemyUnits)))
 			{
 				// We have gathered sufficient units. Attack the nearest enemy unit.
-				owner.FuzzyStateMachine.ChangeState(owner, new NavyUnitsAttackMoveState(), false);
+				owner.BaseLocation = RandomBuildingLocation(owner);
+				owner.FuzzyStateMachine.ChangeState(owner, new GuerrillaUnitsAttackMoveState(), false);
 			}
 			else
-				owner.FuzzyStateMachine.ChangeState(owner, new NavyUnitsFleeState(), false);
+				Retreat(owner, true, true, true);
 		}
 
 		public void Deactivate(Squad owner) { }
@@ -91,7 +70,7 @@ namespace OpenRA.Mods.Common.Traits.BotModules.Squads
 
 	// See detailed comments at GroundStates.cs
 	// There is many in common
-	class NavyUnitsAttackMoveState : NavyStateBase, IState
+	class GuerrillaUnitsAttackMoveState : GuerrillaStatesBase, IState
 	{
 		const int MaxAttemptsToAdvance = 6;
 		const int MakeWayTicks = 2;
@@ -101,7 +80,10 @@ namespace OpenRA.Mods.Common.Traits.BotModules.Squads
 		int makeWay = MakeWayTicks;
 		bool canMoveAfterMakeWay = true;
 		long stuckDistThreshold;
+
+		UnitWposWrapper leader = new UnitWposWrapper(null);
 		WPos lastLeaderPos = WPos.Zero;
+		int squadsize = 0;
 
 		public void Activate(Squad owner)
 		{
@@ -117,16 +99,20 @@ namespace OpenRA.Mods.Common.Traits.BotModules.Squads
 			// Initialize leader. Optimize pathfinding by using leader.
 			// Drop former "owner.Units.ClosestTo(owner.TargetActor.CenterPosition)",
 			// which is the shortest geometric distance, but it has no relation to pathfinding distance in map.
-			var leader = GetPathfindLeader(owner);
+			if (owner.SquadManager.UnitCannotBeOrdered(leader.Actor) || squadsize != owner.Units.Count)
+			{
+				leader = GetPathfindLeader(owner);
+				squadsize = owner.Units.Count;
+			}
 
 			if (!owner.IsTargetValid)
 			{
-				var targetActor = FindClosestEnemy(owner, leader.Actor);
+				var targetActor = owner.SquadManager.FindClosestEnemy(leader.Actor);
 				if (targetActor != null)
 					owner.TargetActor = targetActor;
 				else
 				{
-					owner.FuzzyStateMachine.ChangeState(owner, new NavyUnitsFleeState(), false);
+					owner.FuzzyStateMachine.ChangeState(owner, new GuerrillaUnitsFleeState(), false);
 					return;
 				}
 			}
@@ -138,7 +124,7 @@ namespace OpenRA.Mods.Common.Traits.BotModules.Squads
 			if (enemyActor != null)
 			{
 				owner.TargetActor = enemyActor;
-				owner.FuzzyStateMachine.ChangeState(owner, new NavyUnitsAttackState(), false);
+				owner.FuzzyStateMachine.ChangeState(owner, new GuerrillaUnitsHitState(), false);
 				return;
 			}
 
@@ -152,12 +138,14 @@ namespace OpenRA.Mods.Common.Traits.BotModules.Squads
 				{
 					var stopUnits = new List<Actor>();
 
-					// Check if it is the units stuck
+					// Check if it is the leader stuck
 					if ((leader.Actor.CenterPosition - leader.WPos).HorizontalLengthSquared < stuckDistThreshold && !IsAttackingAndTryAttack(leader.Actor).isFiring)
 					{
 						stopUnits.Add(leader.Actor);
 						owner.Units.Remove(leader);
 					}
+
+					// Check if it is the units stuck
 					else
 					{
 						for (var i = 0; i < owner.Units.Count; i++)
@@ -180,14 +168,14 @@ namespace OpenRA.Mods.Common.Traits.BotModules.Squads
 					if (owner.Units.Count == 0)
 						return;
 					failedAttempts = MaxAttemptsToAdvance - 2;
-					leader = owner.Units.FirstOrDefault();
+					leader = GetPathfindLeader(owner);
 					owner.Bot.QueueOrder(new Order("AttackMove", leader.Actor, Target.FromCell(owner.World, owner.TargetActor.Location), false));
 					owner.Bot.QueueOrder(new Order("Stop", null, false, groupedActors: stopUnits.ToArray()));
-
 					makeWay = 0;
 				}
 
-				// Make way for leader
+				// Make way for leader: Make sure the guide unit has not been blocked by the rest of the squad.
+				// If canMoveAfterMakeWay is not reset to true after this, will try kick unit
 				if (makeWay > 0)
 				{
 					owner.Bot.QueueOrder(new Order("AttackMove", leader.Actor, Target.FromCell(owner.World, owner.TargetActor.Location), false));
@@ -199,8 +187,9 @@ namespace OpenRA.Mods.Common.Traits.BotModules.Squads
 						// Give some tolerance for AI regrouping when stuck at first time
 						failedAttempts = 0 - MakeWayTicks;
 
-						// To prevent ground target causing the stuck
-						owner.TargetActor = FindClosestEnemy(owner, leader.Actor);
+						// Change target that may cause the stuck, which also makes Guerrilla Squad unpredictable
+						owner.TargetActor = owner.SquadManager.FindClosestEnemy(leader.Actor);
+						makeWay = MakeWayTicks;
 						canMoveAfterMakeWay = false;
 						owner.Bot.QueueOrder(new Order("AttackMove", null, Target.FromCell(owner.World, leader.Actor.Location), true, groupedActors: others.ToArray()));
 					}
@@ -237,8 +226,8 @@ namespace OpenRA.Mods.Common.Traits.BotModules.Squads
 			else
 				owner.Bot.QueueOrder(new Order("AttackMove", leader.Actor, Target.FromCell(owner.World, owner.TargetActor.Location), false));
 
-			var unitsHurryUp = owner.Units.Where(u => (u.Actor.CenterPosition - leader.Actor.CenterPosition).HorizontalLengthSquared >= occupiedArea * 2).Select(u => u.Actor);
-			owner.Bot.QueueOrder(new Order("AttackMove", null, Target.FromCell(owner.World, leader.Actor.Location), false, groupedActors: unitsHurryUp.ToArray()));
+			var unitsHurryUp = owner.Units.Where(u => (u.Actor.CenterPosition - leader.Actor.CenterPosition).HorizontalLengthSquared >= occupiedArea * 2).Select(u => u.Actor).ToArray();
+			owner.Bot.QueueOrder(new Order("AttackMove", null, Target.FromCell(owner.World, leader.Actor.Location), false, groupedActors: unitsHurryUp));
 		}
 
 		public void Deactivate(Squad owner) { }
@@ -246,11 +235,15 @@ namespace OpenRA.Mods.Common.Traits.BotModules.Squads
 
 	// See detailed comments at GroundStates.cs
 	// There are many in common
-	class NavyUnitsAttackState : NavyStateBase, IState
+	class GuerrillaUnitsHitState : GuerrillaStatesBase, IState
 	{
 		// Use it to find if entire squad cannot reach the attack position
 		int tryAttackTick;
+
+		Actor leader;
 		int tryAttack = 0;
+		bool isFirstTick = true; // Only record HP and do not retreat at first tick
+		int squadsize = 0;
 
 		public void Activate(Squad owner)
 		{
@@ -263,7 +256,9 @@ namespace OpenRA.Mods.Common.Traits.BotModules.Squads
 			if (!owner.IsValid)
 				return;
 
-			var leader = owner.Units.First().Actor;
+			if (owner.SquadManager.UnitCannotBeOrdered(leader))
+				leader = owner.Units.FirstOrDefault().Actor;
+
 			var isDefaultLeader = true;
 
 			// Rescan target to prevent being ambushed and die without fight
@@ -271,88 +266,141 @@ namespace OpenRA.Mods.Common.Traits.BotModules.Squads
 			var attackScanRadius = WDist.FromCells(owner.SquadManager.Info.AttackScanRadius);
 			var closestEnemy = owner.SquadManager.FindClosestEnemy(leader, attackScanRadius);
 
-			if (closestEnemy == null)
-			{
-				owner.TargetActor = FindClosestEnemy(owner, leader);
-				owner.FuzzyStateMachine.ChangeState(owner, new NavyUnitsAttackMoveState(), false);
-				return;
-			}
-			else if (owner.TargetActor != closestEnemy)
-			{
-				// Refresh tryAttack when target switched
-				tryAttack = 0;
-				owner.TargetActor = closestEnemy;
-			}
-
+			var healthChange = false;
 			var cannotRetaliate = true;
 			var followingUnits = new List<Actor>();
 			var attackingUnits = new List<Actor>();
 
-			foreach (var u in owner.Units)
+			if (closestEnemy == null)
 			{
-				var attackCondition = IsAttackingAndTryAttack(u.Actor);
-
-				if ((attackCondition.tryAttacking || attackCondition.isFiring) &&
-					(u.Actor.CenterPosition - owner.TargetActor.CenterPosition).HorizontalLengthSquared <
-					(leader.CenterPosition - owner.TargetActor.CenterPosition).HorizontalLengthSquared)
+				owner.TargetActor = owner.SquadManager.FindClosestEnemy(leader);
+				owner.FuzzyStateMachine.ChangeState(owner, new GuerrillaUnitsAttackMoveState(), false);
+				return;
+			}
+			else
+			{
+				if (owner.TargetActor != closestEnemy)
 				{
-					isDefaultLeader = false;
-					leader = u.Actor;
+					// Refresh tryAttack when target switched
+					tryAttack = 0;
+					owner.TargetActor = closestEnemy;
 				}
 
-				if (attackCondition.isFiring && tryAttack != 0)
+				for (var i = 0; i < owner.Units.Count; i++)
 				{
-					// Make there is at least one follow and attack target, AFTER first trying on attack
-					if (isDefaultLeader)
+					var u = owner.Units[i];
+					var attackCondition = IsAttackingAndTryAttack(u.Actor);
+
+					var health = u.Actor.TraitOrDefault<IHealth>();
+
+					if (health != null)
 					{
-						leader = u.Actor;
-						isDefaultLeader = false;
+						var healthWPos = new WPos(0, 0, (int)health.DamageState); // HACK: use WPos.Z storage HP
+						if (u.WPos.Z != healthWPos.Z)
+						{
+							if (u.WPos.Z < healthWPos.Z)
+								healthChange = true;
+							u.WPos = healthWPos;
+						}
 					}
 
-					cannotRetaliate = false;
-				}
-				else if (CanAttackTarget(u.Actor, owner.TargetActor))
-				{
-					if (tryAttack > tryAttackTick && attackCondition.tryAttacking)
+					if ((attackCondition.tryAttacking || attackCondition.isFiring) &&
+						(u.Actor.CenterPosition - owner.TargetActor.CenterPosition).HorizontalLengthSquared <
+						(leader.CenterPosition - owner.TargetActor.CenterPosition).HorizontalLengthSquared)
 					{
-						// Make there is at least one follow and attack target even when approach max tryAttackTick
+						isDefaultLeader = false;
+						leader = u.Actor;
+					}
+
+					if (attackCondition.isFiring && tryAttack != 0)
+					{
+						// Make there is at least one follow and attack target, AFTER first trying on attack
 						if (isDefaultLeader)
 						{
 							leader = u.Actor;
 							isDefaultLeader = false;
-							attackingUnits.Add(u.Actor);
+						}
+
+						cannotRetaliate = false;
+					}
+					else if (CanAttackTarget(u.Actor, owner.TargetActor))
+					{
+						if (tryAttack > tryAttackTick && attackCondition.tryAttacking)
+						{
+							// Make there is at least one follow and attack target even when approach max tryAttackTick
+							if (isDefaultLeader)
+							{
+								leader = u.Actor;
+								isDefaultLeader = false;
+								attackingUnits.Add(u.Actor);
+								continue;
+							}
+
+							followingUnits.Add(u.Actor);
 							continue;
 						}
 
-						followingUnits.Add(u.Actor);
-						continue;
+						attackingUnits.Add(u.Actor);
+						cannotRetaliate = false;
 					}
-
-					attackingUnits.Add(u.Actor);
-					cannotRetaliate = false;
+					else
+						followingUnits.Add(u.Actor);
 				}
-				else
-					followingUnits.Add(u.Actor);
 			}
 
 			// Because ShouldFlee(owner) cannot retreat units while they cannot even fight
 			// a unit that they cannot target. Therefore, use `cannotRetaliate` here to solve this bug.
-			if (ShouldFleeSimple(owner) || cannotRetaliate)
-			{
-				owner.FuzzyStateMachine.ChangeState(owner, new NavyUnitsFleeState(), false);
-				return;
-			}
+			if (cannotRetaliate)
+				owner.FuzzyStateMachine.ChangeState(owner, new GuerrillaUnitsFleeState(), true);
 
 			tryAttack++;
 
+			var unitlost = squadsize > owner.Units.Count;
+			squadsize = owner.Units.Count;
+
+			if ((healthChange || unitlost) && !isFirstTick)
+				owner.FuzzyStateMachine.ChangeState(owner, new GuerrillaUnitsRunState(), true);
+
 			owner.Bot.QueueOrder(new Order("AttackMove", null, Target.FromCell(owner.World, leader.Location), false, groupedActors: followingUnits.ToArray()));
 			owner.Bot.QueueOrder(new Order("Attack", null, Target.FromActor(owner.TargetActor), false, groupedActors: attackingUnits.ToArray()));
+
+			isFirstTick = false;
 		}
 
 		public void Deactivate(Squad owner) { }
 	}
 
-	class NavyUnitsFleeState : NavyStateBase, IState
+	class GuerrillaUnitsRunState : GuerrillaStatesBase, IState
+	{
+		public const int HitTicks = 2;
+		internal int Hit = HitTicks;
+		bool ordered;
+
+		public void Activate(Squad owner) { ordered = false; }
+
+		public void Tick(Squad owner)
+		{
+			if (!owner.IsValid)
+				return;
+
+			if (Hit-- <= 0)
+			{
+				Hit = HitTicks;
+				owner.FuzzyStateMachine.ChangeState(owner, new GuerrillaUnitsHitState(), true);
+				return;
+			}
+
+			if (!ordered)
+			{
+				owner.Bot.QueueOrder(new Order("Move", null, Target.FromCell(owner.World, owner.BaseLocation), false, groupedActors: owner.Units.Select(u => u.Actor).ToArray()));
+				ordered = true;
+			}
+		}
+
+		public void Deactivate(Squad owner) { }
+	}
+
+	class GuerrillaUnitsFleeState : GuerrillaStatesBase, IState
 	{
 		public void Activate(Squad owner) { }
 
@@ -361,8 +409,8 @@ namespace OpenRA.Mods.Common.Traits.BotModules.Squads
 			if (!owner.IsValid)
 				return;
 
-			Retreat(owner, flee: true, rearm: true, repair: true);
-			owner.FuzzyStateMachine.ChangeState(owner, new NavyUnitsIdleState(), false);
+			Retreat(owner, true, true, true);
+			owner.FuzzyStateMachine.ChangeState(owner, new GuerrillaUnitsIdleState(), false);
 		}
 
 		public void Deactivate(Squad owner) { }

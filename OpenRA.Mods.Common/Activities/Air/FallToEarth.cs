@@ -26,6 +26,7 @@ namespace OpenRA.Mods.Common.Activities
 
 		public FallToEarth(Actor self, FallsToEarthInfo info)
 		{
+			ActivityType = ActivityType.Move;
 			this.info = info;
 			IsInterruptible = false;
 			aircraft = self.Trait<Aircraft>();

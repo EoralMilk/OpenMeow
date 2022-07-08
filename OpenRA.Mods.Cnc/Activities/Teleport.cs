@@ -35,6 +35,7 @@ namespace OpenRA.Mods.Cnc.Activities
 			bool killCargo, bool screenFlash, string sound, bool interruptable = true,
 			bool killOnFailure = false, BitSet<DamageType> killDamageTypes = default(BitSet<DamageType>))
 		{
+			ActivityType = ActivityType.Move;
 			var max = teleporter.World.Map.Grid.MaximumTileSearchRange;
 			if (maximumDistance > max)
 				throw new InvalidOperationException($"Teleport distance cannot exceed the value of MaximumTileSearchRange ({max}).");

@@ -47,6 +47,7 @@ namespace OpenRA.Mods.Common.Activities
 
 		public Attack(Actor self, in Target target, bool allowMovement, bool forceAttack, Color? targetLineColor = null)
 		{
+			ActivityType = ActivityType.Attack;
 			this.target = target;
 			this.targetLineColor = targetLineColor;
 			this.forceAttack = forceAttack;

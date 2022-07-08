@@ -29,6 +29,7 @@ namespace OpenRA.Mods.Common.Activities
 
 		public Drag(Actor self, WPos start, WPos end, int length, WAngle? facing = null)
 		{
+			ActivityType = ActivityType.Move;
 			positionable = self.Trait<IPositionable>();
 			disableable = self.TraitOrDefault<IMove>() as IDisabledTrait;
 			this.start = start;

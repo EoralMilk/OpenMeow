@@ -157,6 +157,7 @@ namespace OpenRA.Mods.Cnc.Traits
 			public DetonationSequence(Actor self, MadTank mad)
 				: this(self, mad, Target.Invalid)
 			{
+				ActivityType = ActivityType.Attack;
 				assignTargetOnFirstRun = true;
 			}
 

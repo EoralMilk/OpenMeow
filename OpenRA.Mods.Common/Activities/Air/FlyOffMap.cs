@@ -24,6 +24,7 @@ namespace OpenRA.Mods.Common.Activities
 
 		public FlyOffMap(Actor self, int endingDelay = 25)
 		{
+			ActivityType = ActivityType.Move;
 			aircraft = self.Trait<Aircraft>();
 			ChildHasPriority = false;
 			this.endingDelay = endingDelay;
@@ -32,6 +33,7 @@ namespace OpenRA.Mods.Common.Activities
 		public FlyOffMap(Actor self, in Target target, int endingDelay = 25)
 			: this(self, endingDelay)
 		{
+			ActivityType = ActivityType.Move;
 			this.target = target;
 			hasTarget = true;
 		}

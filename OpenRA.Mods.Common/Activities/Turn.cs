@@ -23,6 +23,7 @@ namespace OpenRA.Mods.Common.Activities
 
 		public Turn(Actor self, WAngle desiredFacing)
 		{
+			ActivityType = ActivityType.Move;
 			mobile = self.TraitOrDefault<Mobile>();
 			facing = self.Trait<IFacing>();
 			this.desiredFacing = desiredFacing;

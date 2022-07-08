@@ -42,6 +42,7 @@ namespace OpenRA.Mods.D2k.Activities
 
 		public SwallowActor(Actor self, in Target target, Armament a, IFacing facing)
 		{
+			ActivityType = ActivityType.Attack;
 			this.target = target;
 			this.facing = facing;
 			armament = a;

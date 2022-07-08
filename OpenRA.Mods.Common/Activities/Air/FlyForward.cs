@@ -24,6 +24,7 @@ namespace OpenRA.Mods.Common.Activities
 
 		FlyForward(Actor self)
 		{
+			ActivityType = ActivityType.Move;
 			aircraft = self.Trait<Aircraft>();
 			cruiseAltitude = aircraft.Info.CruiseAltitude;
 		}
@@ -31,12 +32,14 @@ namespace OpenRA.Mods.Common.Activities
 		public FlyForward(Actor self, int ticks = -1)
 			: this(self)
 		{
+			ActivityType = ActivityType.Move;
 			flyTicks = ticks;
 		}
 
 		public FlyForward(Actor self, WDist distance)
 			: this(self)
 		{
+			ActivityType = ActivityType.Move;
 			remainingDistance = distance.Length;
 		}
 

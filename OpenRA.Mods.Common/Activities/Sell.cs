@@ -25,6 +25,7 @@ namespace OpenRA.Mods.Common.Activities
 
 		public Sell(Actor self, bool showTicks)
 		{
+			ActivityType = ActivityType.Ability;
 			this.showTicks = showTicks;
 			health = self.TraitOrDefault<IHealth>();
 			sellableInfo = self.Info.TraitInfo<SellableInfo>();

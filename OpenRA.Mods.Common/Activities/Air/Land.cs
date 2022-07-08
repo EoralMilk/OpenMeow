@@ -37,20 +37,22 @@ namespace OpenRA.Mods.Common.Activities
 		public Land(Actor self, WAngle? facing = null, Color? targetLineColor = null)
 			: this(self, Target.Invalid, new WDist(-1), WVec.Zero, facing, targetLineColor: targetLineColor)
 		{
+			ActivityType = ActivityType.Move;
 			assignTargetOnFirstRun = true;
 		}
 
 		public Land(Actor self, in Target target, WAngle? facing = null, Color? targetLineColor = null)
-			: this(self, target, new WDist(-1), WVec.Zero, facing, targetLineColor: targetLineColor) { }
+			: this(self, target, new WDist(-1), WVec.Zero, facing, targetLineColor: targetLineColor) { ActivityType = ActivityType.Move; }
 
 		public Land(Actor self, in Target target, WDist landRange, WAngle? facing = null, Color? targetLineColor = null)
-			: this(self, target, landRange, WVec.Zero, facing, targetLineColor: targetLineColor) { }
+			: this(self, target, landRange, WVec.Zero, facing, targetLineColor: targetLineColor) { ActivityType = ActivityType.Move; }
 
 		public Land(Actor self, in Target target, in WVec offset, WAngle? facing = null, Color? targetLineColor = null)
-			: this(self, target, WDist.Zero, offset, facing, targetLineColor: targetLineColor) { }
+			: this(self, target, WDist.Zero, offset, facing, targetLineColor: targetLineColor) { ActivityType = ActivityType.Move; }
 
 		public Land(Actor self, in Target target, WDist landRange, in WVec offset, WAngle? facing = null, CPos[] clearCells = null, Color? targetLineColor = null)
 		{
+			ActivityType = ActivityType.Move;
 			aircraft = self.Trait<Aircraft>();
 			this.target = target;
 			this.offset = offset;

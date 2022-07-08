@@ -44,6 +44,7 @@ namespace OpenRA.Mods.Cnc.Traits
 
 			public AttackTDGunboatTurretedActivity(Actor self, in Target target, bool forceAttack, Color? targetLineColor = null)
 			{
+				ActivityType = ActivityType.Attack;
 				attack = self.Trait<AttackTDGunboatTurreted>();
 				this.target = target;
 				this.forceAttack = forceAttack;

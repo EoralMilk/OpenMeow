@@ -39,6 +39,7 @@ namespace OpenRA.Mods.Common.Activities
 
 		public FlyAttack(Actor self, AttackSource source, in Target target, bool forceAttack, Color? targetLineColor)
 		{
+			ActivityType = ActivityType.Attack;
 			this.source = source;
 			this.target = target;
 			this.forceAttack = forceAttack;
@@ -224,6 +225,7 @@ namespace OpenRA.Mods.Common.Activities
 
 		public FlyAttackRun(in Target t, WDist exitRange, AttackAircraft attack)
 		{
+			ActivityType = ActivityType.Attack;
 			ChildHasPriority = false;
 
 			target = t;
@@ -273,6 +275,7 @@ namespace OpenRA.Mods.Common.Activities
 
 		public StrafeAttackRun(AttackAircraft attackAircraft, Aircraft aircraft, in Target t, WDist exitRange)
 		{
+			ActivityType = ActivityType.Attack;
 			ChildHasPriority = false;
 
 			target = t;

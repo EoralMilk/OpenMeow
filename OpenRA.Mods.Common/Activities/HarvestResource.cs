@@ -31,6 +31,7 @@ namespace OpenRA.Mods.Common.Activities
 
 		public HarvestResource(Actor self, CPos targetCell)
 		{
+			ActivityType = ActivityType.Move;
 			harv = self.Trait<Harvester>();
 			harvInfo = self.Info.TraitInfo<HarvesterInfo>();
 			facing = self.Trait<IFacing>();

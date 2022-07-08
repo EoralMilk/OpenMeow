@@ -53,6 +53,8 @@ namespace OpenRA.Mods.Common.Activities
 		// Ignores lane bias
 		public Move(Actor self, CPos destination, Color? targetLineColor = null)
 		{
+			ActivityType = ActivityType.Move;
+
 			// PERF: Because we can be sure that OccupiesSpace is Mobile here, we can save some performance by avoiding querying for the trait.
 			mobile = (Mobile)self.OccupiesSpace;
 
@@ -70,6 +72,8 @@ namespace OpenRA.Mods.Common.Activities
 		public Move(Actor self, CPos destination, WDist nearEnough, Actor ignoreActor = null, bool evaluateNearestMovableCell = false,
 			Color? targetLineColor = null)
 		{
+			ActivityType = ActivityType.Move;
+
 			// PERF: Because we can be sure that OccupiesSpace is Mobile here, we can save some performance by avoiding querying for the trait.
 			mobile = (Mobile)self.OccupiesSpace;
 
@@ -93,6 +97,8 @@ namespace OpenRA.Mods.Common.Activities
 
 		public Move(Actor self, Func<BlockedByActor, List<CPos>> getPath, Color? targetLineColor = null)
 		{
+			ActivityType = ActivityType.Move;
+
 			// PERF: Because we can be sure that OccupiesSpace is Mobile here, we can save some performance by avoiding querying for the trait.
 			mobile = (Mobile)self.OccupiesSpace;
 
@@ -366,6 +372,7 @@ namespace OpenRA.Mods.Common.Activities
 			public MovePart(Move move, WPos from, WPos to, WAngle fromFacing, WAngle toFacing,
 				WRot? fromTerrainOrientation, WRot? toTerrainOrientation, int terrainOrientationMargin, int carryoverProgress)
 			{
+				ActivityType = ActivityType.Move;
 				Move = move;
 				From = from;
 				To = to;

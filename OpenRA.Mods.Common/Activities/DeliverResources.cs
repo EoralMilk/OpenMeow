@@ -28,6 +28,7 @@ namespace OpenRA.Mods.Common.Activities
 
 		public DeliverResources(Actor self, Actor targetActor = null)
 		{
+			ActivityType = ActivityType.Move;
 			movement = self.Trait<IMove>();
 			harv = self.Trait<Harvester>();
 			this.targetActor = targetActor;

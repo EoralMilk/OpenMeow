@@ -32,6 +32,7 @@ namespace OpenRA.Mods.Common.Activities
 
 		public MoveAdjacentTo(Actor self, in Target target, WPos? initialTargetPosition = null, Color? targetLineColor = null)
 		{
+			ActivityType = ActivityType.Move;
 			this.target = target;
 			this.targetLineColor = targetLineColor;
 			Mobile = self.Trait<Mobile>();

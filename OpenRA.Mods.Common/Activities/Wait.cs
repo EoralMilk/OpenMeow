@@ -18,9 +18,10 @@ namespace OpenRA.Mods.Common.Activities
 	{
 		int remainingTicks;
 
-		public Wait(int period) { remainingTicks = period; }
+		public Wait(int period) { ActivityType = ActivityType.Undefined; remainingTicks = period; }
 		public Wait(int period, bool interruptible)
 		{
+			ActivityType = ActivityType.Undefined;
 			remainingTicks = period;
 			IsInterruptible = interruptible;
 		}
@@ -38,9 +39,10 @@ namespace OpenRA.Mods.Common.Activities
 	{
 		readonly Func<bool> f;
 
-		public WaitFor(Func<bool> f) { this.f = f; }
+		public WaitFor(Func<bool> f) { this.f = f; ActivityType = ActivityType.Undefined; }
 		public WaitFor(Func<bool> f, bool interruptible)
 		{
+			ActivityType = ActivityType.Undefined;
 			this.f = f;
 			IsInterruptible = interruptible;
 		}

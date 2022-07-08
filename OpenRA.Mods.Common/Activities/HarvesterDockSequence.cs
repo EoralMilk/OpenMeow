@@ -35,6 +35,7 @@ namespace OpenRA.Mods.Common.Activities
 
 		public HarvesterDockSequence(Actor self, Actor refinery, WAngle dockAngle, bool isDragRequired, in WVec dragOffset, int dragLength)
 		{
+			ActivityType = ActivityType.Move;
 			dockingState = DockingState.Turn;
 			Refinery = refinery;
 			DockAngle = dockAngle;

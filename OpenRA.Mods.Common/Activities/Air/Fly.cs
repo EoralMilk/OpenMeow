@@ -34,11 +34,13 @@ namespace OpenRA.Mods.Common.Activities
 		public Fly(Actor self, in Target t, WDist nearEnough, WPos? initialTargetPosition = null, Color? targetLineColor = null)
 			: this(self, t, initialTargetPosition, targetLineColor)
 		{
+			ActivityType = ActivityType.Move;
 			this.nearEnough = nearEnough;
 		}
 
 		public Fly(Actor self, in Target t, WPos? initialTargetPosition = null, Color? targetLineColor = null)
 		{
+			ActivityType = ActivityType.Move;
 			aircraft = self.Trait<Aircraft>();
 			target = t;
 			this.targetLineColor = targetLineColor;
@@ -56,6 +58,7 @@ namespace OpenRA.Mods.Common.Activities
 			WPos? initialTargetPosition = null, Color? targetLineColor = null)
 			: this(self, t, initialTargetPosition, targetLineColor)
 		{
+			ActivityType = ActivityType.Move;
 			this.maxRange = maxRange;
 			this.minRange = minRange;
 		}

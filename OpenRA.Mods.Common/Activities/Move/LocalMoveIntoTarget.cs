@@ -27,6 +27,7 @@ namespace OpenRA.Mods.Common.Activities
 
 		public LocalMoveIntoTarget(Actor self, in Target target, WDist targetMovementThreshold, Color? targetLineColor = null)
 		{
+			ActivityType = ActivityType.Move;
 			mobile = self.Trait<Mobile>();
 			this.target = target;
 			this.targetMovementThreshold = targetMovementThreshold;

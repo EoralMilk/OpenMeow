@@ -40,6 +40,7 @@ namespace OpenRA.Mods.Cnc.Activities
 
 		public LeapAttack(Actor self, in Target target, bool allowMovement, bool forceAttack, AttackLeap attack, AttackLeapInfo info, Color? targetLineColor = null)
 		{
+			ActivityType = ActivityType.Attack;
 			this.target = target;
 			this.targetLineColor = targetLineColor;
 			this.info = info;

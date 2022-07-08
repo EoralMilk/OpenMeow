@@ -18,7 +18,7 @@ namespace OpenRA.Mods.Common.Activities
 	{
 		readonly CPos destination;
 
-		public SimpleTeleport(CPos destination) { this.destination = destination; }
+		public SimpleTeleport(CPos destination) { ActivityType = ActivityType.Move; this.destination = destination; }
 
 		public override bool Tick(Actor self)
 		{

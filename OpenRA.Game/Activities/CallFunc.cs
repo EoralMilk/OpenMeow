@@ -18,6 +18,7 @@ namespace OpenRA.Activities
 		public CallFunc(Action a) { this.a = a; }
 		public CallFunc(Action a, bool interruptible)
 		{
+			ActivityType = ActivityType.Undefined;
 			this.a = a;
 			IsInterruptible = interruptible;
 		}

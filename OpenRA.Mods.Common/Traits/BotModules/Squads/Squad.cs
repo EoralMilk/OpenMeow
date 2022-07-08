@@ -20,7 +20,7 @@ namespace OpenRA.Mods.Common.Traits.BotModules.Squads
 
 	public class Squad
 	{
-		public List<Actor> Units = new List<Actor>();
+		public List<UnitWposWrapper> Units = new List<UnitWposWrapper>();
 		public SquadType Type;
 
 		internal IBot Bot;
@@ -30,6 +30,7 @@ namespace OpenRA.Mods.Common.Traits.BotModules.Squads
 
 		internal Target Target;
 		internal StateMachine FuzzyStateMachine;
+		internal CPos BaseLocation;
 
 		public Squad(IBot bot, SquadManagerBotModule squadManager, SquadType type)
 			: this(bot, squadManager, type, null) { }
@@ -47,6 +48,8 @@ namespace OpenRA.Mods.Common.Traits.BotModules.Squads
 			switch (type)
 			{
 				case SquadType.Assault:
+					FuzzyStateMachine.ChangeState(this, new GuerrillaUnitsIdleState(), true);
+					break;
 				case SquadType.Rush:
 					FuzzyStateMachine.ChangeState(this, new GroundUnitsIdleState(), true);
 					break;
@@ -76,18 +79,18 @@ namespace OpenRA.Mods.Common.Traits.BotModules.Squads
 			set => Target = Target.FromActor(value);
 		}
 
-		public bool IsTargetValid => Target.IsValidFor(Units.FirstOrDefault()) && !Target.Actor.Info.HasTraitInfo<HuskInfo>();
+		public bool IsTargetValid => Target.IsValidFor(Units.FirstOrDefault().Actor) && !Target.Actor.Info.HasTraitInfo<HuskInfo>();
 
 		public bool IsTargetVisible => TargetActor.CanBeViewedByPlayer(Bot.Player);
 
-		public WPos CenterPosition { get { return Units.Select(u => u.CenterPosition).Average(); } }
+		public WPos CenterPosition { get { return Units.First().Actor.CenterPosition; } }
 
 		public MiniYaml Serialize()
 		{
 			var nodes = new MiniYaml("", new List<MiniYamlNode>()
 			{
 				new MiniYamlNode("Type", FieldSaver.FormatValue(Type)),
-				new MiniYamlNode("Units", FieldSaver.FormatValue(Units.Select(a => a.ActorID).ToArray())),
+				new MiniYamlNode("Units", FieldSaver.FormatValue(Units.Where(a => !SquadManager.UnitCannotBeOrdered(a.Actor)).Select(a => a.Actor.ActorID).ToArray())),
 			});
 
 			if (Target.Type == TargetType.Actor)
@@ -113,8 +116,13 @@ namespace OpenRA.Mods.Common.Traits.BotModules.Squads
 
 			var unitsNode = yaml.Nodes.FirstOrDefault(n => n.Key == "Units");
 			if (unitsNode != null)
-				squad.Units.AddRange(FieldLoader.GetValue<uint[]>("Units", unitsNode.Value.Value)
-					.Select(a => squadManager.World.GetActorById(a)));
+			{
+				foreach (var a in FieldLoader.GetValue<uint[]>("Units", unitsNode.Value.Value)
+					.Select(a => squadManager.World.GetActorById(a)))
+				{
+					squad.Units.Add(new UnitWposWrapper(a));
+				}
+			}
 
 			return squad;
 		}

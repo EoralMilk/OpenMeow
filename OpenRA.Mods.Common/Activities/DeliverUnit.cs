@@ -30,11 +30,13 @@ namespace OpenRA.Mods.Common.Activities
 		public DeliverUnit(Actor self, WDist deliverRange, Color? targetLineColor)
 			: this(self, Target.Invalid, deliverRange, targetLineColor)
 		{
+			ActivityType = ActivityType.Move;
 			assignTargetOnFirstRun = true;
 		}
 
 		public DeliverUnit(Actor self, in Target destination, WDist deliverRange, Color? targetLineColor)
 		{
+			ActivityType = ActivityType.Move;
 			this.destination = destination;
 			this.deliverRange = deliverRange;
 			this.targetLineColor = targetLineColor;
@@ -74,6 +76,7 @@ namespace OpenRA.Mods.Common.Activities
 
 			public ReleaseUnit(Actor self)
 			{
+				ActivityType = ActivityType.Move;
 				facing = self.Trait<IFacing>();
 				carryall = self.Trait<Carryall>();
 				body = self.Trait<BodyOrientation>();

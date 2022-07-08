@@ -23,6 +23,7 @@ namespace OpenRA.Mods.Common.Activities
 
 		public DeployForGrantedCondition(Actor self, GrantConditionOnDeploy deploy, bool moving = false)
 		{
+			ActivityType = ActivityType.Move;
 			this.deploy = deploy;
 			this.moving = moving;
 			canTurn = self.Info.HasTraitInfo<IFacingInfo>();
@@ -52,6 +53,7 @@ namespace OpenRA.Mods.Common.Activities
 
 		public DeployInner(GrantConditionOnDeploy deployment)
 		{
+			ActivityType = ActivityType.Move;
 			this.deployment = deployment;
 
 			// Once deployment animation starts, the animation must finish.

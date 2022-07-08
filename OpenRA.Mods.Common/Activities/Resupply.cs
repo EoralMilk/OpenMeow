@@ -45,6 +45,7 @@ namespace OpenRA.Mods.Common.Activities
 
 		public Resupply(Actor self, Actor host, WDist closeEnough, bool stayOnResupplier = false)
 		{
+			ActivityType = ActivityType.Move;
 			this.host = Target.FromActor(host);
 			this.closeEnough = closeEnough;
 			this.stayOnResupplier = stayOnResupplier;

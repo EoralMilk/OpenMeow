@@ -42,6 +42,7 @@ namespace OpenRA.Mods.Common.Traits
 
 			public SetTarget(AttackOmni attack, in Target target, bool allowMove, bool forceAttack, Color? targetLineColor = null)
 			{
+				ActivityType = ActivityType.Attack;
 				this.target = target;
 				this.targetLineColor = targetLineColor;
 				this.attack = attack;
