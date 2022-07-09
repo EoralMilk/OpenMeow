@@ -99,6 +99,18 @@ namespace OpenRA.Mods.Common.Traits
 
 			if (remainingDuration == 0)
 				localOffset = WVec.Zero;
+
+			if (IsProne)
+			{
+				if (conditionToken == Actor.InvalidConditionToken)
+					conditionToken = self.GrantCondition(info.Condition);
+			}
+			else
+			{
+				if (conditionToken == Actor.InvalidConditionToken)
+					return;
+				conditionToken = self.RevokeCondition(conditionToken);
+			}
 		}
 
 		public override bool HasAchievedDesiredFacing => true;
@@ -130,9 +142,6 @@ namespace OpenRA.Mods.Common.Traits
 
 		protected override void TraitEnabled(Actor self)
 		{
-			if (conditionToken == Actor.InvalidConditionToken)
-				conditionToken = self.GrantCondition(info.Condition);
-
 			if (info.Duration < 0 && info.DamageTriggers.IsEmpty)
 			{
 				remainingDuration = info.Duration;
