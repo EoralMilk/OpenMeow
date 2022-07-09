@@ -18,6 +18,9 @@ ABAN01:
 		Pieces: 2, 4
 	IsometricSelectable:
 		Height: 72
+	HitShape:
+		Type: Rectangle
+			VerticalTopOffset: 2172
 
 ABAN02:
 	Inherits: ^CivBuilding
@@ -39,6 +42,9 @@ ABAN02:
 		Pieces: 2, 4
 	IsometricSelectable:
 		Height: 48
+	HitShape:
+		Type: Rectangle
+			VerticalTopOffset: 1448
 
 ABAN03:
 	Inherits: ^CivBuilding
@@ -60,6 +66,12 @@ ABAN03:
 		Pieces: 2, 4
 	IsometricSelectable:
 		Height: 48
+	HitShape:
+		Type: Rectangle
+			VerticalTopOffset: 1448
+	HitShape:
+		Type: Rectangle
+			VerticalTopOffset: 720
 
 ABAN04:
 	Inherits: ^CivBuilding
@@ -79,12 +91,16 @@ ABAN04:
 		Pieces: 4, 7
 	ThrowsShrapnel@LARGE:
 		Pieces: 2, 3
+	HitShape:
+		Type: Rectangle
+			VerticalTopOffset: 720
 
 ABAN05:
 	Inherits: ^CivBuilding
 	Inherits@SHAPE: ^3x2Shape
 	HitShape:
 		Type: Rectangle
+			VerticalTopOffset: 720
 			TopLeft: -1536, -1024
 			BottomRight: 768, 1024
 	Tooltip:

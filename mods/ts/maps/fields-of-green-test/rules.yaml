@@ -13,9 +13,9 @@ World:
 	LuaScript:
 		Scripts: fields-of-green.lua
 	MusicPlaylist:
-		BackgroundMusic: intro
-		DisableWorldSounds: true
-		AllowMuteBackgroundMusic: true
+		# BackgroundMusic: intro
+		# DisableWorldSounds: true
+		# AllowMuteBackgroundMusic: true
 
 ^BaseWorld:
 	TerrainLighting:

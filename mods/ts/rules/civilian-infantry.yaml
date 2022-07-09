@@ -154,7 +154,8 @@ MWMN:
 	RevealsShroud:
 		Range: 4c0
 	Armament:
-		Weapon: Vulcan
+		LocalOffset: 123,0,422
+		Weapon: TestShotGun
 	AttackFrontal:
 		Voice: Attack
 		FacingTolerance: 0

@@ -221,8 +221,11 @@ namespace OpenRA.Mods.Common.Projectiles
 			if (checkLengthReached || remainingBounces < info.BounceCount || info.AlwaysDetectTarget)
 			{
 				// check target at PassiveTargetPos
-				if (AnyValidTargetsInRadius(world, pos, info.Width, args.SourceActor, true))
+				if (FirstValidTargetsOnLine(world, lastPos, pos, info.Width, args.SourceActor, true, out var hitpos, out blocker))
+				{
+					pos = hitpos;
 					return true;
+				}
 			}
 
 			if (shouldBounce && dat <= 0 && bouncingTick <= 0)

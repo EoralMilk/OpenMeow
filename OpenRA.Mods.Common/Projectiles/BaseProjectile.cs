@@ -260,6 +260,67 @@ namespace OpenRA.Mods.Common.Projectiles
 			if (info.ContrailLength > 0)
 				world.AddFrameEndTask(w => w.Add(new ContrailFader(pos, contrail)));
 		}
-	}
 
+		public bool FirstValidTargetsOnLine(World world, WPos lineStart, WPos lineEnd, WDist lineWidth, Actor firedBy, bool checkTargetType, out WPos hitPos, out Actor hitActor, bool onlyBlockers = false)
+		{
+			// This line intersection check is done by first just finding all actors within a square that starts at the source, and ends at the target.
+			// Then we iterate over this list, and find all actors for which their health radius is at least within lineWidth of the line.
+			// For actors without a health radius, we simply check their center point.
+			// The square in which we select all actors must be large enough to encompass the entire line's width.
+			// xDir and yDir must never be 0, otherwise the overscan will be 0 in the respective direction.
+			var xDiff = lineEnd.X - lineStart.X;
+			var yDiff = lineEnd.Y - lineStart.Y;
+			var xDir = xDiff < 0 ? -1 : 1;
+			var yDir = yDiff < 0 ? -1 : 1;
+
+			var dir = new WVec(xDir, yDir, 0);
+			var largestValidActorRadius = onlyBlockers ? world.ActorMap.LargestBlockingActorRadius.Length : world.ActorMap.LargestActorRadius.Length;
+			var overselect = dir * (1024 + lineWidth.Length + largestValidActorRadius);
+			var finalTarget = lineEnd + overselect;
+			var finalSource = lineStart - overselect;
+
+			var actorsInSquare = world.ActorMap.ActorsInBox(finalTarget, finalSource);
+			hitActor = null;
+			var intersectedActors = new List<Actor>();
+			int min = (lineStart - lineEnd).Length;
+			var temp = 0;
+			WPos tempHit;
+			hitPos = lineEnd;
+			foreach (var currActor in actorsInSquare)
+			{
+				if (currActor == firedBy)
+					continue;
+				var actorWidth = 0;
+				var shapes = currActor.TraitsImplementing<HitShape>().Where(Exts.IsTraitEnabled);
+				//if (shapes.Any())
+				//	actorWidth = shapes.Max(h => h.Info.Type.OuterRadius.Length);
+
+				//var projection = lineStart.MinimumPointLineProjection(lineEnd, currActor.CenterPosition);
+
+				foreach (var shape in shapes)
+				{
+					if (shape.DistanceFromEdge(currActor, lineStart).Length <= 0)
+					{
+						tempHit = shape.GetHitPos(currActor, lineStart);
+						temp = (lineStart - tempHit).Length;
+						if (temp < min)
+						{
+							min = temp;
+							hitActor = currActor;
+							hitPos = tempHit;
+						}
+					}
+				}
+			}
+
+			if (hitActor != null)
+			{
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+		}
+	}
 }

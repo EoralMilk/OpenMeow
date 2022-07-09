@@ -633,7 +633,16 @@
 	RevealOnFire:
 	EntersTunnels:
 		Voice: Move
+	HitShape@prone:
+		TargetableOffsets: 0,0,0
+		RequiresCondition: takecover
+		Type: Circle
+			Radius: 178
+			VerticalTopOffset: 64
+			VerticalBottomOffset: 0
 	HitShape:
+		TargetableOffsets: 0,0,256
+		RequiresCondition: !takecover
 		Type: Circle
 			Radius: 128
 			VerticalTopOffset: 512
@@ -711,6 +720,7 @@
 			Prone350Percent: 350
 		DamageTriggers: TriggerProne
 		ProneOffset: 300,0,0
+		Condition: takecover
 	WithSplitAttackPaletteInfantryBody:
 		IdleSequences: idle1, idle2
 		Palette: player-nomuzzle

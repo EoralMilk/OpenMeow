@@ -40,6 +40,10 @@ namespace OpenRA.Mods.Common.Traits
 		[Desc("Sequence prefix to apply while prone.")]
 		public readonly string ProneSequencePrefix = "prone-";
 
+		[GrantedConditionReference]
+		[Desc("Condition to grant.")]
+		public readonly string Condition = null;
+
 		public override object Create(ActorInitializer init) { return new TakeCover(init, this); }
 
 		public override void RulesetLoaded(Ruleset rules, ActorInfo ai)
@@ -54,6 +58,7 @@ namespace OpenRA.Mods.Common.Traits
 	public class TakeCover : Turreted, INotifyDamage, IDamageModifier, ISpeedModifier, ISync, IRenderInfantrySequenceModifier
 	{
 		readonly TakeCoverInfo info;
+		int conditionToken = Actor.InvalidConditionToken;
 
 		[Sync]
 		int remainingDuration = 0;
@@ -118,10 +123,16 @@ namespace OpenRA.Mods.Common.Traits
 		protected override void TraitDisabled(Actor self)
 		{
 			remainingDuration = 0;
+			if (conditionToken == Actor.InvalidConditionToken)
+				return;
+			conditionToken = self.RevokeCondition(conditionToken);
 		}
 
 		protected override void TraitEnabled(Actor self)
 		{
+			if (conditionToken == Actor.InvalidConditionToken)
+				conditionToken = self.GrantCondition(info.Condition);
+
 			if (info.Duration < 0 && info.DamageTriggers.IsEmpty)
 			{
 				remainingDuration = info.Duration;

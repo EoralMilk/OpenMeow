@@ -462,6 +462,9 @@ GARADR:
 	ProvidesPrerequisite@buildingname:
 	IsometricSelectable:
 		Height: 72
+	HitShape:
+		Type: Rectangle
+			VerticalTopOffset: 2172
 
 GATECH:
 	Inherits: ^Building
