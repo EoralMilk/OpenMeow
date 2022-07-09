@@ -66,7 +66,8 @@ CYBORG:
 	RevealsShroud:
 		Range: 5c0
 	Armament:
-		Weapon: Vulcan3
+		Weapon: CyMG #Vulcan3
+		LocalOffset: 240,120,558
 	AttackFrontal:
 		Voice: Attack
 		FacingTolerance: 0

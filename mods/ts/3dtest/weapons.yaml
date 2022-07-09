@@ -77,12 +77,12 @@ A10Napalm:
 
 
 TestVulcan:
-	Inherits: ^MG
 	ValidTargets: Ground, Water, Air
 	ReloadDelay: 3
 	MinRange: 0c128
 	Range: 15c0
 	Report: cygun1.aud
+	BurstDelays: 1
 	Projectile: Bullet
 		DetectTargetFromLength: 0.7
 		ContrailLength: 5
@@ -101,39 +101,101 @@ TestVulcan:
 	Warhead@1Dam: SpreadDamage
 		Damage: 900
 		Spread: 0c372
+		Falloff: 100, 50, 25, 12, 6, 3, 0
+		Versus:
+			None: 100
+			Wood: 60
+			Light: 40
+			Heavy: 25
+			Concrete: 10
+		DamageTypes: Prone70Percent, TriggerProne, BulletDeath
 		ValidTargets: Ground, Water, Air
 	Warhead@2Eff: CreateEffect
 		Explosions: piff
 		ValidTargets: Ground, Air
+	Warhead@3EffWater: CreateEffect
+		Explosions: water_piffs
+		ExplosionPalette: ra
+		ValidTargets: Water
+		InvalidTargets: Vehicle
+
 
 TestMG:
 	Inherits: TestVulcan
 	MinRange: 0c128
-	Range: 6c512
+	Range: 6c0
 	ReloadDelay: 30
 	Burst: 4
-	BurstDelay: 1
+	BurstDelays: 4
+	Report: infgun3.aud
 	Projectile: Bullet
 		LifeTime: 13
-		ContrailLength: 2
-		Inaccuracy: 200
-		VerticalInaccuracy: 126
+		ContrailLength: 3
+		Inaccuracy: 230
+		VerticalInaccuracy: 155
+		Blockable: true
 	Warhead@1Dam: SpreadDamage
 		Damage: 900
 		Spread: 0c128
 		ValidTargets: Ground, Water, Air
 
+CyMG:
+	Inherits: TestMG
+	Range: 6c768
+	ReloadDelay: 30
+	Burst: 4
+	BurstDelays: 2
+	Report: cygun1.aud
+	# Projectile: Bullet
+	# 	LifeTime: 13
+	# 	ContrailLength: 3
+	# 	Inaccuracy: 450
+	# 	VerticalInaccuracy: 240
+	Projectile: InstantScat
+		ScatWeapon: CyMGScat
+		ScatCount: 2
+		Inaccuracy: 200
+		VerticalInaccuracy: 200
+
+CyMGScat:
+	Inherits: TestMG
+	Projectile: Bullet
+		LifeTime: 13
+		ContrailLength: 3
+		Inaccuracy: 330
+		VerticalInaccuracy: 168
+
+VulcanMG:
+	Inherits: TestMG
+	Report: chaingn1.aud
+	Range: 7c0
+	ReloadDelay: 40
+	Burst: 6
+	BurstDelays: 3
+
+TestShotGunScat:
+	Inherits: TestMG
+	Projectile: Bullet
+		LifeTime: 10
+		Inaccuracy: 700
+		ContrailLength: 2
+		VerticalInaccuracy: 440
+	Warhead@1Dam: SpreadDamage
+		Damage: 600
+		Spread: 0c128
+		ValidTargets: Ground, Water, Air
+
 TestShotGun:
 	ReloadDelay: 24
-	Range: 6c768
+	Range: 5c256
 	Burst: 1
 	# BurstDelays: 2
 	Report: gun18.aud
 	Projectile: InstantScat
-		ScatWeapon: TestMG
+		ScatWeapon: TestShotGunScat
 		ScatCount: 9
-		Inaccuracy: 500
-		VerticalInaccuracy: 350
+		Inaccuracy: 200
+		VerticalInaccuracy: 200
 	Warhead@1Dam: SpreadDamage
 
 VectorBooster:
@@ -162,7 +224,7 @@ VectorBooster:
 		TrailInterval: 1
 		TrailCount: 0
 		ExplodeUnderThisAltitude: 0
-		UsingScat: true
+		UsingScat: false
 		ScatWeapon: Grenade
 		ScatDist: 3c512
 		ScatCount: 3

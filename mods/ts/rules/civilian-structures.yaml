@@ -1473,6 +1473,22 @@ GASAND:
 	WithWallSpriteBody:
 		Type: sandbags
 	-BlocksProjectiles:
+	HitShape:
+		Type: Rectangle
+			LocalYaw: 128
+			TopLeft: -512, -512
+			BottomRight: 512, 512
+			VerticalTopOffset: 300
+	AppearsOnMapPreview:
+	MapEditorData:
+		Categories: Wall
+	Valued:
+		Cost: 50
+	CustomSellValue:
+		Value: 0
+	BlocksProjectiles:
+		Height: 300
+
 
 GASPOT:
 	Inherits: ^Building

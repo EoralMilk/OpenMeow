@@ -22,7 +22,7 @@ DPOD:
 		UnloadVoice: Move
 		EjectOnDeath: true
 	Armament:
-		Weapon: Vulcan2
+		Weapon: VulcanMG #Vulcan2
 	AttackAircraft:
 		Voice: Attack
 	AmmoPool:
