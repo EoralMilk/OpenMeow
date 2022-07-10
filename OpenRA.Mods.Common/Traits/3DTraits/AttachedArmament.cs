@@ -275,7 +275,8 @@ namespace OpenRA.Mods.Common.Traits
 			Func<WAngle> muzzleFacing = () => CalculateMuzzleOrientation(self, barrel).Yaw;
 			var muzzleOrientation = WRot.FromYaw(muzzleFacing());
 
-			var passiveTarget = Weapon.TargetActorCenter ? target.CenterPosition : target.Positions.PositionClosestTo(muzzlePosition());
+			var targetOffset = AimTargetOn(self, muzzlePosition(), target);
+			var passiveTarget = Weapon.TargetActorCenter ? target.CenterPosition + targetOffset : target.Positions.PositionClosestTo(muzzlePosition()) + targetOffset;
 			var initialOffset = Weapon.FirstBurstTargetOffset;
 			if (initialOffset != WVec.Zero)
 			{

@@ -34,7 +34,8 @@ namespace OpenRA.Graphics
 
 		public void UpdateWorldRenderOffset(World3DRenderer wr)
 		{
-			var offset = wr.InverseCameraFrontMeterPerWPos * 100;
+			var offset = wr.InverseCameraFrontMeterPerWPos * 1000;
+
 			ViewZOffset = new float3(offset.x, offset.y, offset.z);
 			CamUpOffset = new float3(wr.CameraUp.x, wr.CameraUp.y, wr.CameraUp.z);
 			CamRightOffset = new float3(wr.CameraRight.x, wr.CameraRight.y, wr.CameraRight.z);
@@ -48,6 +49,25 @@ namespace OpenRA.Graphics
 		public void DrawWorldLine(in float3 start, in float3 end, float width, Color startColor, Color endColor, BlendMode blendMode = BlendMode.Alpha)
 		{
 			DrawLine(start, end, width, startColor, endColor, blendMode, true);
+		}
+
+		public void DrawWorldPoint(in WPos pos, float width, Color startColor, Color endColor, BlendMode blendMode = BlendMode.Alpha)
+		{
+			var offset = new WVec(0, 0, 1);
+			var offset2 = new WVec(1, 0, 0);
+
+			DrawLine(Render3DPosition(pos - offset), Render3DPosition(pos + offset), width, startColor, endColor, blendMode, true);
+			DrawLine(Render3DPosition(pos - offset2), Render3DPosition(pos + offset2), width, startColor, endColor, blendMode, true);
+		}
+
+		public void DrawWorldLine(in WPos start, in WPos end, float width, Color startColor, Color endColor, BlendMode blendMode = BlendMode.Alpha)
+		{
+			DrawLine(Render3DPosition(start), Render3DPosition(end), width, startColor, endColor, blendMode, true);
+		}
+
+		public float3 Render3DPosition(WPos pos)
+		{
+			return new float3(-(float)pos.X / Game.Renderer.World3DRenderer.WPosPerMeter, (float)pos.Y / Game.Renderer.World3DRenderer.WPosPerMeter, (float)pos.Z / Game.Renderer.World3DRenderer.WPosPerMeterHeight);
 		}
 
 		void DrawLine(in float3 start, in float3 end, float width, Color startColor, Color endColor, BlendMode blendMode = BlendMode.Alpha, bool world = false)

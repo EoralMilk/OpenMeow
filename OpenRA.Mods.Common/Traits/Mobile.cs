@@ -265,6 +265,10 @@ namespace OpenRA.Mods.Common.Traits
 		}
 		#endregion
 
+		WPos lastPos, currentPos;
+		WVec currentSpeed = WVec.Zero;
+		public WVec CurrentSpeed => currentSpeed;
+
 		public Mobile(ActorInitializer init, MobileInfo info)
 			: base(info)
 		{
@@ -303,6 +307,8 @@ namespace OpenRA.Mods.Common.Traits
 			}
 
 			creationActivityDelay = init.GetValue<CreationActivityDelayInit, int>(0);
+			currentPos = CenterPosition;
+			lastPos = CenterPosition;
 		}
 
 		protected override void Created(Actor self)
@@ -317,11 +323,16 @@ namespace OpenRA.Mods.Common.Traits
 				.Single(l => l.Info.Name == Info.Locomotor);
 
 			base.Created(self);
+			currentPos = CenterPosition;
+			lastPos = CenterPosition;
 		}
 
 		void ITick.Tick(Actor self)
 		{
 			UpdateMovement();
+			currentPos = CenterPosition;
+			currentSpeed = currentPos - lastPos;
+			lastPos = currentPos;
 		}
 
 		public void UpdateMovement()

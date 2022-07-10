@@ -2,6 +2,12 @@ DPOD:
 	Inherits: ^Aircraft
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@CARGOPIPS: ^CargoPips
+	Buildable:
+		Queue: Air
+		BuildPaletteOrder: 100
+		Prerequisites: ~none
+	RenderSprites:
+		Image: scrin
 	Valued:
 		Cost: 10
 	Tooltip:
@@ -38,6 +44,7 @@ DPOD:
 
 DPOD2:
 	Inherits@2: ^ExistsInWorld
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Valued:
 		Cost: 10
 	Tooltip:
@@ -52,6 +59,10 @@ DPOD2:
 		CruiseAltitude: 16c0
 		MaximumPitch: 110
 		LandableTerrainTypes: Clear, Road, Rail, DirtRoad, Rough
+	AttackAircraft:
+		Voice: Attack
+	Armament:
+		Weapon: TestVulcan #Vulcan2
 	HiddenUnderFog:
 		Type: CenterPosition
 	BodyOrientation:
@@ -87,6 +98,12 @@ DPOD2E2:
 DSHP:
 	Inherits: ^Aircraft
 	Inherits@CARGOPIPS: ^CargoPips
+	Buildable:
+		Queue: Air
+		BuildPaletteOrder: 100
+		Prerequisites: ~none
+	RenderSprites:
+		Image: scrin
 	Valued:
 		Cost: 1000
 	Tooltip:

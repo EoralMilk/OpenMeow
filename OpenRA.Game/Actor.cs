@@ -566,6 +566,16 @@ namespace OpenRA
 			return new[] { CenterPosition };
 		}
 
+		public IEnumerable<WPos> GetTargetablePositions(WVec offset)
+		{
+			if (enabledTargetablePositions.Any())
+				foreach (var t in enabledTargetableWorldPositions) {
+					yield return t + offset;
+				}
+			else
+				yield return CenterPosition;
+		}
+
 		#region Conditions
 
 		void UpdateConditionState(string condition, int token, bool isRevoke)

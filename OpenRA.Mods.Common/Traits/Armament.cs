@@ -13,9 +13,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using OpenRA.GameRules;
+using OpenRA.Mods.Common.Projectiles;
 using OpenRA.Mods.Common.Traits.Render;
 using OpenRA.Mods.Common.Traits.Trait3D;
 using OpenRA.Traits;
+using TrueSync;
 
 namespace OpenRA.Mods.Common.Traits
 {
@@ -30,6 +32,8 @@ namespace OpenRA.Mods.Common.Traits
 	public class ArmamentInfo : PausableConditionalTraitInfo, Requires<AttackBaseInfo>
 	{
 		public readonly string Name = "primary";
+
+		public readonly int CalProjSpeed = 500;
 
 		[WeaponReference]
 		[FieldLoader.Require]
@@ -235,10 +239,17 @@ namespace OpenRA.Mods.Common.Traits
 			delayedActions.RemoveAll(a => a.Ticks <= 0);
 		}
 
+		int debugDrawTick = 0;
+		WPos lineStart, lineEnd;
 		void ITick.Tick(Actor self)
 		{
 			// Split into a protected method to allow subclassing
 			Tick(self);
+
+			//if (debugDrawTick-- >= 0)
+			//{
+			//	Game.Renderer.WorldRgbaColorRenderer.DrawWorldLine(lineStart, lineEnd, 0.5f, Primitives.Color.White, Primitives.Color.White);
+			//}
 		}
 
 		protected void ScheduleDelayedAction(int t, int b, Action<int> a)
@@ -247,6 +258,78 @@ namespace OpenRA.Mods.Common.Traits
 				delayedActions.Add((t, b, a));
 			else
 				a(b);
+		}
+
+		public virtual WVec AimTargetOn(Actor self, in WPos firePos, in Target target)
+		{
+			var offset = WVec.Zero;
+			var w3dr = Game.Renderer.World3DRenderer;
+			// target the lead
+			if (target.Actor != null && target.Actor != self && !target.Actor.IsDead && target.Actor.IsInWorld)
+			{
+				var move = target.Actor.TraitOrDefault<IMove>();
+				if (move != null)
+				{
+					FP projSpeed = FP.Zero;
+					if (Weapon.Projectile is BulletInfo)
+					{
+						var speeds = (Weapon.Projectile as BulletInfo).Speed;
+						if (speeds.Length == 1)
+							projSpeed = speeds[0].Length;
+						else
+						{
+							projSpeed = (speeds[0].Length + speeds[1].Length) / 2;
+						}
+					}
+
+					if (projSpeed == FP.Zero)
+						return offset;
+
+					projSpeed = projSpeed / w3dr.WPosPerMeter;
+					// var tsFIrePos = w3dr.Get3DPositionFromWPos(firePos);
+					var tsDist = w3dr.Get3DPositionFromWVec(firePos - target.Actor.CenterPosition);
+					var tsMove = w3dr.Get3DPositionFromWVec(move.CurrentSpeed);
+					var distq = tsDist.sqrMagnitude;
+					FP distLength = TSMath.Sqrt(distq);
+					var msq = tsMove.sqrMagnitude;
+					FP moveSpeed = TSMath.Sqrt(msq);
+					if (msq == 0)
+						return offset;
+
+					FP cos = TSVector.Dot(tsDist, tsMove) / (distLength * moveSpeed);
+					FP a = (msq - projSpeed * projSpeed);
+					FP b = -(2 * distLength * cos * moveSpeed);
+					FP c = distq;
+					var delta = (b * b) - (4 * a * c);
+					if (delta >= 0)
+					{
+						var t = (-b + TSMath.Sqrt(delta)) / (2 * a);
+						var t2 = (-b - TSMath.Sqrt(delta)) / (2 * a);
+						if (t < t2)
+							t = t2;
+						if (t > 0)
+						{
+							offset = new WVec((int)(t * move.CurrentSpeed.X), (int)(t * move.CurrentSpeed.Y), (int)(t * move.CurrentSpeed.Z));
+							//lineStart = firePos;
+							//lineEnd = target.Actor.CenterPosition + offset;
+							//debugDrawTick = 4;
+							return offset;
+						}
+						else
+						{
+							Console.WriteLine("invlid t: " + (float)t + "  cos: " + (float)cos + " b*b: " + (float)b * b + " a:" + (float)a + " c:" + (float)c);
+						}
+					}
+					else
+					{
+						Console.WriteLine("no target locked:  cos: " + (float)cos + " b*b: " + (float)b * b + " a:" + (float)a + " c:" + (float)c);
+					}
+				}
+
+				return offset;
+			}
+
+			return offset;
 		}
 
 		bool CanFire(Actor self, in Target target)
@@ -277,7 +360,7 @@ namespace OpenRA.Mods.Common.Traits
 		// The world coordinate model uses Actor.Orientation
 		public virtual Barrel CheckFire(Actor self, IFacing facing, in Target target)
 		{
-			if (!CanFire(self, target))
+			if (!CanFire(self, in target))
 				return null;
 
 			if (ticksSinceLastShot >= Weapon.ReloadDelay)
@@ -305,7 +388,6 @@ namespace OpenRA.Mods.Common.Traits
 			Func<WPos> muzzlePosition = () => MuzzleWPos(self, barrel);
 			Func<WAngle> muzzleFacing = () => MuzzleOrientation(self, barrel).Yaw;
 			var muzzleOrientation = WRot.FromYaw(muzzleFacing());
-
 			var passiveTarget = Weapon.TargetActorCenter ? target.CenterPosition : target.Positions.PositionClosestTo(muzzlePosition());
 			var initialOffset = Weapon.FirstBurstTargetOffset;
 			if (initialOffset != WVec.Zero)
@@ -348,6 +430,8 @@ namespace OpenRA.Mods.Common.Traits
 			{
 				if (args.Weapon.Projectile != null)
 				{
+					var targetOffset = AimTargetOn(self, args.Source, delayedTarget);
+					args.PassiveTarget += targetOffset;
 					var projectile = args.Weapon.Projectile.Create(args);
 					if (projectile != null)
 						self.World.Add(projectile);
@@ -394,6 +478,11 @@ namespace OpenRA.Mods.Common.Traits
 		public WPos MuzzleWPos(Actor self, Barrel b)
 		{
 			return CalculateMuzzleWPos(self, b);
+		}
+
+		public WPos MuzzleWPos()
+		{
+			return CalculateMuzzleWPos(self, Weapon.Burst == 1 ? Barrels[currentBarrel % Barrels.Length] : Barrels[Burst % Barrels.Length]);
 		}
 
 		protected virtual WPos CalculateMuzzleWPos(Actor self, Barrel b)

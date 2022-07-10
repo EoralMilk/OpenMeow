@@ -570,6 +570,7 @@ GAPLUG:
 		ChargeInterval: 10000
 		UnitTypes: DPOD2E1, DPOD2E2
 		CameraActor: camera
+		Weapon: VulcanMG
 	ProduceActorPower:
 		PauseOnCondition: disabled || empdisable
 		RequiresCondition: plug.hunterseekera || plug.hunterseekerb

@@ -89,6 +89,10 @@ namespace OpenRA.Mods.Cnc.Traits
 
 		CPos cachedLocation;
 
+		WPos lastPos, currentPos;
+		WVec currentSpeed = WVec.Zero;
+		public WVec CurrentSpeed => currentSpeed;
+
 		public TDGunboat(ActorInitializer init, TDGunboatInfo info)
 		{
 			Info = info;
@@ -108,6 +112,9 @@ namespace OpenRA.Mods.Cnc.Traits
 			// Prevent mappers from setting bogus facings
 			if (Facing != Left && Facing != Right)
 				Facing = Facing.Angle > 511 ? Right : Left;
+
+			currentPos = CenterPosition;
+			lastPos = CenterPosition;
 		}
 
 		void INotifyCreated.Created(Actor self)
@@ -115,6 +122,8 @@ namespace OpenRA.Mods.Cnc.Traits
 			speedModifiers = self.TraitsImplementing<ISpeedModifier>().ToArray().Select(sm => sm.GetSpeedModifier());
 			cachedLocation = self.Location;
 			notifyCenterPositionChanged = self.TraitsImplementing<INotifyCenterPositionChanged>().ToArray();
+			currentPos = CenterPosition;
+			lastPos = CenterPosition;
 		}
 
 		void INotifyAddedToWorld.AddedToWorld(Actor self)
@@ -129,6 +138,8 @@ namespace OpenRA.Mods.Cnc.Traits
 
 		void ITick.Tick(Actor self)
 		{
+			lastPos = currentPos;
+
 			if (cachedLocation != self.Location)
 			{
 				// If the actor just left the map, switch facing
@@ -139,6 +150,9 @@ namespace OpenRA.Mods.Cnc.Traits
 			cachedLocation = self.Location;
 
 			SetCenterPosition(self, self.CenterPosition + MoveStep(Facing));
+
+			currentPos = CenterPosition;
+			currentSpeed = currentPos - lastPos;
 		}
 
 		void Turn()

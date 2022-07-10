@@ -252,7 +252,9 @@ namespace OpenRA.Mods.Common.Traits
 				var checkIsValid = checkForCenterTargetingWeapons ? armament.Weapon.TargetActorCenter : !armament.IsTraitPaused;
 				var reloadingStateIsValid = !reloadingIsInvalid || !armament.IsReloading;
 				if (checkIsValid && reloadingStateIsValid && !armament.IsTraitDisabled && armament.Weapon.IsValidAgainst(t, self.World, self))
+				{
 					return true;
+				}
 			}
 
 			return false;

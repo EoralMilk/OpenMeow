@@ -54,7 +54,8 @@ UMAGON:
 	RevealsShroud:
 		Range: 7c0
 	Armament:
-		Weapon: Sniper
+		LocalOffset: 126,0,438
+		Weapon: TestSniper
 	AttackFrontal:
 		Voice: Attack
 		FacingTolerance: 0
@@ -154,7 +155,7 @@ MWMN:
 	RevealsShroud:
 		Range: 4c0
 	Armament:
-		LocalOffset: 123,0,422
+		LocalOffset: 143,0,438
 		Weapon: TestShotGun
 	AttackFrontal:
 		Voice: Attack

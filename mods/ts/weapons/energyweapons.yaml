@@ -193,7 +193,7 @@ ObeliskLaserFire:
 TurretLaserFire:
 	Inherits: ^Laser
 	ReloadDelay: 40
-	Range: 5c512
+	Range: 6c512
 	Report: lastur1.aud
 	Projectile: LaserZap
 		Width: 36

@@ -269,6 +269,10 @@ namespace OpenRA.Mods.Common.Traits
 		public WAngle TurnSpeed => IsTraitDisabled || IsTraitPaused ? WAngle.Zero : Info.TurnSpeed;
 		public WAngle? IdleTurnSpeed => IsTraitDisabled || IsTraitPaused ? null : Info.IdleTurnSpeed;
 
+		WPos lastPos, currentPos;
+		WVec currentSpeed = WVec.Zero;
+		public WVec CurrentSpeed => currentSpeed;
+
 		public WAngle GetTurnSpeed(bool isIdleTurn)
 		{
 			// A MovementSpeed of zero indicates either a speed modifier of zero percent or that the trait is paused or disabled.
@@ -324,6 +328,8 @@ namespace OpenRA.Mods.Common.Traits
 
 			Facing = init.GetValue<FacingInit, WAngle>(Info.InitialFacing);
 			creationActivityDelay = init.GetValue<CreationActivityDelayInit, int>(0);
+			currentPos = CenterPosition;
+			lastPos = CenterPosition;
 		}
 
 		public WDist LandAltitude
@@ -372,6 +378,8 @@ namespace OpenRA.Mods.Common.Traits
 			overrideAircraftLanding = self.TraitOrDefault<IOverrideAircraftLanding>();
 			notifyCenterPositionChanged = self.TraitsImplementing<INotifyCenterPositionChanged>().ToArray();
 			base.Created(self);
+			currentPos = CenterPosition;
+			lastPos = CenterPosition;
 		}
 
 		void INotifyAddedToWorld.AddedToWorld(Actor self)
@@ -388,6 +396,9 @@ namespace OpenRA.Mods.Common.Traits
 				OnAirborneAltitudeReached();
 			if (altitude == Info.CruiseAltitude)
 				OnCruisingAltitudeReached();
+
+			currentPos = CenterPosition;
+			lastPos = CenterPosition;
 		}
 
 		void INotifyRemovedFromWorld.RemovedFromWorld(Actor self)
@@ -456,6 +467,9 @@ namespace OpenRA.Mods.Common.Traits
 			}
 
 			Repulse();
+			currentPos = CenterPosition;
+			currentSpeed = currentPos - lastPos;
+			lastPos = currentPos;
 		}
 
 		public void Repulse()

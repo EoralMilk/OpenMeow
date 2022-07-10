@@ -132,23 +132,23 @@ Jugg90mm:
 Grenade:
 	Inherits: ^ArtilleryWeapon
 	ReloadDelay: 60
-	Range: 4c512
+	Range: 5c0
 	-Report:
-	Burst: 5
+	# Burst: 5
 	ValidTargets: Ground, Water, Air, Trees
 	Projectile: Bullet
 		Speed: 226
 		Blockable: true
 		Shadow: true
 		LaunchAngle: 60
-		Inaccuracy: 800
+		Inaccuracy: 400
 		Image: DISCUS
 		Palette: effect
 		BounceCount: 5
-		Width: 64
+		Width: 256
 	Warhead@1Dam: SpreadDamage
 		Spread: 154
-		Damage: 4000
+		Damage: 5500
 		Versus:
 			Light: 70
 			Concrete: 28

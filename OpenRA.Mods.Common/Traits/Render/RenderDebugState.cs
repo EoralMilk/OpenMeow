@@ -34,6 +34,8 @@ namespace OpenRA.Mods.Common.Traits.Render
 		readonly WVec offset;
 		SquadManagerBotModule ai;
 
+		IMove move;
+
 		Color color;
 		string tagString;
 
@@ -81,6 +83,12 @@ namespace OpenRA.Mods.Common.Traits.Render
 			var activity = self.CurrentActivity;
 			if (activity != null)
 				yield return new TextAnnotationRenderable(font, self.CenterPosition, 0, color, activity.DebugLabelComponents().JoinWith("."));
+
+			move = self.TraitOrDefault<IMove>();
+			if (move != null)
+			{
+				yield return new TextAnnotationRenderable(font, self.CenterPosition - 2 * offset, 0, color, new string("Speed: " + move.CurrentSpeed));
+			}
 
 			// Get the AI squad that this actor belongs to.
 			if (!self.Owner.IsBot)

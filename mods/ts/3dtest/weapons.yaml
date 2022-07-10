@@ -85,22 +85,23 @@ TestVulcan:
 	BurstDelays: 1
 	Projectile: Bullet
 		DetectTargetFromLength: 0.7
-		ContrailLength: 5
+		DetectTargetBeforeDist: 2c0
+		ContrailLength: 3
 		ContrailWidth: 44
-		ContrailColor: F0D05CA0
+		ContrailColor: FFE8CCA0
 		ContrailDelay: 0
 		ContrailBlendMode: ScreenAdditive
 		Speed: 1100
 		LaunchAngle: 0
 		ZOffset: 1024
-		Inaccuracy: 1c0
-		VerticalInaccuracy: 1c0
+		Inaccuracy: 450
+		VerticalInaccuracy: 400
 		OnlyHitToExplode: true
 		ExplodeUnderThisAltitude: 0
 		Blockable: false
 	Warhead@1Dam: SpreadDamage
 		Damage: 900
-		Spread: 0c372
+		Spread: 0c128
 		Falloff: 100, 50, 25, 12, 6, 3, 0
 		Versus:
 			None: 100
@@ -114,7 +115,7 @@ TestVulcan:
 		Explosions: piff
 		ValidTargets: Ground, Air
 	Warhead@3EffWater: CreateEffect
-		Explosions: water_piffs
+		Explosions: water_piff
 		ExplosionPalette: ra
 		ValidTargets: Water
 		InvalidTargets: Vehicle
@@ -136,31 +137,31 @@ TestMG:
 		Blockable: true
 	Warhead@1Dam: SpreadDamage
 		Damage: 900
-		Spread: 0c128
+		Spread: 0c76
 		ValidTargets: Ground, Water, Air
 
 CyMG:
 	Inherits: TestMG
 	Range: 6c768
 	ReloadDelay: 30
-	Burst: 4
+	Burst: 8
 	BurstDelays: 2
 	Report: cygun1.aud
-	# Projectile: Bullet
-	# 	LifeTime: 13
-	# 	ContrailLength: 3
-	# 	Inaccuracy: 450
-	# 	VerticalInaccuracy: 240
-	Projectile: InstantScat
-		ScatWeapon: CyMGScat
-		ScatCount: 2
-		Inaccuracy: 200
-		VerticalInaccuracy: 200
+	Projectile: Bullet
+		LifeTime: 10
+		ContrailLength: 3
+		Inaccuracy: 340
+		VerticalInaccuracy: 178
+	# Projectile: InstantScat
+	# 	ScatWeapon: CyMGScat
+	# 	ScatCount: 2
+	# 	Inaccuracy: 200
+	# 	VerticalInaccuracy: 200
 
 CyMGScat:
 	Inherits: TestMG
 	Projectile: Bullet
-		LifeTime: 13
+		LifeTime: 10
 		ContrailLength: 3
 		Inaccuracy: 330
 		VerticalInaccuracy: 168
@@ -176,14 +177,29 @@ VulcanMG:
 TestShotGunScat:
 	Inherits: TestMG
 	Projectile: Bullet
-		LifeTime: 10
+		LifeTime: 7
 		Inaccuracy: 700
 		ContrailLength: 2
 		VerticalInaccuracy: 440
 	Warhead@1Dam: SpreadDamage
 		Damage: 600
 		Spread: 0c128
+		Versus:
+			None: 100
+			Wood: 20
+			Light: 15
+			Heavy: 5
+			Concrete: 5
 		ValidTargets: Ground, Water, Air
+
+TestShotGunProScat:
+	Inherits: TestMG
+	Projectile: Bullet
+		LifeTime: 7
+		Inaccuracy: 800
+		ContrailLength: 2
+		VerticalInaccuracy: 490
+
 
 TestShotGun:
 	ReloadDelay: 24
@@ -197,6 +213,43 @@ TestShotGun:
 		Inaccuracy: 200
 		VerticalInaccuracy: 200
 	Warhead@1Dam: SpreadDamage
+
+TestShotGunPro:
+	ReloadDelay: 24
+	Range: 6c256
+	Burst: 1
+	# BurstDelays: 2
+	Report: gun18.aud
+	Projectile: InstantScat
+		ScatWeapon: TestShotGunProScat
+		ScatCount: 9
+		Inaccuracy: 0
+		VerticalInaccuracy: 0
+	Warhead@1Dam: SpreadDamage
+
+TestSniper:
+	Inherits: TestMG
+	MinRange: 0c128
+	Range: 10c0
+	ReloadDelay: 45
+	Burst: 1
+	Report: silencer.aud
+	Projectile: Bullet
+		LifeTime: 13
+		ContrailLength: 3
+		Inaccuracy: 0
+		VerticalInaccuracy: 0
+		Blockable: true
+	Warhead@1Dam: SpreadDamage
+		Spread: 36
+		Damage: 15000
+		Versus:
+			Wood: 5
+			Light: 15
+			Heavy: 5
+			Concrete: 5
+		DamageTypes: Prone100Percent, TriggerProne, BulletDeath
+
 
 VectorBooster:
 	Range: 8c0
