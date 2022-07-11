@@ -48,6 +48,7 @@ Packages:
 	~e01vox02.mix
 	~ecache01.mix
 	ts|bits
+	ts|bits/audios
 	ts|uibits
 	ts|meshes
 	ts|materials

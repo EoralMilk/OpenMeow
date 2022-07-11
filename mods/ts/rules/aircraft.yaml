@@ -534,7 +534,8 @@ APACHE:
 		Range: 2c0
 		Type: CenterPosition
 	Armament:
-		Weapon: HarpyClaw
+		LocalOffset: 418,0,60
+		Weapon: TestHarpyClaw
 		PauseOnCondition: !ammo
 	AttackAircraft:
 		FacingTolerance: 80
@@ -543,8 +544,10 @@ APACHE:
 		PauseOnCondition: empdisable
 		AttackType: Hover
 	AmmoPool:
-		Ammo: 12
+		Ammo: 72
 		AmmoCondition: ammo
+		ReloadCount: 8
+		ReloadDelay: 40
 	WithIdleOverlay@ROTORAIR:
 		Offset: 85,0,346
 		Sequence: rotor
@@ -566,7 +569,7 @@ APACHE:
 		Position: BottomLeft
 		RequiresSelection: true
 		Margin: 4, 5
-		PipCount: 4
+		PipCount: 9
 		FullSequence: pip-ammo
 		EmptySequence: pip-ammoempty
 		Palette: pips

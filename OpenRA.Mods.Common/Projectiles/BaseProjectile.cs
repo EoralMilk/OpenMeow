@@ -93,6 +93,9 @@ namespace OpenRA.Mods.Common.Projectiles
 		[Desc("Always detect valid target in Width.")]
 		public readonly bool AlwaysDetectTarget = false;
 
+		[Desc("Determines what actors to detect based on their allegiance to the source owner.")]
+		public readonly PlayerRelationship ValidDetectRelationships = PlayerRelationship.Neutral | PlayerRelationship.Enemy;
+
 		[Desc("Only Explode when hit some thing, which means that the projectile can't explode in sky where the passive target is.")]
 		public readonly bool OnlyHitToExplode = false;
 
@@ -261,7 +264,7 @@ namespace OpenRA.Mods.Common.Projectiles
 				world.AddFrameEndTask(w => w.Add(new ContrailFader(pos, contrail)));
 		}
 
-		public bool FirstValidTargetsOnLine(World world, WPos lineStart, WPos lineEnd, WDist lineWidth, Actor firedBy, bool checkTargetType, out WPos hitPos, out Actor hitActor, bool onlyBlockers = false)
+		public bool FirstValidTargetsOnLine(World world, WPos lineStart, WPos lineEnd, WDist lineWidth, Actor firedBy, bool checkTargetType, Actor targetActor, out WPos hitPos, out Actor hitActor, bool onlyBlockers = false)
 		{
 			// This line intersection check is done by first just finding all actors within a square that starts at the source, and ends at the target.
 			// Then we iterate over this list, and find all actors for which their health radius is at least within lineWidth of the line.
@@ -288,7 +291,7 @@ namespace OpenRA.Mods.Common.Projectiles
 			hitPos = lineEnd;
 			foreach (var currActor in actorsInSquare)
 			{
-				if (currActor == firedBy)
+				if (currActor == firedBy || firedBy == null || (!(targetActor != null && currActor == targetActor) && !info.ValidDetectRelationships.HasRelationship(currActor.Owner.RelationshipWith(firedBy.Owner))) )
 					continue;
 				var shapes = currActor.TraitsImplementing<HitShape>().Where(Exts.IsTraitEnabled);
 				var checkPos = lineStart.MinimumPointLineProjection(lineEnd, currActor.CenterPosition);

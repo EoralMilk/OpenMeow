@@ -1,27 +1,21 @@
 A10Vulcan:
-	Inherits: ^MG
+	Inherits: TestVulcan
 	ValidTargets: Ground, Water
 	ReloadDelay: 100
 	MinRange: 4c512
 	Burst: 30
 	BurstDelays: 1
 	Range: 10c0
-	Report: cygun1.aud
+	Report: cygun_a.wav, cygun_b.wav
 	FirstBurstTargetOffset: -3000,0,0
 	FollowingBurstTargetOffset: 300,0,0
 	Projectile: Bullet
-		ContrailLength: 3
-		ContrailWidth: 44
-		ContrailColor: F0D05C
-		ContrailDelay: 0
-		ContrailBlendMode: ScreenAdditive
 		Speed: 1100
-		LaunchAngle: 10
-		ZOffset: 1024
+		LaunchAngle: 0
 		Inaccuracy: 1c0
-	Warhead@1Dam: SpreadDamage
+	Warhead@1Dam: Spread3DDamage
 		Damage: 1000
-		Spread: 0c372
+		Spread: 0c268
 
 A10Napalm:
 	ReloadDelay: 100
@@ -39,6 +33,7 @@ A10Napalm:
 	# 	Palette: player
 	# 	IsPlayerPalette: true
 	Projectile: Bullet
+		InstantDropToGround: true
 		Speed: 226
 		Blockable: true
 		Shadow: true
@@ -75,20 +70,19 @@ A10Napalm:
 		InvalidTargets: Vehicle, Building, Wall
 
 
-
 TestVulcan:
 	ValidTargets: Ground, Water, Air
 	ReloadDelay: 3
 	MinRange: 0c128
 	Range: 15c0
-	Report: cygun1.aud
+	Report: infgun_a.wav, infgun_b.wav, infgun_c.wav, infgun_d.wav
 	BurstDelays: 1
 	Projectile: Bullet
 		DetectTargetFromLength: 0.7
 		DetectTargetBeforeDist: 2c0
 		ContrailLength: 3
 		ContrailWidth: 44
-		ContrailColor: FFE8CCA0
+		ContrailColor: FFFFC0C0
 		ContrailDelay: 0
 		ContrailBlendMode: ScreenAdditive
 		Speed: 1100
@@ -97,10 +91,12 @@ TestVulcan:
 		Inaccuracy: 450
 		UseVerticalInaccuracy: true
 		OnlyHitToExplode: true
-		ExplodeUnderThisAltitude: 0
+		ExplodeUnderThisAltitude: -418
 		Blockable: false
-	Warhead@1Dam: SpreadDamage
+	Warhead@1Dam: Spread3DDamage
 		Damage: 900
+		DamageOne: true
+		DamageBlocker: true
 		Spread: 0c128
 		Falloff: 100, 50, 25, 12, 6, 3, 0
 		Versus:
@@ -120,7 +116,6 @@ TestVulcan:
 		ValidTargets: Water
 		InvalidTargets: Vehicle
 
-
 DropVulcan:
 	Inherits: TestVulcan
 	Projectile: Bullet
@@ -132,17 +127,32 @@ TestMG:
 	Range: 6c0
 	ReloadDelay: 30
 	Burst: 4
-	BurstDelays: 4
-	Report: infgun3.aud
+	BurstDelays: 3
+	Report: infgun_a.wav, infgun_b.wav, infgun_c.wav, infgun_d.wav
 	Projectile: Bullet
-		LifeTime: 13
+		LifeTime: 10
 		ContrailLength: 3
 		Inaccuracy: 230
 		Blockable: true
-	Warhead@1Dam: SpreadDamage
+	Warhead@1Dam: Spread3DDamage
 		Damage: 900
 		Spread: 0c76
-		ValidTargets: Ground, Water, Air
+
+TestHarpyClaw:
+	Inherits: TestMG
+	Burst: 8
+	BurstDelays: 2
+	MinRange: 0
+	Range: 7c512
+	Report: slvkgun_a.wav, slvkgun_b.wav
+	Projectile: Bullet
+		LifeTime: 13
+		ContrailLength: 3
+		ContrailColor: A0FFA0C0
+	Warhead@1Dam: Spread3DDamage
+		Damage: 1500
+		Spread: 0c76
+
 
 CyMG:
 	Inherits: TestMG
@@ -150,23 +160,15 @@ CyMG:
 	ReloadDelay: 30
 	Burst: 8
 	BurstDelays: 2
-	Report: cygun1.aud
+	Report: cygun_a.wav, cygun_b.wav
 	Projectile: Bullet
 		LifeTime: 10
 		ContrailLength: 3
 		Inaccuracy: 340
 
-
-CyMGScat:
-	Inherits: TestMG
-	Projectile: Bullet
-		LifeTime: 10
-		ContrailLength: 3
-		Inaccuracy: 330
-
 VulcanMG:
 	Inherits: TestMG
-	Report: chaingn1.aud
+	Report: chaingn_a.wav, chaingn_b.wav, chaingn_c.wav, chaingn_d.wav
 	Range: 7c0
 	ReloadDelay: 40
 	Burst: 6
@@ -178,7 +180,7 @@ TestShotGunScat:
 		LifeTime: 7
 		Inaccuracy: 700
 		ContrailLength: 2
-	Warhead@1Dam: SpreadDamage
+	Warhead@1Dam: Spread3DDamage
 		Damage: 600
 		Spread: 0c128
 		Versus:
@@ -201,7 +203,6 @@ TestShotGun:
 	ReloadDelay: 24
 	Range: 5c256
 	Burst: 1
-	# BurstDelays: 2
 	Report: gun18.aud
 	Projectile: InstantScat
 		ScatWeapon: TestShotGunScat
@@ -214,7 +215,7 @@ TestShotGunPro:
 	Range: 6c256
 	Burst: 1
 	# BurstDelays: 2
-	Report: gun18.aud
+	Report: gostgun_a.wav, gostgun_b.wav
 	Projectile: InstantScat
 		ScatWeapon: TestShotGunProScat
 		ScatCount: 9
@@ -233,7 +234,7 @@ TestSniper:
 		ContrailLength: 3
 		Inaccuracy: -1
 		Blockable: true
-	Warhead@1Dam: SpreadDamage
+	Warhead@1Dam: Spread3DDamage
 		Spread: 36
 		Damage: 15000
 		Versus:
@@ -245,10 +246,10 @@ TestSniper:
 
 
 VectorBooster:
-	Range: 8c0
+	Range: 7c0
 	Report: hovrmis1.aud
 	ReloadDelay: 60
-	MinRange: 0c512
+	MinRange: 1c0
 	ValidTargets: Ground, Water, Air, Trees
 	Projectile: VectorBooster
 		RotationSpeed: 15
@@ -279,10 +280,10 @@ VectorBooster:
 		ScatDist: 3c512
 		ScatCount: 3
 		LostTarget: false
-	Warhead@1Dam: SpreadDamage
-		Spread: 108
+	Warhead@1Dam: Spread3DDamage
+		Spread: 0c256
 		Falloff: 100, 50, 25, 12, 6, 3, 0
-		Damage: 7500
+		Damage: 6000
 		ValidTargets: Ground, Water, Air, Trees
 		Versus:
 			None: 25

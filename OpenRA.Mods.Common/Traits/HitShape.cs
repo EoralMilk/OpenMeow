@@ -31,6 +31,9 @@ namespace OpenRA.Mods.Common.Traits
 		[Desc("Create a targetable position at the center of each occupied cell. Stacks with TargetableOffsets.")]
 		public readonly bool UseTargetableCellsOffsets = false;
 
+		[Desc("If UseTargetableCellsOffsets, You can add a additional offset.")]
+		public readonly WVec TargetableCellAdditionalOffset = WVec.Zero;
+
 		[Desc("Defines which Armor types apply when the actor receives damage to this HitShape.",
 			"If none specified, all armor types the actor has are valid.")]
 		public readonly BitSet<ArmorType> ArmorTypes = default(BitSet<ArmorType>);
@@ -124,7 +127,7 @@ namespace OpenRA.Mods.Common.Traits
 		{
 			if (Info.UseTargetableCellsOffsets && targetableCells != null)
 				foreach (var c in targetableCells.TargetableCells())
-					yield return self.World.Map.CenterOfCell(c.Cell);
+					yield return self.World.Map.CenterOfCell(c.Cell) + Info.TargetableCellAdditionalOffset;
 
 			foreach (var o in Info.TargetableOffsets)
 			{

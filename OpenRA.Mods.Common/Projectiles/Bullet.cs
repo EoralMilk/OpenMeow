@@ -25,7 +25,10 @@ namespace OpenRA.Mods.Common.Projectiles
 {
 	public class BulletInfo : CorporealProjectileInfo, IProjectileInfo, IRulesetLoaded<WeaponInfo>
 	{
+		public readonly bool InstantDropToGround = false;
+
 		public readonly float DetectTargetFromLength = 1f;
+
 		public readonly WDist DetectTargetBeforeDist = WDist.Zero;
 
 		[Desc("Up to how many times does this bullet bounce when touching ground without hitting a target.",
@@ -133,7 +136,16 @@ namespace OpenRA.Mods.Common.Projectiles
 			else
 				speed = info.Speed[0];
 
-			target = args.PassiveTarget;
+			if (info.InstantDropToGround)
+			{
+				target = args.Source;
+				target = new WPos(target.X, target.Y, world.Map.HeightOfCell(target));
+			}
+			else
+			{
+				target = args.PassiveTarget;
+			}
+
 			if (info.Inaccuracy.Length > 0)
 			{
 				var maxInaccuracyOffset = Util.GetProjectileInaccuracy(info.Inaccuracy.Length, info.InaccuracyType, args);
@@ -141,9 +153,9 @@ namespace OpenRA.Mods.Common.Projectiles
 			}
 
 			target += offset;
-			//var th = world.Map.HeightOfCell(target);
-			//if (th > target.Z)
-			//	target = new WPos(target.X, target.Y, th);
+			var th = world.Map.HeightOfCell(target);
+			if (th > target.Z)
+				target = new WPos(target.X, target.Y, th);
 
 			if (info.AirburstAltitude > WDist.Zero)
 				target += new WVec(WDist.Zero, WDist.Zero, info.AirburstAltitude);
@@ -223,7 +235,7 @@ namespace OpenRA.Mods.Common.Projectiles
 			if (checkLengthReached || remainingBounces < info.BounceCount || info.AlwaysDetectTarget)
 			{
 				// check target at PassiveTargetPos
-				if (FirstValidTargetsOnLine(world, lastPos, pos, info.Width, args.SourceActor, true, out var hitpos, out blocker))
+				if (FirstValidTargetsOnLine(world, lastPos, pos, info.Width, args.SourceActor, true, args.GuidedTarget.Actor, out var hitpos, out blocker))
 				{
 					pos = hitpos;
 					return true;

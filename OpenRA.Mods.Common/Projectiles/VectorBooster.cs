@@ -268,7 +268,7 @@ namespace OpenRA.Mods.Common.Projectiles
 			if ((info.DetectTargetOnCurve && (pos - source).LengthSquared > detectTargetBeforeDistSquare) || info.AlwaysDetectTarget)
 			{
 				// check target at PassiveTargetPos
-				if (FirstValidTargetsOnLine(world, lastPos, pos, info.Width, args.SourceActor, true, out var hitpos, out blocker))
+				if (FirstValidTargetsOnLine(world, lastPos, pos, info.Width, args.SourceActor, true, args.GuidedTarget.Actor, out var hitpos, out blocker))
 				{
 					pos = hitpos;
 					return true;

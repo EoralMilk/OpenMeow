@@ -389,6 +389,7 @@ NASTLH:
 	Inherits@SHAPE: ^3x2Shape
 	HitShape:
 		TargetableOffsets: 250,0,0, 600,-864,0
+		TargetableCellAdditionalOffset: 0,0,418
 	Valued:
 		Cost: 2500
 	Tooltip:
@@ -430,6 +431,7 @@ NATMPL:
 	Inherits@SHAPE: ^4x3Shape
 	HitShape:
 		TargetableOffsets: -1280,363,0
+		TargetableCellAdditionalOffset: 0,0,418
 	Buildable:
 		Queue: Building
 		BuildPaletteOrder: 110
@@ -557,6 +559,7 @@ NAMISL:
 NAWAST:
 	Inherits: ^Building
 	HitShape:
+		TargetableCellAdditionalOffset: 0,0,418
 		Type: Rectangle
 			TopLeft: -1536, -1536
 			BottomRight: 512, 1536
