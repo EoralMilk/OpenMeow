@@ -124,7 +124,7 @@ CyCannon:
 		Blockable: false
 		HorizontalRateOfTurn: 8
 		Shadow: true
-		Image: TORPEDO
+		Image: proton_projectile
 		MinimumLaunchSpeed: 75
 		Speed: 384
 		RangeLimit: 8c0
@@ -141,6 +141,7 @@ CyCannon:
 			Concrete: 80
 		DamageTypes: Prone350Percent, TriggerProne, EnergyDeath
 	Warhead@2Eff: CreateEffect
+		Explosions: proton_explo
 		ValidTargets: Ground, Trees
 
 Proton:
@@ -153,7 +154,7 @@ Proton:
 		Blockable: false
 		Shadow: true
 		Inaccuracy: 128
-		Image: TORPEDO
+		Image: proton_projectile
 	Warhead@1Dam: SpreadDamage
 		Spread: 128
 		Damage: 2000
@@ -165,7 +166,7 @@ Proton:
 			Concrete: 60
 		DamageTypes: Prone50Percent, TriggerProne, ExplosionDeath
 	Warhead@2Eff: CreateEffect
-		Explosions: small_bang
+		Explosions: proton_explo
 
 ^Laser:
 	Projectile: LaserZap
