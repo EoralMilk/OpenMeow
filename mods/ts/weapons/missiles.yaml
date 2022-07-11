@@ -105,14 +105,13 @@ Dragon:
 
 Hellfire:
 	Inherits: ^DefaultMissile
-	ReloadDelay: 50
+	ReloadDelay: 30
 	Report: orcamis1.aud
-	Burst: 2
 	ValidTargets: Ground
 	Warhead@1Dam: SpreadDamage
 		Spread: 72
 		Damage: 3000
-		ValidTargets: Ground, Air
+		ValidTargets: Ground, Water, Air, Trees
 		Versus:
 			None: 30
 			Wood: 65
@@ -133,7 +132,7 @@ RedEye2:
 		Speed: 288
 	Warhead@1Dam: SpreadDamage
 		Spread: 128
-		Damage: 3300
+		Damage: 4400
 		ValidTargets: Air, Ground
 		DamageTypes: SmallExplosionDeath
 	Warhead@2Eff: CreateEffect

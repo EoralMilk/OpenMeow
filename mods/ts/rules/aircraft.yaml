@@ -239,11 +239,11 @@ ORCA:
 		Type: CenterPosition
 	Armament@a:
 		Weapon: Hellfire
-		LocalOffset: 355,195,70
+		LocalOffset: 300,195,70
 		PauseOnCondition: !ammo
 	Armament@b:
 		Weapon: Hellfire
-		LocalOffset: 355,195,70
+		LocalOffset: 300,-195,70
 		PauseOnCondition: !ammo
 	AttackAircraft:
 		FacingTolerance: 80
