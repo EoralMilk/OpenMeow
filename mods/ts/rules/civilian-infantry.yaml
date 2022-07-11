@@ -1,9 +1,5 @@
 WEEDGUY:
 	Inherits: ^Soldier
-	Buildable:
-		Queue: Infantry
-		BuildPaletteOrder: 0
-		Prerequisites: ~none
 	Valued:
 		Cost: 300
 	Tooltip:
@@ -203,10 +199,6 @@ MUTANT3:
 TRATOS:
 	Inherits: ^Soldier
 	Inherits@2: ^HealsOnTiberium
-	Buildable:
-		Queue: Infantry
-		BuildPaletteOrder: 0
-		Prerequisites: ~none
 	Valued:
 		Cost: 100
 	Tooltip:
@@ -222,10 +214,6 @@ TRATOS:
 
 OXANNA:
 	Inherits: ^Soldier
-	Buildable:
-		Queue: Infantry
-		BuildPaletteOrder: 0
-		Prerequisites: ~none
 	Valued:
 		Cost: 100
 	Tooltip:
@@ -243,10 +231,6 @@ OXANNA:
 
 SLAV:
 	Inherits: ^Soldier
-	Buildable:
-		Queue: Infantry
-		BuildPaletteOrder: 0
-		Prerequisites: ~none
 	Valued:
 		Cost: 100
 	Tooltip:
@@ -265,10 +249,6 @@ SLAV:
 CIV1:
 	Inherits: ^CivilianInfantry
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
-	Buildable:
-		Queue: Infantry
-		BuildPaletteOrder: 0
-		Prerequisites: ~none
 	WithSplitAttackPaletteInfantryBody:
 		DefaultAttackSequence: attack
 		Palette: player-nomuzzle
@@ -284,19 +264,11 @@ CIV1:
 
 CIV2:
 	Inherits: ^CivilianInfantry
-	Buildable:
-		Queue: Infantry
-		BuildPaletteOrder: 0
-		Prerequisites: ~none
 	Voiced:
 		VoiceSet: Civilian2
 
 CIV3:
 	Inherits: ^CivilianInfantry
-	Buildable:
-		Queue: Infantry
-		BuildPaletteOrder: 0
-		Prerequisites: ~none
 	Voiced:
 		VoiceSet: Civilian3
 

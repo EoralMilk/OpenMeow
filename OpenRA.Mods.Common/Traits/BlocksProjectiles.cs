@@ -65,6 +65,7 @@ namespace OpenRA.Mods.Common.Traits
 					if (i.DistanceFromEdge(a, checkPos).Length <= 0)
 					{
 						var hitPos = i.GetHitPos(a, end);
+						hitPos = start.MinimumPointLineProjection(end, hitPos);
 						hit = hitPos;
 						blocker = a;
 						return true;

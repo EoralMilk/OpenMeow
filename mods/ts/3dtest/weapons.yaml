@@ -47,7 +47,7 @@ A10Napalm:
 		Image: DISCUS
 		Palette: effect
 		BounceCount: 5
-		Width: 128
+		Width: 324
 	Warhead@1Dam: SpreadDamage
 		Spread: 512
 		Falloff: 100, 50, 25, 12, 6, 3, 0
@@ -95,7 +95,7 @@ TestVulcan:
 		LaunchAngle: 0
 		ZOffset: 1024
 		Inaccuracy: 450
-		VerticalInaccuracy: 400
+		UseVerticalInaccuracy: true
 		OnlyHitToExplode: true
 		ExplodeUnderThisAltitude: 0
 		Blockable: false
@@ -121,6 +121,11 @@ TestVulcan:
 		InvalidTargets: Vehicle
 
 
+DropVulcan:
+	Inherits: TestVulcan
+	Projectile: Bullet
+		Speed: 1c768
+
 TestMG:
 	Inherits: TestVulcan
 	MinRange: 0c128
@@ -133,7 +138,6 @@ TestMG:
 		LifeTime: 13
 		ContrailLength: 3
 		Inaccuracy: 230
-		VerticalInaccuracy: 155
 		Blockable: true
 	Warhead@1Dam: SpreadDamage
 		Damage: 900
@@ -151,12 +155,7 @@ CyMG:
 		LifeTime: 10
 		ContrailLength: 3
 		Inaccuracy: 340
-		VerticalInaccuracy: 178
-	# Projectile: InstantScat
-	# 	ScatWeapon: CyMGScat
-	# 	ScatCount: 2
-	# 	Inaccuracy: 200
-	# 	VerticalInaccuracy: 200
+
 
 CyMGScat:
 	Inherits: TestMG
@@ -164,7 +163,6 @@ CyMGScat:
 		LifeTime: 10
 		ContrailLength: 3
 		Inaccuracy: 330
-		VerticalInaccuracy: 168
 
 VulcanMG:
 	Inherits: TestMG
@@ -180,7 +178,6 @@ TestShotGunScat:
 		LifeTime: 7
 		Inaccuracy: 700
 		ContrailLength: 2
-		VerticalInaccuracy: 440
 	Warhead@1Dam: SpreadDamage
 		Damage: 600
 		Spread: 0c128
@@ -198,7 +195,6 @@ TestShotGunProScat:
 		LifeTime: 7
 		Inaccuracy: 800
 		ContrailLength: 2
-		VerticalInaccuracy: 490
 
 
 TestShotGun:
@@ -211,7 +207,6 @@ TestShotGun:
 		ScatWeapon: TestShotGunScat
 		ScatCount: 9
 		Inaccuracy: 200
-		VerticalInaccuracy: 200
 	Warhead@1Dam: SpreadDamage
 
 TestShotGunPro:
@@ -223,8 +218,7 @@ TestShotGunPro:
 	Projectile: InstantScat
 		ScatWeapon: TestShotGunProScat
 		ScatCount: 9
-		Inaccuracy: 0
-		VerticalInaccuracy: 0
+		Inaccuracy: -1
 	Warhead@1Dam: SpreadDamage
 
 TestSniper:
@@ -237,8 +231,7 @@ TestSniper:
 	Projectile: Bullet
 		LifeTime: 13
 		ContrailLength: 3
-		Inaccuracy: 0
-		VerticalInaccuracy: 0
+		Inaccuracy: -1
 		Blockable: true
 	Warhead@1Dam: SpreadDamage
 		Spread: 36
@@ -260,6 +253,7 @@ VectorBooster:
 	Projectile: VectorBooster
 		RotationSpeed: 15
 		LifeTime: 180
+		ProximityRange: 0
 		ProximitySnapping: true
 		ContrailLength: 12
 		ContrailWidth: 74
@@ -270,6 +264,9 @@ VectorBooster:
 		LaunchAngle: 128
 		ZOffset: 1024
 		Inaccuracy: 1c0
+		UseVerticalInaccuracy: true
+		LockOnInaccuracy: 400
+		UseLockOnVerticalInaccuracy: true
 		Shadow: true
 		Image: DISCUS
 		Palette: effect

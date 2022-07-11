@@ -62,7 +62,7 @@ DPOD2:
 	AttackAircraft:
 		Voice: Attack
 	Armament:
-		Weapon: TestVulcan #Vulcan2
+		Weapon: DropVulcan #Vulcan2
 	HiddenUnderFog:
 		Type: CenterPosition
 	BodyOrientation:

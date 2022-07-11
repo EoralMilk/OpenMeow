@@ -35,8 +35,11 @@ namespace OpenRA.Mods.Common.HitShapes
 
 		public CircleShape(WDist radius) { Radius = radius; }
 
+		int radiusSquared;
+
 		public void Initialize()
 		{
+			radiusSquared = Radius.Length * Radius.Length;
 			if (VerticalTopOffset < VerticalBottomOffset)
 				throw new YamlException("VerticalTopOffset must be equal to or higher than VerticalBottomOffset.");
 		}
@@ -44,7 +47,13 @@ namespace OpenRA.Mods.Common.HitShapes
 		// TODO
 		public WPos GetHitPos(in WPos pos, in WPos origin, in WRot orientation)
 		{
-			return pos;
+			// return pos;
+			var dist = pos - origin;
+			var length = dist.Length;
+			if (length <= Radius.Length)
+				return pos;
+
+			return origin + (dist * length / Radius.Length);
 		}
 
 		public WDist DistanceFromEdge(in WVec v)

@@ -22,7 +22,7 @@ namespace OpenRA.Mods.Common.Projectiles
 		public readonly WDist Inaccuracy = WDist.Zero;
 
 		[Desc("Inaccuracy value in Vertical space.")]
-		public readonly WDist VerticalInaccuracy = WDist.Zero;
+		public readonly bool UseVerticalInaccuracy = false;
 
 		[Desc("Controls the way inaccuracy is calculated. Possible values are 'Maximum' - scale from 0 to max with range, 'PerCellIncrement' - scale from 0 with range and 'Absolute' - use set value regardless of range.")]
 		public readonly InaccuracyType InaccuracyType = InaccuracyType.Maximum;
@@ -290,18 +290,15 @@ namespace OpenRA.Mods.Common.Projectiles
 			{
 				if (currActor == firedBy)
 					continue;
-				var actorWidth = 0;
 				var shapes = currActor.TraitsImplementing<HitShape>().Where(Exts.IsTraitEnabled);
-				//if (shapes.Any())
-				//	actorWidth = shapes.Max(h => h.Info.Type.OuterRadius.Length);
-
-				//var projection = lineStart.MinimumPointLineProjection(lineEnd, currActor.CenterPosition);
+				var checkPos = lineStart.MinimumPointLineProjection(lineEnd, currActor.CenterPosition);
 
 				foreach (var shape in shapes)
 				{
-					if (shape.DistanceFromEdge(currActor, lineStart).Length <= 0)
+					if (shape.DistanceFromEdge(currActor, checkPos).Length <= 0)
 					{
-						tempHit = shape.GetHitPos(currActor, lineStart);
+						tempHit = shape.GetHitPos(currActor, checkPos);
+						tempHit = lineStart.MinimumPointLineProjection(lineEnd, tempHit);
 						temp = (lineStart - tempHit).Length;
 						if (temp < min)
 						{

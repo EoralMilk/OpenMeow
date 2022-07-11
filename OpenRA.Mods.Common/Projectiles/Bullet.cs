@@ -106,6 +106,7 @@ namespace OpenRA.Mods.Common.Projectiles
 
 		public Actor SourceActor { get { return args.SourceActor; } }
 		protected Actor blocker;
+		readonly int detectTargetBeforeDistSquare;
 
 		public Bullet(BulletInfo info, ProjectileArgs args)
 			: base(info, args)
@@ -114,7 +115,7 @@ namespace OpenRA.Mods.Common.Projectiles
 			this.args = args;
 			pos = args.Source;
 			source = args.Source;
-
+			detectTargetBeforeDistSquare = info.DetectTargetBeforeDist.Length * info.DetectTargetBeforeDist.Length;
 			var world = args.SourceActor.World;
 
 			if (info.UsingScat)
@@ -136,13 +137,13 @@ namespace OpenRA.Mods.Common.Projectiles
 			if (info.Inaccuracy.Length > 0)
 			{
 				var maxInaccuracyOffset = Util.GetProjectileInaccuracy(info.Inaccuracy.Length, info.InaccuracyType, args);
-				offset = WVec.FromPDF(world.SharedRandom, 2, info.VerticalInaccuracy) * maxInaccuracyOffset / 1024;
+				offset = WVec.FromPDF(world.SharedRandom, 2, info.UseVerticalInaccuracy) * maxInaccuracyOffset / 1024;
 			}
 
 			target += offset;
-			var th = world.Map.HeightOfCell(target);
-			if (th > target.Z)
-				target = new WPos(target.X, target.Y, th);
+			//var th = world.Map.HeightOfCell(target);
+			//if (th > target.Z)
+			//	target = new WPos(target.X, target.Y, th);
 
 			if (info.AirburstAltitude > WDist.Zero)
 				target += new WVec(WDist.Zero, WDist.Zero, info.AirburstAltitude);
@@ -215,7 +216,7 @@ namespace OpenRA.Mods.Common.Projectiles
 			}
 
 			var flightLengthReached = ticks++ >= length;
-			var checkLengthReached = (ticks >= (length * info.DetectTargetFromLength) && (pos - source).Length > info.DetectTargetBeforeDist.Length);
+			var checkLengthReached = (ticks >= (length * info.DetectTargetFromLength) && (pos - source).LengthSquared > detectTargetBeforeDistSquare);
 			var shouldBounce = remainingBounces > 0;
 			var dat = world.Map.DistanceAboveTerrain(pos).Length;
 

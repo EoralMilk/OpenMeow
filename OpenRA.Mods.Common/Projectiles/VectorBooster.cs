@@ -35,11 +35,14 @@ namespace OpenRA.Mods.Common.Projectiles
 
 		public readonly bool LostTarget = false;
 
+		public readonly bool DetectTargetOnCurve = false;
+		public readonly WDist DetectTargetBeforeDist = WDist.Zero;
+
 		[Desc("Inaccuracy override when successfully locked onto target. Defaults to Inaccuracy if negative.")]
 		public readonly WDist LockOnInaccuracy = new WDist(-1);
 
 		[Desc("Inaccuracy value in Vertical space.")]
-		public readonly WDist LockOnVerticalInaccuracy = WDist.Zero;
+		public readonly bool UseLockOnVerticalInaccuracy = false;
 
 		[Desc("Probability of locking onto and following target.")]
 		public readonly int LockOnProbability = 100;
@@ -124,6 +127,7 @@ namespace OpenRA.Mods.Common.Projectiles
 		TSVector sourcePos, currentPos, targetPos;
 		FP rotationSpeed;
 		readonly int proximityRange;
+		readonly long detectTargetBeforeDistSquare;
 
 		public VectorBooster(VectorBoosterInfo info, ProjectileArgs args)
 			:base(info, args)
@@ -132,6 +136,7 @@ namespace OpenRA.Mods.Common.Projectiles
 			this.args = args;
 			pos = args.Source;
 			source = args.Source;
+			detectTargetBeforeDistSquare = info.DetectTargetBeforeDist.Length * info.DetectTargetBeforeDist.Length;
 
 			var world = args.SourceActor.World;
 
@@ -168,7 +173,7 @@ namespace OpenRA.Mods.Common.Projectiles
 				if (info.LockOnInaccuracy.Length > 0)
 				{
 					var maxInaccuracyOffset = Util.GetProjectileInaccuracy(info.LockOnInaccuracy.Length, info.InaccuracyType, args);
-					offset = WVec.FromPDF(world.SharedRandom, 2, info.LockOnVerticalInaccuracy) * maxInaccuracyOffset / 1024;
+					offset = WVec.FromPDF(world.SharedRandom, 2, info.UseLockOnVerticalInaccuracy) * maxInaccuracyOffset / 1024;
 				}
 
 				target = args.Weapon.TargetActorCenter ? args.GuidedTarget.CenterPosition + offset : args.GuidedTarget.Positions.PositionClosestTo(args.Source) + offset;
@@ -178,7 +183,7 @@ namespace OpenRA.Mods.Common.Projectiles
 				if (info.Inaccuracy.Length > 0)
 				{
 					var maxInaccuracyOffset = Util.GetProjectileInaccuracy(info.Inaccuracy.Length, info.InaccuracyType, args);
-					offset = WVec.FromPDF(world.SharedRandom, 2, info.VerticalInaccuracy) * maxInaccuracyOffset / 1024;
+					offset = WVec.FromPDF(world.SharedRandom, 2, info.UseVerticalInaccuracy) * maxInaccuracyOffset / 1024;
 				}
 
 				target = args.PassiveTarget + offset;
@@ -254,10 +259,20 @@ namespace OpenRA.Mods.Common.Projectiles
 				return true;
 			}
 
-			if (info.AlwaysDetectTarget)
+			//if (info.AlwaysDetectTarget)
+			//{
+			//	if (AnyValidTargetsInRadius(world, pos, info.Width, args.SourceActor, true))
+			//		return true;
+			//}
+
+			if ((info.DetectTargetOnCurve && (pos - source).LengthSquared > detectTargetBeforeDistSquare) || info.AlwaysDetectTarget)
 			{
-				if (AnyValidTargetsInRadius(world, pos, info.Width, args.SourceActor, true))
+				// check target at PassiveTargetPos
+				if (FirstValidTargetsOnLine(world, lastPos, pos, info.Width, args.SourceActor, true, out var hitpos, out blocker))
+				{
+					pos = hitpos;
 					return true;
+				}
 			}
 
 			var distToTarget = (pos - target).Length;
