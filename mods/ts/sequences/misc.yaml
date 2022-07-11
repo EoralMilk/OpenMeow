@@ -254,6 +254,9 @@ explosion:
 		Tick: 360
 		IgnoreWorldTint: False
 		BlendMode: Alpha
+	proton_explo: proton_explo
+		BlendMode: Alpha
+		AlphaFade: False
 
 discus:
 	idle:
@@ -311,6 +314,13 @@ torpedo:
 		MeshType: Plane
 		BlendMode: ScreenAdditive
 
+proton_projectile
+	idle:
+		Length: *
+		ZOffset: 1023
+		Offset: 0, 0, 8
+		IgnoreWorldTint: True
+		MeshType: Plane
 
 flameall:
 	idle:
