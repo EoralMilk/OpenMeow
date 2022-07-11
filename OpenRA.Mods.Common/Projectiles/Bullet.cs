@@ -118,6 +118,7 @@ namespace OpenRA.Mods.Common.Projectiles
 			this.args = args;
 			pos = args.Source;
 			source = args.Source;
+			lastPos = pos;
 			detectTargetBeforeDistSquare = info.DetectTargetBeforeDist.Length * info.DetectTargetBeforeDist.Length;
 			var world = args.SourceActor.World;
 
@@ -232,7 +233,7 @@ namespace OpenRA.Mods.Common.Projectiles
 			var shouldBounce = remainingBounces > 0;
 			var dat = world.Map.DistanceAboveTerrain(pos).Length;
 
-			if (checkLengthReached || remainingBounces < info.BounceCount || info.AlwaysDetectTarget)
+			if (flightLengthReached || checkLengthReached || remainingBounces < info.BounceCount || info.AlwaysDetectTarget)
 			{
 				// check target at PassiveTargetPos
 				if (FirstValidTargetsOnLine(world, lastPos, pos, info.Width, args.SourceActor, true, args.GuidedTarget.Actor, out var hitpos, out blocker))

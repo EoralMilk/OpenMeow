@@ -1,17 +1,30 @@
 ^Cannon:
 	ReloadDelay: 50
-	Range: 6c768
+	Range: 7c768
 	Report: 120mmf.aud
 	Projectile: Bullet
-		Speed: 682
-		Image: 120mm
-		Shadow: true
-		LaunchAngle: 75
-		Palette: ra
+		# Image: 120mm
+		# Shadow: true
+		# Palette: ra
+		LaunchAngle: 5
+		DetectTargetFromLength: 0.8
+		DetectTargetBeforeDist: 2c512
+		ContrailLength: 4
+		ContrailWidth: 66
+		ContrailColor: FFFFCFF0
+		ContrailDelay: 0
+		ContrailBlendMode: ScreenAdditive
+		Speed: 1050
+		ZOffset: 1024
+		Inaccuracy: 300
+		UseVerticalInaccuracy: true
+		OnlyHitToExplode: true
+		ExplodeUnderThisAltitude: -418
+		Blockable: false
 	Warhead@1Dam: SpreadDamage
-		Spread: 108
+		Spread: 125
 		Falloff: 100, 50, 25, 12, 6, 3, 0
-		Damage: 3600
+		Damage: 4800
 		Versus:
 			None: 25
 			Wood: 65
@@ -42,14 +55,13 @@
 
 120mm:
 	Inherits: ^Cannon
-	ReloadDelay: 80
+	ReloadDelay: 75
 	Projectile: Bullet
-		-Image:
 		Speed: 1c512
 		Blockable: false
 		LaunchAngle: 0
 	Warhead@1Dam: SpreadDamage
-		Damage: 7000
+		Damage: 9000
 
 120mmx:
 	Inherits: ^Cannon
@@ -57,7 +69,7 @@
 	Burst: 2
 	BurstDelays: 5
 	Warhead@1Dam: SpreadDamage
-		Damage: 5000
+		Damage: 8000
 
 RPGTower:
 	Inherits: ^Cannon
@@ -68,9 +80,16 @@ RPGTower:
 		Speed: 384
 		Blockable: false
 		Image: canister
+		Shadow: true
+		LaunchAngle: 75
 		Palette: player
+		ContrailLength: 4
+		ContrailWidth: 66
+		ContrailColor: FFFFFFA0
+		ContrailDelay: 0
+		ContrailBlendMode: Alpha
 	Warhead@1Dam: SpreadDamage
-		Damage: 11000
+		Damage: 14000
 		Versus:
 			None: 30
 			Wood: 75
@@ -85,6 +104,9 @@ RPGTower:
 	Inherits: ^Cannon
 	Projectile: Bullet
 		Blockable: false
+		ContrailLength: 12
+		ContrailWidth: 88
+		LaunchAngle: 75
 	Warhead@1Dam: SpreadDamage
 		Spread: 216
 		Versus:
@@ -132,7 +154,7 @@ Jugg90mm:
 Grenade:
 	Inherits: ^ArtilleryWeapon
 	ReloadDelay: 60
-	Range: 5c0
+	Range: 5c256
 	-Report:
 	# Burst: 5
 	ValidTargets: Ground, Water, Air, Trees
@@ -146,6 +168,7 @@ Grenade:
 		Palette: effect
 		BounceCount: 5
 		Width: 256
+		ContrailLength: 0
 	Warhead@1Dam: SpreadDamage
 		Spread: 154
 		Damage: 5500

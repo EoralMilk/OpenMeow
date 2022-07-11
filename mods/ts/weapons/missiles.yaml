@@ -1,6 +1,6 @@
 ^DefaultMissile:
 	ReloadDelay: 60
-	Range: 6c0
+	Range: 7c0
 	MinRange: 0c512
 	ValidTargets: Ground, Water, Air, Trees
 	Projectile: Missile
@@ -88,11 +88,11 @@ MammothTusk:
 
 BikeMissile:
 	Inherits: ^DefaultMissile
-	Range: 5c0
 	Report: misl1.aud
 	ValidTargets: Ground
+	ReloadDelay: 40
 	Warhead@1Dam: SpreadDamage
-		Damage: 4000
+		Damage: 5500
 		ValidTargets: Ground, Air
 
 Dragon:
@@ -101,13 +101,13 @@ Dragon:
 	Burst: 2
 	Report: misl1.aud
 	Warhead@1Dam: SpreadDamage
-		Damage: 3000
+		Damage: 5000
 
 Hellfire:
 	Inherits: ^DefaultMissile
 	ReloadDelay: 30
 	Report: orcamis1.aud
-	ValidTargets: Ground
+	ValidTargets: Ground, Water, Air
 	Warhead@1Dam: SpreadDamage
 		Spread: 72
 		Damage: 3000

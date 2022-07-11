@@ -310,6 +310,7 @@ namespace OpenRA.Mods.Common.Traits
 						if (t > 0)
 						{
 							offset = new WVec((int)(t * move.CurrentSpeed.X), (int)(t * move.CurrentSpeed.Y), (int)(t * move.CurrentSpeed.Z));
+							target.SetOffset(offset);
 							//lineStart = firePos;
 							//lineEnd = target.Actor.CenterPosition + offset;
 							//debugDrawTick = 4;

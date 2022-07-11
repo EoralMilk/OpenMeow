@@ -85,7 +85,7 @@ TestVulcan:
 		ContrailColor: FFFFC0C0
 		ContrailDelay: 0
 		ContrailBlendMode: ScreenAdditive
-		Speed: 1100
+		Speed: 1000
 		LaunchAngle: 0
 		ZOffset: 1024
 		Inaccuracy: 450
@@ -129,11 +129,19 @@ TestMG:
 	Burst: 4
 	BurstDelays: 3
 	Report: infgun_a.wav, infgun_b.wav, infgun_c.wav, infgun_d.wav
+	ValidTargets: Ground, Water
 	Projectile: Bullet
 		LifeTime: 10
 		ContrailLength: 3
 		Inaccuracy: 230
 		Blockable: true
+		Speed: 989
+		Versus:
+			None: 100
+			Wood: 35
+			Light: 40
+			Heavy: 5
+			Concrete: 5
 	Warhead@1Dam: Spread3DDamage
 		Damage: 900
 		Spread: 0c76
@@ -144,35 +152,59 @@ TestHarpyClaw:
 	BurstDelays: 2
 	MinRange: 0
 	Range: 7c512
+	ReloadDelay: 25
 	Report: slvkgun_a.wav, slvkgun_b.wav
 	Projectile: Bullet
 		LifeTime: 13
 		ContrailLength: 3
 		ContrailColor: A0FFA0C0
+		Inaccuracy: 290
+		Speed: 1000
 	Warhead@1Dam: Spread3DDamage
 		Damage: 1500
-		Spread: 0c76
+		Spread: 0c128
 
+TestRaiderCannon:
+	Inherits: TestMG
+	Burst: 6
+	BurstDelays: 2
+	ReloadDelay: 35
+	MinRange: 0
+	Range: 6c512
+	Report: chaingn_a.wav, chaingn_b.wav, chaingn_c.wav, chaingn_d.wav
+	Projectile: Bullet
+		Inaccuracy: 250
+	Warhead@1Dam: Spread3DDamage
+		Damage: 1000
+		Spread: 0c100
 
 CyMG:
 	Inherits: TestMG
 	Range: 6c768
-	ReloadDelay: 30
+	ReloadDelay: 35
 	Burst: 8
-	BurstDelays: 2
+	BurstDelays: 1
 	Report: cygun_a.wav, cygun_b.wav
 	Projectile: Bullet
 		LifeTime: 10
 		ContrailLength: 3
 		Inaccuracy: 340
 
+
 VulcanMG:
 	Inherits: TestMG
 	Report: chaingn_a.wav, chaingn_b.wav, chaingn_c.wav, chaingn_d.wav
 	Range: 7c0
-	ReloadDelay: 40
-	Burst: 6
-	BurstDelays: 3
+	ReloadDelay: 45
+	Burst: 8
+	BurstDelays: 2
+	Projectile: Bullet
+		LifeTime: 11
+		ContrailLength: 2
+		Inaccuracy: 410
+	Warhead@1Dam: Spread3DDamage
+		Damage: 800
+		Spread: 0c100
 
 TestShotGunScat:
 	Inherits: TestMG
@@ -234,6 +266,7 @@ TestSniper:
 		ContrailLength: 3
 		Inaccuracy: -1
 		Blockable: true
+		Speed: 1120
 	Warhead@1Dam: Spread3DDamage
 		Spread: 36
 		Damage: 15000
@@ -252,7 +285,7 @@ VectorBooster:
 	MinRange: 1c0
 	ValidTargets: Ground, Water, Air, Trees
 	Projectile: VectorBooster
-		RotationSpeed: 15
+		RotationSpeed: 18
 		LifeTime: 100
 		ProximityRange: 0
 		ProximitySnapping: true
@@ -261,7 +294,7 @@ VectorBooster:
 		ContrailColor: F0F0E0B0
 		ContrailDelay: 0
 		ContrailBlendMode: ScreenAdditive
-		Speed: 320
+		Speed: 310
 		LaunchAngle: 128
 		ZOffset: 1024
 		Inaccuracy: 1c0
@@ -356,7 +389,7 @@ TestProton:
 		DamageTypes: Prone50Percent, TriggerProne, EnergyDeath
 		ValidTargets: Ground, Water, Air, Trees
 	Warhead@2Eff: CreateEffect
-		Explosions: large_explosion
+		Explosions: proton_explo
 		ImpactSounds: expnew12.aud
 		ValidTargets: Ground, Air
 	Warhead@3EffWater: CreateEffect

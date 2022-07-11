@@ -573,7 +573,7 @@ namespace OpenRA
 					yield return t + offset;
 				}
 			else
-				yield return CenterPosition;
+				yield return CenterPosition + offset;
 		}
 
 		#region Conditions

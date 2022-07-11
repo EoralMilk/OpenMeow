@@ -136,6 +136,7 @@ namespace OpenRA.Mods.Common.Projectiles
 			this.args = args;
 			pos = args.Source;
 			source = args.Source;
+			lastPos = pos;
 			detectTargetBeforeDistSquare = info.DetectTargetBeforeDist.Length * info.DetectTargetBeforeDist.Length;
 
 			var world = args.SourceActor.World;

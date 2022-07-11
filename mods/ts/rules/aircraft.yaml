@@ -208,7 +208,7 @@ A10:
 ORCA:
 	Inherits: ^EMPableAircraft
 	Inherits@EXPERIENCE: ^GainsExperience
-	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Valued:
 		Cost: 1000
 	Tooltip:
@@ -235,8 +235,8 @@ ORCA:
 	Armor:
 		Type: Light
 	RevealsShroud:
-		Range: 2c0
-		Type: CenterPosition
+		Range: 10c0
+		Type: GroundPosition
 	Armament@a:
 		Weapon: Hellfire
 		LocalOffset: 300,195,70
@@ -305,8 +305,8 @@ ORCAB:
 	Armor:
 		Type: Light
 	RevealsShroud:
-		Range: 2c0
-		Type: CenterPosition
+		Range: 10c0
+		Type: GroundPosition
 	Armament:
 		Weapon: Bomb
 		PauseOnCondition: !ammo
@@ -367,8 +367,8 @@ ORCATRAN:
 	Armor:
 		Type: Light
 	RevealsShroud:
-		Range: 2c0
-		Type: CenterPosition
+		Range: 10c0
+		Type: GroundPosition
 	Cargo:
 		Types: Infantry
 		MaxWeight: 5
@@ -415,8 +415,8 @@ TRNSPORT:
 	Armor:
 		Type: Light
 	RevealsShroud:
-		Range: 2c0
-		Type: CenterPosition
+		Range: 10c0
+		Type: GroundPosition
 	RenderSprites:
 	Selectable:
 		Bounds: 1327, 1930, 0, -482
@@ -430,7 +430,7 @@ TRNSPORT:
 SCRIN:
 	Inherits: ^EMPableAircraft
 	Inherits@EXPERIENCE: ^GainsExperience
-	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Valued:
 		Cost: 1500
 	Tooltip:
@@ -461,15 +461,15 @@ SCRIN:
 	Armor:
 		Type: Light
 	RevealsShroud:
-		Range: 2c0
-		Type: CenterPosition
+		Range: 10c0
+		Type: GroundPosition
 	Armament@a:
 		Weapon: TestProton
-		LocalOffset: 355,145,120
+		LocalOffset: 485,145,120
 		PauseOnCondition: !ammo
 	Armament@b:
 		Weapon: TestProton
-		LocalOffset: 355,-145,120
+		LocalOffset: 485,-145,120
 		PauseOnCondition: !ammo
 	AttackAircraft:
 		Voice: Attack
@@ -502,7 +502,7 @@ SCRIN:
 APACHE:
 	Inherits: ^EMPableAircraft
 	Inherits@EXPERIENCE: ^GainsExperience
-	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Valued:
 		Cost: 1000
 	Tooltip:
@@ -530,8 +530,8 @@ APACHE:
 	Armor:
 		Type: Light
 	RevealsShroud:
-		Range: 2c0
-		Type: CenterPosition
+		Range: 10c0
+		Type: GroundPosition
 	Armament:
 		LocalOffset: 418,0,60
 		Weapon: TestHarpyClaw

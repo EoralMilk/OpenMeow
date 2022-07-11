@@ -16,7 +16,7 @@ using System.Linq;
 namespace OpenRA.Traits
 {
 	public enum TargetType : byte { Invalid, Actor, Terrain, FrozenActor }
-	public readonly struct Target
+	public struct Target
 	{
 		public static readonly Target[] None = Array.Empty<Target>();
 		public static readonly Target Invalid = default(Target);
@@ -29,8 +29,13 @@ namespace OpenRA.Traits
 		readonly CPos? cell;
 		readonly SubCell? subCell;
 		readonly int generation;
+		WVec offset;
+		public void SetOffset(WVec offset)
+		{
+			this.offset = offset;
+		}
 
-		Target(WPos terrainCenterPosition, WPos[] terrainPositions = null)
+		Target(WPos terrainCenterPosition, WVec offset, WPos[] terrainPositions = null)
 		{
 			type = TargetType.Terrain;
 			this.terrainCenterPosition = terrainCenterPosition;
@@ -41,6 +46,7 @@ namespace OpenRA.Traits
 			cell = null;
 			subCell = null;
 			generation = 0;
+			this.offset = offset;
 		}
 
 		Target(World w, CPos c, SubCell subCell)
@@ -54,6 +60,7 @@ namespace OpenRA.Traits
 			actor = null;
 			frozen = null;
 			generation = 0;
+			offset = WVec.Zero;
 		}
 
 		Target(Actor a, int generation)
@@ -67,6 +74,7 @@ namespace OpenRA.Traits
 			frozen = null;
 			cell = null;
 			subCell = null;
+			offset = WVec.Zero;
 		}
 
 		Target(FrozenActor fa)
@@ -80,10 +88,11 @@ namespace OpenRA.Traits
 			cell = null;
 			subCell = null;
 			generation = 0;
+			offset = WVec.Zero;
 		}
 
-		public static Target FromPos(WPos p) { return new Target(p); }
-		public static Target FromTargetPositions(in Target t) { return new Target(t.CenterPosition, t.Positions.ToArray()); }
+		public static Target FromPos(WPos p) { return new Target(p, WVec.Zero); }
+		public static Target FromTargetPositions(in Target t) { return new Target(t.CenterPosition, t.offset, t.Positions.ToArray()); }
 		public static Target FromCell(World w, CPos c, SubCell subCell = SubCell.FullCell) { return new Target(w, c, subCell); }
 		public static Target FromActor(Actor a) { return a != null ? new Target(a, a.Generation) : Invalid; }
 		public static Target FromFrozenActor(FrozenActor fa) { return new Target(fa); }
@@ -162,7 +171,7 @@ namespace OpenRA.Traits
 				switch (Type)
 				{
 					case TargetType.Actor:
-						return actor.CenterPosition;
+						return offset == WVec.Zero ? actor.CenterPosition : actor.CenterPosition + offset;
 					case TargetType.FrozenActor:
 						return frozen.CenterPosition;
 					case TargetType.Terrain:
@@ -183,7 +192,7 @@ namespace OpenRA.Traits
 				switch (Type)
 				{
 					case TargetType.Actor:
-						return actor.GetTargetablePositions();
+						return offset == WVec.Zero ? actor.GetTargetablePositions() : actor.GetTargetablePositions(offset);
 					case TargetType.FrozenActor:
 						// TargetablePositions may be null if it is Invalid
 						return frozen.TargetablePositions ?? NoPositions;
