@@ -184,15 +184,15 @@ Proton:
 
 ObeliskLaserFire:
 	Inherits: ^Laser
-	ReloadDelay: 120
-	Range: 10c512
+	ReloadDelay: 100
+	Range: 11c512
 	Report: obelray1.aud
 	Warhead@1Dam: SpreadDamage
-		Damage: 25000
+		Damage: 34000
 
 TurretLaserFire:
 	Inherits: ^Laser
-	ReloadDelay: 40
+	ReloadDelay: 25
 	Range: 6c512
 	Report: lastur1.aud
 	Projectile: LaserZap

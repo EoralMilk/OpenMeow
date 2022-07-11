@@ -2,12 +2,6 @@ DPOD:
 	Inherits: ^Aircraft
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@CARGOPIPS: ^CargoPips
-	Buildable:
-		Queue: Air
-		BuildPaletteOrder: 100
-		Prerequisites: ~none
-	RenderSprites:
-		Image: scrin
 	Valued:
 		Cost: 10
 	Tooltip:
@@ -98,12 +92,6 @@ DPOD2E2:
 DSHP:
 	Inherits: ^Aircraft
 	Inherits@CARGOPIPS: ^CargoPips
-	Buildable:
-		Queue: Air
-		BuildPaletteOrder: 100
-		Prerequisites: ~none
-	RenderSprites:
-		Image: scrin
 	Valued:
 		Cost: 1000
 	Tooltip:
@@ -249,8 +237,13 @@ ORCA:
 	RevealsShroud:
 		Range: 2c0
 		Type: CenterPosition
-	Armament:
+	Armament@a:
 		Weapon: Hellfire
+		LocalOffset: 355,195,70
+		PauseOnCondition: !ammo
+	Armament@b:
+		Weapon: Hellfire
+		LocalOffset: 355,195,70
 		PauseOnCondition: !ammo
 	AttackAircraft:
 		FacingTolerance: 80
@@ -259,7 +252,8 @@ ORCA:
 		PauseOnCondition: empdisable
 		AttackType: Hover
 	AmmoPool:
-		Ammo: 5
+		Ammo: 10
+		ReloadCount: 2
 		AmmoCondition: ammo
 	RenderSprites:
 	SpawnActorOnDeath:
@@ -455,7 +449,7 @@ SCRIN:
 	Aircraft:
 		CruiseAltitude: 5c0
 		TurnSpeed: 15
-		Speed: 245
+		Speed: 275
 		IdleTurnSpeed: 6
 		IdleSpeed: 140
 		TakeoffSounds: dropup1.aud
@@ -469,8 +463,13 @@ SCRIN:
 	RevealsShroud:
 		Range: 2c0
 		Type: CenterPosition
-	Armament:
-		Weapon: Proton
+	Armament@a:
+		Weapon: TestProton
+		LocalOffset: 355,145,120
+		PauseOnCondition: !ammo
+	Armament@b:
+		Weapon: TestProton
+		LocalOffset: 355,-145,120
 		PauseOnCondition: !ammo
 	AttackAircraft:
 		Voice: Attack
@@ -478,8 +477,8 @@ SCRIN:
 		PersistentTargeting: false
 		PauseOnCondition: empdisable
 	AmmoPool:
-		Ammo: 15
-		ReloadCount: 5
+		Ammo: 30
+		ReloadCount: 10
 		AmmoCondition: ammo
 	RenderSprites:
 	DeathSounds:

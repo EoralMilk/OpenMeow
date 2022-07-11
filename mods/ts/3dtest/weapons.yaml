@@ -253,7 +253,7 @@ VectorBooster:
 	ValidTargets: Ground, Water, Air, Trees
 	Projectile: VectorBooster
 		RotationSpeed: 15
-		LifeTime: 180
+		LifeTime: 100
 		ProximityRange: 0
 		ProximitySnapping: true
 		ContrailLength: 12
@@ -315,3 +315,57 @@ VectorBoosterMul:
 		ScatDist: 7c512
 		ScatCount: 3
 		LostTarget: false
+
+
+TestProton:
+	ReloadDelay: 50
+	Range: 7c0
+	Burst: 5
+	BurstDelays: 3
+	Report: scrin5b.aud
+	ValidTargets: Ground, Water, Air, Trees
+	Projectile: Bullet
+		Speed: 700
+		Blockable: false
+		Shadow: true
+		Inaccuracy: 128
+		UseVerticalInaccuracy: true
+		OnlyHitToExplode: true
+		ExplodeUnderThisAltitude: -418
+		Blockable: false
+		# Image: TORPEDO
+		Width: 256
+		DetectTargetFromLength: 0.7
+		DetectTargetBeforeDist: 2c0
+		ContrailLength: 2
+		ContrailWidth: 99
+		ContrailColor: 66FF66E0
+		ContrailDelay: 0
+		ContrailBlendMode: ScreenAdditive
+		LaunchAngle: 0
+		ZOffset: 1024
+	Warhead@1Dam: Spread3DDamage
+		Spread: 0c172
+		Damage: 2000
+		Versus:
+			None: 25
+			Wood: 65
+			Light: 75
+			Heavy: 100
+			Concrete: 60
+		DamageTypes: Prone50Percent, TriggerProne, EnergyDeath
+		ValidTargets: Ground, Water, Air, Trees
+	Warhead@2Eff: CreateEffect
+		Explosions: large_explosion
+		ImpactSounds: expnew12.aud
+		ValidTargets: Ground, Air
+	Warhead@3EffWater: CreateEffect
+		Explosions: small_watersplash
+		ExplosionPalette: player
+		ImpactSounds: ssplash3.aud
+		ValidTargets: Water
+		InvalidTargets: Vehicle
+	Warhead@4Smu: LeaveSmudge
+		SmudgeType: SmallScorch
+		InvalidTargets: Vehicle, Building, Wall
+

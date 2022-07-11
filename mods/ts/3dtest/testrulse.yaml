@@ -288,7 +288,7 @@ RUTEST4:
 		Range: 2c0
 		Type: CenterPosition
 	Armament:
-		Weapon: Proton
+		Weapon: TestProton
 		PauseOnCondition: !ammo
 		SkeletonToUse: body
 		FromBonePose: a-s-Rig_Hand.R, a-s-Rig_Hand.L
