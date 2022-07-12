@@ -46,11 +46,11 @@ RUTEST:
 	GivesExperience:
 	UpdatesPlayerStatistics:
 		AddToArmyValue: false
-	Buildable:
-		Queue: Vehicle
-		BuildPaletteOrder: 0
-		Prerequisites: ~none
-		Description: Fast scout vehicle, armed with\nrockets.\n  Strong vs Vehicles\n  Weak vs Infantry, Aircraft
+	# Buildable:
+	# 	Queue: Vehicle
+	# 	BuildPaletteOrder: 0
+	# 	Prerequisites: ~none
+	# 	Description: Fast scout vehicle, armed with\nrockets.\n  Strong vs Vehicles\n  Weak vs Infantry, Aircraft
 	Mobile:
 		TurnSpeed: 44
 		Speed: 100
@@ -261,11 +261,11 @@ RUTEST4:
 		Name: Test fly
 	UpdatesPlayerStatistics:
 		AddToArmyValue: true
-	Buildable:
-		Queue: Air
-		BuildPaletteOrder: 0
-		Prerequisites: ~nahpad, natech
-		Description: Advanced fighter-bomber craft\nwith twin plasma cannons.\n  Strong vs Buildings, Vehicles\n  Weak vs Infantry, Aircraft
+	# Buildable:
+	# 	Queue: Air
+	# 	BuildPaletteOrder: 0
+	# 	Prerequisites: ~nahpad, natech
+	# 	Description: Advanced fighter-bomber craft\nwith twin plasma cannons.\n  Strong vs Buildings, Vehicles\n  Weak vs Infantry, Aircraft
 	Selectable:
 		Bounds: 905, 1448
 	Voiced:

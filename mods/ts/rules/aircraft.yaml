@@ -477,7 +477,7 @@ SCRIN:
 		Weapon: TestProtonBomb
 		LocalOffset: 111,0,80
 		PauseOnCondition: !ammo
-		AmmoUsage: 4
+		AmmoUsage: 6
 	AttackAircraft:
 		Voice: Attack
 		PersistentTargeting: false
@@ -487,8 +487,9 @@ SCRIN:
 		# StrafeRunLength: 17c0
 		RotateToFullOnTarget: true
 	AmmoPool:
-		Ammo: 60
-		ReloadCount: 10
+		Ammo: 72
+		ReloadCount: 6
+		ReloadDelay: 20
 		AmmoCondition: ammo
 	RenderSprites:
 	DeathSounds:
@@ -504,7 +505,7 @@ SCRIN:
 		Position: BottomLeft
 		RequiresSelection: true
 		Margin: 4, 5
-		PipCount: 6
+		PipCount: 12
 		FullSequence: pip-ammo
 		EmptySequence: pip-ammoempty
 		Palette: pips

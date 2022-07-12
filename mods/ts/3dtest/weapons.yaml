@@ -354,7 +354,7 @@ VectorBoosterMul:
 TestProton:
 	ReloadDelay: 50
 	Range: 7c0
-	Burst: 5
+	Burst: 6
 	BurstDelays: 3
 	Report: scrin5b.aud
 	ValidTargets: Ground, Water, Air, Trees
