@@ -106,7 +106,7 @@ TestVulcan:
 			Light: 40
 			Heavy: 25
 			Concrete: 10
-		DamageTypes: Prone70Percent, TriggerProne, BulletDeath
+		DamageTypes: Prone50Percent, TriggerProne, BulletDeath
 		ValidTargets: Ground, Water, Air
 	Warhead@2Eff: CreateEffect
 		Explosions: piff
