@@ -154,7 +154,7 @@ SMECH:
 		FacingTolerance: 0
 	Armament:
 		LocalOffset: 111,200,255, 111,-220,255
-		BurstPerFireCount: 2
+		BurstsPerFire: 2
 		UseBlindage: true
 		Weapon: AssaultVulcan
 	Voiced:
@@ -360,7 +360,7 @@ HMEC:
 		FacingTolerance: 256
 	Armament@RAILGUN:
 		Weapon: MechRailgun
-		BurstPerFireCount: 2
+		BurstsPerFire: 2
 		LocalOffset: 368,-311,595, 368,311,595
 		FacingTolerance: 15
 	-WithModelBody:

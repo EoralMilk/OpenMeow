@@ -518,7 +518,7 @@ SUBTANK:
 		Range: 6c512
 	Armament:
 		Weapon: DualFireballLauncher
-		BurstPerFireCount: 2
+		BurstsPerFire: 2
 		LocalOffset: 392,-377,217, 392,377,217
 	AttackFrontal:
 		Voice: Attack
@@ -582,7 +582,7 @@ STNK:
 		ValidDamageStates: Critical
 	Armament:
 		Weapon: Dragon
-		BurstPerFireCount: 2
+		BurstsPerFire: 2
 		LocalOffset: 301,-61,243, 301,61,243
 		LocalYaw: 76, -76
 	AttackFrontal:

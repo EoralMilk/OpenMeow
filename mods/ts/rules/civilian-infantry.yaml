@@ -135,7 +135,7 @@ MUTANT:
 		Speed: 71
 	Armament:
 		LocalOffset: 311,83,490, 311,-83,490
-		BurstPerFireCount: 2
+		BurstsPerFire: 2
 		Weapon: SMG
 		UseBlindage: true
 	AttackFrontal:
@@ -204,7 +204,7 @@ MUTANT3:
 		Range: 7c0
 	Armament:
 		LocalOffset: 311,83,490, 311,-83,490
-		BurstPerFireCount: 2
+		BurstsPerFire: 2
 		Weapon: SergeantSMG
 		UseBlindage: true
 	AttackFrontal:

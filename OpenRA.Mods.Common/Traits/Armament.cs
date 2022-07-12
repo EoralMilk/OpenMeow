@@ -41,7 +41,7 @@ namespace OpenRA.Mods.Common.Traits
 		public readonly string Weapon = null;
 
 		[Desc("The number of bursts fired per shot.")]
-		public readonly uint BurstPerFireCount = 1;
+		public readonly int BurstsPerFire = 1;
 
 		[Desc("Exhaust all burst per attack.")]
 		public readonly bool ExhaustAllBurst = false;
@@ -130,11 +130,16 @@ namespace OpenRA.Mods.Common.Traits
 				WeaponInfo.Range.Length,
 				ai.TraitInfos<IRangeModifierInfo>().Select(m => m.GetRangeModifierDefault())));
 
-			if (WeaponInfo.Burst > 1 && WeaponInfo.BurstDelays.Length > 1 && (WeaponInfo.BurstDelays.Length != WeaponInfo.Burst - 1))
-				throw new YamlException($"Weapon '{weaponToLower}' has an invalid number of BurstDelays, must be single entry or Burst - 1.");
+			if (BurstsPerFire <= 0)
+				throw new YamlException("BurstsPerFire in Armament has to be greater than 0");
 
 			if (FacingTolerance.Angle > 512)
 				throw new YamlException("Facing tolerance must be in range of [0, 512], 512 covers 360 degrees.");
+
+			var expectedLength = WeaponInfo.Burst % BurstsPerFire > 0 ? WeaponInfo.Burst / BurstsPerFire : WeaponInfo.Burst / BurstsPerFire - 1;
+
+			if (WeaponInfo.Burst > 1 && WeaponInfo.BurstDelays.Length > 1 && expectedLength != WeaponInfo.BurstDelays.Length)
+				throw new YamlException($"Weapon '{weaponToLower}' has an invalid number of BurstDelays, must be single entry or the ceil of \"Weapon.Burst / Armament.BurstsPerFire - 1\".");
 
 			base.RulesetLoaded(rules, ai);
 		}
@@ -436,7 +441,7 @@ namespace OpenRA.Mods.Common.Traits
 
 			ticksSinceLastShot = 0;
 
-			for (int i = 0; i < Info.BurstPerFireCount; i++)
+			for (var i = 0; i < Info.BurstsPerFire && Burst > 0; i++)
 			{
 				// If Weapon.Burst == 1, cycle through all LocalOffsets, otherwise use the offset corresponding to current Burst
 				currentBarrel %= barrelCount;
@@ -444,9 +449,10 @@ namespace OpenRA.Mods.Common.Traits
 				currentBarrel++;
 
 				FireBarrel(self, facing, target, barrel);
-
-				UpdateBurst(self, target);
+				Burst--;
 			}
+
+			AfterFire(self, target);
 
 			return barrel;
 		}
@@ -539,14 +545,14 @@ namespace OpenRA.Mods.Common.Traits
 			});
 		}
 
-		protected virtual void UpdateBurst(Actor self, in Target target)
+		protected virtual void AfterFire(Actor self, in Target target)
 		{
-			if (--Burst > 0)
+			if (Burst > 0)
 			{
 				if (Weapon.BurstDelays.Length == 1)
 					FireDelay = Weapon.BurstDelays[0];
 				else
-					FireDelay = Weapon.BurstDelays[Weapon.Burst - (Burst + 1)];
+					FireDelay = Weapon.BurstDelays[(Weapon.Burst - Burst) / Info.BurstsPerFire - 1];
 			}
 			else
 			{

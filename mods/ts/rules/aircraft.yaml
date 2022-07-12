@@ -178,7 +178,7 @@ A10:
 		FacingTolerance: 512
 		LocalOffset: 0,-256,27, 0,256,27
 		ExhaustAllBurst: True
-		BurstPerFireCount: 2
+		BurstsPerFire: 2
 	AttackAircraft:
 		Voice: Attack
 		FacingTolerance: 512
@@ -231,7 +231,7 @@ ORCA:
 		Type: Light
 	Armament:
 		Weapon: VectorHellfire #Hellfire
-		# BurstPerFireCount: 2
+		# BurstsPerFire: 2
 		LocalOffset: 300,195,70, 300,-195,70
 		PauseOnCondition: !ammo
 	AttackAircraft:
@@ -448,7 +448,7 @@ SCRIN:
 	Armament@PulseGun:
 		Weapon: ProtonPulse
 		LocalOffset: 555,155,120, 555,-155,120
-		BurstPerFireCount: 2
+		BurstsPerFire: 2
 		PauseOnCondition: !ammo
 		FacingTolerance: 80
 	Armament@Bomb:
