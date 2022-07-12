@@ -40,6 +40,9 @@ namespace OpenRA.Mods.Common.Traits
 		[Desc("Has to be defined in weapons.yaml as well.")]
 		public readonly string Weapon = null;
 
+		[Desc("The number of bursts fired per shot.")]
+		public readonly uint BurstPerFireCount = 1;
+
 		[Desc("Which turret (if present) should this armament be assigned to.")]
 		public readonly string Turret = "primary";
 
@@ -359,24 +362,27 @@ namespace OpenRA.Mods.Common.Traits
 
 		// Note: facing is only used by the legacy positioning code
 		// The world coordinate model uses Actor.Orientation
+		Barrel barrel;
 		public virtual Barrel CheckFire(Actor self, IFacing facing, in Target target)
 		{
 			if (!CanFire(self, in target))
 				return null;
-
 			if (ticksSinceLastShot >= Weapon.ReloadDelay)
 				Burst = Weapon.Burst;
 
 			ticksSinceLastShot = 0;
 
-			// If Weapon.Burst == 1, cycle through all LocalOffsets, otherwise use the offset corresponding to current Burst
-			currentBarrel %= barrelCount;
-			var barrel = Weapon.Burst == 1 ? Barrels[currentBarrel] : Barrels[Burst % Barrels.Length];
-			currentBarrel++;
+			for (int i = 0; i < Info.BurstPerFireCount; i++)
+			{
+				// If Weapon.Burst == 1, cycle through all LocalOffsets, otherwise use the offset corresponding to current Burst
+				currentBarrel %= barrelCount;
+				barrel = Weapon.Burst == 1 ? Barrels[currentBarrel] : Barrels[Burst % Barrels.Length];
+				currentBarrel++;
 
-			FireBarrel(self, facing, target, barrel);
+				FireBarrel(self, facing, target, barrel);
 
-			UpdateBurst(self, target);
+				UpdateBurst(self, target);
+			}
 
 			return barrel;
 		}

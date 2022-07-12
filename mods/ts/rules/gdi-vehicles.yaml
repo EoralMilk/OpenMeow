@@ -118,11 +118,13 @@ SMECH:
 	Buildable:
 		Queue: Vehicle
 		BuildPaletteOrder: 20
+		Locomotor: foot
 		Prerequisites: ~gaweap, ~techlevel.low
 		Description: Anti-personnel walker.\n  Strong vs Infantry, Light armor\n  Weak vs Vehicles, Aircraft
 	Mobile:
-		TurnSpeed: 20
-		Speed: 99
+		TurnSpeed: 65
+		Speed: 101
+		Locomotor: foot
 		AlwaysTurnInPlace: true
 		TerrainOrientationAdjustmentMargin: -1
 	Health:
@@ -138,7 +140,9 @@ SMECH:
 		PauseOnCondition: empdisable
 		FacingTolerance: 0
 	Armament:
-		Weapon: AssaultCannon
+		LocalOffset: 111,200,255, 111,-220,255
+		BurstPerFireCount: 2
+		Weapon: AssaultVulcan #AssaultCannon
 	Voiced:
 		VoiceSet: Mech
 	QuantizeFacingsFromSequence:
@@ -264,6 +268,7 @@ HMEC:
 		LocalOffset: -243,-368,697, -243,368,697
 	Armament@RAILGUN:
 		Weapon: MechRailgun
+		BurstPerFireCount: 2
 		LocalOffset: 368,-311,595, 368,311,595
 	-WithModelBody:
 	WithModelWalkerBody:

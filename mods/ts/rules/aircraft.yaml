@@ -237,13 +237,10 @@ ORCA:
 	RevealsShroud:
 		Range: 10c0
 		Type: GroundPosition
-	Armament@a:
+	Armament:
 		Weapon: Hellfire
-		LocalOffset: 300,195,70
-		PauseOnCondition: !ammo
-	Armament@b:
-		Weapon: Hellfire
-		LocalOffset: 300,-195,70
+		BurstPerFireCount: 2
+		LocalOffset: 300,195,70, 300,-195,70
 		PauseOnCondition: !ammo
 	AttackAircraft:
 		FacingTolerance: 80
@@ -463,18 +460,14 @@ SCRIN:
 	RevealsShroud:
 		Range: 10c0
 		Type: GroundPosition
-	Armament@a:
-		Weapon: TestProton
-		LocalOffset: 555,155,120
+	Armament@PulseGun:
+		Weapon: ProtonPulse
+		LocalOffset: 555,155,120, 555,-155,120
+		BurstPerFireCount: 2
 		PauseOnCondition: !ammo
 		FacingTolerance: 80
-	Armament@b:
-		Weapon: TestProton
-		LocalOffset: 555,-155,120
-		PauseOnCondition: !ammo
-		FacingTolerance: 80
-	Armament@bomb:
-		Weapon: TestProtonBomb
+	Armament@Bomb:
+		Weapon: ProtonBomb
 		LocalOffset: 111,0,80
 		PauseOnCondition: !ammo
 		AmmoUsage: 6
@@ -558,8 +551,8 @@ APACHE:
 		Range: 10c0
 		Type: GroundPosition
 	Armament:
-		LocalOffset: 418,0,60
-		Weapon: TestHarpyClaw
+		LocalOffset: 418,0,40
+		Weapon: HarpyClawMG
 		PauseOnCondition: !ammo
 	AttackAircraft:
 		FacingTolerance: 80

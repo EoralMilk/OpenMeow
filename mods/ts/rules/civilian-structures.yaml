@@ -1478,7 +1478,7 @@ GASAND:
 			LocalYaw: 128
 			TopLeft: -512, -512
 			BottomRight: 512, 512
-			VerticalTopOffset: 300
+			VerticalTopOffset: 245
 	AppearsOnMapPreview:
 	MapEditorData:
 		Categories: Wall

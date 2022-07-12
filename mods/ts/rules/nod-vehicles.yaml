@@ -26,7 +26,7 @@ BGGY:
 		Range: 6c0
 		MaxHeightDelta: 3
 	Armament:
-		Weapon: TestRaiderCannon
+		Weapon: RaiderCannonMG
 		LocalOffset: 0,-61,313, 0,61,313
 		MuzzleSequence: muzzle
 	AttackFrontal:

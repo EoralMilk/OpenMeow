@@ -243,14 +243,17 @@ namespace OpenRA.Mods.Common.Traits
 
 					ticksSinceLastShot = 0;
 
-					// If Weapon.Burst == 1, cycle through all LocalOffsets, otherwise use the offset corresponding to current Burst
-					currentBarrel %= barrelCount;
-					delayedBarrel = Weapon.Burst == 1 ? Barrels[currentBarrel] : Barrels[Burst % Barrels.Length];
-					currentBarrel++;
+					for (int i = 0; i < Info.BurstPerFireCount; i++)
+					{
+						// If Weapon.Burst == 1, cycle through all LocalOffsets, otherwise use the offset corresponding to current Burst
+						currentBarrel %= barrelCount;
+						delayedBarrel = Weapon.Burst == 1 ? Barrels[currentBarrel] : Barrels[Burst % Barrels.Length];
+						currentBarrel++;
 
-					FireBarrel(self, delayedIFacing, delayedTarget, delayedBarrel);
+						FireBarrel(self, delayedIFacing, delayedTarget, delayedBarrel);
 
-					UpdateBurst(self, delayedTarget);
+						UpdateBurst(self, delayedTarget);
+					}
 				}
 			}
 

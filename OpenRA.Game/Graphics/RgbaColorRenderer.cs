@@ -34,7 +34,7 @@ namespace OpenRA.Graphics
 
 		public void UpdateWorldRenderOffset(World3DRenderer wr)
 		{
-			var offset = wr.InverseCameraFrontMeterPerWPos * 1000;
+			var offset = wr.InverseCameraFrontMeterPerWPos * 10;
 
 			ViewZOffset = new float3(offset.x, offset.y, offset.z);
 			CamUpOffset = new float3(wr.CameraUp.x, wr.CameraUp.y, wr.CameraUp.z);

@@ -80,7 +80,7 @@ RUTEST:
 	# 	Scale: 4
 	# 	Mesh: turret
 	# AttachedArmament@1:
-	# 	Weapon: TestVulcan
+	# 	Weapon: ^SA
 	# 	SkeletonToUse: turret_skeleton1
 	# 	FromBonePose: firepose
 	# 	FacingTolerance: 40
@@ -98,7 +98,7 @@ RUTEST:
 		Scale: 4
 		Mesh: turret
 	AttachedArmament@2:
-		Weapon: TestVulcan
+		Weapon: ^SA
 		SkeletonToUse: turret_skeleton2
 		FromBonePose: firepose
 		FacingTolerance: 40
@@ -157,7 +157,7 @@ RUTEST2:
 		TurretFireAngleLimitation: true
 		BarrelFireAngleLimitation: true
 	AttachedArmament@1:
-		Weapon: TestVulcan
+		Weapon: ^SA
 		SkeletonToUse: turret_skeleton1
 		FromBonePose: firepose
 		FacingTolerance: 40
@@ -215,7 +215,7 @@ RUTEST2:
 	# 	TurretFireAngleLimitation: true
 	# 	BarrelFireAngleLimitation: true
 	# AttachedArmament@3:
-	# 	Weapon: TestVulcan
+	# 	Weapon: ^SA
 	# 	SkeletonToUse: turret_skeleton3
 	# 	FromBonePose: firepose
 	# 	FacingTolerance: 40
@@ -244,7 +244,7 @@ RUTEST2:
 	# 	TurretFireAngleLimitation: true
 	# 	BarrelFireAngleLimitation: true
 	# AttachedArmament@4:
-	# 	Weapon: TestVulcan
+	# 	Weapon: ^SA
 	# 	SkeletonToUse: turret_skeleton4
 	# 	FromBonePose: firepose
 	# 	FacingTolerance: 40
@@ -288,7 +288,7 @@ RUTEST4:
 		Range: 2c0
 		Type: CenterPosition
 	Armament:
-		Weapon: TestProton
+		Weapon: Proton
 		PauseOnCondition: !ammo
 		SkeletonToUse: body
 		FromBonePose: a-s-Rig_Hand.R, a-s-Rig_Hand.L

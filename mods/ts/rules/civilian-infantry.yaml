@@ -51,7 +51,7 @@ UMAGON:
 		Range: 7c0
 	Armament:
 		LocalOffset: 126,0,438
-		Weapon: TestSniper
+		Weapon: SilencerSniper
 	AttackFrontal:
 		Voice: Attack
 		FacingTolerance: 0
@@ -152,7 +152,7 @@ MWMN:
 		Range: 4c0
 	Armament:
 		LocalOffset: 143,0,438
-		Weapon: TestShotGun
+		Weapon: ^ShotGun
 	AttackFrontal:
 		Voice: Attack
 		FacingTolerance: 0

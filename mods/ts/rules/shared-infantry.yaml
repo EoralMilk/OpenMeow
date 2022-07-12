@@ -20,11 +20,11 @@ E1:
 		Speed: 71
 	Armament@PRIMARY:
 		LocalOffset: 137,0,444
-		Weapon: TestMG #Minigun
+		Weapon: InfMG #Minigun
 		RequiresCondition: !rank-elite
 	Armament@ELITE:
 		LocalOffset: 137,0,444
-		Weapon: TestShotGunPro #M1Carbine
+		Weapon: ShotGunPro #M1Carbine
 		RequiresCondition: rank-elite
 	AttackFrontal:
 		Voice: Attack

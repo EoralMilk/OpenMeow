@@ -1,5 +1,5 @@
 A10Vulcan:
-	Inherits: TestVulcan
+	Inherits: ^SA
 	ValidTargets: Ground, Water
 	ReloadDelay: 100
 	MinRange: 4c512
@@ -71,7 +71,7 @@ A10Napalm:
 		InvalidTargets: Vehicle, Building, Wall
 
 
-TestVulcan:
+^SA:
 	ValidTargets: Ground, Water, Air
 	ReloadDelay: 3
 	MinRange: 0c128
@@ -108,9 +108,10 @@ TestVulcan:
 			Concrete: 10
 		DamageTypes: Prone50Percent, TriggerProne, BulletDeath
 		ValidTargets: Ground, Water, Air
+		InvalidTargets: Wall, Bridge
 	Warhead@2Eff: CreateEffect
 		Explosions: piff
-		ValidTargets: Ground, Air
+		ValidTargets: Ground, Air, Trees
 	Warhead@3EffWater: CreateEffect
 		Explosions: water_piff
 		ExplosionPalette: ra
@@ -118,12 +119,13 @@ TestVulcan:
 		InvalidTargets: Vehicle
 
 DropVulcan:
-	Inherits: TestVulcan
+	Inherits: ^SA
 	Projectile: Bullet
-		Speed: 1c768
+		Speed: 2c0
+		ContrailLength: 2
 
-TestMG:
-	Inherits: TestVulcan
+InfMG:
+	Inherits: ^SA
 	MinRange: 0c128
 	Range: 6c0
 	ReloadDelay: 30
@@ -145,10 +147,21 @@ TestMG:
 			Concrete: 5
 	Warhead@1Dam: Spread3DDamage
 		Damage: 900
-		Spread: 0c76
+		Spread: 0c64
 
-TestHarpyClaw:
-	Inherits: TestMG
+AssaultVulcan:
+	Inherits: InfMG
+	Report: tsgun4.aud
+	BurstDelays: 2
+	Burst: 10
+	Range: 6c512
+	Projectile: Bullet
+		LifeTime: 10
+		ContrailLength: 2
+		Inaccuracy: 400
+
+HarpyClawMG:
+	Inherits: InfMG
 	Burst: 8
 	BurstDelays: 2
 	MinRange: 0
@@ -165,8 +178,8 @@ TestHarpyClaw:
 		Damage: 1500
 		Spread: 0c128
 
-TestRaiderCannon:
-	Inherits: TestMG
+RaiderCannonMG:
+	Inherits: InfMG
 	Burst: 6
 	BurstDelays: 2
 	ReloadDelay: 35
@@ -174,13 +187,13 @@ TestRaiderCannon:
 	Range: 6c512
 	Report: chaingn_a.wav, chaingn_b.wav, chaingn_c.wav, chaingn_d.wav
 	Projectile: Bullet
-		Inaccuracy: 250
+		Inaccuracy: 330
 	Warhead@1Dam: Spread3DDamage
 		Damage: 1000
 		Spread: 0c100
 
-CyMG:
-	Inherits: TestMG
+CyborgMG:
+	Inherits: InfMG
 	Range: 6c768
 	ReloadDelay: 35
 	Burst: 8
@@ -191,13 +204,12 @@ CyMG:
 		ContrailLength: 3
 		Inaccuracy: 340
 
-
 VulcanMG:
-	Inherits: TestMG
+	Inherits: InfMG
 	Report: chaingn_a.wav, chaingn_b.wav, chaingn_c.wav, chaingn_d.wav
 	Range: 7c0
 	ReloadDelay: 45
-	Burst: 8
+	Burst: 16
 	BurstDelays: 2
 	Projectile: Bullet
 		LifeTime: 11
@@ -207,56 +219,8 @@ VulcanMG:
 		Damage: 800
 		Spread: 0c100
 
-TestShotGunScat:
-	Inherits: TestMG
-	Projectile: Bullet
-		LifeTime: 7
-		Inaccuracy: 700
-		ContrailLength: 2
-	Warhead@1Dam: Spread3DDamage
-		Damage: 600
-		Spread: 0c128
-		Versus:
-			None: 100
-			Wood: 20
-			Light: 15
-			Heavy: 5
-			Concrete: 5
-		ValidTargets: Ground, Water, Air
-
-TestShotGunProScat:
-	Inherits: TestMG
-	Projectile: Bullet
-		LifeTime: 7
-		Inaccuracy: 800
-		ContrailLength: 2
-
-
-TestShotGun:
-	ReloadDelay: 24
-	Range: 5c256
-	Burst: 1
-	Report: gun18.aud
-	Projectile: InstantScat
-		ScatWeapon: TestShotGunScat
-		ScatCount: 9
-		Inaccuracy: 200
-	Warhead@1Dam: SpreadDamage
-
-TestShotGunPro:
-	ReloadDelay: 24
-	Range: 6c256
-	Burst: 1
-	# BurstDelays: 2
-	Report: gostgun_a.wav, gostgun_b.wav
-	Projectile: InstantScat
-		ScatWeapon: TestShotGunProScat
-		ScatCount: 9
-		Inaccuracy: -1
-	Warhead@1Dam: SpreadDamage
-
-TestSniper:
-	Inherits: TestMG
+SilencerSniper:
+	Inherits: InfMG
 	MinRange: 0c128
 	Range: 10c0
 	ReloadDelay: 45
@@ -279,6 +243,55 @@ TestSniper:
 		DamageTypes: Prone100Percent, TriggerProne, BulletDeath
 
 
+ShotGunScat:
+	Inherits: InfMG
+	Projectile: Bullet
+		LifeTime: 7
+		Inaccuracy: 700
+		ContrailLength: 2
+	Warhead@1Dam: Spread3DDamage
+		Damage: 600
+		Spread: 0c128
+		Versus:
+			None: 100
+			Wood: 20
+			Light: 15
+			Heavy: 5
+			Concrete: 5
+		ValidTargets: Ground, Water, Air
+
+ShotGunProScat:
+	Inherits: InfMG
+	Projectile: Bullet
+		LifeTime: 7
+		Inaccuracy: 800
+		ContrailLength: 2
+
+
+^ShotGun:
+	ReloadDelay: 24
+	Range: 5c256
+	Burst: 1
+	Report: gun18.aud
+	Projectile: InstantScat
+		ScatWeapon: ShotGunScat
+		ScatCount: 9
+		Inaccuracy: 200
+	Warhead@1Dam: SpreadDamage
+
+ShotGunPro:
+	ReloadDelay: 24
+	Range: 6c256
+	Burst: 1
+	# BurstDelays: 2
+	Report: gostgun_a.wav, gostgun_b.wav
+	Projectile: InstantScat
+		ScatWeapon: ShotGunProScat
+		ScatCount: 9
+		Inaccuracy: -1
+	Warhead@1Dam: SpreadDamage
+
+
 VectorBooster:
 	Range: 7c0
 	Report: hovrmis1.aud
@@ -292,12 +305,12 @@ VectorBooster:
 		ProximitySnapping: true
 		ContrailLength: 12
 		ContrailWidth: 74
-		ContrailColor: F0F0E0B0
+		ContrailColor: FFDD40B0
 		ContrailDelay: 0
 		ContrailBlendMode: ScreenAdditive
 		Speed: 310
 		LaunchAngle: 128
-		ZOffset: 1024
+		ZOffset: 10
 		Inaccuracy: 1c0
 		UseVerticalInaccuracy: true
 		LockOnInaccuracy: 400
@@ -307,7 +320,8 @@ VectorBooster:
 		Palette: effect
 		TrailImage: small_smoke_trail
 		TrailInterval: 1
-		TrailCount: 0
+		TrailCount: 2
+		TrailDelay: 0
 		ExplodeUnderThisAltitude: 0
 		UsingScat: false
 		ScatWeapon: Grenade
@@ -351,10 +365,10 @@ VectorBoosterMul:
 		LostTarget: false
 
 
-TestProton:
+ProtonPulse:
 	ReloadDelay: 50
 	Range: 7c0
-	Burst: 6
+	Burst: 12
 	BurstDelays: 3
 	Report: scrin5b.aud
 	ValidTargets: Ground, Water, Air, Trees
@@ -396,7 +410,7 @@ TestProton:
 		SmudgeType: SmallScorch
 		InvalidTargets: Vehicle, Building, Wall
 
-TestProtonBounce:
+ProtonBounce:
 	Warhead@1Dam: Spread3DDamage
 		Spread: 0c268
 		Damage: 4000
@@ -416,7 +430,7 @@ TestProtonBounce:
 		SmudgeType: SmallScorch
 		InvalidTargets: Vehicle, Building, Wall
 
-TestProtonBomb:
+ProtonBomb:
 	ReloadDelay: 50
 	Burst: 3
 	BurstDelays: 2
@@ -446,7 +460,7 @@ TestProtonBomb:
 		BounceCount: 1
 		BounceRangeModifier: 20
 		Width: 388
-		BounceWeapon: TestProtonBounce
+		BounceWeapon: ProtonBounce
 		OnlyHitToExplode: true
 		ExplodeUnderThisAltitude: 0
 	Warhead@1Dam: Spread3DDamage
