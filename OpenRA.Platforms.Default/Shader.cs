@@ -79,6 +79,13 @@ namespace OpenRA.Platforms.Default
 
 			var vertexShader = CompileShaderObject(OpenGL.GL_VERTEX_SHADER, bindings.VertexShaderName);
 			var fragmentShader = CompileShaderObject(OpenGL.GL_FRAGMENT_SHADER, bindings.FragmentShaderName);
+			uint geometryShader = 0;
+			bool hasGeometryShader = false;
+			if (bindings.GeometryShaderName != null)
+			{
+				geometryShader = CompileShaderObject(OpenGL.GL_GEOMETRY_SHADER, bindings.GeometryShaderName);
+				hasGeometryShader = true;
+			}
 
 			// Assemble program
 			program = OpenGL.glCreateProgram();
@@ -100,6 +107,11 @@ namespace OpenRA.Platforms.Default
 			OpenGL.CheckGLError();
 			OpenGL.glAttachShader(program, fragmentShader);
 			OpenGL.CheckGLError();
+			if (hasGeometryShader)
+			{
+				OpenGL.glAttachShader(program, geometryShader);
+				OpenGL.CheckGLError();
+			}
 
 			OpenGL.glLinkProgram(program);
 			OpenGL.CheckGLError();

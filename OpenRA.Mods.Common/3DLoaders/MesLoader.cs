@@ -13,6 +13,8 @@ namespace OpenRA.Mods.Common.Graphics
 	{
 		public string VertexShaderName { get; }
 		public string FragmentShaderName { get; }
+		public string GeometryShaderName => null;
+
 		public int Stride => (17 * sizeof(float));
 
 		public IEnumerable<ShaderVertexAttribute> Attributes { get; } = new[]

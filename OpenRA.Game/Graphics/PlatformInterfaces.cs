@@ -145,6 +145,7 @@ namespace OpenRA
 	{
 		string VertexShaderName { get; }
 		string FragmentShaderName { get; }
+		string GeometryShaderName { get; }
 
 		// 这是基础顶点属性的参数
 		int Stride { get; }

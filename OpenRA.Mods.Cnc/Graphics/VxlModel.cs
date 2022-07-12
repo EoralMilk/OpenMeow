@@ -22,6 +22,8 @@ namespace OpenRA.Mods.Cnc.Graphics
 	{
 		public string VertexShaderName { get; }
 		public string FragmentShaderName { get; }
+		public string GeometryShaderName => null;
+
 		public int Stride => 52;
 
 		public IEnumerable<ShaderVertexAttribute> Attributes { get; } = new[]

@@ -18,6 +18,8 @@ namespace OpenRA.Graphics
 	{
 		public string VertexShaderName { get; }
 		public string FragmentShaderName { get; }
+
+		public string GeometryShaderName => null;
 		public int Stride => 52;
 
 		public IEnumerable<ShaderVertexAttribute> Attributes { get; } = new[]
@@ -51,6 +53,8 @@ namespace OpenRA.Graphics
 	{
 		public string VertexShaderName { get; }
 		public string FragmentShaderName { get; }
+		public string GeometryShaderName => null;
+
 		public int Stride => 4 * sizeof(float);
 
 		public IEnumerable<ShaderVertexAttribute> Attributes { get; } = new[]

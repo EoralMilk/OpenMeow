@@ -167,6 +167,9 @@ namespace OpenRA.Platforms.Default
 		public const int GL_RGBA16F = 0x881A;
 		public const int GL_RGBA32F = 0x8814;
 
+		// OpenGL 3
+		public const int GL_GEOMETRY_SHADER = 0x8DD9;
+
 		// OpenGL 4.3
 		public const int GL_DEBUG_OUTPUT = 0x92E0;
 		public const int GL_DEBUG_OUTPUT_SYNCHRONOUS = 0x8242;
