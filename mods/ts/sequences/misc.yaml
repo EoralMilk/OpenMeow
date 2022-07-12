@@ -239,24 +239,34 @@ explosion:
 		Tick: 360
 		IgnoreWorldTint: False
 		BlendMode: Alpha
+		MeshType: Plane
 	droppod2_explosion: droppod2
 		Length: 8
 		Tick: 360
 		IgnoreWorldTint: False
 		BlendMode: Alpha
+		MeshType: Plane
 	droppody_explosion: droppody
 		Length: 8
 		Tick: 360
 		IgnoreWorldTint: False
 		BlendMode: Alpha
+		MeshType: Plane
 	droppody2_explosion: droppody2
 		Length: 8
 		Tick: 360
 		IgnoreWorldTint: False
 		BlendMode: Alpha
+		MeshType: Plane
 	proton_explo: proton_explo
 		BlendMode: Alpha
 		AlphaFade: False
+		MeshType: Plane
+	proton_explobig: proton_explo
+		Scale: 2
+		AlphaFade: False
+		Tick: 50
+		MeshType: Plane
 
 discus:
 	idle:
@@ -310,17 +320,20 @@ torpedo:
 		Length: *
 		ZOffset: 1023
 		Offset: 0, 0, 8
+		Scale: 1
 		IgnoreWorldTint: True
 		MeshType: Plane
 		BlendMode: ScreenAdditive
 
-proton_projectile
+proton_projectile:
 	idle:
 		Length: *
 		ZOffset: 1023
 		Offset: 0, 0, 8
+		Scale: 1.2
 		IgnoreWorldTint: True
 		MeshType: Plane
+		BlendMode: ScreenAdditive
 
 flameall:
 	idle:

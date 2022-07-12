@@ -58,9 +58,9 @@ namespace OpenRA.Graphics
 				//float3 leftFront = new float3(leftBack.X, position.y + topBottom.Y / Game.Renderer.World3DRenderer.CosCameraPitch, position.z);
 				//float3 rightFront = new float3(rightBack.X, leftFront.Y, position.z);
 
-				float3 leftBack = new float3(position.x + r.leftBack.X, position.y + r.leftBack.Y, position.z);
+				float3 leftBack = new float3(position.x + scale * r.leftBack.X, position.y + scale * r.leftBack.Y, position.z);
 				float3 rightBack = new float3(position.x + leftRight.Y, leftBack.Y, position.z);
-				float3 leftFront = new float3(leftBack.X, position.y + r.leftFront.Y, position.z);
+				float3 leftFront = new float3(leftBack.X, position.y + scale * r.leftFront.Y, position.z);
 				float3 rightFront = new float3(rightBack.X, leftFront.Y, position.z);
 
 				float sl = 0;
@@ -101,9 +101,9 @@ namespace OpenRA.Graphics
 				//float3 leftBottom = new float3(leftTop.X, position.y, position.z - (topBottom.Y) / Game.Renderer.World3DRenderer.SinCameraPitch);
 				//float3 rightBottom = new float3(rightTop.X, position.y, leftBottom.Z);
 
-				float3 leftTop = new float3(position.x + r.leftTop.X, position.y, position.z + r.leftTop.Z);
+				float3 leftTop = new float3(position.x + scale * r.leftTop.X, position.y, position.z + scale * r.leftTop.Z);
 				float3 rightTop = new float3(position.x + leftRight.Y, position.y, leftTop.Z);
-				float3 leftBottom = new float3(leftTop.X, position.y, position.z + r.leftBottom.Z);
+				float3 leftBottom = new float3(leftTop.X, position.y, position.z + scale * r.leftBottom.Z);
 				float3 rightBottom = new float3(rightTop.X, position.y, leftBottom.Z);
 
 				float sl = 0;
@@ -139,11 +139,11 @@ namespace OpenRA.Graphics
 			}
 			else
 			{
-				float3 leftTop = new float3(position.x + r.leftTop.X, position.y, position.z + r.leftTop.Z);
+				float3 leftTop = new float3(position.x + scale * r.leftTop.X, position.y, position.z + scale * r.leftTop.Z);
 				float3 rightTop = new float3(position.x + leftRight.Y, position.y, leftTop.Z);
 				float3 leftBase = new float3(leftTop.X, position.y, position.z);
 				float3 rightBase = new float3(rightTop.X, position.y, position.z);
-				float3 leftFront = new float3(leftTop.X, position.y + r.leftFront.Y, position.z);
+				float3 leftFront = new float3(leftTop.X, position.y + scale * r.leftFront.Y, position.z);
 				float3 rightFront = new float3(rightTop.X, leftFront.Y, position.z);
 
 				float ycut = topBottom.X / (ssziehalf.Y * 2);
@@ -221,9 +221,9 @@ namespace OpenRA.Graphics
 			var position = Game.Renderer.World3DRenderer.Get3DRenderPositionFromWPos(inPos);
 			position += viewOffset;
 
-			float3 leftBack = new float3(position.x + leftRight.X, position.y + r.leftBack.Y, position.z);
+			float3 leftBack = new float3(position.x + leftRight.X, position.y + scale * r.leftBack.Y, position.z);
 			float3 rightBack = new float3(position.x + leftRight.Y, leftBack.Y, position.z);
-			float3 leftFront = new float3(leftBack.X, position.y + r.leftFront.Y, position.z);
+			float3 leftFront = new float3(leftBack.X, position.y + scale * r.leftFront.Y, position.z);
 			float3 rightFront = new float3(rightBack.X, leftFront.Y, position.z);
 
 			float sl = 0;
@@ -285,9 +285,9 @@ namespace OpenRA.Graphics
 			var position = Game.Renderer.World3DRenderer.Get3DRenderPositionFromWPos(inPos);
 			position += viewOffset;
 
-			float3 leftTop = new float3(position.x + leftRight.X, position.y, position.z + r.leftTop.Z);
+			float3 leftTop = new float3(position.x + leftRight.X, position.y, position.z + scale * r.leftTop.Z);
 			float3 rightTop = new float3(position.x + leftRight.Y, position.y, leftTop.Z);
-			float3 leftBottom = new float3(leftTop.X, position.y, position.z + r.leftBottom.Z);
+			float3 leftBottom = new float3(leftTop.X, position.y, position.z + scale * r.leftBottom.Z);
 			float3 rightBottom = new float3(rightTop.X, position.y, leftBottom.Z);
 
 			float sl = 0;

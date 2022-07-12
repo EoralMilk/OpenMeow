@@ -17,6 +17,7 @@ A10Vulcan:
 		Damage: 1000
 		Spread: 0c268
 
+
 A10Napalm:
 	ReloadDelay: 100
 	Burst: 24
@@ -360,7 +361,6 @@ TestProton:
 	Projectile: Bullet
 		Speed: 700
 		Blockable: false
-		Shadow: true
 		Inaccuracy: 128
 		UseVerticalInaccuracy: true
 		OnlyHitToExplode: true
@@ -371,7 +371,7 @@ TestProton:
 		DetectTargetFromLength: 0.7
 		DetectTargetBeforeDist: 2c0
 		ContrailLength: 2
-		ContrailWidth: 99
+		ContrailWidth: 88
 		ContrailColor: 66FF66E0
 		ContrailDelay: 0
 		ContrailBlendMode: ScreenAdditive
@@ -391,14 +391,80 @@ TestProton:
 	Warhead@2Eff: CreateEffect
 		Explosions: proton_explo
 		ImpactSounds: expnew12.aud
-		ValidTargets: Ground, Air
-	Warhead@3EffWater: CreateEffect
-		Explosions: small_watersplash
-		ExplosionPalette: player
-		ImpactSounds: ssplash3.aud
-		ValidTargets: Water
-		InvalidTargets: Vehicle
+		ValidTargets: Ground, Air, Water
 	Warhead@4Smu: LeaveSmudge
 		SmudgeType: SmallScorch
 		InvalidTargets: Vehicle, Building, Wall
 
+TestProtonBounce:
+	Warhead@1Dam: Spread3DDamage
+		Spread: 0c268
+		Damage: 4000
+		Versus:
+			None: 25
+			Wood: 65
+			Light: 75
+			Heavy: 100
+			Concrete: 60
+		DamageTypes: Prone50Percent, TriggerProne, EnergyDeath
+		ValidTargets: Ground, Water, Air, Trees
+	Warhead@2Eff: CreateEffect
+		Explosions: proton_explo
+		ImpactSounds: expnew12.aud
+		ValidTargets: Ground, Air, Water
+	Warhead@4Smu: LeaveSmudge
+		SmudgeType: SmallScorch
+		InvalidTargets: Vehicle, Building, Wall
+
+TestProtonBomb:
+	ReloadDelay: 50
+	Burst: 3
+	BurstDelays: 2
+	Range: 3c686
+	TargetActorCenter: true
+	ValidTargets: Ground, Trees
+	FirstBurstTargetOffset: -1c0,0,0
+	FollowingBurstTargetOffset: 1c0,0,0
+	# Projectile: GravityBomb
+	# 	Velocity: 72, 0, -90
+	# 	Acceleration: 0, 0, -8
+	# 	Shadow: false
+	# 	Image: proton_projectile
+	# 	Palette: effect
+	Projectile: Bullet
+		# InstantDropToGround: true
+		Speed: 226
+		Blockable: false
+		# Image: TORPEDO
+		Image: proton_projectile
+		Palette: effect
+		Shadow: false
+		LaunchAngle: 60
+		Inaccuracy: 200
+		DetectTargetFromLength: 0.5
+		DetectTargetBeforeDist: 2c0
+		BounceCount: 1
+		BounceRangeModifier: 20
+		Width: 388
+		BounceWeapon: TestProtonBounce
+		OnlyHitToExplode: true
+		ExplodeUnderThisAltitude: 0
+	Warhead@1Dam: Spread3DDamage
+		Spread: 0c488
+		Falloff: 100, 80, 65, 35, 6, 3
+		Damage: 16000
+		Versus:
+			None: 200
+			Wood: 90
+			Light: 75
+			Heavy: 32
+			Concrete: 100
+		DamageTypes: Prone100Percent, TriggerProne,  EnergyDeath
+		ValidTargets: Ground, Water, Air, Trees
+	Warhead@2Eff: CreateEffect
+		Explosions: proton_explobig
+		ImpactSounds: expnew09.aud
+		ValidTargets: Ground, Water, Trees, Air
+	Warhead@4Smu: LeaveSmudge
+		SmudgeType: LargeScorch
+		InvalidTargets: Vehicle, Building, Wall

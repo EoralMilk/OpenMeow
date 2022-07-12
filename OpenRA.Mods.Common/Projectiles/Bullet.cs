@@ -69,7 +69,11 @@ namespace OpenRA.Mods.Common.Projectiles
 		[Desc("Weapon fire when projectile die.")]
 		public readonly string ScatWeapon = null;
 
+		[WeaponReference]
+		[Desc("Weapon impact when projectile bounce.")]
+		public readonly string BounceWeapon = null;
 		public WeaponInfo ScatWeaponInfo { get; private set; }
+		public WeaponInfo BounceWeaponInfo { get; private set; }
 
 		void IRulesetLoaded<WeaponInfo>.RulesetLoaded(Ruleset rules, WeaponInfo info)
 		{
@@ -80,6 +84,15 @@ namespace OpenRA.Mods.Common.Projectiles
 				if (!rules.Weapons.TryGetValue(ScatWeapon.ToLowerInvariant(), out scatWeapon))
 					throw new YamlException("Weapons Ruleset does not contain an entry '{0}'".F(ScatWeapon.ToLowerInvariant()));
 				ScatWeaponInfo = scatWeapon;
+			}
+
+			if (BounceWeapon != null)
+			{
+				WeaponInfo bounceWeapon;
+
+				if (!rules.Weapons.TryGetValue(BounceWeapon.ToLowerInvariant(), out bounceWeapon))
+					throw new YamlException("Weapons Ruleset does not contain an entry '{0}'".F(BounceWeapon.ToLowerInvariant()));
+				BounceWeaponInfo = bounceWeapon;
 			}
 		}
 
@@ -96,6 +109,7 @@ namespace OpenRA.Mods.Common.Projectiles
 		readonly WDist speed;
 
 		readonly WeaponInfo scatWeapon;
+		readonly WeaponInfo bonceWeapon;
 
 		readonly WVec offset = WVec.Zero;
 
@@ -126,6 +140,9 @@ namespace OpenRA.Mods.Common.Projectiles
 			{
 				scatWeapon = info.ScatWeaponInfo;
 			}
+
+			if (info.BounceCount > 0 && info.BounceWeaponInfo != null)
+				bonceWeapon = info.BounceWeaponInfo;
 
 			if (info.LaunchAngle.Length > 1)
 				angle = new WAngle(world.SharedRandom.Next(info.LaunchAngle[0].Angle, info.LaunchAngle[1].Angle));
@@ -273,6 +290,17 @@ namespace OpenRA.Mods.Common.Projectiles
 				if (info.UsingScat)
 				{
 					scatlength = Math.Max(((target - pos).Length - info.ScatDist.Length) / speed.Length, 1);
+				}
+
+				if (bonceWeapon != null)
+				{
+					var warheadArgs = new WarheadArgs(args)
+					{
+						ImpactOrientation = new WRot(WAngle.Zero, Util.GetVerticalAngle(lastPos, pos), args.Facing),
+						ImpactPosition = pos,
+						Blocker = blocker,
+					};
+					bonceWeapon.Impact(Target.FromPos(pos), warheadArgs);
 				}
 
 				ticks = 0;

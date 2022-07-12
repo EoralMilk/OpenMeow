@@ -465,19 +465,29 @@ SCRIN:
 		Type: GroundPosition
 	Armament@a:
 		Weapon: TestProton
-		LocalOffset: 485,145,120
+		LocalOffset: 555,155,120
 		PauseOnCondition: !ammo
+		FacingTolerance: 80
 	Armament@b:
 		Weapon: TestProton
-		LocalOffset: 485,-145,120
+		LocalOffset: 555,-155,120
 		PauseOnCondition: !ammo
+		FacingTolerance: 80
+	Armament@bomb:
+		Weapon: TestProtonBomb
+		LocalOffset: 111,0,80
+		PauseOnCondition: !ammo
+		AmmoUsage: 4
 	AttackAircraft:
 		Voice: Attack
-		FacingTolerance: 80
 		PersistentTargeting: false
 		PauseOnCondition: empdisable
+		FacingTolerance: 512
+		# AttackType: Strafe
+		# StrafeRunLength: 17c0
+		RotateToFullOnTarget: true
 	AmmoPool:
-		Ammo: 30
+		Ammo: 60
 		ReloadCount: 10
 		AmmoCondition: ammo
 	RenderSprites:
@@ -494,10 +504,24 @@ SCRIN:
 		Position: BottomLeft
 		RequiresSelection: true
 		Margin: 4, 5
-		PipCount: 3
+		PipCount: 6
 		FullSequence: pip-ammo
 		EmptySequence: pip-ammoempty
 		Palette: pips
+	Contrail@a:
+		Offset: -385,145,45
+		TrailLength: 4
+		TrailWidth: 70
+		BlendMode: Additive
+		UsePlayerColor: false
+		Color: 80FF80CF
+	Contrail@b:
+		Offset: -385,-145,45
+		TrailLength: 4
+		TrailWidth: 70
+		BlendMode: Additive
+		UsePlayerColor: false
+		Color: 80FF80CF
 
 APACHE:
 	Inherits: ^EMPableAircraft
@@ -546,7 +570,7 @@ APACHE:
 		Ammo: 72
 		AmmoCondition: ammo
 		ReloadCount: 8
-		ReloadDelay: 40
+		ReloadDelay: 20
 	WithIdleOverlay@ROTORAIR:
 		Offset: 85,0,346
 		Sequence: rotor
