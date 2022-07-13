@@ -5,7 +5,7 @@ BodyCombined:
 	SpecularTint: 0.45, 0.45,0.45
 	Shininess: 32.0
 
-	Type: PBR
+	# Type: PBR
 	# PBR
 	AlbedoTint: 1.2, 1.15, 1
 	Roughness: 0.75

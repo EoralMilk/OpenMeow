@@ -9,7 +9,6 @@
 		Shadow: true
 		Inaccuracy: 128
 		Image: DRAGON
-		TrailImage: small_smoke_trail
 		HorizontalRateOfTurn: 100
 		RangeLimit: 15c0
 		Palette: ra
@@ -22,8 +21,15 @@
 		CruiseAltitude: 3c512
 		AllowSnapping: true
 		TerrainHeightAware: true
-		ContrailLength: 10
-		ContrailColor: F0E0E0
+		TrailImage: small_smoke_trail
+		TrailInterval: 1
+		TrailCount: 2
+		TrailDelay: 0
+		ContrailLength: 12
+		ContrailWidth: 74
+		ContrailColor: FFDD40B0
+		ContrailDelay: 0
+		ContrailBlendMode: ScreenAdditive
 	Warhead@1Dam: SpreadDamage
 		Spread: 108
 		Falloff: 100, 50, 25, 12, 6, 3, 0

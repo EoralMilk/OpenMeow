@@ -693,14 +693,14 @@
 	EntersTunnels:
 		Voice: Move
 	HitShape@prone:
-		TargetableOffsets: 0,0,0
+		TargetableOffsets: 0,0,32
 		RequiresCondition: takecover
 		Type: Circle
-			Radius: 178
-			VerticalTopOffset: 64
-			VerticalBottomOffset: 0
+			Radius: 168
+			# VerticalTopOffset: 64
+			# VerticalBottomOffset: 0
 	HitShape:
-		TargetableOffsets: 0,0,256
+		TargetableOffsets: 0,0,288
 		RequiresCondition: !takecover
 		Type: Circle
 			Radius: 128

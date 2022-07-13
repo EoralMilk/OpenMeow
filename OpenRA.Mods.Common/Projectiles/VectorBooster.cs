@@ -225,10 +225,14 @@ namespace OpenRA.Mods.Common.Projectiles
 			currentPos += currentFacing * TSVector.forward * speed;
 			pos = Game.Renderer.World3DRenderer.GetWPosFromTSVector(currentPos);
 
-			if (lockOn && args.GuidedTarget.Actor.IsInWorld && !args.GuidedTarget.Actor.IsDead)
+			if (lockOn && args.GuidedTarget.Actor.IsInWorld)
 			{
-				target = args.Weapon.TargetActorCenter ? args.GuidedTarget.CenterPosition + offset : args.GuidedTarget.Positions.PositionClosestTo(args.Source) + offset;
-				targetPos = Game.Renderer.World3DRenderer.Get3DPositionFromWPos(target);
+				if (!args.GuidedTarget.Actor.IsDead)
+				{
+					target = args.Weapon.TargetActorCenter ? args.GuidedTarget.CenterPosition + offset : args.GuidedTarget.Positions.PositionClosestTo(args.Source) + offset;
+					targetPos = Game.Renderer.World3DRenderer.Get3DPositionFromWPos(target);
+				}
+
 				desireFacing = TSQuaternion.FromToRotation(TSVector.forward, targetPos - currentPos);
 				currentFacing = TSQuaternion.RotateTowards(currentFacing, desireFacing, rotationSpeed);
 			}

@@ -13,6 +13,7 @@ struct BlinnPhongMaterial {
 	vec3      specularTint;
 	float     shininess;
 	sampler2D specular;
+	bool blinn;
 };
 
 struct PBRMaterial {
@@ -61,6 +62,7 @@ in vec3 vRemap;
 flat in uint drawPart;
 flat in int isDraw;
 
+
 uniform vec3 viewPos;
 uniform bool EnableDepthPreview;
 uniform vec2 DepthPreviewParams;
@@ -106,10 +108,16 @@ vec4 CalcDirLight(DirLight light, vec3 normal, vec3 viewDir, const BlinnPhongMat
 	// diffuse
 	float diff = max(dot(normal, lightDir), 0.0);
 	// specular
-	vec3 reflectDir = reflect(-lightDir, normal);
-	float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
+	float spec = 0.0;
+	if (material.blinn){
+		vec3 halfwayDir = normalize(lightDir + viewDir);
+		spec = pow(max(dot(viewDir, halfwayDir), 0.0), material.shininess);
+	}
+	else{
+		vec3 reflectDir = reflect(-lightDir, normal);
+		spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
+	}
 	// merge
-
 	vec3 ambient  = light.ambient;
 	vec3 diffuse  = light.diffuse * diff;
 

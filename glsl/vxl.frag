@@ -85,8 +85,11 @@ vec3 CalcDirLight(DirLight light, vec3 normal, vec3 viewDir, vec3 color)
 	// diffuse
 	float diff = max(dot(normal, lightDir), 0.0);
 	// specular
-	vec3 reflectDir = reflect(-lightDir, normal);
-	float spec = pow(max(dot(viewDir, reflectDir), 0.0), 0.5f);
+	// vec3 reflectDir = reflect(-lightDir, normal);
+	// float spec = pow(max(dot(viewDir, reflectDir), 0.0), 0.5f);
+
+	vec3 halfwayDir = normalize(lightDir + viewDir);
+	float spec = pow(max(dot(viewDir, halfwayDir), 0.0), 0.5f);
 	// merge
 	float shadowMul = (1.0f - CalShadow(light));
 	vec3 ambient  = light.ambient  * color * vLightModify.y;

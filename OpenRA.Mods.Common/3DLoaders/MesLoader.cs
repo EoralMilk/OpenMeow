@@ -557,6 +557,7 @@ namespace OpenRA.Mods.Common.Graphics
 		readonly string specMapName;
 		readonly ITexture diffuseTex;
 		readonly ITexture specularTex;
+		readonly bool blinn;
 
 		// PBR
 		readonly float3 albedoTint;
@@ -603,6 +604,7 @@ namespace OpenRA.Mods.Common.Graphics
 				diffMapName = ReadYamlInfo.LoadField(info, "DiffuseMap", "NO_TEXTURE");
 				specMapName = ReadYamlInfo.LoadField(info, "SpecularMap", "NO_TEXTURE");
 				shininess = ReadYamlInfo.LoadField(info, "Shininess", 0.0f);
+				blinn = ReadYamlInfo.LoadField(info, "Blinn", true);
 
 				if (diffMapName == "NO_TEXTURE")
 				{
@@ -714,7 +716,7 @@ namespace OpenRA.Mods.Common.Graphics
 		public IMaterial CreateMaterial()
 		{
 			if (materialType == MaterialType.BlinnPhong)
-				return new BlinnPhongMaterial(name, diffuseTex != null, diffuseTint, diffuseTex, specularTex != null, specularTint, specularTex, shininess, faceCullFunc);
+				return new BlinnPhongMaterial(name, diffuseTex != null, diffuseTint, diffuseTex, specularTex != null, specularTint, specularTex, shininess, faceCullFunc, blinn);
 			else if (materialType == MaterialType.PBR)
 				return new PBRMaterial(name, albedoTex != null, albedoTint, albedoTex, roughnessTex != null, roughness, roughnessTex, matallicTex != null, metallic, matallicTex, aoTex != null, ao, aoTex, faceCullFunc);
 			else

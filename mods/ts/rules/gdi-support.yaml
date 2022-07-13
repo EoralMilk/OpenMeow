@@ -94,14 +94,15 @@ GACTWR:
 	Armament@VULCPRIMARY:
 		RequiresCondition: tower.vulcan
 		Weapon: VulcanMG #VulcanTower
-		LocalOffset: 588,120,784
+		BurstPerFireCount: 2
+		LocalOffset: 588,120,784, 588,-120,784
 		MuzzleSequence: muzzle
-	Armament@VULCSECONDARY:
-		RequiresCondition: tower.vulcan
-		Name: secondary
-		Weapon: VulcanMG #VulcanTower
-		LocalOffset: 588,-120,784
-		MuzzleSequence: muzzle
+	# Armament@VULCSECONDARY:
+	# 	RequiresCondition: tower.vulcan
+	# 	Name: secondary
+	# 	Weapon: VulcanMG #VulcanTower
+	# 	LocalOffset: 588,-120,784
+	# 	MuzzleSequence: muzzle
 	Armament@ROCKET:
 		RequiresCondition: tower.rocket
 		Weapon: RPGTower

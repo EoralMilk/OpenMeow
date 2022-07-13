@@ -21,28 +21,8 @@ using OpenRA.Traits;
 
 namespace OpenRA.Mods.Common.Projectiles
 {
-	public class MissileInfo : IProjectileInfo
+	public class MissileInfo : CorporealProjectileInfo, IProjectileInfo
 	{
-		[Desc("Name of the image containing the projectile sequence.")]
-		public readonly string Image = null;
-
-		[SequenceReference(nameof(Image), allowNullImage: true)]
-		[Desc("Loop a randomly chosen sequence of Image from this list while this projectile is moving.")]
-		public readonly string[] Sequences = { "idle" };
-
-		[PaletteReference(nameof(IsPlayerPalette))]
-		[Desc("Palette used to render the projectile sequence.")]
-		public readonly string Palette = "effect";
-
-		[Desc("Palette is a player palette BaseName")]
-		public readonly bool IsPlayerPalette = false;
-
-		[Desc("Does this projectile have a shadow?")]
-		public readonly bool Shadow = false;
-
-		[Desc("Color to draw shadow if Shadow is true.")]
-		public readonly Color ShadowColor = Color.FromArgb(140, 0, 0, 0);
-
 		[Desc("Minimum vertical launch angle (pitch).")]
 		public readonly WAngle MinimumLaunchAngle = new WAngle(-64);
 
@@ -56,7 +36,7 @@ namespace OpenRA.Mods.Common.Projectiles
 		public readonly WDist MaximumLaunchSpeed = new WDist(-1);
 
 		[Desc("Maximum projectile speed in WDist / tick")]
-		public readonly WDist Speed = new WDist(384);
+		public readonly WDist MaxSpeed = new WDist(384);
 
 		[Desc("Projectile acceleration when propulsion activated.")]
 		public readonly WDist Acceleration = new WDist(5);
@@ -64,20 +44,8 @@ namespace OpenRA.Mods.Common.Projectiles
 		[Desc("How many ticks before this missile is armed and can explode.")]
 		public readonly int Arm = 0;
 
-		[Desc("Is the missile blocked by actors with BlocksProjectiles: trait.")]
-		public readonly bool Blockable = true;
-
 		[Desc("Is the missile aware of terrain height levels. Only needed for mods with real, non-visual height levels.")]
 		public readonly bool TerrainHeightAware = false;
-
-		[Desc("Width of projectile (used for finding blocking actors).")]
-		public readonly WDist Width = new WDist(1);
-
-		[Desc("The maximum/constant/incremental inaccuracy used in conjunction with the InaccuracyType property.")]
-		public readonly WDist Inaccuracy = WDist.Zero;
-
-		[Desc("Controls the way inaccuracy is calculated. Possible values are 'Maximum' - scale from 0 to max with range, 'PerCellIncrement' - scale from 0 with range and 'Absolute' - use set value regardless of range.")]
-		public readonly InaccuracyType InaccuracyType = InaccuracyType.Absolute;
 
 		[Desc("Inaccuracy override when successfully locked onto target. Defaults to Inaccuracy if negative.")]
 		public readonly WDist LockOnInaccuracy = new WDist(-1);
@@ -109,39 +77,8 @@ namespace OpenRA.Mods.Common.Projectiles
 		[Desc("Activate homing mechanism after this many ticks.")]
 		public readonly int HomingActivationDelay = 0;
 
-		[Desc("Image that contains the trail animation.")]
-		public readonly string TrailImage = null;
-
-		[SequenceReference(nameof(TrailImage), allowNullImage: true)]
-		[Desc("Loop a randomly chosen sequence of TrailImage from this list while this projectile is moving.")]
-		public readonly string[] TrailSequences = { "idle" };
-
-		[PaletteReference(nameof(TrailUsePlayerPalette))]
-		[Desc("Palette used to render the trail sequence.")]
-		public readonly string TrailPalette = "effect";
-
-		[Desc("Use the Player Palette to render the trail sequence.")]
-		public readonly bool TrailUsePlayerPalette = false;
-
-		[Desc("Interval in ticks between spawning trail animation.")]
-		public readonly int TrailInterval = 2;
-
 		[Desc("Should trail animation be spawned when the propulsion is not activated.")]
 		public readonly bool TrailWhenDeactivated = false;
-
-		public readonly int ContrailLength = 0;
-
-		public readonly int ContrailZOffset = 2047;
-
-		public readonly WDist ContrailWidth = new WDist(64);
-
-		public readonly Color ContrailColor = Color.White;
-
-		public readonly bool ContrailUsePlayerColor = false;
-
-		public readonly int ContrailDelay = 1;
-
-		public readonly BlendMode ContrailBlendMode = BlendMode.Alpha;
 
 		[Desc("Should missile targeting be thrown off by nearby actors with JamsMissiles.")]
 		public readonly bool Jammable = true;
@@ -165,7 +102,7 @@ namespace OpenRA.Mods.Common.Projectiles
 	}
 
 	// TODO: double check square roots!!!
-	public class Missile : IProjectile, ISync
+	public class Missile : CorporealProjectile, IProjectile, ISync
 	{
 		enum States
 		{
@@ -176,7 +113,6 @@ namespace OpenRA.Mods.Common.Projectiles
 
 		readonly MissileInfo info;
 		readonly ProjectileArgs args;
-		readonly Animation anim;
 
 		readonly WVec gravity;
 		readonly int minLaunchSpeed;
@@ -186,14 +122,7 @@ namespace OpenRA.Mods.Common.Projectiles
 		readonly WAngle maxLaunchAngle;
 		Actor blocker;
 
-		readonly float3 shadowColor;
-		readonly float shadowAlpha;
-
 		int ticks;
-
-		int ticksToNextSmoke;
-		readonly ContrailRenderable contrail;
-		readonly string trailPalette;
 
 		States state;
 		bool targetPassedBy;
@@ -224,6 +153,7 @@ namespace OpenRA.Mods.Common.Projectiles
 		int vFacing;
 
 		public Missile(MissileInfo info, ProjectileArgs args)
+			: base(info, args)
 		{
 			this.info = info;
 			this.args = args;
@@ -234,9 +164,9 @@ namespace OpenRA.Mods.Common.Projectiles
 			targetPosition = args.PassiveTarget;
 			var limit = info.RangeLimit != WDist.Zero ? info.RangeLimit : args.Weapon.Range;
 			rangeLimit = new WDist(Util.ApplyPercentageModifiers(limit.Length, args.RangeModifiers));
-			minLaunchSpeed = info.MinimumLaunchSpeed.Length > -1 ? info.MinimumLaunchSpeed.Length : info.Speed.Length;
-			maxLaunchSpeed = info.MaximumLaunchSpeed.Length > -1 ? info.MaximumLaunchSpeed.Length : info.Speed.Length;
-			maxSpeed = info.Speed.Length;
+			minLaunchSpeed = info.MinimumLaunchSpeed.Length > -1 ? info.MinimumLaunchSpeed.Length : info.MaxSpeed.Length;
+			maxLaunchSpeed = info.MaximumLaunchSpeed.Length > -1 ? info.MaximumLaunchSpeed.Length : info.MaxSpeed.Length;
+			maxSpeed = info.MaxSpeed.Length;
 			minLaunchAngle = info.MinimumLaunchAngle;
 			maxLaunchAngle = info.MaximumLaunchAngle;
 
@@ -257,25 +187,11 @@ namespace OpenRA.Mods.Common.Projectiles
 			velocity = new WVec(0, -speed, 0)
 				.Rotate(new WRot(WAngle.FromFacing(vFacing), WAngle.Zero, WAngle.Zero))
 				.Rotate(new WRot(WAngle.Zero, WAngle.Zero, WAngle.FromFacing(hFacing)));
+		}
 
-			if (!string.IsNullOrEmpty(info.Image))
-			{
-				anim = new Animation(world, info.Image, () => renderFacing);
-				anim.PlayRepeating(info.Sequences.Random(world.SharedRandom));
-			}
-
-			if (info.ContrailLength > 0)
-			{
-				var color = info.ContrailUsePlayerColor ? ContrailRenderable.ChooseColor(args.SourceActor) : info.ContrailColor;
-				contrail = new ContrailRenderable(world, color, info.ContrailWidth, info.ContrailLength, info.ContrailDelay, info.ContrailZOffset, info.ContrailBlendMode);
-			}
-
-			trailPalette = info.TrailPalette;
-			if (info.TrailUsePlayerPalette)
-				trailPalette += args.SourceActor.Owner.InternalName;
-
-			shadowColor = new float3(info.ShadowColor.R, info.ShadowColor.G, info.ShadowColor.B) / 255f;
-			shadowAlpha = info.ShadowColor.A / 255f;
+		protected override WAngle GetEffectiveFacing()
+		{
+			return renderFacing;
 		}
 
 		static int LoopRadius(int speed, int rot)
@@ -804,8 +720,8 @@ namespace OpenRA.Mods.Common.Projectiles
 
 		public void Tick(World world)
 		{
+			RenderTick(world, pos);
 			ticks++;
-			anim?.Tick();
 
 			// Switch from freefall mode to homing mode
 			if (ticks == info.HomingActivationDelay + 1)
@@ -867,18 +783,6 @@ namespace OpenRA.Mods.Common.Projectiles
 				shouldExplode = true;
 			}
 
-			// Create the sprite trail effect
-			if (!string.IsNullOrEmpty(info.TrailImage) && --ticksToNextSmoke < 0 && (state != States.Freefall || info.TrailWhenDeactivated))
-			{
-				world.AddFrameEndTask(w => w.Add(new SpriteEffect(pos - 3 * move / 2, renderFacing, w,
-					info.TrailImage, info.TrailSequences.Random(world.SharedRandom), trailPalette)));
-
-				ticksToNextSmoke = info.TrailInterval;
-			}
-
-			if (info.ContrailLength > 0)
-				contrail.Update(pos);
-
 			distanceCovered += new WDist(speed);
 			var cell = world.Map.CellContaining(pos);
 			var height = world.Map.DistanceAboveTerrain(pos);
@@ -895,8 +799,7 @@ namespace OpenRA.Mods.Common.Projectiles
 
 		void Explode(World world)
 		{
-			if (info.ContrailLength > 0)
-				world.AddFrameEndTask(w => w.Add(new ContrailFader(pos, contrail)));
+			RenderExplode(world, pos);
 
 			world.AddFrameEndTask(w => w.Remove(this));
 
@@ -914,36 +817,5 @@ namespace OpenRA.Mods.Common.Projectiles
 			args.Weapon.Impact(Target.FromPos(pos), warheadArgs);
 		}
 
-		public IEnumerable<IRenderable> Render(WorldRenderer wr)
-		{
-			if (info.ContrailLength > 0)
-				yield return contrail;
-
-			if (anim == null)
-				yield break;
-
-			var world = args.SourceActor.World;
-			if (!world.FogObscures(pos))
-			{
-				var paletteName = info.Palette;
-				if (paletteName != null && info.IsPlayerPalette)
-					paletteName += args.SourceActor.Owner.InternalName;
-
-				var palette = wr.Palette(paletteName);
-
-				if (info.Shadow)
-				{
-					var dat = world.Map.DistanceAboveTerrain(pos);
-					var shadowPos = pos - new WVec(0, 0, dat.Length);
-					foreach (var r in anim.Render(shadowPos, palette))
-						yield return ((IModifyableRenderable)r)
-							.WithTint(shadowColor, ((IModifyableRenderable)r).TintModifiers | TintModifiers.ReplaceColor)
-							.WithAlpha(shadowAlpha);
-				}
-
-				foreach (var r in anim.Render(pos, palette))
-					yield return r;
-			}
-		}
 	}
 }

@@ -103,6 +103,7 @@ namespace OpenRA.Mods.Common.Projectiles
 	{
 		readonly BulletInfo info;
 		readonly ProjectileArgs args;
+		readonly World world;
 
 		readonly WAngle facing;
 		readonly WAngle angle;
@@ -134,7 +135,7 @@ namespace OpenRA.Mods.Common.Projectiles
 			source = args.Source;
 			lastPos = pos;
 			detectTargetBeforeDistSquare = info.DetectTargetBeforeDist.Length * info.DetectTargetBeforeDist.Length;
-			var world = args.SourceActor.World;
+			world = args.SourceActor.World;
 
 			if (info.UsingScat)
 			{
@@ -171,9 +172,6 @@ namespace OpenRA.Mods.Common.Projectiles
 			}
 
 			target += offset;
-			var th = world.Map.HeightOfCell(target);
-			if (th > target.Z)
-				target = new WPos(target.X, target.Y, th);
 
 			if (info.AirburstAltitude > WDist.Zero)
 				target += new WVec(WDist.Zero, WDist.Zero, info.AirburstAltitude);
@@ -327,14 +325,31 @@ namespace OpenRA.Mods.Common.Projectiles
 			// Driving into cell with higher height level
 			if (!shouldBounce)
 			{
-				if (!flightLengthReached && dat < info.ExplodeUnderThisAltitude.Length)
+				if (dat < info.ExplodeUnderThisAltitude.Length)
+				{
+					FIndGroundHitPos();
 					return true;
+				}
 
-				if (flightLengthReached && dat <= 0)
+				if (flightLengthReached && dat <= 1)
+				{
+					FIndGroundHitPos();
 					return true;
+				}
 			}
 
 			return false;
+		}
+
+		void FIndGroundHitPos()
+		{
+			var posToLastPos = lastPos - pos;
+			if (posToLastPos.Z <= 0)
+				return;
+
+			var th = world.Map.HeightOfCell(pos);
+			if (th > pos.Z)
+				pos += posToLastPos * (th - pos.Z) / (posToLastPos.Z);
 		}
 
 		protected virtual void Explode(World world)

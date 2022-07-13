@@ -1,10 +1,10 @@
 Hair-dpt1:
-	# DiffuseMap: h-dpt1.png
-	# SpecularTint: 0.56, 0.56,0.56
-	# Shininess: 32.0
+	DiffuseMap: h-dpt1.png
+	SpecularTint: 0.56, 0.56,0.56
+	Shininess: 32.0
 	FaceCull: None
 
-	Type: PBR
+	# Type: PBR
 	# PBR
 	Roughness: 0.45
 	Metallic: 0

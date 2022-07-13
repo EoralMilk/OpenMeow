@@ -1,8 +1,8 @@
 SportShorts:
-	# DiffuseMap: pants1.png
-	# SpecularTint: 0.36, 0.36,0.36
-	# Shininess: 16.0
-	Type: PBR
+	DiffuseMap: pants1.png
+	SpecularTint: 0.36, 0.36,0.36
+	Shininess: 16.0
+	# Type: PBR
 	# PBR
 	Roughness: 0.7
 	Metallic: 0

@@ -99,9 +99,10 @@ namespace OpenRA.Graphics
 		public readonly float3 SpecularTint;
 		public readonly ITexture SpecularMap;
 		public readonly float Shininess;
+		public readonly bool Blinn;
 		readonly FaceCullFunc faceCullFunc;
 		public FaceCullFunc FaceCullFunc => faceCullFunc;
-		public BlinnPhongMaterial(string name, bool hasDiffuseMap, float3 diffuseTint, ITexture diffuseMap, bool hasSpecularMap, float3 specularTint, ITexture specularMap, float shininess, FaceCullFunc faceCullFunc)
+		public BlinnPhongMaterial(string name, bool hasDiffuseMap, float3 diffuseTint, ITexture diffuseMap, bool hasSpecularMap, float3 specularTint, ITexture specularMap, float shininess, FaceCullFunc faceCullFunc, bool blinn)
 		{
 			Name = name;
 			HasDiffuseMap = hasDiffuseMap;
@@ -112,10 +113,13 @@ namespace OpenRA.Graphics
 			SpecularMap = specularMap;
 			Shininess = shininess;
 			this.faceCullFunc = faceCullFunc;
+			Blinn = blinn;
 		}
 
 		public virtual void SetShader(IShader shader, in string matname)
 		{
+			shader.SetBool(matname + ".blinn", Blinn);
+
 			// diffuse
 			shader.SetBool(matname + ".hasDiffuseMap", HasDiffuseMap);
 			shader.SetVec(matname + ".diffuseTint", DiffuseTint.X, DiffuseTint.Y, DiffuseTint.Z);

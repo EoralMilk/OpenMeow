@@ -98,7 +98,7 @@ A10Napalm:
 		Damage: 900
 		DamageOne: true
 		DamageBlocker: true
-		Spread: 0c128
+		Spread: 0c76
 		Falloff: 100, 50, 25, 12, 6, 3, 0
 		Versus:
 			None: 100
@@ -147,7 +147,7 @@ InfMG:
 			Concrete: 5
 	Warhead@1Dam: Spread3DDamage
 		Damage: 900
-		Spread: 0c64
+		Spread: 0c42
 
 AssaultVulcan:
 	Inherits: InfMG
@@ -190,7 +190,7 @@ RaiderCannonMG:
 		Inaccuracy: 330
 	Warhead@1Dam: Spread3DDamage
 		Damage: 1000
-		Spread: 0c100
+		Spread: 0c64
 
 CyborgMG:
 	Inherits: InfMG
@@ -217,7 +217,7 @@ VulcanMG:
 		Inaccuracy: 410
 	Warhead@1Dam: Spread3DDamage
 		Damage: 800
-		Spread: 0c100
+		Spread: 0c72
 
 SilencerSniper:
 	Inherits: InfMG
@@ -241,7 +241,6 @@ SilencerSniper:
 			Heavy: 5
 			Concrete: 5
 		DamageTypes: Prone100Percent, TriggerProne, BulletDeath
-
 
 ShotGunScat:
 	Inherits: InfMG
