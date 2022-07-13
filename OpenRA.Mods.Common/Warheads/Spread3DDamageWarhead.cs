@@ -38,6 +38,12 @@ namespace OpenRA.Mods.Warheads
 		[Desc("If the impact point is less than ground, force the impact point to ground")]
 		public bool ForceUnderGroundHitToSurface = true;
 
+		[Desc("The condition to apply. Must be included in the target actor's ExternalConditions list.")]
+		public readonly string Condition = null;
+
+		[Desc("Duration of the condition (in ticks). Set to 0 for a permanent condition.")]
+		public readonly int Duration = 0;
+
 		Actor bestTarget = null;
 		int maxDamage = 0;
 		void IRulesetLoaded<WeaponInfo>.RulesetLoaded(Ruleset rules, WeaponInfo info)
@@ -55,8 +61,20 @@ namespace OpenRA.Mods.Warheads
 				Range = Exts.MakeArray(Falloff.Length, i => i * Spread);
 		}
 
-		void CallTargetDamageTrait(in WPos pos, in Actor firedBy, in WarheadArgs args, int damage)
+		void AdditionalEffect(in WPos pos, in Actor firedBy, in Actor victim, in WarheadArgs args, int damage)
 		{
+			if (victim.IsDead || !victim.IsInWorld)
+				return;
+
+			if (Condition != null)
+			{
+				var sourceActor = firedBy;
+				victim.TraitsImplementing<ExternalCondition>()
+						.FirstOrDefault(t => t.Info.Condition == Condition && t.CanGrantCondition(sourceActor))
+						?.GrantCondition(victim, sourceActor, Duration);
+				//Console.WriteLine("GrantCondition: " + victim.Info.Name + victim.ActorID + " from " + firedBy.Info.Name + firedBy.ActorID);
+			}
+
 			// var explodes = args.Blocker.TraitsImplementing<IGetBlownUp>();
 			// foreach (var explode in explodes)
 			// {
@@ -102,7 +120,7 @@ namespace OpenRA.Mods.Warheads
 
 				var damage = Inflict3DDamage(args.Blocker, firedBy, closestActiveShape.HitShape, updatedWarheadArgs);
 
-				CallTargetDamageTrait(pos, firedBy, args, damage);
+				AdditionalEffect(pos, firedBy, args.Blocker, args, damage);
 
 				return;
 			}
@@ -174,14 +192,14 @@ namespace OpenRA.Mods.Warheads
 				else
 				{
 					damage = Inflict3DDamage(victim, firedBy, closestActiveShape.HitShape, updatedWarheadArgs);
-					CallTargetDamageTrait(pos, firedBy, args, damage);
+					AdditionalEffect(pos, firedBy, victim, args, damage);
 				}
 			}
 
 			if (DamageOne && bestTarget != null && bestTarget.IsInWorld && !bestTarget.IsDead)
 			{
 				bestTarget.InflictDamage(firedBy, new Damage(maxDamage, DamageTypes));
-				CallTargetDamageTrait(pos, firedBy, args, maxDamage);
+				AdditionalEffect(pos, firedBy, bestTarget, args, maxDamage);
 			}
 
 		}

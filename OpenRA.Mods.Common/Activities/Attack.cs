@@ -217,7 +217,7 @@ namespace OpenRA.Mods.Common.Activities
 				var desiredFacing = (attack.GetTargetPosition(pos, target) - pos).Yaw;
 
 				// Don't queue a turn activity: Executing a child takes an additional tick during which the target may have moved again
-				facing.Facing = Util.TickFacing(facing.Facing, desiredFacing, facing.TurnSpeed);
+				facing.Facing = Util.TickFacing(facing.Facing, desiredFacing + attack.Info.FiringAngle, facing.TurnSpeed);
 
 				// Check again if we turned enough and directly continue attacking if we did
 				if (!attack.TargetInFiringArc(self, target, attack.Info.FacingTolerance))

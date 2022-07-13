@@ -127,7 +127,7 @@ DropVulcan:
 InfMG:
 	Inherits: ^SA
 	MinRange: 0c128
-	Range: 6c0
+	Range: 6c128
 	ReloadDelay: 30
 	Burst: 4
 	BurstDelays: 3
@@ -139,18 +139,64 @@ InfMG:
 		Inaccuracy: 230
 		Blockable: true
 		Speed: 989
+	Warhead@1Dam: Spread3DDamage
+		Damage: 900
+		Spread: 0c42
 		Versus:
 			None: 100
 			Wood: 35
 			Light: 40
 			Heavy: 5
 			Concrete: 5
+
+SMG:
+	Inherits: InfMG
+	Range: 5c512
+	ReloadDelay: 30
+	MinRange: 0
+	Burst: 8
+	BurstDelays: 3
+	Report: gostgun_a.wav, gostgun_b.wav # infgun_a.wav, infgun_b.wav, infgun_c.wav, infgun_d.wav
+	Projectile: Bullet
+		LifeTime: 8
+		ContrailLength: 2
+		Inaccuracy: 450
 	Warhead@1Dam: Spread3DDamage
-		Damage: 900
+		Damage: 750
 		Spread: 0c42
+		Versus:
+			None: 100
+			Wood: 35
+			Light: 25
+			Heavy: 5
+			Concrete: 5
+
+SergeantSMG:
+	Inherits: SMG
+	Burst: 8
+	Report: cygun_a.wav, cygun_b.wav
+	Range: 6c128
+	ReloadDelay: 22
+	Projectile: Bullet
+		LifeTime: 11
+		ContrailLength: 2
+		ContrailColor: 77B0FFFF
+		Inaccuracy: 375
+	Warhead@1Dam: Spread3DDamage
+		Damage: 1250
+		Spread: 0c42
+		Condition: empdisable
+		Duration: 10
+		Versus:
+			None: 100
+			Wood: 35
+			Light: 45
+			Heavy: 15
+			Concrete: 15
 
 AssaultVulcan:
 	Inherits: InfMG
+	Range: 6c512
 	Report: tsgun4.aud
 	BurstDelays: 2
 	Burst: 10
@@ -165,7 +211,7 @@ HarpyClawMG:
 	Burst: 8
 	BurstDelays: 2
 	MinRange: 0
-	Range: 7c512
+	Range: 7c768
 	ReloadDelay: 25
 	Report: slvkgun_a.wav, slvkgun_b.wav
 	Projectile: Bullet
@@ -242,6 +288,28 @@ SilencerSniper:
 			Concrete: 5
 		DamageTypes: Prone100Percent, TriggerProne, BulletDeath
 
+Pistol:
+	Inherits: InfMG
+	MinRange: 0
+	Range: 5c128
+	ReloadDelay: 12
+	Burst: 1
+	Report: gun18.aud
+	Projectile: Bullet
+		LifeTime: 6
+		ContrailLength: 2
+		Inaccuracy: 330
+		Blockable: true
+		Speed: 1120
+	Warhead@1Dam: Spread3DDamage
+		Damage: 900
+		Versus:
+			None: 100
+			Wood: 5
+			Light: 15
+			Heavy: 1
+			Concrete: 1
+
 ShotGunScat:
 	Inherits: InfMG
 	Projectile: Bullet
@@ -255,8 +323,8 @@ ShotGunScat:
 			None: 100
 			Wood: 20
 			Light: 15
-			Heavy: 5
-			Concrete: 5
+			Heavy: 1
+			Concrete: 1
 		ValidTargets: Ground, Water, Air
 
 ShotGunProScat:
@@ -269,7 +337,7 @@ ShotGunProScat:
 
 ^ShotGun:
 	ReloadDelay: 24
-	Range: 5c256
+	Range: 5c128
 	Burst: 1
 	Report: gun18.aud
 	Projectile: InstantScat

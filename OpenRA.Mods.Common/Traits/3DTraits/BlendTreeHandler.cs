@@ -125,7 +125,7 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 				guardTick++;
 			}
 
-			if (move.CurrentMovementTypes != MovementType.None)
+			if (move.CurrentMovementTypes == MovementType.Horizontal)
 				moveSwitch.SetFlag(true);
 			else
 				moveSwitch.SetFlag(false);

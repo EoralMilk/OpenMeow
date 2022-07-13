@@ -76,6 +76,12 @@ namespace OpenRA.Mods.Common.Traits
 
 		[Desc("Tolerance for attack angle. Range [0, 512], 512 covers 360 degrees. 1023 Means to use attack trait value. Only influence self fire checking.")]
 		public readonly WAngle FacingTolerance = new WAngle(1023);
+
+		[Desc("Whether to calculate target movement to correct trajectory.")]
+		public readonly bool CalculateTargetMoving = true;
+
+		[Desc("The angle relative to the actor's orientation used to fire the weapon from.")]
+		public readonly WAngle FiringAngle = WAngle.Zero;
 		public WeaponInfo WeaponInfo { get; private set; }
 		public WDist ModifiedRange { get; private set; }
 
@@ -265,6 +271,8 @@ namespace OpenRA.Mods.Common.Traits
 
 		public virtual WVec AimTargetOn(Actor self, in WPos firePos, in Target target)
 		{
+			if (!Info.CalculateTargetMoving)
+				return WVec.Zero;
 			var offset = WVec.Zero;
 			var w3dr = Game.Renderer.World3DRenderer;
 			// target the lead
@@ -354,7 +362,7 @@ namespace OpenRA.Mods.Common.Traits
 			if (hasFacingTolerance && facing != null)
 			{
 				var delta = target.CenterPosition - self.CenterPosition;
-				return Util.FacingWithinTolerance(facing.Facing, delta.Yaw, Info.FacingTolerance);
+				return Util.FacingWithinTolerance(facing.Facing, delta.Yaw + Info.FiringAngle, Info.FacingTolerance);
 			}
 
 			return true;

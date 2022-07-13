@@ -32,12 +32,13 @@ UMAGON:
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@EXPHOSPITAL: ^InfantryExperienceHospitalOverrides
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@LeaveTib: ^LeaveTiberiumWhenDeath
 	Buildable:
 		Queue: Infantry
 		BuildPaletteOrder: 0
 		Prerequisites: ~none
 	Valued:
-		Cost: 400
+		Cost: 600
 	Tooltip:
 		Name: Umagon
 	Voiced:
@@ -48,7 +49,7 @@ UMAGON:
 		HP: 15000
 	Passenger:
 	RevealsShroud:
-		Range: 7c0
+		Range: 9c512
 	Armament:
 		LocalOffset: 126,0,438
 		Weapon: SilencerSniper
@@ -102,6 +103,7 @@ MUTANT:
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@EXPHOSPITAL: ^InfantryExperienceHospitalOverrides
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@LeaveTib: ^LeaveTiberiumWhenDeath
 	Buildable:
 		Queue: Infantry
 		BuildPaletteOrder: 0
@@ -113,13 +115,15 @@ MUTANT:
 	Voiced:
 		VoiceSet: Mutant
 	Health:
-		HP: 5000
+		HP: 7500
 	Mobile:
-		Speed: 56
+		Speed: 71
 	RevealsShroud:
-		Range: 4c0
+		Range: 6c0
 	Armament:
-		Weapon: Vulcan
+		LocalOffset: 311,83,490, 311,-83,490
+		BurstPerFireCount: 2
+		Weapon: SMG
 	AttackFrontal:
 		Voice: Attack
 		FacingTolerance: 0
@@ -134,6 +138,7 @@ MWMN:
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@EXPHOSPITAL: ^InfantryExperienceHospitalOverrides
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@LeaveTib: ^LeaveTiberiumWhenDeath
 	Buildable:
 		Queue: Infantry
 		BuildPaletteOrder: 0
@@ -145,13 +150,13 @@ MWMN:
 	Voiced:
 		VoiceSet: CivilianFemale
 	Health:
-		HP: 5000
+		HP: 7500
 	Mobile:
-		Speed: 56
+		Speed: 76
 	RevealsShroud:
-		Range: 4c0
+		Range: 6c0
 	Armament:
-		LocalOffset: 143,0,438
+		LocalOffset: 253,0,478
 		Weapon: ^ShotGun
 	AttackFrontal:
 		Voice: Attack
@@ -167,24 +172,27 @@ MUTANT3:
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@EXPHOSPITAL: ^InfantryExperienceHospitalOverrides
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@LeaveTib: ^LeaveTiberiumWhenDeath
 	Buildable:
 		Queue: Infantry
 		BuildPaletteOrder: 0
 		Prerequisites: ~none
 	Valued:
-		Cost: 100
+		Cost: 400
 	Tooltip:
 		Name: Mutant Sergeant
 	Voiced:
 		VoiceSet: Mutant
 	Health:
-		HP: 5000
+		HP: 15000
 	Mobile:
-		Speed: 56
+		Speed: 71
 	RevealsShroud:
-		Range: 4c0
+		Range: 7c256
 	Armament:
-		Weapon: Vulcan
+		LocalOffset: 311,83,490, 311,-83,490
+		BurstPerFireCount: 2
+		Weapon: SergeantSMG
 	AttackFrontal:
 		Voice: Attack
 		FacingTolerance: 0
@@ -199,6 +207,7 @@ MUTANT3:
 TRATOS:
 	Inherits: ^Soldier
 	Inherits@2: ^HealsOnTiberium
+	Inherits@LeaveTib: ^LeaveTiberiumWhenDeath
 	Valued:
 		Cost: 100
 	Tooltip:
@@ -210,7 +219,7 @@ TRATOS:
 	Mobile:
 		Speed: 71
 	RevealsShroud:
-		Range: 4c0
+		Range: 5c0
 
 OXANNA:
 	Inherits: ^Soldier
@@ -225,7 +234,7 @@ OXANNA:
 	Mobile:
 		Speed: 56
 	RevealsShroud:
-		Range: 4c0
+		Range: 6c0
 	WithSplitAttackPaletteInfantryBody:
 		DefaultAttackSequence: attack
 
@@ -242,20 +251,25 @@ SLAV:
 	Mobile:
 		Speed: 56
 	RevealsShroud:
-		Range: 4c0
+		Range: 6c0
 	WithSplitAttackPaletteInfantryBody:
 		DefaultAttackSequence: attack
 
 CIV1:
 	Inherits: ^CivilianInfantry
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Buildable:
+		Queue: Infantry
+		BuildPaletteOrder: 0
+		Prerequisites: ~none
 	WithSplitAttackPaletteInfantryBody:
 		DefaultAttackSequence: attack
 		Palette: player-nomuzzle
 		IsPlayerPalette: true
 		SplitAttackPalette: muzzle
 	Armament:
-		Weapon: Pistola
+		LocalOffset: 233,0,438
+		Weapon: Pistol
 	AttackFrontal:
 		Voice: Attack
 		FacingTolerance: 0
@@ -287,7 +301,8 @@ CTECH:
 		IsPlayerPalette: true
 		SplitAttackPalette: muzzle
 	Armament:
-		Weapon: Pistola
+		LocalOffset: 233,0,438
+		Weapon: Pistol
 	AttackFrontal:
 		Voice: Attack
 		FacingTolerance: 0

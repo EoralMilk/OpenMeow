@@ -196,7 +196,7 @@ namespace OpenRA.Mods.Common.Traits
 			if (hasFacingTolerance && facing != null)
 			{
 				var delta = target.CenterPosition - self.CenterPosition;
-				return Util.FacingWithinTolerance(delayedFaceAngle, delta.Yaw, Info.FacingTolerance);
+				return Util.FacingWithinTolerance(delayedFaceAngle, delta.Yaw + Info.FiringAngle, Info.FacingTolerance);
 			}
 
 			return true;

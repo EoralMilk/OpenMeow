@@ -64,7 +64,7 @@ CYBORG:
 		HP: 30000
 	Passenger:
 	RevealsShroud:
-		Range: 5c0
+		Range: 6c512
 	Armament:
 		Weapon: CyborgMG #Vulcan3
 		LocalOffset: 240,120,558
@@ -104,7 +104,7 @@ CYC2:
 		HP: 50000
 	Passenger:
 	RevealsShroud:
-		Range: 7c0
+		Range: 8c0
 	Armament:
 		Weapon: CyCannon
 		LocalOffset: 240,120,558
@@ -141,4 +141,4 @@ MHIJACK:
 		CaptureTypes: Vehicle
 		PlayerExperience: 50
 	RevealsShroud:
-		Range: 6c0
+		Range: 6c512

@@ -1506,7 +1506,7 @@ GASPOT:
 	Health:
 		HP: 40000
 	RevealsShroud:
-		Range: 6c0
+		Range: 8c512
 		MaxHeightDelta: 3
 	WithIdleOverlay@LIGHTS-BRIGHT:
 		Sequence: idle-lights-bright

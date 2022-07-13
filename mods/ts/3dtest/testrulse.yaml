@@ -129,10 +129,12 @@ RUTEST2:
 		# AlwaysTurnInPlace: true
 	# -WithMeshCloth@skirt:
 	# -WithMeshCloth@sweater:
-
 	AttackAttachmentTurreted:
 		Turrets: turret1, turret2
 		Voice: Attack
+		FiringAngle: 512
+		FacingToTarget: true
+		FacingToTargetTolerance: 12
 	WithSkeleton@turret1:
 		SkeletonDefine: turret-test
 		Name: turret_skeleton1

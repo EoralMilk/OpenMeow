@@ -10,8 +10,10 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 	public class TurretAttachmentInfo : MeshAttachmentInfo
 	{
 		public readonly string Name = "turret";
+
 		public readonly string BarrelBone = null;
 		public readonly string TurretBone = null;
+
 		[Desc("Number of ticks before turret is realigned. (-1 turns off realignment)")]
 		public readonly int RealignDelay = 40;
 

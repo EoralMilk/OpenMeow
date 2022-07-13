@@ -604,6 +604,11 @@
 		RemoveInstead: true
 	RenderSprites:
 
+^LeaveTiberiumWhenDeath:
+	Explodes@LeaveTib:
+		Weapon: TiberiumDeath
+		EmptyWeapon: TiberiumDeath
+
 ^Infantry:
 	Inherits@2: ^ExistsInWorld
 	Inherits@3: ^SpriteActor
@@ -627,6 +632,7 @@
 		MaxHeightDelta: 3
 	Mobile:
 		Voice: Move
+		TurnSpeed: 150
 		Speed: 71
 		AlwaysTurnInPlace: true
 		Locomotor: foot
@@ -790,6 +796,7 @@
 	Inherits@1: ^Infantry
 	Inherits@2: ^EmpDisable
 	Inherits@3: ^HealsOnTiberium
+	Inherits@LeaveTib: ^LeaveTiberiumWhenDeath
 	ExplosionOnDamageTransition:
 		Weapon: CyborgExplode
 		DamageState: Critical
@@ -1072,6 +1079,7 @@
 	Inherits@3: ^HealsOnTiberium
 	Inherits@selection: ^SelectableCombatUnit
 	Inherits@handicaps: ^PlayerHandicaps
+	Inherits@LeaveTib: ^LeaveTiberiumWhenDeath
 	Huntable:
 	Health:
 	Armor:

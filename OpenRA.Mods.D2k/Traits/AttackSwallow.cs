@@ -53,23 +53,24 @@ namespace OpenRA.Mods.D2k.Traits
 			Info = info;
 		}
 
-		public override void DoAttack(Actor self, in Target target)
+		public override bool DoAttack(Actor self, in Target target)
 		{
 			// This is so that the worm does not launch an attack against a target that has reached solid rock
 			if (target.Type != TargetType.Actor || !CanAttack(self, target))
 			{
 				self.CancelActivity();
-				return;
+				return false;
 			}
 
 			var a = ChooseArmamentsForTarget(target, true).FirstOrDefault();
 			if (a == null)
-				return;
+				return false;
 
 			if (!target.IsInRange(self.CenterPosition, a.MaxRange()))
-				return;
+				return false;
 
 			self.QueueActivity(false, new SwallowActor(self, target, a, facing));
+			return true;
 		}
 
 		public override Activity GetAttackActivity(Actor self, AttackSource source, in Target newTarget, bool allowMove, bool forceAttack, Color? targetLineColor)

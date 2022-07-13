@@ -30,6 +30,9 @@ namespace OpenRA.Mods.Common.Traits
 		[Desc("Range to stay away from min and max ranges to give some leeway if the target starts moving.")]
 		public readonly WDist RangeMargin = WDist.FromCells(1);
 
+		public readonly bool FacingToTarget = false;
+		public readonly WAngle FacingToTargetTolerance = WAngle.Zero;
+
 		public override object Create(ActorInitializer init) { return new AttackFollow(init.Self, this); }
 	}
 
@@ -40,6 +43,7 @@ namespace OpenRA.Mods.Common.Traits
 		public Target OpportunityTarget { get; private set; }
 
 		Mobile mobile;
+		IFacing facing;
 		AutoTarget autoTarget;
 		bool requestedForceAttack;
 		Activity requestedTargetPresetForActivity;
@@ -75,6 +79,7 @@ namespace OpenRA.Mods.Common.Traits
 		protected override void Created(Actor self)
 		{
 			mobile = self.TraitOrDefault<Mobile>();
+			facing = self.TraitOrDefault<IFacing>();
 			autoTarget = self.TraitOrDefault<AutoTarget>();
 			base.Created(self);
 		}
@@ -99,6 +104,7 @@ namespace OpenRA.Mods.Common.Traits
 
 		protected override void Tick(Actor self)
 		{
+			bool locked = false;
 			if (IsTraitDisabled)
 			{
 				RequestedTarget = OpportunityTarget = Target.Invalid;
@@ -127,7 +133,7 @@ namespace OpenRA.Mods.Common.Traits
 			{
 				IsAiming = CanAimAtTarget(self, RequestedTarget, requestedForceAttack);
 				if (IsAiming)
-					DoAttack(self, RequestedTarget);
+					locked = DoAttack(self, RequestedTarget);
 			}
 			else
 			{
@@ -148,8 +154,23 @@ namespace OpenRA.Mods.Common.Traits
 				}
 
 				if (IsAiming)
-					DoAttack(self, OpportunityTarget);
+					locked = DoAttack(self, OpportunityTarget);
 			}
+
+			//if (Info.FacingToTarget && IsAiming)
+			//{
+			//	var target = RequestedTarget.Type != TargetType.Invalid ? RequestedTarget : OpportunityTarget;
+			//	if (locked)
+			//	{
+			//		if (facing != null && target.Type != TargetType.Invalid && !TargetInFiringArc(self, target, Info.FacingToTargetTolerance))
+			//		{
+			//			var desiredFacing = (GetTargetPosition(self.CenterPosition, target) - self.CenterPosition).Yaw;
+
+			//			// Don't queue a turn activity: Executing a child takes an additional tick during which the target may have moved again
+			//			facing.Facing = Util.TickFacing(facing.Facing, desiredFacing + Info.FiringAngle, facing.TurnSpeed);
+			//		}
+			//	}
+			//}
 
 			base.Tick(self);
 		}
@@ -217,7 +238,7 @@ namespace OpenRA.Mods.Common.Traits
 			readonly IMove move;
 			readonly bool forceAttack;
 			readonly Color? targetLineColor;
-
+			readonly IFacing facing;
 			Target target;
 			Target lastVisibleTarget;
 			bool useLastVisibleTarget;
@@ -258,6 +279,11 @@ namespace OpenRA.Mods.Common.Traits
 						lastVisibleOwner = target.FrozenActor.Owner;
 						lastVisibleTargetTypes = target.FrozenActor.TargetTypes;
 					}
+				}
+
+				if (attack.Info.FacingToTarget)
+				{
+					facing = self.TraitOrDefault<IFacing>();
 				}
 			}
 
@@ -339,6 +365,15 @@ namespace OpenRA.Mods.Common.Traits
 				// otherwise if it is hidden or dead we give up
 				if (checkTarget.IsInRange(pos, maxRange) && !checkTarget.IsInRange(pos, minRange))
 				{
+					if (attack.Info.FacingToTarget && facing != null && !attack.TargetInFiringArc(self, target, attack.Info.FacingToTargetTolerance))
+					{
+						var desiredFacing = (attack.GetTargetPosition(self.CenterPosition, target) - self.CenterPosition).Yaw;
+
+						// Don't queue a turn activity: Executing a child takes an additional tick during which the target may have moved again
+						facing.Facing = Util.TickFacing(facing.Facing, desiredFacing + attack.Info.FiringAngle, facing.TurnSpeed);
+						return false;
+					}
+
 					if (useLastVisibleTarget)
 						return true;
 

@@ -35,6 +35,7 @@
 	AttackTurreted:
 		Voice: Attack
 		PauseOnCondition: empdisable
+		FacingToTarget: true
 	ChangesHealth:
 		Step: 500
 		Delay: 10

@@ -241,7 +241,7 @@ GHOST:
 		HP: 20000
 	Passenger:
 	RevealsShroud:
-		Range: 6c0
+		Range: 7c512
 	Armament:
 		Weapon: LtRail
 		LocalOffset: 120,0,313

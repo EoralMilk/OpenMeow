@@ -50,10 +50,18 @@ TiberiumExplosion:
 		DamageTypes: Prone50Percent, TriggerProne, ExplosionDeath
 	Warhead@Res: CreateResource
 		AddsResourceType: Tiberium
-		Size: 1,1
+		Size: 1,0
 	Warhead@2Eff: CreateEffect
 		Explosions: large_explosion
 	-Warhead@4Smu:
+
+TiberiumDeath:
+	Warhead@1Dam: SpreadDamage
+		Spread: 1
+		Damage: 1
+	Warhead@4Res: CreateResource
+		AddsResourceType: Tiberium
+		Size: 0,0
 
 Demolish:
 	Warhead@1Dam: SpreadDamage

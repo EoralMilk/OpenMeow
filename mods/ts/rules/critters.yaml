@@ -3,6 +3,7 @@ DOGGIE:
 	Inherits@2: ^RegularInfantryDeath
 	Inherits@3: ^HealsOnTiberium
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@LeaveTib: ^LeaveTiberiumWhenDeath
 	Buildable:
 		Queue: Infantry
 		BuildPaletteOrder: 0
@@ -16,7 +17,7 @@ DOGGIE:
 	Selectable:
 		Bounds: 724, 1448
 	Valued:
-		Cost: 100
+		Cost: 500
 	Armor:
 		Type: Light
 	RevealsShroud:
@@ -29,9 +30,11 @@ DOGGIE:
 		TargetTypes: Ground, Creep
 	Armament:
 		Weapon: FiendShard
+		FiringAngle: 512
 	AttackFrontal:
 		Voice: Attack
 		FacingTolerance: 0
+		FiringAngle: 512
 	AttackWander:
 		WanderMoveRadius: 2
 		MinMoveDelay: 200
@@ -67,6 +70,8 @@ VISC_SML:
 		Name: Baby Visceroid
 	Health:
 		HP: 20000
+	Valued:
+		Cost: 100
 	AttackWander:
 		WanderMoveRadius: 2
 		MinMoveDelay: 30
@@ -91,6 +96,8 @@ VISC_LRG:
 		Name: Adult Visceroid
 	Health:
 		HP: 50000
+	Valued:
+		Cost: 500
 	Armor:
 		Type: Heavy
 	RevealsShroud:
@@ -118,6 +125,8 @@ JFISH:
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Tooltip:
 		Name: Tiberium Floater
+	Valued:
+		Cost: 500
 	Health:
 		HP: 50000
 	RevealsShroud:

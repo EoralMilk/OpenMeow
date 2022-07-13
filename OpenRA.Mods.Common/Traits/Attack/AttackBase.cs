@@ -56,6 +56,9 @@ namespace OpenRA.Mods.Common.Traits
 		[Desc("Tolerance for attack angle. Range [0, 512], 512 covers 360 degrees.")]
 		public readonly WAngle FacingTolerance = new WAngle(512);
 
+		[Desc("The angle relative to the actor's orientation used to fire the weapon from.")]
+		public readonly WAngle FiringAngle = WAngle.Zero;
+
 		public override void RulesetLoaded(Ruleset rules, ActorInfo ai)
 		{
 			base.RulesetLoaded(rules, ai);
@@ -140,7 +143,7 @@ namespace OpenRA.Mods.Common.Traits
 			if (delta.HorizontalLengthSquared == 0)
 				return true;
 
-			return Util.FacingWithinTolerance(facing.Facing, delta.Yaw, facingTolerance);
+			return Util.FacingWithinTolerance(facing.Facing, delta.Yaw + Info.FiringAngle, facingTolerance);
 		}
 
 		protected virtual bool CanAttack(Actor self, in Target target)
@@ -161,10 +164,10 @@ namespace OpenRA.Mods.Common.Traits
 			return true;
 		}
 
-		public virtual void DoAttack(Actor self, in Target target)
+		public virtual bool DoAttack(Actor self, in Target target)
 		{
 			if (!CanAttack(self, target))
-				return;
+				return false;
 
 			bool flag = true;
 			foreach (var prepare in prepareForAttacks)
@@ -175,10 +178,11 @@ namespace OpenRA.Mods.Common.Traits
 			}
 
 			if (!flag)
-				return;
+				return false;
 
 			foreach (var a in Armaments)
 				a.CheckFire(self, facing, target);
+			return true;
 		}
 
 		IEnumerable<IOrderTargeter> IIssueOrder.Orders

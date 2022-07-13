@@ -143,10 +143,10 @@ namespace OpenRA.Mods.Common.Traits
 			return coords.Value.LocalToWorld(p.Offset.Rotate(bodyOrientation));
 		}
 
-		public override void DoAttack(Actor self, in Target target)
+		public override bool DoAttack(Actor self, in Target target)
 		{
 			if (!CanAttack(self, target))
-				return;
+				return false;
 
 			var pos = self.CenterPosition;
 			var targetedPosition = GetTargetPosition(pos, target);
@@ -159,7 +159,7 @@ namespace OpenRA.Mods.Common.Traits
 
 				var port = SelectFirePort(self, targetYaw);
 				if (port == null)
-					return;
+					return false;
 
 				paxFacing[a.Actor].Facing = targetYaw;
 				paxPos[a.Actor].SetCenterPosition(a.Actor, pos + PortOffset(self, port));
@@ -185,6 +185,8 @@ namespace OpenRA.Mods.Common.Traits
 				foreach (var npa in self.TraitsImplementing<INotifyAttack>())
 					npa.Attacking(self, target, a, barrel);
 			}
+
+			return true;
 		}
 
 		IEnumerable<IRenderable> IRender.Render(Actor self, WorldRenderer wr)
