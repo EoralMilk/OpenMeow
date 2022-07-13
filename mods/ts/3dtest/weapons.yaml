@@ -299,7 +299,7 @@ VectorBooster:
 	ValidTargets: Ground, Water, Air, Trees
 	Projectile: VectorBooster
 		RotationSpeed: 18
-		LifeTime: 100
+		LifeTime: 75
 		ProximityRange: 0
 		ProximitySnapping: true
 		ContrailLength: 12

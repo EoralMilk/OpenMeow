@@ -480,7 +480,7 @@ SCRIN:
 		# StrafeRunLength: 17c0
 		RotateToFullOnTarget: true
 	AmmoPool:
-		Ammo: 72
+		Ammo: 60
 		ReloadCount: 6
 		ReloadDelay: 20
 		AmmoCondition: ammo
@@ -498,19 +498,21 @@ SCRIN:
 		Position: BottomLeft
 		RequiresSelection: true
 		Margin: 4, 5
-		PipCount: 12
+		PipCount: 10
 		FullSequence: pip-ammo
 		EmptySequence: pip-ammoempty
 		Palette: pips
 	Contrail@a:
-		Offset: -385,145,45
+		Offset: -395,145,45
+		ZOffset: 88
 		TrailLength: 4
 		TrailWidth: 70
 		BlendMode: Additive
 		UsePlayerColor: false
 		Color: 80FF80CF
 	Contrail@b:
-		Offset: -385,-145,45
+		Offset: -395,-145,45
+		ZOffset: 88
 		TrailLength: 4
 		TrailWidth: 70
 		BlendMode: Additive

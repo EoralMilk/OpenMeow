@@ -157,7 +157,7 @@ Grenade:
 	Range: 5c256
 	-Report:
 	# Burst: 5
-	ValidTargets: Ground, Water, Air, Trees
+	ValidTargets: Ground, Water, Trees
 	Projectile: Bullet
 		Speed: 226
 		Blockable: true
@@ -166,7 +166,7 @@ Grenade:
 		Inaccuracy: 400
 		Image: DISCUS
 		Palette: effect
-		BounceCount: 5
+		BounceCount: 2
 		Width: 256
 		ContrailLength: 0
 	Warhead@1Dam: SpreadDamage

@@ -694,14 +694,14 @@
 		Voice: Move
 	HitShape@prone:
 		TargetableOffsets: 0,0,32
-		RequiresCondition: takecover
+		RequiresCondition: takecover || critical
 		Type: Circle
 			Radius: 168
 			# VerticalTopOffset: 64
 			# VerticalBottomOffset: 0
 	HitShape:
 		TargetableOffsets: 0,0,288
-		RequiresCondition: !takecover
+		RequiresCondition: !takecover && !critical
 		Type: Circle
 			Radius: 128
 			VerticalTopOffset: 512
