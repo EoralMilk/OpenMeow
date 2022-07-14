@@ -318,7 +318,7 @@ ShotGunScat:
 		Inaccuracy: 700
 		ContrailLength: 2
 	Warhead@1Dam: Spread3DDamage
-		Damage: 600
+		Damage: 700
 		Spread: 0c128
 		Versus:
 			None: 100
@@ -332,22 +332,48 @@ ShotGunProScat:
 	Inherits: InfMG
 	Projectile: Bullet
 		LifeTime: 7
-		Inaccuracy: 800
+		Inaccuracy: 600
 		ContrailLength: 2
+
+TinyShard:
+	Inherits: InfMG
+	Projectile: Bullet
+		LifeTime: 7
+		ContrailLength: 2
+		ContrailColor: 30E030D0
+		Inaccuracy: 990
+		Speed: 800
+	Warhead@1Dam: Spread3DDamage
+		Damage: 1000
+		Spread: 0c42
+		Versus:
+			None: 100
+			Wood: 33
+			Light: 55
+			Heavy: 33
+			Concrete: 10
+		DamageTypes:  Prone70Percent, TriggerProne, SmallExplosionDeath, TriggerVisceroid
 
 
 ^ShotGun:
-	ReloadDelay: 24
+	ReloadDelay: 22
 	Range: 5c535
 	Burst: 1
 	Report: gun18.aud
 	Projectile: InstantScat
 		ScatWeapon: ShotGunScat
-		ScatCount: 9
+		ScatCount: 10
 		Inaccuracy: 200
 	Warhead@1Dam: SpreadDamage
 
+ShardShotGun:
+	Inherits: ^ShotGun
+	Projectile: InstantScat
+		ScatWeapon: TinyShard
+		ScatCount: 8
+
 ShotGunPro:
+	Inherits: ^ShotGun
 	ReloadDelay: 24
 	Range: 6c256
 	Burst: 1
@@ -355,10 +381,8 @@ ShotGunPro:
 	Report: gostgun_a.wav, gostgun_b.wav
 	Projectile: InstantScat
 		ScatWeapon: ShotGunProScat
-		ScatCount: 9
+		ScatCount: 8
 		Inaccuracy: -1
-	Warhead@1Dam: SpreadDamage
-
 
 VectorBooster:
 	Range: 7c0

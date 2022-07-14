@@ -142,6 +142,7 @@ SMECH:
 	Armament:
 		LocalOffset: 111,200,255, 111,-220,255
 		BurstPerFireCount: 2
+		UseBindage: true
 		Weapon: AssaultVulcan #AssaultCannon
 	Voiced:
 		VoiceSet: Mech

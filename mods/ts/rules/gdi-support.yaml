@@ -83,10 +83,12 @@ GACTWR:
 		RequiresCondition: !build-incomplete && tower.vulcan
 		Recoils: false
 		Sequence: turret-vulcan
+		UseBindage: true
 	WithSpriteTurret@ROCKET:
 		RequiresCondition: !build-incomplete && tower.rocket
 		Recoils: false
 		Sequence: turret-rocket
+		UseBindage: true
 	WithSpriteTurret@SAM:
 		RequiresCondition: !build-incomplete && tower.sam
 		Recoils: false
