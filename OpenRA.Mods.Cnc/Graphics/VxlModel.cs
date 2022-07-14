@@ -181,7 +181,7 @@ namespace OpenRA.Mods.Cnc.Graphics
 			palette = pal;
 		}
 
-		public void DrawInstances()
+		public void DrawInstances(bool shadowBuffser = false)
 		{
 			if (instanceCount == 0)
 				return;

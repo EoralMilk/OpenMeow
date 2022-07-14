@@ -171,11 +171,11 @@ namespace OpenRA.Graphics
 			}
 		}
 
-		public void DrawInstances()
+		public void DrawInstances(bool shadowBuffer = false)
 		{
 			foreach (var orderedMesh in meshes)
 			{
-				orderedMesh.Value.DrawInstances();
+				orderedMesh.Value.DrawInstances(shadowBuffer);
 			}
 		}
 

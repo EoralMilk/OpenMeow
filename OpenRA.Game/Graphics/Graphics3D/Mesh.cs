@@ -60,7 +60,7 @@ namespace OpenRA.Graphics
 		OrderedSkeleton Skeleton { get; set; }
 		void AddInstanceData(in float[] data, int dataCount, in int[] dataInt, int dataIntCount);
 		void Flush();
-		void DrawInstances();
+		void DrawInstances(bool shadowBuffser);
 		void SetPalette(ITexture pal);
 
 		Rectangle BoundingRec { get; }

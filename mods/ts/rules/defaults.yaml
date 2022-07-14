@@ -580,6 +580,7 @@
 			TopLeft: -512, -512
 			BottomRight: 512, 512
 			VerticalTopOffset: 768
+			VerticalBottomOffset: -1024
 	AppearsOnMapPreview:
 	MapEditorData:
 		Categories: Wall

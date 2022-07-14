@@ -241,12 +241,14 @@ namespace OpenRA.Mods.Common.Graphics
 			//palette = pal;
 		}
 
-		public void DrawInstances()
+		public void DrawInstances(bool shadowBuffser = false)
 		{
 			if (instanceCount == 0)
 				return;
-
-			Game.Renderer.SetFaceCull(Material.FaceCullFunc);
+			if (shadowBuffser && Material.FaceCullFunc == FaceCullFunc.Back)
+				Game.Renderer.SetFaceCull(FaceCullFunc.Front);
+			else
+				Game.Renderer.SetFaceCull(Material.FaceCullFunc);
 			if (Skeleton != null)
 			{
 				renderData.Shader.SetBool("useDQB", useDQB);

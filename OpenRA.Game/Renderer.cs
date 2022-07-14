@@ -364,11 +364,11 @@ namespace OpenRA
 			// vxl
 			foreach (var orderedMesh in orderedMeshes)
 			{
-				orderedMesh.Value.DrawInstances();
+				orderedMesh.Value.DrawInstances(sunCamera);
 			}
 
 			// mesh
-			wr.World.MeshCache.DrawInstances();
+			wr.World.MeshCache.DrawInstances(sunCamera);
 		}
 
 		public void RenderInstance(int start, int numVertices, int numInstance, bool elemented = false)

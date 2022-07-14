@@ -107,7 +107,7 @@ A10Napalm:
 			Light: 40
 			Heavy: 25
 			Concrete: 10
-		DamageTypes: Prone50Percent, TriggerProne, BulletDeath
+		DamageTypes: Prone70Percent, TriggerProne, BulletDeath
 		ValidTargets: Ground, Water, Air
 		InvalidTargets: Wall, Bridge
 	Warhead@2Eff: CreateEffect
@@ -145,10 +145,10 @@ InfMG:
 		Spread: 0c42
 		Versus:
 			None: 100
-			Wood: 35
-			Light: 40
-			Heavy: 5
-			Concrete: 5
+			Wood: 15
+			Light: 30
+			Heavy: 2
+			Concrete: 2
 
 SMG:
 	Inherits: InfMG
@@ -167,10 +167,10 @@ SMG:
 		Spread: 0c42
 		Versus:
 			None: 100
-			Wood: 35
+			Wood: 15
 			Light: 25
-			Heavy: 5
-			Concrete: 5
+			Heavy: 1
+			Concrete: 1
 
 SergeantSMG:
 	Inherits: SMG
@@ -190,22 +190,33 @@ SergeantSMG:
 		Duration: 10
 		Versus:
 			None: 100
-			Wood: 35
-			Light: 45
+			Wood: 15
+			Light: 50
 			Heavy: 15
 			Concrete: 15
 
 AssaultVulcan:
 	Inherits: InfMG
-	Range: 6c512
+	Range: 6c768
 	Report: tsgun4.aud
 	BurstDelays: 2
-	Burst: 10
+	Burst: 12
 	Range: 6c512
+	ReloadDelay: 25
 	Projectile: Bullet
 		LifeTime: 10
 		ContrailLength: 2
 		Inaccuracy: 400
+	Warhead@1Dam: Spread3DDamage
+		Damage: 1200
+		Spread: 0c42
+		Versus:
+			None: 100
+			Wood: 25
+			Light: 35
+			Heavy: 8
+			Concrete: 8
+
 
 HarpyClawMG:
 	Inherits: InfMG
@@ -226,25 +237,23 @@ HarpyClawMG:
 		Spread: 0c128
 
 RaiderCannonMG:
-	Inherits: InfMG
-	Burst: 6
+	Inherits: AssaultVulcan
+	Burst: 8
 	BurstDelays: 2
-	ReloadDelay: 35
+	ReloadDelay: 30
 	MinRange: 0
 	Range: 6c512
 	Report: chaingn_a.wav, chaingn_b.wav, chaingn_c.wav, chaingn_d.wav
 	Projectile: Bullet
 		Inaccuracy: 330
-	Warhead@1Dam: Spread3DDamage
-		Damage: 1000
-		Spread: 0c64
+
 
 CyborgMG:
-	Inherits: InfMG
+	Inherits: AssaultVulcan
 	Range: 6c768
-	ReloadDelay: 35
-	Burst: 8
-	BurstDelays: 1
+	ReloadDelay: 30
+	Burst: 9
+	BurstDelays: 2
 	Report: cygun_a.wav, cygun_b.wav
 	Projectile: Bullet
 		LifeTime: 10
@@ -252,7 +261,7 @@ CyborgMG:
 		Inaccuracy: 340
 
 VulcanMG:
-	Inherits: InfMG
+	Inherits: AssaultVulcan
 	Report: chaingn_a.wav, chaingn_b.wav, chaingn_c.wav, chaingn_d.wav
 	Range: 7c0
 	ReloadDelay: 45
@@ -263,14 +272,14 @@ VulcanMG:
 		ContrailLength: 2
 		Inaccuracy: 410
 	Warhead@1Dam: Spread3DDamage
-		Damage: 800
+		Damage: 1000
 		Spread: 0c72
 
 SilencerSniper:
 	Inherits: InfMG
 	MinRange: 0c128
 	Range: 10c0
-	ReloadDelay: 45
+	ReloadDelay: 50
 	Burst: 1
 	Report: silencer.aud
 	Projectile: Bullet
@@ -281,13 +290,13 @@ SilencerSniper:
 		Speed: 1120
 	Warhead@1Dam: Spread3DDamage
 		Spread: 36
-		Damage: 15000
+		Damage: 12550
 		Versus:
 			Wood: 5
 			Light: 15
 			Heavy: 5
 			Concrete: 5
-		DamageTypes: Prone100Percent, TriggerProne, BulletDeath
+		DamageTypes: Prone70Percent, TriggerProne, BulletDeath
 
 Pistol:
 	Inherits: InfMG
@@ -340,7 +349,7 @@ TinyShard:
 	Projectile: Bullet
 		LifeTime: 7
 		ContrailLength: 2
-		ContrailColor: 30E030D0
+		ContrailColor: 20B020D0
 		Inaccuracy: 990
 		Speed: 800
 	Warhead@1Dam: Spread3DDamage
@@ -352,7 +361,7 @@ TinyShard:
 			Light: 55
 			Heavy: 33
 			Concrete: 10
-		DamageTypes:  Prone70Percent, TriggerProne, SmallExplosionDeath, TriggerVisceroid
+		DamageTypes:  Prone100Percent, TriggerProne, SmallExplosionDeath, TriggerVisceroid
 
 
 ^ShotGun:
