@@ -33,6 +33,8 @@ namespace OpenRA.Mods.Common.Traits
 		[Desc("Determines what projectiles to block based on their allegiance to the gate owner.")]
 		public readonly PlayerRelationship BlocksProjectilesValidRelationships = PlayerRelationship.Ally | PlayerRelationship.Neutral | PlayerRelationship.Enemy;
 
+		[Desc("Use bindage logic, which will check actors who are using this bindage and won't block their projectiles")]
+		public readonly bool IsBindage = false;
 		public override object Create(ActorInitializer init) { return new Gate(init, this); }
 	}
 
@@ -142,5 +144,7 @@ namespace OpenRA.Mods.Common.Traits
 		WDist IBlocksProjectiles.BlockingHeight => new WDist(Info.BlocksProjectilesHeight.Length * (OpenPosition - Position) / OpenPosition);
 
 		PlayerRelationship IBlocksProjectiles.ValidRelationships => Info.BlocksProjectilesValidRelationships;
+
+		bool IBlocksProjectiles.IsBindage { get { return Info.IsBindage; } }
 	}
 }

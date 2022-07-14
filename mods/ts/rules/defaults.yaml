@@ -574,6 +574,7 @@
 	ScriptTriggers:
 	Health:
 	HitShape:
+		TargetableOffsets: 0,0,315
 		Type: Rectangle
 			LocalYaw: 128
 			TopLeft: -512, -512
@@ -703,14 +704,13 @@
 		RequiresCondition: takecover || critical
 		Type: Circle
 			Radius: 168
-			# VerticalTopOffset: 64
-			# VerticalBottomOffset: 0
+			VerticalTopOffset: 64
 	HitShape:
-		TargetableOffsets: 0,0,288
+		TargetableOffsets: 0,0,300
 		RequiresCondition: !takecover && !critical
 		Type: Circle
 			Radius: 128
-			VerticalTopOffset: 512
+			VerticalTopOffset: 575
 			VerticalBottomOffset: 0
 	MapEditorData:
 		Categories: Infantry
@@ -925,9 +925,10 @@
 	EntersTunnels:
 		Voice: Move
 	HitShape:
+		TargetableOffsets: 0,0,310
 		Type: Circle
 			Radius: 368
-			VerticalTopOffset: 612
+			VerticalTopOffset: 620
 	MapEditorData:
 		Categories: Vehicle
 	GrantConditionOnTunnelLayer:
@@ -1025,6 +1026,7 @@
 	WithModelBody:
 	RevealOnFire:
 	HitShape:
+		TargetableOffsets: 0,0,250
 		Type: Circle
 			Radius: 368
 			VerticalTopOffset: 612
@@ -1100,6 +1102,7 @@
 	EntersTunnels:
 		Voice: Move
 	HitShape:
+		TargetableOffsets: 0,0,300
 		Type: Circle
 			Radius: 256
 			VerticalTopOffset: 512
@@ -1138,7 +1141,14 @@
 		RedTint: 0.01
 		GreenTint: 0.8
 		BlueTint: 0.01
-
+	HitShape:
+		TargetableOffsets: 0,0,300
+		Type: Circle
+			Radius: 134
+			VerticalTopOffset: 612
+	BlocksProjectiles:
+		IsBindage: true
+		Height: 612
 
 ^Tree:
 	Inherits@1: ^SpriteActor
@@ -1158,9 +1168,13 @@
 	RequiresSpecificOwners:
 		ValidOwnerNames: Neutral
 	HitShape:
+		TargetableOffsets: 0,0,310
 		Type: Circle
-			Radius: 164
+			Radius: 134
 			VerticalTopOffset: 612
+	BlocksProjectiles:
+		IsBindage: true
+		Height: 612
 	Health:
 		HP: 200000
 	Armor:
@@ -1199,6 +1213,14 @@
 	Building:
 		Footprint: x
 		Dimensions: 1, 1
+	BlocksProjectiles:
+		IsBindage: true
+		Height: 444
+	HitShape:
+		TargetableOffsets: 0,0,120
+		Type: Circle
+			Radius: 255
+			VerticalTopOffset: 444
 	Tooltip:
 		Name: Rock
 	MapEditorData:

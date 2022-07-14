@@ -33,6 +33,7 @@ namespace OpenRA.GameRules
 		public Actor SourceActor;
 		public WPos PassiveTarget;
 		public Target GuidedTarget;
+		public List<Actor> IgnoredActors = new List<Actor>();
 	}
 
 	public class WarheadArgs

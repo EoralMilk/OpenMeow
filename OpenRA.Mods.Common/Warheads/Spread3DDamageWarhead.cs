@@ -32,8 +32,11 @@ namespace OpenRA.Mods.Warheads
 		[Desc("Only one optimal target is dealt damage")]
 		public readonly bool DamageOne = false;
 
-		[Desc("Only deals damage to blockers (if any)")]
+		[Desc("Only deals damage to blockers (if any), If no blocker, logic run as common.")]
 		public readonly bool DamageBlocker = false;
+
+		[Desc("Only deals damage to blockers. Won't deal damage to any other actors")]
+		public readonly bool OnlyBlocker = false;
 
 		[Desc("If the impact point is less than ground, force the impact point to ground")]
 		public bool ForceUnderGroundHitToSurface = true;
@@ -72,7 +75,6 @@ namespace OpenRA.Mods.Warheads
 				victim.TraitsImplementing<ExternalCondition>()
 						.FirstOrDefault(t => t.Info.Condition == Condition && t.CanGrantCondition(sourceActor))
 						?.GrantCondition(victim, sourceActor, Duration);
-				//Console.WriteLine("GrantCondition: " + victim.Info.Name + victim.ActorID + " from " + firedBy.Info.Name + firedBy.ActorID);
 			}
 
 			// var explodes = args.Blocker.TraitsImplementing<IGetBlownUp>();
@@ -93,7 +95,7 @@ namespace OpenRA.Mods.Warheads
 			if (ForceUnderGroundHitToSurface && firedBy.World.Map.DistanceAboveTerrain(args.ImpactPosition) < WDist.Zero)
 				args.ImpactPosition = new WPos(args.ImpactPosition.X, args.ImpactPosition.Y, args.ImpactPosition.Z - firedBy.World.Map.DistanceAboveTerrain(args.ImpactPosition).Length);
 
-			if (DamageBlocker && args.Blocker != null && args.Blocker.IsInWorld && !args.Blocker.IsDead)
+			if ((OnlyBlocker || DamageBlocker) && args.Blocker != null && args.Blocker.IsInWorld && !args.Blocker.IsDead)
 			{
 				if (!IsValidAgainst(args.Blocker, firedBy))
 					return;
@@ -124,6 +126,9 @@ namespace OpenRA.Mods.Warheads
 
 				return;
 			}
+
+			if (OnlyBlocker)
+				return;
 
 			bestTarget = null;
 			maxDamage = 0;

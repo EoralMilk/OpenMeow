@@ -337,11 +337,96 @@ namespace OpenRA.Mods.Common.Traits
 			});
 		}
 
+		// WIP AttackUnlimited
+		public List<Target> ScanTargets(Actor self, WDist scanRange)
+		{
+			List<Target> targets = new List<Target>();
+			if (ActiveAttackBases.Any())
+			{
+				foreach (var ab in ActiveAttackBases)
+				{
+					// If we can't attack right now, there's no need to try and find a target.
+					var attackStances = ab.UnforcedAttackTargetStances();
+					if (attackStances != OpenRA.Traits.PlayerRelationship.None)
+					{
+						var range = Info.ScanRadius > 0 ? WDist.FromCells(Info.ScanRadius) : ab.GetMaximumRange();
+
+						var activePriorities = activeTargetPriorities.ToList();
+						if (activePriorities.Count == 0)
+							return targets;
+
+						var targetsInRange = self.World.FindActorsInCircle(self.CenterPosition, scanRange)
+							.Select(Target.FromActor);
+
+						if (ab.Info.TargetFrozenActors)
+							targetsInRange = targetsInRange
+								.Concat(self.Owner.FrozenActorLayer.FrozenActorsInCircle(self.World, self.CenterPosition, scanRange)
+								.Select(Target.FromFrozenActor));
+
+						foreach (var target in targetsInRange)
+						{
+							BitSet<TargetableType> targetTypes;
+							Player owner;
+							if (target.Type == TargetType.Actor)
+							{
+								// PERF: Most units can only attack enemy units. If this is the case but the target is not an enemy, we
+								// can bail early and avoid the more expensive targeting checks and armament selection. For groups of
+								// allied units, this helps significantly reduce the cost of auto target scans. This is important as
+								// these groups will continuously rescan their allies until an enemy finally comes into range.
+								if (attackStances == PlayerRelationship.Enemy && !target.Actor.AppearsHostileTo(self))
+									continue;
+
+								// Check whether we can auto-target this actor
+								targetTypes = target.Actor.GetEnabledTargetTypes();
+
+								if (PreventsAutoTarget(self, target.Actor) || !target.Actor.CanBeViewedByPlayer(self.Owner))
+									continue;
+
+								owner = target.Actor.Owner;
+							}
+							else if (target.Type == TargetType.FrozenActor)
+							{
+								if (attackStances == PlayerRelationship.Enemy && self.Owner.RelationshipWith(target.FrozenActor.Owner) == PlayerRelationship.Ally)
+									continue;
+
+								targetTypes = target.FrozenActor.TargetTypes;
+								owner = target.FrozenActor.Owner;
+							}
+							else
+								continue;
+
+							var validPriorities = activePriorities.Where(ati =>
+							{
+								// Incompatible relationship
+								if (!ati.ValidRelationships.HasRelationship(self.Owner.RelationshipWith(owner)))
+									return false;
+
+								// Incompatible target types
+								if (!ati.ValidTargets.Overlaps(targetTypes) || ati.InvalidTargets.Overlaps(targetTypes))
+									return false;
+
+								return true;
+							}).ToList();
+
+							if (validPriorities.Count == 0)
+								continue;
+
+							targets.Add(target);
+						}
+
+						return targets;
+					}
+				}
+			}
+
+			return targets;
+		}
+
 		Target ChooseTarget(Actor self, AttackBase ab, PlayerRelationship attackStances, WDist scanRange, bool allowMove, bool allowTurn)
 		{
 			var chosenTarget = Target.Invalid;
 			var chosenTargetPriority = int.MinValue;
-			int chosenTargetRange = 0;
+			long chosenTargetRange = 0;
 
 			var activePriorities = activeTargetPriorities.ToList();
 			if (activePriorities.Count == 0)
@@ -412,7 +497,8 @@ namespace OpenRA.Mods.Common.Traits
 				if (!allowMove)
 					armaments = armaments.Where(arm =>
 						target.IsInRange(self.CenterPosition, arm.MaxRange()) &&
-						!target.IsInRange(self.CenterPosition, arm.Weapon.MinRange));
+						!target.IsInRange(self.CenterPosition, arm.Weapon.MinRange) &&
+						arm.TargetInFiringArc(target));
 
 				if (!armaments.Any())
 					continue;
@@ -421,7 +507,7 @@ namespace OpenRA.Mods.Common.Traits
 					continue;
 
 				// Evaluate whether we want to target this actor
-				var targetRange = (target.CenterPosition - self.CenterPosition).Length;
+				var targetRange = (target.CenterPosition - self.CenterPosition).LengthSquared;
 				foreach (var ati in validPriorities)
 				{
 					if (chosenTarget.Type == TargetType.Invalid || chosenTargetPriority < ati.Priority

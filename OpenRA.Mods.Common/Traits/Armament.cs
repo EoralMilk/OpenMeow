@@ -82,6 +82,11 @@ namespace OpenRA.Mods.Common.Traits
 
 		[Desc("The angle relative to the actor's orientation used to fire the weapon from.")]
 		public readonly WAngle FiringAngle = WAngle.Zero;
+
+		[Desc("Whether this armament can use bindage.")]
+		public readonly bool UseBindage = false;
+
+		public readonly WDist BindageDetectWidth = new WDist(1024);
 		public WeaponInfo WeaponInfo { get; private set; }
 		public WDist ModifiedRange { get; private set; }
 
@@ -368,6 +373,19 @@ namespace OpenRA.Mods.Common.Traits
 			return true;
 		}
 
+		public virtual bool TargetInFiringArc(in Target target)
+		{
+			if (hasFacingTolerance && facing != null)
+			{
+				var delta = target.CenterPosition - self.CenterPosition;
+				return Util.FacingWithinTolerance(facing.Facing, delta.Yaw + Info.FiringAngle, Info.FacingTolerance);
+			}
+
+			if (hasFacingTolerance && facing == null)
+				return false;
+			return true;
+		}
+
 		// Note: facing is only used by the legacy positioning code
 		// The world coordinate model uses Actor.Orientation
 		Barrel barrel;
@@ -438,6 +456,18 @@ namespace OpenRA.Mods.Common.Traits
 				PassiveTarget = passiveTarget,
 				GuidedTarget = target
 			};
+
+			if (Info.UseBindage)
+			{
+				var toend = (passiveTarget - args.Source);
+				var end = args.Source + toend * Info.BindageDetectWidth.Length * 2 / toend.Length;
+
+				foreach (Actor a in self.World.FindBlockingActorsOnLine(args.Source, end, Info.BindageDetectWidth))
+				{
+					if (a.TraitsImplementing<IBlocksProjectiles>().Any(b => b.IsBindage))
+						args.IgnoredActors.Add(a);
+				}
+			}
 
 			// Lambdas can't use 'in' variables, so capture a copy for later
 			var delayedTarget = target;

@@ -53,6 +53,7 @@ UMAGON:
 	Armament:
 		LocalOffset: 126,0,438
 		Weapon: SilencerSniper
+		UseBindage: true
 	AttackFrontal:
 		Voice: Attack
 		FacingTolerance: 0
@@ -124,6 +125,7 @@ MUTANT:
 		LocalOffset: 311,83,490, 311,-83,490
 		BurstPerFireCount: 2
 		Weapon: SMG
+		UseBindage: true
 	AttackFrontal:
 		Voice: Attack
 		FacingTolerance: 0
@@ -158,6 +160,7 @@ MWMN:
 	Armament:
 		LocalOffset: 253,0,478
 		Weapon: ^ShotGun
+		UseBindage: true
 	AttackFrontal:
 		Voice: Attack
 		FacingTolerance: 0
@@ -193,6 +196,7 @@ MUTANT3:
 		LocalOffset: 311,83,490, 311,-83,490
 		BurstPerFireCount: 2
 		Weapon: SergeantSMG
+		UseBindage: true
 	AttackFrontal:
 		Voice: Attack
 		FacingTolerance: 0
@@ -270,6 +274,7 @@ CIV1:
 	Armament:
 		LocalOffset: 233,0,438
 		Weapon: Pistol
+		UseBindage: true
 	AttackFrontal:
 		Voice: Attack
 		FacingTolerance: 0
@@ -303,6 +308,7 @@ CTECH:
 	Armament:
 		LocalOffset: 233,0,438
 		Weapon: Pistol
+		UseBindage: true
 	AttackFrontal:
 		Voice: Attack
 		FacingTolerance: 0

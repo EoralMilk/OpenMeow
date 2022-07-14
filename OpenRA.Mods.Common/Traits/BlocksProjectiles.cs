@@ -9,6 +9,7 @@
  */
 #endregion
 
+using System.Collections.Generic;
 using System.Linq;
 using OpenRA.Traits;
 
@@ -18,6 +19,9 @@ namespace OpenRA.Mods.Common.Traits
 	public class BlocksProjectilesInfo : ConditionalTraitInfo, IBlocksProjectilesInfo
 	{
 		public readonly WDist Height = WDist.FromCells(1);
+
+		[Desc("Use bindage logic, which will check actors who are using this bindage and won't block their projectiles")]
+		public readonly bool IsBindage = false;
 
 		[Desc("Determines what projectiles to block based on their allegiance to the wall owner.")]
 		public readonly PlayerRelationship ValidRelationships = PlayerRelationship.Ally | PlayerRelationship.Neutral | PlayerRelationship.Enemy;
@@ -33,6 +37,7 @@ namespace OpenRA.Mods.Common.Traits
 		WDist IBlocksProjectiles.BlockingHeight => Info.Height;
 
 		PlayerRelationship IBlocksProjectiles.ValidRelationships { get { return Info.ValidRelationships; } }
+		bool IBlocksProjectiles.IsBindage { get { return Info.IsBindage; } }
 
 		public static bool AnyBlockingActorAt(World world, WPos pos)
 		{
@@ -44,15 +49,18 @@ namespace OpenRA.Mods.Common.Traits
 					.Any(Exts.IsTraitEnabled));
 		}
 
-		public static bool AnyBlockingActorsBetween(World world, Player owner, WPos start, WPos end, WDist width, out WPos hit, out Actor blocker)
+		public static bool AnyBlockingActorsBetween(World world, Player owner, WPos start, WPos end, WDist width, out WPos hit, out Actor blocker, GameRules.ProjectileArgs args = null)
 		{
 			var actors = world.FindBlockingActorsOnLine(start, end, width);
 			var length = (end - start).Length;
 
 			foreach (var a in actors)
 			{
+				if (args != null && args.IgnoredActors.Contains(a))
+					continue;
+
 				var blockers = a.TraitsImplementing<IBlocksProjectiles>()
-					.Where(Exts.IsTraitEnabled).Where(t => t.ValidRelationships.HasRelationship(a.Owner.RelationshipWith(owner)))
+					.Where(Exts.IsTraitEnabled).Where(t => (t.ValidRelationships.HasRelationship(a.Owner.RelationshipWith(owner))))
 					.ToList();
 
 				if (blockers.Count == 0)

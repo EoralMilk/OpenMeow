@@ -157,7 +157,7 @@ namespace OpenRA.Mods.Common.Projectiles
 		{
 			// Check for blocking actors
 			if (info.Blockable && BlocksProjectiles.AnyBlockingActorsBetween(args.SourceActor.World, args.SourceActor.Owner, target, args.Source,
-					info.BeamWidth, out var blockedPos, out blocker))
+					info.BeamWidth, out var blockedPos, out blocker, args))
 				target = blockedPos;
 
 			// Note: WAngle.Sin(x) = 1024 * Math.Sin(2pi/1024 * x)

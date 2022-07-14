@@ -237,7 +237,7 @@ namespace OpenRA.Mods.Common.Projectiles
 				return true;
 			}
 
-			if (info.Blockable && BlocksProjectiles.AnyBlockingActorsBetween(world, args.SourceActor.Owner, lastPos, pos, info.Width, out var blockedPos, out blocker))
+			if (info.Blockable && BlocksProjectiles.AnyBlockingActorsBetween(world, args.SourceActor.Owner, lastPos, pos, info.Width, out var blockedPos, out blocker, args))
 			{
 				pos = blockedPos;
 				return true;

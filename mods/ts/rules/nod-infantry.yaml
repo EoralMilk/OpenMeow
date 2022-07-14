@@ -23,6 +23,7 @@ E3:
 	Armament@PRIMARY:
 		Weapon: VectorBooster #Bazooka
 		LocalOffset: 356,0,558
+		UseBindage: true
 	TakeCover:
 		ProneOffset: 52,64,0
 	AttackFrontal:
@@ -68,6 +69,7 @@ CYBORG:
 	Armament:
 		Weapon: CyborgMG #Vulcan3
 		LocalOffset: 240,120,558
+		UseBindage: true
 	AttackFrontal:
 		Voice: Attack
 		FacingTolerance: 0
@@ -108,6 +110,7 @@ CYC2:
 	Armament:
 		Weapon: CyCannon
 		LocalOffset: 240,120,558
+		UseBindage: true
 	AttackFrontal:
 		Voice: Attack
 		FacingTolerance: 0

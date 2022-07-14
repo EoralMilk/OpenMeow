@@ -98,8 +98,9 @@ A10Napalm:
 		Damage: 900
 		DamageOne: true
 		DamageBlocker: true
+		OnlyBlocker: true
 		Spread: 0c76
-		Falloff: 100, 50, 25, 12, 6, 3, 0
+		Falloff: 100, 100
 		Versus:
 			None: 100
 			Wood: 60
@@ -337,7 +338,7 @@ ShotGunProScat:
 
 ^ShotGun:
 	ReloadDelay: 24
-	Range: 5c128
+	Range: 5c535
 	Burst: 1
 	Report: gun18.aud
 	Projectile: InstantScat

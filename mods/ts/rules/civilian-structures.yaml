@@ -1472,7 +1472,9 @@ GASAND:
 		Types: sandbags
 	WithWallSpriteBody:
 		Type: sandbags
-	-BlocksProjectiles:
+	BlocksProjectiles:
+		IsBindage: true
+		Height: 245
 	HitShape:
 		Type: Rectangle
 			LocalYaw: 128

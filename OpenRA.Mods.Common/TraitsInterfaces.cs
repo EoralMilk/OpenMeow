@@ -46,6 +46,8 @@ namespace OpenRA.Mods.Common.Traits
 	[RequireExplicitImplementation]
 	public interface IBlocksProjectiles
 	{
+		bool IsBindage { get; }
+
 		WDist BlockingHeight { get; }
 
 		PlayerRelationship ValidRelationships { get; }
