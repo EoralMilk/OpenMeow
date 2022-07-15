@@ -614,6 +614,243 @@ namespace OpenRA
 
 			// Update UID to match the newly saved data
 			Uid = ComputeUID(toPackage);
+			SaveMapAsPng("./MapToPng/");
+		}
+
+		/// <summary>
+		///  WIP
+		/// </summary>
+		public void SaveMapAsPng(string path)
+		{
+			if (Grid.Type != MapGridType.RectangularIsometric)
+				return;
+			Console.WriteLine("Saving Map " + Title + " As Png");
+			float mapMaxHeight = (float)Grid.MaximumTerrainHeight * MapGrid.MapHeightStep;
+			var width = MapSize.X * 2 + 2;
+			var height = MapSize.Y + 2;
+
+			var heights = new Color[width * height];
+			var colors = new Color[width * height];
+
+			var heightData = new byte[heights.Length * 4];
+			var colorData = new byte[heights.Length * 4];
+
+			for (var y = 0; y < MapSize.Y; y++)
+			{
+				for (var x = 0; x < MapSize.X; x++)
+				{
+					var uv = new MPos(x, y);
+					Color heightColor = Color.FromArgb((int)Height[uv] * 256 / Grid.MaximumTerrainHeight, 0, 0);
+					Color heightColorHalf = Color.FromArgb(((int)Height[uv] * 2 + 1) * 128 / Grid.MaximumTerrainHeight, 0, 0);
+					Color heightColorUpper = Color.FromArgb(((int)Height[uv] + 1) * 256 / Grid.MaximumTerrainHeight, 0, 0);
+					Color heightColorUppest = Color.FromArgb(((int)Height[uv] + 2) * 256 / Grid.MaximumTerrainHeight, 0, 0);
+					var ramp = Ramp[uv];
+
+					int2 mid;
+					if (y % 2 == 0)
+					{
+						mid = new int2(2 * x + 1, y + 1);
+					}
+					else
+					{
+						mid = new int2(2 * x + 2, y + 1);
+					}
+
+					var type = Rules.TerrainInfo.GetTerrainInfo(Tiles[uv]);
+					var midcolor = type.GetColor(Game.CosmeticRandom);
+
+					colors[mid.Y * width + mid.X] = midcolor;
+					colors[(mid.Y - 1) * width + mid.X] = Exts.ColorLerp(0.5f, midcolor, colors[(mid.Y - 1) * width + mid.X]);
+					colors[(mid.Y + 1) * width + mid.X] = Exts.ColorLerp(0.5f, midcolor, colors[(mid.Y + 1) * width + mid.X]);
+					colors[mid.Y * width + mid.X - 1] = Exts.ColorLerp(0.5f, midcolor, colors[mid.Y * width + mid.X - 1]);
+					colors[mid.Y * width + mid.X + 1] = Exts.ColorLerp(0.5f, midcolor, colors[mid.Y * width + mid.X + 1]);
+
+					Color m, t, b, l, r;
+					switch (ramp)
+					{
+						case 0:
+							m = heightColor;
+							t = heightColor;
+							b = heightColor;
+							l = heightColor;
+							r = heightColor;
+							break;
+						case 1:
+							m =	heightColorHalf;
+							t =	heightColor;
+							b =	heightColorUpper;
+							l =	heightColor;
+							r =	heightColorUpper;
+							break;
+						case 2:
+							m = heightColorHalf;
+							t =	heightColor;
+							b =	heightColorUpper;
+							l =	heightColorUpper;
+							r =	heightColor;
+							break;
+						case 3:
+							m =	heightColorHalf;
+							t =	heightColorUpper;
+							b =	heightColor;
+							l =	heightColorUpper;
+							r = heightColor;
+							break;
+						case 4:
+							m = heightColorHalf;
+							t =	heightColorUpper;
+							b =	heightColor;
+							l =	heightColor;
+							r =	heightColorUpper;
+							break;
+						case 5:
+							m =	heightColorUpper;
+							t =	heightColorUpper;
+							b =	heightColorUpper;
+							l =	heightColor;
+							r =	heightColorUpper;
+							break;
+						case 6:
+							m =	heightColor;
+							t =	heightColor;
+							b =	heightColor;
+							l =	heightColorUpper;
+							r =	heightColor;
+							break;
+						case 7:
+							m =	heightColor;
+							t =	heightColorUpper;
+							b =	heightColor;
+							l =	heightColor;
+							r =	heightColor;
+							break;
+						case 8:
+							m =	heightColor;
+							t =	heightColor;
+							b =	heightColor;
+							l =	heightColor;
+							r = heightColorUpper;
+							break;
+						case 9:
+							m =	heightColorUpper;
+							t =	heightColor;
+							b =	heightColorUpper;
+							l =	heightColorUpper;
+							r = heightColorUpper;
+							break;
+						case 10:
+							m =	heightColorUpper;
+							t =	heightColorUpper;
+							b =	heightColorUpper;
+							l =	heightColorUpper;
+							r = heightColor;
+							break;
+						case 11:
+							m =	heightColorUpper;
+							t =	heightColorUpper;
+							b =	heightColor;
+							l =	heightColorUpper;
+							r = heightColorUpper;
+							break;
+						case 12:
+							m =	heightColorUpper;
+							t =	heightColorUpper;
+							b =	heightColorUpper;
+							l =	heightColor;
+							r = heightColorUpper;
+							break;
+						case 13:
+							m =	heightColorUpper;
+							t =	heightColor;
+							b =	heightColorUppest;
+							l =	heightColorUpper;
+							r = heightColorUpper;
+							break;
+						case 14:
+							m =	heightColorUpper;
+							t =	heightColorUpper;
+							b =	heightColorUpper;
+							l =	heightColorUppest;
+							r = heightColor;
+							break;
+						case 15:
+							m =	heightColorUpper;
+							t =	heightColorUppest;
+							b =	heightColor;
+							l =	heightColorUpper;
+							r = heightColorUpper;
+							break;
+						case 16:
+							m =	heightColorUpper;
+							t =	heightColorUpper;
+							b =	heightColorUpper;
+							l =	heightColor;
+							r = heightColorUppest;
+							break;
+						case 17:
+							m =	heightColor;
+							t =	heightColor;
+							b =	heightColor;
+							l =	heightColorUpper;
+							r = heightColorUpper;
+							break;
+						case 18:
+							m =	heightColorUpper;
+							t =	heightColorUpper;
+							b =	heightColorUpper;
+							l =	heightColor;
+							r = heightColor;
+							break;
+						case 19:
+							m =	heightColorUpper;
+							t =	heightColor;
+							b =	heightColor;
+							l =	heightColorUpper;
+							r = heightColorUpper;
+							break;
+						case 20:
+							m =	heightColor;
+							t =	heightColorUpper;
+							b =	heightColorUpper;
+							l =	heightColor;
+							r = heightColor;
+							break;
+						default:
+							m = heightColor;
+							t = heightColor;
+							b = heightColor;
+							l = heightColor;
+							r = heightColor;
+							Console.WriteLine("Invalid Ramp Type: " + ramp);
+							break;
+					}
+
+					heights[mid.Y * width + mid.X] = m;
+					heights[(mid.Y - 1) * width + mid.X] = Exts.ColorLerp(0.5f, t, heights[(mid.Y - 1) * width + mid.X]);
+					heights[(mid.Y + 1) * width + mid.X] = Exts.ColorLerp(0.5f, b, heights[(mid.Y + 1) * width + mid.X]);
+					heights[mid.Y * width + mid.X - 1] = Exts.ColorLerp(0.5f, l, heights[mid.Y * width + mid.X - 1]);
+					heights[mid.Y * width + mid.X + 1] = Exts.ColorLerp(0.5f, r, heights[mid.Y * width + mid.X + 1]);
+				}
+			}
+
+			for (int i = 0; i < heights.Length; i++)
+			{
+				heightData[i * 4] = heights[i].R;
+				heightData[i * 4 + 1] = heights[i].G;
+				heightData[i * 4 + 2] = heights[i].B;
+				heightData[i * 4 + 3] = heights[i].A;
+			}
+
+			for (int i = 0; i < colors.Length; i++)
+			{
+				colorData[i * 4] = colors[i].R;
+				colorData[i * 4 + 1] = colors[i].G;
+				colorData[i * 4 + 2] = colors[i].B;
+				colorData[i * 4 + 3] = colors[i].A;
+			}
+
+			new Png(heightData, SpriteFrameType.Rgba32, width, height).Save(path + Title + "-height.png");
+			new Png(colorData, SpriteFrameType.Rgba32, width, height).Save(path + Title + "-color.png");
 		}
 
 		public byte[] SaveBinaryData()

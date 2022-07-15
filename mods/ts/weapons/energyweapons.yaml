@@ -193,14 +193,14 @@ ObeliskLaserFire:
 
 TurretLaserFire:
 	Inherits: ^Laser
-	ReloadDelay: 25
+	ReloadDelay: 30
 	Range: 6c512
 	Report: lastur1.aud
 	Projectile: LaserZap
 		Width: 36
 		Duration: 8
 		SecondaryBeamWidth: 144
-		SecondaryBeamColor: FF000030
+		SecondaryBeamColor: FF000050
 	Warhead@1Dam: SpreadDamage
 		Damage: 3000
 

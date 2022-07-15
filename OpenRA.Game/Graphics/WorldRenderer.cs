@@ -307,8 +307,7 @@ namespace OpenRA.Graphics
 
 			Game.Renderer.EnableDepthWrite(true);
 
-			if (enableDepthBuffer)
-				Game.Renderer.DisableDepthTest();
+			Game.Renderer.DisableDepthTest();
 
 			World.ApplyToActorsWithTrait<IRenderAboveWorld>((actor, trait) =>
 			{

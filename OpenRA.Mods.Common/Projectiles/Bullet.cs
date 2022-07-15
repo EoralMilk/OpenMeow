@@ -348,7 +348,7 @@ namespace OpenRA.Mods.Common.Projectiles
 				return;
 
 			var th = world.Map.HeightOfCell(pos);
-			if (th > pos.Z)
+			if (th > pos.Z && th < lastPos.Z)
 				pos += posToLastPos * (th - pos.Z) / (posToLastPos.Z);
 		}
 

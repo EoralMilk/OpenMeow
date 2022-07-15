@@ -217,24 +217,26 @@ AssaultVulcan:
 			Heavy: 8
 			Concrete: 8
 
-
 HarpyClawMG:
-	Inherits: InfMG
-	Burst: 8
+	Inherits: AssaultVulcan
+	Burst: 20
 	BurstDelays: 2
 	MinRange: 0
 	Range: 7c768
-	ReloadDelay: 25
+	ReloadDelay: 35
 	Report: slvkgun_a.wav, slvkgun_b.wav
+	ValidTargets: Ground, Water, Air
 	Projectile: Bullet
-		LifeTime: 13
-		ContrailLength: 3
+		LifeTime: 12
+		ContrailLength: 2
 		ContrailColor: A0FFA0C0
 		Inaccuracy: 290
 		Speed: 1000
+		OnlyBlocker: false
 	Warhead@1Dam: Spread3DDamage
-		Damage: 1500
+		Damage: 1250
 		Spread: 0c128
+		DamageTypes:  Prone100Percent, TriggerProne, SmallExplosionDeath, TriggerVisceroid
 
 RaiderCannonMG:
 	Inherits: AssaultVulcan

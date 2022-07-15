@@ -71,6 +71,7 @@ Player:
 		RequiresCondition: enable-test-ai
 		SquadSize: 20
 		ExcludeFromSquadsTypes: harv, mcv, dpod, hunter
+		IgnoredEnemyTargetTypes: Wall, AIgnored
 		ConstructionYardTypes: gacnst
 		AirUnitsTypes: orca, orcab, scrin, apache, jumpjet
 		ProtectionTypes: gapowr, gapowrup, gapile, gaweap, gahpad, gadept, garadr, gatech, gaplug, gagate_a, gagate_b, gactwr, gavulc, garock, gacsam, napowr, naapwr, nahand, naweap, nahpad, naradr, natech, nastlh, natmpl, namisl, nawast, nagate_a, nagate_b, nalasr, naobel, nasam, weed, gacnst, proc, gasilo, napuls, mcv, harv
