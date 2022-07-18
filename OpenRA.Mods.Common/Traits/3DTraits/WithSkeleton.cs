@@ -78,7 +78,7 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 			}
 		}
 
-		public readonly float Scale = 1;
+		public float Scale = 1;
 		readonly Actor self;
 		readonly IFacing myFacing;
 		public readonly bool OnlyUpdateForDraw;

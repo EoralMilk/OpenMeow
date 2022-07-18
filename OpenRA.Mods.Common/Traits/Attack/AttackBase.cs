@@ -173,7 +173,7 @@ namespace OpenRA.Mods.Common.Traits
 			foreach (var prepare in prepareForAttacks)
 			{
 				// all of the prepare for attack traits need to prepare
-				if (prepare.PrepareForAttack() == false)
+				if (prepare.PrepareForAttack(target) == false)
 					flag = false;
 			}
 
@@ -182,6 +182,21 @@ namespace OpenRA.Mods.Common.Traits
 
 			foreach (var a in Armaments)
 				a.CheckFire(self, facing, target);
+			return true;
+		}
+
+		public virtual bool PrepareAttack(in Target target)
+		{
+			bool flag = true;
+			foreach (var prepare in prepareForAttacks)
+			{
+				// all of the prepare for attack traits need to prepare
+				if (prepare.PrepareForAttack(target) == false)
+					flag = false;
+			}
+
+			if (!flag)
+				return false;
 			return true;
 		}
 

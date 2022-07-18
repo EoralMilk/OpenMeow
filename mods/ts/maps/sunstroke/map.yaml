@@ -29,14 +29,14 @@ Players:
 		Enemies: Multi0, Multi1
 	PlayerReference@CreepsNodBase:
 		Name: CreepsNodBase
-		Color: FE1100
 		NonCombatant: True
 		Faction: Random
+		Color: FE1100
 	PlayerReference@CreepsGDIBase:
 		Name: CreepsGDIBase
-		Color: EEEE66
 		NonCombatant: True
 		Faction: Random
+		Color: EEEE66
 	PlayerReference@Multi0:
 		Name: Multi0
 		Playable: True

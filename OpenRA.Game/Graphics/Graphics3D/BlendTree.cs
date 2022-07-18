@@ -99,7 +99,7 @@ namespace OpenRA.Graphics
 
 		// 用于判断是否需要Update节点数据
 		protected short tick = -1;
-
+		protected bool updated = false;
 		public BlendTreeNode(string name, uint id, BlendTree blendTree, AnimMask mask)
 		{
 			this.name = name;

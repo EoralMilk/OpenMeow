@@ -105,7 +105,7 @@ BUS:
 	Mobile:
 		TurnSpeed: 20
 		Speed: 113
-		PauseOnCondition: empdisable || loading || being-captured || carried
+		PauseOnCondition: empdisable || loading || being-captured || carried || traped
 	Health:
 		HP: 10000
 	Armor:
@@ -131,7 +131,7 @@ PICK:
 	Mobile:
 		TurnSpeed: 20
 		Speed: 113
-		PauseOnCondition: empdisable || loading || being-captured || carried
+		PauseOnCondition: empdisable || loading || being-captured || carried || traped
 	Health:
 		HP: 10000
 	Armor:
@@ -157,7 +157,7 @@ CAR:
 	Mobile:
 		TurnSpeed: 20
 		Speed: 113
-		PauseOnCondition: empdisable || loading || being-captured || carried
+		PauseOnCondition: empdisable || loading || being-captured || carried || traped
 	Health:
 		HP: 10000
 	Armor:
@@ -183,7 +183,7 @@ WINI:
 	Mobile:
 		TurnSpeed: 20
 		Speed: 113
-		PauseOnCondition: empdisable || loading || being-captured || carried
+		PauseOnCondition: empdisable || loading || being-captured || carried || traped
 	Health:
 		HP: 20000
 	Armor:

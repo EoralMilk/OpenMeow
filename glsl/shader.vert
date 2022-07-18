@@ -166,9 +166,9 @@ mat2x4 GetBoneTransform(vec4 weights)
 
 	// Fetch bones
 	mat2x4 dq0 = GetDualQuat(m1, s1);
-	mat2x4 dq1 = GetDualQuat(m2, s1);
-	mat2x4 dq2 = GetDualQuat(m3, s1);
-	mat2x4 dq3 = GetDualQuat(m4, s1);
+	mat2x4 dq1 = GetDualQuat(m2, s2);
+	mat2x4 dq2 = GetDualQuat(m3, s3);
+	mat2x4 dq3 = GetDualQuat(m4, s4);
 
 	// Ensure all bone transforms are in the same neighbourhood
 	weights.y *= sign(dot(dq0[0], dq1[0]));
@@ -230,6 +230,8 @@ void main()
 	}
 	drawPart = aDrawPart;
 
+	mat4 scaleMatrix = mat4(0.0f);
+
 	if (iDrawId != -1)
 	{
 		animTexoffset = iDrawId * skinBoneCount * 4;
@@ -239,7 +241,7 @@ void main()
 		}
 		else if (useDQB){
 			// dqbs Skin
-			mat4 scaleMatrix = mat4(0.0f);
+			
 			vec3 scale = vec3(0.0f);
 			m1 = GetMat4ById(aBoneId[0]);
 			m2 = GetMat4ById(aBoneId[1]);
@@ -261,6 +263,12 @@ void main()
 			// LBS Skin
 			for (int i = 0; i < MAX_BONE_LENGTH; i++)
 				mMatrix += GetMat4ById(aBoneId[i]) * aBoneWeights[i];
+
+			vec3 scale = vec3(length(mMatrix[0].xyz), length(mMatrix[1].xyz), length(mMatrix[2].xyz));
+			scaleMatrix[0][0] = scale[0];
+			scaleMatrix[1][1] = scale[1];
+			scaleMatrix[2][2] = scale[2];
+			scaleMatrix[3][3] = 1.0f;
 		}
 	}
 	else
@@ -274,7 +282,17 @@ void main()
 	gl_Position = projection * view * fragP;
 	FragPos = fragP.xyz;
 	TexCoords = aTexCoords;
-	Normal = normalize(mat3(transpose(inverse(mMatrix))) * aNormal);
+	Normal = normalize(inverse(transpose(mat3(mMatrix))) * aNormal);
+	// mMatrix[3][0] = 0.0;
+	// mMatrix[3][1] = 0.0;
+	// mMatrix[3][2] = 0.0;
+	// mMatrix[0] = mMatrix[0] / scaleMatrix[0][0];
+	// mMatrix[1] = mMatrix[1] / scaleMatrix[1][1];
+	// mMatrix[2] = mMatrix[2] / scaleMatrix[2][2];
+	// Normal = normalize(inverse(transpose(mat3(scaleMatrix))) * aNormal);
+	// Normal = mat3(mMatrix) * aNormal;
+	// ExtractRotation(mMatrix, vec3(length(mMatrix[0].xyz), length(mMatrix[1].xyz), length(mMatrix[2].xyz)));
+	// Normal = normalize(mat3(mMatrix) * aNormal);
 }
 
 

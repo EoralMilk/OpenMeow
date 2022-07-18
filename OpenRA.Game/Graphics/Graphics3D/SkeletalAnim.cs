@@ -43,6 +43,25 @@ namespace OpenRA.Graphics
 
 		public readonly Frame[] Frames;
 
+		public SkeletalAnim(ModifiedBoneRestPose mb, SkeletonAsset assetBind, string name, string sequence = null)
+		{
+			Name = name;
+			Sequence = sequence;
+			Frames = new Frame[2];
+			Frame frame1 = new Frame(assetBind.BoneNameAnimIndex.Count);
+			Frame frame2 = new Frame(assetBind.BoneNameAnimIndex.Count);
+			for (int i = 0; i < frame1.Length; i++)
+			{
+				frame1[i] = new Transformation(assetBind.Bones[assetBind.AnimBonesIndices[i]].RestPose);
+				frame2[i] = new Transformation(assetBind.Bones[assetBind.AnimBonesIndices[i]].RestPose);
+			}
+
+			frame1[mb.AnimId] = new Transformation(mb.FirstPose);
+			frame2[mb.AnimId] = new Transformation(mb.LastPose);
+			Frames[0] = frame1;
+			Frames[1] = frame2;
+		}
+
 		public SkeletalAnim(IReadOnlyFileSystem fileSystem, string sequence, string filename, SkeletonAsset assetBind)
 		{
 			Sequence = sequence;
@@ -117,15 +136,19 @@ namespace OpenRA.Graphics
 
 			uint length = s.ReadUInt32();
 			Frames = new Frame[length];
-
+			bool support = true;
 			for (int i = 0; i < length; i++)
 			{
 				uint bones = s.ReadUInt32();
-				Frames[i] = new Frame((int)bones);
+				Frames[i] = new Frame((int)skeleton.BoneNameAnimIndex.Count);
 				for (int j = 0; j < bones; j++)
 				{
-
-					if (skeleton != null && skeleton.BoneNameAnimIndex.ContainsKey(boneIdtoNames[j]))
+					if (!boneIdtoNames.ContainsKey(j) || !skeleton.BoneNameAnimIndex.ContainsKey(boneIdtoNames[j]))
+					{
+						support = false;
+						continue;
+					}
+					else if (skeleton != null) // && skeleton.BoneNameAnimIndex.ContainsKey(boneIdtoNames[j]))
 					{
 						var scale = ReadVec3(s);
 						var rotation = ReadQuat(s);
@@ -135,10 +158,14 @@ namespace OpenRA.Graphics
 					}
 					else
 					{
-						Console.WriteLine("No Match Bone: " + boneIdtoNames[j] + " in skeleton: " + skeleton.Name);
+						continue;
+						//Console.WriteLine("No Match Bone: " + boneIdtoNames[j] + " in skeleton: " + skeleton.Name);
 					}
 				}
 			}
+
+			if (!support)
+				Console.WriteLine(animName + " not full support");
 		}
 
 		TSVector ReadVec3(Stream s)

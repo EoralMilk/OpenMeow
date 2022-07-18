@@ -235,7 +235,7 @@ namespace OpenRA.Mods.Common.Activities
 
 		protected virtual void DoAttack(Actor self, AttackFrontal attack, IEnumerable<Armament> armaments)
 		{
-			if (!attack.IsTraitPaused)
+			if (!attack.IsTraitPaused && attack.PrepareAttack(target))
 				foreach (var a in armaments)
 					a.CheckFire(self, facing, target);
 		}

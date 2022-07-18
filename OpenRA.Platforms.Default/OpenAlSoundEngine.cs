@@ -46,7 +46,7 @@ namespace OpenRA.Platforms.Default
 			public OpenAlSound Sound;
 		}
 
-		const int MaxInstancesPerFrame = 16;
+		const int MaxInstancesPerFrame = 32;
 		const int GroupDistance = 2730;
 		const int GroupDistanceSqr = GroupDistance * GroupDistance;
 		const int PoolSize = 256;

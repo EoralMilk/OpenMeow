@@ -71,19 +71,24 @@ namespace OpenRA.Graphics
 		}
 	}
 
-	public struct ModifiedBoneRestPose
+	public class ModifiedBoneRestPose
 	{
 		public readonly string Name;
 		public readonly int Id;
 		public readonly int AnimId;
+		public readonly TSMatrix4x4 FirstPose;
+		public readonly TSMatrix4x4 LastPose;
+
 		public readonly TSMatrix4x4 RestPose;
 
-		public ModifiedBoneRestPose(in BoneAsset asset, TSMatrix4x4 modifiedPose)
+		public ModifiedBoneRestPose(in BoneAsset asset, TSMatrix4x4 modifiedPose, TSMatrix4x4 firstPose, TSMatrix4x4 lastPos)
 		{
 			Name = asset.Name;
 			Id = asset.Id;
 			AnimId = asset.AnimId;
 			RestPose = modifiedPose;
+			FirstPose = firstPose;
+			LastPose = lastPos;
 		}
 	}
 
@@ -156,7 +161,7 @@ namespace OpenRA.Graphics
 
 		public TSMatrix4x4 SetBoneOffsetMat(int id, in TSMatrix4x4 mat)
 		{
-			return LastSkeletonPose[id] = mat;
+			return Bones[id].CurrentPose = mat;
 		}
 
 		/// <summary>
@@ -186,6 +191,12 @@ namespace OpenRA.Graphics
 			for (int i = 0; i < boneSize; i++)
 			{
 				Bones[i] = new BoneInstance(boneAssets[i]);
+			}
+
+			foreach (var mb in skeleton.ModifiedBoneRestPoses)
+			{
+				Bones[mb.Value.Id].ModifiedRest = true;
+				Bones[mb.Value.Id].RestPose = mb.Value.RestPose;
 			}
 
 			LastSkeletonPose = new TSMatrix4x4[boneSize];
@@ -292,10 +303,13 @@ namespace OpenRA.Graphics
 			int y = DrawID * dataWidth;
 			for (int x = 0; x < dataWidth; x += 16)
 			{
-				var c0 = LastSkeletonPose[asset.SkinBonesMatchIndices[i]].Column0;
-				var c1 = LastSkeletonPose[asset.SkinBonesMatchIndices[i]].Column1;
-				var c2 = LastSkeletonPose[asset.SkinBonesMatchIndices[i]].Column2;
-				var c3 = LastSkeletonPose[asset.SkinBonesMatchIndices[i]].Column3;
+				int id = asset.SkinBonesIndices[i];
+				if (skipUpdateAdjBonePose)
+					id = asset.SkinBonesMatchIndices[i];
+				var c0 = LastSkeletonPose[id].Column0;
+				var c1 = LastSkeletonPose[id].Column1;
+				var c2 = LastSkeletonPose[id].Column2;
+				var c3 = LastSkeletonPose[id].Column3;
 				skeleton.AnimTransformData[y + x + 0] = (float)c0.x;
 				skeleton.AnimTransformData[y + x + 1] = (float)c0.y;
 				skeleton.AnimTransformData[y + x + 2] = (float)c0.z;
@@ -329,7 +343,7 @@ namespace OpenRA.Graphics
 	public class OrderedSkeleton
 	{
 		public readonly string Name;
-		readonly List<ModifiedBoneRestPose> modifiedBoneRestPoses = new List<ModifiedBoneRestPose>();
+		public readonly Dictionary<int, ModifiedBoneRestPose> ModifiedBoneRestPoses = new Dictionary<int, ModifiedBoneRestPose>();
 
 		/// <summary>
 		/// update each tick, by actor skeleton trait.
@@ -361,8 +375,12 @@ namespace OpenRA.Graphics
 					if (asset.BonesDict.ContainsKey(boneDefine.Key))
 					{
 						var boneInfo = boneDefine.Value.ToDictionary();
-						var restPose = ReadYamlInfo.LoadFixPointMat4(boneInfo, "RestPose");
-						modifiedBoneRestPoses.Add(new ModifiedBoneRestPose(asset.BonesDict[boneDefine.Key], restPose));
+						var firstIsRest = ReadYamlInfo.LoadField(boneInfo, "FirstPoseAsRestPose", false);
+						var restPose = asset.BonesDict[boneDefine.Key].RestPose * ReadYamlInfo.LoadFixPointMat4(boneInfo, "RestPoseModify");
+						var lastPose = asset.BonesDict[boneDefine.Key].RestPose * ReadYamlInfo.LoadFixPointMat4(boneInfo, "LastPose");
+						var firstPose = asset.BonesDict[boneDefine.Key].RestPose * ReadYamlInfo.LoadFixPointMat4(boneInfo, "FirstPose");
+						var mb = new ModifiedBoneRestPose(asset.BonesDict[boneDefine.Key], firstIsRest ? firstPose : restPose, firstPose, lastPose);
+						ModifiedBoneRestPoses.Add(asset.BonesDict[boneDefine.Key].Id, mb);
 					}
 					else
 					{
@@ -374,9 +392,9 @@ namespace OpenRA.Graphics
 			UseDynamicAdjBonePose = ReadYamlInfo.LoadField(info, "UseDynamicAdjBonePose", false);
 			preBakeInstance = new SkeletonInstance(asset.Bones, asset, this);
 
-			foreach (var newPose in modifiedBoneRestPoses)
+			foreach (var newPose in ModifiedBoneRestPoses)
 			{
-				preBakeInstance.Bones[newPose.Id].RestPose = newPose.RestPose;
+				preBakeInstance.Bones[newPose.Value.Id].RestPose = newPose.Value.RestPose;
 			}
 
 			//foreach (var animkv in asset.Animations)
@@ -407,7 +425,7 @@ namespace OpenRA.Graphics
 					mat4 bindPose = bone.BindPose;
 					// notice: Adj bone's bindPose can be (RestPose * BindPose),
 					// if the adj Bone is a child of another adj bone, the bindPose should apply the parentBone's restpose, until the parent is not adj bone.
-					if (bone.IsAdjBone)
+					if (bone.IsAdjBone && !UseDynamicAdjBonePose)
 					{
 						bindPose = ApplyBindPose(bone.Id) * bone.BindPose;
 					}
@@ -479,9 +497,9 @@ namespace OpenRA.Graphics
 		{
 			SkeletonInstance skeletonInstance = new SkeletonInstance(SkeletonAsset.Bones, SkeletonAsset, this);
 
-			foreach (var newPose in modifiedBoneRestPoses)
+			foreach (var newPose in ModifiedBoneRestPoses)
 			{
-				skeletonInstance.Bones[newPose.Id].RestPose = newPose.RestPose;
+				skeletonInstance.Bones[newPose.Value.Id].RestPose = newPose.Value.RestPose;
 			}
 
 			return skeletonInstance;
@@ -521,6 +539,11 @@ namespace OpenRA.Graphics
 		public readonly int[] SkinBonesIndices;
 
 		/// <summary>
+		/// the array order by anim bone's animid, value is bone's common id
+		/// </summary>
+		public readonly int[] AnimBonesIndices;
+
+		/// <summary>
 		/// considering the adj bone, the adj bone's "boneOffsetTextureId" should be the AdjParentId
 		/// </summary>
 		public readonly int[] SkinBonesMatchIndices;
@@ -557,10 +580,10 @@ namespace OpenRA.Graphics
 				// Attention, the Adj bone is a type of special bone which won't apply any animation, and won't uppdate logic offset;
 				// the "BindPose" of adj bone whilc contains restPose relative to the AdjParent bone and self bindPose
 				// cpu pak the bindPose and AdjParentPose to gpu, gpu while calculate the final bindOffset when process skin
-				if (bone.Value.Name.Contains("Adj_"))
-				{
-					bone.Value.IsAdjBone = true;
-				}
+				//if (bone.Value.Name.Contains("Adj_"))
+				//{
+				//	bone.Value.IsAdjBone = true;
+				//}
 
 				Bones[bone.Value.Id] = bone.Value;
 			}
@@ -632,6 +655,13 @@ namespace OpenRA.Graphics
 				}
 				else
 					SkinBonesMatchIndices[bone.SkinId] = bone.Id;
+			}
+
+			AnimBonesIndices = new int[BoneNameAnimIndex.Count];
+			foreach (var b in Bones)
+			{
+				if (b.AnimId != -1)
+					AnimBonesIndices[b.AnimId] = b.Id;
 			}
 
 			AllValidMask = new AnimMask("all", Bones.Length);

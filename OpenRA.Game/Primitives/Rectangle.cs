@@ -123,7 +123,7 @@ namespace OpenRA.Primitives
 		}
 
 		public static Rectangle operator *(int a, Rectangle b) { return new Rectangle(a * b.X, a * b.Y, a * b.Width, a * b.Height); }
-
+		public static Rectangle operator *(float a, Rectangle b) { return new Rectangle((int)(a * b.X), (int)(a * b.Y), (int)(a * b.Width), (int)(a * b.Height)); }
 		public override string ToString()
 		{
 			return $"{X},{Y},{Width},{Height}";

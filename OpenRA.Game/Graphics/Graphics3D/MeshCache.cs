@@ -58,7 +58,7 @@ namespace OpenRA.Graphics
 				if (loader.TryLoadMesh(fileSystem, fileName, definition, this, skeleton, skeletonType, out var mesh))
 					return mesh;
 
-			throw new InvalidDataException(unit + "." + sequence + " is not a valid mesh file!");
+			throw new InvalidDataException(unit + "." + sequence + " file: " + fileName + " is not a valid mesh file!");
 		}
 
 		public bool HasMeshData(string name)

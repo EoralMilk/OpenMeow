@@ -304,14 +304,9 @@ RUTEST4:
 		AmmoCondition: ammo
 	RenderSprites:
 	DeathSounds:
-	SpawnActorOnDeath:
-		Actor: SCRIN.Husk
-		RequiresCondition: !empdisable
-	SpawnActorOnDeath@EMP:
-		Actor: SCRIN.Husk.EMP
-		RequiresCondition: empdisable
 	Rearmable:
 		RearmActors: gahpad, nahpad
+	-SpawnActorOnDeath:
 	WithAmmoPipsDecoration:
 		Position: BottomLeft
 		RequiresSelection: true

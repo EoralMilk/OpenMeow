@@ -16,7 +16,7 @@ APC:
 	Mobile:
 		TurnSpeed: 20
 		Speed: 113
-		PauseOnCondition: empdisable || loading || being-captured || carried
+		PauseOnCondition: empdisable || loading || being-captured || carried || traped
 		Locomotor: amphibious
 	Health:
 		HP: 20000
@@ -320,9 +320,9 @@ SONIC:
 		Offset: -170,0,0
 	WithModelTurret:
 	Explodes:
-		RequiresCondition: !rank-elite
+		RequiresCondition: !rank-elite && !traped
 	Explodes@ELITE:
-		RequiresCondition: rank-elite
+		RequiresCondition: rank-elite && !traped
 		Weapon: UnitExplode
 
 JUGG:

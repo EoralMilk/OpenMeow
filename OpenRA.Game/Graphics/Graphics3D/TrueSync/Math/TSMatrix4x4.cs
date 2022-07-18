@@ -147,6 +147,27 @@ namespace TrueSync
 			M44 = col3.w;
 		}
 
+		public TSMatrix4x4 MulNum(FP mul)
+		{
+			M11 *= mul;
+			M12 *= mul;
+			M13 *= mul;
+			M14 *= mul;
+			M21 *= mul;
+			M22 *= mul;
+			M23 *= mul;
+			M24 *= mul;
+			M31 *= mul;
+			M32 *= mul;
+			M33 *= mul;
+			M34 *= mul;
+			M41 *= mul;
+			M42 *= mul;
+			M43 *= mul;
+			M44 *= mul;
+			return this;
+		}
+
 		/// <summary>
 		/// Initializes a new instance of the matrix structure.
 		/// </summary>

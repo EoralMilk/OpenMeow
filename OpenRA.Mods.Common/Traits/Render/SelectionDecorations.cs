@@ -67,6 +67,15 @@ namespace OpenRA.Mods.Common.Traits.Render
 		protected override IEnumerable<IRenderable> RenderSelectionBox(Actor self, WorldRenderer wr, Color color)
 		{
 			var bounds = interactable.DecorationBounds(self, wr);
+			if (BoundsScale != 1)
+			{
+				int2 pos = new int2(bounds.X + bounds.Width / 2, bounds.Y + bounds.Height / 2);
+				int width = (int)(BoundsScale * bounds.Width);
+				int height = (int)(BoundsScale * bounds.Height);
+
+				bounds = new Rectangle(pos.X - width / 2, pos.Y - width / 2, width, height);
+			}
+
 			yield return new SelectionBoxAnnotationRenderable(self, bounds, color);
 		}
 

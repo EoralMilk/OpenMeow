@@ -98,6 +98,7 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 
 	public class AttachPointInfo : ConditionalTraitInfo, Requires<AttachManagerInfo>, Requires<WithSkeletonInfo>
 	{
+		public readonly string Name = "point";
 		public readonly string Skeleton = "body";
 		public readonly string BoneAttach = null;
 		public override object Create(ActorInitializer init) { return new AttachPoint(init.Self, this); }
@@ -107,6 +108,7 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 	{
 		readonly int attachBoneId = -1;
 		public readonly WithSkeleton MainSkeleton;
+		public readonly string Name;
 
 		// this actor attached to other's with matrix
 		public bool Attached = false;
@@ -127,6 +129,7 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 		{
 			body = self.Trait<BodyOrientation>();
 			myFacing = self.Trait<IFacing>();
+			Name = info.Name;
 			this.self = self;
 			MainSkeleton = self.TraitsImplementing<WithSkeleton>().Single(w => w.Info.Name == info.Skeleton);
 			attachBoneId = MainSkeleton.GetBoneId(Info.BoneAttach);
@@ -150,18 +153,18 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 
 		void INotifyAttack.Attacking(Actor self, in Target target, Armament a, Barrel barrel)
 		{
-			AttachActor(target.Actor);
+			//AttachActor(target.Actor);
 		}
 
-		void AttachActor(Actor target)
+		public bool AttachActor(Actor target)
 		{
 			if (target == null || target.IsDead || !target.IsInWorld || attachBoneId == -1)
-				return;
+				return false;
 
 			ReleaseAttach();
 
 			if (!manager.AddAttachment(target))
-				return;
+				return false;
 
 			attachmentActor = target;
 			attachmentPositionable = attachmentActor.TraitOrDefault<IPositionable>();
@@ -174,6 +177,7 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 			}
 
 			MainSkeleton.CallForUpdate();
+			return true;
 		}
 
 		void TickAttach()

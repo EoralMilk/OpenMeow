@@ -194,6 +194,7 @@ namespace OpenRA.Mods.Common.Traits
 
 		WRot terrainRampOrientation = WRot.None;
 		public int TerrainOrientationAdjustmentMargin;
+		public bool TerrainOrientationIgnore = false;
 		WAngle oldFacing;
 		WRot orientation;
 		WPos oldPos;
@@ -530,7 +531,7 @@ namespace OpenRA.Mods.Common.Traits
 
 		public void SetTerrainRampOrientation(WRot orientation)
 		{
-			if (TerrainOrientationAdjustmentMargin >= 0)
+			if (TerrainOrientationAdjustmentMargin >= 0 && !TerrainOrientationIgnore)
 				terrainRampOrientation = orientation;
 		}
 

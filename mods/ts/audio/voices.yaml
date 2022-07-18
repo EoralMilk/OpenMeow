@@ -1,4 +1,4 @@
-Infantry:
+^CommonInfantry:
 	Voices:
 		Select: 15-i000, 15-i004, 15-i012, 15-i048
 		Move: 15-i018, 15-i024, 15-i044
@@ -8,102 +8,92 @@ Infantry:
 		Burned: dedman2
 		Zapped: electro1
 		Explode: expnew10
+		Crushed: squish6
+
+
+Infantry:
+	Inherits: ^CommonInfantry
+	Voices:
+		Select: 15-i000, 15-i004, 15-i012, 15-i048
+		Move: 15-i018, 15-i024, 15-i044
+		Attack: 15-i044, 15-i050, 15-i044, 15-i046
+		#Feedback: 15-i058, 15-i064 # TODO
+
 
 Rocket:
+	Inherits: ^CommonInfantry
 	Voices:
 		Select: 15-i000, 15-i032, 15-i048
 		Move: 15-i008, 15-i014, 15-i026
 		Attack: 15-i008, 15-i014, 15-i026, 15-i050, 15-i060
 		#Feedback: 15-i058, 15-i064 #TODO
-		Die: dedman1, dedman3, dedman4, dedman5, dedman6
-		Burned: dedman2
-		Zapped: electro1
-		Explode: expnew10
 
 Umagon:
+	Inherits: ^CommonInfantry
 	Voices:
 		Select: 10-i000, 10-i002, 10-i004, 10-i006
 		Move: 10-i016, 10-i020, 10-i022
 		Attack: 10-i024, 10-i026, 10-i028, 10-i030
 		Die: dedgirl1, dedgirl2, dedgirl4
 		Burned: dedgirl3
-		Zapped: electro1
-		Explode: expnew10
 
 Ghost:
+	Inherits: ^CommonInfantry
 	Voices:
 		Select: 14-i000, 14-i002, 14-i004
 		Move: 14-i008, 14-i010, 14-i012, 14-i014
 		Attack: 14-i008, 14-i010, 14-i014, 14-i016
-		Die: dedman1, dedman3, dedman4, dedman5, dedman6
-		Burned: dedman2
-		Zapped: electro1
-		Explode: expnew10
 
 Medic:
+	Inherits: ^CommonInfantry
 	Voices:
 		Select: 20-i000, 20-i004, 20-i006
 		Move: 20-i008, 20-i010, 20-i012
 		Action: 20-i016, 20-i018, 20-i020
-		Die: dedman1, dedman3, dedman4, dedman5, dedman6
-		Burned: dedman2
-		Zapped: electro1
-		Explode: expnew10
 
 Engineer:
+	Inherits: ^CommonInfantry
 	Voices:
 		Select: 19-i000, 19-i002, 19-i006
 		Move: 19-i010, 19-i016
 		Action: 19-i018, 19-i016
-		Die: dedman1, dedman3, dedman4, dedman5, dedman6
-		Burned: dedman2
-		Zapped: electro1
-		Explode: expnew10
 
 JumpJet:
+	Inherits: ^CommonInfantry
 	Voices:
 		Select: 15-i000, 15-i004, 15-i012, 15-i048
 		Move: 15-i018, 15-i024, 15-i044
 		Attack: 15-i044, 15-i050, 15-i044, 15-i046
 		#Feedback: 15-i058, 15-i064
-		Die: dedman1, dedman3, dedman4, dedman5, dedman6
-		Burned: dedman2
-		Zapped: electro1
-		Explode: expnew10
 
 Weed:
+	Inherits: ^CommonInfantry
 	Voices:
 		Select: 15-i000, 15-i006, 15-i040, 15-i042
 		Move: 15-i024, 15-i044
 		Attack: 15-i006, 15-i046
 		#Feedback: 15-i058, 15-i064 # TODO
-		Die: dedman1, dedman3, dedman4, dedman5, dedman6
-		Burned: dedman2
-		Zapped: electro1
-		Explode: expnew10
+
 
 Spy:
+	Inherits: ^CommonInfantry
 	Voices:
 		Select: 21-i000, 21-i002, 21-i004
 		Move: 21-i010, 21-i012, 21-i016
 		Action: 21-i010, 21-i012, 21-i022
 		#Feedback: 21-i000, 21-i002 # TODO
-		Die: dedman1, dedman3, dedman4, dedman5, dedman6
-		Burned: dedman2
-		Zapped: electro1
-		Explode: expnew10
+
 
 Hijacker:
+	Inherits: ^CommonInfantry
 	Voices:
 		Select: 24-i000, 24-i002, 24-i004, 24-i006
 		Move: 24-i008, 24-i010, 24-i012, 24-i014
 		Action: 24-i016, 24-i018, 24-i020, 24-i022, 24-i024
-		Die: dedman1, dedman3, dedman4, dedman5, dedman6
-		Burned: dedman2
-		Zapped: electro1
-		Explode: expnew10
+
 
 Cyborg:
+	Inherits: ^CommonInfantry
 	Voices:
 		Select: 22-i000, 22-i002, 22-i006
 		Move: 22-i008, 22-i010, 22-i014, 22-i016, 22-i020
@@ -111,6 +101,7 @@ Cyborg:
 		Die: 22-n104, 22-n106, 22-n108
 
 CyborgCommando:
+	Inherits: ^CommonInfantry
 	Voices:
 		Select: 23-i000, 23-i002, 23-i004, 23-i006
 		Move: 23-i008, 23-i010, 23-i012, 23-i016
@@ -118,46 +109,37 @@ CyborgCommando:
 		Die: 22-n104, 22-n106, 22-n108
 
 Mutant:
+	Inherits: ^CommonInfantry
 	Voices:
 		Select: 15-i032, 15-i048
 		Move: 15-i008,15-I014,15-I026
 		Attack: 15-i008,15-I014,15-I026,15-I050,15-I060
-		Die: dedman1, dedman3, dedman4, dedman5, dedman6
-		Burned: dedman2
-		Zapped: electro1
-		Explode: expnew10
 
 Tratos:
+	Inherits: ^CommonInfantry
 	Voices:
 		Select: 13-i000, 13-i002, 13-i004, 13-i006
 		Move: 13-i008, 13-i010, 13-i012, 13-i014
 		Attack: 13-i016, 13-i018, 13-i020
-		Die: dedman1, dedman3, dedman4, dedman5, dedman6
-		Burned: dedman2
-		Zapped: electro1
-		Explode: expnew10
 
 Oxanna:
+	Inherits: ^CommonInfantry
 	Voices:
 		Select: 11-i000, 11-i002, 11-i004, 11-i006
 		Move: 11-i008, 11-i010, 11-i012
 		Attack: 11-i014, 11-i016, 11-i018
 		Die: dedgirl1, dedgirl2, dedgirl4
 		Burned: dedgirl3
-		Zapped: electro1
-		Explode: expnew10
 
 Slavick:
+	Inherits: ^CommonInfantry
 	Voices:
 		Select: 12-i000, 12-i002, 12-i004
 		Move: 12-i006, 12-i008, 12-i010
 		Attack: 12-i012, 12-i014, 12-i016
-		Die: dedman1, dedman3, dedman4, dedman5, dedman6
-		Burned: dedman2
-		Zapped: electro1
-		Explode: expnew10
 
 Fiend:
+	Inherits: ^CommonInfantry
 	Voices:
 		Select: fiend1
 		Attack: fiend1
@@ -187,6 +169,7 @@ Heli:
 		Attack: 30-i022, 30-i030, 30-i034, 30-i036
 
 Civilian:
+	Inherits: ^CommonInfantry
 	Voices:
 		Select:
 		Move:
@@ -222,6 +205,7 @@ CivilianTechnician:
 		Attack: 70-n014, 70-n016, 70-n018
 
 CivilianFemale: #can be used for female mutant as well
+	Inherits: ^CommonInfantry
 	Voices:
 		Select:
 		Move:

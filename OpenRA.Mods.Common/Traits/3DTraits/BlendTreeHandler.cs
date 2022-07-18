@@ -96,7 +96,7 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 		FP guardBlendSpeed;
 		int guardTick = 0;
 		readonly int guardTime = 50;
-		public bool PrepareForAttack()
+		public bool PrepareForAttack(in Target target)
 		{
 			guardTick = 0;
 			if (guardBlend2.BlendValue < FP.One)

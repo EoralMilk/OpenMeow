@@ -310,6 +310,18 @@ namespace OpenRA.Mods.Common.Graphics
 		{
 			var fields = (filename).Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
 
+			// mesh
+			var name = fields[0].Trim();
+
+			if (!fileSystem.Exists(name))
+				name += ".mes";
+
+			if (!fileSystem.Exists(name))
+			{
+				mesh = null;
+				return false;
+			}
+
 			IMaterial material;
 
 			var info = definition.ToDictionary();
@@ -366,18 +378,6 @@ namespace OpenRA.Mods.Common.Graphics
 			{
 				isCloth = false;
 				bodyMaterial = null;
-			}
-
-			// mesh
-			var name = fields[0].Trim();
-
-			if (!fileSystem.Exists(name))
-				name += ".mes";
-
-			if (!fileSystem.Exists(name))
-			{
-				mesh = null;
-				return false;
 			}
 
 			// key should be name + skeletonType because the skin info can be modified by skeletonType

@@ -54,3 +54,7 @@ update.log
 
 # IntelliJ files
 .idea
+
+# test
+mods/ts/tstest/
+OpenRA.Mods.Common/Traits/_Test/

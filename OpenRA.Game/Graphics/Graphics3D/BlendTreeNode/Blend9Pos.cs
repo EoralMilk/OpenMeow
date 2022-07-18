@@ -30,6 +30,7 @@ namespace OpenRA.Graphics
 		{
 			if (optick == tick)
 				return;
+			updated = false;
 			tick = optick;
 
 			pos = new int2((int)(BlendPos.x * 1024), (int)(BlendPos.y * 1024));
@@ -45,9 +46,9 @@ namespace OpenRA.Graphics
 
 		public override BlendTreeNodeOutPut UpdateOutPut(short optick, bool resolve = true)
 		{
-			if (!resolve)
+			if (!resolve || updated)
 				return outPut;
-
+			updated = true;
 			var inPutValues = new BlendTreeNodeOutPut[9];
 
 			for (int i = 0; i < 9; i++)

@@ -19,6 +19,13 @@ namespace OpenRA.Graphics
 			Position = t;
 		}
 
+		public Transformation(TSMatrix4x4 mat)
+		{
+			Scale = MatScale(mat);
+			Rotation = MatRotation(mat, Scale);
+			Position = MatPosition(mat);
+		}
+
 		public static TSMatrix4x4 ExtractRotationMatrix(in TSMatrix4x4 matrix, in TSVector scale)
 		{
 			return new TSMatrix4x4(matrix.Column0 / scale.x, matrix.Column1 / scale.y, matrix.Column2 / scale.z, new TSVector4(0, 0, 0, FP.FromFloat(1.0f)));

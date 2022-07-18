@@ -39,6 +39,7 @@ namespace OpenRA.Graphics
 			if (optick == tick)
 				return;
 			tick = optick;
+			updated = false;
 
 			if (flag)
 			{
@@ -68,7 +69,7 @@ namespace OpenRA.Graphics
 
 		public override BlendTreeNodeOutPut UpdateOutPut(short optick, bool resolve = true)
 		{
-			if (!resolve)
+			if (!resolve || updated)
 				return outPut;
 
 			if (blendValue >= FP.One)
@@ -88,6 +89,7 @@ namespace OpenRA.Graphics
 				outPut = blendTree.Blend(inPutValue1, inPutValue2, blendValue, animMask);
 			}
 
+			updated = true;
 			return outPut;
 		}
 	}

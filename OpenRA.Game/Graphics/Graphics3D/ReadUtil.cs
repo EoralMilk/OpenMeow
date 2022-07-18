@@ -29,13 +29,13 @@ namespace OpenRA.Graphics
 			return tm * (sm * rm);
 		}
 
-		public static TSMatrix4x4 LoadFixPointMat4(Dictionary<string, MiniYaml> d, string key)
+		public static TSMatrix4x4 LoadFixPointMat4(Dictionary<string, MiniYaml> d, string key, bool normalize = false)
 		{
 			float3 s = LoadField(d, key + "Scale", float3.Ones);
 			float4 r = LoadField(d, key + "Rotation", float4.Identity);
 			float3 t = LoadField(d, key + "Translation", float3.Zero);
 			var tm = TSMatrix4x4.Translate((FP)t.X, (FP)t.Y, (FP)t.Z);
-			var rm = TSMatrix4x4.Rotate(new TSQuaternion((FP)r.X, (FP)r.Y, (FP)r.Z, (FP)r.W));
+			var rm = TSMatrix4x4.Rotate(normalize ? (new TSQuaternion((FP)r.X, (FP)r.Y, (FP)r.Z, (FP)r.W)).Normalize() : new TSQuaternion((FP)r.X, (FP)r.Y, (FP)r.Z, (FP)r.W));
 			var sm = TSMatrix4x4.Scale((FP)s.X, (FP)s.Y, (FP)s.Z);
 			return tm * (sm * rm);
 		}

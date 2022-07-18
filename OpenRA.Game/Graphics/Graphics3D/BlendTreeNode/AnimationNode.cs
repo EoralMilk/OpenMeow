@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace OpenRA.Graphics
 {
@@ -14,6 +15,22 @@ namespace OpenRA.Graphics
 
 		bool backwards;
 		SkeletalAnim animation;
+		readonly Dictionary<int, List<Action>> frameActions = new Dictionary<int, List<Action>>();
+
+		public void AddFrameAction(int frame, in Action action)
+		{
+			if (frameActions.ContainsKey(frame))
+			{
+				frameActions[frame].Add(action);
+			}
+			else
+			{
+				frameActions.Add(frame, new List<Action>
+				{
+					action
+				});
+			}
+		}
 
 		public AnimationNode(string name, uint id, BlendTree blendTree, AnimMask animMask, SkeletalAnim animation)
 			: base(name, id, blendTree, animMask)
@@ -37,6 +54,7 @@ namespace OpenRA.Graphics
 			if (!run)
 			{
 				frame = 0;
+				KeepingEnd = false;
 			}
 			else
 			{
@@ -61,6 +79,14 @@ namespace OpenRA.Graphics
 					{
 						frame = Math.Min(frame + step, animation.Frames.Length - 1);
 						backwards = frame == animation.Frames.Length - 1 ? true : false;
+					}
+				}
+
+				if (frameActions.ContainsKey(frame))
+				{
+					foreach (var a in frameActions[frame])
+					{
+						a();
 					}
 				}
 			}

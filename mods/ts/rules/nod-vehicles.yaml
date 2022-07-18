@@ -542,7 +542,7 @@ STNK:
 		InitialStanceAI: ReturnFire
 	-MustBeDestroyed:
 	Explodes:
-		RequiresCondition: !rank-elite
+		RequiresCondition: !rank-elite && !traped
 	Explodes@ELITE:
-		RequiresCondition: rank-elite
+		RequiresCondition: rank-elite && !traped
 		Weapon: UnitExplode

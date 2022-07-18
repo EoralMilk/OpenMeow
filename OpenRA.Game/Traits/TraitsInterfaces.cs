@@ -302,7 +302,7 @@ namespace OpenRA.Traits
 
 	public interface IPrepareForAttack
 	{
-		bool PrepareForAttack();
+		bool PrepareForAttack(in Target target);
 	}
 
 	public interface IUpdateWithSkeleton

@@ -174,7 +174,7 @@ JUMPJET:
 	DeathSounds@ZAPPED:
 		RequiresCondition: !airborne
 	SpawnActorOnDeath:
-		RequiresCondition: !airborne
+		RequiresCondition: airborne && !traped
 	SpawnActorOnDeath@FLAMEGUY:
 		RequiresCondition: !airborne
 	WithShadow@airborne:

@@ -6,6 +6,10 @@
 		PlayerExperienceModifier: 1
 	ScriptTriggers:
 	RenderDebugState:
+	Targetable@avoidByAi:
+		TargetTypes: AIgnored
+		RequiresCondition: traped
+
 
 ^SpriteActor:
 	BodyOrientation:
@@ -442,6 +446,18 @@
 	SpawnActorsOnSell@nod:
 		ActorTypes: e1, e1, e1, e3, e3
 		Factions: nod
+	SpawnActorOnDeath@ctech:
+		Actor: ctech
+		SpawnAfterDefeat: false
+	SpawnActorOnDeath@civ1:
+		Actor: civ1
+		SpawnAfterDefeat: false
+	SpawnActorOnDeath@1e1:
+		Actor: e1
+		SpawnAfterDefeat: false
+	SpawnActorOnDeath@2e1:
+		Actor: e1
+		SpawnAfterDefeat: false
 	MustBeDestroyed:
 		RequiredForShortGame: true
 	OwnerLostAction:
@@ -480,6 +496,21 @@
 		Palette: terraindecoration
 	MapEditorData:
 		Categories: Civilian building
+	SpawnActorOnDeath@ctech:
+		Actor: ctech
+		Probability: 75
+		SpawnAfterDefeat: false
+	SpawnActorOnDeath@civ1:
+		Actor: civ1
+		Probability: 75
+		SpawnAfterDefeat: false
+	SpawnActorOnDeath@civ3:
+		Actor: civ2
+		SpawnAfterDefeat: false
+	SpawnActorOnDeath@civ2:
+		Actor: civ3
+		SpawnAfterDefeat: false
+
 
 ^OldBase:
 	Inherits: ^CivBuilding
@@ -496,6 +527,22 @@
 	-Cloak@EXTERNALCLOAK:
 	-ExternalCondition@CLOAKGENERATOR:
 	-ExternalCondition@CRATE-CLOAK:
+	-SpawnActorOnDeath@ctech:
+	-SpawnActorOnDeath@civ1:
+	-SpawnActorOnDeath@civ3:
+	-SpawnActorOnDeath@civ2:
+	SpawnActorOnDeath@1mutant:
+		Actor: mutant
+		SpawnAfterDefeat: false
+		Probability: 75
+	SpawnActorOnDeath@2mutant:
+		Actor: mutant
+		SpawnAfterDefeat: false
+		Probability: 75
+	SpawnActorOnDeath@3mutant:
+		Actor: MWMN
+		SpawnAfterDefeat: false
+		Probability: 75
 
 ^CivBillboard:
 	Inherits: ^CivBuilding
@@ -514,6 +561,10 @@
 		Pieces: 1, 1
 	MapEditorData:
 		Categories: Billboard
+	-SpawnActorOnDeath@ctech:
+	-SpawnActorOnDeath@civ1:
+	-SpawnActorOnDeath@civ3:
+	-SpawnActorOnDeath@civ2:
 
 ^Crate:
 	HiddenUnderFog:
@@ -638,6 +689,9 @@
 		Speed: 71
 		AlwaysTurnInPlace: true
 		Locomotor: foot
+		PauseOnCondition: traped
+	ExternalCondition@traped:
+		Condition: traped
 	TurnOnIdle:
 	Selectable:
 		DecorationBounds: 452, 1387, 0, -543
@@ -743,6 +797,12 @@
 		DeathPaletteIsPlayerPalette: False
 		DeathTypes:
 			EnergyDeath: melting
+	WithDeathAnimation@CrushedDeath:
+		DeathSequence: die-
+		DeathSequencePalette: player
+		DeathPaletteIsPlayerPalette: true
+		DeathTypes:
+			CrushedDeath: crushed
 	WithDeathAnimation:
 		CrushedSequence: die-crushed
 		CrushedSequencePalette: player
@@ -758,6 +818,9 @@
 	DeathSounds@ZAPPED:
 		Voice: Zapped
 		DeathTypes: EnergyDeath
+	DeathSounds@CRUSHED:
+		Voice: Crushed
+		DeathTypes: CrushedDeath
 	Crushable:
 		CrushSound: squish6.aud
 	SpawnActorOnDeath:
@@ -802,9 +865,11 @@
 		Weapon: CyborgExplode
 		DamageState: Critical
 		TriggerOnlyOnce: true
+		RequiresCondition: !traped
 	Explodes:
 		Weapon: CyborgExplode
 		EmptyWeapon: CyborgExplode
+		RequiresCondition: !traped
 	DeathSounds:
 	RevealsShroud:
 		Range: 4c0
@@ -831,7 +896,7 @@
 		ValidDamageStates: Critical
 		GrantPermanently: true
 	Mobile:
-		PauseOnCondition: empdisable
+		PauseOnCondition: empdisable || traped
 
 ^CivilianInfantry:
 	Inherits@1: ^Infantry
@@ -859,11 +924,13 @@
 	OwnerLostAction:
 		Action: Kill
 	Mobile:
-		PauseOnCondition: empdisable || being-captured || carried
+		PauseOnCondition: empdisable || being-captured || carried || traped
 		Locomotor: wheeled
 		TurnSpeed: 20
 		Voice: Move
 		TerrainOrientationAdjustmentMargin: 256
+	ExternalCondition@traped:
+		Condition: traped
 	Selectable:
 		Bounds: 1206, 1448
 	Voiced:
@@ -901,12 +968,14 @@
 	Explodes:
 		Weapon: UnitExplodeSmall
 		EmptyWeapon: UnitExplodeSmall
+		RequiresCondition: !traped
 	MustBeDestroyed:
 	RenderSprites:
 	ThrowsShrapnel:
 		Weapons: SmallDebris
 		Pieces: 3, 7
 		Range: 2c0, 5c0
+		RequiresCondition: !traped
 	GrantConditionOnDamageState@DAMAGEDSPEED:
 		Condition: damagedspeed
 		ValidDamageStates: Heavy
@@ -941,6 +1010,10 @@
 		Sequence: vehicle
 		Palette: player
 		IsPlayerPalette: true
+	SpawnActorOnDeath@ctech:
+		Actor: ctech
+		SpawnAfterDefeat: false
+		Probability: 50
 
 ^Tank:
 	Inherits: ^Vehicle
@@ -1034,19 +1107,21 @@
 	MapEditorData:
 		Categories: Aircraft
 	SpawnActorOnDeath:
-		RequiresCondition: airborne
+		RequiresCondition: airborne && !traped
 	Hovers@CRUISING:
 		RequiresCondition: cruising
 		BobDistance: -64
 		InitialHeight: 64
+	ExternalCondition@traped:
+		Condition: traped
 
 ^EMPableAircraft:
 	Inherits: ^Aircraft
 	Inherits@EMP: ^EmpDisable
 	Aircraft:
-		PauseOnCondition: empdisable
+		PauseOnCondition: empdisable || traped
 	KillsSelf:
-		RequiresCondition: airborne && empdisable
+		RequiresCondition: airborne && empdisable && !traped
 
 ^AircraftHusk:
 	RenderModels:
@@ -1091,6 +1166,9 @@
 		Speed: 113
 		TurnSpeed: 64
 		Locomotor: visceroid
+		PauseOnCondition: traped
+	ExternalCondition@traped:
+		Condition: traped
 	Selectable:
 		Bounds: 784, 1568, 0, -181
 	Targetable:
@@ -1276,6 +1354,10 @@
 	MapEditorData:
 		Categories: Defense
 	-CommandBarBlacklist:
+	-SpawnActorOnDeath@ctech:
+	-SpawnActorOnDeath@civ1:
+	-SpawnActorOnDeath@1e1:
+	-SpawnActorOnDeath@2e1:
 
 ^Train:
 	Inherits@1: ^EmpDisable
@@ -1294,8 +1376,10 @@
 		TurnSpeed: 20
 		Voice: Move
 		Speed: 113
-		PauseOnCondition: empdisable
+		PauseOnCondition: empdisable || traped
 		Locomotor: train
+	ExternalCondition@traped:
+		Condition: traped
 	Cargo:
 		Types: Infantry
 		UnloadVoice: Unload
@@ -1323,6 +1407,7 @@
 	Explodes:
 		Weapon: UnitExplodeSmall
 		EmptyWeapon: UnitExplodeSmall
+		RequiresCondition: !traped
 	ThrowsShrapnel:
 		Weapons: SmallDebris
 		Pieces: 3, 7
@@ -1332,6 +1417,12 @@
 		Categories: Railway
 	GrantConditionOnTunnelLayer:
 		Condition: inside-tunnel
+	SpawnActorOnDeath@civ3:
+		Actor: civ2
+		SpawnAfterDefeat: false
+	SpawnActorOnDeath@civ2:
+		Actor: civ3
+		SpawnAfterDefeat: false
 
 ^TerrainOverlay:
 	AlwaysVisible:

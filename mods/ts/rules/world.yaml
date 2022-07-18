@@ -29,6 +29,21 @@
 			Tiberium: 90
 			BlueTiberium: 90
 			Veins: 50
+	Locomotor@Test:
+		Name: test
+		Crushes: crate
+		SharesCell: true
+		TerrainSpeeds:
+			Clear: 100
+			Road: 100
+			Bridge: 100
+			Rail: 100
+			DirtRoad: 100
+			Rough: 100
+			Tiberium: 100
+			BlueTiberium: 100
+			Veins: 100
+			Water: 80
 	Locomotor@FLAMEGUY:
 		Name: flameguy
 		SharesCell: true

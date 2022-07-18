@@ -110,21 +110,21 @@ Pistola:
 	Warhead@3EffWater: CreateEffect
 		Explosions: water_piff
 
-Sniper:
-	Inherits: ^MG
-	ReloadDelay: 60
-	Range: 6c768
-	Report: silencer.aud
-	Warhead@1Dam: SpreadDamage
-		Spread: 36
-		Damage: 15000
-		Versus:
-			Wood: 5
-			Light: 5
-			Heavy: 5
-			Concrete: 5
-		DamageTypes: Prone100Percent, TriggerProne, BulletDeath
-	Warhead@2Eff: CreateEffect
-		Explosions: piff
-	Warhead@3EffWater: CreateEffect
-		Explosions: water_piff
+# Sniper:
+# 	Inherits: ^MG
+# 	ReloadDelay: 60
+# 	Range: 6c768
+# 	Report: silencer.aud
+# 	Warhead@1Dam: SpreadDamage
+# 		Spread: 36
+# 		Damage: 15000
+# 		Versus:
+# 			Wood: 5
+# 			Light: 5
+# 			Heavy: 5
+# 			Concrete: 5
+# 		DamageTypes: Prone100Percent, TriggerProne, BulletDeath
+# 	Warhead@2Eff: CreateEffect
+# 		Explosions: piff
+# 	Warhead@3EffWater: CreateEffect
+# 		Explosions: water_piff

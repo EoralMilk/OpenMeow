@@ -31,6 +31,7 @@ namespace OpenRA.Graphics
 		{
 			if (optick == tick)
 				return;
+			updated = false;
 			tick = optick;
 
 			inPutNodeMid.UpdateTick(optick, run, step);
@@ -40,7 +41,7 @@ namespace OpenRA.Graphics
 
 		public override BlendTreeNodeOutPut UpdateOutPut(short optick, bool resolve = true)
 		{
-			if (!resolve)
+			if (!resolve || updated)
 				return outPut;
 
 			var inPutValueMid = inPutNodeMid.UpdateOutPut(optick, resolve);
@@ -51,7 +52,7 @@ namespace OpenRA.Graphics
 				outPut = blendTree.Blend(inPutValueMid, inPutValueHigh, BlendValue, animMask);
 			else
 				outPut = blendTree.Blend(inPutValueMid, inPutValueLow, -BlendValue, animMask);
-
+			updated = true;
 			return outPut;
 		}
 	}

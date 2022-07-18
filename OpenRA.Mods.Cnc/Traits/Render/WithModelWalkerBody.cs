@@ -94,7 +94,7 @@ namespace OpenRA.Mods.Cnc.Traits.Render
 
 		Rectangle IAutoMouseBounds.AutoMouseoverBounds(Actor self, WorldRenderer wr)
 		{
-			return modelAnimation.ScreenBounds(self.CenterPosition, wr, rv.Info.Scale);
+			return modelAnimation.ScreenBounds(self.CenterPosition, wr, rv.ScaleOverride);
 		}
 	}
 

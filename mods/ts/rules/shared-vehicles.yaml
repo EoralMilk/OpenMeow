@@ -88,7 +88,7 @@ HARV:
 	-WithModelBody:
 	WithModelUnloadBody:
 	Explodes:
-		RequiresCondition: !no-tiberium
+		RequiresCondition: !no-tiberium && !traped
 		Weapon: TiberiumExplosion
 	WithHarvestOverlay:
 		LocalOffset: 543,0,0

@@ -83,6 +83,8 @@ namespace OpenRA.Mods.Common.Traits.Render
 
 	public class RenderModels : IRender, ITick, INotifyOwnerChanged
 	{
+		public float ScaleOverride = 1;
+
 		class AnimationWrapper
 		{
 			readonly ModelAnimation model;
@@ -122,6 +124,7 @@ namespace OpenRA.Mods.Common.Traits.Render
 		{
 			this.self = self;
 			Info = info;
+			ScaleOverride = info.Scale;
 			body = self.Trait<BodyOrientation>();
 			camera = new WRot(WAngle.Zero, body.CameraPitch - new WAngle(256), new WAngle(256));
 			lightSource = new WRot(WAngle.Zero, new WAngle(256) - info.LightPitch, info.LightYaw);
@@ -155,7 +158,7 @@ namespace OpenRA.Mods.Common.Traits.Render
 			return new IRenderable[]
 			{
 				new ModelRenderable(
-					components, self.CenterPosition, Info.ZOffset, camera, Info.Scale,
+					components, self.CenterPosition, Info.ZOffset, camera, ScaleOverride,
 					Info.LightAmbientColor, Info.LightDiffuseColor, Info.LightScale, Info.AmbientScale, Info.SpecularScale, 
 					colorPalette, normalsPalette, shadowPalette)
 			};
@@ -166,7 +169,7 @@ namespace OpenRA.Mods.Common.Traits.Render
 			var pos = self.CenterPosition;
 			foreach (var c in components)
 				if (c.IsVisible)
-					yield return c.ScreenBounds(pos, wr, Info.Scale);
+					yield return c.ScreenBounds(pos, wr, ScaleOverride);
 		}
 
 		public string Image => Info.Image ?? self.Info.Name;

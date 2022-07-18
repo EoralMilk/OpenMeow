@@ -124,6 +124,7 @@ DSHP:
 		EjectOnDeath: true
 	SpawnActorOnDeath:
 		Actor: DSHP.Husk
+		RequiresCondition: airborne && !traped
 
 A10:
 	Inherits: ^EMPableAircraft
@@ -188,10 +189,10 @@ A10:
 	DeathSounds:
 	SpawnActorOnDeath:
 		Actor: A10.Husk
-		RequiresCondition: !empdisable
+		RequiresCondition: !empdisable && !traped
 	SpawnActorOnDeath@EMP:
 		Actor: A10.Husk.EMP
-		RequiresCondition: empdisable
+		RequiresCondition: empdisable && !traped
 	Rearmable:
 		RearmActors: gahpad, nahpad
 	RenderModels:
@@ -255,10 +256,10 @@ ORCA:
 	RenderSprites:
 	SpawnActorOnDeath:
 		Actor: ORCA.Husk
-		RequiresCondition: !empdisable
+		RequiresCondition: !empdisable && !traped
 	SpawnActorOnDeath@EMP:
 		Actor: ORCA.Husk.EMP
-		RequiresCondition: empdisable
+		RequiresCondition: empdisable && !traped
 	Rearmable:
 		RearmActors: gahpad, nahpad
 	WithAmmoPipsDecoration:
@@ -322,10 +323,10 @@ ORCAB:
 		RequiresCondition: cruising
 	SpawnActorOnDeath:
 		Actor: ORCAB.Husk
-		RequiresCondition: !empdisable
+		RequiresCondition: !empdisable && !traped
 	SpawnActorOnDeath@EMP:
 		Actor: ORCAB.Husk.EMP
-		RequiresCondition: empdisable
+		RequiresCondition: empdisable && !traped
 	Rearmable:
 		RearmActors: gahpad, nahpad
 	WithAmmoPipsDecoration:
@@ -374,10 +375,10 @@ ORCATRAN:
 		AfterUnloadDelay: 40
 	SpawnActorOnDeath:
 		Actor: ORCATRAN.Husk
-		RequiresCondition: !empdisable
+		RequiresCondition: !empdisable && !traped
 	SpawnActorOnDeath@EMP:
 		Actor: ORCATRAN.Husk.EMP
-		RequiresCondition: empdisable
+		RequiresCondition: empdisable && !traped
 	Selectable:
 		Bounds: 1327, 1930, 0, -482
 
@@ -419,10 +420,10 @@ TRNSPORT:
 		Bounds: 1327, 1930, 0, -482
 	SpawnActorOnDeath:
 		Actor: TRNSPORT.Husk
-		RequiresCondition: !empdisable
+		RequiresCondition: !empdisable && !traped
 	SpawnActorOnDeath@EMP:
 		Actor: TRNSPORT.Husk.EMP
-		RequiresCondition: empdisable
+		RequiresCondition: empdisable && !traped
 
 SCRIN:
 	Inherits: ^EMPableAircraft
@@ -488,10 +489,10 @@ SCRIN:
 	DeathSounds:
 	SpawnActorOnDeath:
 		Actor: SCRIN.Husk
-		RequiresCondition: !empdisable
+		RequiresCondition: !empdisable && !traped
 	SpawnActorOnDeath@EMP:
 		Actor: SCRIN.Husk.EMP
-		RequiresCondition: empdisable
+		RequiresCondition: empdisable && !traped
 	Rearmable:
 		RearmActors: gahpad, nahpad
 	WithAmmoPipsDecoration:
@@ -570,18 +571,18 @@ APACHE:
 	WithIdleOverlay@ROTORAIR:
 		Offset: 85,0,346
 		Sequence: rotor
-		RequiresCondition: airborne
+		RequiresCondition: airborne && !traped
 	WithIdleOverlay@ROTORGROUND:
 		Offset: 85,0,346
 		Sequence: slow-rotor
-		RequiresCondition: !airborne
+		RequiresCondition: !airborne && !traped
 	RenderSprites:
 	SpawnActorOnDeath:
 		Actor: APACHE.Husk
-		RequiresCondition: !empdisable
+		RequiresCondition: !empdisable && !traped
 	SpawnActorOnDeath@EMP:
 		Actor: APACHE.Husk.EMP
-		RequiresCondition: empdisable
+		RequiresCondition: empdisable && !traped
 	Rearmable:
 		RearmActors: gahpad, nahpad
 	WithAmmoPipsDecoration:

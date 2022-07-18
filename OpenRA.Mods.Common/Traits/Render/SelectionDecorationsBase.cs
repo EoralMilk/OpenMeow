@@ -26,12 +26,18 @@ namespace OpenRA.Mods.Common.Traits.Render
 	{
 		IDecoration[] decorations;
 		IDecoration[] selectedDecorations;
+		public bool ForceRenderSelection;
+		public float BoundsScale = 1;
+		public readonly Color SelectionBoxColor;
+		public Color ColorOverride = Color.White;
 
 		protected readonly SelectionDecorationsBaseInfo Info;
 
 		public SelectionDecorationsBase(SelectionDecorationsBaseInfo info)
 		{
 			Info = info;
+			SelectionBoxColor = info.SelectionBoxColor;
+			ColorOverride = info.SelectionBoxColor;
 		}
 
 		void INotifyCreated.Created(Actor self)
@@ -85,8 +91,8 @@ namespace OpenRA.Mods.Common.Traits.Render
 			//  * status bar preference is set to "always show" or "when damaged"
 			var displayExtra = selected || rollover || (regularWorld && statusBars != StatusBarsType.Standard);
 
-			if (selected)
-				foreach (var r in RenderSelectionBox(self, wr, Info.SelectionBoxColor))
+			if (selected || ForceRenderSelection)
+				foreach (var r in RenderSelectionBox(self, wr, ColorOverride))
 					yield return r;
 
 			if (displayHealth || displayExtra)

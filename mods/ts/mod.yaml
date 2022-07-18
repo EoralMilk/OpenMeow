@@ -55,6 +55,13 @@ Packages:
 	ts|textures
 	ts|skeletons
 
+	ts|tstest
+	ts|tstest/asset
+	ts|tstest/asset/mat
+	ts|tstest/asset/audios
+	ts|tstest/asset/anims
+
+
 
 MapFolders:
 	ts|maps: System
@@ -90,6 +97,8 @@ Rules:
 
 	ts|3dtest/testrulse.yaml
 
+	ts|tstest/localtestrulse.yaml
+
 Weapons:
 	ts|weapons/ballisticweapons.yaml
 	ts|weapons/energyweapons.yaml
@@ -100,6 +109,9 @@ Weapons:
 	ts|weapons/smallguns.yaml
 	ts|weapons/superweapons.yaml
 	ts|3dtest/weapons.yaml
+	
+	ts|tstest/localtestweapon.yaml
+
 
 Sequences:
 	ts|sequences/aircraft.yaml
@@ -112,11 +124,15 @@ Sequences:
 	ts|sequences/bridges.yaml
 	ts|sequences/critters.yaml
 
+	ts|tstest/localtestseq.yaml
+
 ModelSequences:
 	ts|sequences/voxels.yaml
 
 MeshSequences:
 	ts|3dtest/meshes.yaml
+
+	ts|tstest/localtestmes.yaml
 
 TileSets:
 	ts|tilesets/temperate.yaml
@@ -200,6 +216,9 @@ Translations:
 
 Voices:
 	ts|audio/voices.yaml
+
+	ts|tstest/localtestvoices.yaml
+
 
 Notifications:
 	ts|audio/speech-generic.yaml
