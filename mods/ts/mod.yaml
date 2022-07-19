@@ -55,11 +55,11 @@ Packages:
 	ts|textures
 	ts|skeletons
 
-	# ts|tstest
-	# ts|tstest/asset
-	# ts|tstest/asset/mat
-	# ts|tstest/asset/audios
-	# ts|tstest/asset/anims
+	ts|tstest
+	ts|tstest/asset
+	ts|tstest/asset/mat
+	ts|tstest/asset/audios
+	ts|tstest/asset/anims
 
 
 
@@ -97,7 +97,7 @@ Rules:
 
 	ts|3dtest/testrulse.yaml
 
-	# ts|tstest/localtestrulse.yaml
+	ts|tstest/localtestrulse.yaml
 
 Weapons:
 	ts|weapons/ballisticweapons.yaml
@@ -110,7 +110,7 @@ Weapons:
 	ts|weapons/superweapons.yaml
 	ts|3dtest/weapons.yaml
 	
-	# ts|tstest/localtestweapon.yaml
+	ts|tstest/localtestweapon.yaml
 
 
 Sequences:
@@ -124,7 +124,7 @@ Sequences:
 	ts|sequences/bridges.yaml
 	ts|sequences/critters.yaml
 
-	# ts|tstest/localtestseq.yaml
+	ts|tstest/localtestseq.yaml
 
 ModelSequences:
 	ts|sequences/voxels.yaml
@@ -132,7 +132,7 @@ ModelSequences:
 MeshSequences:
 	ts|3dtest/meshes.yaml
 
-	# ts|tstest/localtestmes.yaml
+	ts|tstest/localtestmes.yaml
 
 TileSets:
 	ts|tilesets/temperate.yaml
@@ -217,7 +217,7 @@ Translations:
 Voices:
 	ts|audio/voices.yaml
 
-	# ts|tstest/localtestvoices.yaml
+	ts|tstest/localtestvoices.yaml
 
 
 Notifications:

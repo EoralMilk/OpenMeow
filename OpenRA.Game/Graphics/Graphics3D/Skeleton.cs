@@ -45,6 +45,7 @@ namespace OpenRA.Graphics
 		public bool ModifiedRest;
 		public TSMatrix4x4 RestPose;
 		public TSMatrix4x4 CurrentPose;
+		public bool OverridePose;
 
 		public BoneInstance(in BoneAsset asset)
 		{
@@ -55,15 +56,28 @@ namespace OpenRA.Graphics
 			BaseRestPoseInv = asset.RestPoseInv;
 			ModifiedRest = false;
 			CurrentPose = RestPose;
+			OverridePose = false;
 		}
 
 		public void UpdateOffset(in TSMatrix4x4 parent)
 		{
+			if (OverridePose)
+			{
+				OverridePose = false;
+				return;
+			}
+
 			CurrentPose = parent * RestPose;
 		}
 
 		public void UpdateOffset(in TSMatrix4x4 parent, in TSMatrix4x4 anim)
 		{
+			if (OverridePose)
+			{
+				OverridePose = false;
+				return;
+			}
+
 			if (ModifiedRest)
 				CurrentPose = parent * (anim * BaseRestPoseInv) * RestPose;
 			else
@@ -159,9 +173,16 @@ namespace OpenRA.Graphics
 			return LastSkeletonPose[id];
 		}
 
-		public TSMatrix4x4 SetBoneOffsetMat(int id, in TSMatrix4x4 mat)
+		public void SetBoneOffsetMat(int id, TSMatrix4x4 mat, bool ignoreScale = false)
 		{
-			return Bones[id].CurrentPose = mat;
+			if (ignoreScale)
+			{
+				var scale = Transformation.MatScale(Bones[id].CurrentPose);
+				mat = Transformation.MatWithNewScale(mat, scale);
+			}
+
+			Bones[id].CurrentPose = mat;
+			Bones[id].OverridePose = true;
 		}
 
 		/// <summary>
@@ -880,8 +901,6 @@ namespace OpenRA.Graphics
 					rootBone = bone.Name;
 				}
 			}
-
 		}
 	}
-
 }

@@ -96,10 +96,10 @@ Player:
 			subtank: 10
 			sonic: 10
 			stnk: 8
-			orca: 5
-			orcab: 4
-			apache: 5
-			scrin: 4
+			orca: 15
+			orcab: 11
+			apache: 15
+			scrin: 14
 		UnitLimits:
 			harv: 12
 			medic: 3

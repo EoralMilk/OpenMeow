@@ -152,7 +152,6 @@ A10:
 		# IdleBehavior: Land
 		Roll: 66
 		RollSpeed: 10
-		CruiseAltitude: 5c0
 		TurnSpeed: 12
 		Speed: 170
 		IdleTurnSpeed: 6
@@ -288,7 +287,7 @@ ORCAB:
 	Selectable:
 		Bounds: 905, 1448
 	Aircraft:
-		CruiseAltitude: 5c512
+		# CruiseAltitude: 5c512
 		TurnSpeed: 12
 		IdleTurnSpeed: 4
 		Speed: 126
@@ -445,7 +444,6 @@ SCRIN:
 	Voiced:
 		VoiceSet: Scrin
 	Aircraft:
-		CruiseAltitude: 5c0
 		TurnSpeed: 15
 		Speed: 275
 		IdleTurnSpeed: 6

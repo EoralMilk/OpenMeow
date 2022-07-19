@@ -35,6 +35,7 @@ namespace OpenRA.Mods.Common.Traits
 	class KillsSelf : ConditionalTrait<KillsSelfInfo>, INotifyAddedToWorld, ITick
 	{
 		int lifetime;
+		public bool Disable = false;
 
 		public KillsSelf(Actor self, KillsSelfInfo info)
 			: base(info)
@@ -46,7 +47,7 @@ namespace OpenRA.Mods.Common.Traits
 		{
 			// Actors can be created without being added to the world
 			// We want to make sure that this only triggers once they are inserted into the world
-			if (lifetime == 0 && self.IsInWorld)
+			if (lifetime == 0 && self.IsInWorld && !Disable)
 				self.World.AddFrameEndTask(w => Kill(self));
 		}
 

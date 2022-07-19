@@ -80,6 +80,8 @@ namespace OpenRA.Mods.Common.Traits.Render
 
 	public class RenderSprites : IRender, ITick, INotifyOwnerChanged, INotifyEffectiveOwnerChanged, IActorPreviewInitModifier
 	{
+		public float ScaleMultiply = 1;
+
 		static readonly (DamageState DamageState, string Prefix)[] DamagePrefixes =
 		{
 			(DamageState.Critical, "critical-"),
@@ -189,7 +191,7 @@ namespace OpenRA.Mods.Common.Traits.Render
 					a.CachePalette(wr, owner);
 				}
 
-				foreach (var r in a.Animation.Render(self, a.PaletteReference))
+				foreach (var r in a.Animation.Render(self, a.PaletteReference, ScaleMultiply))
 					yield return r;
 			}
 		}

@@ -7,9 +7,13 @@
 	ScriptTriggers:
 	RenderDebugState:
 	Targetable@avoidByAi:
-		TargetTypes: AIgnored
+		TargetTypes: AIgnored, Traped
 		RequiresCondition: traped
-
+	ExternalCondition@avoidtarget:
+		Condition: avoidtarget
+	Targetable@avoidBySpecialActor:
+		TargetTypes: Ignored
+		RequiresCondition: avoidtarget
 
 ^SpriteActor:
 	BodyOrientation:
@@ -1014,6 +1018,7 @@
 		Actor: ctech
 		SpawnAfterDefeat: false
 		Probability: 50
+		RequiresCondition: !traped
 
 ^Tank:
 	Inherits: ^Vehicle
@@ -1061,7 +1066,7 @@
 	Aircraft:
 		AirborneCondition: airborne
 		CruisingCondition: cruising
-		CruiseAltitude: 4c704
+		CruiseAltitude: 4c255
 		AltitudeVelocity: 96
 		Voice: Move
 		IdealSeparation: 853

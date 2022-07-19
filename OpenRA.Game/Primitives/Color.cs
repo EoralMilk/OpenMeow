@@ -19,6 +19,16 @@ namespace OpenRA.Primitives
 	{
 		readonly long argb;
 
+		static int LerpAxis(byte a, byte b, float t)
+		{
+			return (int)(a + (b - a) * t);
+		}
+
+		public static Color Lerp(in Color a, in Color b, float t)
+		{
+			return FromArgb(LerpAxis(a.A, b.A, t), LerpAxis(a.R, b.R, t), LerpAxis(a.G, b.G, t), LerpAxis(a.B, b.B, t));
+		}
+
 		public static Color FromArgb(int red, int green, int blue)
 		{
 			return FromArgb(byte.MaxValue, red, green, blue);

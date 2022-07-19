@@ -531,7 +531,13 @@ namespace OpenRA.Mods.Common.Traits
 
 		public void SetTerrainRampOrientation(WRot orientation)
 		{
-			if (TerrainOrientationAdjustmentMargin >= 0 && !TerrainOrientationIgnore)
+			if (TerrainOrientationIgnore)
+			{
+				terrainRampOrientation = WRot.None;
+				return;
+			}
+
+			if (TerrainOrientationAdjustmentMargin >= 0)
 				terrainRampOrientation = orientation;
 		}
 
