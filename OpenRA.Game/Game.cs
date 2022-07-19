@@ -84,6 +84,9 @@ namespace OpenRA
 
 		static void JoinInner(OrderManager om)
 		{
+			// Refresh TextNotificationsManager before the game starts.
+			TextNotificationsManager.Clear();
+
 			// HACK: The shellmap World and OrderManager are owned by the main menu's WorldRenderer instead of Game.
 			// This allows us to switch Game.OrderManager from the shellmap to the new network connection when joining
 			// a lobby, while keeping the OrderManager that runs the shellmap intact.
@@ -232,6 +235,17 @@ namespace OpenRA
 
 			// Reseed the RNG so this isn't an exact repeat of the last game
 			lobbyInfo.GlobalSettings.RandomSeed = CosmeticRandom.Next();
+
+			// Note: the map may have been changed on disk outside the game, changing its UID.
+			// Use the updated UID if we have tracked the update instead of failing.
+			lobbyInfo.GlobalSettings.Map = ModData.MapCache.GetUpdatedMap(lobbyInfo.GlobalSettings.Map);
+			if (lobbyInfo.GlobalSettings.Map == null)
+			{
+				Disconnect();
+				Ui.ResetAll();
+				LoadShellMap();
+				return;
+			}
 
 			var orders = new[]
 			{

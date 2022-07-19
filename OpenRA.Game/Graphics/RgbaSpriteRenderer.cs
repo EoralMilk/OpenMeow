@@ -23,36 +23,36 @@ namespace OpenRA.Graphics
 			this.Parent = parent;
 		}
 
-		public void DrawSprite(Sprite s, in float3 location, in float3 scale)
+		public void DrawSprite(Sprite s, in float3 location, in float3 scale, float rotation = 0f)
 		{
 			if (s.Channel != TextureChannel.RGBA)
 				throw new InvalidOperationException("DrawRGBASprite requires a RGBA sprite.");
 
-			Parent.DrawSprite(s, 0, location, scale);
+			Parent.DrawSprite(s, 0, location, scale, rotation);
 		}
 
-		public void DrawSprite(Sprite s, in float3 location, float scale = 1f)
+		public void DrawSprite(Sprite s, in float3 location, float scale = 1f, float rotation = 0f)
 		{
 			if (s.Channel != TextureChannel.RGBA)
 				throw new InvalidOperationException("DrawRGBASprite requires a RGBA sprite.");
 
-			Parent.DrawSprite(s, 0, location, scale);
+			Parent.DrawSprite(s, 0, location, scale, rotation);
 		}
 
-		public void DrawCardSprite(Sprite s, in WPos wpos, in GlmSharp.vec3 offset, float scale, in float3 tint, float alpha)
+		public void DrawCardSprite(Sprite s, in WPos wpos, in GlmSharp.vec3 offset, float scale, in float3 tint, float alpha, float rotation = 0f)
 		{
 			if (s.Channel != TextureChannel.RGBA)
 				throw new InvalidOperationException("DrawRGBASprite requires a RGBA sprite.");
 
-			Parent.DrawCardSprite(s, 0, wpos, offset, scale, tint, alpha);
+			Parent.DrawCardSprite(s, 0, wpos, offset, scale, tint, alpha, rotation);
 		}
 
-		public void DrawSprite(Sprite s, in float3 location, float scale, in float3 tint, float alpha)
+		public void DrawSprite(Sprite s, in float3 location, float scale, in float3 tint, float alpha, float rotation = 0f)
 		{
 			if (s.Channel != TextureChannel.RGBA)
 				throw new InvalidOperationException("DrawRGBASprite requires a RGBA sprite.");
 
-			Parent.DrawSprite(s, 0, location, scale, tint, alpha);
+			Parent.DrawSprite(s, 0, location, scale, tint, alpha, rotation);
 		}
 
 		public void DrawSprite(Sprite s, in float3 a, in float3 b, in float3 c, in float3 d, in float3 tint, float alpha)

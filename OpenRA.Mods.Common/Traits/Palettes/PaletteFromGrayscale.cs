@@ -1,4 +1,4 @@
-#region Copyright & License Information
+﻿#region Copyright & License Information
 /*
  * Copyright 2007-2022 The OpenRA Developers (see AUTHORS)
  * This file is part of OpenRA, which is free software. It is made
@@ -18,8 +18,8 @@ using OpenRA.Traits;
 namespace OpenRA.Mods.Common.Traits
 {
 	[TraitLocation(SystemActors.World | SystemActors.EditorWorld)]
-	[Desc("Creates a single color palette without any base palette file.")]
-	class PaletteFromRGBAInfo : TraitInfo
+	[Desc("Creates a greyscale palette without any base palette file.")]
+	class PaletteFromGrayscaleInfo : TraitInfo
 	{
 		[PaletteDefinition]
 		[FieldLoader.Require]
@@ -29,31 +29,19 @@ namespace OpenRA.Mods.Common.Traits
 		[Desc("If defined, load the palette only for this tileset.")]
 		public readonly string Tileset = null;
 
-		[Desc("red color component")]
-		public readonly int R = 0;
-
-		[Desc("green color component")]
-		public readonly int G = 0;
-
-		[Desc("blue color component")]
-		public readonly int B = 0;
-
-		[Desc("alpha channel (transparency)")]
-		public readonly int A = 255;
-
 		public readonly bool AllowModifiers = true;
 
 		[Desc("Index set to be fully transparent/invisible.")]
 		public readonly int TransparentIndex = 0;
 
-		public override object Create(ActorInitializer init) { return new PaletteFromRGBA(init.World, this); }
+		public override object Create(ActorInitializer init) { return new PaletteFromGrayscale(init.World, this); }
 	}
 
-	class PaletteFromRGBA : ILoadsPalettes
+	class PaletteFromGrayscale : ILoadsPalettes
 	{
 		readonly World world;
-		readonly PaletteFromRGBAInfo info;
-		public PaletteFromRGBA(World world, PaletteFromRGBAInfo info)
+		readonly PaletteFromGrayscaleInfo info;
+		public PaletteFromGrayscale(World world, PaletteFromGrayscaleInfo info)
 		{
 			this.world = world;
 			this.info = info;
@@ -65,12 +53,7 @@ namespace OpenRA.Mods.Common.Traits
 			if (info.Tileset != null && !string.Equals(info.Tileset, world.Map.Tileset, StringComparison.InvariantCultureIgnoreCase))
 				return;
 
-			var a = info.A / 255f;
-			var r = (int)(a * info.R + 0.5f).Clamp(0, 255);
-			var g = (int)(a * info.G + 0.5f).Clamp(0, 255);
-			var b = (int)(a * info.B + 0.5f).Clamp(0, 255);
-			var c = (uint)Color.FromArgb(info.A, r, g, b).ToArgb();
-			wr.AddPalette(info.Name, new ImmutablePalette(Enumerable.Range(0, Palette.Size).Select(i => (i == info.TransparentIndex) ? 0 : c)), info.AllowModifiers);
+			wr.AddPalette(info.Name, new ImmutablePalette(Enumerable.Range(0, Palette.Size).Select(i => (i == info.TransparentIndex) ? 0 : (uint)Color.FromArgb(255, i, i, i).ToArgb())), info.AllowModifiers);
 		}
 	}
 }
