@@ -53,15 +53,15 @@ namespace OpenRA.Graphics
 
 		public Sprite Image => CurrentSequence.GetSprite(CurrentFrame, facingFunc());
 
-		public IRenderable[] Render(WPos pos, in WVec offset, int zOffset, PaletteReference palette, float scaleMul = 1f)
+		public IRenderable[] Render(WPos pos, in WVec offset, int zOffset, PaletteReference palette, float scaleMul = 1f, bool renderShadow = true)
 		{
 			var tintModifiers = CurrentSequence.IgnoreWorldTint ? TintModifiers.IgnoreWorldTint : TintModifiers.None;
 			var alpha = CurrentSequence.GetAlpha(CurrentFrame);
 			var (image, rotation) = CurrentSequence.GetSpriteWithRotation(CurrentFrame, facingFunc());
-			var imageRenderable = new SpriteRenderable(image, pos, offset, CurrentSequence.ZOffset + zOffset, palette, CurrentSequence.Scale, alpha, float3.Ones, tintModifiers, IsDecoration,
+			var imageRenderable = new SpriteRenderable(image, pos, offset, CurrentSequence.ZOffset + zOffset, palette, CurrentSequence.Scale * scaleMul, alpha, float3.Ones, tintModifiers, IsDecoration,
 				rotation);
 
-			if (CurrentSequence.ShadowStart >= 0)
+			if (CurrentSequence.ShadowStart >= 0 && renderShadow)
 			{
 				var shadow = CurrentSequence.GetShadow(CurrentFrame, facingFunc());
 

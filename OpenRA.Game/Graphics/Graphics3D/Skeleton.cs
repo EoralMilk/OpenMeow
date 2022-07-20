@@ -93,6 +93,7 @@ namespace OpenRA.Graphics
 		public readonly TSMatrix4x4 FirstPose;
 		public readonly TSMatrix4x4 LastPose;
 
+		public readonly bool OnlyRestPose = false;
 		public readonly TSMatrix4x4 RestPose;
 
 		public ModifiedBoneRestPose(in BoneAsset asset, TSMatrix4x4 modifiedPose, TSMatrix4x4 firstPose, TSMatrix4x4 lastPos)
@@ -103,6 +104,8 @@ namespace OpenRA.Graphics
 			RestPose = modifiedPose;
 			FirstPose = firstPose;
 			LastPose = lastPos;
+			if (LastPose == FirstPose)
+				OnlyRestPose = true;
 		}
 	}
 

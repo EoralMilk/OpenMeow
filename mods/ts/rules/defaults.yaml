@@ -12,8 +12,11 @@
 	ExternalCondition@avoidtarget:
 		Condition: avoidtarget
 	Targetable@avoidBySpecialActor:
-		TargetTypes: Ignored
+		TargetTypes: Ignored, AIgnored
 		RequiresCondition: avoidtarget
+	DamageMultiplier@avoidtarget:
+		RequiresCondition: avoidtarget
+		Modifier: 0
 
 ^SpriteActor:
 	BodyOrientation:

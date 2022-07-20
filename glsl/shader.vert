@@ -264,11 +264,11 @@ void main()
 			for (int i = 0; i < MAX_BONE_LENGTH; i++)
 				mMatrix += GetMat4ById(aBoneId[i]) * aBoneWeights[i];
 
-			vec3 scale = vec3(length(mMatrix[0].xyz), length(mMatrix[1].xyz), length(mMatrix[2].xyz));
-			scaleMatrix[0][0] = scale[0];
-			scaleMatrix[1][1] = scale[1];
-			scaleMatrix[2][2] = scale[2];
-			scaleMatrix[3][3] = 1.0f;
+			// vec3 scale = vec3(length(mMatrix[0].xyz), length(mMatrix[1].xyz), length(mMatrix[2].xyz));
+			// scaleMatrix[0][0] = scale[0];
+			// scaleMatrix[1][1] = scale[1];
+			// scaleMatrix[2][2] = scale[2];
+			// scaleMatrix[3][3] = 1.0f;
 		}
 	}
 	else
