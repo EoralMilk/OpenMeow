@@ -127,6 +127,7 @@ namespace OpenRA.Graphics
 			animName = s.ReadUntil('?');
 
 			uint dictSize = s.ReadUInt32();
+
 			for (int i = 0; i < dictSize; i++)
 			{
 				int id = s.ReadInt32();
@@ -143,23 +144,24 @@ namespace OpenRA.Graphics
 				Frames[i] = new Frame((int)skeleton.BoneNameAnimIndex.Count);
 				for (int j = 0; j < bones; j++)
 				{
-					if (!boneIdtoNames.ContainsKey(j) || !skeleton.BoneNameAnimIndex.ContainsKey(boneIdtoNames[j]))
+					var scale = ReadVec3(s);
+					var rotation = ReadQuat(s);
+					rotation.Normalize();
+					var translation = ReadVec3(s);
+
+					if (!boneIdtoNames.ContainsKey(j))
 					{
-						support = false;
 						continue;
 					}
-					else if (skeleton != null) // && skeleton.BoneNameAnimIndex.ContainsKey(boneIdtoNames[j]))
+
+					if (skeleton != null && skeleton.BoneNameAnimIndex.ContainsKey(boneIdtoNames[j]))
 					{
-						var scale = ReadVec3(s);
-						var rotation = ReadQuat(s);
-						rotation.Normalize();
-						var translation = ReadVec3(s);
 						Frames[i].Transformations[skeleton.BoneNameAnimIndex[boneIdtoNames[j]]] = new Transformation(scale, rotation, translation);
 					}
 					else
 					{
 						continue;
-						//Console.WriteLine("No Match Bone: " + boneIdtoNames[j] + " in skeleton: " + skeleton.Name);
+						Console.WriteLine("No Match Bone: " + boneIdtoNames[j] + " in skeleton: " + skeleton.Name);
 					}
 				}
 			}
