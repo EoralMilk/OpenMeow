@@ -157,7 +157,7 @@ vec4 QuatMultiply(const vec4 left, const vec4 right)
 mat2x4 GetDualQuat(const mat4 m, const vec3 s){
 	vec4 r = NormaliseQuat(ExtractRotation(m,s));
 	vec4 tq = vec4(m[3].xyz, 0);
-	return mat2x4(r, QuatMultiply(tq, r* 0.5f));
+	return mat2x4(r, NormaliseQuat(QuatMultiply(tq, r* 0.5f)));
 }
 
 mat2x4 GetBoneTransform(vec4 weights)
