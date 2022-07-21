@@ -157,7 +157,7 @@ vec4 QuatMultiply(const vec4 left, const vec4 right)
 mat2x4 GetDualQuat(const mat4 m, const vec3 s){
 	vec4 r = NormaliseQuat(ExtractRotation(m,s));
 	vec4 tq = vec4(m[3].xyz, 0);
-	return mat2x4(r, NormaliseQuat(QuatMultiply(tq, r* 0.5f)));
+	return mat2x4(r, QuatMultiply(tq, r * 0.5f));
 }
 
 mat2x4 GetBoneTransform(vec4 weights)
@@ -247,10 +247,10 @@ void main()
 			m2 = GetMat4ById(aBoneId[1]);
 			m3 = GetMat4ById(aBoneId[2]);
 			m4 = GetMat4ById(aBoneId[3]);
-			s1 = vec3(length(m1[0].xyz), length(m1[1].xyz), length(m1[2].xyz));
-			s2 = vec3(length(m2[0].xyz), length(m2[1].xyz), length(m2[2].xyz));
-			s3 = vec3(length(m3[0].xyz), length(m3[1].xyz), length(m3[2].xyz));
-			s4 = vec3(length(m4[0].xyz), length(m4[1].xyz), length(m4[2].xyz));
+			s1 = vec3(length(m1[0]), length(m1[1]), length(m1[2]));
+			s2 = vec3(length(m2[0]), length(m2[1]), length(m2[2]));
+			s3 = vec3(length(m3[0]), length(m3[1]), length(m3[2]));
+			s4 = vec3(length(m4[0]), length(m4[1]), length(m4[2]));
 			scale= s1 * aBoneWeights[0] + s2 * aBoneWeights[1] + s3 * aBoneWeights[2] + s4 * aBoneWeights[3];
 
 			scaleMatrix[0][0] = scale[0];
