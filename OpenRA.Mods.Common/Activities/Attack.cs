@@ -212,7 +212,7 @@ namespace OpenRA.Mods.Common.Activities
 				return AttackStatus.NeedsToMove;
 			}
 
-			if (!attack.TargetInFiringArc(self, target, attack.Info.FacingTolerance))
+			if (attack.Info.FacingFullOnTarget || !attack.TargetInFiringArc(self, target, attack.Info.FacingTolerance))
 			{
 				var desiredFacing = (attack.GetTargetPosition(pos, target) - pos).Yaw;
 

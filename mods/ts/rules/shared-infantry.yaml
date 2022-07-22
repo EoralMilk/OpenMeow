@@ -22,12 +22,12 @@ E1:
 		LocalOffset: 137,0,444
 		Weapon: InfMG #Minigun
 		RequiresCondition: !rank-elite
-		UseBindage: true
+		UseBlindage: true
 	Armament@ELITE:
 		LocalOffset: 137,0,444
 		Weapon: ShotGunPro #M1Carbine
 		RequiresCondition: rank-elite
-		UseBindage: true
+		UseBlindage: true
 	AttackFrontal:
 		Voice: Attack
 		FacingTolerance: 0

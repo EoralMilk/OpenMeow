@@ -138,6 +138,27 @@ hmec:
 	Inherits@defaults: ^VehicleBase
 	Inherits: ^VehicleOverlays
 	icon: hmecicon
+	muzzle:
+		Combine:
+			mgun-n:
+				Length: 6
+			mgun-nw:
+				Length: 6
+			mgun-w:
+				Length: 6
+			mgun-sw:
+				Length: 6
+			mgun-s:
+				Length: 6
+			mgun-se:
+				Length: 6
+			mgun-e:
+				Length: 6
+			mgun-ne:
+				Length: 6
+		Facings: 8
+		Length: 6
+		IgnoreWorldTint: True
 
 bike:
 	Inherits@defaults: ^VehicleBase

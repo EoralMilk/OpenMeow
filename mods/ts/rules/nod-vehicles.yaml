@@ -29,7 +29,7 @@ BGGY:
 		Weapon: RaiderCannonMG
 		LocalOffset: 0,-61,313, 0,61,313
 		MuzzleSequence: muzzle
-		UseBindage: true
+		UseBlindage: true
 	AttackFrontal:
 		Voice: Attack
 		PauseOnCondition: empdisable

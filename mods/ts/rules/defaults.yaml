@@ -448,23 +448,22 @@
 		DeathSequence: dead
 		UseDeathTypeSuffix: false
 	SpawnActorsOnSell@gdi:
-		ActorTypes: e1, e1, e2, medic
+		ActorTypes: e1, e1, e2, medic, ctech
+		MinHpPercent: 0
+		ValuePercent: 40
 		Factions: gdi
 	SpawnActorsOnSell@nod:
-		ActorTypes: e1, e1, e1, e3, e3
+		ActorTypes: e1, e1, e1, e3, e3, ctech
+		MinHpPercent: 0
+		ValuePercent: 40
 		Factions: nod
-	SpawnActorOnDeath@ctech:
-		Actor: ctech
+	SpawnActorsOnDeath@building:
+		ActorTypes: ctech, e1, e1, ctech, civ1, civ1
+		UseCell: true
 		SpawnAfterDefeat: false
-	SpawnActorOnDeath@civ1:
-		Actor: civ1
-		SpawnAfterDefeat: false
-	SpawnActorOnDeath@1e1:
-		Actor: e1
-		SpawnAfterDefeat: false
-	SpawnActorOnDeath@2e1:
-		Actor: e1
-		SpawnAfterDefeat: false
+		SpawnCountCalculateAsValue: True
+		ValuePercent: 40
+		Probability: 100
 	MustBeDestroyed:
 		RequiredForShortGame: true
 	OwnerLostAction:
@@ -503,21 +502,12 @@
 		Palette: terraindecoration
 	MapEditorData:
 		Categories: Civilian building
-	SpawnActorOnDeath@ctech:
-		Actor: ctech
-		Probability: 75
+	SpawnActorsOnDeath@building:
+		ActorTypes: civ1, civ2, civ3, civ2, civ1, civ3, ctech
+		SpawnCountCalculateAsValue: false
+		UseCell: true
 		SpawnAfterDefeat: false
-	SpawnActorOnDeath@civ1:
-		Actor: civ1
-		Probability: 75
-		SpawnAfterDefeat: false
-	SpawnActorOnDeath@civ3:
-		Actor: civ2
-		SpawnAfterDefeat: false
-	SpawnActorOnDeath@civ2:
-		Actor: civ3
-		SpawnAfterDefeat: false
-
+		Probability: 35
 
 ^OldBase:
 	Inherits: ^CivBuilding
@@ -534,22 +524,10 @@
 	-Cloak@EXTERNALCLOAK:
 	-ExternalCondition@CLOAKGENERATOR:
 	-ExternalCondition@CRATE-CLOAK:
-	-SpawnActorOnDeath@ctech:
-	-SpawnActorOnDeath@civ1:
-	-SpawnActorOnDeath@civ3:
-	-SpawnActorOnDeath@civ2:
-	SpawnActorOnDeath@1mutant:
-		Actor: mutant
-		SpawnAfterDefeat: false
-		Probability: 75
-	SpawnActorOnDeath@2mutant:
-		Actor: mutant
-		SpawnAfterDefeat: false
-		Probability: 75
-	SpawnActorOnDeath@3mutant:
-		Actor: MWMN
-		SpawnAfterDefeat: false
-		Probability: 75
+	SpawnActorsOnDeath@building:
+		ActorTypes: mutant, mutant, MWMN, mutant, civ1, ctech
+		SpawnCountCalculateAsValue: false
+		Probability: 20
 
 ^CivBillboard:
 	Inherits: ^CivBuilding
@@ -568,10 +546,7 @@
 		Pieces: 1, 1
 	MapEditorData:
 		Categories: Billboard
-	-SpawnActorOnDeath@ctech:
-	-SpawnActorOnDeath@civ1:
-	-SpawnActorOnDeath@civ3:
-	-SpawnActorOnDeath@civ2:
+	-SpawnActorsOnDeath@building:
 
 ^Crate:
 	HiddenUnderFog:
@@ -1020,7 +995,7 @@
 	SpawnActorOnDeath@ctech:
 		Actor: ctech
 		SpawnAfterDefeat: false
-		Probability: 50
+		Probability: 20
 		RequiresCondition: !traped
 
 ^Tank:
@@ -1362,10 +1337,8 @@
 	MapEditorData:
 		Categories: Defense
 	-CommandBarBlacklist:
-	-SpawnActorOnDeath@ctech:
-	-SpawnActorOnDeath@civ1:
-	-SpawnActorOnDeath@1e1:
-	-SpawnActorOnDeath@2e1:
+	-SpawnActorsOnDeath@building:
+
 
 ^Train:
 	Inherits@1: ^EmpDisable
@@ -1425,12 +1398,6 @@
 		Categories: Railway
 	GrantConditionOnTunnelLayer:
 		Condition: inside-tunnel
-	SpawnActorOnDeath@civ3:
-		Actor: civ2
-		SpawnAfterDefeat: false
-	SpawnActorOnDeath@civ2:
-		Actor: civ3
-		SpawnAfterDefeat: false
 
 ^TerrainOverlay:
 	AlwaysVisible:

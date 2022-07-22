@@ -1,6 +1,6 @@
 ^DefaultMissile:
 	ReloadDelay: 60
-	Range: 7c0
+	Range: 7c512
 	MinRange: 0c512
 	ValidTargets: Ground, Water, Air, Trees
 	Projectile: Missile
@@ -18,14 +18,14 @@
 		MinimumLaunchAngle: 128
 		MaximumLaunchAngle: 192
 		VerticalRateOfTurn: 100
-		CruiseAltitude: 3c512
+		CruiseAltitude: 3c0
 		AllowSnapping: true
 		TerrainHeightAware: true
 		TrailImage: small_smoke_trail
 		TrailInterval: 1
 		TrailCount: 2
 		TrailDelay: 0
-		ContrailLength: 12
+		ContrailLength: 8
 		ContrailWidth: 74
 		ContrailColor: FFDD40B0
 		ContrailDelay: 0
@@ -62,12 +62,17 @@ Bazooka:
 
 HoverMissile:
 	Inherits: ^DefaultMissile
-	ReloadDelay: 68
+	ReloadDelay: 60
 	Burst: 2
-	Range: 8c0
+	Range: 9c0
 	Report: hovrmis1.aud
 	Warhead@1Dam: SpreadDamage
 		Damage: 3000
+
+HoverMissileDual:
+	Inherits: HoverMissile
+	Burst: 4
+	ReloadDelay: 80
 
 MammothTusk:
 	Inherits: ^DefaultMissile

@@ -90,6 +90,8 @@ GACNST:
 		RequiresCondition: !build-incomplete
 	Power:
 		Amount: 0
+	ProvidesPrerequisite@any:
+		Prerequisite: structures.any
 	ProvidesPrerequisite@gdi:
 		Factions: gdi
 		Prerequisite: structures.gdi

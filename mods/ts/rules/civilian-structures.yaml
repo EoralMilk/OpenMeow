@@ -290,6 +290,7 @@ ABAN17:
 		HP: 40000
 	MapEditorData:
 		ExcludeTilesets: TEMPERATE
+	-SpawnActorsOnDeath@building:
 
 ABAN18:
 	Inherits: ^CivBuilding
@@ -304,6 +305,7 @@ ABAN18:
 		HP: 40000
 	MapEditorData:
 		ExcludeTilesets: TEMPERATE
+	-SpawnActorsOnDeath@building:
 
 AMMOCRAT:
 	Inherits: ^CivBuilding
@@ -318,6 +320,7 @@ AMMOCRAT:
 		HP: 1
 	RenderSprites:
 		Palette: player
+	-SpawnActorsOnDeath@building:
 
 BBOARD01:
 	Inherits: ^CivBillboard
@@ -591,6 +594,7 @@ CA0011:
 		Type: heavy
 	Health:
 		HP: 20000
+	-SpawnActorsOnDeath@building:
 
 CA0012:
 	Inherits: ^CivBuilding
@@ -606,6 +610,7 @@ CA0012:
 		HP: 10000
 	IsometricSelectable:
 		Height: 36
+	-SpawnActorsOnDeath@building:
 
 CA0013:
 	Inherits: ^CivBuilding
@@ -621,6 +626,7 @@ CA0013:
 		HP: 30000
 	IsometricSelectable:
 		Height: 48
+	-SpawnActorsOnDeath@building:
 
 CA0014:
 	Inherits: ^CivBuilding
@@ -647,6 +653,7 @@ CA0015:
 		Type: light
 	Health:
 		HP: 30000
+	-SpawnActorsOnDeath@building:
 
 CA0016:
 	Inherits: ^CivBuilding
@@ -661,6 +668,7 @@ CA0016:
 		HP: 30000
 	IsometricSelectable:
 		Height: 48
+	-SpawnActorsOnDeath@building:
 
 CA0017:
 	Inherits: ^CivBuilding
@@ -675,6 +683,7 @@ CA0017:
 		HP: 30000
 	IsometricSelectable:
 		Height: 48
+	-SpawnActorsOnDeath@building:
 
 CA0018:
 	Inherits: ^CivBuilding
@@ -693,6 +702,7 @@ CA0018:
 		HP: 20000
 	IsometricSelectable:
 		Height: 48
+	-SpawnActorsOnDeath@building:
 
 CA0019:
 	Inherits: ^CivBuilding
@@ -711,6 +721,7 @@ CA0019:
 		HP: 20000
 	IsometricSelectable:
 		Height: 48
+	-SpawnActorsOnDeath@building:
 
 CA0020:
 	Inherits: ^CivBuilding
@@ -729,6 +740,7 @@ CA0020:
 		HP: 20000
 	IsometricSelectable:
 		Height: 48
+	-SpawnActorsOnDeath@building:
 
 CA0021:
 	Inherits: ^CivBuilding
@@ -747,6 +759,7 @@ CA0021:
 		HP: 20000
 	IsometricSelectable:
 		Height: 48
+	-SpawnActorsOnDeath@building:
 
 CAARAY:
 	Inherits: ^CivBuilding
@@ -794,6 +807,8 @@ CAARMR:
 		Palette: player
 	ProvidesPrerequisite:
 		Prerequisite: barracks.upgraded
+	ProvidesPrerequisite@CivilianArmory:
+		Prerequisite: civilian.armory
 	CaptureManager:
 	Capturable:
 		Types: building
@@ -870,6 +885,7 @@ CAPYR01:
 		ExcludeTilesets: SNOW
 	IsometricSelectable:
 		Height: 48
+	-SpawnActorsOnDeath@building:
 
 CAPYR02:
 	Inherits: ^CivBuilding
@@ -891,6 +907,7 @@ CAPYR02:
 		Pieces: 3, 4
 	IsometricSelectable:
 		Height: 96
+	-SpawnActorsOnDeath@building:
 
 CAPYR03:
 	Inherits: ^CivBuilding
@@ -912,6 +929,7 @@ CAPYR03:
 		Pieces: 3, 4
 	IsometricSelectable:
 		Height: 96
+	-SpawnActorsOnDeath@building:
 
 CITY01:
 	Inherits: ^CivBuilding
@@ -933,6 +951,7 @@ CITY01:
 		Pieces: 2, 4
 	IsometricSelectable:
 		Height: 72
+	-SpawnActorsOnDeath@building:
 
 CITY02:
 	Inherits: ^CivBuilding
@@ -1091,6 +1110,7 @@ CITY09:
 		RequireTilesets: TEMPERATE
 	IsometricSelectable:
 		Height: 48
+	-SpawnActorsOnDeath@building:
 
 CITY10:
 	Inherits: ^CivBuilding
@@ -1142,6 +1162,7 @@ CITY12:
 		RequireTilesets: TEMPERATE
 	IsometricSelectable:
 		Height: 96
+	-SpawnActorsOnDeath@building:
 
 CITY13:
 	Inherits: ^CivBuilding
@@ -1272,6 +1293,7 @@ CITY19:
 		HP: 50000
 	MapEditorData:
 		RequireTilesets: TEMPERATE
+	-SpawnActorsOnDeath@building:
 
 CITY20:
 	Inherits: ^CivBuilding
@@ -1286,6 +1308,7 @@ CITY20:
 		HP: 25000
 	MapEditorData:
 		RequireTilesets: TEMPERATE
+	-SpawnActorsOnDeath@building:
 
 CITY21:
 	Inherits: ^CivBuilding
@@ -1300,6 +1323,7 @@ CITY21:
 		HP: 10000
 	MapEditorData:
 		RequireTilesets: TEMPERATE
+	-SpawnActorsOnDeath@building:
 
 CITY22:
 	Inherits: ^CivBuilding
@@ -1348,6 +1372,7 @@ CTDAM:
 		Pieces: 5, 9
 	ThrowsShrapnel@LARGE:
 		Pieces: 2, 4
+	-SpawnActorsOnDeath@building:
 
 CTVEGA:
 	Inherits: ^CivBuilding
@@ -1369,6 +1394,7 @@ CTVEGA:
 		Pieces: 3, 4
 	IsometricSelectable:
 		Height: 72
+	-SpawnActorsOnDeath@building:
 
 GAKODK:
 	Inherits: ^CivBuilding
@@ -1407,6 +1433,7 @@ GAKODK:
 	WithIdleOverlay@SMALLLIGHTS-BRIGHT:
 		Sequence: small-lights-bright
 		Palette: bright
+	-SpawnActorsOnDeath@building:
 
 GAOLDCC1:
 	Inherits: ^OldBase
@@ -1517,6 +1544,7 @@ GASPOT:
 		Categories: Civilian building
 	IsometricSelectable:
 		Height: 72
+	-SpawnActorsOnDeath@building:
 
 GALITE:
 	Inherits: ^Building
@@ -1553,6 +1581,7 @@ GALITE:
 		Categories: Civilian building
 	Capturable:
 		-RequiresCondition:
+	-SpawnActorsOnDeath@building:
 
 INGALITE:
 	Interactable:
@@ -1753,6 +1782,7 @@ GAICBM:
 		Categories: Vehicle
 	IsometricSelectable:
 		Height: 48
+	-SpawnActorsOnDeath@building:
 
 NAMNTK:
 	Inherits: ^CivBuilding
@@ -1777,6 +1807,7 @@ NAMNTK:
 		Palette: bright
 	IsometricSelectable:
 		Height: 36
+	-SpawnActorsOnDeath@building:
 
 NTPYRA:
 	Inherits: ^CivBuilding
@@ -1802,6 +1833,7 @@ NTPYRA:
 		Pieces: 3, 5
 	IsometricSelectable:
 		Height: 72
+	-SpawnActorsOnDeath@building:
 
 UFO:
 	Inherits: ^CivBuilding
@@ -1825,3 +1857,4 @@ UFO:
 		Pieces: 6, 8
 	IsometricSelectable:
 		Height: 144
+	-SpawnActorsOnDeath@building:

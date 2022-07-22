@@ -91,12 +91,12 @@ namespace OpenRA
 				v = ((p[0].X - p[2].X) * (dY - p[2].Y) - (p[0].Y - p[2].Y) * (dX - p[2].X)) / 1024;
 
 				// Point is within the triangle if 0 <= u,v <= 1024
-				if (u >= 0 && u <= 1024 && v >= 0 && v <= 1024)
+				if (u >= 0 && u <= MapGrid.MapHeightStep * 2 && v >= 0 && v <= MapGrid.MapHeightStep * 2)
 					break;
 			}
 
 			// Calculate w from u,v and interpolate height
-			return (u * p[0].Z + v * p[1].Z + (1024 - u - v) * p[2].Z) / 1024;
+			return (u * p[0].Z + v * p[1].Z + (MapGrid.MapHeightStep * 2 - u - v) * p[2].Z) / (MapGrid.MapHeightStep * 2);
 		}
 	}
 

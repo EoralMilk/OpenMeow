@@ -84,9 +84,9 @@ namespace OpenRA.Mods.Common.Traits
 		public readonly WAngle FiringAngle = WAngle.Zero;
 
 		[Desc("Whether this armament can use bindage.")]
-		public readonly bool UseBindage = false;
+		public readonly bool UseBlindage = false;
 
-		public readonly WDist BindageDetectWidth = new WDist(1024);
+		public readonly WDist BlindageDetectWidth = new WDist(1024);
 		public WeaponInfo WeaponInfo { get; private set; }
 		public WDist ModifiedRange { get; private set; }
 
@@ -457,12 +457,12 @@ namespace OpenRA.Mods.Common.Traits
 				GuidedTarget = target
 			};
 
-			if (Info.UseBindage)
+			if (Info.UseBlindage)
 			{
 				var toend = (passiveTarget - args.Source);
-				var end = args.Source + toend * Info.BindageDetectWidth.Length * 2 / toend.Length;
+				var end = args.Source + toend * Info.BlindageDetectWidth.Length * 2 / toend.Length;
 
-				foreach (Actor a in self.World.FindBlockingActorsOnLine(args.Source, end, Info.BindageDetectWidth))
+				foreach (Actor a in self.World.FindBlockingActorsOnLine(args.Source, end, Info.BlindageDetectWidth))
 				{
 					if (a.TraitsImplementing<IBlocksProjectiles>().Any(b => b.IsBindage))
 						args.IgnoredActors.Add(a);

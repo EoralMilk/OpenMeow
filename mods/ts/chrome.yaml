@@ -454,6 +454,7 @@ flags:
 		nod: 226, 225, 30, 15
 		Random: 226, 241, 30, 15
 		spectator: 226, 241, 30, 15
+		test: 226, 241, 30, 15
 
 lobby-bits:
 	Inherits: ^Glyphs

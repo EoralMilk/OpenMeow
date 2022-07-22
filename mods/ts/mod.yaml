@@ -49,6 +49,7 @@ Packages:
 	~ecache01.mix
 	ts|bits
 	ts|bits/audios
+	ts|bits/vxls
 	ts|uibits
 	ts|meshes
 	ts|materials

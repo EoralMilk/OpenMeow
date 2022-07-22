@@ -6,7 +6,7 @@ harv:
 	unload: horv
 
 apc:
-	idle:
+	idle: 
 	water: apcw
 
 art2:
@@ -79,7 +79,7 @@ dshp:
 	idle:
 
 4tnk:
-	idle:
+	idle: 4tnk
 	turret: 4tnktur
 	barrel: 4tnkbarl
 
@@ -180,4 +180,14 @@ sonic:
 #	idle:
 
 dpod:
+	idle:
+
+# test
+v3:
+	idle:
+
+v3wo:
+	idle:
+
+falc:
 	idle:

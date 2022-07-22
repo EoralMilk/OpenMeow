@@ -59,6 +59,9 @@ namespace OpenRA.Mods.Common.Traits
 		[Desc("The angle relative to the actor's orientation used to fire the weapon from.")]
 		public readonly WAngle FiringAngle = WAngle.Zero;
 
+		[Desc("Trying to make a full turn even when we are within firing Angle.")]
+		public readonly bool FacingFullOnTarget = false;
+
 		public override void RulesetLoaded(Ruleset rules, ActorInfo ai)
 		{
 			base.RulesetLoaded(rules, ai);

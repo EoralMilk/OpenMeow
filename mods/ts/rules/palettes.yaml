@@ -93,6 +93,22 @@
 	PaletteFromFile@effect:
 		Name: effect
 		Filename: anim.pal
+	FixedColorPalette@effectcyan:
+		Base: effect
+		Name: effectcyan
+		Color: 00FFFF
+	FixedColorPalette@effectblue:
+		Base: effect
+		Name: effectblue
+		Color: 0033FF
+	FixedColorPalette@effectgreen:
+		Base: effect
+		Name: effectgreen
+		Color: 00FF00
+	FixedColorPalette@effectdarkgreen:
+		Base: effect
+		Name: effectdarkgreen
+		Color: 00CC00
 	PaletteFromFile@sidebar:
 		Name: sidebar
 		Filename: sidebar-nod|sidebar.pal

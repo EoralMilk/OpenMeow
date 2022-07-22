@@ -47,6 +47,10 @@ APC:
 		TerrainTypes: Water
 		StationaryInterval: 18
 		MovingInterval: 6
+	# RenderModels:
+	# 	LightScale: 0.34
+	# 	SpecularScale: 0.12
+	# 	AmbientScale: 1.1
 
 HVR:
 	Inherits: ^Vehicle
@@ -79,11 +83,13 @@ HVR:
 		Range: 7c0
 		MaxHeightDelta: 3
 	Armament:
-		Weapon: HoverMissile
-		LocalOffset: 0,242,314, 0,-242,314
+		Weapon: HoverMissileDual
+		Turret: primary
+		LocalOffset: 122,172,666, 122,-172,666, 122,211,666, 122,-211,666
 	Turreted:
 		TurnSpeed: 28
-		Offset: -128,0,85
+		Turret: primary
+		Offset: -154,0,0
 	AttackTurreted:
 		Voice: Attack
 		PauseOnCondition: empdisable
@@ -142,7 +148,7 @@ SMECH:
 	Armament:
 		LocalOffset: 111,200,255, 111,-220,255
 		BurstPerFireCount: 2
-		UseBindage: true
+		UseBlindage: true
 		Weapon: AssaultVulcan #AssaultCannon
 	Voiced:
 		VoiceSet: Mech
@@ -258,19 +264,29 @@ HMEC:
 		Type: Heavy
 	RevealsShroud:
 		RequiresCondition: !inside-tunnel
-		Range: 8c0
+		Range: 10c0
 		MaxHeightDelta: 3
 	AttackFrontal:
 		Voice: Attack
 		PauseOnCondition: empdisable
-		FacingTolerance: 0
+		FacingTolerance: 256
+		FacingFullOnTarget: true
+	WithMuzzleOverlay:
+	Armament@PulseChainGun:
+		Weapon: MechPulseGun
+		LocalOffset: 1000,0,370
+		FacingTolerance: 256
+		MuzzleSequence: muzzle
+		MuzzlePalette: effectcyan
 	Armament@MISSILES:
 		Weapon: MammothTusk
 		LocalOffset: -243,-368,697, -243,368,697
+		FacingTolerance: 256
 	Armament@RAILGUN:
 		Weapon: MechRailgun
 		BurstPerFireCount: 2
 		LocalOffset: 368,-311,595, 368,311,595
+		FacingTolerance: 15
 	-WithModelBody:
 	WithModelWalkerBody:
 		TickRate: 1
@@ -278,6 +294,8 @@ HMEC:
 		Bounds: 1206, 2413, 0, -482
 	Carryable:
 		LocalOffset: 0,0,509
+	BodyOrientation:
+		QuantizedFacings: 1024
 
 SONIC:
 	Inherits: ^Tank

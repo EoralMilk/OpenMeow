@@ -183,7 +183,7 @@ A10:
 		PauseOnCondition: empdisable
 		AttackType: Strafe
 		StrafeRunLength: 17c0
-		RotateToFullOnTarget: true
+		FacingFullOnTarget: true
 	RenderSprites:
 	DeathSounds:
 	SpawnActorOnDeath:
@@ -268,6 +268,10 @@ ORCA:
 		FullSequence: pip-ammo
 		EmptySequence: pip-ammoempty
 		Palette: pips
+	# RenderModels:
+	# 	LightScale: 0.34
+	# 	SpecularScale: 0.12
+	# 	AmbientScale: 1.1
 
 ORCAB:
 	Inherits: ^EMPableAircraft
@@ -477,7 +481,7 @@ SCRIN:
 		FacingTolerance: 512
 		# AttackType: Strafe
 		# StrafeRunLength: 17c0
-		RotateToFullOnTarget: true
+		FacingFullOnTarget: true
 	AmmoPool:
 		Ammo: 60
 		ReloadCount: 6

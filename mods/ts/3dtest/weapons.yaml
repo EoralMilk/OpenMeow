@@ -194,6 +194,9 @@ SergeantSMG:
 			Light: 50
 			Heavy: 15
 			Concrete: 15
+	Warhead@2Eff: CreateEffect
+		ExplosionPalette: effectblue
+
 
 AssaultVulcan:
 	Inherits: InfMG
@@ -237,6 +240,9 @@ HarpyClawMG:
 		Damage: 1250
 		Spread: 0c128
 		DamageTypes:  Prone100Percent, TriggerProne, SmallExplosionDeath, TriggerVisceroid
+	Warhead@2Eff: CreateEffect
+		ExplosionPalette: effectgreen
+
 
 RaiderCannonMG:
 	Inherits: AssaultVulcan
@@ -248,6 +254,31 @@ RaiderCannonMG:
 	Report: chaingn_a.wav, chaingn_b.wav, chaingn_c.wav, chaingn_d.wav
 	Projectile: Bullet
 		Inaccuracy: 330
+
+MechPulseGun:
+	Inherits: AssaultVulcan
+	Burst: 10
+	Report: silencer.aud
+	Range: 7c256
+	ReloadDelay: 25
+	Projectile: Bullet
+		LifeTime: 11
+		ContrailLength: 3
+		ContrailColor: 77CFFFFF
+		Inaccuracy: 375
+	Warhead@1Dam: Spread3DDamage
+		Damage: 1500
+		Spread: 0c42
+		Condition: empdisable
+		Duration: 10
+		Versus:
+			None: 100
+			Wood: 15
+			Light: 50
+			Heavy: 15
+			Concrete: 15
+	Warhead@2Eff: CreateEffect
+		ExplosionPalette: effectcyan
 
 
 CyborgMG:
@@ -384,6 +415,8 @@ TinyShard:
 			Heavy: 33
 			Concrete: 10
 		DamageTypes:  Prone100Percent, TriggerProne, SmallExplosionDeath, TriggerVisceroid
+	Warhead@2Eff: CreateEffect
+		ExplosionPalette: effectdarkgreen
 
 
 ^ShotGun:

@@ -42,7 +42,7 @@
 		StartIfBelow: 50
 		DamageCooldown: 200
 	WithModelTurret:
-	WithModelBarrel:
+	# WithModelBarrel:
 	WithMuzzleOverlay:
 
 ^TRUCK:

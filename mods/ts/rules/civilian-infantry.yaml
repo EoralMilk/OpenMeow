@@ -53,7 +53,7 @@ UMAGON:
 	Armament:
 		LocalOffset: 126,0,438
 		Weapon: SilencerSniper
-		UseBindage: true
+		UseBlindage: true
 	AttackFrontal:
 		Voice: Attack
 		FacingTolerance: 0
@@ -125,7 +125,7 @@ MUTANT:
 		LocalOffset: 311,83,490, 311,-83,490
 		BurstPerFireCount: 2
 		Weapon: SMG
-		UseBindage: true
+		UseBlindage: true
 	AttackFrontal:
 		Voice: Attack
 		FacingTolerance: 0
@@ -158,9 +158,9 @@ MWMN:
 	RevealsShroud:
 		Range: 6c0
 	Armament:
-		LocalOffset: 262,0,488
+		LocalOffset: 276,0,470
 		Weapon: ShardShotGun
-		UseBindage: true
+		UseBlindage: true
 	AttackFrontal:
 		Voice: Attack
 		FacingTolerance: 0
@@ -196,7 +196,7 @@ MUTANT3:
 		LocalOffset: 311,83,490, 311,-83,490
 		BurstPerFireCount: 2
 		Weapon: SergeantSMG
-		UseBindage: true
+		UseBlindage: true
 	AttackFrontal:
 		Voice: Attack
 		FacingTolerance: 0
@@ -265,21 +265,25 @@ CIV1:
 	Buildable:
 		Queue: Infantry
 		BuildPaletteOrder: 0
-		Prerequisites: ~none
+		Prerequisites: ~civilian.armory
 	WithSplitAttackPaletteInfantryBody:
 		DefaultAttackSequence: attack
 		Palette: player-nomuzzle
 		IsPlayerPalette: true
 		SplitAttackPalette: muzzle
 	Armament:
-		LocalOffset: 233,0,438
+		LocalOffset: 294,-10,468
 		Weapon: Pistol
-		UseBindage: true
+		UseBlindage: true
 	AttackFrontal:
 		Voice: Attack
 		FacingTolerance: 0
 	Voiced:
 		VoiceSet: Civilian1
+	Tooltip:
+		Name: Armed Civilian
+	ScaredyCat:
+		AttackPanicChance: 0
 
 CIV2:
 	Inherits: ^CivilianInfantry
@@ -292,25 +296,14 @@ CIV3:
 		VoiceSet: Civilian3
 
 CTECH:
-	Inherits: CIV3
-	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
-	Buildable:
-		Queue: Infantry
-		BuildPaletteOrder: 0
-		Prerequisites: ~none
+	Inherits: CIV1
 	RenderSprites:
 		Image: civ3
-	WithSplitAttackPaletteInfantryBody:
-		DefaultAttackSequence: attack
-		Palette: player-nomuzzle
-		IsPlayerPalette: true
-		SplitAttackPalette: muzzle
 	Armament:
-		LocalOffset: 233,0,438
-		Weapon: Pistol
-		UseBindage: true
-	AttackFrontal:
-		Voice: Attack
-		FacingTolerance: 0
+		LocalOffset: 294,0,468
 	Voiced:
 		VoiceSet: CivilianTechnician
+	Tooltip:
+		Name: Technican
+	-ScaredyCat:
+	-Wanders:
