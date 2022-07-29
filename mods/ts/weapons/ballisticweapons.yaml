@@ -11,7 +11,7 @@
 		DetectTargetBeforeDist: 2c512
 		ContrailLength: 4
 		ContrailWidth: 66
-		ContrailColor: FFFFCFF0
+		ContrailStartColor: FFFFCFF0
 		ContrailDelay: 0
 		ContrailBlendMode: ScreenAdditive
 		Speed: 1050
@@ -85,7 +85,7 @@ RPGTower:
 		Palette: player
 		ContrailLength: 4
 		ContrailWidth: 66
-		ContrailColor: FFFFFFA0
+		ContrailStartColor: FFFFFFA0
 		ContrailDelay: 0
 		ContrailBlendMode: Alpha
 	Warhead@1Dam: SpreadDamage

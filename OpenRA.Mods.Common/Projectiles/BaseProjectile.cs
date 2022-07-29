@@ -7,9 +7,7 @@ using OpenRA.Mods.Common.Effects;
 using OpenRA.Mods.Common.Graphics;
 using OpenRA.Mods.Common.Traits;
 using OpenRA.Primitives;
-using OpenRA.Support;
 using OpenRA.Traits;
-using TrueSync;
 
 namespace OpenRA.Mods.Common.Projectiles
 {
@@ -109,12 +107,40 @@ namespace OpenRA.Mods.Common.Projectiles
 		[Desc("How long this projectile can live, LifeTime < 0 means lives forever if not hit the target.")]
 		public readonly int[] LifeTime = { -1 };
 
+		[Desc("Length of the contrail (in ticks).")]
 		public readonly int ContrailLength = 0;
+
+		[Desc("Offset for contrail's Z sorting.")]
 		public readonly int ContrailZOffset = 2047;
-		public readonly Color ContrailColor = Color.White;
-		public readonly bool ContrailUsePlayerColor = false;
+
+		[Desc("Delay of the contrail.")]
 		public readonly int ContrailDelay = 1;
+
+		[Desc("Width of the contrail.")]
 		public readonly WDist ContrailWidth = new WDist(64);
+
+		[Desc("RGB color when the contrail starts.")]
+		public readonly Color ContrailStartColor = Color.White;
+
+		[Desc("Use player remap color instead of a custom color when the contrail starts.")]
+		public readonly bool ContrailStartColorUsePlayerColor = false;
+
+		[Desc("The alpha value [from 0 to 255] of color when the contrail starts.")]
+		public readonly int ContrailStartColorAlpha = 255;
+
+		[Desc("RGB color when the contrail ends.")]
+		public readonly Color ContrailEndColor = Color.White;
+
+		[Desc("Use player remap color instead of a custom color when the contrail ends.")]
+		public readonly bool ContrailEndColorUsePlayerColor = false;
+
+		[Desc("The alpha value [from 0 to 255] of color when the contrail ends.")]
+		public readonly int ContrailEndColorAlpha = 0;
+
+		[Desc("Contrail will fade with contrail width. Set 1.0 to make contrail fades just by length. Can be set with negative value")]
+		public readonly float ContrailWidthFadeRate = 0;
+
+		[Desc("Contrail blendmode.")]
 		public readonly BlendMode ContrailBlendMode = BlendMode.Alpha;
 	}
 
@@ -160,8 +186,9 @@ namespace OpenRA.Mods.Common.Projectiles
 
 			if (info.ContrailLength > 0)
 			{
-				var color = info.ContrailUsePlayerColor ? ContrailRenderable.ChooseColor(args.SourceActor) : info.ContrailColor;
-				contrail = new ContrailRenderable(world, color, info.ContrailWidth, info.ContrailLength, info.ContrailDelay, info.ContrailZOffset, info.ContrailBlendMode);
+				var startcolor = info.ContrailStartColorUsePlayerColor ? Color.FromArgb(info.ContrailStartColorAlpha, args.SourceActor.Owner.Color) : Color.FromArgb(info.ContrailStartColorAlpha, info.ContrailStartColor);
+				var endcolor = info.ContrailEndColorUsePlayerColor ? Color.FromArgb(info.ContrailEndColorAlpha, args.SourceActor.Owner.Color) : Color.FromArgb(info.ContrailEndColorAlpha, info.ContrailEndColor);
+				contrail = new ContrailRenderable(world, startcolor, endcolor, info.ContrailWidth, info.ContrailLength, info.ContrailDelay, info.ContrailZOffset, info.ContrailWidthFadeRate, info.ContrailBlendMode);
 			}
 
 			trailTicks = info.TrailDelay;
@@ -191,7 +218,7 @@ namespace OpenRA.Mods.Common.Projectiles
 				{
 					var v = (pos - trailLastPos) / info.TrailCount;
 
-					for (int i = 0; i < info.TrailCount; i++)
+					for (var i = 0; i < info.TrailCount; i++)
 					{
 						trailLastPos += v;
 						var ppos = trailLastPos; // delayed pos
@@ -285,13 +312,13 @@ namespace OpenRA.Mods.Common.Projectiles
 			var actorsInSquare = world.ActorMap.ActorsInBox(finalTarget, finalSource);
 			hitActor = null;
 			var intersectedActors = new List<Actor>();
-			int min = (lineStart - lineEnd).Length;
+			var min = (lineStart - lineEnd).Length;
 			var temp = 0;
 			WPos tempHit;
 			hitPos = lineEnd;
 			foreach (var currActor in actorsInSquare)
 			{
-				if (currActor == firedBy || firedBy == null || (!(targetActor != null && currActor == targetActor) && !info.ValidDetectRelationships.HasRelationship(currActor.Owner.RelationshipWith(firedBy.Owner))) )
+				if (currActor == firedBy || firedBy == null || (!(targetActor != null && currActor == targetActor) && !info.ValidDetectRelationships.HasRelationship(currActor.Owner.RelationshipWith(firedBy.Owner))))
 					continue;
 				var shapes = currActor.TraitsImplementing<HitShape>().Where(Exts.IsTraitEnabled);
 				var checkPos = lineStart.MinimumPointLineProjection(lineEnd, currActor.CenterPosition);

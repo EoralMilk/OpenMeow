@@ -25,9 +25,12 @@
 		TrailInterval: 1
 		TrailCount: 2
 		TrailDelay: 0
-		ContrailLength: 8
-		ContrailWidth: 74
-		ContrailColor: FFDD40B0
+		ContrailLength: 16
+		ContrailWidth: 96
+		ContrailStartColor: BB8800
+		ContrailStartColorAlpha: 167
+		ContrailEndColor: AA0000
+		ContrailWidthFadeRate: 1
 		ContrailDelay: 0
 		ContrailBlendMode: ScreenAdditive
 	Warhead@1Dam: SpreadDamage

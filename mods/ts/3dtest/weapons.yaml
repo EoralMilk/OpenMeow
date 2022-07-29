@@ -82,10 +82,14 @@ A10Napalm:
 		DetectTargetFromLength: 0.7
 		DetectTargetBeforeDist: 2c0
 		ContrailLength: 3
-		ContrailWidth: 44
-		ContrailColor: FFFFC0C0
+		ContrailWidth: 50
+		ContrailStartColor: FFFF88
+		ContrailStartColorAlpha: 255
+		ContrailEndColor: BBBB00
+		ContrailEndColorAlpha: 64
+		ContrailWidthFadeRate: 0.75
 		ContrailDelay: 0
-		ContrailBlendMode: ScreenAdditive
+		#ContrailBlendMode: ScreenAdditive
 		Speed: 1000
 		LaunchAngle: 0
 		ZOffset: 1024
@@ -123,7 +127,7 @@ DropVulcan:
 	Inherits: ^SA
 	Projectile: Bullet
 		Speed: 2c0
-		ContrailLength: 2
+		ContrailWidthFadeRate: 1
 
 InfMG:
 	Inherits: ^SA
@@ -136,7 +140,7 @@ InfMG:
 	ValidTargets: Ground, Water
 	Projectile: Bullet
 		LifeTime: 10
-		ContrailLength: 3
+		ContrailLength: 2
 		Inaccuracy: 230
 		Blockable: true
 		Speed: 989
@@ -160,7 +164,6 @@ SMG:
 	Report: gostgun_a.wav, gostgun_b.wav # infgun_a.wav, infgun_b.wav, infgun_c.wav, infgun_d.wav
 	Projectile: Bullet
 		LifeTime: 8
-		ContrailLength: 2
 		Inaccuracy: 450
 	Warhead@1Dam: Spread3DDamage
 		Damage: 750
@@ -180,8 +183,8 @@ SergeantSMG:
 	ReloadDelay: 22
 	Projectile: Bullet
 		LifeTime: 11
-		ContrailLength: 2
-		ContrailColor: 77B0FFFF
+		ContrailStartColor: 77B0FF
+		ContrailEndColor: FFFFFF
 		Inaccuracy: 375
 	Warhead@1Dam: Spread3DDamage
 		Damage: 1250
@@ -208,7 +211,6 @@ AssaultVulcan:
 	ReloadDelay: 25
 	Projectile: Bullet
 		LifeTime: 10
-		ContrailLength: 2
 		Inaccuracy: 400
 	Warhead@1Dam: Spread3DDamage
 		Damage: 1200
@@ -231,8 +233,7 @@ HarpyClawMG:
 	ValidTargets: Ground, Water, Air
 	Projectile: Bullet
 		LifeTime: 12
-		ContrailLength: 2
-		ContrailColor: A0FFA0C0
+		ContrailStartColor: A0FFA0C0
 		Inaccuracy: 290
 		Speed: 1000
 		OnlyBlocker: false
@@ -264,7 +265,7 @@ MechPulseGun:
 	Projectile: Bullet
 		LifeTime: 11
 		ContrailLength: 3
-		ContrailColor: 77CFFFFF
+		ContrailStartColor: 77CFFFFF
 		Inaccuracy: 375
 	Warhead@1Dam: Spread3DDamage
 		Damage: 1500
@@ -302,7 +303,6 @@ VulcanMG:
 	BurstDelays: 2
 	Projectile: Bullet
 		LifeTime: 11
-		ContrailLength: 2
 		Inaccuracy: 410
 	Warhead@1Dam: Spread3DDamage
 		Damage: 1000
@@ -402,7 +402,8 @@ TinyShard:
 	Projectile: Bullet
 		LifeTime: 7
 		ContrailLength: 2
-		ContrailColor: 20B020D0
+		ContrailStartColor: 10FFA0
+		ContrailEndColor: 008800
 		Inaccuracy: 990
 		Speed: 800
 	Warhead@1Dam: Spread3DDamage
@@ -459,9 +460,12 @@ VectorBooster:
 		LifeTime: 75
 		ProximityRange: 0
 		ProximitySnapping: true
-		ContrailLength: 12
-		ContrailWidth: 74
-		ContrailColor: FFDD40B0
+		ContrailLength: 16
+		ContrailWidth: 96
+		ContrailStartColor: BB8800
+		ContrailStartColorAlpha: 167
+		ContrailEndColor: AA0000
+		ContrailWidthFadeRate: 1
 		ContrailDelay: 0
 		ContrailBlendMode: ScreenAdditive
 		Speed: 310
@@ -542,7 +546,7 @@ ProtonPulse:
 		DetectTargetBeforeDist: 2c0
 		ContrailLength: 2
 		ContrailWidth: 88
-		ContrailColor: 66FF66E0
+		ContrailStartColor: 66FF66E0
 		ContrailDelay: 0
 		ContrailBlendMode: ScreenAdditive
 		LaunchAngle: 0

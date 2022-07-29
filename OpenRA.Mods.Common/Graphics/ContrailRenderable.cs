@@ -22,8 +22,10 @@ namespace OpenRA.Mods.Common.Graphics
 		public int Length => trail.Length;
 
 		readonly World world;
-		readonly Color color;
+		readonly Color startcolor;
+		readonly Color endcolor;
 		readonly int zOffset;
+		readonly float widthFadeRate;
 
 		// Store trail positions in a circular buffer
 		readonly WPos[] trail;
@@ -31,13 +33,11 @@ namespace OpenRA.Mods.Common.Graphics
 		int next;
 		int length;
 		readonly int skip;
-		readonly BlendMode blendMode;
-		public BlendMode BlendMode => blendMode;
 
-		public ContrailRenderable(World world, Color color, WDist width, int length, int skip, int zOffset, BlendMode blendMode)
-			: this(world, new WPos[length], width, 0, 0, skip, color, zOffset, blendMode) { }
+		public ContrailRenderable(World world, Color startcolor, Color endcolor, WDist width, int length, int skip, int zOffset, float widthFadeRate, BlendMode blendMode)
+			: this(world, new WPos[length], width, 0, 0, skip, startcolor, endcolor, zOffset, widthFadeRate, blendMode) { }
 
-		ContrailRenderable(World world, WPos[] trail, WDist width, int next, int length, int skip, Color color, int zOffset, BlendMode blendMode)
+		ContrailRenderable(World world, WPos[] trail, WDist width, int next, int length, int skip, Color startcolor, Color endcolor, int zOffset, float widthFadeRate, BlendMode blendMode)
 		{
 			this.world = world;
 			this.trail = trail;
@@ -45,8 +45,10 @@ namespace OpenRA.Mods.Common.Graphics
 			this.next = next;
 			this.length = length;
 			this.skip = skip;
-			this.color = color;
+			this.startcolor = startcolor;
+			this.endcolor = endcolor;
 			this.zOffset = zOffset;
+			this.widthFadeRate = widthFadeRate;
 			this.blendMode = blendMode;
 		}
 
@@ -54,13 +56,15 @@ namespace OpenRA.Mods.Common.Graphics
 		public int ZOffset => zOffset;
 		public bool IsDecoration => true;
 
-		public IRenderable WithZOffset(int newOffset) { return new ContrailRenderable(world, (WPos[])trail.Clone(), width, next, length, skip, color, newOffset, blendMode); }
+		readonly BlendMode blendMode;
+		public BlendMode BlendMode => blendMode;
 
+		public IRenderable WithZOffset(int newOffset) { return new ContrailRenderable(world, (WPos[])trail.Clone(), width, next, length, skip, startcolor, endcolor, newOffset, widthFadeRate, blendMode); }
 		public IRenderable OffsetBy(in WVec vec)
 		{
 			// Lambdas can't use 'in' variables, so capture a copy for later
 			var offset = vec;
-			return new ContrailRenderable(world, trail.Select(pos => pos + offset).ToArray(), width, next, length, skip, color, zOffset, blendMode);
+			return new ContrailRenderable(world, trail.Select(pos => pos + offset).ToArray(), width, next, length, skip, startcolor, endcolor, zOffset, widthFadeRate, blendMode);
 		}
 
 		public IRenderable AsDecoration() { return this; }
@@ -79,13 +83,12 @@ namespace OpenRA.Mods.Common.Graphics
 
 			// Start of the first line segment is the tail of the list - don't smooth it.
 			var curPos = trail[Index(next - skip - 1)];
-			var curColor = color;
+			var curColor = startcolor;
 
 			for (var i = 1; i < renderLength; i++)
 			{
 				var j = next - skip - 1 - i;
-				var alpha = ((renderLength - i) * color.A + renderLength - 1) / renderLength;
-				var nextColor = Color.FromArgb(alpha, color);
+				var nextColor = Exts.ColorLerp(i * 1f / (renderLength - 1), startcolor, endcolor);
 
 				var nextX = 0L;
 				var nextY = 0L;
@@ -102,7 +105,11 @@ namespace OpenRA.Mods.Common.Graphics
 				var nextPos = new WPos((int)(nextX / k), (int)(nextY / k), (int)(nextZ / k));
 
 				if (!world.FogObscures(curPos) && !world.FogObscures(nextPos))
-					wcr.DrawWorldLine(wr.Render3DPosition(curPos), wr.Render3DPosition(nextPos), screenWidth, curColor, nextColor, blendMode);
+				{
+					var wfade = (renderLength * 1f - (i - 1) * widthFadeRate) / renderLength;
+					if (wfade > 0)
+						wcr.DrawWorldLine(wr.Render3DPosition(curPos), wr.Render3DPosition(nextPos), screenWidth * wfade, curColor, nextColor, blendMode);
+				}
 
 				curPos = nextPos;
 				curColor = nextColor;
@@ -126,12 +133,6 @@ namespace OpenRA.Mods.Common.Graphics
 
 			if (length < trail.Length)
 				length++;
-		}
-
-		public static Color ChooseColor(Actor self)
-		{
-			var ownerColor = Color.FromArgb(255, self.Owner.Color);
-			return Exts.ColorLerp(0.5f, ownerColor, Color.White);
 		}
 	}
 }

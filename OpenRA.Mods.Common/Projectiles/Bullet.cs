@@ -13,12 +13,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using OpenRA.GameRules;
-using OpenRA.Graphics;
-using OpenRA.Mods.Common.Effects;
-using OpenRA.Mods.Common.Graphics;
 using OpenRA.Mods.Common.Traits;
-using OpenRA.Primitives;
-using OpenRA.Support;
 using OpenRA.Traits;
 
 namespace OpenRA.Mods.Common.Projectiles
@@ -79,18 +74,14 @@ namespace OpenRA.Mods.Common.Projectiles
 		{
 			if (ScatWeapon != null)
 			{
-				WeaponInfo scatWeapon;
-
-				if (!rules.Weapons.TryGetValue(ScatWeapon.ToLowerInvariant(), out scatWeapon))
+				if (!rules.Weapons.TryGetValue(ScatWeapon.ToLowerInvariant(), out var scatWeapon))
 					throw new YamlException("Weapons Ruleset does not contain an entry '{0}'".F(ScatWeapon.ToLowerInvariant()));
 				ScatWeaponInfo = scatWeapon;
 			}
 
 			if (BounceWeapon != null)
 			{
-				WeaponInfo bounceWeapon;
-
-				if (!rules.Weapons.TryGetValue(BounceWeapon.ToLowerInvariant(), out bounceWeapon))
+				if (!rules.Weapons.TryGetValue(BounceWeapon.ToLowerInvariant(), out var bounceWeapon))
 					throw new YamlException("Weapons Ruleset does not contain an entry '{0}'".F(BounceWeapon.ToLowerInvariant()));
 				BounceWeaponInfo = bounceWeapon;
 			}
@@ -271,10 +262,11 @@ namespace OpenRA.Mods.Common.Projectiles
 					return true;
 
 				var ph = world.Map.HeightOfCell(pos);
+
 				// rebounce
 				if (bounceHeight > ph)
 				{
-					//pos = pos - new WVec(0, 0, dat);
+					/*pos = pos - new WVec(0, 0, dat);*/
 					target += (pos - source) * info.BounceRangeModifier / 100;
 					target = new WPos(target.X, target.Y, (bounceHeight - ph) * info.BounceRangeModifier / 100 + ph);
 				}
