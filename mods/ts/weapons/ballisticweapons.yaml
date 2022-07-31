@@ -6,16 +6,22 @@
 		# Image: 120mm
 		# Shadow: true
 		# Palette: ra
-		LaunchAngle: 5
 		DetectTargetFromLength: 0.8
 		DetectTargetBeforeDist: 2c512
-		ContrailLength: 4
-		ContrailWidth: 66
-		ContrailStartColor: FFFFCFF0
 		ContrailDelay: 0
-		ContrailBlendMode: ScreenAdditive
-		Speed: 1050
-		ZOffset: 1024
+		ContrailLength: 4
+		ContrailStartColor: BBAA66
+		ContrailStartColorAlpha: 255
+		ContrailWidth: 0c80
+		ContrailEndColor: BB2200
+		ContrailEndColorAlpha: 255
+		ContrailWidthFadeRate: 1
+		ContrailZOffset: 3000
+		TrailImage: cannonsmokecircle
+		TrailPalette: effect
+		TrailDelay: 0
+		TrailInterval: 1
+		Speed: 800
 		Inaccuracy: 300
 		UseVerticalInaccuracy: true
 		OnlyHitToExplode: true
@@ -57,7 +63,7 @@
 	Inherits: ^Cannon
 	ReloadDelay: 75
 	Projectile: Bullet
-		Speed: 1c512
+		ContrailWidth: 0c96
 		Blockable: false
 		LaunchAngle: 0
 	Warhead@1Dam: SpreadDamage

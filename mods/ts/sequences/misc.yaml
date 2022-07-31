@@ -797,3 +797,14 @@ fire2:
 		BlendMode: Translucent
 		Offset: 0, -18, 18
 		ZOffset: 10
+
+cannonsmokecircle:
+	idle:
+		Length: *
+		ZOffset: 512
+		IgnoreWorldTint: true
+	idle2:
+		Length: *
+		ZOffset: 512
+		Scale: 0.75
+		IgnoreWorldTint: true
