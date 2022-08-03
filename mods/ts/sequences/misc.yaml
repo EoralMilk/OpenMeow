@@ -808,3 +808,22 @@ cannonsmokecircle:
 		ZOffset: 512
 		Scale: 0.75
 		IgnoreWorldTint: true
+
+caryland:
+	idle: podring
+		Length: *
+		Tick: 50
+		ZOffset: -512
+		ZRamp: 1
+		Offset: 0, 0, 1
+		BlendMode: Translucent
+
+dropland:
+	idle: podring
+		Length: *
+		Tick: 90
+		ZOffset: -512
+		ZRamp: 1
+		Offset: 0, 0, 1
+		BlendMode: Translucent
+

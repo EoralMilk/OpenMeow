@@ -384,6 +384,8 @@ ORCATRAN:
 		RequiresCondition: empdisable && !traped
 	Selectable:
 		Bounds: 1327, 1930, 0, -482
+	WithAircraftLandingEffect:
+		Image: caryland
 
 TRNSPORT:
 	Inherits: ^EMPableAircraft
@@ -427,6 +429,8 @@ TRNSPORT:
 	SpawnActorOnDeath@EMP:
 		Actor: TRNSPORT.Husk.EMP
 		RequiresCondition: empdisable && !traped
+	WithAircraftLandingEffect:
+		Image: caryland
 
 SCRIN:
 	Inherits: ^EMPableAircraft
