@@ -11,7 +11,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using OpenRA.GameRules;
 using OpenRA.Mods.Common.Traits;
 using OpenRA.Traits;
@@ -403,9 +402,11 @@ namespace OpenRA.Mods.Common.Projectiles
 					continue;
 
 				// If the impact position is within any actor's HitShape, we have a direct hit
-				var activeShapes = victim.TraitsImplementing<HitShape>().Where(Exts.IsTraitEnabled);
-				if (activeShapes.Any(i => i.DistanceFromEdge(victim, pos).Length <= 0))
-					return true;
+				// PERF: Avoid using TraitsImplementing<HitShape> that needs to find the actor in the trait dictionary.
+				foreach (var targetPos in victim.EnabledTargetablePositions)
+					if (targetPos is HitShape h)
+						if (h.DistanceFromEdge(victim, pos).Length <= 0)
+							return true;
 			}
 
 			return false;
