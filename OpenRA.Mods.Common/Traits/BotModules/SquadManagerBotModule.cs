@@ -232,9 +232,8 @@ namespace OpenRA.Mods.Common.Traits
 				return World.FindActorsInCircle(leader.CenterPosition, radius).Where(a => IsPreferredEnemyUnit(a) && IsNotHiddenUnit(a) && IsNotUnseenUnit(a)).ClosestTo(leader.CenterPosition);
 			else
 			{
-				var domainIndex = leader.World.WorldActor.Trait<DomainIndex>();
 				var locomotor = mobile.Locomotor;
-				return World.FindActorsInCircle(leader.CenterPosition, radius).Where(a => IsPreferredEnemyUnit(a) && IsNotHiddenUnit(a) && IsNotUnseenUnit(a) && domainIndex.IsPassable(leader.Location, a.Location, locomotor)).ClosestTo(leader.CenterPosition);
+				return World.FindActorsInCircle(leader.CenterPosition, radius).Where(a => IsPreferredEnemyUnit(a) && IsNotHiddenUnit(a) && IsNotUnseenUnit(a) && mobile.PathFinder.PathExistsForLocomotor(locomotor, leader.Location, a.Location)).ClosestTo(leader.CenterPosition);
 			}
 		}
 
@@ -248,9 +247,8 @@ namespace OpenRA.Mods.Common.Traits
 			}
 			else
 			{
-				var domainIndex = leader.World.WorldActor.Trait<DomainIndex>();
 				var locomotor = mobile.Locomotor;
-				var units = World.Actors.Where(a => IsPreferredEnemyUnit(a) && domainIndex.IsPassable(leader.Location, a.Location, locomotor));
+				var units = World.Actors.Where(a => IsPreferredEnemyUnit(a) && mobile.PathFinder.PathExistsForLocomotor(locomotor, leader.Location, a.Location));
 				return units.Where(IsNotHiddenUnit).ClosestTo(leader.CenterPosition) ?? units.ClosestTo(leader.CenterPosition);
 			}
 		}
