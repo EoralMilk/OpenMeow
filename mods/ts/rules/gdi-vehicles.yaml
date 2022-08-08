@@ -2,6 +2,7 @@ APC:
 	Inherits: ^Tank
 	Inherits@VOXELS: ^VoxelActor
 	Inherits@CARGOPIPS: ^CargoPips
+	Inherits: ^WithIsslyVoxRender
 	Valued:
 		Cost: 800
 	Tooltip:
@@ -57,6 +58,7 @@ HVR:
 	Inherits@VOXELS: ^VoxelActor
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits: ^WithIsslyVoxRender
 	Valued:
 		Cost: 900
 	Tooltip:
@@ -241,6 +243,7 @@ HMEC:
 	Inherits@VOXELS: ^VoxelActor
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits: ^WithIsslyVoxRender
 	Valued:
 		Cost: 3000
 	Tooltip:
@@ -302,6 +305,7 @@ SONIC:
 	Inherits@VOXELS: ^VoxelActor
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits: ^WithIsslyVoxRender
 	Valued:
 		Cost: 1300
 	Tooltip:

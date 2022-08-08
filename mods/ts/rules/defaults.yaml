@@ -18,6 +18,13 @@
 		RequiresCondition: avoidtarget
 		Modifier: 0
 
+^WithIsslyVoxRender:
+	RenderModels:
+		Scale: 0.14
+		LightScale: 0.25
+		SpecularScale: 0.2
+		AmbientScale: 1		
+
 ^SpriteActor:
 	BodyOrientation:
 		UseClassicPerspectiveFudge: False
