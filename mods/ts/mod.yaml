@@ -47,11 +47,14 @@ Packages:
 	~e01vox01.mix
 	~e01vox02.mix
 	~ecache01.mix
-	# Issly's Voxel
-	~isslyvox01.mix
+
 	ts|bits
 	ts|bits/audios
 	ts|bits/vxls
+
+	# Issly's Voxel
+	~isslyvox01.mix
+	
 	ts|uibits
 	ts|meshes
 	ts|materials
