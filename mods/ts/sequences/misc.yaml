@@ -817,6 +817,7 @@ caryland:
 		ZRamp: 1
 		Offset: 0, 0, 1
 		BlendMode: Translucent
+		MeshType: Plane
 
 dropland:
 	idle: podring
@@ -826,4 +827,4 @@ dropland:
 		ZRamp: 1
 		Offset: 0, 0, 1
 		BlendMode: Translucent
-
+		MeshType: Plane
