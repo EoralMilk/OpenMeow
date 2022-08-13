@@ -3,6 +3,7 @@
 	Inherits@VOXELS: ^VoxelActor
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits: ^WithIsslyVoxRender
 	Buildable:
 		Queue: Air
 		BuildPaletteOrder: 1
@@ -27,11 +28,13 @@
 		TurnSpeed: 12
 	Armament@PRIMARY:
 		Weapon: 120mmx
-		LocalOffset: 707,85,264, 707,-120,264
+		LocalOffset: 907,85,430, 907,-120,434
+		#LocalOffset: 707,85,264, 707,-120,264
 		MuzzleSequence: muzzle
 	Armament@SECONDARY:
 		Weapon: MammothTusk
-		LocalOffset: 0,283,335, 0,-283,335
+		LocalOffset: -80,233,355, -80,-233,355
+		#LocalOffset: 0,283,335, 0,-283,335
 	AttackTurreted:
 		Voice: Attack
 		PauseOnCondition: empdisable

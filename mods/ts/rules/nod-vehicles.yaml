@@ -3,6 +3,7 @@ BGGY:
 	Inherits@VOXELS: ^VoxelActor
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits: ^WithIsslyVoxRender
 	Valued:
 		Cost: 400
 	Tooltip:
@@ -43,6 +44,7 @@ BIKE:
 	Inherits@VOXELS: ^VoxelActor
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits: ^WithIsslyVoxRender
 	Valued:
 		Cost: 600
 	Tooltip:
@@ -87,6 +89,7 @@ TTNK:
 	Inherits@VOXELS: ^VoxelActor
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits: ^WithIsslyVoxRender
 	Valued:
 		Cost: 800
 	Tooltip:
@@ -201,14 +204,14 @@ TTNK:
 	RenderDetectionCircle:
 	RevealOnFire:
 		ArmamentNames: primary, deployed
-	RenderModels:
-		Scale: 1.4
+	
 
 ART2:
 	Inherits: ^Tank
 	Inherits@VOXELS: ^VoxelActor
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits: ^WithIsslyVoxRender
 	Valued:
 		Cost: 975
 	Tooltip:
@@ -302,6 +305,7 @@ ART2:
 REPAIR:
 	Inherits: ^Tank
 	Inherits@VOXELS: ^VoxelActor
+	Inherits: ^WithRA2VoxRender
 	Buildable:
 		Queue: Vehicle
 		BuildPaletteOrder: 70
@@ -393,6 +397,7 @@ SAPC:
 	Inherits: ^Tank
 	Inherits@VOXELS: ^VoxelActor
 	Inherits@CARGOPIPS: ^CargoPips
+	Inherits: ^WithRA2VoxRender
 	Valued:
 		Cost: 800
 	Tooltip:
@@ -424,10 +429,6 @@ SAPC:
 		LoadingCondition: loading
 		EjectOnDeath: true
 	WithModelBody:
-		RequiresCondition: !submerged
-	Targetable:
-		RequiresCondition: !inside-tunnel && !submerged
-	Targetable@UNDERGROUND:
 		TargetTypes: Underground
 		RequiresCondition: submerged
 	GrantConditionOnSubterraneanLayer:
@@ -445,6 +446,7 @@ SUBTANK:
 	Inherits@VOXELS: ^VoxelActor
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits: ^WithRA2VoxRender
 	Valued:
 		Cost: 750
 	Tooltip:
@@ -496,6 +498,7 @@ STNK:
 	Inherits@VOXELS: ^VoxelActor
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits: ^WithRA2VoxRender
 	Valued:
 		Cost: 1100
 	Tooltip:

@@ -61,6 +61,7 @@ ORCAB.Husk:
 		Image: orcab
 	RenderModels:
 		Image: orcab
+		Scale: 0.14
 
 ORCAB.Husk.EMP:
 	Inherits: ORCAB.Husk
@@ -93,6 +94,7 @@ TRNSPORT.Husk:
 		Image: trnsport
 	RenderModels:
 		Image: trnsport
+		Scale: 0.14
 
 TRNSPORT.Husk.EMP:
 	Inherits: TRNSPORT.Husk

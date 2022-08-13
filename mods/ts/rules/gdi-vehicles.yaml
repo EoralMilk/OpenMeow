@@ -58,7 +58,7 @@ HVR:
 	Inherits@VOXELS: ^VoxelActor
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
-	Inherits: ^WithIsslyVoxRender
+	Inherits: ^WithRA2VoxRender
 	Valued:
 		Cost: 900
 	Tooltip:
@@ -87,7 +87,8 @@ HVR:
 	Armament:
 		Weapon: HoverMissileDual
 		Turret: primary
-		LocalOffset: 122,172,666, 122,-172,666, 122,211,666, 122,-211,666
+		#LocalOffset: 122,172,666, 122,-172,666, 122,211,666, 122,-211,666
+		LocalOffset: 122,172,666, 122,-172,666, 122,211,606, 122,-211,606
 	Turreted:
 		TurnSpeed: 28
 		Turret: primary
@@ -230,8 +231,9 @@ MMCH:
 	RenderModels:
 		NormalsPalette: normals
 		ShadowPalette: shadow
-		Scale: 1.4
+	Inherits: ^WithIsslyVoxRender
 	WithModelBarrel:
+		Scale: 0.14
 		LocalOffset: 0,51,256
 	Selectable:
 		Bounds: 905, 2534, 0, -482
@@ -339,7 +341,7 @@ SONIC:
 		OpportunityFire: False
 	Turreted:
 		TurnSpeed: 20
-		Offset: -170,0,0
+		Offset: -386,0,0
 	WithModelTurret:
 	Explodes:
 		RequiresCondition: !rank-elite && !traped

@@ -28,6 +28,7 @@ nalasr:
 
 sapc:
 	idle:
+	water: apcw
 
 bike:
 	idle:

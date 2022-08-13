@@ -92,6 +92,7 @@ DPOD2E2:
 DSHP:
 	Inherits: ^Aircraft
 	Inherits@CARGOPIPS: ^CargoPips
+	Inherits: ^WithIsslyVoxRender
 	Valued:
 		Cost: 1000
 	Tooltip:
@@ -209,6 +210,7 @@ ORCA:
 	Inherits: ^EMPableAircraft
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits: ^WithIsslyVoxRender
 	Valued:
 		Cost: 1000
 	Tooltip:
@@ -277,6 +279,7 @@ ORCAB:
 	Inherits: ^EMPableAircraft
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits: ^WithIsslyVoxRender
 	Valued:
 		Cost: 1400
 	Tooltip:
@@ -387,6 +390,7 @@ ORCATRAN:
 
 TRNSPORT:
 	Inherits: ^EMPableAircraft
+	Inherits: ^WithIsslyVoxRender
 	Valued:
 		Cost: 750
 	Tooltip:
