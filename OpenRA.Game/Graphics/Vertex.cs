@@ -61,4 +61,32 @@ namespace OpenRA.Graphics
 			U = u; V = v;
 		}
 	}
+
+	public struct MapVertex
+	{
+		public readonly float X, Y, Z;
+		public readonly float NX, NY, NZ;
+		public readonly float U, V;
+		public readonly float TR, TG, TB;
+		public readonly float R, G, B, A;
+
+		public MapVertex(float x, float y, float z, float nx, float ny, float nz, float u, float v, float tr, float tg, float tb, float r, float g, float b, float a)
+		{
+			X = x;
+			Y = y;
+			Z = z;
+			NX = nx;
+			NY = ny;
+			NZ = nz;
+			U = u;
+			V = v;
+			TR = tr;
+			TG = tg;
+			TB = tb;
+			R = r;
+			G = g;
+			B = b;
+			A = a;
+		}
+	};
 }

@@ -36,9 +36,9 @@ namespace OpenRA.Mods.Common.Traits
 	public abstract class AffectsShroud : ConditionalTrait<AffectsShroudInfo>, ISync, INotifyAddedToWorld,
 		INotifyRemovedFromWorld, INotifyMoving, INotifyCenterPositionChanged, ITick
 	{
-		static readonly PPos[] NoCells = Array.Empty<PPos>();
+		static readonly CPos[] NoCells = Array.Empty<CPos>();
 
-		readonly HashSet<PPos> footprint;
+		readonly HashSet<CPos> footprint;
 
 		[Sync]
 		CPos cachedLocation;
@@ -51,17 +51,17 @@ namespace OpenRA.Mods.Common.Traits
 
 		WPos cachedPos;
 
-		protected abstract void AddCellsToPlayerShroud(Actor self, Player player, PPos[] uv);
+		protected abstract void AddCellsToPlayerShroud(Actor self, Player player, CPos[] uv);
 		protected abstract void RemoveCellsFromPlayerShroud(Actor self, Player player);
 
 		public AffectsShroud(AffectsShroudInfo info)
 			: base(info)
 		{
 			if (Info.Type == VisibilityType.Footprint)
-				footprint = new HashSet<PPos>();
+				footprint = new HashSet<CPos>();
 		}
 
-		PPos[] ProjectedCells(Actor self)
+		CPos[] ProjectedCells(Actor self)
 		{
 			var map = self.World.Map;
 			var minRange = Info.MinRange;
@@ -73,7 +73,7 @@ namespace OpenRA.Mods.Common.Traits
 			{
 				// PERF: Reuse collection to avoid allocations.
 				footprint.UnionWith(self.OccupiesSpace.OccupiedCells()
-					.SelectMany(kv => Shroud.ProjectedCellsInRange(map, map.CenterOfCell(kv.Cell), minRange, maxRange, Info.MaxHeightDelta)));
+					.SelectMany(kv => Shroud.ProjectedCellsInRange(map, map.CenterOfCell(kv.Cell), minRange, maxRange, Info.MaxHeightDelta * MapGrid.MapHeightStep)));
 				var cells = footprint.ToArray();
 				footprint.Clear();
 				return cells;
@@ -83,7 +83,7 @@ namespace OpenRA.Mods.Common.Traits
 			if (Info.Type == VisibilityType.GroundPosition)
 				pos -= new WVec(WDist.Zero, WDist.Zero, self.World.Map.DistanceAboveTerrain(pos));
 
-			return Shroud.ProjectedCellsInRange(map, pos, minRange, maxRange, Info.MaxHeightDelta)
+			return Shroud.ProjectedCellsInRange(map, pos, minRange, maxRange, Info.MaxHeightDelta * MapGrid.MapHeightStep)
 				.ToArray();
 		}
 
@@ -93,7 +93,7 @@ namespace OpenRA.Mods.Common.Traits
 				return;
 
 			var centerPosition = self.CenterPosition;
-			var projectedPos = centerPosition - new WVec(0, centerPosition.Z, centerPosition.Z);
+			var projectedPos = centerPosition;// - new WVec(0, centerPosition.Z, centerPosition.Z);
 			var projectedLocation = self.World.Map.CellContaining(projectedPos);
 			var pos = self.CenterPosition;
 
@@ -137,7 +137,7 @@ namespace OpenRA.Mods.Common.Traits
 		void INotifyAddedToWorld.AddedToWorld(Actor self)
 		{
 			var centerPosition = self.CenterPosition;
-			var projectedPos = centerPosition - new WVec(0, centerPosition.Z, centerPosition.Z);
+			var projectedPos = centerPosition;// - new WVec(0, centerPosition.Z, centerPosition.Z);
 			cachedLocation = self.World.Map.CellContaining(projectedPos);
 			cachedPos = centerPosition;
 			CachedTraitDisabled = IsTraitDisabled;
@@ -161,7 +161,7 @@ namespace OpenRA.Mods.Common.Traits
 			if (type == MovementType.None && self.IsInWorld)
 			{
 				var centerPosition = self.CenterPosition;
-				var projectedPos = centerPosition - new WVec(0, centerPosition.Z, centerPosition.Z);
+				var projectedPos = centerPosition;// - new WVec(0, centerPosition.Z, centerPosition.Z);
 				var projectedLocation = self.World.Map.CellContaining(projectedPos);
 				var pos = self.CenterPosition;
 

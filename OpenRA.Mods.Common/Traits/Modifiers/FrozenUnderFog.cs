@@ -33,7 +33,8 @@ namespace OpenRA.Mods.Common.Traits
 
 		readonly FrozenUnderFogInfo info;
 		readonly bool startsRevealed;
-		readonly PPos[] footprint;
+		readonly CPos[] footprint;
+		readonly MPos[] footprintMPos;
 
 		PlayerDictionary<FrozenState> frozenStates;
 		bool isRendering;
@@ -61,14 +62,23 @@ namespace OpenRA.Mods.Common.Traits
 			startsRevealed = exploredMap && init.Contains<SpawnedByMapInit>() && !init.Contains<HiddenUnderFogInit>();
 			var buildingInfo = init.Self.Info.TraitInfoOrDefault<BuildingInfo>();
 			var footprintCells = buildingInfo?.FrozenUnderFogTiles(init.Self.Location).ToList() ?? new List<CPos>() { init.Self.Location };
-			footprint = footprintCells.SelectMany(c => map.ProjectedCellsCovering(c.ToMPos(map))).ToArray();
+
+			//footprint = footprintCells.SelectMany(c => map.ProjectedCellsCovering(c.ToMPos(map))).ToArray();
+			footprint = footprintCells.ToArray();
+			var footprintMPosList = new List<MPos>();
+			foreach (var c in footprint)
+			{
+				footprintMPosList.Add(c.ToMPos(map));
+			}
+
+			footprintMPos = footprintMPosList.ToArray();
 		}
 
 		void INotifyCreated.Created(Actor self)
 		{
 			frozenStates = new PlayerDictionary<FrozenState>(self.World, (player, playerIndex) =>
 			{
-				var frozenActor = new FrozenActor(self, this, footprint, player, startsRevealed);
+				var frozenActor = new FrozenActor(self, this, footprintMPos, player, startsRevealed);
 				player.PlayerActor.Trait<FrozenActorLayer>().Add(frozenActor);
 				return new FrozenState(frozenActor) { IsVisible = !frozenActor.Visible };
 			});
@@ -119,7 +129,7 @@ namespace OpenRA.Mods.Common.Traits
 		{
 			// If fog is disabled visibility is determined by shroud
 			if (!byPlayer.Shroud.FogEnabled)
-				return byPlayer.Shroud.AnyExplored(footprint);
+				return byPlayer.Shroud.AnyExplored(footprintMPos);
 
 			return frozenStates[byPlayer].IsVisible;
 		}

@@ -321,6 +321,79 @@ namespace OpenRA.Graphics
 			vertices[nv + 5] = new Vertex(leftTop, r.Left, r.Top, sl, st, paletteTextureIndex, fAttribC, tint, alpha);
 		}
 
+		public static void FastCreateTile(Vertex[] vertices, float3[] verticesColor,
+			in float3 mpos, in float3 tpos, in float3 bpos, in float3 lpos, in float3 rpos,
+			in float3 mtint, in float3 ttint, in float3 btint, in float3 ltint, in float3 rtint,
+			Sprite r, int2 samplers, float paletteTextureIndex, float scale,
+			in float3 tint, float alpha, int nv, float rotation = 0f)
+		{
+			if (scale < 0)
+			{
+				throw new Exception("invalide create mesh scale: only positve value supported");
+			}
+
+			float sl = 0;
+			float st = 0;
+			float sbaseTB = 0;
+			float sbaseRL = 0;
+
+			float sr = 0;
+			float sb = 0;
+
+			// See combined.vert for documentation on the channel attribute format
+			var attribC = r.Channel == TextureChannel.RGBA ? 0x02 : ((byte)r.Channel) << 1 | 0x01;
+			attribC |= samplers.X << 6;
+			if (r is SpriteWithSecondaryData ss)
+			{
+				sl = ss.SecondaryLeft;
+				st = ss.SecondaryTop;
+				sr = ss.SecondaryRight;
+				sb = ss.SecondaryBottom;
+
+				sbaseTB = st - (st - sb) * 0.5f;
+				sbaseRL = sr - (sr - sl) * 0.5f;
+
+				attribC |= ((byte)ss.SecondaryChannel) << 4 | 0x08;
+				attribC |= samplers.Y << 9;
+			}
+
+			var fAttribC = (float)attribC;
+			float baseY = r.Top - (r.Top - r.Bottom) * 0.5f;
+			float baseX = r.Right - (r.Right - r.Left) * 0.5f;
+
+			vertices[nv] = new Vertex(tpos, r.Left, r.Top, sl, st, paletteTextureIndex, fAttribC, ttint, alpha);
+			vertices[nv + 1] = new Vertex(mpos, baseX, baseY, sbaseRL, sbaseTB, paletteTextureIndex, fAttribC, mtint, alpha);
+			vertices[nv + 2] = new Vertex(rpos, r.Right, r.Top, sr, st, paletteTextureIndex, fAttribC, rtint, alpha);
+
+			vertices[nv + 3] = new Vertex(mpos, baseX, baseY, sbaseRL, sbaseTB, paletteTextureIndex, fAttribC, mtint, alpha);
+			vertices[nv + 4] = new Vertex(bpos, r.Right, r.Bottom, sr, sb, paletteTextureIndex, fAttribC, btint, alpha);
+			vertices[nv + 5] = new Vertex(rpos, r.Right, r.Top, sr, st, paletteTextureIndex, fAttribC, rtint, alpha);
+
+			vertices[nv + 6] = new Vertex(tpos, r.Left, r.Top, sl, st, paletteTextureIndex, fAttribC, ttint, alpha);
+			vertices[nv + 7] = new Vertex(lpos, r.Left, r.Bottom, sl, sb, paletteTextureIndex, fAttribC, ltint, alpha);
+			vertices[nv + 8] = new Vertex(mpos, baseX, baseY, sbaseRL, sbaseTB, paletteTextureIndex, fAttribC, mtint, alpha);
+
+			vertices[nv + 9] = new Vertex(mpos, baseX, baseY, sbaseRL, sbaseTB, paletteTextureIndex, fAttribC, mtint, alpha);
+			vertices[nv + 10] = new Vertex(lpos, r.Left, r.Bottom, sl, sb, paletteTextureIndex, fAttribC, ltint, alpha);
+			vertices[nv + 11] = new Vertex(bpos, r.Right, r.Bottom, sr, sb, paletteTextureIndex, fAttribC, btint, alpha);
+
+			verticesColor[nv] = ttint;
+			verticesColor[nv + 1] = mtint;
+			verticesColor[nv + 2] = rtint;
+
+			verticesColor[nv + 3] = mtint;
+			verticesColor[nv + 4] = btint;
+			verticesColor[nv + 5] = rtint;
+
+			verticesColor[nv + 6] = ttint;
+			verticesColor[nv + 7] = ltint;
+			verticesColor[nv + 8] = mtint;
+
+			verticesColor[nv + 9] = mtint;
+			verticesColor[nv + 10] = ltint;
+			verticesColor[nv + 11] = btint;
+		}
+
 		public static void FastCreateQuad(Vertex[] vertices, in float3 o, Sprite r, int2 samplers, float paletteTextureIndex, int nv,
 					in float3 size, in float3 tint, float alpha, float rotation = 0f)
 		{

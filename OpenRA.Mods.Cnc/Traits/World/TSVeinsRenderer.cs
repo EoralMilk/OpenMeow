@@ -320,7 +320,7 @@ namespace OpenRA.Mods.Cnc.Traits
 		void UpdateSpriteLayers(CPos cell, int[] indices)
 		{
 			if (indices != null)
-				spriteLayer.Update(cell, veinSequence, veinPalette, indices.Random(world.LocalRandom));
+				spriteLayer.Update(cell, veinSequence, veinPalette, indices.Random(world.LocalRandom), true);
 			else
 				spriteLayer.Clear(cell);
 		}

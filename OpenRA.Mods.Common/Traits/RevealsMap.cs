@@ -36,7 +36,7 @@ namespace OpenRA.Mods.Common.Traits
 				: Shroud.SourceType.PassiveVisibility;
 		}
 
-		protected void AddCellsToPlayerShroud(Actor self, Player p, PPos[] uv)
+		protected void AddCellsToPlayerShroud(Actor self, Player p, CPos[] uv)
 		{
 			if (!Info.ValidRelationships.HasRelationship(self.Owner.RelationshipWith(p)))
 				return;
@@ -46,9 +46,9 @@ namespace OpenRA.Mods.Common.Traits
 
 		protected void RemoveCellsFromPlayerShroud(Player p) { p.Shroud.RemoveSource(this); }
 
-		protected PPos[] ProjectedCells(Actor self)
+		protected CPos[] ProjectedCells(Actor self)
 		{
-			return self.World.Map.ProjectedCells;
+			return self.World.Map.AllCellsArray;
 		}
 
 		void INotifyOwnerChanged.OnOwnerChanged(Actor self, Player oldOwner, Player newOwner)

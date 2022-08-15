@@ -12,12 +12,14 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Security.Cryptography;
 
 namespace OpenRA.Graphics
 {
 	public sealed class TerrainSpriteLayer : IDisposable
 	{
-		static readonly int[] CornerVertexMap = { 0, 1, 2, 2, 3, 0 };
+		static readonly int[] CornerVertexMap6 = { 0, 1, 2, 2, 3, 0 };
+		static readonly int[] CornerVertexMap = { 1, 0, 4, 0, 2, 4, 1, 3, 0, 0, 3, 2};
 
 		public readonly BlendMode BlendMode;
 
@@ -26,6 +28,8 @@ namespace OpenRA.Graphics
 
 		readonly IVertexBuffer<Vertex> vertexBuffer;
 		readonly Vertex[] vertices;
+		readonly float3[] verticesColor;
+
 		readonly bool[] ignoreTint;
 		readonly HashSet<int> dirtyRows = new HashSet<int>();
 		readonly int rowStride;
@@ -49,6 +53,13 @@ namespace OpenRA.Graphics
 			rowStride = Game.Renderer.MaxVerticesPerMesh * map.MapSize.X;
 
 			vertices = new Vertex[rowStride * map.MapSize.Y];
+			verticesColor = new float3[rowStride * map.MapSize.Y];
+
+			for (int i = 0; i < verticesColor.Length; i++)
+			{
+				verticesColor[i] = float3.Ones;
+			}
+
 			palettes = new PaletteReference[map.MapSize.X * map.MapSize.Y];
 			vertexBuffer = Game.Renderer.Context.CreateVertexBuffer<Vertex>(vertices.Length);
 
@@ -79,12 +90,12 @@ namespace OpenRA.Graphics
 			Update(cell, null, null, 1f, 1f, true);
 		}
 
-		public void Update(CPos cell, ISpriteSequence sequence, PaletteReference palette, int frame)
+		public void Update(CPos cell, ISpriteSequence sequence, PaletteReference palette, int frame, bool additional = false)
 		{
-			Update(cell, sequence.GetSprite(frame), palette, sequence.Scale, sequence.GetAlpha(frame), sequence.IgnoreWorldTint, sequence.ZOffset);
+			Update(cell, sequence.GetSprite(frame), palette, sequence.Scale, sequence.GetAlpha(frame), sequence.IgnoreWorldTint, sequence.ZOffset, additional: additional);
 		}
 
-		public void Update(CPos cell, Sprite sprite, PaletteReference palette, float scale = 1f, float alpha = 1f, bool ignoreTint = false, int zOffset = -1)
+		public void Update(CPos cell, Sprite sprite, PaletteReference palette, float scale = 1f, float alpha = 1f, bool ignoreTint = false, int zOffset = -1, bool additional = false)
 		{
 			//var xyz = float3.Zero;
 			WPos wPos = WPos.Zero;
@@ -95,7 +106,7 @@ namespace OpenRA.Graphics
 				wPos = map.CenterOfCell(cell) - new WVec(0, 0, map.Grid.Ramps[map.Ramp[cell]].CenterHeightOffset);
 			}
 
-			Update(cell.ToMPos(map.Grid.Type), sprite, palette, wPos, scale, alpha, ignoreTint, zOffset);
+			Update(cell.ToMPos(map.Grid.Type), sprite, palette, wPos, scale, alpha, ignoreTint, zOffset, additional);
 		}
 
 		void UpdateTint(MPos uv)
@@ -106,7 +117,8 @@ namespace OpenRA.Graphics
 				for (var i = 0; i < Game.Renderer.MaxVerticesPerMesh; i++)
 				{
 					var v = vertices[offset + i];
-					vertices[offset + i] = new Vertex(v.X, v.Y, v.Z, v.S, v.T, v.U, v.V, v.P, v.C, v.A * float3.Ones, v.A);
+					var color = verticesColor[offset + i];
+					vertices[offset + i] = new Vertex(v.X, v.Y, v.Z, v.S, v.T, v.U, v.V, v.P, v.C, color * float3.Ones, v.A);
 				}
 
 				return;
@@ -117,13 +129,21 @@ namespace OpenRA.Graphics
 			// transparent for isometric tiles
 			var tl = worldRenderer.TerrainLighting;
 			var pos = map.CenterOfCell(uv.ToCPos(map));
-			var step = map.Grid.Type == MapGridType.RectangularIsometric ? 724 : 512;
+			//var step = map.Grid.Type == MapGridType.RectangularIsometric ? 724 : 512;
+			//var weights = new[]
+			//{
+			//	tl.TintAt(pos + new WVec(-step, -step, 0)),
+			//	tl.TintAt(pos + new WVec(step, -step, 0)),
+			//	tl.TintAt(pos + new WVec(step, step, 0)),
+			//	tl.TintAt(pos + new WVec(-step, step, 0))
+			//};
 			var weights = new[]
 			{
-				tl.TintAt(pos + new WVec(-step, -step, 0)),
-				tl.TintAt(pos + new WVec(step, -step, 0)),
-				tl.TintAt(pos + new WVec(step, step, 0)),
-				tl.TintAt(pos + new WVec(-step, step, 0))
+				tl.TintAt(pos),
+				tl.TintAt(pos + new WVec(0, -724, 0)),
+				tl.TintAt(pos + new WVec(0, 724, 0)),
+				tl.TintAt(pos + new WVec(-724, 0, 0)),
+				tl.TintAt(pos + new WVec(724, 0, 0))
 			};
 
 			// Apply tint directly to the underlying vertices
@@ -131,7 +151,11 @@ namespace OpenRA.Graphics
 			for (var i = 0; i < Game.Renderer.MaxVerticesPerMesh; i++)
 			{
 				var v = vertices[offset + i];
-				vertices[offset + i] = new Vertex(v.X, v.Y, v.Z, v.S, v.T, v.U, v.V, v.P, v.C, v.A * weights[CornerVertexMap[i % 6]], v.A);
+				var color = verticesColor[offset + i];
+				if (color == float3.Ones)
+					vertices[offset + i] = new Vertex(v.X, v.Y, v.Z, v.S, v.T, v.U, v.V, v.P, v.C, v.A * weights[CornerVertexMap6[i % 6]], v.A);
+				else
+					vertices[offset + i] = new Vertex(v.X, v.Y, v.Z, v.S, v.T, v.U, v.V, v.P, v.C, color * weights[CornerVertexMap[i % 12]], v.A);
 			}
 
 			dirtyRows.Add(uv.V);
@@ -157,7 +181,8 @@ namespace OpenRA.Graphics
 			throw new InvalidDataException("Sheet overflow");
 		}
 
-		public void Update(MPos uv, Sprite sprite, PaletteReference palette, in WPos pos, float scale, float alpha, bool ignoreTint, int zOffset = -1)
+		float3 shroudColor = float3.Zero;
+		public void Update(MPos uv, Sprite sprite, PaletteReference palette, in WPos pos, float scale, float alpha, bool ignoreTint, int zOffset = -1, bool additional = false, bool shroud = false)
 		{
 			int2 samplers;
 			if (sprite != null)
@@ -187,23 +212,68 @@ namespace OpenRA.Graphics
 
 			// Note that since the maximum number of vertices per cell is used here, null values may appear in the vertices array 
 			var offset = rowStride * uv.V + Game.Renderer.MaxVerticesPerMesh * uv.U;
-
-			var viewOffset = Game.Renderer.World3DRenderer.InverseCameraFrontMeterPerWPos * (zOffset - 15);
-
-			var spriteMeshType = sprite.SpriteMeshType;
-
-			switch (spriteMeshType)
+			if (additional)
 			{
-				case SpriteMeshType.Plane:
-					Util.FastCreatePlane(vertices, pos, viewOffset, sprite, samplers, palette?.TextureIndex ?? 0, scale, alpha * float3.Ones, alpha, offset);
-					break;
-				case SpriteMeshType.Card:
-					Util.FastCreateCard(vertices, pos, viewOffset, sprite, samplers, palette?.TextureIndex ?? 0, scale, alpha * float3.Ones, alpha, offset);
-					break;
-				case SpriteMeshType.Board:
-					Util.FastCreateBoard(vertices, pos, viewOffset, sprite, samplers, palette?.TextureIndex ?? 0, scale, alpha * float3.Ones, alpha, offset);
-					break;
-				default: throw new Exception("not valid SpriteMeshType for terrain");
+				var viewOffset = Game.Renderer.World3DRenderer.InverseCameraFrontMeterPerWPos * (zOffset - 15);
+
+				var spriteMeshType = sprite.SpriteMeshType;
+
+				switch (spriteMeshType)
+				{
+					case SpriteMeshType.Plane:
+						Util.FastCreatePlane(vertices, pos, viewOffset, sprite, samplers, palette?.TextureIndex ?? 0, scale, alpha * float3.Ones, alpha, offset);
+						break;
+					case SpriteMeshType.Card:
+						Util.FastCreateCard(vertices, pos, viewOffset, sprite, samplers, palette?.TextureIndex ?? 0, scale, alpha * float3.Ones, alpha, offset);
+						break;
+					case SpriteMeshType.Board:
+						Util.FastCreateBoard(vertices, pos, viewOffset, sprite, samplers, palette?.TextureIndex ?? 0, scale, alpha * float3.Ones, alpha, offset);
+						break;
+					default: throw new Exception("not valid SpriteMeshType for terrain");
+				}
+			}
+			else
+			{
+				int2 mid;
+				if (uv.V % 2 == 0)
+				{
+					mid = new int2(2 * uv.U + 1, uv.V + 1);
+				}
+				else
+				{
+					mid = new int2(2 * uv.U + 2, uv.V + 1);
+				}
+
+				if (shroud)
+				{
+					Util.FastCreateTile(vertices, verticesColor,
+												map.VertexPos[mid.Y * map.VertexArrayWidth + mid.X],
+												map.VertexPos[(mid.Y - 1) * map.VertexArrayWidth + mid.X],
+												map.VertexPos[(mid.Y + 1) * map.VertexArrayWidth + mid.X],
+												map.VertexPos[mid.Y * map.VertexArrayWidth + mid.X - 1],
+												map.VertexPos[mid.Y * map.VertexArrayWidth + mid.X + 1],
+												shroudColor,
+												shroudColor,
+												shroudColor,
+												shroudColor,
+												shroudColor,
+												sprite, samplers, palette?.TextureIndex ?? 0, scale, alpha * float3.Ones, alpha, offset);
+				}
+				else
+				{
+					Util.FastCreateTile(vertices, verticesColor,
+												map.VertexPos[mid.Y * map.VertexArrayWidth + mid.X],
+												map.VertexPos[(mid.Y - 1) * map.VertexArrayWidth + mid.X],
+												map.VertexPos[(mid.Y + 1) * map.VertexArrayWidth + mid.X],
+												map.VertexPos[mid.Y * map.VertexArrayWidth + mid.X - 1],
+												map.VertexPos[mid.Y * map.VertexArrayWidth + mid.X + 1],
+												map.VertexColors[mid.Y * map.VertexArrayWidth + mid.X],
+												map.VertexColors[(mid.Y - 1) * map.VertexArrayWidth + mid.X],
+												map.VertexColors[(mid.Y + 1) * map.VertexArrayWidth + mid.X],
+												map.VertexColors[mid.Y * map.VertexArrayWidth + mid.X - 1],
+												map.VertexColors[mid.Y * map.VertexArrayWidth + mid.X + 1],
+												sprite, samplers, palette?.TextureIndex ?? 0, scale, alpha * float3.Ones, -alpha, offset);
+				}
 			}
 
 			palettes[uv.V * map.MapSize.X + uv.U] = palette;

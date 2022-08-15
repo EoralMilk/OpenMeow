@@ -80,4 +80,58 @@ namespace OpenRA.Graphics
 		{
 		}
 	}
+
+	public class MapShaderBindings : IShaderBindings
+	{
+		public string VertexShaderName { get; }
+		public string FragmentShaderName { get; }
+
+		public string GeometryShaderName => null;
+		public int Stride => (15 * sizeof(float));
+
+		public IEnumerable<ShaderVertexAttribute> Attributes { get; } = new[]
+		{
+			new ShaderVertexAttribute("aVertexPos", 0, 3, 0),
+			new ShaderVertexAttribute("aNormal", 1, 3, 3 * sizeof(float)),
+			new ShaderVertexAttribute("aTexCoords", 2, 2, 6 * sizeof(float)),
+			new ShaderVertexAttribute("aVertexTint", 3, 3, 8 * sizeof(float)),
+			new ShaderVertexAttribute("aVertexColor", 4, 4, 11 * sizeof(float)),
+		};
+
+		public bool Instanced => false;
+
+		public int InstanceStrde => throw new System.NotImplementedException();
+
+		public IEnumerable<ShaderVertexAttribute> InstanceAttributes => throw new System.NotImplementedException();
+
+		public MapShaderBindings()
+		{
+			var name = "map";
+			VertexShaderName = name;
+			FragmentShaderName = name;
+		}
+
+		public void SetCommonParaments(IShader shader, World3DRenderer w3dr, bool sunCamera)
+		{
+			shader.SetBool("RenderDepthBuffer", sunCamera);
+			shader.SetMatrix("rotationFix", w3dr.ModelRenderRotationFix.Values1D);
+			if (sunCamera)
+			{
+				shader.SetMatrix("projection", w3dr.SunProjection.Values1D);
+				shader.SetMatrix("view", w3dr.SunView.Values1D);
+				shader.SetVec("viewPos", w3dr.SunPos.x, w3dr.SunPos.y, w3dr.SunPos.z);
+			}
+			else
+			{
+				shader.SetMatrix("projection", w3dr.Projection.Values1D);
+				shader.SetMatrix("view", w3dr.View.Values1D);
+				shader.SetVec("viewPos", w3dr.CameraPos.x, w3dr.CameraPos.y, w3dr.CameraPos.z);
+			}
+
+			shader.SetVec("dirLight.direction", w3dr.SunDir.x, w3dr.SunDir.y, w3dr.SunDir.z);
+			shader.SetVec("dirLight.ambient", w3dr.AmbientColor.X, w3dr.AmbientColor.Y, w3dr.AmbientColor.Z);
+			shader.SetVec("dirLight.diffuse", w3dr.SunColor.X, w3dr.SunColor.Y, w3dr.SunColor.Z);
+			shader.SetVec("dirLight.specular", w3dr.SunSpecularColor.X, w3dr.SunSpecularColor.Y, w3dr.SunSpecularColor.Z);
+		}
+	}
 }

@@ -165,6 +165,7 @@ namespace OpenRA.Mods.Common.Terrain
 			return TileSprite(r, variant) != missingTile;
 		}
 
+        // test!!!
 		public Sprite TileSprite(TerrainTile r, int? variant = null)
 		{
 			if (!templates.TryGetValue(r.Type, out var template))

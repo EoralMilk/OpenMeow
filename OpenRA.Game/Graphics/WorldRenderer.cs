@@ -273,33 +273,19 @@ namespace OpenRA.Graphics
 			{
 				if (preparedRenderables[i].BlendMode == BlendMode.None)
 					preparedRenderables[i].Render(this);
-				else
-				{
-					preparedBlendRenderables[(int)preparedRenderables[i].BlendMode].Add(preparedRenderables[i]);
-				}
 			}
 
-			//Game.Renderer.Flush();
 			Game.Renderer.WorldSpriteRenderer.Flush(BlendMode.None);
 
 			Game.Renderer.Draw3DMeshesInstance(this, false);
 
 			Game.Renderer.Context.DisableCullFace();
 
-			for (var i = 0; i < preparedBlendRenderables.Length; i++)
+			for (var i = 0; i < preparedRenderables.Count; i++)
 			{
-				//if (i == 2)
-				//	Game.Renderer.EnableDepthWrite(false);
-
-				if (preparedBlendRenderables[i].Count > 0)
+				if (preparedRenderables[i].BlendMode != BlendMode.None)
 				{
-					for (var j = 0; j < preparedBlendRenderables[i].Count; j++)
-					{
-						preparedBlendRenderables[i][j].Render(this);
-					}
-
-					// Don't use Game.Renderer.Flush(), which will stupidly use alpha BlendMode any first draw
-					Game.Renderer.WorldSpriteRenderer.Flush((BlendMode)i);
+					preparedRenderables[i].Render(this);
 				}
 			}
 
@@ -315,7 +301,11 @@ namespace OpenRA.Graphics
 					trait.RenderAboveWorld(actor, this);
 			});
 
+			Game.Renderer.Context.EnableDepthBuffer(DepthFunc.LessEqual);
+
+			Game.Renderer.Context.EnableCullFace(FaceCullFunc.Back);
 			World.ApplyToActorsWithTrait<IRenderShroud>((actor, trait) => trait.RenderShroud(this));
+			Game.Renderer.Context.DisableCullFace();
 
 			//Game.Renderer.DisableScissor();
 

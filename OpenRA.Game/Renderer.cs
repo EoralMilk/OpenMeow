@@ -28,6 +28,7 @@ namespace OpenRA
 		public SpriteRenderer WorldSpriteRenderer { get; private set; }
 		public RgbaSpriteRenderer WorldRgbaSpriteRenderer { get; private set; }
 		public RgbaColorRenderer WorldRgbaColorRenderer { get; private set; }
+		public MapRenderer MapRenderer { get; private set; }
 		public VxlRenderer WorldVxlRenderer { get; private set; }
 		public RgbaColorRenderer RgbaColorRenderer { get; private set; }
 		public SpriteRenderer SpriteRenderer { get; private set; }
@@ -104,6 +105,7 @@ namespace OpenRA
 			WorldSpriteRenderer = new SpriteRenderer(this, Context.CreateUnsharedShader<CombinedShaderBindings>());
 			WorldRgbaSpriteRenderer = new RgbaSpriteRenderer(WorldSpriteRenderer);
 			WorldRgbaColorRenderer = new RgbaColorRenderer(WorldSpriteRenderer);
+			//MapRenderer = new MapRenderer(this, Context.CreateUnsharedShader<MapShaderBindings>());
 			WorldVxlRenderer = new VxlRenderer(this);
 			SpriteRenderer = new SpriteRenderer(this, Context.CreateUnsharedShader<CombinedShaderBindings>());
 			RgbaSpriteRenderer = new RgbaSpriteRenderer(SpriteRenderer);

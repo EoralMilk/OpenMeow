@@ -53,7 +53,7 @@ namespace OpenRA
 		}
 
 		// Resolve an array index from cell coordinates
-		int Index(CPos cell)
+		public int Index(CPos cell)
 		{
 			// PERF: Inline CPos.ToMPos to avoid MPos allocation
 			var x = cell.X;
@@ -67,9 +67,15 @@ namespace OpenRA
 		}
 
 		// Resolve an array index from map coordinates
-		int Index(MPos uv)
+		public int Index(MPos uv)
 		{
 			return uv.V * Size.Width + uv.U;
+		}
+
+		// Resolve an array index from map coordinates
+		public MPos IndexToMPos(int i)
+		{
+			return new MPos(i % Size.Width, i / Size.Width);
 		}
 
 		/// <summary>Gets or sets the <see cref="CellLayer"/> using cell coordinates</summary>
@@ -95,6 +101,18 @@ namespace OpenRA
 				Entries[Index(uv)] = value;
 
 				CellEntryChanged?.Invoke(uv.ToCPos(GridType));
+			}
+		}
+
+		public T this[int i]
+		{
+			get => Entries[i];
+
+			set
+			{
+				Entries[i] = value;
+
+				//CellEntryChanged?.Invoke(uv.ToCPos(GridType));
 			}
 		}
 
