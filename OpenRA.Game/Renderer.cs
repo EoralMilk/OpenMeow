@@ -105,7 +105,7 @@ namespace OpenRA
 			WorldSpriteRenderer = new SpriteRenderer(this, Context.CreateUnsharedShader<CombinedShaderBindings>());
 			WorldRgbaSpriteRenderer = new RgbaSpriteRenderer(WorldSpriteRenderer);
 			WorldRgbaColorRenderer = new RgbaColorRenderer(WorldSpriteRenderer);
-			//MapRenderer = new MapRenderer(this, Context.CreateUnsharedShader<MapShaderBindings>());
+			MapRenderer = new MapRenderer(this, Context.CreateUnsharedShader<MapShaderBindings>());
 			WorldVxlRenderer = new VxlRenderer(this);
 			SpriteRenderer = new SpriteRenderer(this, Context.CreateUnsharedShader<CombinedShaderBindings>());
 			RgbaSpriteRenderer = new RgbaSpriteRenderer(SpriteRenderer);
@@ -283,6 +283,9 @@ namespace OpenRA
 			//	lastWorldViewportSize = worldViewport.Size;
 			//}
 
+			MapRenderer.SetCameraParams(World3DRenderer, false);
+			MapRenderer.SetShadowParams();
+
 			WorldSpriteRenderer.SetCameraParams();
 			WorldSpriteRenderer.SetShadowParams();
 
@@ -425,6 +428,7 @@ namespace OpenRA
 
 			SpriteRenderer.SetPalette(currentPaletteTexture, palette.ColorShifts);
 			WorldSpriteRenderer.SetPalette(currentPaletteTexture, palette.ColorShifts);
+			MapRenderer.SetPalette(currentPaletteTexture, palette.ColorShifts);
 			WorldVxlRenderer.SetPalette(currentPaletteTexture);
 		}
 

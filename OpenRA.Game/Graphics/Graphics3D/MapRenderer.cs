@@ -170,16 +170,14 @@ namespace OpenRA.Graphics
 			shader.SetTexture("ColorShifts", colorShifts);
 		}
 
-		public void SetCameraParams()
+		public void SetCameraParams(in World3DRenderer w3dr, bool sunCamera)
 		{
-			if (Game.Renderer.World3DRenderer != null)
-			{
-				shader.SetBool("hasCamera", true);
-				shader.SetBool("renderScreen", false);
-				shader.SetMatrix("projection", Game.Renderer.World3DRenderer.Projection.Values1D);
-				shader.SetMatrix("view", Game.Renderer.World3DRenderer.View.Values1D);
-				//shader.SetVec("viewPos", Game.Renderer.Standalone3DRenderer.CameraPos.x, Game.Renderer.Standalone3DRenderer.CameraPos.y, Game.Renderer.Standalone3DRenderer.CameraPos.z);
-			}
+			shader.SetCommonParaments(w3dr, sunCamera);
+		}
+
+		public void SetRenderShroud(bool flag)
+		{
+			shader.SetBool("RenderShroud", flag);
 		}
 
 		public void SetShadowParams()

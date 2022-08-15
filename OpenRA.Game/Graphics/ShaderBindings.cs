@@ -87,15 +87,15 @@ namespace OpenRA.Graphics
 		public string FragmentShaderName { get; }
 
 		public string GeometryShaderName => null;
-		public int Stride => (15 * sizeof(float));
+		public int Stride => (16 * sizeof(float));
 
 		public IEnumerable<ShaderVertexAttribute> Attributes { get; } = new[]
 		{
-			new ShaderVertexAttribute("aVertexPos", 0, 3, 0),
-			new ShaderVertexAttribute("aNormal", 1, 3, 3 * sizeof(float)),
-			new ShaderVertexAttribute("aTexCoords", 2, 2, 6 * sizeof(float)),
-			new ShaderVertexAttribute("aVertexTint", 3, 3, 8 * sizeof(float)),
-			new ShaderVertexAttribute("aVertexColor", 4, 4, 11 * sizeof(float)),
+			new ShaderVertexAttribute("aVertexPosition", 0, 3, 0),
+			new ShaderVertexAttribute("aVertexTexCoord", 1, 4, 3 * sizeof(float)),
+			new ShaderVertexAttribute("aVertexTexMetadata", 2, 2, 7 * sizeof(float)),
+			new ShaderVertexAttribute("aVertexTint", 3, 4, 9 * sizeof(float)),
+			new ShaderVertexAttribute("aVertexNormal", 4, 3, 13 * sizeof(float)),
 		};
 
 		public bool Instanced => false;
@@ -114,7 +114,6 @@ namespace OpenRA.Graphics
 		public void SetCommonParaments(IShader shader, World3DRenderer w3dr, bool sunCamera)
 		{
 			shader.SetBool("RenderDepthBuffer", sunCamera);
-			shader.SetMatrix("rotationFix", w3dr.ModelRenderRotationFix.Values1D);
 			if (sunCamera)
 			{
 				shader.SetMatrix("projection", w3dr.SunProjection.Values1D);

@@ -19,31 +19,11 @@ uniform vec2 DepthPreviewParams;
 // uniform float DepthTextureScale;
 uniform float AntialiasPixelsPerTexel;
 
-uniform bool hasCamera;
 uniform bool RenderDepthBuffer;
+uniform bool RenderShroud;
 
 
-#if __VERSION__ == 120
-varying vec4 vTexCoord;
-varying vec2 vTexMetadata;
-varying vec4 vChannelMask;
-varying vec4 vDepthMask;
-varying vec2 vTexSampler;
 
-varying vec4 vColorFraction;
-varying vec4 vRGBAFraction;
-varying vec4 vPalettedFraction;
-varying vec4 vTint;
-
-uniform vec2 Texture0Size;
-uniform vec2 Texture1Size;
-uniform vec2 Texture2Size;
-uniform vec2 Texture3Size;
-uniform vec2 Texture4Size;
-uniform vec2 Texture5Size;
-uniform vec2 Texture6Size;
-uniform vec2 Texture7Size;
-#else
 in vec4 vColor;
 
 in vec4 vTexCoord;
@@ -56,10 +36,10 @@ in vec4 vColorFraction;
 in vec4 vRGBAFraction;
 in vec4 vPalettedFraction;
 in vec4 vTint;
+in vec3 vNormal;
+in vec3 vFragPos;
 
 out vec4 fragColor;
-#endif
-
 
 struct DirLight {
 	vec3 direction;
@@ -69,6 +49,8 @@ struct DirLight {
 };
 
 uniform DirLight dirLight;
+uniform vec3 viewPos;
+
 uniform sampler2D ShadowDepthTexture;
 uniform mat4 SunVP;
 uniform mat4 InvCameraVP;
@@ -76,7 +58,8 @@ uniform float ShadowBias;
 uniform float AmbientIntencity;
 uniform vec2 ViewPort;
 
-float CalShadow(DirLight light){
+
+float CalShadow(DirLight light, vec3 normal){
 	vec4 FragPos = InvCameraVP * vec4(gl_FragCoord.x/ViewPort.x * 2.0 - 1.0, gl_FragCoord.y/ViewPort.y * 2.0 - 1.0, gl_FragCoord.z * 2.0 - 1.0, 1.0);
 	FragPos = FragPos / FragPos.w;
 	
@@ -86,7 +69,8 @@ float CalShadow(DirLight light){
 	float currentDepth = projCoords.z;
 
 	float shadow = 0.0f;
-	float bias = ShadowBias * 0.025f;
+	// float bias = ShadowBias * 0.025f;
+	float bias = ShadowBias * max(0.02 * (1.0 - dot(normal, light.direction)), 0.0005);
 
 	if(projCoords.z <= 1.0f)
 	{
@@ -103,6 +87,25 @@ float CalShadow(DirLight light){
 	}
 
 	return shadow;
+}
+
+
+vec4 CalcDirLight(DirLight light, vec3 normal, vec3 viewDir, vec4 color)
+{
+	vec3 lightDir = normalize(-light.direction);
+	// diffuse
+	float diff = max(dot(normal, lightDir), 0.0);
+
+	// merge
+	vec3 ambient  = light.ambient;
+	vec3 diffuse  = light.diffuse * diff;
+
+	ambient = ambient * color.rgb;
+	diffuse = diffuse * color.rgb;
+	
+	diffuse = diffuse * (1.0f - max(CalShadow(light, normal) - AmbientIntencity, 0.0f));
+
+	return vec4((ambient + diffuse), color.a);
 }
 
 
@@ -307,7 +310,7 @@ void main()
 	}
 
 	// Discard any transparent fragments (both color and depth)
-	if (c.a == 0.0)
+	if (c.a == 0.0 && vTint.a > 0.0)
 		discard;
 	if (RenderDepthBuffer){
 		return;
@@ -336,14 +339,19 @@ void main()
 	}
 	else
 	{
-		if (vTint.a < 0.0)
-			c = vec4(vTint.rgb, -vTint.a);
+		if (!RenderShroud){
+			if (vTint.a < 0.0)
+				c = vec4(vTint.rgb, -vTint.a);
 		
-		c = vec4(c.rgb * (1.0f - max(CalShadow(dirLight) - AmbientIntencity, 0.0f)), c.a);
-		// c = c * (1.0f - CalShadow(dirLight));
-		// A negative tint alpha indicates that the tint should replace the colour instead of multiplying it
-		if (vTint.a >= 0.0)
-			c *= vTint;
+			vec3 viewDir = normalize(viewPos - vFragPos);
+			c = CalcDirLight(dirLight, vNormal, viewDir, c);
+
+			// c = vec4(c.rgb * (1.0f - max(CalShadow(dirLight) - AmbientIntencity, 0.0f)), c.a);
+
+			// A negative tint alpha indicates that the tint should replace the colour instead of multiplying it
+			if (vTint.a >= 0.0)
+				c *= vTint;
+		}
 
 		#if __VERSION__ == 120
 		gl_FragColor = c;

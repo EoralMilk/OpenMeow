@@ -246,6 +246,7 @@ namespace OpenRA
 
 		public WPos[] VertexWPos;
 		public float3[] VertexPos;
+		public float3[] VertexNormal;
 		public float3[] VertexColors;
 		public int VertexArrayWidth, VertexArrayHeight;
 
@@ -673,6 +674,8 @@ namespace OpenRA
 
 			var vertexCaled = new bool[VertexArrayWidth * VertexArrayHeight];
 			VertexPos = new float3[VertexArrayWidth * VertexArrayHeight];
+			VertexNormal = new float3[VertexArrayWidth * VertexArrayHeight];
+
 			VertexWPos = new WPos[VertexArrayWidth * VertexArrayHeight];
 			VertexColors = new float3[VertexArrayWidth * VertexArrayHeight];
 
@@ -722,6 +725,7 @@ namespace OpenRA
 						VertexColors[mid.Y * VertexArrayWidth + mid.X + 1] = Color2Float3(type.GetColor(Game.CosmeticRandom));
 
 					int m, t, b, l, r;
+					float3 pm, pt, pb, pl, pr;
 					switch (ramp)
 					{
 						case 0:
@@ -883,30 +887,62 @@ namespace OpenRA
 					var cpos = uv.ToCPos(this);
 					VertexWPos[mid.Y * VertexArrayWidth + mid.X] = TileWPos(m, cpos, WPos.Zero);
 					VertexPos[mid.Y * VertexArrayWidth + mid.X] = TilePos(VertexWPos[mid.Y * VertexArrayWidth + mid.X]);
+					pm = VertexPos[mid.Y * VertexArrayWidth + mid.X];
 
 					if (vertexCaled[(mid.Y - 1) * VertexArrayWidth + mid.X])
 						VertexWPos[(mid.Y - 1) * VertexArrayWidth + mid.X] = TileWPos(HMix(t, VertexWPos[(mid.Y - 1) * VertexArrayWidth + mid.X].Z), cpos, new WPos(0, -724, 0));
 					else
 						VertexWPos[(mid.Y - 1) * VertexArrayWidth + mid.X] = TileWPos(t, cpos, new WPos(0, -724, 0));
 					VertexPos[(mid.Y - 1) * VertexArrayWidth + mid.X] = TilePos(VertexWPos[(mid.Y - 1) * VertexArrayWidth + mid.X]);
+					pt = VertexPos[(mid.Y - 1) * VertexArrayWidth + mid.X];
 
 					if (vertexCaled[(mid.Y + 1) * VertexArrayWidth + mid.X])
 						VertexWPos[(mid.Y + 1) * VertexArrayWidth + mid.X] = TileWPos(HMix(b, VertexWPos[(mid.Y + 1) * VertexArrayWidth + mid.X].Z), cpos, new WPos(0, 724, 0));
 					else
 						VertexWPos[(mid.Y + 1) * VertexArrayWidth + mid.X] = TileWPos(b, cpos, new WPos(0, 724, 0));
 					VertexPos[(mid.Y + 1) * VertexArrayWidth + mid.X] = TilePos(VertexWPos[(mid.Y + 1) * VertexArrayWidth + mid.X]);
+					pb = VertexPos[(mid.Y + 1) * VertexArrayWidth + mid.X];
 
 					if (vertexCaled[mid.Y * VertexArrayWidth + mid.X - 1])
 						VertexWPos[mid.Y * VertexArrayWidth + mid.X - 1] = TileWPos(HMix(l, VertexWPos[mid.Y * VertexArrayWidth + mid.X - 1].Z), cpos, new WPos(-724, 0, 0));
 					else
 						VertexWPos[mid.Y * VertexArrayWidth + mid.X - 1] = TileWPos(l, cpos, new WPos(-724, 0, 0));
 					VertexPos[mid.Y * VertexArrayWidth + mid.X - 1] = TilePos(VertexWPos[mid.Y * VertexArrayWidth + mid.X - 1]);
+					pl = VertexPos[mid.Y * VertexArrayWidth + mid.X - 1];
 
 					if (vertexCaled[mid.Y * VertexArrayWidth + mid.X + 1])
 						VertexWPos[mid.Y * VertexArrayWidth + mid.X + 1] = TileWPos(HMix(r, VertexWPos[mid.Y * VertexArrayWidth + mid.X + 1].Z), cpos, new WPos(724, 0, 0));
 					else
 						VertexWPos[mid.Y * VertexArrayWidth + mid.X + 1] = TileWPos(r, cpos, new WPos(724, 0, 0));
 					VertexPos[mid.Y * VertexArrayWidth + mid.X + 1] = TilePos(VertexWPos[mid.Y * VertexArrayWidth + mid.X + 1]);
+					pr = VertexPos[mid.Y * VertexArrayWidth + mid.X + 1];
+
+					var tlm = CalNormal(pt, pl, pm);
+					var tmr = CalNormal(pt, pm, pr);
+					var mlb = CalNormal(pm, pl, pb);
+					var mbr = CalNormal(pm, pb, pr);
+
+					VertexNormal[mid.Y * VertexArrayWidth + mid.X] = Vec2Float3(tlm * 0.25f + tmr * 0.25f + mlb * 0.25f + mbr * 0.25f);
+
+					if (vertexCaled[(mid.Y - 1) * VertexArrayWidth + mid.X])
+						VertexNormal[(mid.Y - 1) * VertexArrayWidth + mid.X] = Vec2Float3(tlm * 0.25f + tmr * 0.25f) + 0.5f * VertexNormal[(mid.Y - 1) * VertexArrayWidth + mid.X];
+					else
+						VertexNormal[(mid.Y - 1) * VertexArrayWidth + mid.X] = Vec2Float3(tlm * 0.5f + tmr * 0.5f);
+
+					if (vertexCaled[(mid.Y + 1) * VertexArrayWidth + mid.X])
+						VertexNormal[(mid.Y + 1) * VertexArrayWidth + mid.X] = Vec2Float3(mlb * 0.25f + mbr * 0.25f) + 0.5f * VertexNormal[(mid.Y + 1) * VertexArrayWidth + mid.X];
+					else
+						VertexNormal[(mid.Y + 1) * VertexArrayWidth + mid.X] = Vec2Float3(mlb * 0.5f + mbr * 0.5f);
+
+					if (vertexCaled[mid.Y * VertexArrayWidth + mid.X - 1])
+						VertexNormal[mid.Y * VertexArrayWidth + mid.X - 1] = Vec2Float3(mlb * 0.25f + tlm * 0.25f) + 0.5f * VertexNormal[mid.Y * VertexArrayWidth + mid.X - 1];
+					else
+						VertexNormal[mid.Y * VertexArrayWidth + mid.X - 1] = Vec2Float3(mlb * 0.5f + tlm * 0.5f);
+
+					if (vertexCaled[mid.Y * VertexArrayWidth + mid.X + 1])
+						VertexNormal[mid.Y * VertexArrayWidth + mid.X + 1] = Vec2Float3(tmr * 0.25f + mbr * 0.25f) + 0.5f * VertexNormal[mid.Y * VertexArrayWidth + mid.X + 1];
+					else
+						VertexNormal[mid.Y * VertexArrayWidth + mid.X + 1] = Vec2Float3(tmr * 0.5f + mbr * 0.5f);
 
 					vertexCaled[mid.Y * VertexArrayWidth + mid.X] = true;
 					vertexCaled[(mid.Y - 1) * VertexArrayWidth + mid.X] = true;
@@ -917,6 +953,22 @@ namespace OpenRA
 					CellPos[uv.ToCPos(this)] = VertexWPos[mid.Y * VertexArrayWidth + mid.X];
 				}
 			}
+		}
+
+		#region util for CalculateTileVertexInfo
+		vec3 CalNormal(float3 a, float3 b, float3 c)
+		{
+			var va = new vec3(a.X, a.Y, a.Z);
+			var vb = new vec3(b.X, b.Y, b.Z);
+			var vc = new vec3(c.X, c.Y, c.Z);
+			var ab = vb - va;
+			var ac = vc - va;
+			return vec3.Cross(ab, ac).Normalized;
+		}
+
+		float3 Vec2Float3(vec3 vec)
+		{
+			return new float3(vec.x, vec.y, vec.z);
 		}
 
 		int HMix(int a, int b)
@@ -949,6 +1001,8 @@ namespace OpenRA
 										(float)pos.Y / 256,
 										(float)h / 256);
 		}
+
+		#endregion
 
 		/// <summary>
 		///  WIP

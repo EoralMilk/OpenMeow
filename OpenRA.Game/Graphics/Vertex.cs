@@ -64,29 +64,39 @@ namespace OpenRA.Graphics
 
 	public struct MapVertex
 	{
+		// 3d position
 		public readonly float X, Y, Z;
-		public readonly float NX, NY, NZ;
-		public readonly float U, V;
-		public readonly float TR, TG, TB;
+
+		// Primary and secondary texture coordinates or RGBA color
+		public readonly float S, T, U, V;
+
+		// Palette and channel flags
+		public readonly float P, C;
+
+		// Color tint
 		public readonly float R, G, B, A;
 
-		public MapVertex(float x, float y, float z, float nx, float ny, float nz, float u, float v, float tr, float tg, float tb, float r, float g, float b, float a)
+		// 3d normal
+		public readonly float NX, NY, NZ;
+
+		public MapVertex(in float3 xyz, in float3 nml, float s, float t, float u, float v, float p, float c, in float3 tint, float a)
+			: this(xyz.X, xyz.Y, xyz.Z, s, t, u, v, p, c, tint.X, tint.Y, tint.Z, a, nml.X, nml.Y, nml.Z) { }
+
+		public MapVertex(float x, float y, float z, float s, float t, float u, float v, float p, float c, in float3 tint, float a, float nx, float ny, float nz)
+			: this(x, y, z, s, t, u, v, p, c, tint.X, tint.Y, tint.Z, a, nx, ny, nz) { }
+
+		public MapVertex(float x, float y, float z,
+			float s, float t, float u, float v,
+			float p, float c,
+			float r, float g, float b, float a,
+			float nx, float ny, float nz)
 		{
-			X = x;
-			Y = y;
-			Z = z;
-			NX = nx;
-			NY = ny;
-			NZ = nz;
-			U = u;
-			V = v;
-			TR = tr;
-			TG = tg;
-			TB = tb;
-			R = r;
-			G = g;
-			B = b;
-			A = a;
+			X = x; Y = y; Z = z;
+			S = s; T = t;
+			U = u; V = v;
+			P = p; C = c;
+			R = r; G = g; B = b; A = a;
+			NX = nx; NY = ny; NZ = nz;
 		}
 	};
 }
