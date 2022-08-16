@@ -2,12 +2,15 @@
 
 uniform mat4 view;
 uniform mat4 projection;
+uniform vec3 CameraInvFront;
+uniform bool RenderShroud;
 
 in vec4 aVertexPosition;
 in vec4 aVertexTexCoord;
 in vec2 aVertexTexMetadata;
 in vec4 aVertexTint;
 in vec3 aVertexNormal;
+in vec3 aFaceNormal;
 
 out vec4 vTexCoord;
 out vec2 vTexMetadata;
@@ -21,6 +24,7 @@ out vec4 vPalettedFraction;
 out vec4 vTint;
 out vec3 vNormal;
 out vec3 vFragPos;
+flat out int isDraw;
 
 
 
@@ -103,6 +107,14 @@ vec4 SelectPalettedFraction(float x)
 
 void main()
 {
+	if (aVertexTint.a == 0.0 || (RenderShroud && dot(CameraInvFront, aFaceNormal) < 0.01)) 
+	{
+		isDraw = 0;
+		return;
+	}
+	else
+		isDraw = 1;
+
 	gl_Position = projection * view * aVertexPosition;
 	vTexCoord = aVertexTexCoord;
 	vTexMetadata = aVertexTexMetadata;

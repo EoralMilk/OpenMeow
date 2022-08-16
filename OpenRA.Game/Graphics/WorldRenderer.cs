@@ -303,11 +303,11 @@ namespace OpenRA.Graphics
 
 			Game.Renderer.Context.EnableDepthBuffer(DepthFunc.LessEqual);
 			Game.Renderer.MapRenderer.SetRenderShroud(true);
-			Game.Renderer.Context.EnableCullFace(FaceCullFunc.Back);
+			Game.Renderer.SetFaceCull(FaceCullFunc.Back);
 
 			World.ApplyToActorsWithTrait<IRenderShroud>((actor, trait) => trait.RenderShroud(this));
 
-			Game.Renderer.Context.DisableCullFace();
+			Game.Renderer.SetFaceCull(FaceCullFunc.None);
 			Game.Renderer.MapRenderer.SetRenderShroud(false);
 			Game.Renderer.DisableDepthTest();
 

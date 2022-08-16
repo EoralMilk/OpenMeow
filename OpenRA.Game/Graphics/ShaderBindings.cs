@@ -87,7 +87,7 @@ namespace OpenRA.Graphics
 		public string FragmentShaderName { get; }
 
 		public string GeometryShaderName => null;
-		public int Stride => (16 * sizeof(float));
+		public int Stride => (19 * sizeof(float));
 
 		public IEnumerable<ShaderVertexAttribute> Attributes { get; } = new[]
 		{
@@ -96,6 +96,7 @@ namespace OpenRA.Graphics
 			new ShaderVertexAttribute("aVertexTexMetadata", 2, 2, 7 * sizeof(float)),
 			new ShaderVertexAttribute("aVertexTint", 3, 4, 9 * sizeof(float)),
 			new ShaderVertexAttribute("aVertexNormal", 4, 3, 13 * sizeof(float)),
+			new ShaderVertexAttribute("aFaceNormal", 5, 3, 16 * sizeof(float)),
 		};
 
 		public bool Instanced => false;

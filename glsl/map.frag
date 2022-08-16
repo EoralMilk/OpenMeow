@@ -38,6 +38,7 @@ in vec4 vPalettedFraction;
 in vec4 vTint;
 in vec3 vNormal;
 in vec3 vFragPos;
+flat in int isDraw;
 
 out vec4 fragColor;
 
@@ -278,6 +279,9 @@ vec4 ColorShift(vec4 c, float p)
 
 void main()
 {
+	if (isDraw == 0)
+		discard;
+
 	vec2 coords = vTexCoord.st;
 
 	vec4 c;

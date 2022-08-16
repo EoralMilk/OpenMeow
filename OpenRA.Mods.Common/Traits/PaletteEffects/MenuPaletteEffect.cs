@@ -67,8 +67,6 @@ namespace OpenRA.Mods.Common.Traits
 			if (frac < 0)
 				frac = startTime = endTime = 0;
 
-			//Console.WriteLine("frac: " + frac + " endTime: " + endTime + " startTime: " + startTime);
-
 			if (Game.Renderer != null && Game.Renderer.ScreenRenderer != null)
 			{
 				var screenTo = ColorForEffect(to, Color.White);

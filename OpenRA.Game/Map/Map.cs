@@ -11,10 +11,8 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Numerics;
 using System.Reflection;
 using System.Text;
 using GlmSharp;
@@ -152,6 +150,33 @@ namespace OpenRA
 		}
 	}
 
+	public struct CellInfo
+	{
+		public readonly WPos CellCenterPos;
+
+		public readonly float3 CellNmlTLM;
+		public readonly float3 CellNmlTMR;
+		public readonly float3 CellNmlMLB;
+		public readonly float3 CellNmlMBR;
+
+		public readonly int M, T, B, L, R;
+
+		public CellInfo(WPos center, float3 tlmn, float3 tmrn, float3 mlbn, float3 mbrn,
+			int m, int t, int b, int l, int r)
+		{
+			CellCenterPos = center;
+			CellNmlTLM = tlmn;
+			CellNmlTMR = tmrn;
+			CellNmlMLB = mlbn;
+			CellNmlMBR = mbrn;
+			M = m;
+			T = t;
+			B = b;
+			L = l;
+			R = r;
+		}
+	}
+
 	public class Map : IReadOnlyFileSystem
 	{
 		public const int SupportedMapFormat = 11;
@@ -242,11 +267,13 @@ namespace OpenRA
 		public CellLayer<byte> Height { get; private set; }
 		public CellLayer<byte> Ramp { get; private set; }
 		public CellLayer<byte> CustomTerrain { get; private set; }
-		public CellLayer<WPos> CellPos { get; private set; }
+
+		public CellLayer<CellInfo> CellInfos { get; private set; }
 
 		public WPos[] VertexWPos;
 		public float3[] VertexPos;
 		public float3[] VertexNormal;
+		public vec3[][] FaceNormal;
 		public float3[] VertexColors;
 		public int VertexArrayWidth, VertexArrayHeight;
 
@@ -323,8 +350,8 @@ namespace OpenRA
 			Tiles = new CellLayer<TerrainTile>(Grid.Type, size);
 			Resources = new CellLayer<ResourceTile>(Grid.Type, size);
 			Height = new CellLayer<byte>(Grid.Type, size);
-			CellPos = new CellLayer<WPos>(Grid.Type, size);
 			Ramp = new CellLayer<byte>(Grid.Type, size);
+			CellInfos = new CellLayer<CellInfo>(Grid.Type, size);
 			Tiles.Clear(terrainInfo.DefaultTerrainTile);
 			if (Grid.MaximumTerrainHeight > 0)
 			{
@@ -361,8 +388,8 @@ namespace OpenRA
 			Tiles = new CellLayer<TerrainTile>(Grid.Type, size);
 			Resources = new CellLayer<ResourceTile>(Grid.Type, size);
 			Height = new CellLayer<byte>(Grid.Type, size);
-			CellPos = new CellLayer<WPos>(Grid.Type, size);
 			Ramp = new CellLayer<byte>(Grid.Type, size);
+			CellInfos = new CellLayer<CellInfo>(Grid.Type, size);
 
 			using (var s = Package.GetStream("map.bin"))
 			{
@@ -675,7 +702,6 @@ namespace OpenRA
 			var vertexCaled = new bool[VertexArrayWidth * VertexArrayHeight];
 			VertexPos = new float3[VertexArrayWidth * VertexArrayHeight];
 			VertexNormal = new float3[VertexArrayWidth * VertexArrayHeight];
-
 			VertexWPos = new WPos[VertexArrayWidth * VertexArrayHeight];
 			VertexColors = new float3[VertexArrayWidth * VertexArrayHeight];
 
@@ -700,257 +726,266 @@ namespace OpenRA
 						mid = new int2(2 * x + 2, y + 1);
 					}
 
+					int im, it, ib, il, ir;
+					im = mid.Y * VertexArrayWidth + mid.X;
+					it = (mid.Y - 1) * VertexArrayWidth + mid.X;
+					ib = (mid.Y + 1) * VertexArrayWidth + mid.X;
+					il = mid.Y * VertexArrayWidth + mid.X - 1;
+					ir = mid.Y * VertexArrayWidth + mid.X + 1;
+
 					var type = Rules.TerrainInfo.GetTerrainInfo(Tiles[uv]);
 
-					VertexColors[mid.Y * VertexArrayWidth + mid.X] = Color2Float3(type.GetColor(Game.CosmeticRandom));
+					VertexColors[im] = Color2Float3(type.GetColor(Game.CosmeticRandom));
 
-					if (vertexCaled[(mid.Y - 1) * VertexArrayWidth + mid.X])
-						VertexColors[(mid.Y - 1) * VertexArrayWidth + mid.X] = float3.Lerp(Color2Float3(type.GetColor(Game.CosmeticRandom)), VertexColors[(mid.Y - 1) * VertexArrayWidth + mid.X], 0.5f);
+					if (vertexCaled[it])
+						VertexColors[it] = float3.Lerp(Color2Float3(type.GetColor(Game.CosmeticRandom)), VertexColors[it], 0.5f);
 					else
-						VertexColors[(mid.Y - 1) * VertexArrayWidth + mid.X] = Color2Float3(type.GetColor(Game.CosmeticRandom));
+						VertexColors[it] = Color2Float3(type.GetColor(Game.CosmeticRandom));
 
-					if (vertexCaled[(mid.Y + 1) * VertexArrayWidth + mid.X])
-						VertexColors[(mid.Y + 1) * VertexArrayWidth + mid.X] = float3.Lerp(Color2Float3(type.GetColor(Game.CosmeticRandom)), VertexColors[(mid.Y + 1) * VertexArrayWidth + mid.X], 0.5f);
+					if (vertexCaled[ib])
+						VertexColors[ib] = float3.Lerp(Color2Float3(type.GetColor(Game.CosmeticRandom)), VertexColors[ib], 0.5f);
 					else
-						VertexColors[(mid.Y + 1) * VertexArrayWidth + mid.X] = Color2Float3(type.GetColor(Game.CosmeticRandom));
+						VertexColors[ib] = Color2Float3(type.GetColor(Game.CosmeticRandom));
 
-					if (vertexCaled[mid.Y * VertexArrayWidth + mid.X - 1])
-						VertexColors[mid.Y * VertexArrayWidth + mid.X - 1] = float3.Lerp(Color2Float3(type.GetColor(Game.CosmeticRandom)), VertexColors[mid.Y * VertexArrayWidth + mid.X - 1], 0.5f);
+					if (vertexCaled[il])
+						VertexColors[il] = float3.Lerp(Color2Float3(type.GetColor(Game.CosmeticRandom)), VertexColors[il], 0.5f);
 					else
-						VertexColors[mid.Y * VertexArrayWidth + mid.X - 1] = Color2Float3(type.GetColor(Game.CosmeticRandom));
+						VertexColors[il] = Color2Float3(type.GetColor(Game.CosmeticRandom));
 
-					if (vertexCaled[mid.Y * VertexArrayWidth + mid.X + 1])
-						VertexColors[mid.Y * VertexArrayWidth + mid.X + 1] = float3.Lerp(Color2Float3(type.GetColor(Game.CosmeticRandom)), VertexColors[mid.Y * VertexArrayWidth + mid.X + 1], 0.5f);
+					if (vertexCaled[ir])
+						VertexColors[ir] = float3.Lerp(Color2Float3(type.GetColor(Game.CosmeticRandom)), VertexColors[ir], 0.5f);
 					else
-						VertexColors[mid.Y * VertexArrayWidth + mid.X + 1] = Color2Float3(type.GetColor(Game.CosmeticRandom));
+						VertexColors[ir] = Color2Float3(type.GetColor(Game.CosmeticRandom));
 
-					int m, t, b, l, r;
+					int hm, ht, hb, hl, hr;
 					float3 pm, pt, pb, pl, pr;
 					switch (ramp)
 					{
 						case 0:
-							m = heightBase;
-							t = heightBase;
-							b = heightBase;
-							l = heightBase;
-							r = heightBase;
+							hm = heightBase;
+							ht = heightBase;
+							hb = heightBase;
+							hl = heightBase;
+							hr = heightBase;
 							break;
 						case 1:
-							m = heightHalf;
-							t = heightBase;
-							b = heightUpper;
-							l = heightBase;
-							r = heightUpper;
+							hm = heightHalf;
+							ht = heightBase;
+							hb = heightUpper;
+							hl = heightBase;
+							hr = heightUpper;
 							break;
 						case 2:
-							m = heightHalf;
-							t = heightBase;
-							b = heightUpper;
-							l = heightUpper;
-							r = heightBase;
+							hm = heightHalf;
+							ht = heightBase;
+							hb = heightUpper;
+							hl = heightUpper;
+							hr = heightBase;
 							break;
 						case 3:
-							m = heightHalf;
-							t = heightUpper;
-							b = heightBase;
-							l = heightUpper;
-							r = heightBase;
+							hm = heightHalf;
+							ht = heightUpper;
+							hb = heightBase;
+							hl = heightUpper;
+							hr = heightBase;
 							break;
 						case 4:
-							m = heightHalf;
-							t = heightUpper;
-							b = heightBase;
-							l = heightBase;
-							r = heightUpper;
+							hm = heightHalf;
+							ht = heightUpper;
+							hb = heightBase;
+							hl = heightBase;
+							hr = heightUpper;
 							break;
 						case 5:
-							m = heightUpper;
-							t = heightUpper;
-							b = heightUpper;
-							l = heightBase;
-							r = heightUpper;
+							hm = heightUpper;
+							ht = heightUpper;
+							hb = heightUpper;
+							hl = heightBase;
+							hr = heightUpper;
 							break;
 						case 6:
-							m = heightBase;
-							t = heightBase;
-							b = heightBase;
-							l = heightUpper;
-							r = heightBase;
+							hm = heightBase;
+							ht = heightBase;
+							hb = heightBase;
+							hl = heightUpper;
+							hr = heightBase;
 							break;
 						case 7:
-							m = heightBase;
-							t = heightUpper;
-							b = heightBase;
-							l = heightBase;
-							r = heightBase;
+							hm = heightBase;
+							ht = heightUpper;
+							hb = heightBase;
+							hl = heightBase;
+							hr = heightBase;
 							break;
 						case 8:
-							m = heightBase;
-							t = heightBase;
-							b = heightBase;
-							l = heightBase;
-							r = heightUpper;
+							hm = heightBase;
+							ht = heightBase;
+							hb = heightBase;
+							hl = heightBase;
+							hr = heightUpper;
 							break;
 						case 9:
-							m = heightUpper;
-							t = heightBase;
-							b = heightUpper;
-							l = heightUpper;
-							r = heightUpper;
+							hm = heightUpper;
+							ht = heightBase;
+							hb = heightUpper;
+							hl = heightUpper;
+							hr = heightUpper;
 							break;
 						case 10:
-							m = heightUpper;
-							t = heightUpper;
-							b = heightUpper;
-							l = heightUpper;
-							r = heightBase;
+							hm = heightUpper;
+							ht = heightUpper;
+							hb = heightUpper;
+							hl = heightUpper;
+							hr = heightBase;
 							break;
 						case 11:
-							m = heightUpper;
-							t = heightUpper;
-							b = heightBase;
-							l = heightUpper;
-							r = heightUpper;
+							hm = heightUpper;
+							ht = heightUpper;
+							hb = heightBase;
+							hl = heightUpper;
+							hr = heightUpper;
 							break;
 						case 12:
-							m = heightUpper;
-							t = heightUpper;
-							b = heightUpper;
-							l = heightBase;
-							r = heightUpper;
+							hm = heightUpper;
+							ht = heightUpper;
+							hb = heightUpper;
+							hl = heightBase;
+							hr = heightUpper;
 							break;
 						case 13:
-							m = heightUpper;
-							t = heightBase;
-							b = heightUppest;
-							l = heightUpper;
-							r = heightUpper;
+							hm = heightUpper;
+							ht = heightBase;
+							hb = heightUppest;
+							hl = heightUpper;
+							hr = heightUpper;
 							break;
 						case 14:
-							m = heightUpper;
-							t = heightUpper;
-							b = heightUpper;
-							l = heightUppest;
-							r = heightBase;
+							hm = heightUpper;
+							ht = heightUpper;
+							hb = heightUpper;
+							hl = heightUppest;
+							hr = heightBase;
 							break;
 						case 15:
-							m = heightUpper;
-							t = heightUppest;
-							b = heightBase;
-							l = heightUpper;
-							r = heightUpper;
+							hm = heightUpper;
+							ht = heightUppest;
+							hb = heightBase;
+							hl = heightUpper;
+							hr = heightUpper;
 							break;
 						case 16:
-							m = heightUpper;
-							t = heightUpper;
-							b = heightUpper;
-							l = heightBase;
-							r = heightUppest;
+							hm = heightUpper;
+							ht = heightUpper;
+							hb = heightUpper;
+							hl = heightBase;
+							hr = heightUppest;
 							break;
 						case 17:
-							m = heightBase;
-							t = heightBase;
-							b = heightBase;
-							l = heightUpper;
-							r = heightUpper;
+							hm = heightBase;
+							ht = heightBase;
+							hb = heightBase;
+							hl = heightUpper;
+							hr = heightUpper;
 							break;
 						case 18:
-							m = heightUpper;
-							t = heightUpper;
-							b = heightUpper;
-							l = heightBase;
-							r = heightBase;
+							hm = heightUpper;
+							ht = heightUpper;
+							hb = heightUpper;
+							hl = heightBase;
+							hr = heightBase;
 							break;
 						case 19:
-							m = heightUpper;
-							t = heightBase;
-							b = heightBase;
-							l = heightUpper;
-							r = heightUpper;
+							hm = heightUpper;
+							ht = heightBase;
+							hb = heightBase;
+							hl = heightUpper;
+							hr = heightUpper;
 							break;
 						case 20:
-							m = heightBase;
-							t = heightUpper;
-							b = heightUpper;
-							l = heightBase;
-							r = heightBase;
+							hm = heightBase;
+							ht = heightUpper;
+							hb = heightUpper;
+							hl = heightBase;
+							hr = heightBase;
 							break;
 						default:
-							m = heightBase;
-							t = heightBase;
-							b = heightBase;
-							l = heightBase;
-							r = heightBase;
+							hm = heightBase;
+							ht = heightBase;
+							hb = heightBase;
+							hl = heightBase;
+							hr = heightBase;
 							Console.WriteLine("Invalid Ramp Type: " + ramp);
 							break;
 					}
 					var cpos = uv.ToCPos(this);
-					VertexWPos[mid.Y * VertexArrayWidth + mid.X] = TileWPos(m, cpos, WPos.Zero);
-					VertexPos[mid.Y * VertexArrayWidth + mid.X] = TilePos(VertexWPos[mid.Y * VertexArrayWidth + mid.X]);
-					pm = VertexPos[mid.Y * VertexArrayWidth + mid.X];
+					VertexWPos[im] = TileWPos(hm, cpos, WPos.Zero);
+					VertexPos[im] = TilePos(VertexWPos[im]);
+					pm = VertexPos[im];
 
-					if (vertexCaled[(mid.Y - 1) * VertexArrayWidth + mid.X])
-						VertexWPos[(mid.Y - 1) * VertexArrayWidth + mid.X] = TileWPos(HMix(t, VertexWPos[(mid.Y - 1) * VertexArrayWidth + mid.X].Z), cpos, new WPos(0, -724, 0));
+					if (vertexCaled[it])
+						VertexWPos[it] = TileWPos(HMix(ht, VertexWPos[it].Z), cpos, new WPos(0, -724, 0));
 					else
-						VertexWPos[(mid.Y - 1) * VertexArrayWidth + mid.X] = TileWPos(t, cpos, new WPos(0, -724, 0));
-					VertexPos[(mid.Y - 1) * VertexArrayWidth + mid.X] = TilePos(VertexWPos[(mid.Y - 1) * VertexArrayWidth + mid.X]);
-					pt = VertexPos[(mid.Y - 1) * VertexArrayWidth + mid.X];
+						VertexWPos[it] = TileWPos(ht, cpos, new WPos(0, -724, 0));
+					VertexPos[it] = TilePos(VertexWPos[it]);
+					pt = VertexPos[it];
 
-					if (vertexCaled[(mid.Y + 1) * VertexArrayWidth + mid.X])
-						VertexWPos[(mid.Y + 1) * VertexArrayWidth + mid.X] = TileWPos(HMix(b, VertexWPos[(mid.Y + 1) * VertexArrayWidth + mid.X].Z), cpos, new WPos(0, 724, 0));
+					if (vertexCaled[ib])
+						VertexWPos[ib] = TileWPos(HMix(hb, VertexWPos[ib].Z), cpos, new WPos(0, 724, 0));
 					else
-						VertexWPos[(mid.Y + 1) * VertexArrayWidth + mid.X] = TileWPos(b, cpos, new WPos(0, 724, 0));
-					VertexPos[(mid.Y + 1) * VertexArrayWidth + mid.X] = TilePos(VertexWPos[(mid.Y + 1) * VertexArrayWidth + mid.X]);
-					pb = VertexPos[(mid.Y + 1) * VertexArrayWidth + mid.X];
+						VertexWPos[ib] = TileWPos(hb, cpos, new WPos(0, 724, 0));
+					VertexPos[ib] = TilePos(VertexWPos[ib]);
+					pb = VertexPos[ib];
 
-					if (vertexCaled[mid.Y * VertexArrayWidth + mid.X - 1])
-						VertexWPos[mid.Y * VertexArrayWidth + mid.X - 1] = TileWPos(HMix(l, VertexWPos[mid.Y * VertexArrayWidth + mid.X - 1].Z), cpos, new WPos(-724, 0, 0));
+					if (vertexCaled[il])
+						VertexWPos[il] = TileWPos(HMix(hl, VertexWPos[il].Z), cpos, new WPos(-724, 0, 0));
 					else
-						VertexWPos[mid.Y * VertexArrayWidth + mid.X - 1] = TileWPos(l, cpos, new WPos(-724, 0, 0));
-					VertexPos[mid.Y * VertexArrayWidth + mid.X - 1] = TilePos(VertexWPos[mid.Y * VertexArrayWidth + mid.X - 1]);
-					pl = VertexPos[mid.Y * VertexArrayWidth + mid.X - 1];
+						VertexWPos[il] = TileWPos(hl, cpos, new WPos(-724, 0, 0));
+					VertexPos[il] = TilePos(VertexWPos[il]);
+					pl = VertexPos[il];
 
-					if (vertexCaled[mid.Y * VertexArrayWidth + mid.X + 1])
-						VertexWPos[mid.Y * VertexArrayWidth + mid.X + 1] = TileWPos(HMix(r, VertexWPos[mid.Y * VertexArrayWidth + mid.X + 1].Z), cpos, new WPos(724, 0, 0));
+					if (vertexCaled[ir])
+						VertexWPos[ir] = TileWPos(HMix(hr, VertexWPos[ir].Z), cpos, new WPos(724, 0, 0));
 					else
-						VertexWPos[mid.Y * VertexArrayWidth + mid.X + 1] = TileWPos(r, cpos, new WPos(724, 0, 0));
-					VertexPos[mid.Y * VertexArrayWidth + mid.X + 1] = TilePos(VertexWPos[mid.Y * VertexArrayWidth + mid.X + 1]);
-					pr = VertexPos[mid.Y * VertexArrayWidth + mid.X + 1];
+						VertexWPos[ir] = TileWPos(hr, cpos, new WPos(724, 0, 0));
+					VertexPos[ir] = TilePos(VertexWPos[ir]);
+					pr = VertexPos[ir];
 
 					var tlm = CalNormal(pt, pl, pm);
 					var tmr = CalNormal(pt, pm, pr);
 					var mlb = CalNormal(pm, pl, pb);
 					var mbr = CalNormal(pm, pb, pr);
 
-					VertexNormal[mid.Y * VertexArrayWidth + mid.X] = Vec2Float3(tlm * 0.25f + tmr * 0.25f + mlb * 0.25f + mbr * 0.25f);
+					VertexNormal[im] = Vec2Float3(tlm * 0.25f + tmr * 0.25f + mlb * 0.25f + mbr * 0.25f);
 
-					if (vertexCaled[(mid.Y - 1) * VertexArrayWidth + mid.X])
-						VertexNormal[(mid.Y - 1) * VertexArrayWidth + mid.X] = Vec2Float3(tlm * 0.25f + tmr * 0.25f) + 0.5f * VertexNormal[(mid.Y - 1) * VertexArrayWidth + mid.X];
+					if (vertexCaled[it])
+						VertexNormal[it] = Vec2Float3(tlm * 0.25f + tmr * 0.25f) + 0.5f * VertexNormal[it];
 					else
-						VertexNormal[(mid.Y - 1) * VertexArrayWidth + mid.X] = Vec2Float3(tlm * 0.5f + tmr * 0.5f);
+						VertexNormal[it] = Vec2Float3(tlm * 0.5f + tmr * 0.5f);
 
-					if (vertexCaled[(mid.Y + 1) * VertexArrayWidth + mid.X])
-						VertexNormal[(mid.Y + 1) * VertexArrayWidth + mid.X] = Vec2Float3(mlb * 0.25f + mbr * 0.25f) + 0.5f * VertexNormal[(mid.Y + 1) * VertexArrayWidth + mid.X];
+					if (vertexCaled[ib])
+						VertexNormal[ib] = Vec2Float3(mlb * 0.25f + mbr * 0.25f) + 0.5f * VertexNormal[ib];
 					else
-						VertexNormal[(mid.Y + 1) * VertexArrayWidth + mid.X] = Vec2Float3(mlb * 0.5f + mbr * 0.5f);
+						VertexNormal[ib] = Vec2Float3(mlb * 0.5f + mbr * 0.5f);
 
-					if (vertexCaled[mid.Y * VertexArrayWidth + mid.X - 1])
-						VertexNormal[mid.Y * VertexArrayWidth + mid.X - 1] = Vec2Float3(mlb * 0.25f + tlm * 0.25f) + 0.5f * VertexNormal[mid.Y * VertexArrayWidth + mid.X - 1];
+					if (vertexCaled[il])
+						VertexNormal[il] = Vec2Float3(mlb * 0.25f + tlm * 0.25f) + 0.5f * VertexNormal[il];
 					else
-						VertexNormal[mid.Y * VertexArrayWidth + mid.X - 1] = Vec2Float3(mlb * 0.5f + tlm * 0.5f);
+						VertexNormal[il] = Vec2Float3(mlb * 0.5f + tlm * 0.5f);
 
-					if (vertexCaled[mid.Y * VertexArrayWidth + mid.X + 1])
-						VertexNormal[mid.Y * VertexArrayWidth + mid.X + 1] = Vec2Float3(tmr * 0.25f + mbr * 0.25f) + 0.5f * VertexNormal[mid.Y * VertexArrayWidth + mid.X + 1];
+					if (vertexCaled[ir])
+						VertexNormal[ir] = Vec2Float3(tmr * 0.25f + mbr * 0.25f) + 0.5f * VertexNormal[ir];
 					else
-						VertexNormal[mid.Y * VertexArrayWidth + mid.X + 1] = Vec2Float3(tmr * 0.5f + mbr * 0.5f);
+						VertexNormal[ir] = Vec2Float3(tmr * 0.5f + mbr * 0.5f);
 
-					vertexCaled[mid.Y * VertexArrayWidth + mid.X] = true;
-					vertexCaled[(mid.Y - 1) * VertexArrayWidth + mid.X] = true;
-					vertexCaled[(mid.Y + 1) * VertexArrayWidth + mid.X] = true;
-					vertexCaled[mid.Y * VertexArrayWidth + mid.X - 1] = true;
-					vertexCaled[mid.Y * VertexArrayWidth + mid.X + 1] = true;
+					vertexCaled[im] = true;
+					vertexCaled[it] = true;
+					vertexCaled[ib] = true;
+					vertexCaled[il] = true;
+					vertexCaled[ir] = true;
 
-					CellPos[uv.ToCPos(this)] = VertexWPos[mid.Y * VertexArrayWidth + mid.X];
+					CellInfo cellInfo = new CellInfo(VertexWPos[im], Vec2Float3(tlm), Vec2Float3(tmr), Vec2Float3(mlb), Vec2Float3(mbr), im, it, ib, il, ir);
+
+					CellInfos[uv.ToCPos(this)] = cellInfo;
 				}
 			}
 		}
@@ -1308,8 +1343,8 @@ namespace OpenRA
 
 		public WPos CenterOfCell(CPos cell)
 		{
-			if (CellPos != null && CellPos.Contains(cell))
-				return CellPos[cell];
+			if (CellInfos != null && CellInfos.Contains(cell))
+				return CellInfos[cell].CellCenterPos;
 			else
 			{
 				if (Grid.Type == MapGridType.Rectangular)
@@ -1358,27 +1393,11 @@ namespace OpenRA
 
 		public int HeightOfCell(CPos cell)
 		{
-			if (CellPos != null && CellPos.Contains(cell))
-				return CellPos[cell].Z;
+			if (CellInfos != null && CellInfos.Contains(cell))
+				return CellInfos[cell].CellCenterPos.Z;
 			else
 				return Height.Contains(cell) ? MapGrid.MapHeightStep * Height[cell] + Grid.Ramps[Ramp[cell]].CenterHeightOffset : 0;
 		}
-
-		public int HeightOfCell(MPos uv)
-		{
-			int2 mid;
-			if (uv.V % 2 == 0)
-			{
-				mid = new int2(2 * uv.U + 1, uv.V + 1);
-			}
-			else
-			{
-				mid = new int2(2 * uv.U + 2, uv.V + 1);
-			}
-
-			return VertexWPos[mid.Y * VertexArrayWidth + mid.X].Z;
-		}
-
 		public WDist DistanceAboveTerrain(WPos pos)
 		{
 			if (Grid.Type == MapGridType.Rectangular)

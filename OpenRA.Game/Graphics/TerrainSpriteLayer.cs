@@ -13,13 +13,14 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Security.Cryptography;
+using OpenRA.Traits;
 
 namespace OpenRA.Graphics
 {
 	public sealed class TerrainSpriteLayer : IDisposable
 	{
 		static readonly int[] CornerVertexMap6 = { 0, 1, 2, 2, 3, 0 };
-		static readonly int[] CornerVertexMap = { 1, 0, 4, 0, 2, 4, 1, 3, 0, 0, 3, 2};
+		static readonly int[] CornerVertexMap = { 1, 0, 4, 0, 2, 4, 1, 3, 0, 0, 3, 2 };
 
 		public readonly BlendMode BlendMode;
 
@@ -78,7 +79,7 @@ namespace OpenRA.Graphics
 			{
 				var v = vertices[i];
 				var p = palettes[i / Game.Renderer.MaxVerticesPerMesh]?.TextureIndex ?? 0;
-				vertices[i] = new MapVertex(v.X, v.Y, v.Z, v.S, v.T, v.U, v.V, p, v.C, v.R, v.G, v.B, v.A, v.NX, v.NY,v.NZ);
+				vertices[i] = new MapVertex(v.X, v.Y, v.Z, v.S, v.T, v.U, v.V, p, v.C, v.R, v.G, v.B, v.A, v.NX, v.NY, v.NZ, v.FNX, v.FNY, v.FNZ);
 			}
 
 			for (var row = 0; row < map.MapSize.Y; row++)
@@ -97,16 +98,13 @@ namespace OpenRA.Graphics
 
 		public void Update(CPos cell, Sprite sprite, PaletteReference palette, float scale = 1f, float alpha = 1f, bool ignoreTint = false, int zOffset = -1, bool additional = false)
 		{
-			//var xyz = float3.Zero;
 			WPos wPos = WPos.Zero;
 			if (sprite != null)
 			{
-				//var cellOrigin = map.CenterOfCell(cell) - new WVec(0, 0, map.Grid.Ramps[map.Ramp[cell]].CenterHeightOffset);
-				//xyz = worldRenderer.Screen3DPosition(cellOrigin) + scale * (sprite.Offset - 0.5f * sprite.Size);
 				wPos = map.CenterOfCell(cell) - new WVec(0, 0, map.Grid.Ramps[map.Ramp[cell]].CenterHeightOffset);
 			}
 
-			Update(cell.ToMPos(map.Grid.Type), sprite, palette, wPos, scale, alpha, ignoreTint, zOffset, additional);
+			Update(cell.ToMPos(map.Grid.Type), sprite, palette, wPos, scale, alpha, ignoreTint, zOffset, additional, false);
 		}
 
 		void UpdateTint(MPos uv)
@@ -118,7 +116,7 @@ namespace OpenRA.Graphics
 				{
 					var v = vertices[offset + i];
 					var color = verticesColor[offset + i];
-					vertices[offset + i] = new MapVertex(v.X, v.Y, v.Z, v.S, v.T, v.U, v.V, v.P, v.C, color * float3.Ones, v.A, v.NX, v.NY, v.NZ);
+					vertices[offset + i] = new MapVertex(v.X, v.Y, v.Z, v.S, v.T, v.U, v.V, v.P, v.C, color * float3.Ones, v.A, v.NX, v.NY, v.NZ, v.FNX, v.FNY, v.FNZ);
 				}
 
 				return;
@@ -137,6 +135,7 @@ namespace OpenRA.Graphics
 			//	tl.TintAt(pos + new WVec(step, step, 0)),
 			//	tl.TintAt(pos + new WVec(-step, step, 0))
 			//};
+
 			var weights = new[]
 			{
 				tl.TintAt(pos),
@@ -153,9 +152,13 @@ namespace OpenRA.Graphics
 				var v = vertices[offset + i];
 				var color = verticesColor[offset + i];
 				if (color == float3.Ones)
-					vertices[offset + i] = new MapVertex(v.X, v.Y, v.Z, v.S, v.T, v.U, v.V, v.P, v.C, v.A * weights[CornerVertexMap6[i % 6]], v.A, v.NX, v.NY, v.NZ);
+				{
+					vertices[offset + i] = new MapVertex(v.X, v.Y, v.Z, v.S, v.T, v.U, v.V, v.P, v.C, v.A * weights[CornerVertexMap6[i % 6]], v.A, v.NX, v.NY, v.NZ, v.FNX, v.FNY, v.FNZ);
+				}
 				else
-					vertices[offset + i] = new MapVertex(v.X, v.Y, v.Z, v.S, v.T, v.U, v.V, v.P, v.C, color * weights[CornerVertexMap[i % 12]], v.A, v.NX, v.NY, v.NZ);
+				{
+					vertices[offset + i] = new MapVertex(v.X, v.Y, v.Z, v.S, v.T, v.U, v.V, v.P, v.C, color * weights[CornerVertexMap[i % 12]], v.A, v.NX, v.NY, v.NZ, v.FNX, v.FNY, v.FNZ);
+				}
 			}
 
 			dirtyRows.Add(uv.V);
@@ -181,7 +184,7 @@ namespace OpenRA.Graphics
 			throw new InvalidDataException("Sheet overflow");
 		}
 
-		float3 shroudColor = float3.Zero;
+		readonly float3 shroudColor = float3.Zero;
 		public void Update(MPos uv, Sprite sprite, PaletteReference palette, in WPos pos, float scale, float alpha, bool ignoreTint, int zOffset = -1, bool additional = false, bool shroud = false)
 		{
 			int2 samplers;
@@ -210,18 +213,8 @@ namespace OpenRA.Graphics
 			if (!map.Tiles.Contains(uv))
 				return;
 
-			// Note that since the maximum number of vertices per cell is used here, null values may appear in the vertices array 
 			var offset = rowStride * uv.V + Game.Renderer.MaxVerticesPerMesh * uv.U;
-
-			int2 mid;
-			if (uv.V % 2 == 0)
-			{
-				mid = new int2(2 * uv.U + 1, uv.V + 1);
-			}
-			else
-			{
-				mid = new int2(2 * uv.U + 2, uv.V + 1);
-			}
+			var cellinfo = map.CellInfos[uv];
 
 			if (additional)
 			{
@@ -229,63 +222,56 @@ namespace OpenRA.Graphics
 
 				var spriteMeshType = sprite.SpriteMeshType;
 
-				//switch (spriteMeshType)
-				//{
-				//	case SpriteMeshType.Plane:
-				//		Util.FastCreatePlane(vertices, pos, viewOffset, sprite, samplers, palette?.TextureIndex ?? 0, scale, alpha * float3.Ones, alpha, offset);
-				//		break;
-				//	case SpriteMeshType.Card:
-				//		Util.FastCreateCard(vertices, pos, viewOffset, sprite, samplers, palette?.TextureIndex ?? 0, scale, alpha * float3.Ones, alpha, offset);
-				//		break;
-				//	case SpriteMeshType.Board:
-				//		Util.FastCreateBoard(vertices, pos, viewOffset, sprite, samplers, palette?.TextureIndex ?? 0, scale, alpha * float3.Ones, alpha, offset);
-				//		break;
-				//	default: throw new Exception("not valid SpriteMeshType for terrain");
-				//}
-
-				Util.FastCreateTilePlane(vertices, map.VertexNormal[mid.Y * map.VertexArrayWidth + mid.X], pos, viewOffset, sprite, samplers, palette?.TextureIndex ?? 0, scale, alpha * float3.Ones, alpha, offset);
+				Util.FastCreateTilePlane(vertices, map.VertexNormal[cellinfo.M], pos, viewOffset, sprite, samplers, palette?.TextureIndex ?? 0, scale, alpha * float3.Ones, alpha, offset);
 			}
 			else
 			{
-
 				if (shroud)
 				{
 					Util.FastCreateTile(vertices, verticesColor,
-												map.VertexPos[mid.Y * map.VertexArrayWidth + mid.X],
-												map.VertexPos[(mid.Y - 1) * map.VertexArrayWidth + mid.X],
-												map.VertexPos[(mid.Y + 1) * map.VertexArrayWidth + mid.X],
-												map.VertexPos[mid.Y * map.VertexArrayWidth + mid.X - 1],
-												map.VertexPos[mid.Y * map.VertexArrayWidth + mid.X + 1],
-												map.VertexNormal[mid.Y * map.VertexArrayWidth + mid.X],
-												map.VertexNormal[(mid.Y - 1) * map.VertexArrayWidth + mid.X],
-												map.VertexNormal[(mid.Y + 1) * map.VertexArrayWidth + mid.X],
-												map.VertexNormal[mid.Y * map.VertexArrayWidth + mid.X - 1],
-												map.VertexNormal[mid.Y * map.VertexArrayWidth + mid.X + 1],
+												map.VertexPos[cellinfo.M],
+												map.VertexPos[cellinfo.T],
+												map.VertexPos[cellinfo.B],
+												map.VertexPos[cellinfo.L],
+												map.VertexPos[cellinfo.R],
+												map.VertexNormal[cellinfo.M],
+												map.VertexNormal[cellinfo.T],
+												map.VertexNormal[cellinfo.B],
+												map.VertexNormal[cellinfo.L],
+												map.VertexNormal[cellinfo.R],
 												shroudColor,
 												shroudColor,
 												shroudColor,
 												shroudColor,
 												shroudColor,
+												cellinfo.CellNmlTMR,
+												cellinfo.CellNmlMBR,
+												cellinfo.CellNmlTLM,
+												cellinfo.CellNmlMLB,
 												sprite, samplers, palette?.TextureIndex ?? 0, scale, alpha * float3.Ones, alpha, offset);
 				}
 				else
 				{
 					Util.FastCreateTile(vertices, verticesColor,
-												map.VertexPos[mid.Y * map.VertexArrayWidth + mid.X],
-												map.VertexPos[(mid.Y - 1) * map.VertexArrayWidth + mid.X],
-												map.VertexPos[(mid.Y + 1) * map.VertexArrayWidth + mid.X],
-												map.VertexPos[mid.Y * map.VertexArrayWidth + mid.X - 1],
-												map.VertexPos[mid.Y * map.VertexArrayWidth + mid.X + 1],
-												map.VertexNormal[mid.Y * map.VertexArrayWidth + mid.X],
-												map.VertexNormal[(mid.Y - 1) * map.VertexArrayWidth + mid.X],
-												map.VertexNormal[(mid.Y + 1) * map.VertexArrayWidth + mid.X],
-												map.VertexNormal[mid.Y * map.VertexArrayWidth + mid.X - 1],
-												map.VertexNormal[mid.Y * map.VertexArrayWidth + mid.X + 1],
-												map.VertexColors[mid.Y * map.VertexArrayWidth + mid.X],
-												map.VertexColors[(mid.Y - 1) * map.VertexArrayWidth + mid.X],
-												map.VertexColors[(mid.Y + 1) * map.VertexArrayWidth + mid.X],
-												map.VertexColors[mid.Y * map.VertexArrayWidth + mid.X - 1],
-												map.VertexColors[mid.Y * map.VertexArrayWidth + mid.X + 1],
+												map.VertexPos[cellinfo.M],
+												map.VertexPos[cellinfo.T],
+												map.VertexPos[cellinfo.B],
+												map.VertexPos[cellinfo.L],
+												map.VertexPos[cellinfo.R],
+												map.VertexNormal[cellinfo.M],
+												map.VertexNormal[cellinfo.T],
+												map.VertexNormal[cellinfo.B],
+												map.VertexNormal[cellinfo.L],
+												map.VertexNormal[cellinfo.R],
+												map.VertexColors[cellinfo.M],
+												map.VertexColors[cellinfo.T],
+												map.VertexColors[cellinfo.B],
+												map.VertexColors[cellinfo.L],
+												map.VertexColors[cellinfo.R],
+												cellinfo.CellNmlTMR,
+												cellinfo.CellNmlMBR,
+												cellinfo.CellNmlTLM,
+												cellinfo.CellNmlMLB,
 												sprite, samplers, palette?.TextureIndex ?? 0, scale, alpha * float3.Ones, -alpha, offset);
 				}
 			}

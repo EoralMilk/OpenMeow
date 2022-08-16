@@ -178,6 +178,10 @@ namespace OpenRA.Graphics
 		public void SetRenderShroud(bool flag)
 		{
 			shader.SetBool("RenderShroud", flag);
+			shader.SetVec("CameraInvFront",
+				Game.Renderer.World3DRenderer.InverseCameraFront.x,
+				Game.Renderer.World3DRenderer.InverseCameraFront.y,
+				Game.Renderer.World3DRenderer.InverseCameraFront.z);
 		}
 
 		public void SetShadowParams()
