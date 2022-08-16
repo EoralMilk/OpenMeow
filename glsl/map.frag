@@ -106,7 +106,7 @@ vec4 CalcDirLight(DirLight light, vec3 normal, vec3 viewDir, vec4 color)
 	
 	diffuse = diffuse * (1.0f - max(CalShadow(light, normal) - AmbientIntencity, 0.0f));
 
-	return vec4((ambient + diffuse), color.a);
+	return vec4((ambient * 0.35 + diffuse * 1.5), color.a);
 }
 
 
@@ -283,6 +283,8 @@ void main()
 		discard;
 
 	vec2 coords = vTexCoord.st;
+	// if (!RenderShroud)
+	// 	coords *= 2.0;
 
 	vec4 c;
 	if (AntialiasPixelsPerTexel > 0.0)
@@ -346,15 +348,16 @@ void main()
 		if (!RenderShroud){
 			if (vTint.a < 0.0)
 				c = vec4(vTint.rgb, -vTint.a);
-		
+			else if (vTint.a >= 0.0)
+				c = 3.0 * c * vTint;
+			
 			vec3 viewDir = normalize(viewPos - vFragPos);
 			c = CalcDirLight(dirLight, vNormal, viewDir, c);
 
 			// c = vec4(c.rgb * (1.0f - max(CalShadow(dirLight) - AmbientIntencity, 0.0f)), c.a);
 
 			// A negative tint alpha indicates that the tint should replace the colour instead of multiplying it
-			if (vTint.a >= 0.0)
-				c *= vTint;
+			
 		}
 
 		#if __VERSION__ == 120

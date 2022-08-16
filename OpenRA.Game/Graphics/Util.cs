@@ -327,20 +327,15 @@ namespace OpenRA.Graphics
 			in float3 mtint, in float3 ttint, in float3 btint, in float3 ltint, in float3 rtint,
 			in float3 tmrNml, in float3 mbrNml, in float3 tlmNml, in float3 mlbNml,
 			Sprite r, int2 samplers, float paletteTextureIndex, float scale,
-			in float3 tint, float alpha, int nv, float rotation = 0f)
+			in float3 tint, float alpha, int nv, bool rotation = true)
 		{
-			if (scale < 0)
-			{
-				throw new Exception("invalide create mesh scale: only positve value supported");
-			}
-
 			float sl = 0;
 			float st = 0;
-			float sbaseTB = 0;
-			float sbaseRL = 0;
-
 			float sr = 0;
 			float sb = 0;
+
+			float sbaseTB = 0;
+			float sbaseRL = 0;
 
 			// See combined.vert for documentation on the channel attribute format
 			var attribC = r.Channel == TextureChannel.RGBA ? 0x02 : ((byte)r.Channel) << 1 | 0x01;
@@ -363,21 +358,49 @@ namespace OpenRA.Graphics
 			float baseY = r.Top - (r.Top - r.Bottom) * 0.5f;
 			float baseX = r.Right - (r.Right - r.Left) * 0.5f;
 
-			vertices[nv] = new MapVertex(tpos, tnml, tmrNml, r.Left, r.Top, sl, st, paletteTextureIndex, fAttribC, ttint, alpha);
-			vertices[nv + 1] = new MapVertex(mpos, mnml, tmrNml, baseX, baseY, sbaseRL, sbaseTB, paletteTextureIndex, fAttribC, mtint, alpha);
-			vertices[nv + 2] = new MapVertex(rpos, rnml, tmrNml, r.Right, r.Top, sr, st, paletteTextureIndex, fAttribC, rtint, alpha);
+			// rotate isomatric tile to rect
+			if (rotation)
+			{
+				float top = r.Top + (r.Bottom - r.Top) * 0.033f;
+				float bottom = r.Bottom + (r.Top - r.Bottom) * 0.033f;
+				float left = r.Left + (r.Right - r.Left) * 0.033f;
+				float right = r.Right + (r.Left - r.Right) * 0.033f;
 
-			vertices[nv + 3] = new MapVertex(mpos, mnml, mbrNml, baseX, baseY, sbaseRL, sbaseTB, paletteTextureIndex, fAttribC, mtint, alpha);
-			vertices[nv + 4] = new MapVertex(bpos, bnml, mbrNml, r.Right, r.Bottom, sr, sb, paletteTextureIndex, fAttribC, btint, alpha);
-			vertices[nv + 5] = new MapVertex(rpos, rnml, mbrNml, r.Right, r.Top, sr, st, paletteTextureIndex, fAttribC, rtint, alpha);
+				vertices[nv] = new MapVertex(tpos, tnml, tmrNml, baseX, top, sbaseRL, st, paletteTextureIndex, fAttribC, ttint, alpha);
+				vertices[nv + 1] = new MapVertex(mpos, mnml, tmrNml, baseX, baseY, sbaseRL, sbaseTB, paletteTextureIndex, fAttribC, mtint, alpha);
+				vertices[nv + 2] = new MapVertex(rpos, rnml, tmrNml, right, baseY, sr, sbaseTB, paletteTextureIndex, fAttribC, rtint, alpha);
 
-			vertices[nv + 6] = new MapVertex(tpos, tnml, tlmNml, r.Left, r.Top, sl, st, paletteTextureIndex, fAttribC, ttint, alpha);
-			vertices[nv + 7] = new MapVertex(lpos, lnml, tlmNml, r.Left, r.Bottom, sl, sb, paletteTextureIndex, fAttribC, ltint, alpha);
-			vertices[nv + 8] = new MapVertex(mpos, mnml, tlmNml, baseX, baseY, sbaseRL, sbaseTB, paletteTextureIndex, fAttribC, mtint, alpha);
+				vertices[nv + 3] = new MapVertex(mpos, mnml, mbrNml, baseX, baseY, sbaseRL, sbaseTB, paletteTextureIndex, fAttribC, mtint, alpha);
+				vertices[nv + 4] = new MapVertex(bpos, bnml, mbrNml, baseX, bottom, sbaseRL, sb, paletteTextureIndex, fAttribC, btint, alpha);
+				vertices[nv + 5] = new MapVertex(rpos, rnml, mbrNml, right, baseY, sr, sbaseTB, paletteTextureIndex, fAttribC, rtint, alpha);
 
-			vertices[nv + 9] = new MapVertex(mpos, mnml, mlbNml, baseX, baseY, sbaseRL, sbaseTB, paletteTextureIndex, fAttribC, mtint, alpha);
-			vertices[nv + 10] = new MapVertex(lpos, lnml, mlbNml, r.Left, r.Bottom, sl, sb, paletteTextureIndex, fAttribC, ltint, alpha);
-			vertices[nv + 11] = new MapVertex(bpos, bnml, mlbNml, r.Right, r.Bottom, sr, sb, paletteTextureIndex, fAttribC, btint, alpha);
+				vertices[nv + 6] = new MapVertex(tpos, tnml, tlmNml, baseX, top, sbaseRL, st, paletteTextureIndex, fAttribC, ttint, alpha);
+				vertices[nv + 7] = new MapVertex(lpos, lnml, tlmNml, left, baseY, sl, sbaseTB, paletteTextureIndex, fAttribC, ltint, alpha);
+				vertices[nv + 8] = new MapVertex(mpos, mnml, tlmNml, baseX, baseY, sbaseRL, sbaseTB, paletteTextureIndex, fAttribC, mtint, alpha);
+
+				vertices[nv + 9] = new MapVertex(mpos, mnml, mlbNml, baseX, baseY, sbaseRL, sbaseTB, paletteTextureIndex, fAttribC, mtint, alpha);
+				vertices[nv + 10] = new MapVertex(lpos, lnml, mlbNml, left, baseY, sl, sbaseTB, paletteTextureIndex, fAttribC, ltint, alpha);
+				vertices[nv + 11] = new MapVertex(bpos, bnml, mlbNml, baseX, bottom, sbaseRL, sb, paletteTextureIndex, fAttribC, btint, alpha);
+
+			}
+			else
+			{
+				vertices[nv] = new MapVertex(tpos, tnml, tmrNml, r.Left, r.Top, sl, st, paletteTextureIndex, fAttribC, ttint, alpha);
+				vertices[nv + 1] = new MapVertex(mpos, mnml, tmrNml, baseX, baseY, sbaseRL, sbaseTB, paletteTextureIndex, fAttribC, mtint, alpha);
+				vertices[nv + 2] = new MapVertex(rpos, rnml, tmrNml, r.Right, r.Top, sr, st, paletteTextureIndex, fAttribC, rtint, alpha);
+
+				vertices[nv + 3] = new MapVertex(mpos, mnml, mbrNml, baseX, baseY, sbaseRL, sbaseTB, paletteTextureIndex, fAttribC, mtint, alpha);
+				vertices[nv + 4] = new MapVertex(bpos, bnml, mbrNml, r.Right, r.Bottom, sr, sb, paletteTextureIndex, fAttribC, btint, alpha);
+				vertices[nv + 5] = new MapVertex(rpos, rnml, mbrNml, r.Right, r.Top, sr, st, paletteTextureIndex, fAttribC, rtint, alpha);
+
+				vertices[nv + 6] = new MapVertex(tpos, tnml, tlmNml, r.Left, r.Top, sl, st, paletteTextureIndex, fAttribC, ttint, alpha);
+				vertices[nv + 7] = new MapVertex(lpos, lnml, tlmNml, r.Left, r.Bottom, sl, sb, paletteTextureIndex, fAttribC, ltint, alpha);
+				vertices[nv + 8] = new MapVertex(mpos, mnml, tlmNml, baseX, baseY, sbaseRL, sbaseTB, paletteTextureIndex, fAttribC, mtint, alpha);
+
+				vertices[nv + 9] = new MapVertex(mpos, mnml, mlbNml, baseX, baseY, sbaseRL, sbaseTB, paletteTextureIndex, fAttribC, mtint, alpha);
+				vertices[nv + 10] = new MapVertex(lpos, lnml, mlbNml, r.Left, r.Bottom, sl, sb, paletteTextureIndex, fAttribC, ltint, alpha);
+				vertices[nv + 11] = new MapVertex(bpos, bnml, mlbNml, r.Right, r.Bottom, sr, sb, paletteTextureIndex, fAttribC, btint, alpha);
+			}
 
 			verticesColor[nv] = ttint;
 			verticesColor[nv + 1] = mtint;
@@ -562,23 +585,23 @@ namespace OpenRA.Graphics
 								{
 									case SpriteFrameType.Bgra32:
 									case SpriteFrameType.Bgr24:
-									{
-										b = src[k++];
-										g = src[k++];
-										r = src[k++];
-										a = srcType == SpriteFrameType.Bgra32 ? src[k++] : (byte)255;
-										break;
-									}
+										{
+											b = src[k++];
+											g = src[k++];
+											r = src[k++];
+											a = srcType == SpriteFrameType.Bgra32 ? src[k++] : (byte)255;
+											break;
+										}
 
 									case SpriteFrameType.Rgba32:
 									case SpriteFrameType.Rgb24:
-									{
-										r = src[k++];
-										g = src[k++];
-										b = src[k++];
-										a = srcType == SpriteFrameType.Rgba32 ? src[k++] : (byte)255;
-										break;
-									}
+										{
+											r = src[k++];
+											g = src[k++];
+											b = src[k++];
+											a = srcType == SpriteFrameType.Rgba32 ? src[k++] : (byte)255;
+											break;
+										}
 
 									default:
 										throw new InvalidOperationException($"Unknown SpriteFrameType {srcType}");
@@ -636,21 +659,21 @@ namespace OpenRA.Graphics
 							switch (src.Type)
 							{
 								case SpriteFrameType.Indexed8:
-								{
-									cc = src.Palette[src.Data[k++]];
-									break;
-								}
+									{
+										cc = src.Palette[src.Data[k++]];
+										break;
+									}
 
 								case SpriteFrameType.Rgba32:
 								case SpriteFrameType.Rgb24:
-								{
-									var r = src.Data[k++];
-									var g = src.Data[k++];
-									var b = src.Data[k++];
-									var a = src.Type == SpriteFrameType.Rgba32 ? src.Data[k++] : (byte)255;
-									cc = Color.FromArgb(a, r, g, b);
-									break;
-								}
+									{
+										var r = src.Data[k++];
+										var g = src.Data[k++];
+										var b = src.Data[k++];
+										var a = src.Type == SpriteFrameType.Rgba32 ? src.Data[k++] : (byte)255;
+										cc = Color.FromArgb(a, r, g, b);
+										break;
+									}
 
 								// Pngs don't support BGR[A], so no need to include them here
 								default:

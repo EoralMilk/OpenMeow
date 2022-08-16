@@ -496,6 +496,15 @@ shroud:
 	full: fullshroud
 		Length: 1
 
+testtile:
+	Defaults:
+		UseTilesetCode: false
+	 	AddExtension: false
+		Offset: 0, 0, 0
+		MeshType: Plane
+		BlendMode: None
+	dirt: dirt.png
+
 smallscorches:
 	Defaults:
 		UseTilesetExtension: true
