@@ -104,7 +104,7 @@ vec4 CalcDirLight(DirLight light, vec3 normal, vec3 viewDir, vec4 color)
 	// water pix
 	if (mDrawType == 2 && color.b > color.r)
 	{
-		vec2 uv = vTileTexCoord + vec2(WaterUVOffset);
+		vec2 uv = vTileTexCoord + vec2(0.0, WaterUVOffset);
 		normal = texture(Water, uv).rgb;
 		normal = normalize(normal * 2.0 - 1.0); 
 		vec4 water = texture(Caustics, uv);
@@ -113,8 +113,8 @@ vec4 CalcDirLight(DirLight light, vec3 normal, vec3 viewDir, vec4 color)
 		color *= (water + (vec4(1.0) - water) * max(color.r/color.b, 0.5));
 
 		vec3 reflectDir = reflect(-lightDir, normal);
-		float spec = pow(max(dot(viewDir, reflectDir), 0.0), 24.0);
-		specular = light.specular * spec * 0.6;
+		float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32.0);
+		specular = light.specular * spec;
 	}
 
 	// diffuse
