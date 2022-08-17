@@ -727,6 +727,8 @@ namespace OpenRA.Platforms.Default
 		readonly uint id;
 		readonly Func<object> getScaleFilter;
 		readonly Action<object> setScaleFilter;
+		readonly Func<object> getWrapType;
+		readonly Action<object> setWrapType;
 		readonly Func<object> getSize;
 		readonly Action<object> setEmpty;
 		readonly Func<byte[]> getData;
@@ -742,6 +744,8 @@ namespace OpenRA.Platforms.Default
 			id = texture.ID;
 			getScaleFilter = () => texture.ScaleFilter;
 			setScaleFilter = value => texture.ScaleFilter = (TextureScaleFilter)value;
+			getWrapType = () => texture.WrapType;
+			setWrapType = value => texture.WrapType = (TextureWrap)value;
 			getSize = () => texture.Size;
 			setEmpty = tuple => { var t = (ValueTuple<int, int>)tuple; texture.SetEmpty(t.Item1, t.Item2); };
 			getData = () => texture.GetData();
@@ -759,6 +763,13 @@ namespace OpenRA.Platforms.Default
 			get => (TextureScaleFilter)device.Send(getScaleFilter);
 
 			set => device.Post(setScaleFilter, value);
+		}
+
+		public TextureWrap WrapType
+		{
+			get => (TextureWrap)device.Send(getWrapType);
+
+			set => device.Post(setWrapType, value);
 		}
 
 		public Size Size => (Size)device.Send(getSize);

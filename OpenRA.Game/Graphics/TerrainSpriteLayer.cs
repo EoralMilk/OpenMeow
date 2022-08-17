@@ -13,7 +13,10 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Security.Cryptography;
+using OpenRA.Primitives;
+using System.Xml.Linq;
 using OpenRA.Traits;
+using StbImageSharp;
 
 namespace OpenRA.Graphics
 {
@@ -41,14 +44,12 @@ namespace OpenRA.Graphics
 
 		readonly PaletteReference[] palettes;
 
-		//ISpriteSequence testSequence;
-		//Sprite dirt;
 		public TerrainSpriteLayer(World world, WorldRenderer wr, Sprite emptySprite, BlendMode blendMode, bool restrictToBounds)
 		{
 			worldRenderer = wr;
 			this.restrictToBounds = restrictToBounds;
 			this.emptySprite = emptySprite;
-			sheets = new Sheet[SpriteRenderer.SheetCount];
+			sheets = new Sheet[MapRenderer.SheetCount];
 			BlendMode = blendMode;
 
 			map = world.Map;
@@ -73,9 +74,6 @@ namespace OpenRA.Graphics
 				ignoreTint = new bool[rowStride * map.MapSize.Y];
 				wr.TerrainLighting.CellChanged += UpdateTint;
 			}
-
-			//testSequence = map.Rules.Sequences.GetSequence("testtile", "dirt");
-			//dirt = testSequence.GetSprite(0);
 		}
 
 		void UpdatePaletteIndices()
@@ -84,7 +82,7 @@ namespace OpenRA.Graphics
 			{
 				var v = vertices[i];
 				var p = palettes[i / Game.Renderer.MaxVerticesPerMesh]?.TextureIndex ?? 0;
-				vertices[i] = new MapVertex(v.X, v.Y, v.Z, v.S, v.T, v.U, v.V, p, v.C, v.R, v.G, v.B, v.A, v.NX, v.NY, v.NZ, v.FNX, v.FNY, v.FNZ);
+				vertices[i] = new MapVertex(v.X, v.Y, v.Z, v.S, v.T, v.U, v.V, p, v.C, v.R, v.G, v.B, v.A, v.NX, v.NY, v.NZ, v.FNX, v.FNY, v.FNZ, v.TU, v.TV, v.DrawType);
 			}
 
 			for (var row = 0; row < map.MapSize.Y; row++)
@@ -120,7 +118,7 @@ namespace OpenRA.Graphics
 				for (var i = 0; i < Game.Renderer.MaxVerticesPerMesh; i++)
 				{
 					var v = vertices[offset + i];
-					vertices[offset + i] = new MapVertex(v.X, v.Y, v.Z, v.S, v.T, v.U, v.V, v.P, v.C, v.A * float3.Ones, v.A, v.NX, v.NY, v.NZ, v.FNX, v.FNY, v.FNZ);
+					vertices[offset + i] = new MapVertex(v.X, v.Y, v.Z, v.S, v.T, v.U, v.V, v.P, v.C, v.A * float3.Ones, v.A, v.NX, v.NY, v.NZ, v.FNX, v.FNY, v.FNZ, v.TU, v.TV, v.DrawType);
 				}
 
 				return;
@@ -157,11 +155,11 @@ namespace OpenRA.Graphics
 				var color = verticesColor[offset + i];
 				if (color == float3.Ones)
 				{
-					vertices[offset + i] = new MapVertex(v.X, v.Y, v.Z, v.S, v.T, v.U, v.V, v.P, v.C, v.A * weights6[CornerVertexMap6[i % 6]], v.A, v.NX, v.NY, v.NZ, v.FNX, v.FNY, v.FNZ);
+					vertices[offset + i] = new MapVertex(v.X, v.Y, v.Z, v.S, v.T, v.U, v.V, v.P, v.C, v.A * weights6[CornerVertexMap6[i % 6]], v.A, v.NX, v.NY, v.NZ, v.FNX, v.FNY, v.FNZ, v.TU, v.TV, v.DrawType);
 				}
 				else
 				{
-					vertices[offset + i] = new MapVertex(v.X, v.Y, v.Z, v.S, v.T, v.U, v.V, v.P, v.C, v.A * weights[CornerVertexMap[i % 12]], v.A, v.NX, v.NY, v.NZ, v.FNX, v.FNY, v.FNZ);
+					vertices[offset + i] = new MapVertex(v.X, v.Y, v.Z, v.S, v.T, v.U, v.V, v.P, v.C, v.A * weights[CornerVertexMap[i % 12]], v.A, v.NX, v.NY, v.NZ, v.FNX, v.FNY, v.FNZ, v.TU, v.TV, v.DrawType);
 				}
 			}
 
@@ -220,6 +218,20 @@ namespace OpenRA.Graphics
 			var offset = rowStride * uv.V + Game.Renderer.MaxVerticesPerMesh * uv.U;
 			var cellinfo = map.CellInfos[uv];
 
+			//switch (spriteMeshType)
+			//{
+			//	case SpriteMeshType.Plane:
+			//		Util.FastCreatePlane(vertices, pos, viewOffset, sprite, samplers, palette?.TextureIndex ?? 0, scale, alpha * float3.Ones, alpha, offset);
+			//		break;
+			//	case SpriteMeshType.Card:
+			//		Util.FastCreateCard(vertices, pos, viewOffset, sprite, samplers, palette?.TextureIndex ?? 0, scale, alpha * float3.Ones, alpha, offset);
+			//		break;
+			//	case SpriteMeshType.Board:
+			//		Util.FastCreateBoard(vertices, pos, viewOffset, sprite, samplers, palette?.TextureIndex ?? 0, scale, alpha * float3.Ones, alpha, offset);
+			//		break;
+			//	default: throw new Exception("not valid SpriteMeshType for terrain");
+			//}
+
 			if (additional)
 			{
 				var viewOffset = Game.Renderer.World3DRenderer.InverseCameraFrontMeterPerWPos * (zOffset - 15);
@@ -252,6 +264,7 @@ namespace OpenRA.Graphics
 												cellinfo.CellNmlMBR,
 												cellinfo.CellNmlTLM,
 												cellinfo.CellNmlMLB,
+												cellinfo.Type,
 												sprite, samplers, palette?.TextureIndex ?? 0, scale, alpha * float3.Ones, alpha, offset, false);
 				}
 				else
@@ -276,6 +289,7 @@ namespace OpenRA.Graphics
 												cellinfo.CellNmlMBR,
 												cellinfo.CellNmlTLM,
 												cellinfo.CellNmlMLB,
+												cellinfo.Type,
 												sprite, samplers, palette?.TextureIndex ?? 0, scale, alpha * float3.Ones, alpha, offset, true);
 				}
 			}

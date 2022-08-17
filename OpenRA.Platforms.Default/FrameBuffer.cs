@@ -56,7 +56,7 @@ namespace OpenRA.Platforms.Default
 		Size ITexture.Size => size;
 
 		TextureScaleFilter ITexture.ScaleFilter { get => TextureScaleFilter.Nearest; set => throw new NotImplementedException(); }
-
+		TextureWrap ITexture.WrapType { get => TextureWrap.ClampToEdge; set => throw new NotImplementedException(); }
 		uint ITextureInternal.ID => id;
 
 		byte[] ITexture.GetData()

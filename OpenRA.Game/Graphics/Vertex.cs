@@ -82,18 +82,23 @@ namespace OpenRA.Graphics
 		// 3d normal
 		public readonly float FNX, FNY, FNZ;
 
-		public MapVertex(in float3 xyz, in float3 nml, in float3 fnml, float s, float t, float u, float v, float p, float c, in float3 tint, float a)
-			: this(xyz.X, xyz.Y, xyz.Z, s, t, u, v, p, c, tint.X, tint.Y, tint.Z, a, nml.X, nml.Y, nml.Z, fnml.X, fnml.Y, fnml.Z) { }
+		public readonly float TU, TV;
 
-		public MapVertex(float x, float y, float z, float s, float t, float u, float v, float p, float c, in float3 tint, float a, float nx, float ny, float nz, float fnx, float fny, float fnz)
-			: this(x, y, z, s, t, u, v, p, c, tint.X, tint.Y, tint.Z, a, nx, ny, nz, fnx, fny, fnz) { }
+		public readonly uint DrawType;
+
+		public MapVertex(in float3 xyz, in float3 nml, in float3 fnml, float s, float t, float u, float v, float p, float c, in float3 tint, float a, float tu, float tv, uint type)
+			: this(xyz.X, xyz.Y, xyz.Z, s, t, u, v, p, c, tint.X, tint.Y, tint.Z, a, nml.X, nml.Y, nml.Z, fnml.X, fnml.Y, fnml.Z, tu, tv, type) { }
+
+		public MapVertex(float x, float y, float z, float s, float t, float u, float v, float p, float c, in float3 tint, float a, float nx, float ny, float nz, float fnx, float fny, float fnz, float tu, float tv, uint type)
+			: this(x, y, z, s, t, u, v, p, c, tint.X, tint.Y, tint.Z, a, nx, ny, nz, fnx, fny, fnz, tu, tv, type) { }
 
 		public MapVertex(float x, float y, float z,
 			float s, float t, float u, float v,
 			float p, float c,
 			float r, float g, float b, float a,
 			float nx, float ny, float nz,
-			float fnx, float fny, float fnz)
+			float fnx, float fny, float fnz,
+			float tu, float tv, uint type)
 		{
 			X = x; Y = y; Z = z;
 			S = s; T = t;
@@ -102,6 +107,8 @@ namespace OpenRA.Graphics
 			R = r; G = g; B = b; A = a;
 			NX = nx; NY = ny; NZ = nz;
 			FNX = fnx; FNY = fny; FNZ = fnz;
+			TU = tu; TV = tv;
+			DrawType = type;
 		}
 	};
 }

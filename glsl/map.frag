@@ -11,6 +11,11 @@ uniform sampler2D Texture4;
 uniform sampler2D Texture5;
 uniform sampler2D Texture6;
 uniform sampler2D Texture7;
+
+uniform sampler2D Water;
+uniform sampler2D Caustics;
+uniform float WaterUVOffset;
+
 uniform sampler2D Palette;
 uniform sampler2D ColorShifts;
 
@@ -23,7 +28,6 @@ uniform bool RenderShroud;
 uniform bool RenderDepthBuffer;
 
 
-
 in vec4 vColor;
 
 in vec4 vTexCoord;
@@ -31,6 +35,7 @@ in vec2 vTexMetadata;
 in vec4 vChannelMask;
 in vec4 vDepthMask;
 in vec2 vTexSampler;
+in vec2 vTileTexCoord;
 
 in vec4 vColorFraction;
 in vec4 vRGBAFraction;
@@ -38,7 +43,7 @@ in vec4 vPalettedFraction;
 in vec4 vTint;
 in vec3 vNormal;
 in vec3 vFragPos;
-flat in int isDraw;
+flat in int mDrawType;
 
 out vec4 fragColor;
 
@@ -94,6 +99,24 @@ float CalShadow(DirLight light, vec3 normal){
 vec4 CalcDirLight(DirLight light, vec3 normal, vec3 viewDir, vec4 color)
 {
 	vec3 lightDir = normalize(-light.direction);
+
+	vec3 specular;
+	// water pix
+	if (mDrawType == 2 && color.b > color.r)
+	{
+		vec2 uv = vTileTexCoord + vec2(WaterUVOffset);
+		normal = texture(Water, uv).rgb;
+		normal = normalize(normal * 2.0 - 1.0); 
+		vec4 water = texture(Caustics, uv);
+		water *= 2.0;
+		// color = (water + (water - color) * max(color.r/color.b*2.0, 0.3));
+		color *= (water + (vec4(1.0) - water) * max(color.r/color.b, 0.5));
+
+		vec3 reflectDir = reflect(-lightDir, normal);
+		float spec = pow(max(dot(viewDir, reflectDir), 0.0), 24.0);
+		specular = light.specular * spec * 0.6;
+	}
+
 	// diffuse
 	float diff = max(dot(normal, lightDir), 0.0);
 
@@ -107,7 +130,7 @@ vec4 CalcDirLight(DirLight light, vec3 normal, vec3 viewDir, vec4 color)
 	// diffuse = diffuse * (1.0f - max(CalShadow(light, normal) - AmbientIntencity, 0.0f));
 	diffuse = diffuse * (1.0f - max(CalShadow(light, normal), 0.0f));
 
-	return vec4((ambient + diffuse), color.a);
+	return vec4((ambient + diffuse + specular), color.a);
 }
 
 
@@ -280,7 +303,7 @@ vec4 ColorShift(vec4 c, float p)
 
 void main()
 {
-	if (isDraw == 0)
+	if (mDrawType == 0)
 		discard;
 	if (RenderDepthBuffer){
 		return;

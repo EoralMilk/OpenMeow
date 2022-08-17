@@ -50,6 +50,8 @@ Packages:
 	ts|bits
 	ts|bits/audios
 	ts|bits/vxls
+	ts|bits/caustics
+
 	ts|uibits
 	ts|meshes
 	ts|materials

@@ -20,6 +20,20 @@ namespace OpenRA.Platforms.Default
 	{
 		uint texture;
 		TextureScaleFilter scaleFilter;
+		TextureWrap wrapType;
+		public TextureWrap WrapType
+		{
+			get => wrapType;
+			set
+			{
+				VerifyThreadAffinity();
+				if (wrapType != value)
+				{
+					wrapType = value;
+					PrepareTexture();
+				}
+			}
+		}
 
 		public uint ID => texture;
 		public Size Size { get; private set; }
@@ -54,20 +68,24 @@ namespace OpenRA.Platforms.Default
 			OpenGL.CheckGLError();
 
 			var filter = scaleFilter == TextureScaleFilter.Linear ? OpenGL.GL_LINEAR : OpenGL.GL_NEAREST;
+			var wrap = wrapType == TextureWrap.ClampToEdge ? OpenGL.GL_CLAMP_TO_EDGE : OpenGL.GL_REPEAT;
 			OpenGL.glTexParameteri(OpenGL.GL_TEXTURE_2D, OpenGL.GL_TEXTURE_MAG_FILTER, filter);
 			OpenGL.CheckGLError();
 			OpenGL.glTexParameteri(OpenGL.GL_TEXTURE_2D, OpenGL.GL_TEXTURE_MIN_FILTER, filter);
 			OpenGL.CheckGLError();
 
-			OpenGL.glTexParameterf(OpenGL.GL_TEXTURE_2D, OpenGL.GL_TEXTURE_WRAP_S, OpenGL.GL_CLAMP_TO_EDGE);
+			OpenGL.glTexParameterf(OpenGL.GL_TEXTURE_2D, OpenGL.GL_TEXTURE_WRAP_S, wrap);
 			OpenGL.CheckGLError();
-			OpenGL.glTexParameterf(OpenGL.GL_TEXTURE_2D, OpenGL.GL_TEXTURE_WRAP_T, OpenGL.GL_CLAMP_TO_EDGE);
+			OpenGL.glTexParameterf(OpenGL.GL_TEXTURE_2D, OpenGL.GL_TEXTURE_WRAP_T, wrap);
 			OpenGL.CheckGLError();
 
-			OpenGL.glTexParameteri(OpenGL.GL_TEXTURE_2D, OpenGL.GL_TEXTURE_BASE_LEVEL, 0);
-			OpenGL.CheckGLError();
-			OpenGL.glTexParameteri(OpenGL.GL_TEXTURE_2D, OpenGL.GL_TEXTURE_MAX_LEVEL, 0);
-			OpenGL.CheckGLError();
+			if (wrapType == TextureWrap.ClampToEdge)
+			{
+				OpenGL.glTexParameteri(OpenGL.GL_TEXTURE_2D, OpenGL.GL_TEXTURE_BASE_LEVEL, 0);
+				OpenGL.CheckGLError();
+				OpenGL.glTexParameteri(OpenGL.GL_TEXTURE_2D, OpenGL.GL_TEXTURE_MAX_LEVEL, 0);
+				OpenGL.CheckGLError();
+			}
 		}
 
 		void SetData(IntPtr data, int width, int height, TextureType type = TextureType.BGRA)
@@ -79,6 +97,12 @@ namespace OpenRA.Platforms.Default
 			OpenGL.glTexImage2D(OpenGL.GL_TEXTURE_2D, 0, glInternalFormat, width, height,
 				0, type == TextureType.BGRA ? OpenGL.GL_BGRA : glInternalFormat, OpenGL.GL_UNSIGNED_BYTE, data);
 			OpenGL.CheckGLError();
+
+			if (wrapType == TextureWrap.Repeat)
+			{
+				OpenGL.glGenerateMipmap(OpenGL.GL_TEXTURE_2D);
+				OpenGL.CheckGLError();
+			}
 		}
 
 		public void SetData(byte[] colors, int width, int height, TextureType type = TextureType.BGRA)
@@ -92,6 +116,12 @@ namespace OpenRA.Platforms.Default
 			{
 				fixed (byte* ptr = &colors[0])
 					SetData(new IntPtr(ptr), width, height, type);
+			}
+
+			if (wrapType == TextureWrap.Repeat)
+			{
+				OpenGL.glGenerateMipmap(OpenGL.GL_TEXTURE_2D);
+				OpenGL.CheckGLError();
 			}
 		}
 
@@ -112,6 +142,12 @@ namespace OpenRA.Platforms.Default
 						0, OpenGL.GL_RGBA, OpenGL.GL_FLOAT, new IntPtr(ptr));
 					OpenGL.CheckGLError();
 				}
+			}
+
+			if (wrapType == TextureWrap.Repeat)
+			{
+				OpenGL.glGenerateMipmap(OpenGL.GL_TEXTURE_2D);
+				OpenGL.CheckGLError();
 			}
 		}
 
@@ -214,6 +250,8 @@ namespace OpenRA.Platforms.Default
 			get => TextureScaleFilter.Nearest;
 			set => throw new NotImplementedException();
 		}
+
+		TextureWrap ITexture.WrapType { get => TextureWrap.ClampToEdge; set => throw new NotImplementedException(); }
 
 		public InfoTexture(Size size)
 		{

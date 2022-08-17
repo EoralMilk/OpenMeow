@@ -11,12 +11,16 @@ in vec2 aVertexTexMetadata;
 in vec4 aVertexTint;
 in vec3 aVertexNormal;
 in vec3 aFaceNormal;
+in vec2 aTileTexCoord;
+in uint aDrawType;
 
 out vec4 vTexCoord;
 out vec2 vTexMetadata;
 out vec4 vChannelMask;
 out vec4 vDepthMask;
 out vec2 vTexSampler;
+out vec2 vTileTexCoord;
+flat out int mDrawType;
 
 out vec4 vColorFraction;
 out vec4 vRGBAFraction;
@@ -24,7 +28,6 @@ out vec4 vPalettedFraction;
 out vec4 vTint;
 out vec3 vNormal;
 out vec3 vFragPos;
-flat out int isDraw;
 
 
 
@@ -109,14 +112,15 @@ void main()
 {
 	if (aVertexTint.a == 0.0 || (RenderShroud && dot(CameraInvFront, aFaceNormal) < 0.01)) 
 	{
-		isDraw = 0;
+		mDrawType = 0;
 		return;
 	}
 	else
-		isDraw = 1;
+		mDrawType = int(aDrawType);
 
 	gl_Position = projection * view * aVertexPosition;
 	vTexCoord = aVertexTexCoord;
+	vTileTexCoord = aTileTexCoord;
 	vTexMetadata = aVertexTexMetadata;
 
 	vec4 attrib = UnpackChannelAttributes(aVertexTexMetadata.t);

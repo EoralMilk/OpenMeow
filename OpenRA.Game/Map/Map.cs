@@ -154,6 +154,7 @@ namespace OpenRA
 	public struct CellInfo
 	{
 		public readonly WPos CellCenterPos;
+		public readonly uint Type;
 
 		public readonly float3 CellNmlTLM;
 		public readonly float3 CellNmlTMR;
@@ -163,7 +164,7 @@ namespace OpenRA
 		public readonly int M, T, B, L, R;
 
 		public CellInfo(WPos center, float3 tlmn, float3 tmrn, float3 mlbn, float3 mbrn,
-			int m, int t, int b, int l, int r)
+			int m, int t, int b, int l, int r, uint type)
 		{
 			CellCenterPos = center;
 			CellNmlTLM = tlmn;
@@ -175,6 +176,7 @@ namespace OpenRA
 			B = b;
 			L = l;
 			R = r;
+			Type = type;
 		}
 	}
 
@@ -1081,7 +1083,10 @@ namespace OpenRA
 					//VertexColors[il] = colorMul * VertexColors[il];
 					//VertexColors[ir] = colorMul * VertexColors[ir];
 
-					CellInfo cellInfo = new CellInfo(VertexWPos[im], Vec2Float3(tlm), Vec2Float3(tmr), Vec2Float3(mlb), Vec2Float3(mbr), im, it, ib, il, ir);
+					var type = Rules.TerrainInfo.GetTerrainInfo(Tiles[uv]);
+					var typename = Rules.TerrainInfo.TerrainTypes[type.TerrainType].Type;
+
+					CellInfo cellInfo = new CellInfo(VertexWPos[im], Vec2Float3(tlm), Vec2Float3(tmr), Vec2Float3(mlb), Vec2Float3(mbr), im, it, ib, il, ir, (uint)((typename == "Water" || typename == "Cliff") ? 2 : 1));
 
 					CellInfos[uv.ToCPos(this)] = cellInfo;
 				}

@@ -180,6 +180,7 @@ namespace OpenRA
 	}
 
 	public enum TextureScaleFilter { Nearest, Linear }
+	public enum TextureWrap { ClampToEdge, Repeat}
 
 	public interface ITexture : IDisposable
 	{
@@ -188,6 +189,7 @@ namespace OpenRA
 		byte[] GetData();
 		Size Size { get; }
 		TextureScaleFilter ScaleFilter { get; set; }
+		TextureWrap WrapType { get; set; }
 	}
 
 	public enum TextureType
