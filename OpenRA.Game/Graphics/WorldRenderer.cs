@@ -34,7 +34,7 @@ namespace OpenRA.Graphics
 		readonly HashSet<Actor> onScreenActors = new HashSet<Actor>();
 		readonly HardwarePalette palette = new HardwarePalette();
 		readonly Dictionary<string, PaletteReference> palettes = new Dictionary<string, PaletteReference>();
-		readonly IRenderTerrain terrainRenderer;
+		public readonly IRenderTerrain TerrainRenderer;
 		readonly Lazy<DebugVisualizations> debugVis;
 		readonly Func<string, PaletteReference> createPaletteReference;
 		readonly bool enableDepthBuffer;
@@ -68,7 +68,7 @@ namespace OpenRA.Graphics
 			palette.Initialize();
 
 			TerrainLighting = world.WorldActor.TraitOrDefault<ITerrainLighting>();
-			terrainRenderer = world.WorldActor.TraitOrDefault<IRenderTerrain>();
+			TerrainRenderer = world.WorldActor.TraitOrDefault<IRenderTerrain>();
 
 			debugVis = Exts.Lazy(() => world.WorldActor.TraitOrDefault<DebugVisualizations>());
 			for (int i = 0; i < preparedBlendRenderables.Length; i++)
@@ -265,7 +265,9 @@ namespace OpenRA.Graphics
 
 			Game.Renderer.Context.EnableDepthBuffer(DepthFunc.LessEqual);
 
-			terrainRenderer?.RenderTerrain(this, Viewport);
+			Game.Renderer.SetFaceCull(FaceCullFunc.Back);
+			TerrainRenderer?.RenderTerrain(this, Viewport);
+			Game.Renderer.SetFaceCull(FaceCullFunc.None);
 
 			Game.Renderer.Flush();
 

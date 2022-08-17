@@ -361,10 +361,14 @@ namespace OpenRA.Graphics
 			// rotate isomatric tile to rect
 			if (rotation)
 			{
-				float top = r.Top + (r.Bottom - r.Top) * 0.033f;
-				float bottom = r.Bottom + (r.Top - r.Bottom) * 0.033f;
-				float left = r.Left + (r.Right - r.Left) * 0.033f;
-				float right = r.Right + (r.Left - r.Right) * 0.033f;
+				float top = r.Top + (r.Bottom - r.Top) * 0.035f;
+				float bottom = r.Bottom + (r.Top - r.Bottom) * 0.035f;
+				float left = r.Left + (r.Right - r.Left) * 0.035f;
+				float right = r.Right + (r.Left - r.Right) * 0.035f;
+				//float top = r.Top;// + (r.Bottom - r.Top) * 0.033f;
+				//float bottom = r.Bottom;// + (r.Top - r.Bottom) * 0.033f;
+				//float left = r.Left;// + (r.Right - r.Left) * 0.033f;
+				//float right = r.Right;// + (r.Left - r.Right) * 0.033f;
 
 				vertices[nv] = new MapVertex(tpos, tnml, tmrNml, baseX, top, sbaseRL, st, paletteTextureIndex, fAttribC, ttint, alpha);
 				vertices[nv + 1] = new MapVertex(mpos, mnml, tmrNml, baseX, baseY, sbaseRL, sbaseTB, paletteTextureIndex, fAttribC, mtint, alpha);
@@ -475,13 +479,13 @@ namespace OpenRA.Graphics
 
 			var fAttribC = (float)attribC;
 
-			vertices[nv] = new MapVertex(leftBack, mnml, mnml, r.Left, r.Top, sl, st, paletteTextureIndex, fAttribC, tint, alpha);
+			vertices[nv + 2] = new MapVertex(leftBack, mnml, mnml, r.Left, r.Top, sl, st, paletteTextureIndex, fAttribC, tint, alpha);
 			vertices[nv + 1] = new MapVertex(rightBack, mnml, mnml, r.Right, r.Top, sr, st, paletteTextureIndex, fAttribC, tint, alpha);
-			vertices[nv + 2] = new MapVertex(rightFront, mnml, mnml, r.Right, r.Bottom, sr, sb, paletteTextureIndex, fAttribC, tint, alpha);
+			vertices[nv] = new MapVertex(rightFront, mnml, mnml, r.Right, r.Bottom, sr, sb, paletteTextureIndex, fAttribC, tint, alpha);
 
-			vertices[nv + 3] = new MapVertex(rightFront, mnml, mnml, r.Right, r.Bottom, sr, sb, paletteTextureIndex, fAttribC, tint, alpha);
+			vertices[nv + 5] = new MapVertex(rightFront, mnml, mnml, r.Right, r.Bottom, sr, sb, paletteTextureIndex, fAttribC, tint, alpha);
 			vertices[nv + 4] = new MapVertex(leftFront, mnml, mnml, r.Left, r.Bottom, sl, sb, paletteTextureIndex, fAttribC, tint, alpha);
-			vertices[nv + 5] = new MapVertex(leftBack, mnml, mnml, r.Left, r.Top, sl, st, paletteTextureIndex, fAttribC, tint, alpha);
+			vertices[nv + 3] = new MapVertex(leftBack, mnml, mnml, r.Left, r.Top, sl, st, paletteTextureIndex, fAttribC, tint, alpha);
 		}
 
 		public static void FastCreateQuad(Vertex[] vertices, in float3 o, Sprite r, int2 samplers, float paletteTextureIndex, int nv,

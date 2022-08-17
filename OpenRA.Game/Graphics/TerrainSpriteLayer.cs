@@ -120,8 +120,7 @@ namespace OpenRA.Graphics
 				for (var i = 0; i < Game.Renderer.MaxVerticesPerMesh; i++)
 				{
 					var v = vertices[offset + i];
-					var color = verticesColor[offset + i];
-					vertices[offset + i] = new MapVertex(v.X, v.Y, v.Z, v.S, v.T, v.U, v.V, v.P, v.C, color * float3.Ones, v.A, v.NX, v.NY, v.NZ, v.FNX, v.FNY, v.FNZ);
+					vertices[offset + i] = new MapVertex(v.X, v.Y, v.Z, v.S, v.T, v.U, v.V, v.P, v.C, v.A * float3.Ones, v.A, v.NX, v.NY, v.NZ, v.FNX, v.FNY, v.FNZ);
 				}
 
 				return;
@@ -162,7 +161,7 @@ namespace OpenRA.Graphics
 				}
 				else
 				{
-					vertices[offset + i] = new MapVertex(v.X, v.Y, v.Z, v.S, v.T, v.U, v.V, v.P, v.C, color * weights[CornerVertexMap[i % 12]], v.A, v.NX, v.NY, v.NZ, v.FNX, v.FNY, v.FNZ);
+					vertices[offset + i] = new MapVertex(v.X, v.Y, v.Z, v.S, v.T, v.U, v.V, v.P, v.C, v.A * weights[CornerVertexMap[i % 12]], v.A, v.NX, v.NY, v.NZ, v.FNX, v.FNY, v.FNZ);
 				}
 			}
 
@@ -292,13 +291,14 @@ namespace OpenRA.Graphics
 			dirtyRows.Add(uv.V);
 		}
 
+		int firstRow, lastRow;
 		public void Draw(Viewport viewport)
 		{
 			var cells = restrictToBounds ? viewport.VisibleCellsInsideBounds : viewport.AllVisibleCells;
 
 			// Only draw the rows that are visible.
-			var firstRow = cells.CandidateMapCoords.TopLeft.V.Clamp(0, map.MapSize.Y);
-			var lastRow = (cells.CandidateMapCoords.BottomRight.V + 1).Clamp(firstRow, map.MapSize.Y);
+			firstRow = cells.CandidateMapCoords.TopLeft.V.Clamp(0, map.MapSize.Y);
+			lastRow = (cells.CandidateMapCoords.BottomRight.V + 1).Clamp(firstRow, map.MapSize.Y);
 
 			Game.Renderer.Flush();
 
@@ -312,6 +312,15 @@ namespace OpenRA.Graphics
 				vertexBuffer.SetData(vertices, rowOffset, rowOffset, rowStride);
 			}
 
+			Game.Renderer.MapRenderer.DrawVertexBuffer(
+				vertexBuffer, rowStride * firstRow, rowStride * (lastRow - firstRow),
+				PrimitiveType.TriangleList, sheets, BlendMode);
+
+			Game.Renderer.Flush();
+		}
+
+		public void DrawAgain()
+		{
 			Game.Renderer.MapRenderer.DrawVertexBuffer(
 				vertexBuffer, rowStride * firstRow, rowStride * (lastRow - firstRow),
 				PrimitiveType.TriangleList, sheets, BlendMode);

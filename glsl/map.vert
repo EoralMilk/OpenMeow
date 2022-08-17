@@ -127,6 +127,6 @@ void main()
 	vDepthMask = SelectChannelMask(attrib.t);
 	vTexSampler = attrib.pq;
 	vTint = aVertexTint;
-	vNormal = aVertexNormal;
+	vNormal = normalize(aVertexNormal);
 	vFragPos = aVertexPosition.xyz;
 }

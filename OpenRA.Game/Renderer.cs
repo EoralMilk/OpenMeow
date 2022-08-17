@@ -283,7 +283,6 @@ namespace OpenRA
 			//	lastWorldViewportSize = worldViewport.Size;
 			//}
 
-			MapRenderer.SetCameraParams(World3DRenderer, false);
 			MapRenderer.SetShadowParams();
 
 			WorldSpriteRenderer.SetCameraParams();
@@ -314,10 +313,17 @@ namespace OpenRA
 			worldShadowBuffer.Bind();
 			Game.Renderer.Context.EnableDepthBuffer(DepthFunc.LessEqual);
 			Draw3DMeshesInstance(wr, true);
+
+			//MapRenderer.SetCameraParams(World3DRenderer, true);
+			//wr.TerrainRenderer?.RenderTerrainEarly(wr, wr.Viewport);
+
 			Game.Renderer.Context.DisableDepthBuffer();
 			worldShadowBuffer.Unbind();
 			Game.Renderer.Context.Clear();
 			worldBuffer.Bind();
+
+			MapRenderer.SetCameraParams(World3DRenderer, false);
+
 		}
 
 		public void Flush3DMeshesInstance(WorldRenderer wr)

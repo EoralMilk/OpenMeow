@@ -16,6 +16,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using GlmSharp;
+using GlmSharp.Swizzle;
 using OpenRA.FileFormats;
 using OpenRA.FileSystem;
 using OpenRA.Graphics;
@@ -700,6 +701,8 @@ namespace OpenRA
 			VertexArrayHeight = MapSize.Y + 2;
 
 			var vertexCaled = new bool[VertexArrayWidth * VertexArrayHeight];
+			var vertexNmlCaled = new bool[VertexArrayWidth * VertexArrayHeight];
+
 			VertexPos = new float3[VertexArrayWidth * VertexArrayHeight];
 			VertexNormal = new float3[VertexArrayWidth * VertexArrayHeight];
 			VertexWPos = new WPos[VertexArrayWidth * VertexArrayHeight];
@@ -923,59 +926,74 @@ namespace OpenRA
 					pm = VertexPos[im];
 
 					if (vertexCaled[it])
+					{
 						VertexWPos[it] = TileWPos(HMix(ht, VertexWPos[it].Z), cpos, new WPos(0, -724, 0));
+						//VertexWPos[it] = TileWPos(Math.Min(ht, VertexWPos[it].Z), cpos, new WPos(0, -724, 0));
+					}
 					else
 						VertexWPos[it] = TileWPos(ht, cpos, new WPos(0, -724, 0));
 					VertexPos[it] = TilePos(VertexWPos[it]);
 					pt = VertexPos[it];
 
 					if (vertexCaled[ib])
+					{
 						VertexWPos[ib] = TileWPos(HMix(hb, VertexWPos[ib].Z), cpos, new WPos(0, 724, 0));
+						//VertexWPos[ib] = TileWPos(Math.Min(hb, VertexWPos[ib].Z), cpos, new WPos(0, 724, 0));
+
+					}
 					else
 						VertexWPos[ib] = TileWPos(hb, cpos, new WPos(0, 724, 0));
 					VertexPos[ib] = TilePos(VertexWPos[ib]);
 					pb = VertexPos[ib];
 
 					if (vertexCaled[il])
+					{
 						VertexWPos[il] = TileWPos(HMix(hl, VertexWPos[il].Z), cpos, new WPos(-724, 0, 0));
+						//VertexWPos[il] = TileWPos(Math.Min(hl, VertexWPos[il].Z), cpos, new WPos(-724, 0, 0));
+
+					}
 					else
 						VertexWPos[il] = TileWPos(hl, cpos, new WPos(-724, 0, 0));
 					VertexPos[il] = TilePos(VertexWPos[il]);
 					pl = VertexPos[il];
 
 					if (vertexCaled[ir])
+					{
 						VertexWPos[ir] = TileWPos(HMix(hr, VertexWPos[ir].Z), cpos, new WPos(724, 0, 0));
+						//VertexWPos[ir] = TileWPos(Math.Min(hr, VertexWPos[ir].Z), cpos, new WPos(724, 0, 0));
+
+					}
 					else
 						VertexWPos[ir] = TileWPos(hr, cpos, new WPos(724, 0, 0));
 					VertexPos[ir] = TilePos(VertexWPos[ir]);
 					pr = VertexPos[ir];
 
-					var tlm = CalNormal(pt, pl, pm);
-					var tmr = CalNormal(pt, pm, pr);
-					var mlb = CalNormal(pm, pl, pb);
-					var mbr = CalNormal(pm, pb, pr);
+					//var tlm = CalNormal(pt, pl, pm);
+					//var tmr = CalNormal(pt, pm, pr);
+					//var mlb = CalNormal(pm, pl, pb);
+					//var mbr = CalNormal(pm, pb, pr);
 
-					VertexNormal[im] = Vec2Float3(tlm * 0.25f + tmr * 0.25f + mlb * 0.25f + mbr * 0.25f);
+					//VertexNormal[im] = Vec2Float3(tlm * 0.25f + tmr * 0.25f + mlb * 0.25f + mbr * 0.25f);
 
-					if (vertexCaled[it])
-						VertexNormal[it] = Vec2Float3(tlm * 0.25f + tmr * 0.25f) + 0.5f * VertexNormal[it];
-					else
-						VertexNormal[it] = Vec2Float3(tlm * 0.5f + tmr * 0.5f);
+					//if (vertexCaled[it])
+					//	VertexNormal[it] = 0.25f * Vec2Float3(tlm * 0.5f + tmr * 0.5f) + VertexNormal[it];
+					//else
+					//	VertexNormal[it] = 0.25f * Vec2Float3(tlm * 0.5f + tmr * 0.5f);
 
-					if (vertexCaled[ib])
-						VertexNormal[ib] = Vec2Float3(mlb * 0.25f + mbr * 0.25f) + 0.5f * VertexNormal[ib];
-					else
-						VertexNormal[ib] = Vec2Float3(mlb * 0.5f + mbr * 0.5f);
+					//if (vertexCaled[ib])
+					//	VertexNormal[ib] = 0.25f * Vec2Float3(mlb * 0.5f + mbr * 0.5f) + VertexNormal[ib];
+					//else
+					//	VertexNormal[ib] = 0.25f * Vec2Float3(mlb * 0.5f + mbr * 0.5f);
 
-					if (vertexCaled[il])
-						VertexNormal[il] = Vec2Float3(mlb * 0.25f + tlm * 0.25f) + 0.5f * VertexNormal[il];
-					else
-						VertexNormal[il] = Vec2Float3(mlb * 0.5f + tlm * 0.5f);
+					//if (vertexCaled[il])
+					//	VertexNormal[il] = 0.25f * Vec2Float3(mlb * 0.5f + tlm * 0.5f) + VertexNormal[il];
+					//else
+					//	VertexNormal[il] = 0.25f * Vec2Float3(mlb * 0.5f + tlm * 0.5f);
 
-					if (vertexCaled[ir])
-						VertexNormal[ir] = Vec2Float3(tmr * 0.25f + mbr * 0.25f) + 0.5f * VertexNormal[ir];
-					else
-						VertexNormal[ir] = Vec2Float3(tmr * 0.5f + mbr * 0.5f);
+					//if (vertexCaled[ir])
+					//	VertexNormal[ir] = 0.25f * Vec2Float3(tmr * 0.5f + mbr * 0.5f) + VertexNormal[ir];
+					//else
+					//	VertexNormal[ir] = 0.25f * Vec2Float3(tmr * 0.5f + mbr * 0.5f);
 
 					vertexCaled[im] = true;
 					vertexCaled[it] = true;
@@ -983,9 +1001,118 @@ namespace OpenRA
 					vertexCaled[il] = true;
 					vertexCaled[ir] = true;
 
+					//CellInfo cellInfo = new CellInfo(VertexWPos[im], Vec2Float3(tlm), Vec2Float3(tmr), Vec2Float3(mlb), Vec2Float3(mbr), im, it, ib, il, ir);
+
+					//CellInfos[uv.ToCPos(this)] = cellInfo;
+				}
+			}
+
+			float colorMul = 2;
+
+			for (var y = 0; y < MapSize.Y; y++)
+			{
+				for (var x = 0; x < MapSize.X; x++)
+				{
+					var uv = new MPos(x, y);
+
+					int2 mid;
+					if (y % 2 == 0)
+					{
+						mid = new int2(2 * x + 1, y + 1);
+					}
+					else
+					{
+						mid = new int2(2 * x + 2, y + 1);
+					}
+
+					int im, it, ib, il, ir;
+					im = mid.Y * VertexArrayWidth + mid.X;
+					it = (mid.Y - 1) * VertexArrayWidth + mid.X;
+					ib = (mid.Y + 1) * VertexArrayWidth + mid.X;
+					il = mid.Y * VertexArrayWidth + mid.X - 1;
+					ir = mid.Y * VertexArrayWidth + mid.X + 1;
+
+					float3 pm, pt, pb, pl, pr;
+					pm = VertexPos[im];
+					pt = VertexPos[it];
+					pb = VertexPos[ib];
+					pl = VertexPos[il];
+					pr = VertexPos[ir];
+
+					var tlm = CalNormal(pt, pl, pm);
+					var tmr = CalNormal(pt, pm, pr);
+					var mlb = CalNormal(pm, pl, pb);
+					var mbr = CalNormal(pm, pb, pr);
+
+					var ramp = Ramp[uv];
+					if (ramp != 0)
+						VertexNormal[im] = Vec2Float3(tlm * 0.25f + tmr * 0.25f + mlb * 0.25f + mbr * 0.25f);
+
+					if (vertexNmlCaled[it])
+						VertexNormal[it] = 0.25f * Vec2Float3(tlm * 0.5f + tmr * 0.5f) + VertexNormal[it];
+					else
+						VertexNormal[it] = 0.25f * Vec2Float3(tlm * 0.5f + tmr * 0.5f);
+
+					if (vertexNmlCaled[ib])
+						VertexNormal[ib] = 0.25f * Vec2Float3(mlb * 0.5f + mbr * 0.5f) + VertexNormal[ib];
+					else
+						VertexNormal[ib] = 0.25f * Vec2Float3(mlb * 0.5f + mbr * 0.5f);
+
+					if (vertexNmlCaled[il])
+						VertexNormal[il] = 0.25f * Vec2Float3(mlb * 0.5f + tlm * 0.5f) + VertexNormal[il];
+					else
+						VertexNormal[il] = 0.25f * Vec2Float3(mlb * 0.5f + tlm * 0.5f);
+
+					if (vertexNmlCaled[ir])
+						VertexNormal[ir] = 0.25f * Vec2Float3(tmr * 0.5f + mbr * 0.5f) + VertexNormal[ir];
+					else
+						VertexNormal[ir] = 0.25f * Vec2Float3(tmr * 0.5f + mbr * 0.5f);
+
+					vertexNmlCaled[im] = true;
+					vertexNmlCaled[it] = true;
+					vertexNmlCaled[ib] = true;
+					vertexNmlCaled[il] = true;
+					vertexNmlCaled[ir] = true;
+
+					//// temp
+					//VertexColors[im] = colorMul * VertexColors[im];
+					//VertexColors[it] = colorMul * VertexColors[it];
+					//VertexColors[ib] = colorMul * VertexColors[ib];
+					//VertexColors[il] = colorMul * VertexColors[il];
+					//VertexColors[ir] = colorMul * VertexColors[ir];
+
 					CellInfo cellInfo = new CellInfo(VertexWPos[im], Vec2Float3(tlm), Vec2Float3(tmr), Vec2Float3(mlb), Vec2Float3(mbr), im, it, ib, il, ir);
 
 					CellInfos[uv.ToCPos(this)] = cellInfo;
+				}
+			}
+
+			// normal fix for mixed height tile
+			for (var y = 0; y < MapSize.Y; y++)
+			{
+				for (var x = 0; x < MapSize.X; x++)
+				{
+					if (Ramp[new MPos(x, y)] != 0)
+						continue;
+
+					int2 mid;
+					if (y % 2 == 0)
+					{
+						mid = new int2(2 * x + 1, y + 1);
+					}
+					else
+					{
+						mid = new int2(2 * x + 2, y + 1);
+					}
+
+					int im, it, ib, il, ir;
+					im = mid.Y * VertexArrayWidth + mid.X;
+					it = (mid.Y - 1) * VertexArrayWidth + mid.X;
+					ib = (mid.Y + 1) * VertexArrayWidth + mid.X;
+					il = mid.Y * VertexArrayWidth + mid.X - 1;
+					ir = mid.Y * VertexArrayWidth + mid.X + 1;
+
+					VertexNormal[im] = (0.25f * VertexNormal[it] + 0.25f * VertexNormal[ib] + 0.25f * VertexNormal[il] + 0.25f * VertexNormal[ir]);
 				}
 			}
 		}

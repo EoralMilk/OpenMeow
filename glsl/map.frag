@@ -19,8 +19,8 @@ uniform vec2 DepthPreviewParams;
 // uniform float DepthTextureScale;
 uniform float AntialiasPixelsPerTexel;
 
-uniform bool RenderDepthBuffer;
 uniform bool RenderShroud;
+uniform bool RenderDepthBuffer;
 
 
 
@@ -99,14 +99,15 @@ vec4 CalcDirLight(DirLight light, vec3 normal, vec3 viewDir, vec4 color)
 
 	// merge
 	vec3 ambient  = light.ambient;
-	vec3 diffuse  = light.diffuse * diff;
+	vec3 diffuse  = light.diffuse * (diff - 0.5) * 2.0;
 
 	ambient = ambient * color.rgb;
 	diffuse = diffuse * color.rgb;
 	
-	diffuse = diffuse * (1.0f - max(CalShadow(light, normal) - AmbientIntencity, 0.0f));
+	// diffuse = diffuse * (1.0f - max(CalShadow(light, normal) - AmbientIntencity, 0.0f));
+	diffuse = diffuse * (1.0f - max(CalShadow(light, normal), 0.0f));
 
-	return vec4((ambient * 0.35 + diffuse * 1.5), color.a);
+	return vec4((ambient + diffuse), color.a);
 }
 
 
@@ -281,6 +282,9 @@ void main()
 {
 	if (isDraw == 0)
 		discard;
+	if (RenderDepthBuffer){
+		return;
+	}
 
 	vec2 coords = vTexCoord.st;
 	// if (!RenderShroud)
@@ -318,9 +322,6 @@ void main()
 	// Discard any transparent fragments (both color and depth)
 	if (c.a == 0.0 && vTint.a > 0.0)
 		discard;
-	if (RenderDepthBuffer){
-		return;
-	}
 
 	if (vRGBAFraction.r > 0.0 && vTexMetadata.s > 0.0)
 		c = ColorShift(c, vTexMetadata.s);
@@ -349,8 +350,8 @@ void main()
 			if (vTint.a < 0.0)
 				c = vec4(vTint.rgb, -vTint.a);
 			else if (vTint.a >= 0.0)
-				c = 3.0 * c * vTint;
-			
+				c = c * (vTint * 2.0 + vec4(1.0)) * 0.5f;
+
 			vec3 viewDir = normalize(viewPos - vFragPos);
 			c = CalcDirLight(dirLight, vNormal, viewDir, c);
 
