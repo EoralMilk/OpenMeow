@@ -150,7 +150,7 @@ void main()
 	for (int i = 0; i < MAX_TERRAIN_LIGHT; ++i){
 		if (TerrainLightPos[i].xy == vec2(0.0))
 			break;
-		float dist = length(aVertexPosition.xyz - TerrainLightPos[i]);
+		float dist = length(aVertexPosition.xy - TerrainLightPos[i].xy);
 		if (dist > TerrainLightColorRange[i].a)
 			continue;
 		float falloff = (TerrainLightColorRange[i].a - dist) / TerrainLightColorRange[i].a;
