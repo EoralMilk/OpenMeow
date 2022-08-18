@@ -28,7 +28,7 @@ namespace OpenRA.Platforms.Default
 		readonly IShaderBindings bindings;
 		protected uint CompileShaderObject(int type, string name)
 		{
-			var ext = type == OpenGL.GL_VERTEX_SHADER ? "vert" : "frag";
+			var ext = type == OpenGL.GL_VERTEX_SHADER ? "vert" : (type == OpenGL.GL_FRAGMENT_SHADER ? "frag" : "geom");
 			var filename = name + "." + ext;
 			string code;
 

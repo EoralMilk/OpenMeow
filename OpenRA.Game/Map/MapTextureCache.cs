@@ -19,7 +19,8 @@ namespace OpenRA
 		public MapTextureCache(IReadOnlyFileSystem fileSystem)
 		{
 			this.fileSystem = fileSystem;
-			AddTexture("Water", "water.png");
+			AddTexture("WaterNormal", "WaterNormal.png");
+			AddTexture("GrassNormal", "GrassNormal.png");
 
 			Caustics = new ITexture[32];
 

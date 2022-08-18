@@ -970,46 +970,13 @@ namespace OpenRA
 					VertexPos[ir] = TilePos(VertexWPos[ir]);
 					pr = VertexPos[ir];
 
-					//var tlm = CalNormal(pt, pl, pm);
-					//var tmr = CalNormal(pt, pm, pr);
-					//var mlb = CalNormal(pm, pl, pb);
-					//var mbr = CalNormal(pm, pb, pr);
-
-					//VertexNormal[im] = Vec2Float3(tlm * 0.25f + tmr * 0.25f + mlb * 0.25f + mbr * 0.25f);
-
-					//if (vertexCaled[it])
-					//	VertexNormal[it] = 0.25f * Vec2Float3(tlm * 0.5f + tmr * 0.5f) + VertexNormal[it];
-					//else
-					//	VertexNormal[it] = 0.25f * Vec2Float3(tlm * 0.5f + tmr * 0.5f);
-
-					//if (vertexCaled[ib])
-					//	VertexNormal[ib] = 0.25f * Vec2Float3(mlb * 0.5f + mbr * 0.5f) + VertexNormal[ib];
-					//else
-					//	VertexNormal[ib] = 0.25f * Vec2Float3(mlb * 0.5f + mbr * 0.5f);
-
-					//if (vertexCaled[il])
-					//	VertexNormal[il] = 0.25f * Vec2Float3(mlb * 0.5f + tlm * 0.5f) + VertexNormal[il];
-					//else
-					//	VertexNormal[il] = 0.25f * Vec2Float3(mlb * 0.5f + tlm * 0.5f);
-
-					//if (vertexCaled[ir])
-					//	VertexNormal[ir] = 0.25f * Vec2Float3(tmr * 0.5f + mbr * 0.5f) + VertexNormal[ir];
-					//else
-					//	VertexNormal[ir] = 0.25f * Vec2Float3(tmr * 0.5f + mbr * 0.5f);
-
 					vertexCaled[im] = true;
 					vertexCaled[it] = true;
 					vertexCaled[ib] = true;
 					vertexCaled[il] = true;
 					vertexCaled[ir] = true;
-
-					//CellInfo cellInfo = new CellInfo(VertexWPos[im], Vec2Float3(tlm), Vec2Float3(tmr), Vec2Float3(mlb), Vec2Float3(mbr), im, it, ib, il, ir);
-
-					//CellInfos[uv.ToCPos(this)] = cellInfo;
 				}
 			}
-
-			float colorMul = 2;
 
 			for (var y = 0; y < MapSize.Y; y++)
 			{
@@ -1081,17 +1048,23 @@ namespace OpenRA
 					vertexNmlCaled[il] = true;
 					vertexNmlCaled[ir] = true;
 
-					//// temp
-					//VertexColors[im] = colorMul * VertexColors[im];
-					//VertexColors[it] = colorMul * VertexColors[it];
-					//VertexColors[ib] = colorMul * VertexColors[ib];
-					//VertexColors[il] = colorMul * VertexColors[il];
-					//VertexColors[ir] = colorMul * VertexColors[ir];
-
 					var type = Rules.TerrainInfo.GetTerrainInfo(Tiles[uv]);
 					var typename = Rules.TerrainInfo.TerrainTypes[type.TerrainType].Type;
+					uint typeNum = 1;
+					switch (typename)
+					{
+						case "Water":
+						case "Cliff":
+							typeNum = 2;
+							break;
+						case "Rough":
+							typeNum = 3;
+							break;
+						default:
+							break;
+					}
 
-					CellInfo cellInfo = new CellInfo(VertexWPos[im], Vec2Float3(tlm), Vec2Float3(tmr), Vec2Float3(mlb), Vec2Float3(mbr), im, it, ib, il, ir, (uint)((typename == "Water" || typename == "Cliff") ? 2 : 1));
+					CellInfo cellInfo = new CellInfo(VertexWPos[im], Vec2Float3(tlm), Vec2Float3(tmr), Vec2Float3(mlb), Vec2Float3(mbr), im, it, ib, il, ir, typeNum);
 
 					CellInfos[uv.ToCPos(this)] = cellInfo;
 				}

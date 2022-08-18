@@ -51,12 +51,14 @@ namespace OpenRA.Graphics
 		public void SetTextures(World world)
 		{
 			shader.SetFloat("WaterUVOffset", (float)(Game.LocalTick % 400) / 400);
+			shader.SetFloat("GrassUVOffset", (float)(Game.LocalTick % 1433) / 1433);
+
 			foreach (var kv in world.MapTextureCache.Textures)
 			{
 				shader.SetTexture(kv.Key, kv.Value);
 			}
 
-			shader.SetTexture("Caustics", world.MapTextureCache.Caustics[Math.Min((Game.LocalTick % 128) / 4, world.MapTextureCache.Caustics.Length - 1)]);
+			shader.SetTexture("Caustics", world.MapTextureCache.Caustics[Math.Min((Game.LocalTick % 93) / 3, world.MapTextureCache.Caustics.Length - 1)]);
 
 		}
 

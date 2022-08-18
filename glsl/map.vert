@@ -28,6 +28,7 @@ out vec4 vPalettedFraction;
 out vec4 vTint;
 out vec3 vNormal;
 out vec3 vFragPos;
+out vec4 vNormalQuat;
 
 
 
@@ -108,6 +109,15 @@ vec4 SelectPalettedFraction(float x)
 	return vec4(1, 1, 1, 1);
 }
 
+vec4 FromToQuat(vec3 from, vec3 to){
+	vec3 w = cross(from, to);
+	vec4 q = vec4(w.x, w.y, w.z, dot(from, to));
+	float lenf = length(from);
+	float lent = length(to);
+	q.w += sqrt(lenf * lenf * lent * lent);
+	return normalize(q);
+}
+
 void main()
 {
 	if (aVertexTint.a == 0.0 || (RenderShroud && dot(CameraInvFront, aFaceNormal) < 0.01)) 
@@ -133,4 +143,5 @@ void main()
 	vTint = aVertexTint;
 	vNormal = normalize(aVertexNormal);
 	vFragPos = aVertexPosition.xyz;
+	vNormalQuat = FromToQuat(vec3(0,0,1), aVertexNormal);
 }

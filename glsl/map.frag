@@ -7,14 +7,17 @@ uniform sampler2D Texture0;
 uniform sampler2D Texture1;
 uniform sampler2D Texture2;
 uniform sampler2D Texture3;
-uniform sampler2D Texture4;
-uniform sampler2D Texture5;
-uniform sampler2D Texture6;
-uniform sampler2D Texture7;
+// uniform sampler2D Texture4;
+// uniform sampler2D Texture5;
+// uniform sampler2D Texture6;
+// uniform sampler2D Texture7;
 
-uniform sampler2D Water;
+uniform sampler2D WaterNormal;
+uniform sampler2D GrassNormal;
+
 uniform sampler2D Caustics;
 uniform float WaterUVOffset;
+uniform float GrassUVOffset;
 
 uniform sampler2D Palette;
 uniform sampler2D ColorShifts;
@@ -44,6 +47,7 @@ in vec4 vTint;
 in vec3 vNormal;
 in vec3 vFragPos;
 flat in int mDrawType;
+in vec4 vNormalQuat;
 
 out vec4 fragColor;
 
@@ -64,6 +68,28 @@ uniform float ShadowBias;
 uniform float AmbientIntencity;
 uniform vec2 ViewPort;
 
+vec3 RotNormal(vec4 quat, vec3 vec)
+{
+	float num = quat.x * 2.0;
+	float num2 = quat.y * 2.0;
+	float num3 = quat.z * 2.0;
+	float num4 = quat.x * num;
+	float num5 = quat.y * num2;
+	float num6 = quat.z * num3;
+	float num7 = quat.x * num2;
+	float num8 = quat.x * num3;
+	float num9 = quat.y * num3;
+	float num10 = quat.w * num;
+	float num11 = quat.w * num2;
+	float num12 = quat.w * num3;
+
+	vec3 result;
+	result.x = (1.0 - (num5 + num6)) * vec.x + (num7 - num12) * vec.y + (num8 + num11) * vec.z;
+	result.y = (num7 + num12) * vec.x + (1.0 - (num4 + num6)) * vec.y + (num9 - num10) * vec.z;
+	result.z = (num8 - num11) * vec.x + (num9 + num10) * vec.y + (1.0 - (num4 + num5)) * vec.z;
+
+	return result;
+}
 
 float CalShadow(DirLight light, vec3 normal){
 	vec4 FragPos = InvCameraVP * vec4(gl_FragCoord.x/ViewPort.x * 2.0 - 1.0, gl_FragCoord.y/ViewPort.y * 2.0 - 1.0, gl_FragCoord.z * 2.0 - 1.0, 1.0);
@@ -101,16 +127,37 @@ vec4 CalcDirLight(DirLight light, vec3 normal, vec3 viewDir, vec4 color)
 	vec3 lightDir = normalize(-light.direction);
 
 	vec3 specular;
+
 	// water pix
 	if (mDrawType == 2 && color.b > color.r)
 	{
 		vec2 uv = vTileTexCoord + vec2(0.0, WaterUVOffset);
-		normal = texture(Water, uv).rgb;
+		normal = texture(WaterNormal, uv).rgb;
 		normal = normalize(normal * 2.0 - 1.0); 
+
+		// rotate normal map's normal to vertex normal space
+		// useless, water vertex normal always vec(0,0,1)
+		// normal = RotNormal(vNormalQuat, normal);
+
 		vec4 water = texture(Caustics, uv);
 		water *= 2.0;
 		// color = (water + (water - color) * max(color.r/color.b*2.0, 0.3));
 		color *= (water + (vec4(1.0) - water) * max(color.r/color.b, 0.5));
+
+		vec3 reflectDir = reflect(-lightDir, normal);
+		float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32.0);
+		specular = light.specular * spec;
+	}
+	// grass pix
+	else if (mDrawType == 3 && color.g > color.r && color.g > color.b)
+	{
+		vec2 uv = vTileTexCoord + vec2(0.0, GrassUVOffset);
+		normal = texture(GrassNormal, uv).rgb;
+		normal = normalize(normal * 2.0 - 1.0);
+
+		// rotate normal map's normal to vertex normal space
+		// vertex normal always vec(0,0,1), might not necessary
+		normal = RotNormal(vNormalQuat, normal);
 
 		vec3 reflectDir = reflect(-lightDir, normal);
 		float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32.0);
@@ -186,16 +233,19 @@ vec2 Size(float samplerIndex)
 		return Texture1Size;
 	else if (samplerIndex < 2.5)
 		return Texture2Size;
-	else if (samplerIndex < 3.5)
-		return Texture3Size;
-	else if (samplerIndex < 4.5)
-		return Texture4Size;
-	else if (samplerIndex < 5.5)
-		return Texture5Size;
-	else if (samplerIndex < 6.5)
-		return Texture6Size;
 
-	return Texture7Size;
+	return Texture3Size;
+
+	// else if (samplerIndex < 3.5)
+	// 	return Texture3Size;
+	// else if (samplerIndex < 4.5)
+	// 	return Texture4Size;
+	// else if (samplerIndex < 5.5)
+	// 	return Texture5Size;
+	// else if (samplerIndex < 6.5)
+	// 	return Texture6Size;
+
+	// return Texture7Size;
 }
 
 vec4 Sample(float samplerIndex, vec2 pos)
@@ -206,16 +256,19 @@ vec4 Sample(float samplerIndex, vec2 pos)
 		return texture2D(Texture1, pos);
 	else if (samplerIndex < 2.5)
 		return texture2D(Texture2, pos);
-	else if (samplerIndex < 3.5)
-		return texture2D(Texture3, pos);
-	else if (samplerIndex < 4.5)
-		return texture2D(Texture4, pos);
-	else if (samplerIndex < 5.5)
-		return texture2D(Texture5, pos);
-	else if (samplerIndex < 6.5)
-		return texture2D(Texture6, pos);
+	
+	return texture2D(Texture3, pos);
 
-	return texture2D(Texture7, pos);
+	// else if (samplerIndex < 3.5)
+	// 	return texture2D(Texture3, pos);
+	// else if (samplerIndex < 4.5)
+	// 	return texture2D(Texture4, pos);
+	// else if (samplerIndex < 5.5)
+	// 	return texture2D(Texture5, pos);
+	// else if (samplerIndex < 6.5)
+	// 	return texture2D(Texture6, pos);
+
+	// return texture2D(Texture7, pos);
 }
 #else
 ivec2 Size(float samplerIndex)
@@ -226,16 +279,19 @@ ivec2 Size(float samplerIndex)
 		return textureSize(Texture1, 0);
 	else if (samplerIndex < 2.5)
 		return textureSize(Texture2, 0);
-	else if (samplerIndex < 3.5)
-		return textureSize(Texture3, 0);
-	else if (samplerIndex < 4.5)
-		return textureSize(Texture4, 0);
-	else if (samplerIndex < 5.5)
-		return textureSize(Texture5, 0);
-	else if (samplerIndex < 6.5)
-		return textureSize(Texture6, 0);
 
-	return textureSize(Texture7, 0);
+	return textureSize(Texture3, 0);
+
+	// else if (samplerIndex < 3.5)
+	// 	return textureSize(Texture3, 0);
+	// else if (samplerIndex < 4.5)
+	// 	return textureSize(Texture4, 0);
+	// else if (samplerIndex < 5.5)
+	// 	return textureSize(Texture5, 0);
+	// else if (samplerIndex < 6.5)
+	// 	return textureSize(Texture6, 0);
+
+	// return textureSize(Texture7, 0);
 }
 
 vec4 Sample(float samplerIndex, vec2 pos)
@@ -246,16 +302,19 @@ vec4 Sample(float samplerIndex, vec2 pos)
 		return texture(Texture1, pos);
 	else if (samplerIndex < 2.5)
 		return texture(Texture2, pos);
-	else if (samplerIndex < 3.5)
-		return texture(Texture3, pos);
-	else if (samplerIndex < 4.5)
-		return texture(Texture4, pos);
-	else if (samplerIndex < 5.5)
-		return texture(Texture5, pos);
-	else if (samplerIndex < 6.5)
-		return texture(Texture6, pos);
 
-	return texture(Texture7, pos);
+	return texture(Texture3, pos);
+
+	// else if (samplerIndex < 3.5)
+	// 	return texture(Texture3, pos);
+	// else if (samplerIndex < 4.5)
+	// 	return texture(Texture4, pos);
+	// else if (samplerIndex < 5.5)
+	// 	return texture(Texture5, pos);
+	// else if (samplerIndex < 6.5)
+	// 	return texture(Texture6, pos);
+
+	// return texture(Texture7, pos);
 }
 #endif
 
@@ -370,13 +429,13 @@ void main()
 	else
 	{
 		if (!RenderShroud){
+			vec3 viewDir = normalize(viewPos - vFragPos);
+			c = CalcDirLight(dirLight, vNormal, viewDir, c);
+
 			if (vTint.a < 0.0)
 				c = vec4(vTint.rgb, -vTint.a);
 			else if (vTint.a >= 0.0)
 				c = c * (vTint * 2.0 + vec4(1.0)) * 0.5f;
-
-			vec3 viewDir = normalize(viewPos - vFragPos);
-			c = CalcDirLight(dirLight, vNormal, viewDir, c);
 
 			// c = vec4(c.rgb * (1.0f - max(CalShadow(dirLight) - AmbientIntencity, 0.0f)), c.a);
 
