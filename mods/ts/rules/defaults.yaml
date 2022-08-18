@@ -1199,7 +1199,7 @@
 		Categories: Resource spawn
 	TerrainLightSource:
 		Range: 4c128
-		Intensity: 0.01
+		Intensity: 0.24
 		RedTint: 0.01
 		GreenTint: 0.8
 		BlueTint: 0.01

@@ -177,7 +177,7 @@ vec4 CalcDirLight(DirLight light, vec3 normal, vec3 viewDir, vec4 color)
 	// diffuse = diffuse * (1.0f - max(CalShadow(light, normal) - AmbientIntencity, 0.0f));
 	diffuse = diffuse * (1.0f - max(CalShadow(light, normal), 0.0f));
 
-	return vec4((ambient + diffuse * 1.5 + specular), color.a);
+	return vec4((ambient + diffuse * 1.5 + specular + vTint.rgb), color.a);
 }
 
 
@@ -432,10 +432,10 @@ void main()
 			vec3 viewDir = normalize(viewPos - vFragPos);
 			c = CalcDirLight(dirLight, vNormal, viewDir, c);
 
-			if (vTint.a < 0.0)
-				c = vec4(vTint.rgb, -vTint.a);
-			else if (vTint.a >= 0.0)
-				c = c * (vTint * 2.0 + vec4(1.0)) * 0.5f;
+			// if (vTint.a < 0.0)
+			// 	c = vec4(vTint.rgb, -vTint.a);
+			// else if (vTint.a >= 0.0)
+			// 	c = c * (vTint * 2.0 + vec4(1.0)) * 0.5f;
 
 			// c = vec4(c.rgb * (1.0f - max(CalShadow(dirLight) - AmbientIntencity, 0.0f)), c.a);
 

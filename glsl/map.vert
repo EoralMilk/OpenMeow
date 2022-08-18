@@ -1,9 +1,14 @@
 #version {VERSION}
 
+#define MAX_TERRAIN_LIGHT 64
+
 uniform mat4 view;
 uniform mat4 projection;
 uniform vec3 CameraInvFront;
 uniform bool RenderShroud;
+
+uniform vec3 TerrainLightPos[MAX_TERRAIN_LIGHT];
+uniform vec4 TerrainLightColorRange[MAX_TERRAIN_LIGHT];
 
 in vec4 aVertexPosition;
 in vec4 aVertexTexCoord;
@@ -140,7 +145,21 @@ void main()
 	vPalettedFraction = SelectPalettedFraction(attrib.s);
 	vDepthMask = SelectChannelMask(attrib.t);
 	vTexSampler = attrib.pq;
-	vTint = aVertexTint;
+
+	vec3 tint = vec3(0.0);
+	for (int i = 0; i < MAX_TERRAIN_LIGHT; ++i){
+		if (TerrainLightPos[i].xy == vec2(0.0))
+			break;
+		float dist = length(aVertexPosition.xyz - TerrainLightPos[i]);
+		if (dist > TerrainLightColorRange[i].a)
+			continue;
+		float falloff = (TerrainLightColorRange[i].a - dist) / TerrainLightColorRange[i].a;
+		tint += falloff * TerrainLightColorRange[i].rgb;
+	}
+	// vTint = aVertexTint;
+	vTint = vec4(tint, aVertexTint.a);
+
+
 	vNormal = normalize(aVertexNormal);
 	vFragPos = aVertexPosition.xyz;
 	vNormalQuat = FromToQuat(vec3(0,0,1), aVertexNormal);

@@ -22,12 +22,12 @@ namespace OpenRA.Graphics
 		static readonly string[] SheetIndexToTextureName = Exts.MakeArray(SheetCount, i => $"Texture{i}");
 
 		readonly Renderer renderer;
-		readonly IShader shader;
+		public readonly IShader Shader;
 
 		public MapRenderer(Renderer renderer, IShader shader)
 		{
 			this.renderer = renderer;
-			this.shader = shader;
+			this.Shader = shader;
 		}
 
 		public void DrawVertexBuffer(IVertexBuffer buffer, int start, int length, PrimitiveType type, IEnumerable<Sheet> sheets, BlendMode blendMode)
@@ -39,26 +39,26 @@ namespace OpenRA.Graphics
 					ThrowSheetOverflow(nameof(sheets));
 
 				if (s != null)
-					shader.SetTexture(SheetIndexToTextureName[i++], s.GetTexture());
+					Shader.SetTexture(SheetIndexToTextureName[i++], s.GetTexture());
 			}
 
 			renderer.Context.SetBlendMode(blendMode);
-			shader.PrepareRender();
-			renderer.DrawBatch(shader, buffer, start, length, type);
+			Shader.PrepareRender();
+			renderer.DrawBatch(Shader, buffer, start, length, type);
 			renderer.Context.SetBlendMode(BlendMode.None);
 		}
 
 		public void SetTextures(World world)
 		{
-			shader.SetFloat("WaterUVOffset", (float)(Game.LocalTick % 400) / 400);
-			shader.SetFloat("GrassUVOffset", (float)(Game.LocalTick % 1433) / 1433);
+			Shader.SetFloat("WaterUVOffset", (float)(Game.LocalTick % 400) / 400);
+			Shader.SetFloat("GrassUVOffset", (float)(Game.LocalTick % 1433) / 1433);
 
 			foreach (var kv in world.MapTextureCache.Textures)
 			{
-				shader.SetTexture(kv.Key, kv.Value);
+				Shader.SetTexture(kv.Key, kv.Value);
 			}
 
-			shader.SetTexture("Caustics", world.MapTextureCache.Caustics[Math.Min((Game.LocalTick % 93) / 3, world.MapTextureCache.Caustics.Length - 1)]);
+			Shader.SetTexture("Caustics", world.MapTextureCache.Caustics[Math.Min((Game.LocalTick % 93) / 3, world.MapTextureCache.Caustics.Length - 1)]);
 
 		}
 
@@ -70,19 +70,19 @@ namespace OpenRA.Graphics
 
 		public void SetPalette(ITexture palette, ITexture colorShifts)
 		{
-			shader.SetTexture("Palette", palette);
-			shader.SetTexture("ColorShifts", colorShifts);
+			Shader.SetTexture("Palette", palette);
+			Shader.SetTexture("ColorShifts", colorShifts);
 		}
 
 		public void SetCameraParams(in World3DRenderer w3dr, bool sunCamera)
 		{
-			shader.SetCommonParaments(w3dr, sunCamera);
+			Shader.SetCommonParaments(w3dr, sunCamera);
 		}
 
 		public void SetRenderShroud(bool flag)
 		{
-			shader.SetBool("RenderShroud", flag);
-			shader.SetVec("CameraInvFront",
+			Shader.SetBool("RenderShroud", flag);
+			Shader.SetVec("CameraInvFront",
 				Game.Renderer.World3DRenderer.InverseCameraFront.x,
 				Game.Renderer.World3DRenderer.InverseCameraFront.y,
 				Game.Renderer.World3DRenderer.InverseCameraFront.z);
@@ -92,20 +92,20 @@ namespace OpenRA.Graphics
 		{
 			if (Game.Renderer.World3DRenderer != null)
 			{
-				Game.Renderer.SetShadowParams(shader, Game.Renderer.World3DRenderer);
-				Game.Renderer.SetLightParams(shader, Game.Renderer.World3DRenderer);
+				Game.Renderer.SetShadowParams(Shader, Game.Renderer.World3DRenderer);
+				Game.Renderer.SetLightParams(Shader, Game.Renderer.World3DRenderer);
 			}
 		}
 
 		public void SetDepthPreview(bool enabled, float contrast, float offset)
 		{
-			shader.SetBool("EnableDepthPreview", enabled);
-			shader.SetVec("DepthPreviewParams", contrast, offset);
+			Shader.SetBool("EnableDepthPreview", enabled);
+			Shader.SetVec("DepthPreviewParams", contrast, offset);
 		}
 
 		public void SetAntialiasingPixelsPerTexel(float pxPerTx)
 		{
-			shader.SetVec("AntialiasPixelsPerTexel", pxPerTx);
+			Shader.SetVec("AntialiasPixelsPerTexel", pxPerTx);
 		}
 	}
 }

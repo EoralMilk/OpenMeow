@@ -367,6 +367,9 @@ namespace OpenRA.Platforms.Default
 		public delegate void Uniform3f(int location, float v0, float v1, float v2);
 		public static Uniform3f glUniform3f { get; private set; }
 
+		public delegate void Uniform4f(int location, float v0, float v1, float v2, float v3);
+		public static Uniform4f glUniform4f { get; private set; }
+
 		public delegate void Uniform1fv(int location, int count, IntPtr value);
 		public static Uniform1fv glUniform1fv { get; private set; }
 
@@ -636,6 +639,7 @@ namespace OpenRA.Platforms.Default
 				glUniform1f = Bind<Uniform1f>("glUniform1f");
 				glUniform2f = Bind<Uniform2f>("glUniform2f");
 				glUniform3f = Bind<Uniform3f>("glUniform3f");
+				glUniform4f = Bind<Uniform4f>("glUniform4f");
 				glUniform1fv = Bind<Uniform1fv>("glUniform1fv");
 				glUniform2fv = Bind<Uniform2fv>("glUniform2fv");
 				glUniform3fv = Bind<Uniform3fv>("glUniform3fv");

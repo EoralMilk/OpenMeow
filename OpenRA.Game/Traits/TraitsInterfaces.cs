@@ -425,6 +425,7 @@ namespace OpenRA.Traits
 		float3 GetGlobalDirectLight();
 		float3 GetGlobalAmbient();
 		float GetGlobalAmbientIntencity();
+		void LightSourcesToMapShader(WPos tl, WPos br, IShader shader);
 
 	}
 

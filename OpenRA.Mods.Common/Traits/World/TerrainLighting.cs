@@ -149,6 +149,38 @@ namespace OpenRA.Mods.Common.Traits
 			}
 		}
 
+		const int MaxLightCount = 64;
+		public void LightSourcesToMapShader(WPos tl, WPos br, IShader shader)
+		{
+			int i = 0;
+			int n = 0;
+
+			float[] posArray = new float[3 * MaxLightCount];
+			float[] colorRangeArray = new float[4 * MaxLightCount];
+
+			foreach (var source in partitionedLightSources.InBox(new Rectangle(tl.X, tl.Y, br.X, br.Y)))
+			{
+				var rpos = Game.Renderer.World3DRenderer.Get3DRenderPositionFromWPos(source.Pos);
+				posArray[i] = rpos.x;
+				posArray[i + 1] = rpos.y;
+				posArray[i + 2] = rpos.z;
+
+				colorRangeArray[n] = source.Tint.X * source.Intensity;
+				colorRangeArray[n + 1] = source.Tint.Y * source.Intensity;
+				colorRangeArray[n + 2] = source.Tint.Z * source.Intensity;
+
+				colorRangeArray[n + 3] = (float)source.Range.Length / Game.Renderer.World3DRenderer.WPosPerMeter;
+
+				i += 3;
+				n += 4;
+				if (i >= 3 * MaxLightCount)
+					break;
+			}
+
+			shader.SetVecArray("TerrainLightPos", posArray, 3, MaxLightCount);
+			shader.SetVecArray("TerrainLightColorRange", colorRangeArray, 4, MaxLightCount);
+		}
+
 		public float GetGlobalAmbientIntencity()
 		{
 			return info.AmbientIntensity;

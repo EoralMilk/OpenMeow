@@ -115,53 +115,53 @@ namespace OpenRA.Graphics
 			var offset = rowStride * uv.V + Game.Renderer.MaxVerticesPerMesh * uv.U;
 			if (ignoreTint[offset])
 			{
-				for (var i = 0; i < Game.Renderer.MaxVerticesPerMesh; i++)
-				{
-					var v = vertices[offset + i];
-					vertices[offset + i] = new MapVertex(v.X, v.Y, v.Z, v.S, v.T, v.U, v.V, v.P, v.C, v.A * float3.Ones, v.A, v.NX, v.NY, v.NZ, v.FNX, v.FNY, v.FNZ, v.TU, v.TV, v.DrawType);
-				}
+				//for (var i = 0; i < Game.Renderer.MaxVerticesPerMesh; i++)
+				//{
+				//	var v = vertices[offset + i];
+				//	vertices[offset + i] = new MapVertex(v.X, v.Y, v.Z, v.S, v.T, v.U, v.V, v.P, v.C, v.A * float3.Ones, v.A, v.NX, v.NY, v.NZ, v.FNX, v.FNY, v.FNZ, v.TU, v.TV, v.DrawType);
+				//}
 
 				return;
 			}
 
-			// Allow the terrain tint to vary linearly across the cell to smooth out the staircase effect
-			// This is done by sampling the lighting the corners of the sprite, even though those pixels are
-			// transparent for isometric tiles
-			var tl = worldRenderer.TerrainLighting;
-			var pos = map.CenterOfCell(uv.ToCPos(map));
-			var step = map.Grid.Type == MapGridType.RectangularIsometric ? 724 : 512;
-			var weights6 = new[]
-			{
-				tl.TintAt(pos + new WVec(-step, -step, 0)),
-				tl.TintAt(pos + new WVec(step, -step, 0)),
-				tl.TintAt(pos + new WVec(step, step, 0)),
-				tl.TintAt(pos + new WVec(-step, step, 0))
-			};
+			//// Allow the terrain tint to vary linearly across the cell to smooth out the staircase effect
+			//// This is done by sampling the lighting the corners of the sprite, even though those pixels are
+			//// transparent for isometric tiles
+			//var tl = worldRenderer.TerrainLighting;
+			//var pos = map.CenterOfCell(uv.ToCPos(map));
+			//var step = map.Grid.Type == MapGridType.RectangularIsometric ? 724 : 512;
+			//var weights6 = new[]
+			//{
+			//	tl.TintAt(pos + new WVec(-step, -step, 0)),
+			//	tl.TintAt(pos + new WVec(step, -step, 0)),
+			//	tl.TintAt(pos + new WVec(step, step, 0)),
+			//	tl.TintAt(pos + new WVec(-step, step, 0))
+			//};
 
-			var weights = new[]
-			{
-				tl.TintAt(pos),
-				tl.TintAt(pos + new WVec(0, -724, 0)),
-				tl.TintAt(pos + new WVec(0, 724, 0)),
-				tl.TintAt(pos + new WVec(-724, 0, 0)),
-				tl.TintAt(pos + new WVec(724, 0, 0))
-			};
+			//var weights = new[]
+			//{
+			//	tl.TintAt(pos),
+			//	tl.TintAt(pos + new WVec(0, -724, 0)),
+			//	tl.TintAt(pos + new WVec(0, 724, 0)),
+			//	tl.TintAt(pos + new WVec(-724, 0, 0)),
+			//	tl.TintAt(pos + new WVec(724, 0, 0))
+			//};
 
-			// Apply tint directly to the underlying vertices
-			// This saves us from having to re-query the sprite information, which has not changed
-			for (var i = 0; i < Game.Renderer.MaxVerticesPerMesh; i++)
-			{
-				var v = vertices[offset + i];
-				var color = verticesColor[offset + i];
-				if (color == float3.Ones)
-				{
-					vertices[offset + i] = new MapVertex(v.X, v.Y, v.Z, v.S, v.T, v.U, v.V, v.P, v.C, v.A * weights6[CornerVertexMap6[i % 6]], v.A, v.NX, v.NY, v.NZ, v.FNX, v.FNY, v.FNZ, v.TU, v.TV, v.DrawType);
-				}
-				else
-				{
-					vertices[offset + i] = new MapVertex(v.X, v.Y, v.Z, v.S, v.T, v.U, v.V, v.P, v.C, v.A * weights[CornerVertexMap[i % 12]], v.A, v.NX, v.NY, v.NZ, v.FNX, v.FNY, v.FNZ, v.TU, v.TV, v.DrawType);
-				}
-			}
+			//// Apply tint directly to the underlying vertices
+			//// This saves us from having to re-query the sprite information, which has not changed
+			//for (var i = 0; i < Game.Renderer.MaxVerticesPerMesh; i++)
+			//{
+			//	var v = vertices[offset + i];
+			//	var color = verticesColor[offset + i];
+			//	if (color == float3.Ones)
+			//	{
+			//		vertices[offset + i] = new MapVertex(v.X, v.Y, v.Z, v.S, v.T, v.U, v.V, v.P, v.C, v.A * weights6[CornerVertexMap6[i % 6]], v.A, v.NX, v.NY, v.NZ, v.FNX, v.FNY, v.FNZ, v.TU, v.TV, v.DrawType);
+			//	}
+			//	else
+			//	{
+			//		vertices[offset + i] = new MapVertex(v.X, v.Y, v.Z, v.S, v.T, v.U, v.V, v.P, v.C, v.A * weights[CornerVertexMap[i % 12]], v.A, v.NX, v.NY, v.NZ, v.FNX, v.FNY, v.FNZ, v.TU, v.TV, v.DrawType);
+			//	}
+			//}
 
 			dirtyRows.Add(uv.V);
 		}
@@ -309,6 +309,9 @@ namespace OpenRA.Graphics
 		public void Draw(Viewport viewport)
 		{
 			var cells = restrictToBounds ? viewport.VisibleCellsInsideBounds : viewport.AllVisibleCells;
+			var tlcell = cells.CandidateMapCoords.TopLeft.ToCPos(map);
+			var brcell = cells.CandidateMapCoords.BottomRight.ToCPos(map);
+			worldRenderer.TerrainLighting.LightSourcesToMapShader(map.CenterOfCell(tlcell), map.CenterOfCell(brcell), Game.Renderer.MapRenderer.Shader);
 
 			// Only draw the rows that are visible.
 			firstRow = cells.CandidateMapCoords.TopLeft.V.Clamp(0, map.MapSize.Y);

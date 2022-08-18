@@ -280,6 +280,12 @@ namespace OpenRA
 		public float3[] VertexColors;
 		public int VertexArrayWidth, VertexArrayHeight;
 
+		//// all TerrainPatch on map
+		//public readonly TerrainPatch[] MapTerrainPatches;
+
+		//// one cell may coved more than one TerrainPatch
+		//public readonly Dictionary<MPos, TerrainPatchInstance[]> PatchOnCell;
+
 		public PPos[] ProjectedCells { get; private set; }
 		public MPos[] MapCells { get; private set; }
 		public CellRegion AllCells { get; private set; }

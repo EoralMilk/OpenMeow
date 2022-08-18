@@ -841,6 +841,8 @@ namespace OpenRA.Platforms.Default
 		readonly Action<object> setVec2;
 		readonly Action<object> setVec3;
 		readonly Action<object> setVec4;
+		readonly Action<object> setVecArray;
+
 		readonly Action layoutAttributes;
 		readonly Action layoutInstanceArray;
 		readonly Action<object> setCommonParaments;
@@ -855,9 +857,10 @@ namespace OpenRA.Platforms.Default
 			setMatrix = tuple => { var t = (ValueTuple<string, float[], int>)tuple; shader.SetMatrix(t.Item1, t.Item2, t.Item3); };
 			setTexture = tuple => { var t = (ValueTuple<string, ITexture>)tuple; shader.SetTexture(t.Item1, t.Item2); };
 			setVec1 = tuple => { var t = (ValueTuple<string, float>)tuple; shader.SetVec(t.Item1, t.Item2); };
-			setVec2 = tuple => { var t = (ValueTuple<string, float[], int>)tuple; shader.SetVec(t.Item1, t.Item2, t.Item3); };
-			setVec3 = tuple => { var t = (ValueTuple<string, float, float>)tuple; shader.SetVec(t.Item1, t.Item2, t.Item3); };
-			setVec4 = tuple => { var t = (ValueTuple<string, float, float, float>)tuple; shader.SetVec(t.Item1, t.Item2, t.Item3, t.Item4); };
+			setVec2 = tuple => { var t = (ValueTuple<string, float, float>)tuple; shader.SetVec(t.Item1, t.Item2, t.Item3); };
+			setVec3 = tuple => { var t = (ValueTuple<string, float, float, float>)tuple; shader.SetVec(t.Item1, t.Item2, t.Item3, t.Item4); };
+			setVec4 = tuple => { var t = (ValueTuple<string, float, float, float, float>)tuple; shader.SetVec(t.Item1, t.Item2, t.Item3, t.Item4, t.Item5); };
+			setVecArray = tuple => { var t = (ValueTuple<string, float[], int, int>)tuple; shader.SetVecArray(t.Item1, t.Item2, t.Item3, t.Item4); };
 			layoutAttributes = () => { shader.LayoutAttributes(); };
 			layoutInstanceArray = () => { shader.LayoutInstanceArray(); };
 			setCommonParaments = tuple => {var t = (ValueTuple<World3DRenderer, bool>)tuple; shader.SetCommonParaments(t.Item1, t.Item2); };
@@ -898,19 +901,24 @@ namespace OpenRA.Platforms.Default
 			device.Post(setVec1, (name, x));
 		}
 
-		public void SetVec(string name, float[] vec, int length)
-		{
-			device.Post(setVec2, (name, vec, length));
-		}
-
 		public void SetVec(string name, float x, float y)
 		{
-			device.Post(setVec3, (name, x, y));
+			device.Post(setVec2, (name, x, y));
 		}
 
 		public void SetVec(string name, float x, float y, float z)
 		{
-			device.Post(setVec4, (name, x, y, z));
+			device.Post(setVec3, (name, x, y, z));
+		}
+
+		public void SetVec(string name, float x, float y, float z, float w)
+		{
+			device.Post(setVec4, (name, x, y, z, w));
+		}
+
+		public void SetVecArray(string name, float[] vec, int vecLength, int count)
+		{
+			device.Post(setVecArray, (name, vec, vecLength, count));
 		}
 
 		public void LayoutAttributes()
