@@ -933,7 +933,7 @@ namespace OpenRA
 						//VertexWPos[it] = TileWPos(Math.Min(ht, VertexWPos[it].Z), cpos, new WPos(0, -724, 0));
 					}
 					else
-						VertexWPos[it] = TileWPos(ht, cpos, new WPos(0, -724, 0));
+						VertexWPos[it] = TileWPos(ht / 4, cpos, new WPos(0, -724, 0));
 					VertexPos[it] = TilePos(VertexWPos[it]);
 					pt = VertexPos[it];
 
@@ -944,7 +944,7 @@ namespace OpenRA
 
 					}
 					else
-						VertexWPos[ib] = TileWPos(hb, cpos, new WPos(0, 724, 0));
+						VertexWPos[ib] = TileWPos(hb / 4, cpos, new WPos(0, 724, 0));
 					VertexPos[ib] = TilePos(VertexWPos[ib]);
 					pb = VertexPos[ib];
 
@@ -955,7 +955,7 @@ namespace OpenRA
 
 					}
 					else
-						VertexWPos[il] = TileWPos(hl, cpos, new WPos(-724, 0, 0));
+						VertexWPos[il] = TileWPos(hl / 4, cpos, new WPos(-724, 0, 0));
 					VertexPos[il] = TilePos(VertexWPos[il]);
 					pl = VertexPos[il];
 
@@ -966,7 +966,7 @@ namespace OpenRA
 
 					}
 					else
-						VertexWPos[ir] = TileWPos(hr, cpos, new WPos(724, 0, 0));
+						VertexWPos[ir] = TileWPos(hr / 4, cpos, new WPos(724, 0, 0));
 					VertexPos[ir] = TilePos(VertexWPos[ir]);
 					pr = VertexPos[ir];
 
@@ -1027,6 +1027,8 @@ namespace OpenRA
 						mid = new int2(2 * x + 2, y + 1);
 					}
 
+					var ramp = Ramp[uv];
+
 					int im, it, ib, il, ir;
 					im = mid.Y * VertexArrayWidth + mid.X;
 					it = (mid.Y - 1) * VertexArrayWidth + mid.X;
@@ -1035,18 +1037,21 @@ namespace OpenRA
 					ir = mid.Y * VertexArrayWidth + mid.X + 1;
 
 					float3 pm, pt, pb, pl, pr;
-					pm = VertexPos[im];
 					pt = VertexPos[it];
 					pb = VertexPos[ib];
 					pl = VertexPos[il];
 					pr = VertexPos[ir];
+
+					if (ramp == 0)
+						VertexPos[im] = 0.25f * pt + 0.25f * pb + 0.25f * pl + 0.25f * pr;
+
+					pm = VertexPos[im];
 
 					var tlm = CalNormal(pt, pl, pm);
 					var tmr = CalNormal(pt, pm, pr);
 					var mlb = CalNormal(pm, pl, pb);
 					var mbr = CalNormal(pm, pb, pr);
 
-					var ramp = Ramp[uv];
 					if (ramp != 0)
 						VertexNormal[im] = Vec2Float3(tlm * 0.25f + tmr * 0.25f + mlb * 0.25f + mbr * 0.25f);
 
@@ -1140,7 +1145,8 @@ namespace OpenRA
 
 		int HMix(int a, int b)
 		{
-			return a + (b - a) / 2;
+			//return a + (b - a) / 2;
+			return a / 4 + b;
 		}
 
 		float3 Color2Float3(in Color color)

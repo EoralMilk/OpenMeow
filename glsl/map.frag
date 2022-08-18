@@ -130,7 +130,7 @@ vec4 CalcDirLight(DirLight light, vec3 normal, vec3 viewDir, vec4 color)
 	// diffuse = diffuse * (1.0f - max(CalShadow(light, normal) - AmbientIntencity, 0.0f));
 	diffuse = diffuse * (1.0f - max(CalShadow(light, normal), 0.0f));
 
-	return vec4((ambient + diffuse + specular), color.a);
+	return vec4((ambient + diffuse * 1.5 + specular), color.a);
 }
 
 
