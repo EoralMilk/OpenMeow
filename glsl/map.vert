@@ -1,31 +1,34 @@
 #version {VERSION}
 
 #define MAX_TERRAIN_LIGHT 64
-
+#ifdef GL_ES
+precision mediump float;
+#endif
 uniform mat4 view;
 uniform mat4 projection;
 uniform vec3 CameraInvFront;
+uniform vec3 viewPos;
 uniform bool RenderShroud;
 
 uniform vec3 TerrainLightPos[MAX_TERRAIN_LIGHT];
 uniform vec4 TerrainLightColorRange[MAX_TERRAIN_LIGHT];
+uniform float TerrainLightHeightStep;
 
 in vec4 aVertexPosition;
 in vec4 aVertexTexCoord;
 in vec2 aVertexTexMetadata;
 in vec4 aVertexTint;
+in vec3 aVertexTangent;
+in vec3 aVertexBitangent;
 in vec3 aVertexNormal;
-in vec3 aFaceNormal;
 in vec2 aTileTexCoord;
 in uint aDrawType;
 
 out vec4 vTexCoord;
 out vec2 vTexMetadata;
 out vec4 vChannelMask;
-out vec4 vDepthMask;
 out vec2 vTexSampler;
 out vec2 vTileTexCoord;
-flat out int mDrawType;
 
 out vec4 vColorFraction;
 out vec4 vRGBAFraction;
@@ -33,9 +36,25 @@ out vec4 vPalettedFraction;
 out vec4 vTint;
 out vec3 vNormal;
 out vec3 vFragPos;
-out vec4 vNormalQuat;
+out float vSunLight;
 
+flat out int mDrawType;
 
+struct DirLight {
+	vec3 direction;
+	vec3 ambient;
+	vec3 diffuse;
+	vec3 specular;
+};
+
+uniform DirLight dirLight;
+
+out	vec3 tSunDirection;
+out vec3 tFragPos;
+out vec3 tViewPos;
+out vec3 tNormal;
+
+uniform vec3 SunDirection;
 
 vec4 UnpackChannelAttributes(float x)
 {
@@ -114,24 +133,16 @@ vec4 SelectPalettedFraction(float x)
 	return vec4(1, 1, 1, 1);
 }
 
-vec4 FromToQuat(vec3 from, vec3 to){
-	vec3 w = cross(from, to);
-	vec4 q = vec4(w.x, w.y, w.z, dot(from, to));
-	float lenf = length(from);
-	float lent = length(to);
-	q.w += sqrt(lenf * lenf * lent * lent);
-	return normalize(q);
-}
-
 void main()
 {
-	if (aVertexTint.a == 0.0 || (RenderShroud && dot(CameraInvFront, aFaceNormal) < 0.01)) 
+	if (aVertexTint.a == 0.0) 
 	{
 		mDrawType = 0;
 		return;
 	}
 	else
 		mDrawType = int(aDrawType);
+
 
 	gl_Position = projection * view * aVertexPosition;
 	vTexCoord = aVertexTexCoord;
@@ -143,7 +154,6 @@ void main()
 	vColorFraction = SelectColorFraction(attrib.s);
 	vRGBAFraction = SelectRGBAFraction(attrib.s);
 	vPalettedFraction = SelectPalettedFraction(attrib.s);
-	vDepthMask = SelectChannelMask(attrib.t);
 	vTexSampler = attrib.pq;
 
 	vec3 tint = vec3(0.0);
@@ -156,11 +166,23 @@ void main()
 		float falloff = (TerrainLightColorRange[i].a - dist) / TerrainLightColorRange[i].a;
 		tint += falloff * TerrainLightColorRange[i].rgb;
 	}
+
+	// HeightStep
+	vSunLight = 1.0 + aVertexPosition.z * TerrainLightHeightStep;
+
 	// vTint = aVertexTint;
-	vTint = vec4(tint, aVertexTint.a);
+	vTint = vec4(tint * 4.0 + vec3(1.0), aVertexTint.a);
 
-
-	vNormal = normalize(aVertexNormal);
+	vNormal = aVertexNormal;
 	vFragPos = aVertexPosition.xyz;
-	vNormalQuat = FromToQuat(vec3(0,0,1), aVertexNormal);
+	
+	// no model matrix, so directly create TBN
+	mat3 TBN = transpose(mat3(aVertexTangent, aVertexBitangent, aVertexNormal));
+	// mat3 TBN = mat3(aVertexTangent, aVertexBitangent, aVertexNormal);
+
+	tNormal = TBN * aVertexNormal;
+	tSunDirection = TBN * dirLight.direction;
+	tViewPos = TBN * viewPos;
+	tFragPos = TBN * aVertexPosition.xyz;
+
 }

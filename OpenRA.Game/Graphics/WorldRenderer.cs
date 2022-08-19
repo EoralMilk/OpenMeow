@@ -270,7 +270,7 @@ namespace OpenRA.Graphics
 			TerrainRenderer?.RenderTerrain(this, Viewport);
 			Game.Renderer.SetFaceCull(FaceCullFunc.None);
 
-			// Êµ¼ÊÉÏÃ²ËÆÃ»ÓÐÓÃ
+			// Êµï¿½ï¿½ï¿½ï¿½Ã²ï¿½ï¿½Ã»ï¿½ï¿½ï¿½ï¿½
 			Game.Renderer.Flush();
 
 			for (var i = 0; i < preparedRenderables.Count; i++)
@@ -305,7 +305,6 @@ namespace OpenRA.Graphics
 					trait.RenderAboveWorld(actor, this);
 			});
 
-			Game.Renderer.Context.EnableDepthBuffer(DepthFunc.LessEqual);
 			Game.Renderer.MapRenderer.SetRenderShroud(true);
 			Game.Renderer.SetFaceCull(FaceCullFunc.Back);
 
@@ -313,7 +312,6 @@ namespace OpenRA.Graphics
 
 			Game.Renderer.SetFaceCull(FaceCullFunc.None);
 			Game.Renderer.MapRenderer.SetRenderShroud(false);
-			Game.Renderer.DisableDepthTest();
 
 			//Game.Renderer.DisableScissor();
 

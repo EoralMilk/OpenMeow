@@ -153,24 +153,36 @@ namespace OpenRA
 
 	public struct CellInfo
 	{
+		public const float TU = 0f;
+		public const float TV = 0f;
+
+		public const float LU = 0f;
+		public const float LV = 1f;
+
+		public const float BU = 1f;
+		public const float BV = 1f;
+
+		public const float RU = 1f;
+		public const float RV = 0f;
+
 		public readonly WPos CellCenterPos;
 		public readonly uint Type;
 
-		public readonly float3 CellNmlTLM;
-		public readonly float3 CellNmlTMR;
-		public readonly float3 CellNmlMLB;
-		public readonly float3 CellNmlMBR;
+		//public readonly float3 CellNmlTLM;
+		//public readonly float3 CellNmlTMR;
+		//public readonly float3 CellNmlMLB;
+		//public readonly float3 CellNmlMBR;
 
 		public readonly int M, T, B, L, R;
 
-		public CellInfo(WPos center, float3 tlmn, float3 tmrn, float3 mlbn, float3 mbrn,
+		public CellInfo(WPos center, // float3 tlmn, float3 tmrn, float3 mlbn, float3 mbrn,
 			int m, int t, int b, int l, int r, uint type)
 		{
 			CellCenterPos = center;
-			CellNmlTLM = tlmn;
-			CellNmlTMR = tmrn;
-			CellNmlMLB = mlbn;
-			CellNmlMBR = mbrn;
+			// CellNmlTLM = tlmn;
+			// CellNmlTMR = tmrn;
+			// CellNmlMLB = mlbn;
+			// CellNmlMBR = mbrn;
 			M = m;
 			T = t;
 			B = b;
@@ -275,7 +287,9 @@ namespace OpenRA
 
 		public WPos[] VertexWPos;
 		public float3[] VertexPos;
-		public float3[] VertexNormal;
+		//public float3[] VertexTangent;
+		//public float3[] VertexBitangent;
+		public mat3[] VertexTBN;
 		public vec3[][] FaceNormal;
 		public float3[] VertexColors;
 		public int VertexArrayWidth, VertexArrayHeight;
@@ -712,7 +726,9 @@ namespace OpenRA
 			var vertexNmlCaled = new bool[VertexArrayWidth * VertexArrayHeight];
 
 			VertexPos = new float3[VertexArrayWidth * VertexArrayHeight];
-			VertexNormal = new float3[VertexArrayWidth * VertexArrayHeight];
+			//VertexTangent = new float3[VertexArrayWidth * VertexArrayHeight];
+			//VertexBitangent = new float3[VertexArrayWidth * VertexArrayHeight];
+			VertexTBN = new mat3[VertexArrayWidth * VertexArrayHeight];
 			VertexWPos = new WPos[VertexArrayWidth * VertexArrayHeight];
 			VertexColors = new float3[VertexArrayWidth * VertexArrayHeight];
 
@@ -1010,6 +1026,7 @@ namespace OpenRA
 					ir = mid.Y * VertexArrayWidth + mid.X + 1;
 
 					float3 pm, pt, pb, pl, pr;
+					float2 uvm, uvt, uvb, uvl, uvr;
 					pt = VertexPos[it];
 					pb = VertexPos[ib];
 					pl = VertexPos[il];
@@ -1020,33 +1037,39 @@ namespace OpenRA
 
 					pm = VertexPos[im];
 
-					var tlm = CalNormal(pt, pl, pm);
-					var tmr = CalNormal(pt, pm, pr);
-					var mlb = CalNormal(pm, pl, pb);
-					var mbr = CalNormal(pm, pb, pr);
+					uvm = new float2(0.5f, 0.5f);
+					uvt = new float2(CellInfo.TU, CellInfo.TV);
+					uvb = new float2(CellInfo.BU, CellInfo.BV);
+					uvl = new float2(CellInfo.LU, CellInfo.LV);
+					uvr = new float2(CellInfo.RU, CellInfo.RV);
+
+					var tlm = CalTBN(pt, pl, pm, uvt, uvl, uvm);
+					var tmr = CalTBN(pt, pm, pr, uvt, uvm, uvr);
+					var mlb = CalTBN(pm, pl, pb, uvm, uvl, uvb);
+					var mbr = CalTBN(pm, pb, pr, uvm, uvb, uvr);
 
 					if (ramp != 0)
-						VertexNormal[im] = Vec2Float3(tlm * 0.25f + tmr * 0.25f + mlb * 0.25f + mbr * 0.25f);
+						VertexTBN[im] = (tlm * 0.25f + tmr * 0.25f + mlb * 0.25f + mbr * 0.25f);
 
 					if (vertexNmlCaled[it])
-						VertexNormal[it] = 0.25f * Vec2Float3(tlm * 0.5f + tmr * 0.5f) + VertexNormal[it];
+						VertexTBN[it] = 0.25f * (tlm * 0.5f + tmr * 0.5f) + VertexTBN[it];
 					else
-						VertexNormal[it] = 0.25f * Vec2Float3(tlm * 0.5f + tmr * 0.5f);
+						VertexTBN[it] = 0.25f * (tlm * 0.5f + tmr * 0.5f);
 
 					if (vertexNmlCaled[ib])
-						VertexNormal[ib] = 0.25f * Vec2Float3(mlb * 0.5f + mbr * 0.5f) + VertexNormal[ib];
+						VertexTBN[ib] = 0.25f * (mlb * 0.5f + mbr * 0.5f) + VertexTBN[ib];
 					else
-						VertexNormal[ib] = 0.25f * Vec2Float3(mlb * 0.5f + mbr * 0.5f);
+						VertexTBN[ib] = 0.25f * (mlb * 0.5f + mbr * 0.5f);
 
 					if (vertexNmlCaled[il])
-						VertexNormal[il] = 0.25f * Vec2Float3(mlb * 0.5f + tlm * 0.5f) + VertexNormal[il];
+						VertexTBN[il] = 0.25f * (mlb * 0.5f + tlm * 0.5f) + VertexTBN[il];
 					else
-						VertexNormal[il] = 0.25f * Vec2Float3(mlb * 0.5f + tlm * 0.5f);
+						VertexTBN[il] = 0.25f * (mlb * 0.5f + tlm * 0.5f);
 
 					if (vertexNmlCaled[ir])
-						VertexNormal[ir] = 0.25f * Vec2Float3(tmr * 0.5f + mbr * 0.5f) + VertexNormal[ir];
+						VertexTBN[ir] = 0.25f * (tmr * 0.5f + mbr * 0.5f) + VertexTBN[ir];
 					else
-						VertexNormal[ir] = 0.25f * Vec2Float3(tmr * 0.5f + mbr * 0.5f);
+						VertexTBN[ir] = 0.25f * (tmr * 0.5f + mbr * 0.5f);
 
 					vertexNmlCaled[im] = true;
 					vertexNmlCaled[it] = true;
@@ -1070,7 +1093,7 @@ namespace OpenRA
 							break;
 					}
 
-					CellInfo cellInfo = new CellInfo(VertexWPos[im], Vec2Float3(tlm), Vec2Float3(tmr), Vec2Float3(mlb), Vec2Float3(mbr), im, it, ib, il, ir, typeNum);
+					CellInfo cellInfo = new CellInfo(VertexWPos[im], im, it, ib, il, ir, typeNum);
 
 					CellInfos[uv.ToCPos(this)] = cellInfo;
 				}
@@ -1101,8 +1124,13 @@ namespace OpenRA
 					il = mid.Y * VertexArrayWidth + mid.X - 1;
 					ir = mid.Y * VertexArrayWidth + mid.X + 1;
 
-					VertexNormal[im] = (0.25f * VertexNormal[it] + 0.25f * VertexNormal[ib] + 0.25f * VertexNormal[il] + 0.25f * VertexNormal[ir]);
+					VertexTBN[im] = (0.25f * VertexTBN[it] + 0.25f * VertexTBN[ib] + 0.25f * VertexTBN[il] + 0.25f * VertexTBN[ir]);
 				}
+			}
+
+			for (int i = 0; i < VertexTBN.Length; i++)
+			{
+				VertexTBN[i] = NormalizeTBN(VertexTBN[i]);
 			}
 		}
 
@@ -1117,9 +1145,56 @@ namespace OpenRA
 			return vec3.Cross(ab, ac).Normalized;
 		}
 
+		mat3 CalTBN(float3 a, float3 b, float3 c, float2 uva, float2 uvb, float2 uvc)
+		{
+			// positions
+			vec3 pos1 = Float3toVec3(a);
+			vec3 pos2 = Float3toVec3(b);
+			vec3 pos3 = Float3toVec3(c);
+
+			// texture coordinates
+			vec2 uv1 = new vec2(uva.X, uva.Y);
+			vec2 uv2 = new vec2(uvb.X, uvb.Y);
+			vec2 uv3 = new vec2(uvc.X, uvc.Y);
+
+			// normal vector
+			vec3 nm = CalNormal(a, b, c);
+
+			vec3 edge1 = pos2 - pos1;
+			vec3 edge2 = pos3 - pos1;
+			vec2 deltaUV1 = uv2 - uv1;
+			vec2 deltaUV2 = uv3 - uv1;
+
+			float f = 1.0f / (deltaUV1.x * deltaUV2.y - deltaUV2.x * deltaUV1.y);
+
+			vec3 tangent = vec3.Zero;
+			tangent.x = f * (deltaUV2.y * edge1.x - deltaUV1.y * edge2.x);
+			tangent.y = f * (deltaUV2.y * edge1.y - deltaUV1.y * edge2.y);
+			tangent.z = f * (deltaUV2.y * edge1.z - deltaUV1.y * edge2.z);
+			tangent = tangent.Normalized;
+
+			vec3 bitangent = vec3.Zero;
+			bitangent.x = f * (-deltaUV2.x * edge1.x + deltaUV1.x * edge2.x);
+			bitangent.y = f * (-deltaUV2.x * edge1.y + deltaUV1.x * edge2.y);
+			bitangent.z = f * (-deltaUV2.x * edge1.z + deltaUV1.x * edge2.z);
+			bitangent = bitangent.Normalized;
+
+			return new mat3(tangent, bitangent, nm);
+		}
+
+		mat3 NormalizeTBN (mat3 tbn)
+		{
+			return new mat3(tbn.Column0.NormalizedSafe, tbn.Column1.NormalizedSafe, tbn.Column2.NormalizedSafe);
+		}
+
 		float3 Vec2Float3(vec3 vec)
 		{
 			return new float3(vec.x, vec.y, vec.z);
+		}
+
+		vec3 Float3toVec3(float3 f3)
+		{
+			return new vec3(f3.X, f3.Y, f3.Z);
 		}
 
 		int HMix(int a, int b)

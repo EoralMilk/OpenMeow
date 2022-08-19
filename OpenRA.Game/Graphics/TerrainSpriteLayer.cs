@@ -82,7 +82,8 @@ namespace OpenRA.Graphics
 			{
 				var v = vertices[i];
 				var p = palettes[i / Game.Renderer.MaxVerticesPerMesh]?.TextureIndex ?? 0;
-				vertices[i] = new MapVertex(v.X, v.Y, v.Z, v.S, v.T, v.U, v.V, p, v.C, v.R, v.G, v.B, v.A, v.NX, v.NY, v.NZ, v.FNX, v.FNY, v.FNZ, v.TU, v.TV, v.DrawType);
+				//vertices[i] = new MapVertex(v.X, v.Y, v.Z, v.S, v.T, v.U, v.V, p, v.C, v.R, v.G, v.B, v.A, v.NX, v.NY, v.NZ, v.FNX, v.FNY, v.FNZ, v.TU, v.TV, v.DrawType);
+				vertices[i] = vertices[i].ChangePal(p);
 			}
 
 			for (var row = 0; row < map.MapSize.Y; row++)
@@ -238,7 +239,7 @@ namespace OpenRA.Graphics
 
 				var spriteMeshType = sprite.SpriteMeshType;
 
-				Util.FastCreateTilePlane(vertices, map.VertexNormal[cellinfo.M], pos, viewOffset, sprite, samplers, palette?.TextureIndex ?? 0, scale, alpha * float3.Ones, alpha, offset);
+				Util.FastCreateTilePlane(vertices, map.VertexTBN[cellinfo.M], pos, viewOffset, sprite, samplers, palette?.TextureIndex ?? 0, scale, alpha * float3.Ones, alpha, offset);
 			}
 			else
 			{
@@ -250,20 +251,16 @@ namespace OpenRA.Graphics
 												map.VertexPos[cellinfo.B],
 												map.VertexPos[cellinfo.L],
 												map.VertexPos[cellinfo.R],
-												map.VertexNormal[cellinfo.M],
-												map.VertexNormal[cellinfo.T],
-												map.VertexNormal[cellinfo.B],
-												map.VertexNormal[cellinfo.L],
-												map.VertexNormal[cellinfo.R],
+												map.VertexTBN[cellinfo.M],
+												map.VertexTBN[cellinfo.T],
+												map.VertexTBN[cellinfo.B],
+												map.VertexTBN[cellinfo.L],
+												map.VertexTBN[cellinfo.R],
 												shroudColor,
 												shroudColor,
 												shroudColor,
 												shroudColor,
 												shroudColor,
-												cellinfo.CellNmlTMR,
-												cellinfo.CellNmlMBR,
-												cellinfo.CellNmlTLM,
-												cellinfo.CellNmlMLB,
 												cellinfo.Type,
 												sprite, samplers, palette?.TextureIndex ?? 0, scale, alpha * float3.Ones, alpha, offset, false);
 				}
@@ -275,20 +272,16 @@ namespace OpenRA.Graphics
 												map.VertexPos[cellinfo.B],
 												map.VertexPos[cellinfo.L],
 												map.VertexPos[cellinfo.R],
-												map.VertexNormal[cellinfo.M],
-												map.VertexNormal[cellinfo.T],
-												map.VertexNormal[cellinfo.B],
-												map.VertexNormal[cellinfo.L],
-												map.VertexNormal[cellinfo.R],
+												map.VertexTBN[cellinfo.M],
+												map.VertexTBN[cellinfo.T],
+												map.VertexTBN[cellinfo.B],
+												map.VertexTBN[cellinfo.L],
+												map.VertexTBN[cellinfo.R],
 												map.VertexColors[cellinfo.M],
 												map.VertexColors[cellinfo.T],
 												map.VertexColors[cellinfo.B],
 												map.VertexColors[cellinfo.L],
 												map.VertexColors[cellinfo.R],
-												cellinfo.CellNmlTMR,
-												cellinfo.CellNmlMBR,
-												cellinfo.CellNmlTLM,
-												cellinfo.CellNmlMLB,
 												cellinfo.Type,
 												sprite, samplers, palette?.TextureIndex ?? 0, scale, alpha * float3.Ones, alpha, offset, true);
 				}

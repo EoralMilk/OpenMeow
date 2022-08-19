@@ -10,6 +10,7 @@
 #endregion
 
 using System.Runtime.InteropServices;
+using GlmSharp;
 
 namespace OpenRA.Graphics
 {
@@ -76,39 +77,79 @@ namespace OpenRA.Graphics
 		// Color tint
 		public readonly float R, G, B, A;
 
-		// 3d normal
+		// TBN
+		public readonly float TX, TY, TZ;
+		public readonly float BX, BY, BZ;
 		public readonly float NX, NY, NZ;
-
-		// 3d normal
-		public readonly float FNX, FNY, FNZ;
 
 		public readonly float TU, TV;
 
 		public readonly uint DrawType;
 
-		public MapVertex(in float3 xyz, in float3 nml, in float3 fnml, float s, float t, float u, float v, float p, float c, in float3 tint, float a, float tu, float tv, uint type)
-			: this(xyz.X, xyz.Y, xyz.Z, s, t, u, v, p, c, tint.X, tint.Y, tint.Z, a, nml.X, nml.Y, nml.Z, fnml.X, fnml.Y, fnml.Z, tu, tv, type) { }
-
-		public MapVertex(float x, float y, float z, float s, float t, float u, float v, float p, float c, in float3 tint, float a, float nx, float ny, float nz, float fnx, float fny, float fnz, float tu, float tv, uint type)
-			: this(x, y, z, s, t, u, v, p, c, tint.X, tint.Y, tint.Z, a, nx, ny, nz, fnx, fny, fnz, tu, tv, type) { }
+		public MapVertex(in float3 xyz,
+									in mat3 tbn,
+									float s, float t, float u, float v,
+									float p, float c,
+									in float3 tint, float a,
+									float tu, float tv, uint type)
+			: this(xyz.X, xyz.Y, xyz.Z,
+				  s, t, u, v,
+				  p, c,
+				  tint.X, tint.Y, tint.Z, a,
+				  tbn.Column0.x, tbn.Column0.y, tbn.Column0.z,
+				  tbn.Column1.x, tbn.Column1.y, tbn.Column1.z,
+				  tbn.Column2.x, tbn.Column2.y, tbn.Column2.z,
+				  tu, tv, type) { }
 
 		public MapVertex(float x, float y, float z,
-			float s, float t, float u, float v,
-			float p, float c,
-			float r, float g, float b, float a,
-			float nx, float ny, float nz,
-			float fnx, float fny, float fnz,
-			float tu, float tv, uint type)
+									float s, float t, float u, float v,
+									float p, float c,
+									in float3 tint, float a,
+									float tx, float ty, float tz,
+									float bx, float by, float bz,
+									float nx, float ny, float nz,
+									float tu, float tv, uint type)
+			: this(x, y, z,
+				  s, t, u, v,
+				  p, c,
+				  tint.X, tint.Y, tint.Z, a,
+				  tx, ty, tz,
+				  bx, by, bz,
+				  nx, ny, nz,
+				  tu, tv, type) { }
+
+		public MapVertex(float x, float y, float z,
+									float s, float t, float u, float v,
+									float p, float c,
+									float r, float g, float b, float a,
+									float tx, float ty, float tz,
+									float bx, float by, float bz,
+									float nx, float ny, float nz,
+									float tu, float tv, uint type)
 		{
 			X = x; Y = y; Z = z;
 			S = s; T = t;
 			U = u; V = v;
 			P = p; C = c;
 			R = r; G = g; B = b; A = a;
+			TX = tx; TY = ty; TZ = tz;
+			BX = bx; BY = by; BZ = bz;
 			NX = nx; NY = ny; NZ = nz;
-			FNX = fnx; FNY = fny; FNZ = fnz;
 			TU = tu; TV = tv;
 			DrawType = type;
+		}
+
+		public MapVertex ChangePal(float p)
+		{
+			return new MapVertex(X, Y, Z,
+				S, T, U, V,
+				p, C,
+				R, G, B, A,
+				TX, TY, TZ,
+				BX, BY, BZ,
+				NX, NY, NZ,
+				TU, TV,
+				DrawType);
 		}
 	};
 }

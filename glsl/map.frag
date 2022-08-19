@@ -16,6 +16,7 @@ uniform sampler2D WaterNormal;
 uniform sampler2D GrassNormal;
 
 uniform sampler2D Caustics;
+
 uniform float WaterUVOffset;
 uniform float GrassUVOffset;
 
@@ -36,7 +37,6 @@ in vec4 vColor;
 in vec4 vTexCoord;
 in vec2 vTexMetadata;
 in vec4 vChannelMask;
-in vec4 vDepthMask;
 in vec2 vTexSampler;
 in vec2 vTileTexCoord;
 
@@ -46,8 +46,15 @@ in vec4 vPalettedFraction;
 in vec4 vTint;
 in vec3 vNormal;
 in vec3 vFragPos;
+in float vSunLight;
+
+in vec3 tSunDirection;
+in vec3 tFragPos;
+in vec3 tViewPos;
+in vec3 tNormal;
+
 flat in int mDrawType;
-in vec4 vNormalQuat;
+
 
 out vec4 fragColor;
 
@@ -59,7 +66,6 @@ struct DirLight {
 };
 
 uniform DirLight dirLight;
-uniform vec3 viewPos;
 
 uniform sampler2D ShadowDepthTexture;
 uniform mat4 SunVP;
@@ -67,42 +73,17 @@ uniform mat4 InvCameraVP;
 uniform float ShadowBias;
 uniform float AmbientIntencity;
 uniform vec2 ViewPort;
+uniform vec3 viewPos;
 
-vec3 RotNormal(vec4 quat, vec3 vec)
-{
-	float num = quat.x * 2.0;
-	float num2 = quat.y * 2.0;
-	float num3 = quat.z * 2.0;
-	float num4 = quat.x * num;
-	float num5 = quat.y * num2;
-	float num6 = quat.z * num3;
-	float num7 = quat.x * num2;
-	float num8 = quat.x * num3;
-	float num9 = quat.y * num3;
-	float num10 = quat.w * num;
-	float num11 = quat.w * num2;
-	float num12 = quat.w * num3;
-
-	vec3 result;
-	result.x = (1.0 - (num5 + num6)) * vec.x + (num7 - num12) * vec.y + (num8 + num11) * vec.z;
-	result.y = (num7 + num12) * vec.x + (1.0 - (num4 + num6)) * vec.y + (num9 - num10) * vec.z;
-	result.z = (num8 - num11) * vec.x + (num9 + num10) * vec.y + (1.0 - (num4 + num5)) * vec.z;
-
-	return result;
-}
-
-float CalShadow(DirLight light, vec3 normal){
-	vec4 FragPos = InvCameraVP * vec4(gl_FragCoord.x/ViewPort.x * 2.0 - 1.0, gl_FragCoord.y/ViewPort.y * 2.0 - 1.0, gl_FragCoord.z * 2.0 - 1.0, 1.0);
-	FragPos = FragPos / FragPos.w;
-	
-	vec4 fragPosLightSpace = SunVP * FragPos;
+float CalShadow(){
+	vec4 fragPosLightSpace = SunVP * vec4(vFragPos, 1.0);
 	vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
 	projCoords = projCoords * 0.5f + 0.5f;
 	float currentDepth = projCoords.z;
 
 	float shadow = 0.0f;
-	// float bias = ShadowBias * 0.025f;
-	float bias = ShadowBias * max(0.02 * (1.0 - dot(normal, light.direction)), 0.0005);
+	float bias = ShadowBias * 0.025f;
+	// float bias = ShadowBias * max(0.02 * (1.0 - dot(vNormal, light.direction)), 0.0005);
 
 	if(projCoords.z <= 1.0f)
 	{
@@ -122,26 +103,23 @@ float CalShadow(DirLight light, vec3 normal){
 }
 
 
-vec4 CalcDirLight(DirLight light, vec3 normal, vec3 viewDir, vec4 color)
+vec4 CalcDirLight(DirLight light, vec4 color)
 {
-	vec3 lightDir = normalize(-light.direction);
+	vec3 normal = tNormal;
+	vec3 viewDir = normalize(tViewPos - tFragPos);
+	vec3 lightDir = normalize(-tSunDirection);
 
-	vec3 specular;
+	vec3 specular = vec3(0.0);
 
 	// water pix
 	if (mDrawType == 2 && color.b > color.r)
 	{
 		vec2 uv = vTileTexCoord + vec2(0.0, WaterUVOffset);
-		normal = texture(WaterNormal, uv).rgb;
-		normal = normalize(normal * 2.0 - 1.0); 
-
-		// rotate normal map's normal to vertex normal space
-		// useless, water vertex normal always vec(0,0,1)
-		// normal = RotNormal(vNormalQuat, normal);
+		normal = normalize(texture(WaterNormal, uv).rgb * 2.0 - 1.0);
 
 		vec4 water = texture(Caustics, uv);
 		water *= 2.0;
-		// color = (water + (water - color) * max(color.r/color.b*2.0, 0.3));
+
 		color *= (water + (vec4(1.0) - water) * max(color.r/color.b, 0.5));
 
 		vec3 reflectDir = reflect(-lightDir, normal);
@@ -150,14 +128,10 @@ vec4 CalcDirLight(DirLight light, vec3 normal, vec3 viewDir, vec4 color)
 	}
 	// grass pix
 	else if (mDrawType == 3 && color.g > color.r && color.g > color.b)
+	// else if (mDrawType != 99)
 	{
 		vec2 uv = vTileTexCoord + vec2(0.0, GrassUVOffset);
-		normal = texture(GrassNormal, uv).rgb;
-		normal = normalize(normal * 2.0 - 1.0);
-
-		// rotate normal map's normal to vertex normal space
-		// vertex normal always vec(0,0,1), might not necessary
-		normal = RotNormal(vNormalQuat, normal);
+		normal = normalize(texture(GrassNormal, uv).rgb * 2.0 - 1.0);
 
 		vec3 reflectDir = reflect(-lightDir, normal);
 		float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32.0);
@@ -169,15 +143,15 @@ vec4 CalcDirLight(DirLight light, vec3 normal, vec3 viewDir, vec4 color)
 
 	// merge
 	vec3 ambient  = light.ambient;
-	vec3 diffuse  = light.diffuse * (diff - 0.5) * 2.0;
+	vec3 diffuse  = light.diffuse * diff;
 
 	ambient = ambient * color.rgb;
 	diffuse = diffuse * color.rgb;
-	
+	float shadow = 1.0 - max(CalShadow(), 0.0);
 	// diffuse = diffuse * (1.0f - max(CalShadow(light, normal) - AmbientIntencity, 0.0f));
-	diffuse = diffuse * (1.0f - max(CalShadow(light, normal), 0.0f));
+	// diffuse = diffuse * (1.0 - max(CalShadow(), 0.0));
 
-	return vec4((ambient + diffuse * 1.5 + specular + vTint.rgb), color.a);
+	return vec4((ambient * vSunLight + diffuse * shadow  + specular) * vTint.rgb, color.a);
 }
 
 
@@ -369,8 +343,6 @@ void main()
 	}
 
 	vec2 coords = vTexCoord.st;
-	// if (!RenderShroud)
-	// 	coords *= 2.0;
 
 	vec4 c;
 	if (AntialiasPixelsPerTexel > 0.0)
@@ -405,17 +377,9 @@ void main()
 	if (c.a == 0.0 && vTint.a > 0.0)
 		discard;
 
+
 	if (vRGBAFraction.r > 0.0 && vTexMetadata.s > 0.0)
 		c = ColorShift(c, vTexMetadata.s);
-
-	// float depth = gl_FragCoord.z;
-	// if (length(vDepthMask) > 0.0)
-	// {
-	// 	vec4 y = Sample(vTexSampler.t, vTexCoord.pq);
-	// 	depth = depth + DepthTextureScale * dot(y, vDepthMask);
-	// }
-
-	// gl_FragDepth = depth;
 
 	if (EnableDepthPreview)
 	{
@@ -429,18 +393,10 @@ void main()
 	else
 	{
 		if (!RenderShroud){
-			vec3 viewDir = normalize(viewPos - vFragPos);
-			c = CalcDirLight(dirLight, vNormal, viewDir, c);
-
-			// if (vTint.a < 0.0)
-			// 	c = vec4(vTint.rgb, -vTint.a);
-			// else if (vTint.a >= 0.0)
-			// 	c = c * (vTint * 2.0 + vec4(1.0)) * 0.5f;
-
-			// c = vec4(c.rgb * (1.0f - max(CalShadow(dirLight) - AmbientIntencity, 0.0f)), c.a);
-
-			// A negative tint alpha indicates that the tint should replace the colour instead of multiplying it
+			if (vTint.a < 0.0)
+				c = vec4(vTint.rgb, -vTint.a);
 			
+			c = CalcDirLight(dirLight, c);
 		}
 
 		#if __VERSION__ == 120

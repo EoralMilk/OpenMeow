@@ -22,7 +22,7 @@ namespace OpenRA.Mods.Common.Traits
 	public class TerrainLightingInfo : TraitInfo, ILobbyCustomRulesIgnore
 	{
 		public readonly float Intensity = 1;
-		public readonly float AmbientIntensity = 0.45f;
+		public readonly float AmbientIntensity = 0.35f;
 		public readonly float HeightStep = 0;
 		public readonly float RedTint = 1;
 		public readonly float GreenTint = 1;
@@ -150,10 +150,18 @@ namespace OpenRA.Mods.Common.Traits
 		}
 
 		const int MaxLightCount = 64;
+		bool firstRender = true;
+		float heightStep = 0;
 		public void LightSourcesToMapShader(WPos tl, WPos br, IShader shader)
 		{
+			if (firstRender)
+			{
+				heightStep = (info.Intensity / info.AmbientIntensity) * info.HeightStep * Game.Renderer.World3DRenderer.WPosPerMeter / MapGrid.MapHeightStep;
+			}
+
 			int i = 0;
 			int n = 0;
+			firstRender = false;
 
 			float[] posArray = new float[3 * MaxLightCount];
 			float[] colorRangeArray = new float[4 * MaxLightCount];
@@ -179,6 +187,7 @@ namespace OpenRA.Mods.Common.Traits
 
 			shader.SetVecArray("TerrainLightPos", posArray, 3, MaxLightCount);
 			shader.SetVecArray("TerrainLightColorRange", colorRangeArray, 4, MaxLightCount);
+			shader.SetFloat("TerrainLightHeightStep", heightStep);
 		}
 
 		public float GetGlobalAmbientIntencity()

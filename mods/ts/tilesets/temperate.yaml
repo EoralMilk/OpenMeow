@@ -10293,9 +10293,9 @@ Templates:
 				ZOffset: -12
 				ZRamp: 0
 	Template@388:
-		Categories: droads23.tem, droads24.tem #Dirt Road Slopes
+		Categories: Dirt Road Slopes
 		Id: 388
-		Images: drslpe02.tem
+		Images: droads23.tem, droads24.tem #drslpe02.tem
 		Size: 1, 2
 		Tiles:
 			0: DirtRoad

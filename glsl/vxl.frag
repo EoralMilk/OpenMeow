@@ -27,6 +27,8 @@ in mat4 inverseViewProjection;
 in vec2 VplInfo;
 in vec4 vTint;
 in vec3 vLightModify;
+in vec3 vFragPos;
+
 out vec4 fragColor;
 // #endif
 
@@ -49,10 +51,11 @@ uniform float AmbientIntencity;
 uniform vec2 ViewPort;
 
 float CalShadow(DirLight light){
-	vec4 FragPos = InvCameraVP * vec4(gl_FragCoord.x/ViewPort.x * 2.0 - 1.0, gl_FragCoord.y/ViewPort.y * 2.0 - 1.0, gl_FragCoord.z * 2.0 - 1.0, 1.0);
-	FragPos = FragPos / FragPos.w;
+	// vec4 FragPos = InvCameraVP * vec4(gl_FragCoord.x/ViewPort.x * 2.0 - 1.0, gl_FragCoord.y/ViewPort.y * 2.0 - 1.0, gl_FragCoord.z * 2.0 - 1.0, 1.0);
+	// FragPos = FragPos / FragPos.w;
 	
-	vec4 fragPosLightSpace = SunVP * FragPos;
+	vec4 fragPosLightSpace = SunVP * vec4(vFragPos, 1.0);
+
 	vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
 	projCoords = projCoords * 0.5f + 0.5f;
 	float currentDepth = projCoords.z;

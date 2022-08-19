@@ -1,7 +1,9 @@
 overlay:
 	Defaults: place
 		Offset: 0, -12, 1
+		ZOffset: 20
 		ZRamp: 1
+		MeshType: Plane
 	build-valid-snow:
 	build-valid-temperate:
 	build-invalid:
@@ -11,7 +13,9 @@ overlay:
 editor-overlay:
 	Defaults: place
 		Offset: 0, -12, 1
+		ZOffset: 20
 		ZRamp: 1
+		MeshType: Plane
 	copy:
 	paste:
 		Start: 1

@@ -88,11 +88,6 @@ namespace OpenRA.Graphics
 			renderer.Context.SetBlendMode(BlendMode.None);
 		}
 
-		public void SetAntialiasingPixelsPerTexel(float pxPerTx)
-		{
-			shader.SetVec("AntialiasPixelsPerTexel", pxPerTx);
-		}
-
 		public void SetScreenLight(Color color)
 		{
 			ScreenTint = color;

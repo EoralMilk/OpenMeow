@@ -55,6 +55,12 @@ namespace OpenRA
 		Size worldBufferSize;
 		IFrameBuffer worldBuffer;
 		ITexture worldTexture;
+		public ITexture WorldTexture { get
+			{
+				return worldTexture;
+			}
+		}
+
 		ITexture worldDepthTexture;
 		IFrameBuffer worldShadowBuffer;
 		ITexture worldShadowDepthTexture;
@@ -396,10 +402,10 @@ namespace OpenRA
 				Flush();
 				worldBuffer.Unbind();
 
-				ScreenRenderer.SetAntialiasingPixelsPerTexel(Window.SurfaceSize.Height * 1f / worldTexture.Size.Height);
+				//ScreenRenderer.SetAntialiasingPixelsPerTexel(Window.SurfaceSize.Height * 1f / worldTexture.Size.Height);
 				//ScreenRenderer.SetShadowParams(worldShadowDepthTexture, worldDepthTexture, World3DRenderer);
 				ScreenRenderer.DrawScreen(worldTexture);
-				ScreenRenderer.SetAntialiasingPixelsPerTexel(0);
+				//ScreenRenderer.SetAntialiasingPixelsPerTexel(0);
 			}
 		}
 
@@ -438,7 +444,6 @@ namespace OpenRA
 			WorldVxlRenderer.SetPalette(currentPaletteTexture);
 		}
 
-		// 最后把ui画出来好吗，画在最顶上
 		public void EndFrame(IInputHandler inputHandler)
 		{
 			if (renderType != RenderType.UI)

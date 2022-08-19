@@ -51,7 +51,7 @@ namespace OpenRA.Graphics
 		public void SetTextures(World world)
 		{
 			Shader.SetFloat("WaterUVOffset", (float)(Game.LocalTick % 400) / 400);
-			Shader.SetFloat("GrassUVOffset", (float)(Game.LocalTick % 1433) / 1433);
+			Shader.SetFloat("GrassUVOffset", (MathF.Sin((float)Game.LocalTick / 6) + 1) / 177);
 
 			foreach (var kv in world.MapTextureCache.Textures)
 			{
