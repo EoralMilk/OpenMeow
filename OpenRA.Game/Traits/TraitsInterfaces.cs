@@ -400,7 +400,10 @@ namespace OpenRA.Traits
 	}
 
 	[RequireExplicitImplementation]
-	public interface IRenderOverlay { void Render(WorldRenderer wr); }
+	public interface IRenderOverlay {
+		void Render(WorldRenderer wr);
+		void ModifyTerrainRender(WorldRenderer wr);
+	}
 
 	[RequireExplicitImplementation]
 	public interface INotifyBecomingIdle { void OnBecomingIdle(Actor self); }
@@ -413,8 +416,8 @@ namespace OpenRA.Traits
 
 	[RequireExplicitImplementation]
 	public interface IRenderTerrain {
-		void RenderTerrainEarly(WorldRenderer wr, Viewport viewport);
 		void RenderTerrain(WorldRenderer wr, Viewport viewport);
+		void ModifyCellTint(in CPos cell, in float3 color);
 	}
 
 	[RequireExplicitImplementation]

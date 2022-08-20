@@ -179,8 +179,7 @@ namespace OpenRA.Mods.Common.Traits
 
 					foreach (var a in Info.ActorTypes)
 					{
-						Console.WriteLine(self.Info.Name + self.ActorID + " death dudesValue: " + dudesValue);
-
+						// Console.WriteLine(self.Info.Name + self.ActorID + " death dudesValue: " + dudesValue);
 						var ac = self.World.Map.Rules.Actors[a].TraitInfoOrDefault<ValuedInfo>();
 						var at = ac?.Cost ?? 0;
 						if ((Info.SpawnCountCalculateAsValue && at > dudesValue) || self.World.SharedRandom.Next(0, 100) > Info.Probability)
@@ -199,7 +198,7 @@ namespace OpenRA.Mods.Common.Traits
 						w.CreateActor(huskActor ?? a, td);
 						td.Remove(locinit);
 						td.Remove(posinit);
-						Console.WriteLine(self.Info.Name + self.ActorID + " death spawn: " + a + " at " + loc + " posinit: " + pos);
+						// Console.WriteLine(self.Info.Name + self.ActorID + " death spawn: " + a + " at " + loc + " posinit: " + pos);
 
 					}
 				}

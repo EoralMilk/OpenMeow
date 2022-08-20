@@ -80,6 +80,8 @@ namespace OpenRA.Mods.Common.Traits
 
 		void IWorldLoaded.WorldLoaded(World world, WorldRenderer wr)
 		{
+			colorModify = new CellLayer<float3>(map.Grid.Type, new Size(map.MapSize.X, map.MapSize.Y));
+
 			worldRenderer = wr;
 			spriteLayer = new TerrainSpriteLayer(world, wr, tileCache.MissingTile, BlendMode.Alpha, world.Type != WorldType.Editor);
 			foreach (var cell in map.AllCells)
@@ -98,18 +100,35 @@ namespace OpenRA.Mods.Common.Traits
 
 			var sprite = tileCache.TileSprite(tile);
 			var paletteReference = worldRenderer.Palette(palette);
-			spriteLayer.Update(cell, sprite, paletteReference);
+			WPos wPos = WPos.Zero;
+			if (sprite != null)
+			{
+				wPos = map.CenterOfCell(cell) - new WVec(0, 0, map.Grid.Ramps[map.Ramp[cell]].CenterHeightOffset);
+			}
+
+			var uv = cell.ToMPos(map.Grid.Type);
+			spriteLayer.Update(uv, sprite, paletteReference, wPos, 1, 1, false);
+			spriteLayer.ModifyTint(uv, colorModify[uv]);
 		}
 
-		void IRenderTerrain.RenderTerrainEarly(WorldRenderer wr, Viewport viewport)
+		CellLayer<float3> colorModify;
+		void IRenderTerrain.ModifyCellTint(in CPos cell, in float3 color)
 		{
-			spriteLayer.Draw(wr.Viewport);
+			var uv = cell.ToMPos(map.Grid.Type);
+
+			if (colorModify[uv] == color)
+				return;
+			colorModify[uv] = color;
+			spriteLayer.ModifyTint(uv, colorModify[uv]);
 		}
 
 		void IRenderTerrain.RenderTerrain(WorldRenderer wr, Viewport viewport)
 		{
-			//spriteLayer.DrawAgain();
-			spriteLayer.Draw(wr.Viewport);
+			foreach (var r in wr.World.WorldActor.TraitsImplementing<IRenderOverlay>())
+				r.ModifyTerrainRender(wr);
+
+			spriteLayer.LightShader(wr.Viewport);
+			spriteLayer.Draw(wr.Viewport, false);
 
 			foreach (var r in wr.World.WorldActor.TraitsImplementing<IRenderOverlay>())
 				r.Render(wr);

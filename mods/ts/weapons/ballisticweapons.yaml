@@ -22,7 +22,7 @@
 		TrailDelay: 0
 		TrailInterval: 1
 		Speed: 800
-		Inaccuracy: 300
+		Inaccuracy: 450
 		UseVerticalInaccuracy: true
 		OnlyHitToExplode: true
 		ExplodeUnderThisAltitude: -418
@@ -32,16 +32,16 @@
 		Falloff: 100, 50, 25, 12, 6, 3, 0
 		Damage: 4800
 		Versus:
-			None: 25
+			None: 50
 			Wood: 65
 			Light: 75
 			Heavy: 100
 			Concrete: 60
-		DamageTypes: Prone50Percent, TriggerProne, SmallExplosionDeath
+		DamageTypes: Prone70Percent, TriggerProne, SmallExplosionDeath
 	Warhead@2Eff: CreateEffect
 		Explosions: medium_clsn
 		ImpactSounds: expnew14.aud
-		ValidTargets: Ground, Air
+		ValidTargets: Ground, Air, Trees
 	Warhead@3EffWater: CreateEffect
 		Explosions: small_watersplash
 		ExplosionPalette: player
@@ -66,6 +66,7 @@
 		ContrailWidth: 0c96
 		Blockable: false
 		LaunchAngle: 0
+		Inaccuracy: 340
 	Warhead@1Dam: SpreadDamage
 		Damage: 9000
 

@@ -374,7 +374,7 @@ void main()
 	}
 
 	// Discard any transparent fragments (both color and depth)
-	if (c.a == 0.0 && vTint.a > 0.0)
+	if (c.a == 0.0)
 		discard;
 
 
@@ -393,10 +393,11 @@ void main()
 	else
 	{
 		if (!RenderShroud){
+			// a < 0 is ignoreTint
 			if (vTint.a < 0.0)
-				c = vec4(vTint.rgb, -vTint.a);
-			
-			c = CalcDirLight(dirLight, c);
+				c = vec4(c.rgb * vSunLight, c.a);
+			else
+				c = CalcDirLight(dirLight, c);
 		}
 
 		#if __VERSION__ == 120

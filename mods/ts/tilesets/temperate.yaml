@@ -18,6 +18,7 @@ Terrain:
 		RestrictPlayerColor: true
 	TerrainType@Road:
 		Type: Road
+		AcceptsSmudgeType: SmallScorch, MediumScorch, LargeScorch
 		Color: 745537
 		TargetTypes: Ground
 	TerrainType@Bridge:
@@ -26,6 +27,7 @@ Terrain:
 		TargetTypes: Ground
 	TerrainType@Rail:
 		Type: Rail
+		AcceptsSmudgeType: SmallScorch, MediumScorch, LargeScorch
 		Color: 745537
 		TargetTypes: Ground
 	TerrainType@Impassable:
@@ -39,10 +41,12 @@ Terrain:
 		RestrictPlayerColor: true
 	TerrainType@DirtRoad:
 		Type: DirtRoad
+		AcceptsSmudgeType: SmallCrater, MediumCrater, LargeCrater, SmallScorch, MediumScorch, LargeScorch
 		Color: 745537
 		TargetTypes: Ground
 	TerrainType@Rough:
 		Type: Rough
+		AcceptsSmudgeType: SmallCrater, MediumCrater, LargeCrater, SmallScorch, MediumScorch, LargeScorch
 		Color: 745537
 		TargetTypes: Ground
 	TerrainType@Cliff:

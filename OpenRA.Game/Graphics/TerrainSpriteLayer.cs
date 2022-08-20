@@ -43,6 +43,7 @@ namespace OpenRA.Graphics
 		readonly Map map;
 
 		readonly PaletteReference[] palettes;
+		readonly MapVertex noVertex;
 
 		public TerrainSpriteLayer(World world, WorldRenderer wr, Sprite emptySprite, BlendMode blendMode, bool restrictToBounds)
 		{
@@ -55,8 +56,10 @@ namespace OpenRA.Graphics
 			map = world.Map;
 
 			rowStride = Game.Renderer.MaxVerticesPerMesh * map.MapSize.X;
+			noVertex = new MapVertex(0);
 
 			vertices = new MapVertex[rowStride * map.MapSize.Y];
+
 			verticesColor = new float3[rowStride * map.MapSize.Y];
 
 			for (int i = 0; i < verticesColor.Length; i++)
@@ -111,19 +114,42 @@ namespace OpenRA.Graphics
 			Update(cell.ToMPos(map.Grid.Type), sprite, palette, wPos, scale, alpha, ignoreTint, zOffset, additional, false);
 		}
 
-		void UpdateTint(MPos uv)
+		readonly float[] weights = new float[]
+		{
+					1,
+					0f,
+					0f,
+					0f,
+					0f,
+		};
+
+		public void ModifyTint(MPos uv, float3 colorOffset)
 		{
 			var offset = rowStride * uv.V + Game.Renderer.MaxVerticesPerMesh * uv.U;
-			if (ignoreTint[offset])
+			for (var i = 0; i < Game.Renderer.MaxVerticesPerMesh; i++)
 			{
-				//for (var i = 0; i < Game.Renderer.MaxVerticesPerMesh; i++)
-				//{
-				//	var v = vertices[offset + i];
-				//	vertices[offset + i] = new MapVertex(v.X, v.Y, v.Z, v.S, v.T, v.U, v.V, v.P, v.C, v.A * float3.Ones, v.A, v.NX, v.NY, v.NZ, v.FNX, v.FNY, v.FNZ, v.TU, v.TV, v.DrawType);
-				//}
-
-				return;
+				var v = vertices[offset + i];
+				var color = verticesColor[offset + i];
+				vertices[offset + i] = new MapVertex(v.X, v.Y, v.Z, v.S, v.T, v.U, v.V, v.P, v.C, (weights[CornerVertexMap[i % 12]] * colorOffset), v.A, v.TX, v.TY, v.TZ, v.BX, v.BY, v.BZ, v.NX, v.NY, v.NZ, v.TU, v.TV, v.DrawType);
 			}
+
+			dirtyRows.Add(uv.V);
+		}
+
+		void UpdateTint(MPos uv)
+		{
+			return;
+			//var offset = rowStride * uv.V + Game.Renderer.MaxVerticesPerMesh * uv.U;
+			//if (ignoreTint[offset])
+			//{
+			//	for (var i = 0; i < Game.Renderer.MaxVerticesPerMesh; i++)
+			//	{
+			//		var v = vertices[offset + i];
+			//		vertices[offset + i] = new MapVertex(v.X, v.Y, v.Z, v.S, v.T, v.U, v.V, v.P, v.C, v.A * float3.Ones, v.A, v.NX, v.NY, v.NZ, v.FNX, v.FNY, v.FNZ, v.TU, v.TV, v.DrawType);
+			//	}
+
+			//	return;
+			//}
 
 			//// Allow the terrain tint to vary linearly across the cell to smooth out the staircase effect
 			//// This is done by sampling the lighting the corners of the sprite, even though those pixels are
@@ -164,7 +190,7 @@ namespace OpenRA.Graphics
 			//	}
 			//}
 
-			dirtyRows.Add(uv.V);
+			//dirtyRows.Add(uv.V);
 		}
 
 		int GetOrAddSheetIndex(Sheet sheet)
@@ -190,6 +216,25 @@ namespace OpenRA.Graphics
 		readonly float3 shroudColor = float3.Zero;
 		public void Update(MPos uv, Sprite sprite, PaletteReference palette, in WPos pos, float scale, float alpha, bool ignoreTint, int zOffset = -1, bool additional = false, bool shroud = false)
 		{
+			if (alpha == 0)
+			{
+				var nv = rowStride * uv.V + Game.Renderer.MaxVerticesPerMesh * uv.U;
+				vertices[nv] = noVertex;
+				vertices[nv + 1] = noVertex;
+				vertices[nv + 2] = noVertex;
+				vertices[nv + 3] = noVertex;
+				vertices[nv + 4] = noVertex;
+				vertices[nv + 5] = noVertex;
+				vertices[nv + 6] = noVertex;
+				vertices[nv + 7] = noVertex;
+				vertices[nv + 8] = noVertex;
+				vertices[nv + 9] = noVertex;
+				vertices[nv + 10] = noVertex;
+				vertices[nv + 11] = noVertex;
+				dirtyRows.Add(uv.V);
+				return;
+			}
+
 			int2 samplers;
 			if (sprite != null)
 			{
@@ -237,9 +282,9 @@ namespace OpenRA.Graphics
 			{
 				var viewOffset = Game.Renderer.World3DRenderer.InverseCameraFrontMeterPerWPos * (zOffset - 15);
 
-				var spriteMeshType = sprite.SpriteMeshType;
+				//var spriteMeshType = sprite.SpriteMeshType;
 
-				Util.FastCreateTilePlane(vertices, map.VertexTBN[cellinfo.M], pos, viewOffset, sprite, samplers, palette?.TextureIndex ?? 0, scale, alpha * float3.Ones, alpha, offset);
+				Util.FastCreateTilePlane(vertices, map.VertexTBN[cellinfo.M], pos, viewOffset, sprite, samplers, palette?.TextureIndex ?? 0, scale, float3.Zero, ignoreTint ? -alpha : alpha, offset);
 			}
 			else
 			{
@@ -256,13 +301,13 @@ namespace OpenRA.Graphics
 												map.VertexTBN[cellinfo.B],
 												map.VertexTBN[cellinfo.L],
 												map.VertexTBN[cellinfo.R],
-												shroudColor,
-												shroudColor,
-												shroudColor,
-												shroudColor,
-												shroudColor,
+												float3.Zero,
+												float3.Zero,
+												float3.Zero,
+												float3.Zero,
+												float3.Zero,
 												cellinfo.Type,
-												sprite, samplers, palette?.TextureIndex ?? 0, scale, alpha * float3.Ones, alpha, offset, false);
+												sprite, samplers, palette?.TextureIndex ?? 0, scale, ignoreTint ? -alpha : alpha, offset, false);
 				}
 				else
 				{
@@ -277,13 +322,18 @@ namespace OpenRA.Graphics
 												map.VertexTBN[cellinfo.B],
 												map.VertexTBN[cellinfo.L],
 												map.VertexTBN[cellinfo.R],
-												map.VertexColors[cellinfo.M],
-												map.VertexColors[cellinfo.T],
-												map.VertexColors[cellinfo.B],
-												map.VertexColors[cellinfo.L],
-												map.VertexColors[cellinfo.R],
+												float3.Zero,
+												float3.Zero,
+												float3.Zero,
+												float3.Zero,
+												float3.Zero,
+												//map.VertexColors[cellinfo.M],
+												//map.VertexColors[cellinfo.T],
+												//map.VertexColors[cellinfo.B],
+												//map.VertexColors[cellinfo.L],
+												//map.VertexColors[cellinfo.R],
 												cellinfo.Type,
-												sprite, samplers, palette?.TextureIndex ?? 0, scale, alpha * float3.Ones, alpha, offset, true);
+												sprite, samplers, palette?.TextureIndex ?? 0, scale, ignoreTint ? -alpha : alpha, offset, true);
 				}
 			}
 
@@ -298,13 +348,22 @@ namespace OpenRA.Graphics
 			dirtyRows.Add(uv.V);
 		}
 
-		int firstRow, lastRow;
-		public void Draw(Viewport viewport)
+		public void LightShader(Viewport viewport)
 		{
 			var cells = restrictToBounds ? viewport.VisibleCellsInsideBounds : viewport.AllVisibleCells;
+
 			var tlcell = cells.CandidateMapCoords.TopLeft.ToCPos(map);
 			var brcell = cells.CandidateMapCoords.BottomRight.ToCPos(map);
 			worldRenderer.TerrainLighting.LightSourcesToMapShader(map.CenterOfCell(tlcell), map.CenterOfCell(brcell), Game.Renderer.MapRenderer.Shader);
+		}
+
+		int firstRow, lastRow;
+		public void Draw(Viewport viewport, bool stop = true)
+		{
+			//if (stop)
+			//	return;
+
+			var cells = restrictToBounds ? viewport.VisibleCellsInsideBounds : viewport.AllVisibleCells;
 
 			// Only draw the rows that are visible.
 			firstRow = cells.CandidateMapCoords.TopLeft.V.Clamp(0, map.MapSize.Y);
@@ -322,6 +381,8 @@ namespace OpenRA.Graphics
 				vertexBuffer.SetData(vertices, rowOffset, rowOffset, rowStride);
 			}
 
+			//if (stop)
+			//	return;
 			Game.Renderer.MapRenderer.DrawVertexBuffer(
 				vertexBuffer, rowStride * firstRow, rowStride * (lastRow - firstRow),
 				PrimitiveType.TriangleList, sheets, BlendMode);

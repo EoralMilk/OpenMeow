@@ -196,10 +196,12 @@ namespace OpenRA.Mods.Common.Traits
 			}
 		}
 
+		void IRenderOverlay.ModifyTerrainRender(WorldRenderer wr) { }
+
 		void IRenderOverlay.Render(WorldRenderer wr)
 		{
-			shadowLayer?.Draw(wr.Viewport);
-			spriteLayer.Draw(wr.Viewport);
+			shadowLayer?.Draw(wr.Viewport, false);
+			spriteLayer.Draw(wr.Viewport, false);
 		}
 
 		void ITickRender.TickRender(WorldRenderer wr, Actor self)

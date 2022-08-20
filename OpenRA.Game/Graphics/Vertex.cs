@@ -86,6 +86,20 @@ namespace OpenRA.Graphics
 
 		public readonly uint DrawType;
 
+		public MapVertex(int v)
+		{
+			X = 0; Y = 0; Z = 0;
+			S = 0; T = 0;
+			U = 0; V = 0;
+			P = 0; C = 0;
+			R = 0; G = 0; B = 0; A = 0;
+			TX = 0; TY = 0; TZ = 0;
+			BX = 0; BY = 0; BZ = 0;
+			NX = 0; NY = 0; NZ = 0;
+			TU = 0; TV = 0;
+			DrawType = 0;
+		}
+
 		public MapVertex(in float3 xyz,
 									in mat3 tbn,
 									float s, float t, float u, float v,

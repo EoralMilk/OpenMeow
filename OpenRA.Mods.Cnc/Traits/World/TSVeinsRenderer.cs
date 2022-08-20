@@ -161,6 +161,8 @@ namespace OpenRA.Mods.Cnc.Traits
 		PaletteReference veinPalette;
 		TerrainSpriteLayer spriteLayer;
 
+		int count = 0;
+
 		public TSVeinsRenderer(Actor self, TSVeinsRendererInfo info)
 		{
 			this.info = info;
@@ -230,13 +232,19 @@ namespace OpenRA.Mods.Cnc.Traits
 			}
 		}
 
+		void IRenderOverlay.ModifyTerrainRender(WorldRenderer wr) { }
+
 		void IRenderOverlay.Render(WorldRenderer wr)
 		{
-			spriteLayer.Draw(wr.Viewport);
+			// light
+			//if (count != 0)
+
+			spriteLayer.Draw(wr.Viewport, false);
 		}
 
 		void ITickRender.TickRender(WorldRenderer wr, Actor self)
 		{
+			count = 0;
 			foreach (var cell in dirty)
 			{
 				if (!resourceLayer.IsVisible(cell))
@@ -295,6 +303,7 @@ namespace OpenRA.Mods.Cnc.Traits
 
 			foreach (var c in Common.Util.ExpandFootprint(cell, false))
 				UpdateBorderSprite(c);
+			count++;
 		}
 
 		void UpdateBorderSprite(CPos cell)

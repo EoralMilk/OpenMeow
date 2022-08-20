@@ -156,22 +156,29 @@ void main()
 	vPalettedFraction = SelectPalettedFraction(attrib.s);
 	vTexSampler = attrib.pq;
 
-	vec3 tint = vec3(0.0);
-	for (int i = 0; i < MAX_TERRAIN_LIGHT; ++i){
-		if (TerrainLightPos[i].xy == vec2(0.0))
-			break;
-		float dist = length(aVertexPosition.xy - TerrainLightPos[i].xy);
-		if (dist > TerrainLightColorRange[i].a)
-			continue;
-		float falloff = (TerrainLightColorRange[i].a - dist) / TerrainLightColorRange[i].a;
-		tint += falloff * TerrainLightColorRange[i].rgb;
+	// ignoreTint
+	if (aVertexTint.a < 0.0){
+		vTint = aVertexTint;
+	}
+	else{
+		vec3 tint = vec3(0.0);
+
+		for (int i = 0; i < MAX_TERRAIN_LIGHT; ++i)
+		{
+			if (TerrainLightPos[i].xy == vec2(0.0))
+				break;
+			float dist = length(aVertexPosition.xy - TerrainLightPos[i].xy);
+			if (dist > TerrainLightColorRange[i].a)
+				continue;
+			float falloff = (TerrainLightColorRange[i].a - dist) / TerrainLightColorRange[i].a;
+			tint += falloff * TerrainLightColorRange[i].rgb;
+		}
+		vTint = vec4(tint * 4.0 + vec3(1.0) + aVertexTint.rgb, aVertexTint.a);
+
 	}
 
 	// HeightStep
 	vSunLight = 1.0 + aVertexPosition.z * TerrainLightHeightStep;
-
-	// vTint = aVertexTint;
-	vTint = vec4(tint * 4.0 + vec3(1.0), aVertexTint.a);
 
 	vNormal = aVertexNormal;
 	vFragPos = aVertexPosition.xyz;

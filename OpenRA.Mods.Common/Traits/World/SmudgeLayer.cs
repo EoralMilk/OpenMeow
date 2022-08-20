@@ -161,6 +161,7 @@ namespace OpenRA.Mods.Common.Traits
 				// No smudge; create a new one
 				var st = smudges.Keys.Random(Game.CosmeticRandom);
 				dirty[loc] = new Smudge { Type = st, Depth = 0, Sequence = smudges[st] };
+
 			}
 			else
 			{
@@ -204,7 +205,7 @@ namespace OpenRA.Mods.Common.Traits
 					{
 						var smudge = kv.Value;
 						tiles[kv.Key] = smudge;
-						render.Update(kv.Key, smudge.Sequence, paletteReference, smudge.Depth, true);
+						//render.Update(kv.Key, smudge.Sequence, paletteReference, smudge.Depth, true);
 					}
 
 					remove.Add(kv.Key);
@@ -215,9 +216,21 @@ namespace OpenRA.Mods.Common.Traits
 				dirty.Remove(r);
 		}
 
+		readonly float3 dark = new float3(-0.5f, -0.5f, -0.5f);
+
+		void IRenderOverlay.ModifyTerrainRender(WorldRenderer wr) {
+			foreach (var kv in tiles)
+			{
+				if (kv.Value.Sequence == null)
+					wr.TerrainRenderer.ModifyCellTint(kv.Key, float3.Zero);
+				else
+					wr.TerrainRenderer.ModifyCellTint(kv.Key, dark);
+			}
+		}
+
 		void IRenderOverlay.Render(WorldRenderer wr)
 		{
-			render.Draw(wr.Viewport);
+			//render.Draw(wr.Viewport, false);
 		}
 
 		void INotifyActorDisposing.Disposing(Actor self)

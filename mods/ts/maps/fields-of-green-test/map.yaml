@@ -1469,10 +1469,6 @@ Actors:
 		Owner: Multi0
 		Facing: 384
 		Location: 40,20
-	Actor463: mmch
-		Owner: Multi0
-		Facing: 384
-		Location: 39,16
 	Actor464: gacnst
 		Owner: Multi0
 		Location: 20,6

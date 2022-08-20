@@ -311,9 +311,10 @@ namespace OpenRA.Mods.Common.Traits
 
 		void IRenderShroud.RenderShroud(WorldRenderer wr)
 		{
+			// middle
 			UpdateShroud(map.ProjectedCells);
-			fogLayer.Draw(wr.Viewport);
-			shroudLayer.Draw(wr.Viewport);
+			fogLayer.Draw(wr.Viewport, false);
+			shroudLayer.Draw(wr.Viewport, false);
 		}
 
 		void UpdateShroudCell(MPos uv)

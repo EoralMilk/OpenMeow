@@ -515,6 +515,7 @@ smallscorches:
 		Offset: 0, -12, 1
 		ZRamp: 1
 		MeshType: Plane
+		ZOffset: 10
 	sc1: burnt01
 	sc2: burnt02
 	sc3: burnt03
@@ -528,6 +529,7 @@ mediumscorches:
 		Offset: 0, -18, 1
 		ZRamp: 1
 		MeshType: Plane
+		ZOffset: 10
 	sc7: burnt07
 	sc8: burnt08
 	sc9: burnt09
@@ -539,6 +541,7 @@ largescorches:
 		Offset: 0, -24, 1
 		ZRamp: 1
 		MeshType: Plane
+		ZOffset: 10
 	sc11: burnt11
 	sc12: burnt12
 
@@ -548,6 +551,7 @@ smallcraters:
 		Offset: 0, -12, 1
 		ZRamp: 1
 		MeshType: Plane
+		ZOffset: 10
 	cr1: crater01
 	cr2: crater02
 	cr3: crater03
@@ -561,6 +565,7 @@ mediumcraters:
 		Offset: 0, -12, 1
 		ZRamp: 1
 		MeshType: Plane
+		ZOffset: 10
 	cr7: crater07
 	cr8: crater08
 	cr9: crater09
@@ -572,6 +577,7 @@ largecraters:
 		Offset: 0, -24, 1
 		ZRamp: 1
 		MeshType: Plane
+		ZOffset: 10
 	cr11: crater11
 	cr12: crater12
 
