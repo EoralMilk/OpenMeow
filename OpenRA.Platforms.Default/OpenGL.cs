@@ -16,6 +16,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using System.Text;
 using SDL2;
+using static OpenRA.Platforms.Default.OpenGL;
 
 namespace OpenRA.Platforms.Default
 {
@@ -144,6 +145,8 @@ namespace OpenRA.Platforms.Default
 		public const int GL_BGRA = 0x80E1;
 		public const int GL_RGBA8 = 0x8058;
 		public const int GL_CLAMP_TO_EDGE = 0x812F;
+		public const int GL_REPEAT = 0x2901;
+
 		public const int GL_TEXTURE_BASE_LEVEL = 0x813C;
 		public const int GL_TEXTURE_MAX_LEVEL = 0x813D;
 
@@ -364,6 +367,9 @@ namespace OpenRA.Platforms.Default
 		public delegate void Uniform3f(int location, float v0, float v1, float v2);
 		public static Uniform3f glUniform3f { get; private set; }
 
+		public delegate void Uniform4f(int location, float v0, float v1, float v2, float v3);
+		public static Uniform4f glUniform4f { get; private set; }
+
 		public delegate void Uniform1fv(int location, int count, IntPtr value);
 		public static Uniform1fv glUniform1fv { get; private set; }
 
@@ -503,6 +509,9 @@ namespace OpenRA.Platforms.Default
 		public delegate void TexParameterf(int target, int pname, float param);
 		public static TexParameterf glTexParameterf { get; private set; }
 
+		public delegate void GenerateMipmap(int target);
+		public static GenerateMipmap glGenerateMipmap { get; private set; }
+
 		public delegate void GenFramebuffers(int n, out uint framebuffers);
 		public static GenFramebuffers glGenFramebuffers { get; private set; }
 
@@ -630,6 +639,7 @@ namespace OpenRA.Platforms.Default
 				glUniform1f = Bind<Uniform1f>("glUniform1f");
 				glUniform2f = Bind<Uniform2f>("glUniform2f");
 				glUniform3f = Bind<Uniform3f>("glUniform3f");
+				glUniform4f = Bind<Uniform4f>("glUniform4f");
 				glUniform1fv = Bind<Uniform1fv>("glUniform1fv");
 				glUniform2fv = Bind<Uniform2fv>("glUniform2fv");
 				glUniform3fv = Bind<Uniform3fv>("glUniform3fv");
@@ -669,6 +679,7 @@ namespace OpenRA.Platforms.Default
 				glTexImage2D = Bind<TexImage2D>("glTexImage2D");
 				glTexParameteri = Bind<TexParameteri>("glTexParameteri");
 				glTexParameterf = Bind<TexParameterf>("glTexParameterf");
+				glGenerateMipmap = Bind<GenerateMipmap>("glGenerateMipmap");
 
 				if (Profile != GLProfile.Legacy)
 				{

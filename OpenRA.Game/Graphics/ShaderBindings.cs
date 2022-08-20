@@ -80,4 +80,64 @@ namespace OpenRA.Graphics
 		{
 		}
 	}
+
+	public class MapShaderBindings : IShaderBindings
+	{
+		public string VertexShaderName { get; }
+		public string FragmentShaderName { get; }
+
+		public string GeometryShaderName => null;
+		public int Stride => (25 * sizeof(float));
+
+		public IEnumerable<ShaderVertexAttribute> Attributes { get; } = new[]
+		{
+			new ShaderVertexAttribute("aVertexPosition", 0, 3, 0),
+			new ShaderVertexAttribute("aVertexTexCoord", 1, 4, 3 * sizeof(float)),
+			new ShaderVertexAttribute("aVertexTexMetadata", 2, 2, 7 * sizeof(float)),
+			new ShaderVertexAttribute("aVertexTint", 3, 4, 9 * sizeof(float)),
+
+			new ShaderVertexAttribute("aVertexTangent", 4, 3, 13 * sizeof(float)),
+			new ShaderVertexAttribute("aVertexBitangent", 5, 3, 16 * sizeof(float)),
+			new ShaderVertexAttribute("aVertexNormal", 6, 3, 19 * sizeof(float)),
+
+			new ShaderVertexAttribute("aTileTexCoord", 7, 2, 22 * sizeof(float)),
+			new ShaderVertexAttribute("aDrawType", 8, 1, 24 * sizeof(float), AttributeType.UInt32),
+
+		};
+
+		public bool Instanced => false;
+
+		public int InstanceStrde => throw new System.NotImplementedException();
+
+		public IEnumerable<ShaderVertexAttribute> InstanceAttributes => throw new System.NotImplementedException();
+
+		public MapShaderBindings()
+		{
+			var name = "map";
+			VertexShaderName = name;
+			FragmentShaderName = name;
+		}
+
+		public void SetCommonParaments(IShader shader, World3DRenderer w3dr, bool sunCamera)
+		{
+			shader.SetBool("RenderDepthBuffer", sunCamera);
+			if (sunCamera)
+			{
+				shader.SetMatrix("projection", w3dr.SunProjection.Values1D);
+				shader.SetMatrix("view", w3dr.SunView.Values1D);
+				shader.SetVec("viewPos", w3dr.SunPos.x, w3dr.SunPos.y, w3dr.SunPos.z);
+			}
+			else
+			{
+				shader.SetMatrix("projection", w3dr.Projection.Values1D);
+				shader.SetMatrix("view", w3dr.View.Values1D);
+				shader.SetVec("viewPos", w3dr.CameraPos.x, w3dr.CameraPos.y, w3dr.CameraPos.z);
+			}
+
+			shader.SetVec("dirLight.direction", w3dr.SunDir.x, w3dr.SunDir.y, w3dr.SunDir.z);
+			shader.SetVec("dirLight.ambient", w3dr.AmbientColor.X, w3dr.AmbientColor.Y, w3dr.AmbientColor.Z);
+			shader.SetVec("dirLight.diffuse", w3dr.SunColor.X, w3dr.SunColor.Y, w3dr.SunColor.Z);
+			shader.SetVec("dirLight.specular", w3dr.SunSpecularColor.X, w3dr.SunSpecularColor.Y, w3dr.SunSpecularColor.Z);
+		}
+	}
 }

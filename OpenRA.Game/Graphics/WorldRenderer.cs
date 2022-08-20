@@ -34,7 +34,7 @@ namespace OpenRA.Graphics
 		readonly HashSet<Actor> onScreenActors = new HashSet<Actor>();
 		readonly HardwarePalette palette = new HardwarePalette();
 		readonly Dictionary<string, PaletteReference> palettes = new Dictionary<string, PaletteReference>();
-		readonly IRenderTerrain terrainRenderer;
+		public readonly IRenderTerrain TerrainRenderer;
 		readonly Lazy<DebugVisualizations> debugVis;
 		readonly Func<string, PaletteReference> createPaletteReference;
 		readonly bool enableDepthBuffer;
@@ -68,7 +68,7 @@ namespace OpenRA.Graphics
 			palette.Initialize();
 
 			TerrainLighting = world.WorldActor.TraitOrDefault<ITerrainLighting>();
-			terrainRenderer = world.WorldActor.TraitOrDefault<IRenderTerrain>();
+			TerrainRenderer = world.WorldActor.TraitOrDefault<IRenderTerrain>();
 
 			debugVis = Exts.Lazy(() => world.WorldActor.TraitOrDefault<DebugVisualizations>());
 			for (int i = 0; i < preparedBlendRenderables.Length; i++)
@@ -265,41 +265,31 @@ namespace OpenRA.Graphics
 
 			Game.Renderer.Context.EnableDepthBuffer(DepthFunc.LessEqual);
 
-			terrainRenderer?.RenderTerrain(this, Viewport);
+			Game.Renderer.MapRenderer.SetTextures(World);
+			Game.Renderer.SetFaceCull(FaceCullFunc.Back);
+			TerrainRenderer?.RenderTerrain(this, Viewport);
+			Game.Renderer.SetFaceCull(FaceCullFunc.None);
 
+			// ʵ����ò��û����
 			Game.Renderer.Flush();
 
 			for (var i = 0; i < preparedRenderables.Count; i++)
 			{
 				if (preparedRenderables[i].BlendMode == BlendMode.None)
 					preparedRenderables[i].Render(this);
-				else
-				{
-					preparedBlendRenderables[(int)preparedRenderables[i].BlendMode].Add(preparedRenderables[i]);
-				}
 			}
 
-			//Game.Renderer.Flush();
 			Game.Renderer.WorldSpriteRenderer.Flush(BlendMode.None);
 
 			Game.Renderer.Draw3DMeshesInstance(this, false);
 
 			Game.Renderer.Context.DisableCullFace();
 
-			for (var i = 0; i < preparedBlendRenderables.Length; i++)
+			for (var i = 0; i < preparedRenderables.Count; i++)
 			{
-				//if (i == 2)
-				//	Game.Renderer.EnableDepthWrite(false);
-
-				if (preparedBlendRenderables[i].Count > 0)
+				if (preparedRenderables[i].BlendMode != BlendMode.None)
 				{
-					for (var j = 0; j < preparedBlendRenderables[i].Count; j++)
-					{
-						preparedBlendRenderables[i][j].Render(this);
-					}
-
-					// Don't use Game.Renderer.Flush(), which will stupidly use alpha BlendMode any first draw
-					Game.Renderer.WorldSpriteRenderer.Flush((BlendMode)i);
+					preparedRenderables[i].Render(this);
 				}
 			}
 
@@ -315,7 +305,13 @@ namespace OpenRA.Graphics
 					trait.RenderAboveWorld(actor, this);
 			});
 
+			Game.Renderer.MapRenderer.SetRenderShroud(true);
+			Game.Renderer.SetFaceCull(FaceCullFunc.Back);
+
 			World.ApplyToActorsWithTrait<IRenderShroud>((actor, trait) => trait.RenderShroud(this));
+
+			Game.Renderer.SetFaceCull(FaceCullFunc.None);
+			Game.Renderer.MapRenderer.SetRenderShroud(false);
 
 			//Game.Renderer.DisableScissor();
 

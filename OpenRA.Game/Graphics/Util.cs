@@ -321,6 +321,173 @@ namespace OpenRA.Graphics
 			vertices[nv + 5] = new Vertex(leftTop, r.Left, r.Top, sl, st, paletteTextureIndex, fAttribC, tint, alpha);
 		}
 
+		public static void FastCreateTile(MapVertex[] vertices, float3[] verticesColor,
+			in float3 mpos, in float3 tpos, in float3 bpos, in float3 lpos, in float3 rpos,
+			in mat3 mtbn, in mat3 ttbn, in mat3 btbn, in mat3 ltbn, in mat3 rtbn,
+			in float3 mtint, in float3 ttint, in float3 btint, in float3 ltint, in float3 rtint,
+			uint type,
+			Sprite r, int2 samplers, float paletteTextureIndex, float scale,
+			in float3 tint, float alpha, int nv, bool rotation = true)
+		{
+			float sl = 0;
+			float st = 0;
+			float sr = 0;
+			float sb = 0;
+
+			float sbaseTB = 0;
+			float sbaseRL = 0;
+
+			// See combined.vert for documentation on the channel attribute format
+			var attribC = r.Channel == TextureChannel.RGBA ? 0x02 : ((byte)r.Channel) << 1 | 0x01;
+			attribC |= samplers.X << 6;
+			if (r is SpriteWithSecondaryData ss)
+			{
+				sl = ss.SecondaryLeft;
+				st = ss.SecondaryTop;
+				sr = ss.SecondaryRight;
+				sb = ss.SecondaryBottom;
+
+				sbaseTB = st - (st - sb) * 0.5f;
+				sbaseRL = sr - (sr - sl) * 0.5f;
+
+				attribC |= ((byte)ss.SecondaryChannel) << 4 | 0x08;
+				attribC |= samplers.Y << 9;
+			}
+
+			var fAttribC = (float)attribC;
+			float baseY = r.Top - (r.Top - r.Bottom) * 0.5f;
+			float baseX = r.Right - (r.Right - r.Left) * 0.5f;
+
+			// rotate isomatric tile to rect
+			if (rotation)
+			{
+				float top = r.Top + (r.Bottom - r.Top) * 0.035f;
+				float bottom = r.Bottom + (r.Top - r.Bottom) * 0.035f;
+				float left = r.Left + (r.Right - r.Left) * 0.035f;
+				float right = r.Right + (r.Left - r.Right) * 0.035f;
+				//float top = r.Top;// + (r.Bottom - r.Top) * 0.033f;
+				//float bottom = r.Bottom;// + (r.Top - r.Bottom) * 0.033f;
+				//float left = r.Left;// + (r.Right - r.Left) * 0.033f;
+				//float right = r.Right;// + (r.Left - r.Right) * 0.033f;
+
+				vertices[nv] = new MapVertex(tpos, ttbn, baseX, top, sbaseRL, st, paletteTextureIndex, fAttribC, ttint, alpha, CellInfo.TU, CellInfo.TV, type);
+				vertices[nv + 1] = new MapVertex(mpos, mtbn, baseX, baseY, sbaseRL, sbaseTB, paletteTextureIndex, fAttribC, mtint, alpha, 0.5f, 0.5f, type);
+				vertices[nv + 2] = new MapVertex(rpos, rtbn, right, baseY, sr, sbaseTB, paletteTextureIndex, fAttribC, rtint, alpha, CellInfo.RU, CellInfo.RV, type);
+
+				vertices[nv + 3] = new MapVertex(mpos, mtbn, baseX, baseY, sbaseRL, sbaseTB, paletteTextureIndex, fAttribC, mtint, alpha, 0.5f, 0.5f, type);
+				vertices[nv + 4] = new MapVertex(bpos, btbn, baseX, bottom, sbaseRL, sb, paletteTextureIndex, fAttribC, btint, alpha, CellInfo.BU, CellInfo.BV, type);
+				vertices[nv + 5] = new MapVertex(rpos, rtbn, right, baseY, sr, sbaseTB, paletteTextureIndex, fAttribC, rtint, alpha, CellInfo.RU, CellInfo.RV, type);
+
+				vertices[nv + 6] = new MapVertex(tpos, ttbn, baseX, top, sbaseRL, st, paletteTextureIndex, fAttribC, ttint, alpha, CellInfo.TU, CellInfo.TV, type);
+				vertices[nv + 7] = new MapVertex(lpos, ltbn, left, baseY, sl, sbaseTB, paletteTextureIndex, fAttribC, ltint, alpha, CellInfo.LU, CellInfo.LV, type);
+				vertices[nv + 8] = new MapVertex(mpos, mtbn, baseX, baseY, sbaseRL, sbaseTB, paletteTextureIndex, fAttribC, mtint, alpha, 0.5f, 0.5f, type);
+
+				vertices[nv + 9] = new MapVertex(mpos, mtbn, baseX, baseY, sbaseRL, sbaseTB, paletteTextureIndex, fAttribC, mtint, alpha, 0.5f, 0.5f, type);
+				vertices[nv + 10] = new MapVertex(lpos, ltbn, left, baseY, sl, sbaseTB, paletteTextureIndex, fAttribC, ltint, alpha, CellInfo.LU, CellInfo.LV, type);
+				vertices[nv + 11] = new MapVertex(bpos, btbn, baseX, bottom, sbaseRL, sb, paletteTextureIndex, fAttribC, btint, alpha, CellInfo.BU, CellInfo.BV, type);
+
+			}
+			else
+			{
+				vertices[nv] = new MapVertex(tpos, ttbn, r.Left, r.Top, sl, st, paletteTextureIndex, fAttribC, ttint, alpha, CellInfo.TU, CellInfo.TV, type);
+				vertices[nv + 1] = new MapVertex(mpos, mtbn, baseX, baseY, sbaseRL, sbaseTB, paletteTextureIndex, fAttribC, mtint, alpha, 0.5f, 0.5f, type);
+				vertices[nv + 2] = new MapVertex(rpos, rtbn, r.Right, r.Top, sr, st, paletteTextureIndex, fAttribC, rtint, alpha, CellInfo.RU, CellInfo.RV, type);
+
+				vertices[nv + 3] = new MapVertex(mpos, mtbn, baseX, baseY, sbaseRL, sbaseTB, paletteTextureIndex, fAttribC, mtint, alpha, 0.5f, 0.5f, type);
+				vertices[nv + 4] = new MapVertex(bpos, btbn, r.Right, r.Bottom, sr, sb, paletteTextureIndex, fAttribC, btint, alpha, CellInfo.BU, CellInfo.BV, type);
+				vertices[nv + 5] = new MapVertex(rpos, rtbn, r.Right, r.Top, sr, st, paletteTextureIndex, fAttribC, rtint, alpha, CellInfo.RU, CellInfo.RV, type);
+
+				vertices[nv + 6] = new MapVertex(tpos, ttbn, r.Left, r.Top, sl, st, paletteTextureIndex, fAttribC, ttint, alpha, CellInfo.TU, CellInfo.TV, type);
+				vertices[nv + 7] = new MapVertex(lpos, ltbn, r.Left, r.Bottom, sl, sb, paletteTextureIndex, fAttribC, ltint, alpha, CellInfo.LU, CellInfo.LV, type);
+				vertices[nv + 8] = new MapVertex(mpos, mtbn, baseX, baseY, sbaseRL, sbaseTB, paletteTextureIndex, fAttribC, mtint, alpha, 0.5f, 0.5f, type);
+
+				vertices[nv + 9] = new MapVertex(mpos, mtbn, baseX, baseY, sbaseRL, sbaseTB, paletteTextureIndex, fAttribC, mtint, alpha, 0.5f, 0.5f, type);
+				vertices[nv + 10] = new MapVertex(lpos, ltbn, r.Left, r.Bottom, sl, sb, paletteTextureIndex, fAttribC, ltint, alpha, CellInfo.LU, CellInfo.LV, type);
+				vertices[nv + 11] = new MapVertex(bpos, btbn, r.Right, r.Bottom, sr, sb, paletteTextureIndex, fAttribC, btint, alpha, CellInfo.BU, CellInfo.BV, type);
+			}
+
+			verticesColor[nv] = ttint;
+			verticesColor[nv + 1] = mtint;
+			verticesColor[nv + 2] = rtint;
+
+			verticesColor[nv + 3] = mtint;
+			verticesColor[nv + 4] = btint;
+			verticesColor[nv + 5] = rtint;
+
+			verticesColor[nv + 6] = ttint;
+			verticesColor[nv + 7] = ltint;
+			verticesColor[nv + 8] = mtint;
+
+			verticesColor[nv + 9] = mtint;
+			verticesColor[nv + 10] = ltint;
+			verticesColor[nv + 11] = btint;
+		}
+
+		public static void FastCreateTilePlane(MapVertex[] vertices,
+				in mat3 tbn,
+				in WPos inPos, in vec3 viewOffset,
+				Sprite r, int2 samplers, float paletteTextureIndex, float scale,
+				in float3 tint, float alpha, int nv, float rotation = 0f)
+		{
+			if (r.HasMeshCreateInfo)
+			{
+				if (!r.UpdateMeshInfo())
+					throw new Exception("invalide create mesh time: sprite has not create mesh data");
+			}
+
+			if (r.SpriteMeshType != SpriteMeshType.Plane)
+			{
+				throw new Exception("sprite's mesh type is not plane");
+			}
+
+			if (scale < 0)
+			{
+				throw new Exception("invalide create mesh scale: only positve value supported");
+			}
+
+			float3 ssziehalf = scale * r.Ssizehalf;
+			float3 soffset = scale * r.Soffset;
+			float2 leftRight = scale * r.LeftRight;
+			float2 topBottom = scale * r.TopBottom; // In general, both top and bottom are positive
+
+			var position = Game.Renderer.World3DRenderer.Get3DRenderPositionFromWPos(inPos);
+			position += viewOffset;
+
+			float3 leftBack = new float3(position.x + leftRight.X, position.y + scale * r.leftBack.Y, position.z);
+			float3 rightBack = new float3(position.x + leftRight.Y, leftBack.Y, position.z);
+			float3 leftFront = new float3(leftBack.X, position.y + scale * r.leftFront.Y, position.z);
+			float3 rightFront = new float3(rightBack.X, leftFront.Y, position.z);
+
+			float sl = 0;
+			float st = 0;
+			float sr = 0;
+			float sb = 0;
+
+			// See combined.vert for documentation on the channel attribute format
+			var attribC = r.Channel == TextureChannel.RGBA ? 0x02 : ((byte)r.Channel) << 1 | 0x01;
+			attribC |= samplers.X << 6;
+			if (r is SpriteWithSecondaryData ss)
+			{
+				sl = ss.SecondaryLeft;
+				st = ss.SecondaryTop;
+				sr = ss.SecondaryRight;
+				sb = ss.SecondaryBottom;
+
+				attribC |= ((byte)ss.SecondaryChannel) << 4 | 0x08;
+				attribC |= samplers.Y << 9;
+			}
+
+			var fAttribC = (float)attribC;
+
+			vertices[nv + 2] = new MapVertex(leftBack, tbn, r.Left, r.Top, sl, st, paletteTextureIndex, fAttribC, tint, alpha, CellInfo.TU, CellInfo.TV, 99);
+			vertices[nv + 1] = new MapVertex(rightBack, tbn, r.Right, r.Top, sr, st, paletteTextureIndex, fAttribC, tint, alpha, CellInfo.RU, CellInfo.RV, 99);
+			vertices[nv] = new MapVertex(rightFront, tbn, r.Right, r.Bottom, sr, sb, paletteTextureIndex, fAttribC, tint, alpha, CellInfo.BU, CellInfo.BV, 99);
+
+			vertices[nv + 5] = new MapVertex(rightFront, tbn, r.Right, r.Bottom, sr, sb, paletteTextureIndex, fAttribC, tint, alpha, CellInfo.BU, CellInfo.BV, 99);
+			vertices[nv + 4] = new MapVertex(leftFront, tbn, r.Left, r.Bottom, sl, sb, paletteTextureIndex, fAttribC, tint, alpha, CellInfo.LU, CellInfo.LV, 99);
+			vertices[nv + 3] = new MapVertex(leftBack, tbn, r.Left, r.Top, sl, st, paletteTextureIndex, fAttribC, tint, alpha, CellInfo.TU, CellInfo.TV, 99);
+		}
+
 		public static void FastCreateQuad(Vertex[] vertices, in float3 o, Sprite r, int2 samplers, float paletteTextureIndex, int nv,
 					in float3 size, in float3 tint, float alpha, float rotation = 0f)
 		{
@@ -422,23 +589,23 @@ namespace OpenRA.Graphics
 								{
 									case SpriteFrameType.Bgra32:
 									case SpriteFrameType.Bgr24:
-									{
-										b = src[k++];
-										g = src[k++];
-										r = src[k++];
-										a = srcType == SpriteFrameType.Bgra32 ? src[k++] : (byte)255;
-										break;
-									}
+										{
+											b = src[k++];
+											g = src[k++];
+											r = src[k++];
+											a = srcType == SpriteFrameType.Bgra32 ? src[k++] : (byte)255;
+											break;
+										}
 
 									case SpriteFrameType.Rgba32:
 									case SpriteFrameType.Rgb24:
-									{
-										r = src[k++];
-										g = src[k++];
-										b = src[k++];
-										a = srcType == SpriteFrameType.Rgba32 ? src[k++] : (byte)255;
-										break;
-									}
+										{
+											r = src[k++];
+											g = src[k++];
+											b = src[k++];
+											a = srcType == SpriteFrameType.Rgba32 ? src[k++] : (byte)255;
+											break;
+										}
 
 									default:
 										throw new InvalidOperationException($"Unknown SpriteFrameType {srcType}");
@@ -496,21 +663,21 @@ namespace OpenRA.Graphics
 							switch (src.Type)
 							{
 								case SpriteFrameType.Indexed8:
-								{
-									cc = src.Palette[src.Data[k++]];
-									break;
-								}
+									{
+										cc = src.Palette[src.Data[k++]];
+										break;
+									}
 
 								case SpriteFrameType.Rgba32:
 								case SpriteFrameType.Rgb24:
-								{
-									var r = src.Data[k++];
-									var g = src.Data[k++];
-									var b = src.Data[k++];
-									var a = src.Type == SpriteFrameType.Rgba32 ? src.Data[k++] : (byte)255;
-									cc = Color.FromArgb(a, r, g, b);
-									break;
-								}
+									{
+										var r = src.Data[k++];
+										var g = src.Data[k++];
+										var b = src.Data[k++];
+										var a = src.Type == SpriteFrameType.Rgba32 ? src.Data[k++] : (byte)255;
+										cc = Color.FromArgb(a, r, g, b);
+										break;
+									}
 
 								// Pngs don't support BGR[A], so no need to include them here
 								default:

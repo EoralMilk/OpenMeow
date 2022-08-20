@@ -25,11 +25,11 @@ namespace OpenRA.Mods.Common
 			return false;
 		}
 
-		public static bool AnyExplored(this Shroud shroud, PPos[] puvs)
+		public static bool AnyExplored(this Shroud shroud, MPos[] puvs)
 		{
 			// PERF: Avoid LINQ.
-			foreach (var puv in puvs)
-				if (shroud.IsExplored(puv))
+			foreach (var uv in puvs)
+				if (shroud.IsExplored(uv))
 					return true;
 
 			return false;

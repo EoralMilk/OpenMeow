@@ -18,9 +18,11 @@ uniform mat4 SunVP;
 uniform mat4 InvCameraVP;
 uniform float FrameShadowBias;
 
+uniform vec3 ScreenLight;
 uniform float AmbientIntencity;
 const float offset = 1.0 / 512.0;
 const float blurWeight[5] = float[] (0.227027, 0.1945946, 0.1216216, 0.054054, 0.016216);
+
 
 float ColorLuminance(vec3 rgb){
 	return rgb.r * 0.299f + rgb.b * 0.587f + rgb.b * 0.114f;
@@ -167,5 +169,5 @@ void main()
 	// 	1.0f, 1.0f, 1.0f
 	// );
 
-	FragColor = vec4(col, 1.0);
+	FragColor = vec4(ScreenLight * col, 1.0);
 }

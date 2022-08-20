@@ -68,15 +68,15 @@ namespace OpenRA.Traits
 	public class Shroud : ISync, INotifyCreated, ITick
 	{
 		public enum SourceType : byte { PassiveVisibility, Shroud, Visibility }
-		public event Action<PPos> OnShroudChanged;
+		public event Action<MPos> OnShroudChanged;
 
 		enum ShroudCellType : byte { Shroud, Fog, Visible }
 		class ShroudSource
 		{
 			public readonly SourceType Type;
-			public readonly PPos[] ProjectedCells;
+			public readonly CPos[] ProjectedCells;
 
-			public ShroudSource(SourceType type, PPos[] projectedCells)
+			public ShroudSource(SourceType type, CPos[] projectedCells)
 			{
 				Type = type;
 				ProjectedCells = projectedCells;
@@ -91,15 +91,15 @@ namespace OpenRA.Traits
 		readonly Dictionary<object, ShroudSource> sources = new Dictionary<object, ShroudSource>();
 
 		// Per-cell count of each source type, used to resolve the final cell type
-		readonly ProjectedCellLayer<short> passiveVisibleCount;
-		readonly ProjectedCellLayer<short> visibleCount;
-		readonly ProjectedCellLayer<short> generatedShroudCount;
-		readonly ProjectedCellLayer<bool> explored;
-		readonly ProjectedCellLayer<bool> touched;
+		readonly CellLayer<short> passiveVisibleCount;
+		readonly CellLayer<short> visibleCount;
+		readonly CellLayer<short> generatedShroudCount;
+		readonly CellLayer<bool> explored;
+		readonly CellLayer<bool> touched;
 		bool anyCellTouched;
 
 		// Per-cell cache of the resolved cell type (shroud/fog/visible)
-		readonly ProjectedCellLayer<ShroudCellType> resolvedType;
+		readonly CellLayer<ShroudCellType> resolvedType;
 
 		[Sync]
 		bool disabled;
@@ -132,15 +132,15 @@ namespace OpenRA.Traits
 			this.info = info;
 			map = self.World.Map;
 
-			passiveVisibleCount = new ProjectedCellLayer<short>(map);
-			visibleCount = new ProjectedCellLayer<short>(map);
-			generatedShroudCount = new ProjectedCellLayer<short>(map);
-			explored = new ProjectedCellLayer<bool>(map);
-			touched = new ProjectedCellLayer<bool>(map);
+			passiveVisibleCount = new CellLayer<short>(map);
+			visibleCount = new CellLayer<short>(map);
+			generatedShroudCount = new CellLayer<short>(map);
+			explored = new CellLayer<bool>(map);
+			touched = new CellLayer<bool>(map);
 			anyCellTouched = true;
 
 			// Defaults to 0 = Shroud
-			resolvedType = new ProjectedCellLayer<ShroudCellType>(map);
+			resolvedType = new CellLayer<ShroudCellType>(map);
 		}
 
 		void INotifyCreated.Created(Actor self)
@@ -167,7 +167,7 @@ namespace OpenRA.Traits
 			// We loop over the direct index that represents the PPos in
 			// the ProjectedCellLayers, converting to a PPos only if
 			// it is needed (which is the uncommon case.)
-			var maxIndex = touched.MaxIndex;
+			var maxIndex = touched.Size.Width * touched.Size.Height;
 			for (var index = 0; index < maxIndex; index++)
 			{
 				// PERF: Most cells are not touched
@@ -195,7 +195,7 @@ namespace OpenRA.Traits
 				if (type != oldResolvedType)
 				{
 					resolvedType[index] = type;
-					var uv = touched.PPosFromIndex(index);
+					var uv = touched.IndexToMPos(index);
 					if (map.Contains(uv))
 						OnShroudChanged(uv);
 				}
@@ -204,7 +204,7 @@ namespace OpenRA.Traits
 			Hash = Sync.HashPlayer(self.Owner) + self.World.WorldTick;
 		}
 
-		public static IEnumerable<PPos> ProjectedCellsInRange(Map map, WPos pos, WDist minRange, WDist maxRange, int maxHeightDelta = -1)
+		public static IEnumerable<CPos> ProjectedCellsInRange(Map map, WPos pos, WDist minRange, WDist maxRange, int maxHeightDelta = -1)
 		{
 			// Account for potential extra half-cell from odd-height terrain
 			var r = (maxRange.Length + 1023 + 512) / 1024;
@@ -213,41 +213,41 @@ namespace OpenRA.Traits
 
 			// Project actor position into the shroud plane
 			// the terrian height is not 724!!!
-			var projectedPos = pos - new WVec(0, (int)(pos.Z * MapGrid.MapHeightToYPos), pos.Z);
+			var projectedPos = pos;// - new WVec(0, (int)(pos.Z * MapGrid.MapHeightToYPos), pos.Z);
 			var projectedCell = map.CellContaining(projectedPos);
-			var projectedHeight = pos.Z / 512;
+			var projectedHeight = pos.Z;
 
 			foreach (var c in map.FindTilesInAnnulus(projectedCell, minRange.Length / 1024, r, true))
 			{
 				var dist = (map.CenterOfCell(c) - projectedPos).HorizontalLengthSquared;
 				if (dist <= maxLimit && (dist == 0 || dist > minLimit))
 				{
-					var puv = (PPos)c.ToMPos(map);
-					if (maxHeightDelta < 0 || map.ProjectedHeight(puv) < projectedHeight + maxHeightDelta)
-						yield return puv;
+					//var puv = (PPos)c.ToMPos(map);
+					if (maxHeightDelta < 0 || map.HeightOfCell(c) < projectedHeight + maxHeightDelta)
+						yield return c;
 				}
 			}
 		}
 
-		public static IEnumerable<PPos> ProjectedCellsInRange(Map map, CPos cell, WDist range, int maxHeightDelta = -1)
+		public static IEnumerable<CPos> ProjectedCellsInRange(Map map, CPos cell, WDist range, int maxHeightDelta = -1)
 		{
 			return ProjectedCellsInRange(map, map.CenterOfCell(cell), WDist.Zero, range, maxHeightDelta);
 		}
 
-		public void AddSource(object key, SourceType type, PPos[] projectedCells)
+		public void AddSource(object key, SourceType type, CPos[] projectedCells)
 		{
 			if (sources.ContainsKey(key))
 				throw new InvalidOperationException("Attempting to add duplicate shroud source");
 
 			sources[key] = new ShroudSource(type, projectedCells);
 
-			foreach (var puv in projectedCells)
+			foreach (var cell in projectedCells)
 			{
 				// Force cells outside the visible bounds invisible
-				if (!map.Contains(puv))
+				if (!map.Contains(cell))
 					continue;
 
-				var index = touched.Index(puv);
+				var index = touched.Index(cell);
 				touched[index] = true;
 				anyCellTouched = true;
 				switch (type)
@@ -274,12 +274,12 @@ namespace OpenRA.Traits
 			if (!sources.TryGetValue(key, out var state))
 				return;
 
-			foreach (var puv in state.ProjectedCells)
+			foreach (var cell in state.ProjectedCells)
 			{
 				// Cells outside the visible bounds don't increment visibleCount
-				if (map.Contains(puv))
+				if (map.Contains(cell))
 				{
-					var index = touched.Index(puv);
+					var index = touched.Index(cell);
 					touched[index] = true;
 					anyCellTouched = true;
 					switch (state.Type)
@@ -300,7 +300,7 @@ namespace OpenRA.Traits
 			sources.Remove(key);
 		}
 
-		public void ExploreProjectedCells(IEnumerable<PPos> cells)
+		public void ExploreProjectedCells(IEnumerable<CPos> cells)
 		{
 			foreach (var puv in cells)
 			{
@@ -322,9 +322,9 @@ namespace OpenRA.Traits
 			if (map.Bounds != s.map.Bounds)
 				throw new ArgumentException("The map bounds of these shrouds do not match.", nameof(s));
 
-			foreach (var puv in map.ProjectedCells)
+			var maxIndex = touched.Size.Width * touched.Size.Height;
+			for (var index = 0; index < maxIndex; index++)
 			{
-				var index = touched.Index(puv);
 				if (!explored[index] && s.explored[index])
 				{
 					touched[index] = true;
@@ -336,9 +336,9 @@ namespace OpenRA.Traits
 
 		public void ExploreAll()
 		{
-			foreach (var puv in map.ProjectedCells)
+			var maxIndex = touched.Size.Width * touched.Size.Height;
+			for (var index = 0; index < maxIndex; index++)
 			{
-				var index = touched.Index(puv);
 				if (!explored[index])
 				{
 					touched[index] = true;
@@ -350,19 +350,26 @@ namespace OpenRA.Traits
 
 		public void ResetExploration()
 		{
-			foreach (var puv in map.ProjectedCells)
+			var maxIndex = touched.Size.Width * touched.Size.Height;
+			for (var index = 0; index < maxIndex; index++)
 			{
-				var index = touched.Index(puv);
 				touched[index] = true;
 				explored[index] = (visibleCount[index] + passiveVisibleCount[index]) > 0;
 			}
+
+			//foreach (var puv in map.ProjectedCells)
+			//{
+			//	var index = touched.Index(puv);
+			//	touched[index] = true;
+			//	explored[index] = (visibleCount[index] + passiveVisibleCount[index]) > 0;
+			//}
 
 			anyCellTouched = true;
 		}
 
 		public bool IsExplored(WPos pos)
 		{
-			return IsExplored(map.ProjectedCellCovering(pos));
+			return IsExplored(map.CellContaining(pos));
 		}
 
 		public bool IsExplored(CPos cell)
@@ -372,27 +379,32 @@ namespace OpenRA.Traits
 
 		public bool IsExplored(MPos uv)
 		{
-			if (!map.Contains(uv))
-				return false;
+			//if (!map.Contains(uv))
+			//	return false;
 
-			foreach (var puv in map.ProjectedCellsCovering(uv))
-				if (IsExplored(puv))
-					return true;
+			//foreach (var puv in map.ProjectedCellsCovering(uv))
+			//	if (IsExplored(puv))
+			//		return true;
 
-			return false;
-		}
+			//return false;
 
-		public bool IsExplored(PPos puv)
-		{
 			if (Disabled)
-				return map.Contains(puv);
+				return map.Contains(uv);
 
-			return resolvedType.Contains(puv) && resolvedType[puv] > ShroudCellType.Shroud;
+			return resolvedType.Contains(uv) && resolvedType[uv] > ShroudCellType.Shroud;
 		}
+
+		//public bool IsExplored(PPos puv)
+		//{
+		//	if (Disabled)
+		//		return map.Contains(puv);
+
+		//	return resolvedType.Contains((MPos)puv) && resolvedType[(MPos)puv] > ShroudCellType.Shroud;
+		//}
 
 		public bool IsVisible(WPos pos)
 		{
-			return IsVisible(map.ProjectedCellCovering(pos));
+			return IsVisible(map.CellContaining(pos));
 		}
 
 		public bool IsVisible(CPos cell)
@@ -402,23 +414,28 @@ namespace OpenRA.Traits
 
 		public bool IsVisible(MPos uv)
 		{
-			foreach (var puv in map.ProjectedCellsCovering(uv))
-				if (IsVisible(puv))
-					return true;
+			//foreach (var puv in map.ProjectedCellsCovering(uv))
+			//	if (IsVisible(puv))
+			//		return true;
 
-			return false;
-		}
+			//return false;
 
-		// In internal shroud coords
-		public bool IsVisible(PPos puv)
-		{
 			if (!FogEnabled)
-				return map.Contains(puv);
+				return map.Contains(uv);
 
-			return resolvedType.Contains(puv) && resolvedType[puv] == ShroudCellType.Visible;
+			return resolvedType.Contains(uv) && resolvedType[uv] == ShroudCellType.Visible;
 		}
 
-		public bool Contains(PPos uv)
+		//// In internal shroud coords
+		//public bool IsVisible(PPos puv)
+		//{
+		//	if (!FogEnabled)
+		//		return map.Contains(puv);
+
+		//	return resolvedType.Contains(puv) && resolvedType[puv] == ShroudCellType.Visible;
+		//}
+
+		public bool Contains(MPos uv)
 		{
 			// Check that uv is inside the map area. There is nothing special
 			// about explored here: any of the CellLayers would have been suitable.

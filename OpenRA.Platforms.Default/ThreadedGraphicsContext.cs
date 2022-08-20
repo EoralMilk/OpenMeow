@@ -727,6 +727,8 @@ namespace OpenRA.Platforms.Default
 		readonly uint id;
 		readonly Func<object> getScaleFilter;
 		readonly Action<object> setScaleFilter;
+		readonly Func<object> getWrapType;
+		readonly Action<object> setWrapType;
 		readonly Func<object> getSize;
 		readonly Action<object> setEmpty;
 		readonly Func<byte[]> getData;
@@ -742,6 +744,8 @@ namespace OpenRA.Platforms.Default
 			id = texture.ID;
 			getScaleFilter = () => texture.ScaleFilter;
 			setScaleFilter = value => texture.ScaleFilter = (TextureScaleFilter)value;
+			getWrapType = () => texture.WrapType;
+			setWrapType = value => texture.WrapType = (TextureWrap)value;
 			getSize = () => texture.Size;
 			setEmpty = tuple => { var t = (ValueTuple<int, int>)tuple; texture.SetEmpty(t.Item1, t.Item2); };
 			getData = () => texture.GetData();
@@ -759,6 +763,13 @@ namespace OpenRA.Platforms.Default
 			get => (TextureScaleFilter)device.Send(getScaleFilter);
 
 			set => device.Post(setScaleFilter, value);
+		}
+
+		public TextureWrap WrapType
+		{
+			get => (TextureWrap)device.Send(getWrapType);
+
+			set => device.Post(setWrapType, value);
 		}
 
 		public Size Size => (Size)device.Send(getSize);
@@ -830,6 +841,8 @@ namespace OpenRA.Platforms.Default
 		readonly Action<object> setVec2;
 		readonly Action<object> setVec3;
 		readonly Action<object> setVec4;
+		readonly Action<object> setVecArray;
+
 		readonly Action layoutAttributes;
 		readonly Action layoutInstanceArray;
 		readonly Action<object> setCommonParaments;
@@ -844,9 +857,10 @@ namespace OpenRA.Platforms.Default
 			setMatrix = tuple => { var t = (ValueTuple<string, float[], int>)tuple; shader.SetMatrix(t.Item1, t.Item2, t.Item3); };
 			setTexture = tuple => { var t = (ValueTuple<string, ITexture>)tuple; shader.SetTexture(t.Item1, t.Item2); };
 			setVec1 = tuple => { var t = (ValueTuple<string, float>)tuple; shader.SetVec(t.Item1, t.Item2); };
-			setVec2 = tuple => { var t = (ValueTuple<string, float[], int>)tuple; shader.SetVec(t.Item1, t.Item2, t.Item3); };
-			setVec3 = tuple => { var t = (ValueTuple<string, float, float>)tuple; shader.SetVec(t.Item1, t.Item2, t.Item3); };
-			setVec4 = tuple => { var t = (ValueTuple<string, float, float, float>)tuple; shader.SetVec(t.Item1, t.Item2, t.Item3, t.Item4); };
+			setVec2 = tuple => { var t = (ValueTuple<string, float, float>)tuple; shader.SetVec(t.Item1, t.Item2, t.Item3); };
+			setVec3 = tuple => { var t = (ValueTuple<string, float, float, float>)tuple; shader.SetVec(t.Item1, t.Item2, t.Item3, t.Item4); };
+			setVec4 = tuple => { var t = (ValueTuple<string, float, float, float, float>)tuple; shader.SetVec(t.Item1, t.Item2, t.Item3, t.Item4, t.Item5); };
+			setVecArray = tuple => { var t = (ValueTuple<string, float[], int, int>)tuple; shader.SetVecArray(t.Item1, t.Item2, t.Item3, t.Item4); };
 			layoutAttributes = () => { shader.LayoutAttributes(); };
 			layoutInstanceArray = () => { shader.LayoutInstanceArray(); };
 			setCommonParaments = tuple => {var t = (ValueTuple<World3DRenderer, bool>)tuple; shader.SetCommonParaments(t.Item1, t.Item2); };
@@ -887,19 +901,24 @@ namespace OpenRA.Platforms.Default
 			device.Post(setVec1, (name, x));
 		}
 
-		public void SetVec(string name, float[] vec, int length)
-		{
-			device.Post(setVec2, (name, vec, length));
-		}
-
 		public void SetVec(string name, float x, float y)
 		{
-			device.Post(setVec3, (name, x, y));
+			device.Post(setVec2, (name, x, y));
 		}
 
 		public void SetVec(string name, float x, float y, float z)
 		{
-			device.Post(setVec4, (name, x, y, z));
+			device.Post(setVec3, (name, x, y, z));
+		}
+
+		public void SetVec(string name, float x, float y, float z, float w)
+		{
+			device.Post(setVec4, (name, x, y, z, w));
+		}
+
+		public void SetVecArray(string name, float[] vec, int vecLength, int count)
+		{
+			device.Post(setVecArray, (name, vec, vecLength, count));
 		}
 
 		public void LayoutAttributes()

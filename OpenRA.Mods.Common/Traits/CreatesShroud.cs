@@ -41,7 +41,7 @@ namespace OpenRA.Mods.Common.Traits
 			rangeModifiers = self.TraitsImplementing<ICreatesShroudModifier>().ToArray().Select(x => x.GetCreatesShroudModifier());
 		}
 
-		protected override void AddCellsToPlayerShroud(Actor self, Player p, PPos[] uv)
+		protected override void AddCellsToPlayerShroud(Actor self, Player p, CPos[] uv)
 		{
 			if (!info.ValidRelationships.HasRelationship(self.Owner.RelationshipWith(p)))
 				return;

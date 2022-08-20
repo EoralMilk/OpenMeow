@@ -136,8 +136,8 @@ namespace OpenRA.Mods.Common.Widgets
 				if (newShroud != null)
 				{
 					newShroud.OnShroudChanged += UpdateShroudCell;
-					foreach (var puv in world.Map.ProjectedCells)
-						UpdateShroudCell(puv);
+					foreach (var uv in world.Map.MapCells)
+						UpdateShroudCell(uv);
 				}
 
 				shroud = newShroud;
@@ -237,12 +237,12 @@ namespace OpenRA.Mods.Common.Widgets
 			}
 		}
 
-		void UpdateShroudCell(PPos puv)
+		void UpdateShroudCell(MPos uv)
 		{
 			var color = 0;
-			if (!currentPlayer.Shroud.IsExplored(puv))
+			if (!currentPlayer.Shroud.IsExplored(uv))
 				color = Color.Black.ToArgb();
-			else if (!currentPlayer.Shroud.IsVisible(puv))
+			else if (!currentPlayer.Shroud.IsVisible(uv))
 				color = Color.FromArgb(128, Color.Black).ToArgb();
 
 			var stride = radarSheet.Size.Width;
@@ -251,21 +251,33 @@ namespace OpenRA.Mods.Common.Widgets
 				fixed (byte* colorBytes = &radarData[0])
 				{
 					var colors = (int*)colorBytes;
-					foreach (var iuv in world.Map.Unproject(puv))
-					{
-						if (isRectangularIsometric)
-						{
-							// Odd rows are shifted right by 1px
-							var dx = iuv.V & 1;
-							if (iuv.U + dx > 0)
-								colors[iuv.V * stride + 2 * iuv.U + dx - 1 + previewWidth] = color;
+					//foreach (var iuv in world.Map.Unproject(uv))
+					//{
+					//	if (isRectangularIsometric)
+					//	{
+					//		// Odd rows are shifted right by 1px
+					//		var dx = iuv.V & 1;
+					//		if (iuv.U + dx > 0)
+					//			colors[iuv.V * stride + 2 * iuv.U + dx - 1 + previewWidth] = color;
 
-							if (2 * iuv.U + dx < stride)
-								colors[iuv.V * stride + 2 * iuv.U + dx + previewWidth] = color;
-						}
-						else
-							colors[iuv.V * stride + iuv.U + previewWidth] = color;
+					//		if (2 * iuv.U + dx < stride)
+					//			colors[iuv.V * stride + 2 * iuv.U + dx + previewWidth] = color;
+					//	}
+					//	else
+					//		colors[iuv.V * stride + iuv.U + previewWidth] = color;
+					//}
+					if (isRectangularIsometric)
+					{
+						// Odd rows are shifted right by 1px
+						var dx = uv.V & 1;
+						if (uv.U + dx > 0)
+							colors[uv.V * stride + 2 * uv.U + dx - 1 + previewWidth] = color;
+
+						if (2 * uv.U + dx < stride)
+							colors[uv.V * stride + 2 * uv.U + dx + previewWidth] = color;
 					}
+					else
+						colors[uv.V * stride + uv.U + previewWidth] = color;
 				}
 			}
 		}

@@ -142,7 +142,7 @@ namespace OpenRA.Mods.Common.Traits
 				};
 
 				tiles.Add(kv.Key, smudge);
-				render.Update(kv.Key, seq, paletteReference, s.Depth);
+				render.Update(kv.Key, seq, paletteReference, s.Depth, true);
 			}
 		}
 
@@ -204,7 +204,7 @@ namespace OpenRA.Mods.Common.Traits
 					{
 						var smudge = kv.Value;
 						tiles[kv.Key] = smudge;
-						render.Update(kv.Key, smudge.Sequence, paletteReference, smudge.Depth);
+						render.Update(kv.Key, smudge.Sequence, paletteReference, smudge.Depth, true);
 					}
 
 					remove.Add(kv.Key);

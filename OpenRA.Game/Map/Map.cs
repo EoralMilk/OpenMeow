@@ -15,12 +15,15 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using GlmSharp;
+using GlmSharp.Swizzle;
 using OpenRA.FileFormats;
 using OpenRA.FileSystem;
 using OpenRA.Graphics;
 using OpenRA.Primitives;
 using OpenRA.Support;
 using OpenRA.Traits;
+using static System.Net.WebRequestMethods;
 
 namespace OpenRA
 {
@@ -148,6 +151,47 @@ namespace OpenRA
 		}
 	}
 
+	public struct CellInfo
+	{
+		public const float TU = 0f;
+		public const float TV = 0f;
+
+		public const float LU = 0f;
+		public const float LV = 1f;
+
+		public const float BU = 1f;
+		public const float BV = 1f;
+
+		public const float RU = 1f;
+		public const float RV = 0f;
+
+		public readonly WPos CellCenterPos;
+		public readonly uint Type;
+
+		//public readonly float3 CellNmlTLM;
+		//public readonly float3 CellNmlTMR;
+		//public readonly float3 CellNmlMLB;
+		//public readonly float3 CellNmlMBR;
+
+		public readonly int M, T, B, L, R;
+
+		public CellInfo(WPos center, // float3 tlmn, float3 tmrn, float3 mlbn, float3 mbrn,
+			int m, int t, int b, int l, int r, uint type)
+		{
+			CellCenterPos = center;
+			// CellNmlTLM = tlmn;
+			// CellNmlTMR = tmrn;
+			// CellNmlMLB = mlbn;
+			// CellNmlMBR = mbrn;
+			M = m;
+			T = t;
+			B = b;
+			L = l;
+			R = r;
+			Type = type;
+		}
+	}
+
 	public class Map : IReadOnlyFileSystem
 	{
 		public const int SupportedMapFormat = 11;
@@ -239,8 +283,27 @@ namespace OpenRA
 		public CellLayer<byte> Ramp { get; private set; }
 		public CellLayer<byte> CustomTerrain { get; private set; }
 
+		public CellLayer<CellInfo> CellInfos { get; private set; }
+
+		public WPos[] VertexWPos;
+		public float3[] VertexPos;
+		//public float3[] VertexTangent;
+		//public float3[] VertexBitangent;
+		public mat3[] VertexTBN;
+		public vec3[][] FaceNormal;
+		public float3[] VertexColors;
+		public int VertexArrayWidth, VertexArrayHeight;
+
+		//// all TerrainPatch on map
+		//public readonly TerrainPatch[] MapTerrainPatches;
+
+		//// one cell may coved more than one TerrainPatch
+		//public readonly Dictionary<MPos, TerrainPatchInstance[]> PatchOnCell;
+
 		public PPos[] ProjectedCells { get; private set; }
+		public MPos[] MapCells { get; private set; }
 		public CellRegion AllCells { get; private set; }
+		public CPos[] AllCellsArray { get; private set; }
 		public List<CPos> AllEdgeCells { get; private set; }
 
 		// Internal data
@@ -311,6 +374,7 @@ namespace OpenRA
 			Resources = new CellLayer<ResourceTile>(Grid.Type, size);
 			Height = new CellLayer<byte>(Grid.Type, size);
 			Ramp = new CellLayer<byte>(Grid.Type, size);
+			CellInfos = new CellLayer<CellInfo>(Grid.Type, size);
 			Tiles.Clear(terrainInfo.DefaultTerrainTile);
 			if (Grid.MaximumTerrainHeight > 0)
 			{
@@ -320,6 +384,7 @@ namespace OpenRA
 			}
 
 			PostInit();
+			CalculateTileVertexInfo();
 		}
 
 		public Map(ModData modData, IReadOnlyPackage package)
@@ -347,6 +412,7 @@ namespace OpenRA
 			Resources = new CellLayer<ResourceTile>(Grid.Type, size);
 			Height = new CellLayer<byte>(Grid.Type, size);
 			Ramp = new CellLayer<byte>(Grid.Type, size);
+			CellInfos = new CellLayer<CellInfo>(Grid.Type, size);
 
 			using (var s = Package.GetStream("map.bin"))
 			{
@@ -401,6 +467,7 @@ namespace OpenRA
 			}
 
 			PostInit();
+			CalculateTileVertexInfo();
 
 			Uid = ComputeUID(Package);
 		}
@@ -464,6 +531,25 @@ namespace OpenRA
 			// so other listeners to these same events will get correct data when calling GetTerrainIndex.
 			CustomTerrain.CellEntryChanged += invalidateTerrainIndex;
 			Tiles.CellEntryChanged += invalidateTerrainIndex;
+
+			var listMPos = new List<MPos>();
+			for (var y = 0; y < MapSize.Y; y++)
+			{
+				for (var x = 0; x < MapSize.X; x++)
+				{
+					listMPos.Add(new MPos(x, y));
+				}
+			}
+
+			MapCells = listMPos.ToArray();
+
+			var listCPos = new List<CPos>();
+			foreach (var c in AllCells)
+			{
+				listCPos.Add(c);
+			}
+
+			AllCellsArray = listCPos.ToArray();
 		}
 
 		void UpdateRamp(CPos cell)
@@ -631,33 +717,30 @@ namespace OpenRA
 			SaveMapAsPng("./MapToPng/");
 		}
 
-		/// <summary>
-		///  WIP
-		/// </summary>
-		public void SaveMapAsPng(string path)
+		public void CalculateTileVertexInfo()
 		{
-			if (Grid.Type != MapGridType.RectangularIsometric)
-				return;
-			Console.WriteLine("Saving Map " + Title + " As Png");
-			float mapMaxHeight = (float)Grid.MaximumTerrainHeight * MapGrid.MapHeightStep;
-			var width = MapSize.X * 2 + 2;
-			var height = MapSize.Y + 2;
+			VertexArrayWidth = MapSize.X * 2 + 2;
+			VertexArrayHeight = MapSize.Y + 2;
 
-			var heights = new Color[width * height];
-			var colors = new Color[width * height];
+			var vertexCaled = new bool[VertexArrayWidth * VertexArrayHeight];
+			var vertexNmlCaled = new bool[VertexArrayWidth * VertexArrayHeight];
 
-			var heightData = new byte[heights.Length * 4];
-			var colorData = new byte[heights.Length * 4];
+			VertexPos = new float3[VertexArrayWidth * VertexArrayHeight];
+			//VertexTangent = new float3[VertexArrayWidth * VertexArrayHeight];
+			//VertexBitangent = new float3[VertexArrayWidth * VertexArrayHeight];
+			VertexTBN = new mat3[VertexArrayWidth * VertexArrayHeight];
+			VertexWPos = new WPos[VertexArrayWidth * VertexArrayHeight];
+			VertexColors = new float3[VertexArrayWidth * VertexArrayHeight];
 
 			for (var y = 0; y < MapSize.Y; y++)
 			{
 				for (var x = 0; x < MapSize.X; x++)
 				{
 					var uv = new MPos(x, y);
-					Color heightColor = Color.FromArgb((int)Height[uv] * 256 / Grid.MaximumTerrainHeight, 0, 0);
-					Color heightColorHalf = Color.FromArgb(((int)Height[uv] * 2 + 1) * 128 / Grid.MaximumTerrainHeight, 0, 0);
-					Color heightColorUpper = Color.FromArgb(((int)Height[uv] + 1) * 256 / Grid.MaximumTerrainHeight, 0, 0);
-					Color heightColorUppest = Color.FromArgb(((int)Height[uv] + 2) * 256 / Grid.MaximumTerrainHeight, 0, 0);
+					int heightBase = Height[uv] * MapGrid.MapHeightStep;
+					int heightHalf = (Height[uv] * 2 + 1) * MapGrid.MapHeightStep / 2;
+					int heightUpper = (Height[uv] + 1) * MapGrid.MapHeightStep;
+					int heightUppest = (Height[uv] + 2) * MapGrid.MapHeightStep;
 					var ramp = Ramp[uv];
 
 					int2 mid;
@@ -670,201 +753,515 @@ namespace OpenRA
 						mid = new int2(2 * x + 2, y + 1);
 					}
 
+					int im, it, ib, il, ir;
+					im = mid.Y * VertexArrayWidth + mid.X;
+					it = (mid.Y - 1) * VertexArrayWidth + mid.X;
+					ib = (mid.Y + 1) * VertexArrayWidth + mid.X;
+					il = mid.Y * VertexArrayWidth + mid.X - 1;
+					ir = mid.Y * VertexArrayWidth + mid.X + 1;
+
 					var type = Rules.TerrainInfo.GetTerrainInfo(Tiles[uv]);
-					var midcolor = type.GetColor(Game.CosmeticRandom);
 
-					colors[mid.Y * width + mid.X] = midcolor;
-					colors[(mid.Y - 1) * width + mid.X] = Exts.ColorLerp(0.5f, midcolor, colors[(mid.Y - 1) * width + mid.X]);
-					colors[(mid.Y + 1) * width + mid.X] = Exts.ColorLerp(0.5f, midcolor, colors[(mid.Y + 1) * width + mid.X]);
-					colors[mid.Y * width + mid.X - 1] = Exts.ColorLerp(0.5f, midcolor, colors[mid.Y * width + mid.X - 1]);
-					colors[mid.Y * width + mid.X + 1] = Exts.ColorLerp(0.5f, midcolor, colors[mid.Y * width + mid.X + 1]);
+					VertexColors[im] = Color2Float3(type.GetColor(Game.CosmeticRandom));
 
-					Color m, t, b, l, r;
+					if (vertexCaled[it])
+						VertexColors[it] = float3.Lerp(Color2Float3(type.GetColor(Game.CosmeticRandom)), VertexColors[it], 0.5f);
+					else
+						VertexColors[it] = Color2Float3(type.GetColor(Game.CosmeticRandom));
+
+					if (vertexCaled[ib])
+						VertexColors[ib] = float3.Lerp(Color2Float3(type.GetColor(Game.CosmeticRandom)), VertexColors[ib], 0.5f);
+					else
+						VertexColors[ib] = Color2Float3(type.GetColor(Game.CosmeticRandom));
+
+					if (vertexCaled[il])
+						VertexColors[il] = float3.Lerp(Color2Float3(type.GetColor(Game.CosmeticRandom)), VertexColors[il], 0.5f);
+					else
+						VertexColors[il] = Color2Float3(type.GetColor(Game.CosmeticRandom));
+
+					if (vertexCaled[ir])
+						VertexColors[ir] = float3.Lerp(Color2Float3(type.GetColor(Game.CosmeticRandom)), VertexColors[ir], 0.5f);
+					else
+						VertexColors[ir] = Color2Float3(type.GetColor(Game.CosmeticRandom));
+
+					int hm, ht, hb, hl, hr;
+					float3 pm, pt, pb, pl, pr;
 					switch (ramp)
 					{
 						case 0:
-							m = heightColor;
-							t = heightColor;
-							b = heightColor;
-							l = heightColor;
-							r = heightColor;
+							hm = heightBase;
+							ht = heightBase;
+							hb = heightBase;
+							hl = heightBase;
+							hr = heightBase;
 							break;
 						case 1:
-							m =	heightColorHalf;
-							t =	heightColor;
-							b =	heightColorUpper;
-							l =	heightColor;
-							r =	heightColorUpper;
+							hm = heightHalf;
+							ht = heightBase;
+							hb = heightUpper;
+							hl = heightBase;
+							hr = heightUpper;
 							break;
 						case 2:
-							m = heightColorHalf;
-							t =	heightColor;
-							b =	heightColorUpper;
-							l =	heightColorUpper;
-							r =	heightColor;
+							hm = heightHalf;
+							ht = heightBase;
+							hb = heightUpper;
+							hl = heightUpper;
+							hr = heightBase;
 							break;
 						case 3:
-							m =	heightColorHalf;
-							t =	heightColorUpper;
-							b =	heightColor;
-							l =	heightColorUpper;
-							r = heightColor;
+							hm = heightHalf;
+							ht = heightUpper;
+							hb = heightBase;
+							hl = heightUpper;
+							hr = heightBase;
 							break;
 						case 4:
-							m = heightColorHalf;
-							t =	heightColorUpper;
-							b =	heightColor;
-							l =	heightColor;
-							r =	heightColorUpper;
+							hm = heightHalf;
+							ht = heightUpper;
+							hb = heightBase;
+							hl = heightBase;
+							hr = heightUpper;
 							break;
 						case 5:
-							m =	heightColorUpper;
-							t =	heightColorUpper;
-							b =	heightColorUpper;
-							l =	heightColor;
-							r =	heightColorUpper;
+							hm = heightUpper;
+							ht = heightUpper;
+							hb = heightUpper;
+							hl = heightBase;
+							hr = heightUpper;
 							break;
 						case 6:
-							m =	heightColor;
-							t =	heightColor;
-							b =	heightColor;
-							l =	heightColorUpper;
-							r =	heightColor;
+							hm = heightBase;
+							ht = heightBase;
+							hb = heightBase;
+							hl = heightUpper;
+							hr = heightBase;
 							break;
 						case 7:
-							m =	heightColor;
-							t =	heightColorUpper;
-							b =	heightColor;
-							l =	heightColor;
-							r =	heightColor;
+							hm = heightBase;
+							ht = heightUpper;
+							hb = heightBase;
+							hl = heightBase;
+							hr = heightBase;
 							break;
 						case 8:
-							m =	heightColor;
-							t =	heightColor;
-							b =	heightColor;
-							l =	heightColor;
-							r = heightColorUpper;
+							hm = heightBase;
+							ht = heightBase;
+							hb = heightBase;
+							hl = heightBase;
+							hr = heightUpper;
 							break;
 						case 9:
-							m =	heightColorUpper;
-							t =	heightColor;
-							b =	heightColorUpper;
-							l =	heightColorUpper;
-							r = heightColorUpper;
+							hm = heightUpper;
+							ht = heightBase;
+							hb = heightUpper;
+							hl = heightUpper;
+							hr = heightUpper;
 							break;
 						case 10:
-							m =	heightColorUpper;
-							t =	heightColorUpper;
-							b =	heightColorUpper;
-							l =	heightColorUpper;
-							r = heightColor;
+							hm = heightUpper;
+							ht = heightUpper;
+							hb = heightUpper;
+							hl = heightUpper;
+							hr = heightBase;
 							break;
 						case 11:
-							m =	heightColorUpper;
-							t =	heightColorUpper;
-							b =	heightColor;
-							l =	heightColorUpper;
-							r = heightColorUpper;
+							hm = heightUpper;
+							ht = heightUpper;
+							hb = heightBase;
+							hl = heightUpper;
+							hr = heightUpper;
 							break;
 						case 12:
-							m =	heightColorUpper;
-							t =	heightColorUpper;
-							b =	heightColorUpper;
-							l =	heightColor;
-							r = heightColorUpper;
+							hm = heightUpper;
+							ht = heightUpper;
+							hb = heightUpper;
+							hl = heightBase;
+							hr = heightUpper;
 							break;
 						case 13:
-							m =	heightColorUpper;
-							t =	heightColor;
-							b =	heightColorUppest;
-							l =	heightColorUpper;
-							r = heightColorUpper;
+							hm = heightUpper;
+							ht = heightBase;
+							hb = heightUppest;
+							hl = heightUpper;
+							hr = heightUpper;
 							break;
 						case 14:
-							m =	heightColorUpper;
-							t =	heightColorUpper;
-							b =	heightColorUpper;
-							l =	heightColorUppest;
-							r = heightColor;
+							hm = heightUpper;
+							ht = heightUpper;
+							hb = heightUpper;
+							hl = heightUppest;
+							hr = heightBase;
 							break;
 						case 15:
-							m =	heightColorUpper;
-							t =	heightColorUppest;
-							b =	heightColor;
-							l =	heightColorUpper;
-							r = heightColorUpper;
+							hm = heightUpper;
+							ht = heightUppest;
+							hb = heightBase;
+							hl = heightUpper;
+							hr = heightUpper;
 							break;
 						case 16:
-							m =	heightColorUpper;
-							t =	heightColorUpper;
-							b =	heightColorUpper;
-							l =	heightColor;
-							r = heightColorUppest;
+							hm = heightUpper;
+							ht = heightUpper;
+							hb = heightUpper;
+							hl = heightBase;
+							hr = heightUppest;
 							break;
 						case 17:
-							m =	heightColor;
-							t =	heightColor;
-							b =	heightColor;
-							l =	heightColorUpper;
-							r = heightColorUpper;
+							hm = heightBase;
+							ht = heightBase;
+							hb = heightBase;
+							hl = heightUpper;
+							hr = heightUpper;
 							break;
 						case 18:
-							m =	heightColorUpper;
-							t =	heightColorUpper;
-							b =	heightColorUpper;
-							l =	heightColor;
-							r = heightColor;
+							hm = heightUpper;
+							ht = heightUpper;
+							hb = heightUpper;
+							hl = heightBase;
+							hr = heightBase;
 							break;
 						case 19:
-							m =	heightColorUpper;
-							t =	heightColor;
-							b =	heightColor;
-							l =	heightColorUpper;
-							r = heightColorUpper;
+							hm = heightUpper;
+							ht = heightBase;
+							hb = heightBase;
+							hl = heightUpper;
+							hr = heightUpper;
 							break;
 						case 20:
-							m =	heightColor;
-							t =	heightColorUpper;
-							b =	heightColorUpper;
-							l =	heightColor;
-							r = heightColor;
+							hm = heightBase;
+							ht = heightUpper;
+							hb = heightUpper;
+							hl = heightBase;
+							hr = heightBase;
 							break;
 						default:
-							m = heightColor;
-							t = heightColor;
-							b = heightColor;
-							l = heightColor;
-							r = heightColor;
+							hm = heightBase;
+							ht = heightBase;
+							hb = heightBase;
+							hl = heightBase;
+							hr = heightBase;
 							Console.WriteLine("Invalid Ramp Type: " + ramp);
 							break;
 					}
+					var cpos = uv.ToCPos(this);
+					VertexWPos[im] = TileWPos(hm, cpos, WPos.Zero);
+					VertexPos[im] = TilePos(VertexWPos[im]);
+					pm = VertexPos[im];
 
-					heights[mid.Y * width + mid.X] = m;
-					heights[(mid.Y - 1) * width + mid.X] = Exts.ColorLerp(0.5f, t, heights[(mid.Y - 1) * width + mid.X]);
-					heights[(mid.Y + 1) * width + mid.X] = Exts.ColorLerp(0.5f, b, heights[(mid.Y + 1) * width + mid.X]);
-					heights[mid.Y * width + mid.X - 1] = Exts.ColorLerp(0.5f, l, heights[mid.Y * width + mid.X - 1]);
-					heights[mid.Y * width + mid.X + 1] = Exts.ColorLerp(0.5f, r, heights[mid.Y * width + mid.X + 1]);
+					if (vertexCaled[it])
+					{
+						VertexWPos[it] = TileWPos(HMix(ht, VertexWPos[it].Z), cpos, new WPos(0, -724, 0));
+						//VertexWPos[it] = TileWPos(Math.Min(ht, VertexWPos[it].Z), cpos, new WPos(0, -724, 0));
+					}
+					else
+						VertexWPos[it] = TileWPos(ht / 4, cpos, new WPos(0, -724, 0));
+					VertexPos[it] = TilePos(VertexWPos[it]);
+					pt = VertexPos[it];
+
+					if (vertexCaled[ib])
+					{
+						VertexWPos[ib] = TileWPos(HMix(hb, VertexWPos[ib].Z), cpos, new WPos(0, 724, 0));
+						//VertexWPos[ib] = TileWPos(Math.Min(hb, VertexWPos[ib].Z), cpos, new WPos(0, 724, 0));
+
+					}
+					else
+						VertexWPos[ib] = TileWPos(hb / 4, cpos, new WPos(0, 724, 0));
+					VertexPos[ib] = TilePos(VertexWPos[ib]);
+					pb = VertexPos[ib];
+
+					if (vertexCaled[il])
+					{
+						VertexWPos[il] = TileWPos(HMix(hl, VertexWPos[il].Z), cpos, new WPos(-724, 0, 0));
+						//VertexWPos[il] = TileWPos(Math.Min(hl, VertexWPos[il].Z), cpos, new WPos(-724, 0, 0));
+
+					}
+					else
+						VertexWPos[il] = TileWPos(hl / 4, cpos, new WPos(-724, 0, 0));
+					VertexPos[il] = TilePos(VertexWPos[il]);
+					pl = VertexPos[il];
+
+					if (vertexCaled[ir])
+					{
+						VertexWPos[ir] = TileWPos(HMix(hr, VertexWPos[ir].Z), cpos, new WPos(724, 0, 0));
+						//VertexWPos[ir] = TileWPos(Math.Min(hr, VertexWPos[ir].Z), cpos, new WPos(724, 0, 0));
+
+					}
+					else
+						VertexWPos[ir] = TileWPos(hr / 4, cpos, new WPos(724, 0, 0));
+					VertexPos[ir] = TilePos(VertexWPos[ir]);
+					pr = VertexPos[ir];
+
+					vertexCaled[im] = true;
+					vertexCaled[it] = true;
+					vertexCaled[ib] = true;
+					vertexCaled[il] = true;
+					vertexCaled[ir] = true;
 				}
 			}
 
-			for (int i = 0; i < heights.Length; i++)
+			for (var y = 0; y < MapSize.Y; y++)
 			{
-				heightData[i * 4] = heights[i].R;
-				heightData[i * 4 + 1] = heights[i].G;
-				heightData[i * 4 + 2] = heights[i].B;
-				heightData[i * 4 + 3] = heights[i].A;
+				for (var x = 0; x < MapSize.X; x++)
+				{
+					var uv = new MPos(x, y);
+
+					int2 mid;
+					if (y % 2 == 0)
+					{
+						mid = new int2(2 * x + 1, y + 1);
+					}
+					else
+					{
+						mid = new int2(2 * x + 2, y + 1);
+					}
+
+					var ramp = Ramp[uv];
+
+					int im, it, ib, il, ir;
+					im = mid.Y * VertexArrayWidth + mid.X;
+					it = (mid.Y - 1) * VertexArrayWidth + mid.X;
+					ib = (mid.Y + 1) * VertexArrayWidth + mid.X;
+					il = mid.Y * VertexArrayWidth + mid.X - 1;
+					ir = mid.Y * VertexArrayWidth + mid.X + 1;
+
+					float3 pm, pt, pb, pl, pr;
+					float2 uvm, uvt, uvb, uvl, uvr;
+					pt = VertexPos[it];
+					pb = VertexPos[ib];
+					pl = VertexPos[il];
+					pr = VertexPos[ir];
+
+					if (ramp == 0)
+						VertexPos[im] = 0.25f * pt + 0.25f * pb + 0.25f * pl + 0.25f * pr;
+
+					pm = VertexPos[im];
+
+					uvm = new float2(0.5f, 0.5f);
+					uvt = new float2(CellInfo.TU, CellInfo.TV);
+					uvb = new float2(CellInfo.BU, CellInfo.BV);
+					uvl = new float2(CellInfo.LU, CellInfo.LV);
+					uvr = new float2(CellInfo.RU, CellInfo.RV);
+
+					var tlm = CalTBN(pt, pl, pm, uvt, uvl, uvm);
+					var tmr = CalTBN(pt, pm, pr, uvt, uvm, uvr);
+					var mlb = CalTBN(pm, pl, pb, uvm, uvl, uvb);
+					var mbr = CalTBN(pm, pb, pr, uvm, uvb, uvr);
+
+					if (ramp != 0)
+						VertexTBN[im] = (tlm * 0.25f + tmr * 0.25f + mlb * 0.25f + mbr * 0.25f);
+
+					if (vertexNmlCaled[it])
+						VertexTBN[it] = 0.25f * (tlm * 0.5f + tmr * 0.5f) + VertexTBN[it];
+					else
+						VertexTBN[it] = 0.25f * (tlm * 0.5f + tmr * 0.5f);
+
+					if (vertexNmlCaled[ib])
+						VertexTBN[ib] = 0.25f * (mlb * 0.5f + mbr * 0.5f) + VertexTBN[ib];
+					else
+						VertexTBN[ib] = 0.25f * (mlb * 0.5f + mbr * 0.5f);
+
+					if (vertexNmlCaled[il])
+						VertexTBN[il] = 0.25f * (mlb * 0.5f + tlm * 0.5f) + VertexTBN[il];
+					else
+						VertexTBN[il] = 0.25f * (mlb * 0.5f + tlm * 0.5f);
+
+					if (vertexNmlCaled[ir])
+						VertexTBN[ir] = 0.25f * (tmr * 0.5f + mbr * 0.5f) + VertexTBN[ir];
+					else
+						VertexTBN[ir] = 0.25f * (tmr * 0.5f + mbr * 0.5f);
+
+					vertexNmlCaled[im] = true;
+					vertexNmlCaled[it] = true;
+					vertexNmlCaled[ib] = true;
+					vertexNmlCaled[il] = true;
+					vertexNmlCaled[ir] = true;
+
+					var type = Rules.TerrainInfo.GetTerrainInfo(Tiles[uv]);
+					var typename = Rules.TerrainInfo.TerrainTypes[type.TerrainType].Type;
+					uint typeNum = 1;
+					switch (typename)
+					{
+						case "Water":
+						case "Cliff":
+							typeNum = 2;
+							break;
+						case "Rough":
+							typeNum = 3;
+							break;
+						default:
+							break;
+					}
+
+					CellInfo cellInfo = new CellInfo(VertexWPos[im], im, it, ib, il, ir, typeNum);
+
+					CellInfos[uv.ToCPos(this)] = cellInfo;
+				}
 			}
 
-			for (int i = 0; i < colors.Length; i++)
+			// normal fix for mixed height tile
+			for (var y = 0; y < MapSize.Y; y++)
 			{
-				colorData[i * 4] = colors[i].R;
-				colorData[i * 4 + 1] = colors[i].G;
-				colorData[i * 4 + 2] = colors[i].B;
-				colorData[i * 4 + 3] = colors[i].A;
+				for (var x = 0; x < MapSize.X; x++)
+				{
+					if (Ramp[new MPos(x, y)] != 0)
+						continue;
+
+					int2 mid;
+					if (y % 2 == 0)
+					{
+						mid = new int2(2 * x + 1, y + 1);
+					}
+					else
+					{
+						mid = new int2(2 * x + 2, y + 1);
+					}
+
+					int im, it, ib, il, ir;
+					im = mid.Y * VertexArrayWidth + mid.X;
+					it = (mid.Y - 1) * VertexArrayWidth + mid.X;
+					ib = (mid.Y + 1) * VertexArrayWidth + mid.X;
+					il = mid.Y * VertexArrayWidth + mid.X - 1;
+					ir = mid.Y * VertexArrayWidth + mid.X + 1;
+
+					VertexTBN[im] = (0.25f * VertexTBN[it] + 0.25f * VertexTBN[ib] + 0.25f * VertexTBN[il] + 0.25f * VertexTBN[ir]);
+				}
 			}
 
-			new Png(heightData, SpriteFrameType.Rgba32, width, height).Save(path + Title + "-height.png");
-			new Png(colorData, SpriteFrameType.Rgba32, width, height).Save(path + Title + "-color.png");
+			for (int i = 0; i < VertexTBN.Length; i++)
+			{
+				VertexTBN[i] = NormalizeTBN(VertexTBN[i]);
+			}
+		}
+
+		#region util for CalculateTileVertexInfo
+		vec3 CalNormal(float3 a, float3 b, float3 c)
+		{
+			var va = new vec3(a.X, a.Y, a.Z);
+			var vb = new vec3(b.X, b.Y, b.Z);
+			var vc = new vec3(c.X, c.Y, c.Z);
+			var ab = vb - va;
+			var ac = vc - va;
+			return vec3.Cross(ab, ac).Normalized;
+		}
+
+		mat3 CalTBN(float3 a, float3 b, float3 c, float2 uva, float2 uvb, float2 uvc)
+		{
+			// positions
+			vec3 pos1 = Float3toVec3(a);
+			vec3 pos2 = Float3toVec3(b);
+			vec3 pos3 = Float3toVec3(c);
+
+			// texture coordinates
+			vec2 uv1 = new vec2(uva.X, uva.Y);
+			vec2 uv2 = new vec2(uvb.X, uvb.Y);
+			vec2 uv3 = new vec2(uvc.X, uvc.Y);
+
+			// normal vector
+			vec3 nm = CalNormal(a, b, c);
+
+			vec3 edge1 = pos2 - pos1;
+			vec3 edge2 = pos3 - pos1;
+			vec2 deltaUV1 = uv2 - uv1;
+			vec2 deltaUV2 = uv3 - uv1;
+
+			float f = 1.0f / (deltaUV1.x * deltaUV2.y - deltaUV2.x * deltaUV1.y);
+
+			vec3 tangent = vec3.Zero;
+			tangent.x = f * (deltaUV2.y * edge1.x - deltaUV1.y * edge2.x);
+			tangent.y = f * (deltaUV2.y * edge1.y - deltaUV1.y * edge2.y);
+			tangent.z = f * (deltaUV2.y * edge1.z - deltaUV1.y * edge2.z);
+			tangent = tangent.Normalized;
+
+			vec3 bitangent = vec3.Zero;
+			bitangent.x = f * (-deltaUV2.x * edge1.x + deltaUV1.x * edge2.x);
+			bitangent.y = f * (-deltaUV2.x * edge1.y + deltaUV1.x * edge2.y);
+			bitangent.z = f * (-deltaUV2.x * edge1.z + deltaUV1.x * edge2.z);
+			bitangent = bitangent.Normalized;
+
+			return new mat3(tangent, bitangent, nm);
+		}
+
+		mat3 NormalizeTBN (mat3 tbn)
+		{
+			return new mat3(tbn.Column0.NormalizedSafe, tbn.Column1.NormalizedSafe, tbn.Column2.NormalizedSafe);
+		}
+
+		float3 Vec2Float3(vec3 vec)
+		{
+			return new float3(vec.x, vec.y, vec.z);
+		}
+
+		vec3 Float3toVec3(float3 f3)
+		{
+			return new vec3(f3.X, f3.Y, f3.Z);
+		}
+
+		int HMix(int a, int b)
+		{
+			//return a + (b - a) / 2;
+			return a / 4 + b;
+		}
+
+		float3 Color2Float3(in Color color)
+		{
+			return new float3(((float)color.R) / 255, ((float)color.G) / 255, ((float)color.B) / 255);
+		}
+
+		WPos TileWPos(int h, CPos cell, WPos offset)
+		{
+			return new WPos(724 * (cell.X - cell.Y + 1) + offset.X, 724 * (cell.X + cell.Y + 1) + offset.Y, h + offset.Z);
+		}
+
+		float3 TilePos(WPos pos)
+		{
+			return new float3(-(float)pos.X / 256,
+										(float)pos.Y / 256,
+										(float)pos.Z / 256);
+		}
+
+		float3 TilePos(int h, CPos cell, WPos offset)
+		{
+			var pos = new WPos(724 * (cell.X - cell.Y + 1) + offset.X, 724 * (cell.X + cell.Y + 1) + offset.Y, 0);
+
+			return new float3(-(float)pos.X / 256,
+										(float)pos.Y / 256,
+										(float)h / 256);
+		}
+
+		#endregion
+
+		/// <summary>
+		///  WIP
+		/// </summary>
+		public void SaveMapAsPng(string path)
+		{
+			if (Grid.Type != MapGridType.RectangularIsometric)
+				return;
+			Console.WriteLine("Saving Map " + Title + " As Png");
+			float mapMaxHeight = ((float)Grid.MaximumTerrainHeight * MapGrid.MapHeightStep) / 256;
+
+			var heightData = new byte[VertexPos.Length * 4];
+			var colorData = new byte[VertexPos.Length * 4];
+
+			for (int i = 0; i < VertexPos.Length; i++)
+			{
+				heightData[i * 4] = (byte)(VertexPos[i].Z * byte.MaxValue / mapMaxHeight);
+				heightData[i * 4 + 1] = 0;
+				heightData[i * 4 + 2] = 0;
+				heightData[i * 4 + 3] = byte.MaxValue;
+			}
+
+			for (int i = 0; i < VertexPos.Length; i++)
+			{
+				colorData[i * 4] = (byte)(VertexColors[i].X * byte.MaxValue);
+				colorData[i * 4 + 1] = (byte)(VertexColors[i].Y * byte.MaxValue);
+				colorData[i * 4 + 2] = (byte)(VertexColors[i].Z * byte.MaxValue);
+				colorData[i * 4 + 3] = byte.MaxValue;
+			}
+
+			new Png(heightData, SpriteFrameType.Rgba32, VertexArrayWidth, VertexArrayHeight).Save(path + Title + "-height.png");
+			new Png(colorData, SpriteFrameType.Rgba32, VertexArrayWidth, VertexArrayHeight).Save(path + Title + "-color.png");
 		}
 
 		public byte[] SaveBinaryData()
@@ -1116,30 +1513,49 @@ namespace OpenRA
 			return Bounds.Contains(puv.U, puv.V);
 		}
 
+		//public WPos CenterOfCell(CPos cell)
+		//{
+		//	if (Grid.Type == MapGridType.Rectangular)
+		//		return new WPos(1024 * cell.X + 512, 1024 * cell.Y + 512, 0);
+
+		//	// Convert from isometric cell position (x, y) to world position (u, v):
+		//	// (a) Consider the relationships:
+		//	//  - Center of origin cell is (512, 512)
+		//	//  - +x adds (512, 512) to world pos
+		//	//  - +y adds (-512, 512) to world pos
+		//	// (b) Therefore:
+		//	//  - ax + by adds (a - b) * 512 + 512 to u
+		//	//  - ax + by adds (a + b) * 512 + 512 to v
+		//	// (c) u, v coordinates run diagonally to the cell axes, and we define
+		//	//     1024 as the length projected onto the primary cell axis
+		//	//  - 512 * sqrt(2) = 724
+		//	var z = Height.TryGetValue(cell, out var height) ? MapGrid.MapHeightStep * height + Grid.Ramps[Ramp[cell]].CenterHeightOffset : 0;
+		//	return new WPos(724 * (cell.X - cell.Y + 1), 724 * (cell.X + cell.Y + 1), z);
+		//}
+
 		public WPos CenterOfCell(CPos cell)
 		{
-			if (Grid.Type == MapGridType.Rectangular)
-				return new WPos(1024 * cell.X + 512, 1024 * cell.Y + 512, 0);
+			if (CellInfos != null && CellInfos.Contains(cell))
+				return CellInfos[cell].CellCenterPos;
+			else
+			{
+				if (Grid.Type == MapGridType.Rectangular)
+					return new WPos(1024 * cell.X + 512, 1024 * cell.Y + 512, 0);
 
-			// Convert from isometric cell position (x, y) to world position (u, v):
-			// (a) Consider the relationships:
-			//  - Center of origin cell is (512, 512)
-			//  - +x adds (512, 512) to world pos
-			//  - +y adds (-512, 512) to world pos
-			// (b) Therefore:
-			//  - ax + by adds (a - b) * 512 + 512 to u
-			//  - ax + by adds (a + b) * 512 + 512 to v
-			// (c) u, v coordinates run diagonally to the cell axes, and we define
-			//     1024 as the length projected onto the primary cell axis
-			//  - 512 * sqrt(2) = 724
-			var z = Height.TryGetValue(cell, out var height) ? MapGrid.MapHeightStep * height + Grid.Ramps[Ramp[cell]].CenterHeightOffset : 0;
-			return new WPos(724 * (cell.X - cell.Y + 1), 724 * (cell.X + cell.Y + 1), z);
-		}
-
-		public int HeightOfCell(WPos pos)
-		{
-			var cell = CellContaining(pos);
-			return Height.Contains(cell) ? MapGrid.MapHeightStep * Height[cell] + Grid.Ramps[Ramp[cell]].CenterHeightOffset : 0;
+				// Convert from isometric cell position (x, y) to world position (u, v):
+				// (a) Consider the relationships:
+				//  - Center of origin cell is (512, 512)
+				//  - +x adds (512, 512) to world pos
+				//  - +y adds (-512, 512) to world pos
+				// (b) Therefore:
+				//  - ax + by adds (a - b) * 512 + 512 to u
+				//  - ax + by adds (a + b) * 512 + 512 to v
+				// (c) u, v coordinates run diagonally to the cell axes, and we define
+				//     1024 as the length projected onto the primary cell axis
+				//  - 512 * sqrt(2) = 724
+				var z = Height.TryGetValue(cell, out var height) ? MapGrid.MapHeightStep * height + Grid.Ramps[Ramp[cell]].CenterHeightOffset : 0;
+				return new WPos(724 * (cell.X - cell.Y + 1), 724 * (cell.X + cell.Y + 1), z);
+			}
 		}
 
 		public WPos CenterOfSubCell(CPos cell, SubCell subCell)
@@ -1161,6 +1577,19 @@ namespace OpenRA
 			return CenterOfCell(cell);
 		}
 
+		public int HeightOfCell(WPos pos)
+		{
+			var cell = CellContaining(pos);
+			return Height.Contains(cell) ? MapGrid.MapHeightStep * Height[cell] + Grid.Ramps[Ramp[cell]].CenterHeightOffset : 0;
+		}
+
+		public int HeightOfCell(CPos cell)
+		{
+			if (CellInfos != null && CellInfos.Contains(cell))
+				return CellInfos[cell].CellCenterPos.Z;
+			else
+				return Height.Contains(cell) ? MapGrid.MapHeightStep * Height[cell] + Grid.Ramps[Ramp[cell]].CenterHeightOffset : 0;
+		}
 		public WDist DistanceAboveTerrain(WPos pos)
 		{
 			if (Grid.Type == MapGridType.Rectangular)

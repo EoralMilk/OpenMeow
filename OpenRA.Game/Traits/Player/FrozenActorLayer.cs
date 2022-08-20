@@ -34,7 +34,7 @@ namespace OpenRA.Traits
 
 	public class FrozenActor
 	{
-		public readonly PPos[] Footprint;
+		public readonly MPos[] Footprint;
 		public readonly WPos CenterPosition;
 		readonly Actor actor;
 		readonly ICreatesFrozenActors frozenTrait;
@@ -80,7 +80,7 @@ namespace OpenRA.Traits
 		float3 flashTint;
 		float? flashAlpha;
 
-		public FrozenActor(Actor actor, ICreatesFrozenActors frozenTrait, PPos[] footprint, Player viewer, bool startsRevealed)
+		public FrozenActor(Actor actor, ICreatesFrozenActors frozenTrait, MPos[] footprint, Player viewer, bool startsRevealed)
 		{
 			this.actor = actor;
 			this.frozenTrait = frozenTrait;

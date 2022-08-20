@@ -28,7 +28,7 @@ namespace OpenRA.Platforms.Default
 		readonly IShaderBindings bindings;
 		protected uint CompileShaderObject(int type, string name)
 		{
-			var ext = type == OpenGL.GL_VERTEX_SHADER ? "vert" : "frag";
+			var ext = type == OpenGL.GL_VERTEX_SHADER ? "vert" : (type == OpenGL.GL_FRAGMENT_SHADER ? "frag" : "geom");
 			var filename = name + "." + ext;
 			string code;
 
@@ -296,22 +296,34 @@ namespace OpenRA.Platforms.Default
 			OpenGL.CheckGLError();
 		}
 
-		public void SetVec(string name, float[] vec, int length)
+		public void SetVec(string name, float x, float y, float z, float w)
+		{
+			VerifyThreadAffinity();
+			OpenGL.glUseProgram(program);
+			OpenGL.CheckGLError();
+			var param = OpenGL.glGetUniformLocation(program, name);
+			OpenGL.CheckGLError();
+			OpenGL.glUniform4f(param, x, y, z, w);
+			OpenGL.CheckGLError();
+		}
+
+		public void SetVecArray(string name, float[] vec, int vecLength, int count)
 		{
 			VerifyThreadAffinity();
 			var param = OpenGL.glGetUniformLocation(program, name);
 			OpenGL.CheckGLError();
+
 			unsafe
 			{
 				fixed (float* pVec = vec)
 				{
 					var ptr = new IntPtr(pVec);
-					switch (length)
+					switch (vecLength)
 					{
-						case 1: OpenGL.glUniform1fv(param, 1, ptr); break;
-						case 2: OpenGL.glUniform2fv(param, 1, ptr); break;
-						case 3: OpenGL.glUniform3fv(param, 1, ptr); break;
-						case 4: OpenGL.glUniform4fv(param, 1, ptr); break;
+						case 1: OpenGL.glUniform1fv(param, count, ptr); break;
+						case 2: OpenGL.glUniform2fv(param, count, ptr); break;
+						case 3: OpenGL.glUniform3fv(param, count, ptr); break;
+						case 4: OpenGL.glUniform4fv(param, count, ptr); break;
 						default: throw new InvalidDataException("Invalid vector length");
 					}
 				}

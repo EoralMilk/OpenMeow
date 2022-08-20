@@ -1,10 +1,11 @@
 General:
 	Name: Temperate
 	Id: TEMPERATE
+	Extensions: .tem, .shp
 	HeightDebugColors: 00000080, 00004480, 00008880, 0000CC80, 0000FF80, 4400CC80, 88008880, CC004480, FF110080, FF550080, FF990080, FFDD0080, DDFF0080, 99FF0080, 55FF0080, 11FF0080
 	EditorTemplateOrder: Misc Buildings, Clear, Cliff Pieces, Ice Flow, House, Blank, Ice Ramps, Cliff Set, Civilian Buildings, Shore Pieces, Rough LAT tile, Clear/Rough LAT, Cliff/Water pieces, Bendy Dirt Roads, Dirt Road Junctions, Straight Dirt Roads, Bridges, Paved Roads, Water, Dirt Road Slopes, Slope Set Pieces, Dead Oil Tanker, Ruins, Waterfalls, Ground 01, Ground 02, Sand, Sand/Clear LAT, Rough ground, Paved Road Ends, TrainBridges, Pavement, Pavement/Clear LAT, Paved road bits, Green, Green/Clear LAT, Ramp edge fixup, Water slopes, Pavement (Use for LAT), Paved Road Slopes, Monorail Slopes, Waterfalls-B, Waterfalls-C, Waterfalls-D, Tunnel Floor, Tunnel Side, TrackTunnel Floor, Destroyable Cliffs, Water Caves, Scrin Wreckage, DirtTrackTunnel Floor, DirtTunnel Floor, Crystal LAT tile, Clear Crystal LAT, Swampy, Swampy LAT, Blue Mold, Blue Mold LAT, Crystal Cliff, Kodiak Crash
 	SheetSize: 2048
-	EnableDepth: true
+	EnableDepth: false
 	MinHeightColorBrightness: 1.0
 	MaxHeightColorBrightness: 1.6
 
@@ -132,7 +133,7 @@ Templates:
 	Template@3:
 		Categories: Misc Buildings
 		Id: 3
-		Images: bld03.tem
+		Images: dirtcleartile.shp #bld03.tem
 		Size: 3, 3
 		Tiles:
 			0: Cliff
@@ -227,7 +228,7 @@ Templates:
 	Template@8:
 		Categories: Cliff Pieces
 		Id: 8
-		Images: clif01.tem
+		Images: dirtcleartile.shp #clif01.tem
 		Size: 1, 1
 		Tiles:
 			0: Rough
@@ -238,7 +239,7 @@ Templates:
 	Template@9:
 		Categories: Cliff Pieces
 		Id: 9
-		Images: clif02.tem
+		Images: dirtcleartile.shp #clif02.tem
 		Size: 1, 1
 		Tiles:
 			0: Rough
@@ -472,7 +473,7 @@ Templates:
 	Template@40:
 		Categories: Ice Ramps
 		Id: 40
-		Images: slope01.tem, slope01a.tem, slope01b.tem, slope01c.tem
+		Images: clear01.tem, clear01a.tem, clear01b.tem, clear01c.tem, clear01d.tem, clear01e.tem, clear01f.tem, clear01g.tem #slope01.tem, slope01a.tem, slope01b.tem, slope01c.tem
 		Size: 1, 1
 		Tiles:
 			0: Clear
@@ -484,7 +485,7 @@ Templates:
 	Template@41:
 		Categories: Ice Ramps
 		Id: 41
-		Images: slope02.tem, slope02a.tem, slope02b.tem, slope02c.tem
+		Images: clear01.tem, clear01a.tem, clear01b.tem, clear01c.tem, clear01d.tem, clear01e.tem, clear01f.tem, clear01g.tem #slope02.tem, slope02a.tem, slope02b.tem, slope02c.tem
 		Size: 1, 1
 		Tiles:
 			0: Clear
@@ -496,7 +497,7 @@ Templates:
 	Template@42:
 		Categories: Ice Ramps
 		Id: 42
-		Images: slope03.tem, slope03a.tem, slope03b.tem, slope03c.tem
+		Images: clear01.tem, clear01a.tem, clear01b.tem, clear01c.tem, clear01d.tem, clear01e.tem, clear01f.tem, clear01g.tem #slope03.tem, slope03a.tem, slope03b.tem, slope03c.tem
 		Size: 1, 1
 		Tiles:
 			0: Clear
@@ -508,7 +509,7 @@ Templates:
 	Template@43:
 		Categories: Ice Ramps
 		Id: 43
-		Images: slope04.tem, slope04a.tem, slope04b.tem, slope04c.tem
+		Images: clear01.tem, clear01a.tem, clear01b.tem, clear01c.tem, clear01d.tem, clear01e.tem, clear01f.tem, clear01g.tem #slope04.tem, slope04a.tem, slope04b.tem, slope04c.tem
 		Size: 1, 1
 		Tiles:
 			0: Clear
@@ -520,7 +521,7 @@ Templates:
 	Template@44:
 		Categories: Ice Ramps
 		Id: 44
-		Images: slope05.tem, slope05a.tem, slope05b.tem, slope05c.tem
+		Images: clear01.tem, clear01a.tem, clear01b.tem, clear01c.tem, clear01d.tem, clear01e.tem, clear01f.tem, clear01g.tem #slope05.tem, slope05a.tem, slope05b.tem, slope05c.tem
 		Size: 1, 1
 		Tiles:
 			0: Clear
@@ -532,7 +533,7 @@ Templates:
 	Template@45:
 		Categories: Ice Ramps
 		Id: 45
-		Images: slope06.tem, slope06a.tem, slope06b.tem, slope06c.tem
+		Images: clear01.tem, clear01a.tem, clear01b.tem, clear01c.tem, clear01d.tem, clear01e.tem, clear01f.tem, clear01g.tem #slope06.tem, slope06a.tem, slope06b.tem, slope06c.tem
 		Size: 1, 1
 		Tiles:
 			0: Clear
@@ -544,7 +545,7 @@ Templates:
 	Template@46:
 		Categories: Ice Ramps
 		Id: 46
-		Images: slope07.tem, slope07a.tem, slope07b.tem, slope07c.tem
+		Images: clear01.tem, clear01a.tem, clear01b.tem, clear01c.tem, clear01d.tem, clear01e.tem, clear01f.tem, clear01g.tem #slope07.tem, slope07a.tem, slope07b.tem, slope07c.tem
 		Size: 1, 1
 		Tiles:
 			0: Clear
@@ -556,7 +557,7 @@ Templates:
 	Template@47:
 		Categories: Ice Ramps
 		Id: 47
-		Images: slope08.tem, slope08a.tem, slope08b.tem, slope08c.tem
+		Images: clear01.tem, clear01a.tem, clear01b.tem, clear01c.tem, clear01d.tem, clear01e.tem, clear01f.tem, clear01g.tem #slope08.tem, slope08a.tem, slope08b.tem, slope08c.tem
 		Size: 1, 1
 		Tiles:
 			0: Clear
@@ -568,7 +569,7 @@ Templates:
 	Template@48:
 		Categories: Ice Ramps
 		Id: 48
-		Images: slope09.tem, slope09a.tem, slope09b.tem, slope09c.tem
+		Images: clear01.tem, clear01a.tem, clear01b.tem, clear01c.tem, clear01d.tem, clear01e.tem, clear01f.tem, clear01g.tem #slope09.tem, slope09a.tem, slope09b.tem, slope09c.tem
 		Size: 1, 1
 		Tiles:
 			0: Clear
@@ -580,7 +581,7 @@ Templates:
 	Template@49:
 		Categories: Ice Ramps
 		Id: 49
-		Images: slope10.tem, slope10a.tem, slope10b.tem, slope10c.tem
+		Images: clear01.tem, clear01a.tem, clear01b.tem, clear01c.tem, clear01d.tem, clear01e.tem, clear01f.tem, clear01g.tem #slope10.tem, slope10a.tem, slope10b.tem, slope10c.tem
 		Size: 1, 1
 		Tiles:
 			0: Clear
@@ -592,7 +593,7 @@ Templates:
 	Template@50:
 		Categories: Ice Ramps
 		Id: 50
-		Images: slope11.tem, slope11a.tem, slope11b.tem, slope11c.tem
+		Images: clear01.tem, clear01a.tem, clear01b.tem, clear01c.tem, clear01d.tem, clear01e.tem, clear01f.tem, clear01g.tem #slope11.tem, slope11a.tem, slope11b.tem, slope11c.tem
 		Size: 1, 1
 		Tiles:
 			0: Clear
@@ -604,7 +605,7 @@ Templates:
 	Template@51:
 		Categories: Ice Ramps
 		Id: 51
-		Images: slope12.tem, slope12a.tem, slope12b.tem, slope12c.tem
+		Images: clear01.tem, clear01a.tem, clear01b.tem, clear01c.tem, clear01d.tem, clear01e.tem, clear01f.tem, clear01g.tem #slope12.tem, slope12a.tem, slope12b.tem, slope12c.tem
 		Size: 1, 1
 		Tiles:
 			0: Clear
@@ -616,7 +617,7 @@ Templates:
 	Template@52:
 		Categories: Ice Ramps
 		Id: 52
-		Images: slope13.tem, slope13a.tem, slope13b.tem, slope13c.tem
+		Images: clear01.tem, clear01a.tem, clear01b.tem, clear01c.tem, clear01d.tem, clear01e.tem, clear01f.tem, clear01g.tem #slope13.tem, slope13a.tem, slope13b.tem, slope13c.tem
 		Size: 1, 1
 		Tiles:
 			0: Clear
@@ -628,7 +629,7 @@ Templates:
 	Template@53:
 		Categories: Ice Ramps
 		Id: 53
-		Images: slope14.tem, slope14a.tem, slope14b.tem, slope14c.tem
+		Images: clear01.tem, clear01a.tem, clear01b.tem, clear01c.tem, clear01d.tem, clear01e.tem, clear01f.tem, clear01g.tem #slope14.tem, slope14a.tem, slope14b.tem, slope14c.tem
 		Size: 1, 1
 		Tiles:
 			0: Clear
@@ -640,7 +641,7 @@ Templates:
 	Template@54:
 		Categories: Ice Ramps
 		Id: 54
-		Images: slope15.tem, slope15a.tem, slope15b.tem, slope15c.tem
+		Images: clear01.tem, clear01a.tem, clear01b.tem, clear01c.tem, clear01d.tem, clear01e.tem, clear01f.tem, clear01g.tem #slope15.tem, slope15a.tem, slope15b.tem, slope15c.tem
 		Size: 1, 1
 		Tiles:
 			0: Clear
@@ -652,7 +653,7 @@ Templates:
 	Template@55:
 		Categories: Ice Ramps
 		Id: 55
-		Images: slope16.tem, slope16a.tem, slope16b.tem, slope16c.tem
+		Images: clear01.tem, clear01a.tem, clear01b.tem, clear01c.tem, clear01d.tem, clear01e.tem, clear01f.tem, clear01g.tem #slope16.tem, slope16a.tem, slope16b.tem, slope16c.tem
 		Size: 1, 1
 		Tiles:
 			0: Clear
@@ -664,7 +665,7 @@ Templates:
 	Template@56:
 		Categories: Ice Ramps
 		Id: 56
-		Images: slope17.tem
+		Images: clear01.tem, clear01a.tem, clear01b.tem, clear01c.tem, clear01d.tem, clear01e.tem, clear01f.tem, clear01g.tem #slope17.tem
 		Size: 1, 1
 		Tiles:
 			0: Rough
@@ -676,7 +677,7 @@ Templates:
 	Template@57:
 		Categories: Ice Ramps
 		Id: 57
-		Images: slope18.tem
+		Images: clear01.tem, clear01a.tem, clear01b.tem, clear01c.tem, clear01d.tem, clear01e.tem, clear01f.tem, clear01g.tem #slope18.tem
 		Size: 1, 1
 		Tiles:
 			0: Rough
@@ -688,7 +689,7 @@ Templates:
 	Template@58:
 		Categories: Ice Ramps
 		Id: 58
-		Images: slope19.tem
+		Images: clear01.tem, clear01a.tem, clear01b.tem, clear01c.tem, clear01d.tem, clear01e.tem, clear01f.tem, clear01g.tem #slope19.tem
 		Size: 1, 1
 		Tiles:
 			0: Rough
@@ -700,7 +701,7 @@ Templates:
 	Template@59:
 		Categories: Ice Ramps
 		Id: 59
-		Images: slope20.tem
+		Images: clear01.tem, clear01a.tem, clear01b.tem, clear01c.tem, clear01d.tem, clear01e.tem, clear01f.tem, clear01g.tem #slope20.tem
 		Size: 1, 1
 		Tiles:
 			0: Rough
@@ -712,7 +713,7 @@ Templates:
 	Template@60:
 		Categories: Cliff Set
 		Id: 60
-		Images: cliff01.tem
+		Images: dirtcleartile.shp #cliff01.tem
 		Size: 2, 3
 		Tiles:
 			0: Cliff
@@ -741,7 +742,7 @@ Templates:
 	Template@61:
 		Categories: Cliff Set
 		Id: 61
-		Images: cliff02.tem
+		Images: dirtcleartile.shp #cliff02.tem
 		Size: 1, 2
 		Tiles:
 			0: Cliff
@@ -759,7 +760,7 @@ Templates:
 	Template@62:
 		Categories: Cliff Set
 		Id: 62
-		Images: cliff03.tem
+		Images: dirtcleartile.shp #cliff03.tem
 		Size: 2, 3
 		Tiles:
 			0: Cliff
@@ -788,7 +789,7 @@ Templates:
 	Template@63:
 		Categories: Cliff Set
 		Id: 63
-		Images: cliff04.tem
+		Images: dirtcleartile.shp #cliff04.tem
 		Size: 2, 3
 		Tiles:
 			0: Cliff
@@ -817,7 +818,7 @@ Templates:
 	Template@64:
 		Categories: Cliff Set
 		Id: 64
-		Images: cliff05.tem
+		Images: dirtcleartile.shp #cliff05.tem
 		Size: 2, 2
 		Tiles:
 			0: Cliff
@@ -847,7 +848,7 @@ Templates:
 	Template@65:
 		Categories: Cliff Set
 		Id: 65
-		Images: cliff06.tem
+		Images: dirtcleartile.shp #cliff06.tem
 		Size: 2, 2
 		Tiles:
 			0: Cliff
@@ -877,7 +878,7 @@ Templates:
 	Template@66:
 		Categories: Cliff Set
 		Id: 66
-		Images: cliff07.tem
+		Images: dirtcleartile.shp #cliff07.tem
 		Size: 2, 2
 		Tiles:
 			0: Cliff
@@ -907,7 +908,7 @@ Templates:
 	Template@67:
 		Categories: Cliff Set
 		Id: 67
-		Images: cliff08.tem
+		Images: dirtcleartile.shp #cliff08.tem
 		Size: 1, 2
 		Tiles:
 			0: Cliff
@@ -925,7 +926,7 @@ Templates:
 	Template@68:
 		Categories: Cliff Set
 		Id: 68
-		Images: cliff09.tem
+		Images: dirtcleartile.shp #cliff09.tem
 		Size: 2, 2
 		Tiles:
 			0: Cliff
@@ -949,7 +950,7 @@ Templates:
 	Template@69:
 		Categories: Cliff Set
 		Id: 69
-		Images: cliff10.tem
+		Images: dirtcleartile.shp #cliff10.tem
 		Size: 2, 2
 		Tiles:
 			0: Cliff
@@ -973,7 +974,7 @@ Templates:
 	Template@70:
 		Categories: Cliff Set
 		Id: 70
-		Images: cliff11.tem
+		Images: dirtcleartile.shp #cliff11.tem
 		Size: 2, 2
 		Tiles:
 			0: Cliff
@@ -997,7 +998,7 @@ Templates:
 	Template@71:
 		Categories: Cliff Set
 		Id: 71
-		Images: cliff12.tem
+		Images: dirtcleartile.shp #cliff12.tem
 		Size: 1, 1
 		Tiles:
 			0: Cliff
@@ -1009,7 +1010,7 @@ Templates:
 	Template@72:
 		Categories: Cliff Set
 		Id: 72
-		Images: cliff13.tem
+		Images: dirtcleartile.shp #cliff13.tem
 		Size: 1, 1
 		Tiles:
 			0: Cliff
@@ -1021,7 +1022,7 @@ Templates:
 	Template@73:
 		Categories: Cliff Set
 		Id: 73
-		Images: cliff14.tem
+		Images: dirtcleartile.shp #cliff14.tem
 		Size: 1, 1
 		Tiles:
 			0: Cliff
@@ -1033,7 +1034,7 @@ Templates:
 	Template@74:
 		Categories: Cliff Set
 		Id: 74
-		Images: cliff15.tem
+		Images: dirtcleartile.shp #cliff15.tem
 		Size: 2, 2
 		Tiles:
 			0: Cliff
@@ -1063,7 +1064,7 @@ Templates:
 	Template@75:
 		Categories: Cliff Set
 		Id: 75
-		Images: cliff16.tem
+		Images: dirtcleartile.shp #cliff16.tem
 		Size: 2, 2
 		Tiles:
 			0: Cliff
@@ -1093,7 +1094,7 @@ Templates:
 	Template@76:
 		Categories: Cliff Set
 		Id: 76
-		Images: cliff17.tem
+		Images: dirtcleartile.shp #cliff17.tem
 		Size: 2, 2
 		Tiles:
 			0: Cliff
@@ -1123,7 +1124,7 @@ Templates:
 	Template@77:
 		Categories: Cliff Set
 		Id: 77
-		Images: cliff18.tem
+		Images: dirtcleartile.shp #cliff18.tem
 		Size: 2, 1
 		Tiles:
 			0: Cliff
@@ -1141,7 +1142,7 @@ Templates:
 	Template@78:
 		Categories: Cliff Set
 		Id: 78
-		Images: cliff19.tem
+		Images: dirtcleartile.shp #cliff19.tem
 		Size: 3, 2
 		Tiles:
 			0: Cliff
@@ -1171,7 +1172,7 @@ Templates:
 	Template@79:
 		Categories: Cliff Set
 		Id: 79
-		Images: cliff20.tem
+		Images: dirtcleartile.shp #cliff20.tem
 		Size: 3, 2
 		Tiles:
 			0: Cliff
@@ -1201,7 +1202,7 @@ Templates:
 	Template@80:
 		Categories: Cliff Set
 		Id: 80
-		Images: cliff21.tem
+		Images: dirtcleartile.shp #cliff21.tem
 		Size: 3, 2
 		Tiles:
 			0: Cliff
@@ -1231,7 +1232,7 @@ Templates:
 	Template@81:
 		Categories: Cliff Set
 		Id: 81
-		Images: cliff22.tem
+		Images: dirtcleartile.shp #cliff22.tem
 		Size: 2, 1
 		Tiles:
 			0: Cliff
@@ -1249,7 +1250,7 @@ Templates:
 	Template@82:
 		Categories: Cliff Set
 		Id: 82
-		Images: cliff23.tem
+		Images: dirtcleartile.shp #cliff23.tem
 		Size: 2, 1
 		Tiles:
 			0: Cliff
@@ -1267,7 +1268,7 @@ Templates:
 	Template@83:
 		Categories: Cliff Set
 		Id: 83
-		Images: cliff24.tem
+		Images: dirtcleartile.shp #cliff24.tem
 		Size: 2, 1
 		Tiles:
 			0: Cliff
@@ -1285,7 +1286,7 @@ Templates:
 	Template@84:
 		Categories: Cliff Set
 		Id: 84
-		Images: cliff25.tem
+		Images: dirtcleartile.shp #cliff25.tem
 		Size: 2, 1
 		Tiles:
 			0: Cliff
@@ -1303,7 +1304,7 @@ Templates:
 	Template@85:
 		Categories: Cliff Set
 		Id: 85
-		Images: cliff26.tem
+		Images: dirtcleartile.shp #cliff26.tem
 		Size: 1, 1
 		Tiles:
 			0: Cliff
@@ -1315,7 +1316,7 @@ Templates:
 	Template@86:
 		Categories: Cliff Set
 		Id: 86
-		Images: cliff27.tem
+		Images: dirtcleartile.shp #cliff27.tem
 		Size: 2, 2
 		Tiles:
 			0: Cliff
@@ -1339,7 +1340,7 @@ Templates:
 	Template@87:
 		Categories: Cliff Set
 		Id: 87
-		Images: cliff28.tem
+		Images: dirtcleartile.shp #cliff28.tem
 		Size: 2, 2
 		Tiles:
 			1: Cliff
@@ -1363,7 +1364,7 @@ Templates:
 	Template@88:
 		Categories: Cliff Set
 		Id: 88
-		Images: cliff29.tem
+		Images: dirtcleartile.shp #cliff29.tem
 		Size: 1, 1
 		Tiles:
 			0: Cliff
@@ -1375,7 +1376,7 @@ Templates:
 	Template@89:
 		Categories: Cliff Set
 		Id: 89
-		Images: cliff30.tem
+		Images: dirtcleartile.shp #cliff30.tem
 		Size: 1, 1
 		Tiles:
 			0: Cliff
@@ -1387,7 +1388,7 @@ Templates:
 	Template@90:
 		Categories: Cliff Set
 		Id: 90
-		Images: cliff31.tem
+		Images: dirtcleartile.shp #cliff31.tem
 		Size: 2, 2
 		Tiles:
 			0: Cliff
@@ -1411,7 +1412,7 @@ Templates:
 	Template@91:
 		Categories: Cliff Set
 		Id: 91
-		Images: cliff32.tem
+		Images: dirtcleartile.shp #cliff32.tem
 		Size: 2, 2
 		Tiles:
 			1: Cliff
@@ -1435,7 +1436,7 @@ Templates:
 	Template@92:
 		Categories: Cliff Set
 		Id: 92
-		Images: cliff33.tem, cliff33a.tem
+		Images: dirtcleartile.shp #cliff33.tem, cliff33a.tem
 		Size: 1, 1
 		Tiles:
 			0: Cliff
@@ -1447,7 +1448,7 @@ Templates:
 	Template@93:
 		Categories: Cliff Set
 		Id: 93
-		Images: cliff34.tem, cliff34a.tem
+		Images: dirtcleartile.shp #cliff34.tem, cliff34a.tem
 		Size: 1, 1
 		Tiles:
 			0: Cliff
@@ -1459,7 +1460,7 @@ Templates:
 	Template@94:
 		Categories: Cliff Set
 		Id: 94
-		Images: cliff35.tem
+		Images: dirtcleartile.shp #cliff35.tem
 		Size: 1, 2
 		Tiles:
 			0: Cliff
@@ -1477,7 +1478,7 @@ Templates:
 	Template@95:
 		Categories: Cliff Set
 		Id: 95
-		Images: cliff36.tem
+		Images: dirtcleartile.shp #cliff36.tem
 		Size: 1, 2
 		Tiles:
 			0: Cliff
@@ -1495,7 +1496,7 @@ Templates:
 	Template@96:
 		Categories: Cliff Set
 		Id: 96
-		Images: cliff37.tem
+		Images: dirtcleartile.shp #cliff37.tem
 		Size: 1, 2
 		Tiles:
 			0: Cliff
@@ -1513,7 +1514,7 @@ Templates:
 	Template@97:
 		Categories: Cliff Set
 		Id: 97
-		Images: cliff38.tem
+		Images: dirtcleartile.shp #cliff38.tem
 		Size: 1, 1
 		Tiles:
 			0: Cliff
@@ -1525,7 +1526,7 @@ Templates:
 	Template@98:
 		Categories: Cliff Set
 		Id: 98
-		Images: cliff39.tem
+		Images: dirtcleartile.shp #cliff39.tem
 		Size: 1, 1
 		Tiles:
 			0: Cliff
@@ -1537,7 +1538,7 @@ Templates:
 	Template@99:
 		Categories: Cliff Set
 		Id: 99
-		Images: cliff40.tem
+		Images: dirtcleartile.shp #cliff40.tem
 		Size: 1, 1
 		Tiles:
 			0: Cliff
@@ -3261,7 +3262,7 @@ Templates:
 	Template@167:
 		Categories: Cliff/Water pieces
 		Id: 167
-		Images: wcliff01.tem
+		Images: dirtcleartile.shp #wcliff01.tem
 		Size: 2, 3
 		Tiles:
 			0: Cliff
@@ -3291,7 +3292,7 @@ Templates:
 	Template@168:
 		Categories: Cliff/Water pieces
 		Id: 168
-		Images: wcliff02.tem
+		Images: dirtcleartile.shp #wcliff02.tem
 		Size: 1, 2
 		Tiles:
 			0: Cliff
@@ -3309,7 +3310,7 @@ Templates:
 	Template@169:
 		Categories: Cliff/Water pieces
 		Id: 169
-		Images: wcliff03.tem
+		Images: dirtcleartile.shp #wcliff03.tem
 		Size: 2, 3
 		Tiles:
 			0: Cliff
@@ -3339,7 +3340,7 @@ Templates:
 	Template@170:
 		Categories: Cliff/Water pieces
 		Id: 170
-		Images: wcliff04.tem
+		Images: dirtcleartile.shp #wcliff04.tem
 		Size: 2, 3
 		Tiles:
 			0: Cliff
@@ -3369,7 +3370,7 @@ Templates:
 	Template@171:
 		Categories: Cliff/Water pieces
 		Id: 171
-		Images: wcliff05.tem
+		Images: dirtcleartile.shp #wcliff05.tem
 		Size: 2, 2
 		Tiles:
 			0: Cliff
@@ -3399,7 +3400,7 @@ Templates:
 	Template@172:
 		Categories: Cliff/Water pieces
 		Id: 172
-		Images: wcliff06.tem
+		Images: dirtcleartile.shp #wcliff06.tem
 		Size: 2, 2
 		Tiles:
 			0: Cliff
@@ -3429,7 +3430,7 @@ Templates:
 	Template@173:
 		Categories: Cliff/Water pieces
 		Id: 173
-		Images: wcliff07.tem
+		Images: dirtcleartile.shp #wcliff07.tem
 		Size: 2, 2
 		Tiles:
 			0: Cliff
@@ -3459,7 +3460,7 @@ Templates:
 	Template@174:
 		Categories: Cliff/Water pieces
 		Id: 174
-		Images: wcliff08.tem
+		Images: dirtcleartile.shp #wcliff08.tem
 		Size: 1, 2
 		Tiles:
 			0: Cliff
@@ -3477,7 +3478,7 @@ Templates:
 	Template@175:
 		Categories: Cliff/Water pieces
 		Id: 175
-		Images: wcliff09.tem
+		Images: dirtcleartile.shp #wcliff09.tem
 		Size: 2, 2
 		Tiles:
 			0: Cliff
@@ -3501,7 +3502,7 @@ Templates:
 	Template@176:
 		Categories: Cliff/Water pieces
 		Id: 176
-		Images: wcliff10.tem
+		Images: dirtcleartile.shp #wcliff10.tem
 		Size: 2, 2
 		Tiles:
 			0: Cliff
@@ -3530,7 +3531,7 @@ Templates:
 	Template@177:
 		Categories: Cliff/Water pieces
 		Id: 177
-		Images: wcliff11.tem
+		Images: dirtcleartile.shp #wcliff11.tem
 		Size: 2, 2
 		Tiles:
 			0: Cliff
@@ -3554,7 +3555,7 @@ Templates:
 	Template@178:
 		Categories: Cliff/Water pieces
 		Id: 178
-		Images: wcliff12.tem
+		Images: dirtcleartile.shp #wcliff12.tem
 		Size: 1, 1
 		Tiles:
 			0: Cliff
@@ -3566,7 +3567,7 @@ Templates:
 	Template@179:
 		Categories: Cliff/Water pieces
 		Id: 179
-		Images: wcliff13.tem
+		Images: dirtcleartile.shp #wcliff13.tem
 		Size: 1, 1
 		Tiles:
 			0: Cliff
@@ -3578,7 +3579,7 @@ Templates:
 	Template@180:
 		Categories: Cliff/Water pieces
 		Id: 180
-		Images: wcliff14.tem
+		Images: dirtcleartile.shp #wcliff14.tem
 		Size: 1, 1
 		Tiles:
 			0: Cliff
@@ -3590,7 +3591,7 @@ Templates:
 	Template@181:
 		Categories: Cliff/Water pieces
 		Id: 181
-		Images: wcliff15.tem
+		Images: dirtcleartile.shp #wcliff15.tem
 		Size: 2, 2
 		Tiles:
 			0: Cliff
@@ -3620,7 +3621,7 @@ Templates:
 	Template@182:
 		Categories: Cliff/Water pieces
 		Id: 182
-		Images: wcliff16.tem
+		Images: dirtcleartile.shp #wcliff16.tem
 		Size: 2, 2
 		Tiles:
 			0: Cliff
@@ -3650,7 +3651,7 @@ Templates:
 	Template@183:
 		Categories: Cliff/Water pieces
 		Id: 183
-		Images: wcliff17.tem
+		Images: dirtcleartile.shp #wcliff17.tem
 		Size: 2, 2
 		Tiles:
 			0: Cliff
@@ -3680,7 +3681,7 @@ Templates:
 	Template@184:
 		Categories: Cliff/Water pieces
 		Id: 184
-		Images: wcliff18.tem
+		Images: dirtcleartile.shp #wcliff18.tem
 		Size: 2, 1
 		Tiles:
 			0: Cliff
@@ -3698,7 +3699,7 @@ Templates:
 	Template@185:
 		Categories: Cliff/Water pieces
 		Id: 185
-		Images: wcliff19.tem
+		Images: dirtcleartile.shp #wcliff19.tem
 		Size: 3, 2
 		Tiles:
 			0: Cliff
@@ -3728,7 +3729,7 @@ Templates:
 	Template@186:
 		Categories: Cliff/Water pieces
 		Id: 186
-		Images: wcliff20.tem
+		Images: dirtcleartile.shp #wcliff20.tem
 		Size: 3, 2
 		Tiles:
 			0: Cliff
@@ -3758,7 +3759,7 @@ Templates:
 	Template@187:
 		Categories: Cliff/Water pieces
 		Id: 187
-		Images: wcliff21.tem
+		Images: dirtcleartile.shp #wcliff21.tem
 		Size: 3, 2
 		Tiles:
 			0: Cliff
@@ -3788,7 +3789,7 @@ Templates:
 	Template@188:
 		Categories: Cliff/Water pieces
 		Id: 188
-		Images: wcliff22.tem
+		Images: dirtcleartile.shp #wcliff22.tem
 		Size: 2, 1
 		Tiles:
 			0: Cliff
@@ -3806,7 +3807,7 @@ Templates:
 	Template@189:
 		Categories: Cliff/Water pieces
 		Id: 189
-		Images: wcliff23.tem
+		Images: dirtcleartile.shp #wcliff23.tem
 		Size: 2, 3
 		Tiles:
 			0: Cliff
@@ -3841,7 +3842,7 @@ Templates:
 	Template@190:
 		Categories: Cliff/Water pieces
 		Id: 190
-		Images: wcliff24.tem
+		Images: dirtcleartile.shp #wcliff24.tem
 		Size: 1, 2
 		Tiles:
 			0: Cliff
@@ -3858,7 +3859,7 @@ Templates:
 	Template@191:
 		Categories: Cliff/Water pieces
 		Id: 191
-		Images: wcliff25.tem
+		Images: dirtcleartile.shp #wcliff25.tem
 		Size: 2, 1
 		Tiles:
 			0: Cliff
@@ -3875,7 +3876,7 @@ Templates:
 	Template@192:
 		Categories: Cliff/Water pieces
 		Id: 192
-		Images: wcliff26.tem
+		Images: dirtcleartile.shp #wcliff26.tem
 		Size: 2, 1
 		Tiles:
 			0: Cliff
@@ -3892,7 +3893,7 @@ Templates:
 	Template@193:
 		Categories: Cliff/Water pieces
 		Id: 193
-		Images: wcliff27.tem
+		Images: dirtcleartile.shp #wcliff27.tem
 		Size: 1, 2
 		Tiles:
 			0: Cliff
@@ -3909,7 +3910,7 @@ Templates:
 	Template@194:
 		Categories: Cliff/Water pieces
 		Id: 194
-		Images: wcliff28.tem
+		Images: dirtcleartile.shp #wcliff28.tem
 		Size: 3, 2
 		Tiles:
 			0: Cliff
@@ -10276,7 +10277,7 @@ Templates:
 	Template@387:
 		Categories: Dirt Road Slopes
 		Id: 387
-		Images: drslpe01.tem
+		Images: droads23.tem, droads24.tem #drslpe01.tem
 		Size: 1, 2
 		Tiles:
 			0: DirtRoad
@@ -10294,7 +10295,7 @@ Templates:
 	Template@388:
 		Categories: Dirt Road Slopes
 		Id: 388
-		Images: drslpe02.tem
+		Images: droads23.tem, droads24.tem #drslpe02.tem
 		Size: 1, 2
 		Tiles:
 			0: DirtRoad
@@ -10312,7 +10313,7 @@ Templates:
 	Template@389:
 		Categories: Dirt Road Slopes
 		Id: 389
-		Images: drslpe03.tem
+		Images: droads56.tem, droads57.tem #drslpe03.tem
 		Size: 2, 1
 		Tiles:
 			0: DirtRoad
@@ -10330,7 +10331,7 @@ Templates:
 	Template@390:
 		Categories: Dirt Road Slopes
 		Id: 390
-		Images: drslpe04.tem
+		Images: droads56.tem, droads57.tem #drslpe04.tem
 		Size: 2, 1
 		Tiles:
 			0: DirtRoad
@@ -10348,7 +10349,7 @@ Templates:
 	Template@391:
 		Categories: Dirt Road Slopes
 		Id: 391
-		Images: drslpe05.tem
+		Images: droads23.tem, droads24.tem #drslpe05.tem
 		Size: 1, 2
 		Tiles:
 			0: DirtRoad
@@ -10366,7 +10367,7 @@ Templates:
 	Template@392:
 		Categories: Dirt Road Slopes
 		Id: 392
-		Images: drslpe06.tem
+		Images: droads23.tem, droads24.tem #drslpe06.tem
 		Size: 1, 2
 		Tiles:
 			0: DirtRoad
@@ -10384,7 +10385,7 @@ Templates:
 	Template@393:
 		Categories: Dirt Road Slopes
 		Id: 393
-		Images: drslpe07.tem
+		Images: droads56.tem, droads57.tem #drslpe07.tem
 		Size: 2, 1
 		Tiles:
 			0: DirtRoad
@@ -10402,7 +10403,7 @@ Templates:
 	Template@394:
 		Categories: Dirt Road Slopes
 		Id: 394
-		Images: drslpe08.tem
+		Images: droads56.tem, droads57.tem #drslpe08.tem
 		Size: 2, 1
 		Tiles:
 			0: DirtRoad
@@ -10420,7 +10421,7 @@ Templates:
 	Template@403:
 		Categories: Slope Set Pieces
 		Id: 403
-		Images: ramp01.tem
+		Images: dirtcleartile.shp #ramp01.tem
 		Size: 3, 4
 		Tiles:
 			1: Clear
@@ -10490,7 +10491,7 @@ Templates:
 	Template@404:
 		Categories: Slope Set Pieces
 		Id: 404
-		Images: ramp02.tem
+		Images: dirtcleartile.shp #ramp02.tem
 		Size: 3, 4
 		Tiles:
 			0: Clear
@@ -10560,7 +10561,7 @@ Templates:
 	Template@405:
 		Categories: Slope Set Pieces
 		Id: 405
-		Images: ramp03.tem
+		Images: dirtcleartile.shp #ramp03.tem
 		Size: 4, 3
 		Tiles:
 			0: Clear
@@ -10630,7 +10631,7 @@ Templates:
 	Template@406:
 		Categories: Slope Set Pieces
 		Id: 406
-		Images: ramp04.tem
+		Images: dirtcleartile.shp #ramp04.tem
 		Size: 4, 3
 		Tiles:
 			1: Cliff
@@ -10700,7 +10701,7 @@ Templates:
 	Template@407:
 		Categories: Slope Set Pieces
 		Id: 407
-		Images: ramp05.tem
+		Images: dirtcleartile.shp #ramp05.tem
 		Size: 3, 4
 		Tiles:
 			1: Clear
@@ -10769,7 +10770,7 @@ Templates:
 	Template@408:
 		Categories: Slope Set Pieces
 		Id: 408
-		Images: ramp06.tem
+		Images: dirtcleartile.shp #ramp06.tem
 		Size: 3, 4
 		Tiles:
 			0: Clear
@@ -10819,7 +10820,7 @@ Templates:
 	Template@409:
 		Categories: Slope Set Pieces
 		Id: 409
-		Images: ramp07.tem
+		Images: dirtcleartile.shp #ramp07.tem
 		Size: 2, 2
 		Tiles:
 			0: Cliff
@@ -10845,7 +10846,7 @@ Templates:
 	Template@410:
 		Categories: Slope Set Pieces
 		Id: 410
-		Images: ramp08.tem
+		Images: dirtcleartile.shp #ramp08.tem
 		Size: 4, 3
 		Tiles:
 			1: Cliff
@@ -10914,7 +10915,7 @@ Templates:
 	Template@411:
 		Categories: Slope Set Pieces
 		Id: 411
-		Images: ramp09.tem
+		Images: dirtcleartile.shp #ramp09.tem
 		Size: 4, 3
 		Tiles:
 			0: Clear
@@ -10964,7 +10965,7 @@ Templates:
 	Template@412:
 		Categories: Slope Set Pieces
 		Id: 412
-		Images: ramp10.tem
+		Images: dirtcleartile.shp #ramp10.tem
 		Size: 2, 2
 		Tiles:
 			0: Cliff
@@ -15349,7 +15350,7 @@ Templates:
 	Template@643:
 		Categories: Ramp edge fixup
 		Id: 643
-		Images: rmpfx01.tem, rmpfx01a.tem, rmpfx01b.tem, rmpfx01c.tem
+		Images: clear01.tem, clear01a.tem, clear01b.tem, clear01c.tem, clear01d.tem, clear01e.tem, clear01f.tem, clear01g.tem #rmpfx01.tem, rmpfx01a.tem, rmpfx01b.tem, rmpfx01c.tem
 		Size: 1, 1
 		Tiles:
 			0: Clear
@@ -15361,7 +15362,7 @@ Templates:
 	Template@644:
 		Categories: Ramp edge fixup
 		Id: 644
-		Images: rmpfx02.tem, rmpfx02a.tem, rmpfx02b.tem, rmpfx02c.tem
+		Images: clear01.tem, clear01a.tem, clear01b.tem, clear01c.tem, clear01d.tem, clear01e.tem, clear01f.tem, clear01g.tem #rmpfx02.tem, rmpfx02a.tem, rmpfx02b.tem, rmpfx02c.tem
 		Size: 1, 1
 		Tiles:
 			0: Clear
@@ -15373,7 +15374,7 @@ Templates:
 	Template@645:
 		Categories: Ramp edge fixup
 		Id: 645
-		Images: rmpfx03.tem, rmpfx03a.tem, rmpfx03b.tem, rmpfx03c.tem
+		Images: clear01.tem, clear01a.tem, clear01b.tem, clear01c.tem, clear01d.tem, clear01e.tem, clear01f.tem, clear01g.tem #rmpfx03.tem, rmpfx03a.tem, rmpfx03b.tem, rmpfx03c.tem
 		Size: 1, 1
 		Tiles:
 			0: Clear
@@ -15385,7 +15386,7 @@ Templates:
 	Template@646:
 		Categories: Ramp edge fixup
 		Id: 646
-		Images: rmpfx04.tem, rmpfx04a.tem, rmpfx04b.tem, rmpfx04c.tem
+		Images: clear01.tem, clear01a.tem, clear01b.tem, clear01c.tem, clear01d.tem, clear01e.tem, clear01f.tem, clear01g.tem #rmpfx04.tem, rmpfx04a.tem, rmpfx04b.tem, rmpfx04c.tem
 		Size: 1, 1
 		Tiles:
 			0: Clear
@@ -15397,7 +15398,7 @@ Templates:
 	Template@647:
 		Categories: Ramp edge fixup
 		Id: 647
-		Images: rmpfx05.tem, rmpfx05a.tem, rmpfx05b.tem, rmpfx05c.tem
+		Images: clear01.tem, clear01a.tem, clear01b.tem, clear01c.tem, clear01d.tem, clear01e.tem, clear01f.tem, clear01g.tem #rmpfx05.tem, rmpfx05a.tem, rmpfx05b.tem, rmpfx05c.tem
 		Size: 1, 1
 		Tiles:
 			0: Clear
@@ -15409,7 +15410,7 @@ Templates:
 	Template@648:
 		Categories: Ramp edge fixup
 		Id: 648
-		Images: rmpfx06.tem, rmpfx06a.tem, rmpfx06b.tem, rmpfx06c.tem
+		Images: clear01.tem, clear01a.tem, clear01b.tem, clear01c.tem, clear01d.tem, clear01e.tem, clear01f.tem, clear01g.tem #rmpfx06.tem, rmpfx06a.tem, rmpfx06b.tem, rmpfx06c.tem
 		Size: 1, 1
 		Tiles:
 			0: Clear
@@ -15421,7 +15422,7 @@ Templates:
 	Template@649:
 		Categories: Ramp edge fixup
 		Id: 649
-		Images: rmpfx07.tem, rmpfx07a.tem, rmpfx07b.tem, rmpfx07c.tem
+		Images: clear01.tem, clear01a.tem, clear01b.tem, clear01c.tem, clear01d.tem, clear01e.tem, clear01f.tem, clear01g.tem #rmpfx07.tem, rmpfx07a.tem, rmpfx07b.tem, rmpfx07c.tem
 		Size: 1, 1
 		Tiles:
 			0: Clear
@@ -15433,7 +15434,7 @@ Templates:
 	Template@650:
 		Categories: Ramp edge fixup
 		Id: 650
-		Images: rmpfx08.tem, rmpfx08a.tem, rmpfx08b.tem, rmpfx08c.tem
+		Images: clear01.tem, clear01a.tem, clear01b.tem, clear01c.tem, clear01d.tem, clear01e.tem, clear01f.tem, clear01g.tem #rmpfx08.tem, rmpfx08a.tem, rmpfx08b.tem, rmpfx08c.tem
 		Size: 1, 1
 		Tiles:
 			0: Clear
@@ -15445,7 +15446,7 @@ Templates:
 	Template@651:
 		Categories: Ramp edge fixup
 		Id: 651
-		Images: rmpfx09.tem, rmpfx09a.tem, rmpfx09b.tem, rmpfx09c.tem
+		Images: clear01.tem, clear01a.tem, clear01b.tem, clear01c.tem, clear01d.tem, clear01e.tem, clear01f.tem, clear01g.tem #rmpfx09.tem, rmpfx09a.tem, rmpfx09b.tem, rmpfx09c.tem
 		Size: 1, 1
 		Tiles:
 			0: Clear
@@ -15457,7 +15458,7 @@ Templates:
 	Template@652:
 		Categories: Ramp edge fixup
 		Id: 652
-		Images: rmpfx10.tem, rmpfx10a.tem, rmpfx10b.tem, rmpfx10c.tem
+		Images: clear01.tem, clear01a.tem, clear01b.tem, clear01c.tem, clear01d.tem, clear01e.tem, clear01f.tem, clear01g.tem #rmpfx10.tem, rmpfx10a.tem, rmpfx10b.tem, rmpfx10c.tem
 		Size: 1, 1
 		Tiles:
 			0: Clear
@@ -15469,7 +15470,7 @@ Templates:
 	Template@653:
 		Categories: Ramp edge fixup
 		Id: 653
-		Images: rmpfx11.tem, rmpfx11a.tem, rmpfx11b.tem, rmpfx11c.tem
+		Images: clear01.tem, clear01a.tem, clear01b.tem, clear01c.tem, clear01d.tem, clear01e.tem, clear01f.tem, clear01g.tem #rmpfx11.tem, rmpfx11a.tem, rmpfx11b.tem, rmpfx11c.tem
 		Size: 1, 1
 		Tiles:
 			0: Clear
@@ -15481,7 +15482,7 @@ Templates:
 	Template@654:
 		Categories: Ramp edge fixup
 		Id: 654
-		Images: rmpfx12.tem, rmpfx12a.tem, rmpfx12b.tem, rmpfx12c.tem
+		Images: clear01.tem, clear01a.tem, clear01b.tem, clear01c.tem, clear01d.tem, clear01e.tem, clear01f.tem, clear01g.tem #rmpfx12.tem, rmpfx12a.tem, rmpfx12b.tem, rmpfx12c.tem
 		Size: 1, 1
 		Tiles:
 			0: Clear
@@ -15624,7 +15625,7 @@ Templates:
 	Template@672:
 		Categories: Paved Road Slopes
 		Id: 672
-		Images: prslpe01.tem
+		Images: proad01.tem, proad01a.tem, proad01b.tem, proad01c.tem #prslpe01.tem
 		Size: 1, 3
 		Tiles:
 			0: Road
@@ -15648,7 +15649,7 @@ Templates:
 	Template@673:
 		Categories: Paved Road Slopes
 		Id: 673
-		Images: prslpe02.tem
+		Images: proad02.tem, proad02a.tem, proad02b.tem, proad02c.tem #prslpe02.tem
 		Size: 3, 1
 		Tiles:
 			0: Road
@@ -15672,7 +15673,7 @@ Templates:
 	Template@674:
 		Categories: Paved Road Slopes
 		Id: 674
-		Images: prslpe03.tem
+		Images: proad01.tem, proad01a.tem, proad01b.tem, proad01c.tem #prslpe03.tem
 		Size: 1, 3
 		Tiles:
 			0: Road
@@ -15696,7 +15697,7 @@ Templates:
 	Template@675:
 		Categories: Paved Road Slopes
 		Id: 675
-		Images: prslpe04.tem
+		Images: proad02.tem, proad02a.tem, proad02b.tem, proad02c.tem #prslpe04.tem
 		Size: 3, 1
 		Tiles:
 			0: DirtRoad

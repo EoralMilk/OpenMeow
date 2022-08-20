@@ -1,7 +1,9 @@
 overlay:
 	Defaults: place
 		Offset: 0, -12, 1
+		ZOffset: 20
 		ZRamp: 1
+		MeshType: Plane
 	build-valid-snow:
 	build-valid-temperate:
 	build-invalid:
@@ -11,7 +13,9 @@ overlay:
 editor-overlay:
 	Defaults: place
 		Offset: 0, -12, 1
+		ZOffset: 20
 		ZRamp: 1
+		MeshType: Plane
 	copy:
 	paste:
 		Start: 1
@@ -434,8 +438,8 @@ resources:
 		Offset: 0, -12, 1
 		ZRamp: 1
 		IgnoreWorldTint: true
-		ZOffset: 15
-		MeshType: Plane # useless, because the terrain meshtype is fixed
+		ZOffset: 22
+		MeshType: Plane
 	tib01: tib01
 	tib02: tib02
 	tib03: tib03
@@ -469,16 +473,41 @@ veins:
 		Offset: 0, -12, 24
 		MeshType: Plane
 
+# shroud:
+# 	Defaults:
+# 		Offset: 0, -1
+# 		ZRamp: 1
+# 		MeshType: Plane
+# 		BlendMode: Alpha
+# 	shroud:
+# 		Length: *
+# 	fog: fog
+# 		Length: *
+
 shroud:
 	Defaults:
+		Length: 12
 		Offset: 0, -1
-		ZRamp: 1
 		MeshType: Plane
 		BlendMode: Alpha
-	shroud:
-		Length: *
-	fog: fog
-		Length: *
+	typea: shadow
+	typeb: shadow
+		Start: 12
+	typec: shadow
+		Start: 24
+	typed: shadow
+		Start: 36
+	full: fullshroud
+		Length: 1
+
+testtile:
+	Defaults:
+		UseTilesetCode: false
+	 	AddExtension: false
+		Offset: 0, 0, 0
+		MeshType: Plane
+		BlendMode: None
+	dirt: dirt.png
 
 smallscorches:
 	Defaults:
@@ -808,3 +837,23 @@ cannonsmokecircle:
 		ZOffset: 512
 		Scale: 0.75
 		IgnoreWorldTint: true
+
+caryland:
+	idle: podring
+		Length: *
+		Tick: 50
+		ZOffset: -512
+		ZRamp: 1
+		Offset: 0, 0, 1
+		BlendMode: Translucent
+		MeshType: Plane
+
+dropland:
+	idle: podring
+		Length: *
+		Tick: 90
+		ZOffset: -512
+		ZRamp: 1
+		Offset: 0, 0, 1
+		BlendMode: Translucent
+		MeshType: Plane

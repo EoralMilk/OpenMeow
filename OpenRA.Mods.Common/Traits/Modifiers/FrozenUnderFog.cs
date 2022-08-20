@@ -26,14 +26,15 @@ namespace OpenRA.Mods.Common.Traits
 		public override object Create(ActorInitializer init) { return new FrozenUnderFog(init, this); }
 	}
 
-	public class FrozenUnderFog : ICreatesFrozenActors, IRenderModifier, IDefaultVisibility, ITick, ITickRender, ISync, INotifyCreated, INotifyOwnerChanged, INotifyActorDisposing
+	public class FrozenUnderFog : ICreatesFrozenActors, IRenderModifier, IDefaultVisibility, ITickRender, ISync, INotifyCreated, INotifyOwnerChanged, INotifyActorDisposing
 	{
 		[Sync]
 		public int VisibilityHash;
 
 		readonly FrozenUnderFogInfo info;
 		readonly bool startsRevealed;
-		readonly PPos[] footprint;
+		readonly CPos[] footprint;
+		readonly MPos[] footprintMPos;
 
 		PlayerDictionary<FrozenState> frozenStates;
 		bool isRendering;
@@ -61,17 +62,46 @@ namespace OpenRA.Mods.Common.Traits
 			startsRevealed = exploredMap && init.Contains<SpawnedByMapInit>() && !init.Contains<HiddenUnderFogInit>();
 			var buildingInfo = init.Self.Info.TraitInfoOrDefault<BuildingInfo>();
 			var footprintCells = buildingInfo?.FrozenUnderFogTiles(init.Self.Location).ToList() ?? new List<CPos>() { init.Self.Location };
-			footprint = footprintCells.SelectMany(c => map.ProjectedCellsCovering(c.ToMPos(map))).ToArray();
+
+			//footprint = footprintCells.SelectMany(c => map.ProjectedCellsCovering(c.ToMPos(map))).ToArray();
+			footprint = footprintCells.ToArray();
+			var footprintMPosList = new List<MPos>();
+			foreach (var c in footprint)
+			{
+				footprintMPosList.Add(c.ToMPos(map));
+			}
+
+			footprintMPos = footprintMPosList.ToArray();
 		}
 
 		void INotifyCreated.Created(Actor self)
 		{
 			frozenStates = new PlayerDictionary<FrozenState>(self.World, (player, playerIndex) =>
 			{
-				var frozenActor = new FrozenActor(self, this, footprint, player, startsRevealed);
+				var frozenActor = new FrozenActor(self, this, footprintMPos, player, startsRevealed);
 				player.PlayerActor.Trait<FrozenActorLayer>().Add(frozenActor);
-				return new FrozenState(frozenActor) { IsVisible = startsRevealed };
+				return new FrozenState(frozenActor) { IsVisible = !frozenActor.Visible };
 			});
+
+			// Set the initial visibility state
+			// This relies on actor.GetTargetablePositions(), which is also setup up in Created.
+			// Since we can't be sure whether our method will run after theirs, defer by a frame.
+			self.World.AddFrameEndTask(_ =>
+			{
+				for (var playerIndex = 0; playerIndex < frozenStates.Count; playerIndex++)
+				{
+					var state = frozenStates[playerIndex];
+					if (startsRevealed || state.IsVisible)
+					{
+						UpdateFrozenActor(state.FrozenActor, playerIndex);
+
+						// Needed so tooltips appear.
+						state.FrozenActor.Hidden = false;
+					}
+				}
+			});
+
+			created = true;
 		}
 
 		void UpdateFrozenActor(FrozenActor frozenActor, int playerIndex)
@@ -86,16 +116,20 @@ namespace OpenRA.Mods.Common.Traits
 			if (!created)
 				return;
 
-			// Update state visibility to match the frozen actor to ensure consistency within the tick
-			// The rest of the state will be updated by ITick.Tick below
-			frozenStates[frozen.Viewer].IsVisible = !frozen.Visible;
+			// Update state visibility to match the frozen actor to ensure consistency
+			var state = frozenStates[frozen.Viewer];
+			var isVisible = !frozen.Visible;
+			state.IsVisible = isVisible;
+
+			if (isVisible)
+				UpdateFrozenActor(frozen, frozen.Viewer.World.Players.IndexOf(frozen.Viewer));
 		}
 
 		bool IsVisibleInner(Player byPlayer)
 		{
 			// If fog is disabled visibility is determined by shroud
 			if (!byPlayer.Shroud.FogEnabled)
-				return byPlayer.Shroud.AnyExplored(footprint);
+				return byPlayer.Shroud.AnyExplored(footprintMPos);
 
 			return frozenStates[byPlayer].IsVisible;
 		}
@@ -107,37 +141,6 @@ namespace OpenRA.Mods.Common.Traits
 
 			var relationship = self.Owner.RelationshipWith(byPlayer);
 			return info.AlwaysVisibleRelationships.HasRelationship(relationship) || IsVisibleInner(byPlayer);
-		}
-
-		void ITick.Tick(Actor self)
-		{
-			if (self.Disposed)
-				return;
-
-			// Set the initial visibility state
-			// This relies on actor.GetTargetablePositions(), which is not safe to use from Created
-			// so we defer until the first real tick.
-			if (!created && startsRevealed)
-			{
-				for (var playerIndex = 0; playerIndex < frozenStates.Count; playerIndex++)
-					UpdateFrozenActor(frozenStates[playerIndex].FrozenActor, playerIndex);
-
-				created = true;
-				return;
-			}
-
-			VisibilityHash = 0;
-
-			for (var playerIndex = 0; playerIndex < frozenStates.Count; playerIndex++)
-			{
-				var state = frozenStates[playerIndex];
-				var frozenActor = state.FrozenActor;
-				var isVisible = !frozenActor.Visible;
-				state.IsVisible = isVisible;
-
-				if (isVisible)
-					UpdateFrozenActor(frozenActor, playerIndex);
-			}
 		}
 
 		void ITickRender.TickRender(WorldRenderer wr, Actor self)

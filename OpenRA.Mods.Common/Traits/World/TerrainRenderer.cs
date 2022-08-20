@@ -101,8 +101,14 @@ namespace OpenRA.Mods.Common.Traits
 			spriteLayer.Update(cell, sprite, paletteReference);
 		}
 
+		void IRenderTerrain.RenderTerrainEarly(WorldRenderer wr, Viewport viewport)
+		{
+			spriteLayer.Draw(wr.Viewport);
+		}
+
 		void IRenderTerrain.RenderTerrain(WorldRenderer wr, Viewport viewport)
 		{
+			//spriteLayer.DrawAgain();
 			spriteLayer.Draw(wr.Viewport);
 
 			foreach (var r in wr.World.WorldActor.TraitsImplementing<IRenderOverlay>())

@@ -412,7 +412,10 @@ namespace OpenRA.Traits
 	public interface IRenderShroud { void RenderShroud(WorldRenderer wr); }
 
 	[RequireExplicitImplementation]
-	public interface IRenderTerrain { void RenderTerrain(WorldRenderer wr, Viewport viewport); }
+	public interface IRenderTerrain {
+		void RenderTerrainEarly(WorldRenderer wr, Viewport viewport);
+		void RenderTerrain(WorldRenderer wr, Viewport viewport);
+	}
 
 	[RequireExplicitImplementation]
 	public interface ITerrainLighting
@@ -422,6 +425,7 @@ namespace OpenRA.Traits
 		float3 GetGlobalDirectLight();
 		float3 GetGlobalAmbient();
 		float GetGlobalAmbientIntencity();
+		void LightSourcesToMapShader(WPos tl, WPos br, IShader shader);
 
 	}
 

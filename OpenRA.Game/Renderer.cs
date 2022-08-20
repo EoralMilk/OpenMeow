@@ -28,6 +28,7 @@ namespace OpenRA
 		public SpriteRenderer WorldSpriteRenderer { get; private set; }
 		public RgbaSpriteRenderer WorldRgbaSpriteRenderer { get; private set; }
 		public RgbaColorRenderer WorldRgbaColorRenderer { get; private set; }
+		public MapRenderer MapRenderer { get; private set; }
 		public VxlRenderer WorldVxlRenderer { get; private set; }
 		public RgbaColorRenderer RgbaColorRenderer { get; private set; }
 		public SpriteRenderer SpriteRenderer { get; private set; }
@@ -54,6 +55,12 @@ namespace OpenRA
 		Size worldBufferSize;
 		IFrameBuffer worldBuffer;
 		ITexture worldTexture;
+		public ITexture WorldTexture { get
+			{
+				return worldTexture;
+			}
+		}
+
 		ITexture worldDepthTexture;
 		IFrameBuffer worldShadowBuffer;
 		ITexture worldShadowDepthTexture;
@@ -104,6 +111,7 @@ namespace OpenRA
 			WorldSpriteRenderer = new SpriteRenderer(this, Context.CreateUnsharedShader<CombinedShaderBindings>());
 			WorldRgbaSpriteRenderer = new RgbaSpriteRenderer(WorldSpriteRenderer);
 			WorldRgbaColorRenderer = new RgbaColorRenderer(WorldSpriteRenderer);
+			MapRenderer = new MapRenderer(this, Context.CreateUnsharedShader<MapShaderBindings>());
 			WorldVxlRenderer = new VxlRenderer(this);
 			SpriteRenderer = new SpriteRenderer(this, Context.CreateUnsharedShader<CombinedShaderBindings>());
 			RgbaSpriteRenderer = new RgbaSpriteRenderer(SpriteRenderer);
@@ -281,6 +289,8 @@ namespace OpenRA
 			//	lastWorldViewportSize = worldViewport.Size;
 			//}
 
+			MapRenderer.SetShadowParams();
+
 			WorldSpriteRenderer.SetCameraParams();
 			WorldSpriteRenderer.SetShadowParams();
 
@@ -309,10 +319,17 @@ namespace OpenRA
 			worldShadowBuffer.Bind();
 			Game.Renderer.Context.EnableDepthBuffer(DepthFunc.LessEqual);
 			Draw3DMeshesInstance(wr, true);
+
+			//MapRenderer.SetCameraParams(World3DRenderer, true);
+			//wr.TerrainRenderer?.RenderTerrainEarly(wr, wr.Viewport);
+
 			Game.Renderer.Context.DisableDepthBuffer();
 			worldShadowBuffer.Unbind();
 			Game.Renderer.Context.Clear();
 			worldBuffer.Bind();
+
+			MapRenderer.SetCameraParams(World3DRenderer, false);
+
 		}
 
 		public void Flush3DMeshesInstance(WorldRenderer wr)
@@ -385,10 +402,10 @@ namespace OpenRA
 				Flush();
 				worldBuffer.Unbind();
 
-				ScreenRenderer.SetAntialiasingPixelsPerTexel(Window.SurfaceSize.Height * 1f / worldTexture.Size.Height);
+				//ScreenRenderer.SetAntialiasingPixelsPerTexel(Window.SurfaceSize.Height * 1f / worldTexture.Size.Height);
 				//ScreenRenderer.SetShadowParams(worldShadowDepthTexture, worldDepthTexture, World3DRenderer);
 				ScreenRenderer.DrawScreen(worldTexture);
-				ScreenRenderer.SetAntialiasingPixelsPerTexel(0);
+				//ScreenRenderer.SetAntialiasingPixelsPerTexel(0);
 			}
 		}
 
@@ -423,10 +440,10 @@ namespace OpenRA
 
 			SpriteRenderer.SetPalette(currentPaletteTexture, palette.ColorShifts);
 			WorldSpriteRenderer.SetPalette(currentPaletteTexture, palette.ColorShifts);
+			MapRenderer.SetPalette(currentPaletteTexture, palette.ColorShifts);
 			WorldVxlRenderer.SetPalette(currentPaletteTexture);
 		}
 
-		// 最后把ui画出来好吗，画在最顶上
 		public void EndFrame(IInputHandler inputHandler)
 		{
 			if (renderType != RenderType.UI)

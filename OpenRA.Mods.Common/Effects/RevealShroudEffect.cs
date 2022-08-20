@@ -20,7 +20,7 @@ namespace OpenRA.Mods.Common.Effects
 {
 	public class RevealShroudEffect : IEffect
 	{
-		static readonly PPos[] NoCells = Array.Empty<PPos>();
+		static readonly CPos[] NoCells = Array.Empty<CPos>();
 
 		readonly WPos pos;
 		readonly Player player;
@@ -42,7 +42,7 @@ namespace OpenRA.Mods.Common.Effects
 			ticks = -delay;
 		}
 
-		void AddCellsToPlayerShroud(Player p, PPos[] uv)
+		void AddCellsToPlayerShroud(Player p, CPos[] uv)
 		{
 			if (validStances.HasRelationship(player.RelationshipWith(p)))
 				p.Shroud.AddSource(this, sourceType, uv);
@@ -50,7 +50,7 @@ namespace OpenRA.Mods.Common.Effects
 
 		void RemoveCellsFromPlayerShroud(Player p) { p.Shroud.RemoveSource(this); }
 
-		PPos[] ProjectedCells(World world)
+		CPos[] ProjectedCells(World world)
 		{
 			var map = world.Map;
 			var range = revealRadius;

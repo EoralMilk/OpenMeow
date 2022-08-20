@@ -689,8 +689,9 @@ namespace OpenRA
 				// Use worldRenderer.World instead of OrderManager.World to avoid a rendering mismatch while processing orders
 				if (worldRenderer != null && !worldRenderer.World.IsLoadingGameSave)
 				{
-					Renderer.BeginWorld(worldRenderer.Viewport.Rectangle);
 					Renderer.World3DRenderer.PrepareToRender(worldRenderer);
+
+					Renderer.BeginWorld(worldRenderer.Viewport.Rectangle);
 					Renderer.UpdateShadowBuffer(worldRenderer);
 
 					Sound.SetListenerPosition(worldRenderer.Viewport.CenterPosition);
@@ -865,12 +866,6 @@ namespace OpenRA
 
 		static RunStatus Run()
 		{
-			FP testFp = (FP)(3.1415926f);
-			FP testFP2 = 2.0f;
-			float testfloat = (float)(testFp * testFP2);
-			float testfloat2 = FP.ToFloat(FP.FastMul(testFp, testFP2));
-			Console.WriteLine("FP test: A: " + testfloat + " B:" + testfloat2);
-
 			if (Settings.Graphics.MaxFramerate < 1)
 			{
 				Settings.Graphics.MaxFramerate = new GraphicSettings().MaxFramerate;

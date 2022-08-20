@@ -25,7 +25,8 @@ namespace OpenRA.Graphics
 		readonly IVertexBuffer<ScreenVertex> vBuffer;
 
 		readonly float vertPos = 1.0f;
-
+		float3 screenLight = float3.Ones;
+		public Color ScreenTint = Color.White;
 		public ScreenRenderer(Renderer renderer, IShader shader)
 		{
 			this.renderer = renderer;
@@ -50,6 +51,7 @@ namespace OpenRA.Graphics
 
 			vBuffer = renderer.CreateVertexBuffer<ScreenVertex>(6);
 			vBuffer.SetData(vertices, 6);
+			SetScreenLight(Color.White);
 		}
 
 		public void DrawScreen(Sprite screenSprite, BlendMode blendMode = BlendMode.None)
@@ -78,6 +80,7 @@ namespace OpenRA.Graphics
 
 		public void DrawScreen(ITexture screenTexture, BlendMode blendMode = BlendMode.None)
 		{
+			//Console.WriteLine("ScreenLight: " + screenLight + " ScreenTint: " + ScreenTint);
 			shader.SetTexture("screenTexture", screenTexture);
 			renderer.Context.SetBlendMode(blendMode);
 			shader.PrepareRender();
@@ -85,9 +88,11 @@ namespace OpenRA.Graphics
 			renderer.Context.SetBlendMode(BlendMode.None);
 		}
 
-		public void SetAntialiasingPixelsPerTexel(float pxPerTx)
+		public void SetScreenLight(Color color)
 		{
-			shader.SetVec("AntialiasPixelsPerTexel", pxPerTx);
+			ScreenTint = color;
+			screenLight = new float3(((float)ScreenTint.R) / 255, ((float)ScreenTint.G) / 255, ((float)ScreenTint.B) / 255);
+			shader.SetVec("ScreenLight", screenLight.X, screenLight.Y, screenLight.Z);
 		}
 	}
 }

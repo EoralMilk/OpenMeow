@@ -1873,7 +1873,7 @@ Rules:
 	INGRNLMP:
 		TerrainLightSource:
 			Range: 5c880
-			Intensity: 0.01
+			Intensity: 0.36
 			RedTint: 0.01
 			GreenTint: 0.7
 			BlueTint: 0.01

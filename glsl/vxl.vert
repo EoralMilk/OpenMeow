@@ -38,6 +38,8 @@ out mat4 inverseViewProjection;
 out vec2 VplInfo;
 out vec4 vTint;
 out vec3 vLightModify;
+out vec3 vFragPos;
+
 // #endif
 
 vec4 DecodeMask(float x)
@@ -52,7 +54,7 @@ void main()
 {
 	mat4 model = mat4(iModelV1, iModelV2, iModelV3, iModelV4);
 
-	gl_Position = projection * view * model *aVertexPosition;
+	gl_Position = projection * view * model * aVertexPosition;
 	vTexCoord = aVertexTexCoord;
 	vChannelMask = DecodeMask(aVertexTexMetadata.s);
 	vNormalsMask = DecodeMask(aVertexTexMetadata.t);
@@ -62,4 +64,5 @@ void main()
 	VplInfo = iVplInfo;
 	vTint = iTint;
 	vLightModify = iLightModify;
+	vFragPos = (model * aVertexPosition).xyz;
 }

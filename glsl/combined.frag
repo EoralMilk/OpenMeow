@@ -336,13 +336,13 @@ void main()
 	}
 	else
 	{
-
+		if (vTint.a < 0.0)
+			c = vec4(vTint.rgb, -vTint.a);
+		
 		c = vec4(c.rgb * (1.0f - max(CalShadow(dirLight) - AmbientIntencity, 0.0f)), c.a);
 		// c = c * (1.0f - CalShadow(dirLight));
 		// A negative tint alpha indicates that the tint should replace the colour instead of multiplying it
-		if (vTint.a < 0.0)
-			c = vec4(vTint.rgb, -vTint.a);
-		else
+		if (vTint.a >= 0.0)
 			c *= vTint;
 
 		#if __VERSION__ == 120

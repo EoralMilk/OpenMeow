@@ -55,6 +55,8 @@ Packages:
 	# Issly's Voxel
 	~isslyvox01.mix
 	ts|bits/vxls/replace
+	ts|bits/caustics
+
 	ts|uibits
 	ts|meshes
 	ts|materials

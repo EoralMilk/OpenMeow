@@ -138,8 +138,13 @@
 		G: 255
 		B: 255
 		A: 64
-	TSShroudPalette@shroud:
+	ShroudPalette@shroud:
 		Name: shroud
+	ShroudPalette@fog:
+		Name: fog
+		Fog: true
+	# TSShroudPalette@shroud:
+	# 	Name: shroud
 	VoxelNormalsPalette@normals:
 		Name: normals
 		Type: RedAlert2
@@ -189,3 +194,4 @@
 		Name: terrainalpha
 		Alpha: 0.55
 	MenuPaletteEffect:
+		FadeLength: 20

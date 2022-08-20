@@ -9,6 +9,7 @@
  */
 #endregion
 
+using System;
 using System.Collections.Generic;
 using OpenRA.Graphics;
 using OpenRA.Primitives;
@@ -41,7 +42,7 @@ namespace OpenRA.Mods.Common.Traits
 		EffectType from = EffectType.Black;
 		EffectType to = EffectType.Black;
 
-		float frac = 0;
+		float frac = 1;
 		long startTime;
 		long endTime;
 
@@ -65,6 +66,23 @@ namespace OpenRA.Mods.Common.Traits
 			frac = (endTime - Game.RunTime) * 1f / (endTime - startTime);
 			if (frac < 0)
 				frac = startTime = endTime = 0;
+
+			if (Game.Renderer != null && Game.Renderer.ScreenRenderer != null)
+			{
+				var screenTo = ColorForEffect(to, Color.White);
+
+				if (endTime == 0)
+				{
+					Game.Renderer.ScreenRenderer.SetScreenLight(screenTo);
+					//Console.WriteLine("ScreenTint: " + screenTo + " From: " + from + " To: " + to);
+				}
+				else
+				{
+					var screenFrom = ColorForEffect(from, Color.White);
+					Game.Renderer.ScreenRenderer.SetScreenLight(Exts.ColorLerp(frac, screenTo, screenFrom));
+					//Console.WriteLine(" ScreenTint: " + Exts.ColorLerp(frac, screenTo, screenFrom) + " From: " + from + " To: " + to);
+				}
+			}
 
 			yield break;
 		}
@@ -91,25 +109,29 @@ namespace OpenRA.Mods.Common.Traits
 
 		public void AdjustPalette(IReadOnlyDictionary<string, MutablePalette> palettes)
 		{
-			if (to == EffectType.None && endTime == 0)
-				return;
+			return;
 
-			foreach (var pal in palettes.Values)
-			{
-				for (var x = 0; x < Palette.Size; x++)
-				{
-					var orig = pal.GetColor(x);
-					var t = ColorForEffect(to, orig);
+			//if (to == EffectType.None && endTime == 0)
+			//	return;
 
-					if (endTime == 0)
-						pal.SetColor(x, t);
-					else
-					{
-						var f = ColorForEffect(from, orig);
-						pal.SetColor(x, Exts.ColorLerp(frac, t, f));
-					}
-				}
-			}
+			//foreach (var pal in palettes.Values)
+			//{
+			//	for (var x = 0; x < Palette.Size; x++)
+			//	{
+			//		var orig = pal.GetColor(x);
+			//		var t = ColorForEffect(to, orig);
+
+			//		if (endTime == 0)
+			//		{
+			//			pal.SetColor(x, t);
+			//		}
+			//		else
+			//		{
+			//			var f = ColorForEffect(from, orig);
+			//			pal.SetColor(x, Exts.ColorLerp(frac, t, f));
+			//		}
+			//	}
+			//}
 		}
 
 		void IWorldLoaded.WorldLoaded(World w, WorldRenderer wr)

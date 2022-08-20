@@ -1624,7 +1624,7 @@ REDLAMP:
 		Name: Red Light Post
 	TerrainLightSource:
 		Range: 15c640
-		Intensity: 0.01
+		Intensity: 0.36
 		RedTint: 1.5
 		GreenTint: 0.01
 		BlueTint: 0.01
@@ -1646,7 +1646,7 @@ GRENLAMP:
 		Name: Green Light Post
 	TerrainLightSource:
 		Range: 15c640
-		Intensity: 0.01
+		Intensity: 0.36
 		RedTint: 0.01
 		GreenTint: 1.5
 		BlueTint: 0.01
@@ -1657,7 +1657,7 @@ BLUELAMP:
 		Name: Blue Light Post
 	TerrainLightSource:
 		Range: 15c640
-		Intensity: 0.01
+		Intensity: 0.36
 		RedTint: 0.01
 		GreenTint: 0.01
 		BlueTint: 0.7
@@ -1668,7 +1668,7 @@ YELWLAMP:
 		Name: Yellow Light Post
 	TerrainLightSource:
 		Range: 15c640
-		Intensity: 0.01
+		Intensity: 0.36
 		RedTint: 1.5
 		GreenTint: 1.5
 		BlueTint: 0.01
@@ -1679,7 +1679,7 @@ INYELWLAMP:
 		Name: (Invisible Yellow Light Post)
 	TerrainLightSource:
 		Range: 15c640
-		Intensity: 0.01
+		Intensity: 0.36
 		RedTint: 1.5
 		GreenTint: 1.5
 		BlueTint: 0.01
@@ -1690,7 +1690,7 @@ PURPLAMP:
 		Name: Purple Light Post
 	TerrainLightSource:
 		Range: 11c736
-		Intensity: 0.01
+		Intensity: 0.36
 		RedTint: 2.0
 		GreenTint: 0.01
 		BlueTint: 2.0
@@ -1701,7 +1701,7 @@ INPURPLAMP:
 		Name: (Invisible Purple Light Post)
 	TerrainLightSource:
 		Range: 11c736
-		Intensity: 0.01
+		Intensity: 0.36
 		RedTint: 2.0
 		GreenTint: 0.01
 		BlueTint: 2.0
@@ -1712,7 +1712,7 @@ INORANLAMP:
 		Name: (Invisible Orange Light Post)
 	TerrainLightSource:
 		Range: 11c736
-		Intensity: 0.01
+		Intensity: 0.36
 		RedTint: 2.0
 		GreenTint: 1.4
 		BlueTint: 0.3
@@ -1723,7 +1723,7 @@ INGRNLMP:
 		Name: (Invisible Green Light Post)
 	TerrainLightSource:
 		Range: 15c640
-		Intensity: 0.01
+		Intensity: 0.36
 		RedTint: 0.01
 		GreenTint: 1.5
 		BlueTint: 0.01
@@ -1734,7 +1734,7 @@ INREDLMP:
 		Name: (Invisible Red Light Post)
 	TerrainLightSource:
 		Range: 15c640
-		Intensity: 0.01
+		Intensity: 0.36
 		RedTint: 1.5
 		GreenTint: 0.01
 		BlueTint: 0.01
@@ -1745,7 +1745,7 @@ INBLULMP:
 		Name: (Invisible Blue Light Post)
 	TerrainLightSource:
 		Range: 15c640
-		Intensity: 0.01
+		Intensity: 0.36
 		RedTint: 0.01
 		GreenTint: 0.01
 		BlueTint: 0.7
