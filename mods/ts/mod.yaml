@@ -53,7 +53,8 @@ Packages:
 	ts|bits/vxls
 
 	# Issly's Voxel
-	~isslyvox01.mix
+	ts|bits/vxls/VxlFromIssly
+	
 	ts|bits/vxls/replace
 	ts|bits/caustics
 

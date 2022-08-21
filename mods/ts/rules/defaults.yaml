@@ -18,20 +18,6 @@
 		RequiresCondition: avoidtarget
 		Modifier: 0
 
-^WithIsslyVoxRender:
-	RenderModels:
-		Scale: 0.14
-		LightScale: 0.28
-		SpecularScale: 0.4
-		AmbientScale: 1		
-
-^WithRA2VoxRender:
-	RenderModels:
-		Scale: 0.11
-		LightScale: 0.3
-		SpecularScale: 0.45
-		AmbientScale: 1				
-
 ^SpriteActor:
 	BodyOrientation:
 		UseClassicPerspectiveFudge: False
@@ -1025,6 +1011,20 @@
 		ShadowPalette: shadow
 		Scale: 1.4
 	WithModelBody:
+
+^WithVoxelRenderFromIssly:
+	RenderModels:
+		Scale: 0.14
+		LightScale: 0.28
+		SpecularScale: 0.4
+		AmbientScale: 1		
+
+^WithRA2VoxRender:
+	RenderModels:
+		Scale: 0.11
+		LightScale: 0.3
+		SpecularScale: 0.45
+		AmbientScale: 1	
 
 ^CivilianVoxelVehicle:
 	Inherits: ^Vehicle

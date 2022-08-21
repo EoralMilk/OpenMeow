@@ -2,7 +2,7 @@ APC:
 	Inherits: ^Tank
 	Inherits@VOXELS: ^VoxelActor
 	Inherits@CARGOPIPS: ^CargoPips
-	Inherits: ^WithIsslyVoxRender
+	Inherits: ^WithVoxelRenderFromIssly
 	Valued:
 		Cost: 800
 	Tooltip:
@@ -231,7 +231,7 @@ MMCH:
 	RenderModels:
 		NormalsPalette: normals
 		ShadowPalette: shadow
-	Inherits: ^WithIsslyVoxRender
+	Inherits: ^WithVoxelRenderFromIssly
 	WithModelBarrel:
 		Scale: 0.14
 		LocalOffset: 0,51,256
@@ -245,7 +245,6 @@ HMEC:
 	Inherits@VOXELS: ^VoxelActor
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
-	Inherits: ^WithIsslyVoxRender
 	Valued:
 		Cost: 3000
 	Tooltip:
@@ -307,7 +306,7 @@ SONIC:
 	Inherits@VOXELS: ^VoxelActor
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
-	Inherits: ^WithIsslyVoxRender
+	Inherits: ^WithVoxelRenderFromIssly
 	Valued:
 		Cost: 1300
 	Tooltip:
