@@ -322,13 +322,20 @@ namespace OpenRA.Graphics
 		}
 
 		public static void FastCreateTile(MapVertex[] vertices, float3[] verticesColor,
-			in float3 mpos, in float3 tpos, in float3 bpos, in float3 lpos, in float3 rpos,
+			float3 mpos, float3 tpos, float3 bpos, float3 lpos, float3 rpos,
 			in mat3 mtbn, in mat3 ttbn, in mat3 btbn, in mat3 ltbn, in mat3 rtbn,
 			in float3 mColorOffset, in float3 tColorOffset, in float3 bColorOffset, in float3 lColorOffset, in float3 rColorOffset,
 			uint type,
-			Sprite r, int2 samplers, float paletteTextureIndex, float scale,
+			Sprite r, int2 samplers, float paletteTextureIndex, in vec3 ZOffset,
 			float alpha, int nv, bool rotation = true)
 		{
+			var viewOffset = new float3(ZOffset.x, ZOffset.y, ZOffset.z);
+			mpos += viewOffset;
+			tpos += viewOffset;
+			bpos += viewOffset;
+			lpos += viewOffset;
+			rpos += viewOffset;
+
 			float sl = 0;
 			float st = 0;
 			float sr = 0;

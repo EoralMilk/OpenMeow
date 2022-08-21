@@ -139,7 +139,7 @@ vec4 CalcDirLight(DirLight light, vec4 color)
 	}
 
 	// diffuse
-	float diff = max(dot(normal, lightDir), 0.0);
+	float diff = dot(normal, lightDir);
 
 	// merge
 	vec3 ambient  = light.ambient;

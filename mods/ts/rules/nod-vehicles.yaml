@@ -161,9 +161,10 @@ TTNK:
 	Turreted:
 		TurnSpeed: 24
 		Turret: deployed
-		InitialFacing: 640
+		InitialFacing: 0
 		Offset: -20, -130, 74
 		RealignDelay: -1
+		RealignWhenDisable: true
 	WithModelBarrel:
 		Armament: deployed
 		LocalOffset: 181,0,209
@@ -268,9 +269,10 @@ ART2:
 	Turreted:
 		Turret: deployed
 		TurnSpeed: 20
-		InitialFacing: 384
+		InitialFacing: 0
 		Offset: 0,0,256
 		RealignDelay: -1
+		RealignWhenDisable: true
 	WithModelBarrel:
 		Armament: deployed
 		LocalOffset: 203,0,0
@@ -463,17 +465,20 @@ SUBTANK:
 	Health:
 		HP: 30000
 	Armor:
-		Type: Light
+		Type: Heavy
 	RevealsShroud:
 		RequiresCondition: !inside-tunnel && !submerged
 		Range: 5c0
 		MaxHeightDelta: 3
 	Armament:
-		Weapon: FireballLauncher
+		Weapon: DualFireballLauncher
+		BurstPerFireCount: 2
+		LocalOffset: 112,-347,277, 112,347,277
 	AttackFrontal:
 		Voice: Attack
 		PauseOnCondition: empdisable
-		FacingTolerance: 0
+		FacingTolerance: 23
+		FacingFullOnTarget: true
 	WithModelBody:
 		RequiresCondition: !submerged
 	Targetable:

@@ -277,11 +277,10 @@ namespace OpenRA.Graphics
 			//		break;
 			//	default: throw new Exception("not valid SpriteMeshType for terrain");
 			//}
+			var viewOffset = Game.Renderer.World3DRenderer.InverseCameraFrontMeterPerWPos * (zOffset - 15);
 
 			if (additional)
 			{
-				var viewOffset = Game.Renderer.World3DRenderer.InverseCameraFrontMeterPerWPos * (zOffset - 15);
-
 				//var spriteMeshType = sprite.SpriteMeshType;
 
 				Util.FastCreateTilePlane(vertices, map.VertexTBN[cellinfo.M], pos, viewOffset, sprite, samplers, palette?.TextureIndex ?? 0, scale, float3.Zero, ignoreTint ? -alpha : alpha, offset);
@@ -307,7 +306,7 @@ namespace OpenRA.Graphics
 												float3.Zero,
 												float3.Zero,
 												cellinfo.Type,
-												sprite, samplers, palette?.TextureIndex ?? 0, scale, ignoreTint ? -alpha : alpha, offset, false);
+												sprite, samplers, palette?.TextureIndex ?? 0, viewOffset, ignoreTint ? -alpha : alpha, offset, false);
 				}
 				else
 				{
@@ -333,7 +332,7 @@ namespace OpenRA.Graphics
 												//map.VertexColors[cellinfo.L],
 												//map.VertexColors[cellinfo.R],
 												cellinfo.Type,
-												sprite, samplers, palette?.TextureIndex ?? 0, scale, ignoreTint ? -alpha : alpha, offset, true);
+												sprite, samplers, palette?.TextureIndex ?? 0, viewOffset, ignoreTint ? -alpha : alpha, offset, true);
 				}
 			}
 

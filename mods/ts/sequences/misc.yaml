@@ -343,7 +343,7 @@ flameall:
 	idle:
 		Length: 19
 		Facings: -8
-		Tick: 160
+		Tick: 80
 		ZOffset: 1023
 		Offset: 0, 0, 24
 		IgnoreWorldTint: True
@@ -438,7 +438,7 @@ resources:
 		Offset: 0, -12, 1
 		ZRamp: 1
 		IgnoreWorldTint: true
-		ZOffset: 22
+		ZOffset: 8
 		MeshType: Plane
 	tib01: tib01
 	tib02: tib02
@@ -600,7 +600,6 @@ clustermissile:
 	idle:
 		ShadowStart: 1
 		UseTilesetExtension: true
-		Offset: 0, -12
 
 trock01:
 	Inherits: ^rock
@@ -822,16 +821,18 @@ podring:
 fire1:
 	idle-overlay:
 		Length: 17
-		BlendMode: Translucent
+		BlendMode: Additive #Translucent
 		Offset: 0, -24, 24
-		ZOffset: 10
+		ZOffset: 15
+		IgnoreWorldTint: true
 
 fire2:
 	idle-overlay:
 		Length: 17
-		BlendMode: Translucent
+		BlendMode: Additive #Translucent
 		Offset: 0, -18, 18
-		ZOffset: 10
+		ZOffset: 15
+		IgnoreWorldTint: true
 
 cannonsmokecircle:
 	idle:
