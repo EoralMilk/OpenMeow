@@ -1577,10 +1577,76 @@ namespace OpenRA
 			return CenterOfCell(cell);
 		}
 
-		public int HeightOfCell(WPos pos)
+		int Lerp(int a, int b, int mul, int div)
 		{
-			var cell = CellContaining(pos);
-			return Height.Contains(cell) ? MapGrid.MapHeightStep * Height[cell] + Grid.Ramps[Ramp[cell]].CenterHeightOffset : 0;
+			return a + (b - a) * mul / div;
+		}
+
+		public int HeightOfTerrain(in WPos pos)
+		{
+			var u = pos.X / MapGrid.MapMiniCellWidth;
+			var v = pos.Y / MapGrid.MapMiniCellWidth;
+			if (u < 0 || v < 0 || u >= VertexArrayWidth - 1 || v >= VertexArrayHeight - 1)
+				return 0;
+
+			var tx = pos.X % MapGrid.MapMiniCellWidth;
+			var ty = pos.Y % MapGrid.MapMiniCellWidth;
+			var LT = VertexWPos[u + v * VertexArrayWidth].Z;
+			var RT = VertexWPos[u + 1 + v * VertexArrayWidth].Z;
+			var LB = VertexWPos[u + (v + 1) * VertexArrayWidth].Z;
+			var RB = VertexWPos[u + 1 + (v + 1) * VertexArrayWidth].Z;
+
+			if (u % 2 == v % 2)
+			{
+				// ------------
+				// |           / |
+				// |      /      |
+				// |  /          |
+				// ------------
+				if (ty == 724 - tx)
+				{
+					return Lerp(LB, RT, tx, 724);
+				}
+				else if (ty < 724 - tx)
+				{
+					var a = Lerp(LT, LB, ty, 724);
+					var b = Lerp(RT, LB, ty, 724);
+					return Lerp(a, b, tx, 724 - ty);
+				}
+				else
+				{
+					var a = Lerp(LB, RB, tx, 724);
+					var b = Lerp(LB, RT, tx, 724);
+					return Lerp(a, b, 724 - ty, tx);
+				}
+			}
+			else
+			{
+				// ------------
+				// |  \          |
+				// |      \      |
+				// |          \  |
+				// ------------
+				if (tx == ty)
+				{
+					return Lerp(LT, RB, tx, 724);
+				}
+				else if (tx > ty)
+				{
+					var a = Lerp(LT, RT, tx, 724);
+					var b = Lerp(LT, RB, tx, 724);
+					return Lerp(a, b, ty, tx);
+				}
+				else
+				{
+					var a = Lerp(LT, LB, ty, 724);
+					var b = Lerp(LT, RB, ty, 724);
+					return Lerp(a, b, tx, ty);
+				}
+			}
+
+			//var cell = CellContaining(pos);
+			//return Height.Contains(cell) ? MapGrid.MapHeightStep * Height[cell] + Grid.Ramps[Ramp[cell]].CenterHeightOffset : 0;
 		}
 
 		public int HeightOfCell(CPos cell)
@@ -1590,22 +1656,24 @@ namespace OpenRA
 			else
 				return Height.Contains(cell) ? MapGrid.MapHeightStep * Height[cell] + Grid.Ramps[Ramp[cell]].CenterHeightOffset : 0;
 		}
+
 		public WDist DistanceAboveTerrain(WPos pos)
 		{
 			if (Grid.Type == MapGridType.Rectangular)
 				return new WDist(pos.Z);
 
-			// Apply ramp offset
-			var cell = CellContaining(pos);
-			var offset = pos - CenterOfCell(cell);
+			//// Apply ramp offset
+			//var cell = CellContaining(pos);
+			//var offset = pos - CenterOfCell(cell);
 
-			if (Ramp.TryGetValue(cell, out var ramp) && ramp != 0)
-			{
-				var r = Grid.Ramps[ramp];
-				return new WDist(offset.Z + r.CenterHeightOffset - r.HeightOffset(offset.X, offset.Y));
-			}
+			//if (Ramp.TryGetValue(cell, out var ramp) && ramp != 0)
+			//{
+			//	var r = Grid.Ramps[ramp];
+			//	return new WDist(offset.Z + r.CenterHeightOffset - r.HeightOffset(offset.X, offset.Y));
+			//}
 
-			return new WDist(offset.Z);
+			//return new WDist(offset.Z);
+			return new WDist(pos.Z - HeightOfTerrain(pos));
 		}
 
 		public WRot TerrainOrientation(CPos cell)
