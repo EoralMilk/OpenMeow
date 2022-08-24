@@ -18,6 +18,7 @@ using OpenRA.Traits;
 
 namespace OpenRA.Mods.Common.Projectiles
 {
+	[Desc("Projectile that travels in a straight line or arc.")]
 	public class BulletInfo : CorporealProjectileInfo, IProjectileInfo, IRulesetLoaded<WeaponInfo>
 	{
 		public readonly bool InstantDropToGround = false;

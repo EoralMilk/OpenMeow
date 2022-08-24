@@ -21,6 +21,7 @@ using OpenRA.Traits;
 
 namespace OpenRA.Mods.Common.Projectiles
 {
+	[Desc("Projectile with smart tracking.")]
 	public class MissileInfo : CorporealProjectileInfo, IProjectileInfo
 	{
 		[Desc("Minimum vertical launch angle (pitch).")]
