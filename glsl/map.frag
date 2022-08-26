@@ -151,15 +151,18 @@ vec4 CalcDirLight(DirLight light, vec4 color)
 		{
 			float nndot = dot(vNormal, vec3(0,0,1));
 
-			if (mDrawType == DT_CLIFF){
+			// if (mDrawType > 0 && mDrawType < 21)
+			{
+				float mul = max(min((1.0 - nndot) * 13.0, 1.0), 0.0);
+				normal = normal + (normalize(texture(SlopeNormal, uv).rgb * 2.0 - 1.0) - normal)*mul;
+				color = vec4(color.rgb + (texture(Slope, uv).rgb - color.rgb)*min(mul, 0.7), color.a);
+			}
+
+			// if (mDrawType == DT_CLIFF)
+			{
 				float mul = max(min((1.0 - nndot) * 5.0, 1.0), 0.0);
 				normal = normal + (normalize(texture(CliffNormal, uv).rgb * 2.0 - 1.0) - normal)*mul;
 				color = vec4(color.rgb + (texture(Cliff, uv).rgb - color.rgb)*mul, color.a);
-			}
-			else{
-				float mul = max(min((1.0 - nndot) * 10.0, 1.0), 0.0);
-				normal = normal + (normalize(texture(SlopeNormal, uv).rgb * 2.0 - 1.0) - normal)*mul;
-				color = vec4(color.rgb + (texture(Slope, uv).rgb - color.rgb)*mul, color.a);
 			}
 			
 			vec3 reflectDir = reflect(-lightDir, normal);
