@@ -236,9 +236,7 @@ namespace OpenRA.Mods.Cnc.Traits
 
 		void IRenderOverlay.Render(WorldRenderer wr)
 		{
-			// light
-			//if (count != 0)
-
+			Game.Renderer.MapRenderer.SetTextures(wr.World, UsageType.Overlay);
 			spriteLayer.Draw(wr.Viewport, false);
 		}
 

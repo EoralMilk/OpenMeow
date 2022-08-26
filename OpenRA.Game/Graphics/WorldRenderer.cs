@@ -265,7 +265,6 @@ namespace OpenRA.Graphics
 
 			Game.Renderer.Context.EnableDepthBuffer(DepthFunc.LessEqual);
 
-			Game.Renderer.MapRenderer.SetTextures(World);
 			Game.Renderer.SetFaceCull(FaceCullFunc.Back);
 			TerrainRenderer?.RenderTerrain(this, Viewport);
 			Game.Renderer.SetFaceCull(FaceCullFunc.None);

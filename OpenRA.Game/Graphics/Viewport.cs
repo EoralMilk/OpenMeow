@@ -50,12 +50,15 @@ namespace OpenRA.Graphics
 
 		// Viewport geometry (world-px)
 		public int2 CenterLocation { get; private set; }
-
-		public WPos CenterPosition => worldRenderer.ProjectedPosition(CenterLocation);
-
-		public Rectangle Rectangle => new Rectangle(TopLeft, new Size(ViewportSize.X, ViewportSize.Y));
 		public int2 TopLeft => CenterLocation - ViewportSize / 2;
 		public int2 BottomRight => CenterLocation + ViewportSize / 2;
+
+		public WPos CenterPosition => worldRenderer.ProjectedPosition(CenterLocation);
+		public WPos TopLeftPosition => worldRenderer.ProjectedPosition(TopLeft);
+		public WPos BottomRightPosition => worldRenderer.ProjectedPosition(BottomRight);
+
+		public Rectangle Rectangle => new Rectangle(TopLeft, new Size(ViewportSize.X, ViewportSize.Y));
+
 		public int2 ViewportSize { get; private set; }
 		ProjectedCellRegion cells;
 		bool cellsDirty = true;

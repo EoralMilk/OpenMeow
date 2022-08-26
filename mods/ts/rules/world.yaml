@@ -272,27 +272,45 @@ World:
 		SmokeImage: smallfire
 		SmokeSequences: idle
 		SmokeChance: 50
+		Size: 868, 1024
+		FadeTick: 400, 520
+		MaxCountPerCell: 4
 	SmudgeLayer@MEDIUMSCORCH:
 		Type: MediumScorch
 		Sequence: mediumscorches
 		SmokeImage: mediumfire
 		SmokeSequences: idle
 		SmokeChance: 75
+		Size: 1268, 1448
+		FadeTick: 700, 920
+		MaxCountPerCell: 2
 	SmudgeLayer@LARGESCORCH:
 		Type: LargeScorch
 		Sequence: largescorches
 		SmokeImage: largefire
 		SmokeSequences: idle
 		SmokeChance: 100
+		Size: 1768, 2048
+		FadeTick: 1000, 1320
+		MaxCountPerCell: 1
 	SmudgeLayer@SMALLCRATER:
 		Type: SmallCrater
 		Sequence: smallcraters
+		Size: 868, 1028
+		FadeTick: 900, 1060
+		MaxCountPerCell: 2
 	SmudgeLayer@MEDIUMCRATER:
 		Type: MediumCrater
 		Sequence: mediumcraters
+		Size: 1328, 1548
+		FadeTick: 1200, 1460
+		MaxCountPerCell: 1
 	SmudgeLayer@LARGECRATER:
 		Type: LargeCrater
 		Sequence: largecraters
+		Size: 1768, 2048
+		FadeTick: 1800, 2060
+		MaxCountPerCell: 1
 	TSResourceLayer:
 		VeinholeActors: veinhole
 		ResourceTypes:

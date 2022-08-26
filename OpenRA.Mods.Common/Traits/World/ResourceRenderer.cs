@@ -200,6 +200,8 @@ namespace OpenRA.Mods.Common.Traits
 
 		void IRenderOverlay.Render(WorldRenderer wr)
 		{
+			Game.Renderer.MapRenderer.SetTextures(wr.World, UsageType.Overlay);
+
 			shadowLayer?.Draw(wr.Viewport, false);
 			spriteLayer.Draw(wr.Viewport, false);
 		}

@@ -3,19 +3,47 @@
 precision mediump float;
 #endif
 
+#define DT_NONE -1
+
+#define DT_WATER 22
+#define DT_SHORE 23
+#define DT_CLIFF 25
+#define DT_GRASS 30
+#define DT_SMUDGE 100
+#define DT_ADDON 100
+
+#define GrassNormal Texture4
+#define CliffNormal Texture5
+#define Cliff		Texture6
+#define SlopeNormal Texture7
+#define Slope		Texture8
+#define WaterNormal Texture9
+#define Caustics 	Texture10
+
+#define Scroch		Texture4
+
 uniform sampler2D Texture0;
 uniform sampler2D Texture1;
 uniform sampler2D Texture2;
 uniform sampler2D Texture3;
-// uniform sampler2D Texture4;
-// uniform sampler2D Texture5;
-// uniform sampler2D Texture6;
-// uniform sampler2D Texture7;
+uniform sampler2D Texture4;
+uniform sampler2D Texture5;
+uniform sampler2D Texture6;
+uniform sampler2D Texture7;
+uniform sampler2D Texture8;
+uniform sampler2D Texture9;
+uniform sampler2D Texture10;
 
-uniform sampler2D WaterNormal;
-uniform sampler2D GrassNormal;
+// uniform sampler2D WaterNormal;
+// uniform sampler2D Caustics;
 
-uniform sampler2D Caustics;
+// uniform sampler2D GrassNormal;
+// uniform sampler2D CliffNormal;
+// uniform sampler2D Cliff;
+// uniform sampler2D SlopeNormal;
+// uniform sampler2D Slope;
+
+// uniform sampler2D Scroch;
 
 uniform float WaterUVOffset;
 uniform float GrassUVOffset;
@@ -102,7 +130,6 @@ float CalShadow(){
 	return shadow;
 }
 
-
 vec4 CalcDirLight(DirLight light, vec4 color)
 {
 	vec3 normal = tNormal;
@@ -111,32 +138,62 @@ vec4 CalcDirLight(DirLight light, vec4 color)
 
 	vec3 specular = vec3(0.0);
 
-	// water pix
-	if (mDrawType == 2 && color.b > color.r)
-	{
-		vec2 uv = vTileTexCoord + vec2(0.0, WaterUVOffset);
-		normal = normalize(texture(WaterNormal, uv).rgb * 2.0 - 1.0);
 
-		vec4 water = texture(Caustics, uv);
-		water *= 2.0;
-
-		color *= (water + (vec4(1.0) - water) * max(color.r/color.b, 0.5));
-
-		vec3 reflectDir = reflect(-lightDir, normal);
-		float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32.0);
-		specular = light.specular * spec;
+	if (mDrawType == DT_SMUDGE){
+		// test smudge
+		color = texture(Scroch, vTileTexCoord);
 	}
-	// grass pix
-	else if (mDrawType == 3 && color.g > color.r && color.g > color.b)
-	// else if (mDrawType != 99)
-	{
-		vec2 uv = vTileTexCoord + vec2(0.0, GrassUVOffset);
-		normal = normalize(texture(GrassNormal, uv).rgb * 2.0 - 1.0);
+	else if (mDrawType != DT_ADDON){
+		vec2 uv = vFragPos.xy/5.0;
 
-		vec3 reflectDir = reflect(-lightDir, normal);
-		float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32.0);
-		specular = light.specular * spec;
+		// slope and cliff
+		if (vNormal != vec3(0,0,1))
+		{
+			float nndot = dot(vNormal, vec3(0,0,1));
+
+			if (mDrawType == DT_CLIFF){
+				float mul = max(min((1.0 - nndot) * 5.0, 1.0), 0.0);
+				normal = normal + (normalize(texture(CliffNormal, uv).rgb * 2.0 - 1.0) - normal)*mul;
+				color = vec4(color.rgb + (texture(Cliff, uv).rgb - color.rgb)*mul, color.a);
+			}
+			else{
+				float mul = max(min((1.0 - nndot) * 10.0, 1.0), 0.0);
+				normal = normal + (normalize(texture(SlopeNormal, uv).rgb * 2.0 - 1.0) - normal)*mul;
+				color = vec4(color.rgb + (texture(Slope, uv).rgb - color.rgb)*mul, color.a);
+			}
+			
+			vec3 reflectDir = reflect(-lightDir, normal);
+			float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32.0);
+			specular = light.specular * spec;
+		}
+		// water pix
+		else if (mDrawType == DT_WATER && color.b > color.r)
+		{
+			uv = uv + vec2(0.0, WaterUVOffset);
+			normal = normalize(texture(WaterNormal, uv).rgb * 2.0 - 1.0);
+
+			vec4 water = texture(Caustics, uv);
+			water *= 2.0;
+
+			color *= (water + (vec4(1.0) - water) * max(color.r/color.b, 0.5));
+
+			vec3 reflectDir = reflect(-lightDir, normal);
+			float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32.0);
+			specular = light.specular * spec;
+		}
+		// grass pix
+		else if ((mDrawType == DT_GRASS && color.g > color.r && color.g > color.b))
+		// else if (mDrawType != 99)
+		{
+			uv = uv + vec2(0.0, GrassUVOffset);
+			normal = normalize(texture(GrassNormal, uv).rgb * 2.0 - 1.0);
+
+			vec3 reflectDir = reflect(-lightDir, normal);
+			float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32.0);
+			specular = light.specular * spec;
+		}
 	}
+	
 
 	// diffuse
 	float diff = dot(normal, lightDir);
@@ -148,8 +205,6 @@ vec4 CalcDirLight(DirLight light, vec4 color)
 	ambient = ambient * color.rgb;
 	diffuse = diffuse * color.rgb;
 	float shadow = 1.0 - max(CalShadow(), 0.0);
-	// diffuse = diffuse * (1.0f - max(CalShadow(light, normal) - AmbientIntencity, 0.0f));
-	// diffuse = diffuse * (1.0 - max(CalShadow(), 0.0));
 
 	return vec4((ambient * vSunLight + diffuse * shadow  + specular) * vTint.rgb, color.a);
 }
@@ -209,17 +264,6 @@ vec2 Size(float samplerIndex)
 		return Texture2Size;
 
 	return Texture3Size;
-
-	// else if (samplerIndex < 3.5)
-	// 	return Texture3Size;
-	// else if (samplerIndex < 4.5)
-	// 	return Texture4Size;
-	// else if (samplerIndex < 5.5)
-	// 	return Texture5Size;
-	// else if (samplerIndex < 6.5)
-	// 	return Texture6Size;
-
-	// return Texture7Size;
 }
 
 vec4 Sample(float samplerIndex, vec2 pos)
@@ -232,17 +276,6 @@ vec4 Sample(float samplerIndex, vec2 pos)
 		return texture2D(Texture2, pos);
 	
 	return texture2D(Texture3, pos);
-
-	// else if (samplerIndex < 3.5)
-	// 	return texture2D(Texture3, pos);
-	// else if (samplerIndex < 4.5)
-	// 	return texture2D(Texture4, pos);
-	// else if (samplerIndex < 5.5)
-	// 	return texture2D(Texture5, pos);
-	// else if (samplerIndex < 6.5)
-	// 	return texture2D(Texture6, pos);
-
-	// return texture2D(Texture7, pos);
 }
 #else
 ivec2 Size(float samplerIndex)
@@ -255,17 +288,6 @@ ivec2 Size(float samplerIndex)
 		return textureSize(Texture2, 0);
 
 	return textureSize(Texture3, 0);
-
-	// else if (samplerIndex < 3.5)
-	// 	return textureSize(Texture3, 0);
-	// else if (samplerIndex < 4.5)
-	// 	return textureSize(Texture4, 0);
-	// else if (samplerIndex < 5.5)
-	// 	return textureSize(Texture5, 0);
-	// else if (samplerIndex < 6.5)
-	// 	return textureSize(Texture6, 0);
-
-	// return textureSize(Texture7, 0);
 }
 
 vec4 Sample(float samplerIndex, vec2 pos)
@@ -278,17 +300,6 @@ vec4 Sample(float samplerIndex, vec2 pos)
 		return texture(Texture2, pos);
 
 	return texture(Texture3, pos);
-
-	// else if (samplerIndex < 3.5)
-	// 	return texture(Texture3, pos);
-	// else if (samplerIndex < 4.5)
-	// 	return texture(Texture4, pos);
-	// else if (samplerIndex < 5.5)
-	// 	return texture(Texture5, pos);
-	// else if (samplerIndex < 6.5)
-	// 	return texture(Texture6, pos);
-
-	// return texture(Texture7, pos);
 }
 #endif
 
@@ -336,54 +347,59 @@ vec4 ColorShift(vec4 c, float p)
 
 void main()
 {
-	if (mDrawType == 0)
+	if (mDrawType == DT_NONE)
 		discard;
 	if (RenderDepthBuffer){
 		return;
 	}
 
 	vec2 coords = vTexCoord.st;
-
 	vec4 c;
-	if (AntialiasPixelsPerTexel > 0.0)
-	{
-		vec2 textureSize = vec2(Size(vTexSampler.s));
-		vec2 offset = fract(coords.st * textureSize);
 
-		// Offset the sampling point to simulate bilinear intepolation in window coordinates instead of texture coordinates
-		// https://csantosbh.wordpress.com/2014/01/25/manual-texture-filtering-for-pixelated-games-in-webgl/
-		// https://csantosbh.wordpress.com/2014/02/05/automatically-detecting-the-texture-filter-threshold-for-pixelated-magnifications/
-		// ik is defined as 1/k from the articles, set to 1/0.7 because it looks good
-		float ik = 1.43;
-		vec2 interp = clamp(offset * ik * AntialiasPixelsPerTexel, 0.0, .5) + clamp((offset - 1.0) * ik * AntialiasPixelsPerTexel + .5, 0.0, .5);
-		coords = (floor(coords.st * textureSize) + interp) / textureSize;
-
-		if (vPalettedFraction.x > 0.0)
-			c = SamplePalettedBilinear(vTexSampler.s, coords, textureSize);
+	if (mDrawType == DT_SMUDGE){
+		if (vTileTexCoord.x < 0.0 || vTileTexCoord.x > 1.0 || vTileTexCoord.y < 0.0 || vTileTexCoord.y > 1.0)
+			discard;
 	}
+	else{
+		if (AntialiasPixelsPerTexel > 0.0)
+		{
+			vec2 textureSize = vec2(Size(vTexSampler.s));
+			vec2 offset = fract(coords.st * textureSize);
 
-	if (!(AntialiasPixelsPerTexel > 0.0 && vPalettedFraction.x > 0.0))
-	{
-		vec4 x = Sample(vTexSampler.s, coords);
-		vec2 p = vec2(dot(x, vChannelMask), vTexMetadata.s);
-		#if __VERSION__ == 120
-		c = vPalettedFraction * texture2D(Palette, p) + vRGBAFraction * x + vColorFraction * vTexCoord;
-		#else
-		c = vPalettedFraction * texture(Palette, p) + vRGBAFraction * x + vColorFraction * vTexCoord;
-		#endif
+			// Offset the sampling point to simulate bilinear intepolation in window coordinates instead of texture coordinates
+			// https://csantosbh.wordpress.com/2014/01/25/manual-texture-filtering-for-pixelated-games-in-webgl/
+			// https://csantosbh.wordpress.com/2014/02/05/automatically-detecting-the-texture-filter-threshold-for-pixelated-magnifications/
+			// ik is defined as 1/k from the articles, set to 1/0.7 because it looks good
+			float ik = 1.43;
+			vec2 interp = clamp(offset * ik * AntialiasPixelsPerTexel, 0.0, .5) + clamp((offset - 1.0) * ik * AntialiasPixelsPerTexel + .5, 0.0, .5);
+			coords = (floor(coords.st * textureSize) + interp) / textureSize;
+
+			if (vPalettedFraction.x > 0.0)
+				c = SamplePalettedBilinear(vTexSampler.s, coords, textureSize);
+		}
+
+		if (!(AntialiasPixelsPerTexel > 0.0 && vPalettedFraction.x > 0.0))
+		{
+			vec4 x = Sample(vTexSampler.s, coords);
+			vec2 p = vec2(dot(x, vChannelMask), vTexMetadata.s);
+			#if __VERSION__ == 120
+			c = vPalettedFraction * texture2D(Palette, p) + vRGBAFraction * x + vColorFraction * vTexCoord;
+			#else
+			c = vPalettedFraction * texture(Palette, p) + vRGBAFraction * x + vColorFraction * vTexCoord;
+			#endif
+		}
+
+		// Discard any transparent fragments (both color and depth)
+		if (c.a == 0.0)
+			discard;
+		
+		if (vRGBAFraction.r > 0.0 && vTexMetadata.s > 0.0)
+			c = ColorShift(c, vTexMetadata.s);
 	}
-
-	// Discard any transparent fragments (both color and depth)
-	if (c.a == 0.0)
-		discard;
-
-
-	if (vRGBAFraction.r > 0.0 && vTexMetadata.s > 0.0)
-		c = ColorShift(c, vTexMetadata.s);
 
 	if (EnableDepthPreview)
 	{
-		float intensity = 1.0 - gl_FragCoord.z;//clamp(DepthPreviewParams.x * gl_FragCoord.z - 0.5 * DepthPreviewParams.x - DepthPreviewParams.y + 0.5, 0.0, 1.0);
+		float intensity = 1.0 - gl_FragCoord.z;
 		#if __VERSION__ == 120
 		gl_FragColor = vec4(vec3(intensity), 1.0);
 		#else
@@ -395,9 +411,12 @@ void main()
 		if (!RenderShroud){
 			// a < 0 is ignoreTint
 			if (vTint.a < 0.0)
-				c = vec4(c.rgb * vSunLight, c.a);
-			else
+				c = vec4(c.rgb * vSunLight, c.a * (-vTint.a));
+			else{
 				c = CalcDirLight(dirLight, c);
+				c = c * vTint.a;
+				
+			}
 		}
 
 		#if __VERSION__ == 120

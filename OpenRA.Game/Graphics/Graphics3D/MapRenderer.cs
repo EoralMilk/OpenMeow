@@ -11,6 +11,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Xml.Linq;
 using GlmSharp;
 using OpenRA.Primitives;
 
@@ -23,11 +24,52 @@ namespace OpenRA.Graphics
 
 		readonly Renderer renderer;
 		public readonly IShader Shader;
+		readonly MapVertex[] vertices;
+		readonly Sheet[] sheets = new Sheet[SheetCount];
+
+		BlendMode currentBlend = BlendMode.Alpha;
+		int nv = 0;
+		int ns = 0;
 
 		public MapRenderer(Renderer renderer, IShader shader)
 		{
 			this.renderer = renderer;
 			this.Shader = shader;
+			vertices = new MapVertex[renderer.TempBufferSize];
+
+		}
+
+		public void Flush(BlendMode blendMode = BlendMode.None)
+		{
+			if (nv > 0)
+			{
+				for (var i = 0; i < ns; i++)
+				{
+					Shader.SetTexture(SheetIndexToTextureName[i], sheets[i].GetTexture());
+					sheets[i] = null;
+				}
+
+				renderer.Context.SetBlendMode(blendMode != BlendMode.None ? blendMode : currentBlend);
+				Shader.PrepareRender();
+				renderer.DrawMapBatch(Shader, vertices, nv, PrimitiveType.TriangleList);
+				renderer.Context.SetBlendMode(BlendMode.None);
+
+				nv = 0;
+				ns = 0;
+			}
+		}
+
+		public void DrawOverlay(in OverlayVertex[] overlayVertices, float alpha)
+		{
+			if (nv + overlayVertices.Length >= vertices.Length)
+				Flush();
+
+			for (int i = 0; i < overlayVertices.Length; i++)
+			{
+				vertices[nv + i] = new MapVertex(overlayVertices[i], alpha, 100);
+			}
+
+			nv += overlayVertices.Length;
 		}
 
 		public void DrawVertexBuffer(IVertexBuffer buffer, int start, int length, PrimitiveType type, IEnumerable<Sheet> sheets, BlendMode blendMode)
@@ -48,17 +90,33 @@ namespace OpenRA.Graphics
 			renderer.Context.SetBlendMode(BlendMode.None);
 		}
 
-		public void SetTextures(World world)
+		public void SetTextures(World world, UsageType type = UsageType.Terrain)
 		{
-			Shader.SetFloat("WaterUVOffset", (float)(Game.LocalTick % 400) / 400);
-			Shader.SetFloat("GrassUVOffset", (MathF.Sin((float)Game.LocalTick / 6) + 1) / 177);
 
-			foreach (var kv in world.MapTextureCache.Textures)
+			switch (type)
 			{
-				Shader.SetTexture(kv.Key, kv.Value);
-			}
+				case UsageType.Terrain:
+					Shader.SetFloat("WaterUVOffset", (float)(Game.LocalTick % 400) / 400);
+					Shader.SetFloat("GrassUVOffset", (MathF.Sin((float)Game.LocalTick / 6) + 1) / 177);
 
-			Shader.SetTexture("Caustics", world.MapTextureCache.Caustics[Math.Min((Game.LocalTick % 93) / 3, world.MapTextureCache.Caustics.Length - 1)]);
+					foreach (var key in world.MapTextureCache.TerrainTexturesSet)
+					{
+						Shader.SetTexture(world.MapTextureCache.Textures[key].Item1,
+							world.MapTextureCache.Textures[key].Item2);
+					}
+
+					Shader.SetTexture(MapTextureCache.TN_Caustics, world.MapTextureCache.CausticsTextures[Math.Min((Game.LocalTick % 93) / 3, world.MapTextureCache.CausticsTextures.Length - 1)]);
+					break;
+				case UsageType.Smudge:
+
+					foreach (var key in world.MapTextureCache.SmudgeTexturesSet)
+					{
+						Shader.SetTexture(world.MapTextureCache.Textures[key].Item1,
+							world.MapTextureCache.Textures[key].Item2);
+					}
+
+					break;
+			}
 
 		}
 

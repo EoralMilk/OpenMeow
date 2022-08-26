@@ -129,6 +129,8 @@ namespace OpenRA.Mods.D2k.Traits
 
 		void IRenderOverlay.Render(WorldRenderer wr)
 		{
+			Game.Renderer.MapRenderer.SetTextures(wr.World, UsageType.Overlay);
+
 			render.Draw(wr.Viewport);
 		}
 

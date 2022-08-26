@@ -24,7 +24,7 @@ namespace OpenRA.Graphics
 		public readonly float ZRamp;
 		public readonly float3 Size;
 		public readonly float3 Offset;
-		public readonly float Top, Left, Bottom, Right;
+		public readonly float Top, Left, Bottom, Right, TB, LR;
 
 		public readonly SpriteMeshType SpriteMeshType;
 		public bool HasMeshCreateInfo;
@@ -72,7 +72,8 @@ namespace OpenRA.Graphics
 			Top = (Math.Min(bounds.Top, bounds.Bottom) + inset) / sheet.Size.Height;
 			Right = (Math.Max(bounds.Left, bounds.Right) - inset) / sheet.Size.Width;
 			Bottom = (Math.Max(bounds.Top, bounds.Bottom) - inset) / sheet.Size.Height;
-
+			TB = MathF.Abs(Top - Bottom);
+			LR = MathF.Abs(Left - Right);
 			UpdateMeshInfo();
 		}
 

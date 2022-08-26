@@ -124,14 +124,22 @@ namespace OpenRA.Mods.Common.Traits
 
 		void IRenderTerrain.RenderTerrain(WorldRenderer wr, Viewport viewport)
 		{
+			Game.Renderer.MapRenderer.SetTextures(wr.World, UsageType.Terrain);
+
 			foreach (var r in wr.World.WorldActor.TraitsImplementing<IRenderOverlay>())
 				r.ModifyTerrainRender(wr);
 
 			spriteLayer.LightShader(wr.Viewport);
 			spriteLayer.Draw(wr.Viewport, false);
 
+			Game.Renderer.EnableDepthWrite(false);
+			Game.Renderer.MapRenderer.Flush();
+
 			foreach (var r in wr.World.WorldActor.TraitsImplementing<IRenderOverlay>())
 				r.Render(wr);
+			Game.Renderer.MapRenderer.Flush(BlendMode.Alpha);
+
+			Game.Renderer.EnableDepthWrite(true);
 		}
 
 		void INotifyActorDisposing.Disposing(Actor self)

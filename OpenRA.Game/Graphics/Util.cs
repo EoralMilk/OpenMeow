@@ -10,6 +10,7 @@
 #endregion
 
 using System;
+using System.Dynamic;
 using GlmSharp;
 using OpenRA.FileFormats;
 using OpenRA.Primitives;
@@ -322,19 +323,21 @@ namespace OpenRA.Graphics
 		}
 
 		public static void FastCreateTile(MapVertex[] vertices, float3[] verticesColor,
-			float3 mpos, float3 tpos, float3 bpos, float3 lpos, float3 rpos,
-			in mat3 mtbn, in mat3 ttbn, in mat3 btbn, in mat3 ltbn, in mat3 rtbn,
+			//float3 mpos, float3 tpos, float3 bpos, float3 lpos, float3 rpos,
+			//in mat3 mtbn, in mat3 ttbn, in mat3 btbn, in mat3 ltbn, in mat3 rtbn,
+			Map map, in CellInfo cellinfo,
 			in float3 mColorOffset, in float3 tColorOffset, in float3 bColorOffset, in float3 lColorOffset, in float3 rColorOffset,
 			uint type,
 			Sprite r, int2 samplers, float paletteTextureIndex, in vec3 ZOffset,
 			float alpha, int nv, bool rotation = true)
 		{
 			var viewOffset = new float3(ZOffset.x, ZOffset.y, ZOffset.z);
-			mpos += viewOffset;
-			tpos += viewOffset;
-			bpos += viewOffset;
-			lpos += viewOffset;
-			rpos += viewOffset;
+
+			var mpos = map.VertexPos[cellinfo.M] + viewOffset;
+			var tpos = map.VertexPos[cellinfo.T] + viewOffset;
+			var bpos = map.VertexPos[cellinfo.B] + viewOffset;
+			var lpos = map.VertexPos[cellinfo.L] + viewOffset;
+			var rpos = map.VertexPos[cellinfo.R] + viewOffset;
 
 			float sl = 0;
 			float st = 0;
@@ -373,40 +376,56 @@ namespace OpenRA.Graphics
 				float left = r.Left + (r.Right - r.Left) * 0.035f;
 				float right = r.Right + (r.Left - r.Right) * 0.035f;
 
-				vertices[nv] = new MapVertex(tpos, ttbn, baseX, top, sbaseRL, st, paletteTextureIndex, fAttribC, tColorOffset, alpha, CellInfo.TU, CellInfo.TV, type);
-				vertices[nv + 1] = new MapVertex(mpos, mtbn, baseX, baseY, sbaseRL, sbaseTB, paletteTextureIndex, fAttribC, mColorOffset, alpha, 0.5f, 0.5f, type);
-				vertices[nv + 2] = new MapVertex(rpos, rtbn, right, baseY, sr, sbaseTB, paletteTextureIndex, fAttribC, rColorOffset, alpha, CellInfo.RU, CellInfo.RV, type);
+				//vertices[nv] = new MapVertex(tpos, map.VertexTBN[cellinfo.T], baseX, top, sbaseRL, st, paletteTextureIndex, fAttribC, tColorOffset, alpha, 1,0, type);
+				//vertices[nv + 1] = new MapVertex(mpos, map.VertexTBN[cellinfo.M], baseX, baseY, sbaseRL, sbaseTB, paletteTextureIndex, fAttribC, mColorOffset, alpha, 1,1, type);
+				//vertices[nv + 2] = new MapVertex(rpos, map.VertexTBN[cellinfo.R], right, baseY, sr, sbaseTB, paletteTextureIndex, fAttribC, rColorOffset, alpha, 2,1, type);
 
-				vertices[nv + 3] = new MapVertex(mpos, mtbn, baseX, baseY, sbaseRL, sbaseTB, paletteTextureIndex, fAttribC, mColorOffset, alpha, 0.5f, 0.5f, type);
-				vertices[nv + 4] = new MapVertex(bpos, btbn, baseX, bottom, sbaseRL, sb, paletteTextureIndex, fAttribC, bColorOffset, alpha, CellInfo.BU, CellInfo.BV, type);
-				vertices[nv + 5] = new MapVertex(rpos, rtbn, right, baseY, sr, sbaseTB, paletteTextureIndex, fAttribC, rColorOffset, alpha, CellInfo.RU, CellInfo.RV, type);
+				//vertices[nv + 3] = new MapVertex(mpos, map.VertexTBN[cellinfo.M], baseX, baseY, sbaseRL, sbaseTB, paletteTextureIndex, fAttribC, mColorOffset, alpha, 1,1, type);
+				//vertices[nv + 4] = new MapVertex(bpos, map.VertexTBN[cellinfo.B], baseX, bottom, sbaseRL, sb, paletteTextureIndex, fAttribC, bColorOffset, alpha, 1,2, type);
+				//vertices[nv + 5] = new MapVertex(rpos, map.VertexTBN[cellinfo.R], right, baseY, sr, sbaseTB, paletteTextureIndex, fAttribC, rColorOffset, alpha, 2,1, type);
 
-				vertices[nv + 6] = new MapVertex(tpos, ttbn, baseX, top, sbaseRL, st, paletteTextureIndex, fAttribC, tColorOffset, alpha, CellInfo.TU, CellInfo.TV, type);
-				vertices[nv + 7] = new MapVertex(lpos, ltbn, left, baseY, sl, sbaseTB, paletteTextureIndex, fAttribC, lColorOffset, alpha, CellInfo.LU, CellInfo.LV, type);
-				vertices[nv + 8] = new MapVertex(mpos, mtbn, baseX, baseY, sbaseRL, sbaseTB, paletteTextureIndex, fAttribC, mColorOffset, alpha, 0.5f, 0.5f, type);
+				//vertices[nv + 6] = new MapVertex(tpos, map.VertexTBN[cellinfo.T], baseX, top, sbaseRL, st, paletteTextureIndex, fAttribC, tColorOffset, alpha, 1,0, type);
+				//vertices[nv + 7] = new MapVertex(lpos, map.VertexTBN[cellinfo.L], left, baseY, sl, sbaseTB, paletteTextureIndex, fAttribC, lColorOffset, alpha, 0,1, type);
+				//vertices[nv + 8] = new MapVertex(mpos, map.VertexTBN[cellinfo.M], baseX, baseY, sbaseRL, sbaseTB, paletteTextureIndex, fAttribC, mColorOffset, alpha, 1,1, type);
 
-				vertices[nv + 9] = new MapVertex(mpos, mtbn, baseX, baseY, sbaseRL, sbaseTB, paletteTextureIndex, fAttribC, mColorOffset, alpha, 0.5f, 0.5f, type);
-				vertices[nv + 10] = new MapVertex(lpos, ltbn, left, baseY, sl, sbaseTB, paletteTextureIndex, fAttribC, lColorOffset, alpha, CellInfo.LU, CellInfo.LV, type);
-				vertices[nv + 11] = new MapVertex(bpos, btbn, baseX, bottom, sbaseRL, sb, paletteTextureIndex, fAttribC, bColorOffset, alpha, CellInfo.BU, CellInfo.BV, type);
+				//vertices[nv + 9] = new MapVertex(mpos, map.VertexTBN[cellinfo.M], baseX, baseY, sbaseRL, sbaseTB, paletteTextureIndex, fAttribC, mColorOffset, alpha, 1,1, type);
+				//vertices[nv + 10] = new MapVertex(lpos, map.VertexTBN[cellinfo.L], left, baseY, sl, sbaseTB, paletteTextureIndex, fAttribC, lColorOffset, alpha, 0,1, type);
+				//vertices[nv + 11] = new MapVertex(bpos, map.VertexTBN[cellinfo.B], baseX, bottom, sbaseRL, sb, paletteTextureIndex, fAttribC, bColorOffset, alpha, 1,2, type);
+
+				vertices[nv] = new MapVertex(tpos, map.VertexTBN[cellinfo.T], baseX, top, sbaseRL, st, paletteTextureIndex, fAttribC, tColorOffset, alpha, map.VertexUV[cellinfo.T], type);
+				vertices[nv + 1] = new MapVertex(mpos, map.VertexTBN[cellinfo.M], baseX, baseY, sbaseRL, sbaseTB, paletteTextureIndex, fAttribC, mColorOffset, alpha, map.VertexUV[cellinfo.M], type);
+				vertices[nv + 2] = new MapVertex(rpos, map.VertexTBN[cellinfo.R], right, baseY, sr, sbaseTB, paletteTextureIndex, fAttribC, rColorOffset, alpha, map.VertexUV[cellinfo.R], type);
+
+				vertices[nv + 3] = new MapVertex(mpos, map.VertexTBN[cellinfo.M], baseX, baseY, sbaseRL, sbaseTB, paletteTextureIndex, fAttribC, mColorOffset, alpha, map.VertexUV[cellinfo.M], type);
+				vertices[nv + 4] = new MapVertex(bpos, map.VertexTBN[cellinfo.B], baseX, bottom, sbaseRL, sb, paletteTextureIndex, fAttribC, bColorOffset, alpha, map.VertexUV[cellinfo.B], type);
+				vertices[nv + 5] = new MapVertex(rpos, map.VertexTBN[cellinfo.R], right, baseY, sr, sbaseTB, paletteTextureIndex, fAttribC, rColorOffset, alpha, map.VertexUV[cellinfo.R], type);
+
+				vertices[nv + 6] = new MapVertex(tpos, map.VertexTBN[cellinfo.T], baseX, top, sbaseRL, st, paletteTextureIndex, fAttribC, tColorOffset, alpha, map.VertexUV[cellinfo.T], type);
+				vertices[nv + 7] = new MapVertex(lpos, map.VertexTBN[cellinfo.L], left, baseY, sl, sbaseTB, paletteTextureIndex, fAttribC, lColorOffset, alpha, map.VertexUV[cellinfo.L], type);
+				vertices[nv + 8] = new MapVertex(mpos, map.VertexTBN[cellinfo.M], baseX, baseY, sbaseRL, sbaseTB, paletteTextureIndex, fAttribC, mColorOffset, alpha, map.VertexUV[cellinfo.M], type);
+
+				vertices[nv + 9] = new MapVertex(mpos, map.VertexTBN[cellinfo.M], baseX, baseY, sbaseRL, sbaseTB, paletteTextureIndex, fAttribC, mColorOffset, alpha, map.VertexUV[cellinfo.M], type);
+				vertices[nv + 10] = new MapVertex(lpos, map.VertexTBN[cellinfo.L], left, baseY, sl, sbaseTB, paletteTextureIndex, fAttribC, lColorOffset, alpha, map.VertexUV[cellinfo.L], type);
+				vertices[nv + 11] = new MapVertex(bpos, map.VertexTBN[cellinfo.B], baseX, bottom, sbaseRL, sb, paletteTextureIndex, fAttribC, bColorOffset, alpha, map.VertexUV[cellinfo.B], type);
 
 			}
 			else
 			{
-				vertices[nv] = new MapVertex(tpos, ttbn, r.Left, r.Top, sl, st, paletteTextureIndex, fAttribC, tColorOffset, alpha, CellInfo.TU, CellInfo.TV, type);
-				vertices[nv + 1] = new MapVertex(mpos, mtbn, baseX, baseY, sbaseRL, sbaseTB, paletteTextureIndex, fAttribC, mColorOffset, alpha, 0.5f, 0.5f, type);
-				vertices[nv + 2] = new MapVertex(rpos, rtbn, r.Right, r.Top, sr, st, paletteTextureIndex, fAttribC, rColorOffset, alpha, CellInfo.RU, CellInfo.RV, type);
+				vertices[nv] = new MapVertex(tpos, map.VertexTBN[cellinfo.T], r.Left, r.Top, sl, st, paletteTextureIndex, fAttribC, tColorOffset, alpha, map.VertexUV[cellinfo.T], type);
+				vertices[nv + 1] = new MapVertex(mpos, map.VertexTBN[cellinfo.M], baseX, baseY, sbaseRL, sbaseTB, paletteTextureIndex, fAttribC, mColorOffset, alpha, map.VertexUV[cellinfo.M], type);
+				vertices[nv + 2] = new MapVertex(rpos, map.VertexTBN[cellinfo.R], r.Right, r.Top, sr, st, paletteTextureIndex, fAttribC, rColorOffset, alpha, map.VertexUV[cellinfo.R], type);
 
-				vertices[nv + 3] = new MapVertex(mpos, mtbn, baseX, baseY, sbaseRL, sbaseTB, paletteTextureIndex, fAttribC, mColorOffset, alpha, 0.5f, 0.5f, type);
-				vertices[nv + 4] = new MapVertex(bpos, btbn, r.Right, r.Bottom, sr, sb, paletteTextureIndex, fAttribC, bColorOffset, alpha, CellInfo.BU, CellInfo.BV, type);
-				vertices[nv + 5] = new MapVertex(rpos, rtbn, r.Right, r.Top, sr, st, paletteTextureIndex, fAttribC, rColorOffset, alpha, CellInfo.RU, CellInfo.RV, type);
+				vertices[nv + 3] = new MapVertex(mpos, map.VertexTBN[cellinfo.M], baseX, baseY, sbaseRL, sbaseTB, paletteTextureIndex, fAttribC, mColorOffset, alpha, map.VertexUV[cellinfo.M], type);
+				vertices[nv + 4] = new MapVertex(bpos, map.VertexTBN[cellinfo.B], r.Right, r.Bottom, sr, sb, paletteTextureIndex, fAttribC, bColorOffset, alpha, map.VertexUV[cellinfo.B], type);
+				vertices[nv + 5] = new MapVertex(rpos, map.VertexTBN[cellinfo.R], r.Right, r.Top, sr, st, paletteTextureIndex, fAttribC, rColorOffset, alpha, map.VertexUV[cellinfo.R], type);
 
-				vertices[nv + 6] = new MapVertex(tpos, ttbn, r.Left, r.Top, sl, st, paletteTextureIndex, fAttribC, tColorOffset, alpha, CellInfo.TU, CellInfo.TV, type);
-				vertices[nv + 7] = new MapVertex(lpos, ltbn, r.Left, r.Bottom, sl, sb, paletteTextureIndex, fAttribC, lColorOffset, alpha, CellInfo.LU, CellInfo.LV, type);
-				vertices[nv + 8] = new MapVertex(mpos, mtbn, baseX, baseY, sbaseRL, sbaseTB, paletteTextureIndex, fAttribC, mColorOffset, alpha, 0.5f, 0.5f, type);
+				vertices[nv + 6] = new MapVertex(tpos, map.VertexTBN[cellinfo.T], r.Left, r.Top, sl, st, paletteTextureIndex, fAttribC, tColorOffset, alpha, map.VertexUV[cellinfo.T], type);
+				vertices[nv + 7] = new MapVertex(lpos, map.VertexTBN[cellinfo.L], r.Left, r.Bottom, sl, sb, paletteTextureIndex, fAttribC, lColorOffset, alpha, map.VertexUV[cellinfo.L], type);
+				vertices[nv + 8] = new MapVertex(mpos, map.VertexTBN[cellinfo.M], baseX, baseY, sbaseRL, sbaseTB, paletteTextureIndex, fAttribC, mColorOffset, alpha, map.VertexUV[cellinfo.M], type);
 
-				vertices[nv + 9] = new MapVertex(mpos, mtbn, baseX, baseY, sbaseRL, sbaseTB, paletteTextureIndex, fAttribC, mColorOffset, alpha, 0.5f, 0.5f, type);
-				vertices[nv + 10] = new MapVertex(lpos, ltbn, r.Left, r.Bottom, sl, sb, paletteTextureIndex, fAttribC, lColorOffset, alpha, CellInfo.LU, CellInfo.LV, type);
-				vertices[nv + 11] = new MapVertex(bpos, btbn, r.Right, r.Bottom, sr, sb, paletteTextureIndex, fAttribC, bColorOffset, alpha, CellInfo.BU, CellInfo.BV, type);
+				vertices[nv + 9] = new MapVertex(mpos, map.VertexTBN[cellinfo.M], baseX, baseY, sbaseRL, sbaseTB, paletteTextureIndex, fAttribC, mColorOffset, alpha, map.VertexUV[cellinfo.M], type);
+				vertices[nv + 10] = new MapVertex(lpos, map.VertexTBN[cellinfo.L], r.Left, r.Bottom, sl, sb, paletteTextureIndex, fAttribC, lColorOffset, alpha, map.VertexUV[cellinfo.L], type);
+				vertices[nv + 11] = new MapVertex(bpos, map.VertexTBN[cellinfo.B], r.Right, r.Bottom, sr, sb, paletteTextureIndex, fAttribC, bColorOffset, alpha, map.VertexUV[cellinfo.B], type);
 			}
 
 			verticesColor[nv] = tColorOffset;

@@ -66,7 +66,7 @@ namespace OpenRA.Mods.Common.Warheads
 				if (!smudgeLayers.TryGetValue(smudgeType, out var smudgeLayer))
 					throw new NotImplementedException($"Unknown smudge type `{smudgeType}`");
 
-				smudgeLayer.AddSmudge(sc);
+				smudgeLayer.AddSmudge(sc, pos);
 			}
 		}
 	}

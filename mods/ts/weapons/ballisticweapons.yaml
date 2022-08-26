@@ -111,8 +111,8 @@ RPGTower:
 	Inherits: ^Cannon
 	Projectile: Bullet
 		Blockable: false
-		ContrailLength: 12
-		ContrailWidth: 88
+		ContrailLength: 10
+		ContrailWidth: 85
 		LaunchAngle: 75
 	Warhead@1Dam: SpreadDamage
 		Spread: 216
@@ -132,12 +132,17 @@ RPGTower:
 	Projectile: Bullet
 		Speed: 384
 		LaunchAngle: 165
+		ContrailWidth: 105
+		ContrailLength: 12
 	MinRange: 5c0
 	Warhead@1Dam: SpreadDamage
 		Damage: 15000
 	Warhead@2Eff: CreateEffect
 		Explosions: large_explosion
 		ImpactSounds: expnew06.aud
+	Warhead@4Smu: LeaveSmudge
+		SmudgeType: LargeCrater
+
 
 Jugg90mm:
 	Inherits: ^ArtilleryWeapon

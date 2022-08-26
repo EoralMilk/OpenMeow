@@ -31,9 +31,7 @@ harv.gdi:
 	Inherits: ^VehicleOverlays
 	harvest: harvestr
 		Length: *
-		ZRamp: 1
-		Offset: 0, 0, 1
-		ZOffset: 3
+		ZOffset: 10
 		MeshType: Plane
 	icon: sidebar-gdi|harvicon
 
@@ -42,9 +40,7 @@ harv.nod:
 	Inherits: ^VehicleOverlays
 	harvest: harvestr
 		Length: *
-		ZRamp: 1
-		Offset: 0, 0, 1
-		ZOffset: -3
+		ZOffset: 10
 		MeshType: Plane
 	icon: sidebar-nod|harvicon
 

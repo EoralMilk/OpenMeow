@@ -6,9 +6,9 @@ FireballLauncher:
 	Projectile: Bullet
 		DetectTargetFromLength: 0.8
 		DetectTargetBeforeDist: 2c0
-		Speed: 128
+		Speed: 160
 		Image: FLAMEALL
-		Inaccuracy: 556
+		Inaccuracy: 656
 		UseVerticalInaccuracy: false
 		Blockable: true
 		LaunchAngle: 10

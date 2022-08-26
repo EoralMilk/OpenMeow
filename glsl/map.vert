@@ -4,6 +4,9 @@
 #ifdef GL_ES
 precision mediump float;
 #endif
+
+#define DT_NONE -1
+
 uniform mat4 view;
 uniform mat4 projection;
 uniform vec3 CameraInvFront;
@@ -137,7 +140,7 @@ void main()
 {
 	if (aVertexTint.a == 0.0) 
 	{
-		mDrawType = 0;
+		mDrawType = DT_NONE;
 		return;
 	}
 	else
@@ -147,8 +150,8 @@ void main()
 	gl_Position = projection * view * aVertexPosition;
 	vTexCoord = aVertexTexCoord;
 	vTileTexCoord = aTileTexCoord;
-	vTexMetadata = aVertexTexMetadata;
 
+	vTexMetadata = aVertexTexMetadata;
 	vec4 attrib = UnpackChannelAttributes(aVertexTexMetadata.t);
 	vChannelMask = SelectChannelMask(attrib.s);
 	vColorFraction = SelectColorFraction(attrib.s);

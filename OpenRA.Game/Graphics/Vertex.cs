@@ -113,7 +113,36 @@ namespace OpenRA.Graphics
 				  tbn.Column0.x, tbn.Column0.y, tbn.Column0.z,
 				  tbn.Column1.x, tbn.Column1.y, tbn.Column1.z,
 				  tbn.Column2.x, tbn.Column2.y, tbn.Column2.z,
-				  tu, tv, type) { }
+				  tu, tv, type)
+		{ }
+
+		public MapVertex(in float3 xyz,
+							in mat3 tbn,
+							float s, float t, float u, float v,
+							float p, float c,
+							in float3 tint, float a,
+							float2 tuv, uint type)
+	: this(xyz.X, xyz.Y, xyz.Z,
+		  s, t, u, v,
+		  p, c,
+		  tint.X, tint.Y, tint.Z, a,
+		  tbn.Column0.x, tbn.Column0.y, tbn.Column0.z,
+		  tbn.Column1.x, tbn.Column1.y, tbn.Column1.z,
+		  tbn.Column2.x, tbn.Column2.y, tbn.Column2.z,
+		  tuv.X, tuv.Y, type)
+		{ }
+
+		public MapVertex(in OverlayVertex vertex,
+					float a, uint type)
+: this(vertex.X, vertex.Y, vertex.Z,
+  0, 0, 0, 0,
+  0, 0,
+  0,0,0,a,
+  vertex.TX, vertex.TY, vertex.TZ,
+  vertex.BX, vertex.BY, vertex.BZ,
+  vertex.NX, vertex.NY, vertex.NZ,
+  vertex.U, vertex.V, type)
+		{ }
 
 		public MapVertex(float x, float y, float z,
 									float s, float t, float u, float v,
@@ -130,7 +159,8 @@ namespace OpenRA.Graphics
 				  tx, ty, tz,
 				  bx, by, bz,
 				  nx, ny, nz,
-				  tu, tv, type) { }
+				  tu, tv, type)
+		{ }
 
 		public MapVertex(float x, float y, float z,
 									float s, float t, float u, float v,
@@ -166,4 +196,38 @@ namespace OpenRA.Graphics
 				DrawType);
 		}
 	};
+
+	public struct OverlayVertex
+	{
+		public readonly float X, Y, Z;
+		public readonly float U, V;
+
+		// TBN
+		public readonly float TX, TY, TZ;
+		public readonly float BX, BY, BZ;
+		public readonly float NX, NY, NZ;
+
+		public OverlayVertex(in float3 xyz,
+							in mat3 tbn,
+							float2 uv)
+	: this(xyz.X, xyz.Y, xyz.Z,
+		  uv.X, uv.Y,
+		  tbn.Column0.x, tbn.Column0.y, tbn.Column0.z,
+		  tbn.Column1.x, tbn.Column1.y, tbn.Column1.z,
+		  tbn.Column2.x, tbn.Column2.y, tbn.Column2.z)
+		{ }
+
+		public OverlayVertex(float x, float y, float z,
+			float u, float v,
+			float tx, float ty, float tz,
+			float bx, float by, float bz,
+			float nx, float ny, float nz)
+		{
+			X = x; Y = y; Z = z;
+			U = u; V = v;
+			TX = tx; TY = ty; TZ = tz;
+			BX = bx; BY = by; BZ = bz;
+			NX = nx; NY = ny; NZ = nz;
+		}
+	}
 }

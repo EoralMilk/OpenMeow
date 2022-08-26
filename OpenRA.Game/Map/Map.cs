@@ -287,9 +287,8 @@ namespace OpenRA
 
 		public WPos[] VertexWPos;
 		public float3[] VertexPos;
-		//public float3[] VertexTangent;
-		//public float3[] VertexBitangent;
 		public mat3[] VertexTBN;
+		public float2[] VertexUV;
 		public vec3[][] FaceNormal;
 		public float3[] VertexColors;
 		public int VertexArrayWidth, VertexArrayHeight;
@@ -717,6 +716,11 @@ namespace OpenRA
 			SaveMapAsPng("./MapToPng/");
 		}
 
+		const int DT_WATER = 22;
+		const int DT_SHORE = 23;
+		const int DT_CLIFF = 25;
+		const int DT_GRASS = 30;
+
 		public void CalculateTileVertexInfo()
 		{
 			VertexArrayWidth = MapSize.X * 2 + 2;
@@ -726,6 +730,7 @@ namespace OpenRA
 			var vertexNmlCaled = new bool[VertexArrayWidth * VertexArrayHeight];
 
 			VertexPos = new float3[VertexArrayWidth * VertexArrayHeight];
+			VertexUV = new float2[VertexArrayWidth * VertexArrayHeight];
 			//VertexTangent = new float3[VertexArrayWidth * VertexArrayHeight];
 			//VertexBitangent = new float3[VertexArrayWidth * VertexArrayHeight];
 			VertexTBN = new mat3[VertexArrayWidth * VertexArrayHeight];
@@ -1079,15 +1084,18 @@ namespace OpenRA
 
 					var type = Rules.TerrainInfo.GetTerrainInfo(Tiles[uv]);
 					var typename = Rules.TerrainInfo.TerrainTypes[type.TerrainType].Type;
-					uint typeNum = 1;
+					uint typeNum = (uint)Ramp[uv];
+
 					switch (typename)
 					{
 						case "Water":
+							typeNum = DT_WATER;
+							break;
 						case "Cliff":
-							typeNum = 2;
+							typeNum = DT_CLIFF;
 							break;
 						case "Rough":
-							typeNum = 3;
+							typeNum = DT_GRASS;
 							break;
 						default:
 							break;
@@ -1132,6 +1140,51 @@ namespace OpenRA
 			{
 				VertexTBN[i] = NormalizeTBN(VertexTBN[i]);
 			}
+
+			var meterPerMiniCell = (Grid.MeterPerCell * MapGrid.MapMiniCellWidth / 1024);
+			VertexUV[0] = new float2(0, 0);
+			var up = new vec3(0, 0, 1);
+			// uv retarget
+			for (int i = 0; i < VertexUV.Length; i++)
+			{
+				var n = VertexTBN[i].Column2;
+				if (up == n)
+				{
+					var length = (new float3(0, 0, VertexPos[i].Z) - VertexPos[i]).Length;
+					VertexUV[i] = new float2(length / 3.0f, VertexPos[i].Z / 3.0f);
+				}
+				else
+				{
+					var t = vec3.Cross(up, n).Normalized;
+					var bx = VertexPos[i].X * t.x / t.y;
+					var pos = new float3(VertexPos[i].X + bx, 0, VertexPos[i].Z);
+					var length = (pos - VertexPos[i]).Length;
+					VertexUV[i] = new float2(length / 3.0f, VertexPos[i].Z / 3.0f);
+				}
+				
+			}
+
+			//for (var y = 0; y < VertexArrayHeight - 2; y++)
+			//{
+			//	for (var x = 0; x < VertexArrayWidth - 2; x++)
+			//	{
+			//		var tl = x + y * VertexArrayWidth;
+			//		var tr = x + 1 + y * VertexArrayWidth;
+			//		var bl = x + (y + 1) * VertexArrayWidth;
+			//		var br = x + 1 + (y + 1) * VertexArrayWidth;
+			//		var dx = 0.5f;// (VertexPos[tl] - VertexPos[tr]).Length / meterPerMiniCell;
+			//		var dy = 0.5f;//(VertexPos[tl] - VertexPos[bl]).Length / meterPerMiniCell;
+			//		var dxb = 0.5f;//(VertexPos[bl] - VertexPos[br]).Length / meterPerMiniCell;
+			//		var dyr = 0.5f;//(VertexPos[tr] - VertexPos[br]).Length / meterPerMiniCell;
+			//		if (VertexUV[tr] == float2.Zero)
+			//			VertexUV[tr] = new float2(VertexUV[tl].X + dx, VertexUV[tl].Y);
+			//		if (VertexUV[bl] == float2.Zero)
+			//			VertexUV[bl] = new float2(VertexUV[tl].X, VertexUV[tl].Y + dy);
+			//		if (VertexUV[br] == float2.Zero)
+			//			VertexUV[br] = new float2(VertexUV[tl].X + dxb, VertexUV[tl].Y + dyr);
+			//	}
+			//}
+
 		}
 
 		#region util for CalculateTileVertexInfo
