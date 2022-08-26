@@ -72,8 +72,8 @@ namespace OpenRA.Graphics
 			Top = (Math.Min(bounds.Top, bounds.Bottom) + inset) / sheet.Size.Height;
 			Right = (Math.Max(bounds.Left, bounds.Right) - inset) / sheet.Size.Width;
 			Bottom = (Math.Max(bounds.Top, bounds.Bottom) - inset) / sheet.Size.Height;
-			TB = MathF.Abs(Top - Bottom);
-			LR = MathF.Abs(Left - Right);
+			TB = Bottom - Top;
+			LR = Right - Left;
 			UpdateMeshInfo();
 		}
 

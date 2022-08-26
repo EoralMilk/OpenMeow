@@ -59,14 +59,28 @@ namespace OpenRA.Graphics
 			}
 		}
 
-		public void DrawOverlay(in OverlayVertex[] overlayVertices, float alpha)
+		public void SetSheets(IEnumerable<Sheet> sheets)
+		{
+			var si = 0;
+
+			foreach (var s in sheets)
+			{
+				if (si >= SheetCount)
+					ThrowSheetOverflow(nameof(sheets));
+
+				if (s != null)
+					Shader.SetTexture(SheetIndexToTextureName[si++], s.GetTexture());
+			}
+		}
+
+		public void DrawOverlay(in MapVertex[] overlayVertices, float alpha)
 		{
 			if (nv + overlayVertices.Length >= vertices.Length)
 				Flush();
 
 			for (int i = 0; i < overlayVertices.Length; i++)
 			{
-				vertices[nv + i] = new MapVertex(overlayVertices[i], alpha, 100);
+				vertices[nv + i] = overlayVertices[i].ChangeAlpha(alpha);
 			}
 
 			nv += overlayVertices.Length;

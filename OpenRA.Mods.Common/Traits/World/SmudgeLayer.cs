@@ -171,24 +171,28 @@ namespace OpenRA.Mods.Common.Traits
 			/// </summary>
 			public readonly int LifeTime;
 			public readonly WPos Pos;
+			public readonly Sprite Sprite;
+			public readonly int2 Samplers;
 
 			public readonly int Size;
 
-			public OverlayVertex[] OverlayVertices;
+			public MapVertex[] OverlayVertices;
 			public float AlphaTint;
 			public int Tick;
 
 			public Smudge(int lifeTime)
 			{
 				LifeTime = lifeTime;
-				OverlayVertices = Array.Empty<OverlayVertex>();
+				OverlayVertices = Array.Empty<MapVertex>();
 				AlphaTint = 1;
 				Tick = lifeTime;
 				Pos = WPos.Zero;
 				Size = 0;
+				Sprite = null;
+				Samplers = int2.Zero;
 			}
 
-			public Smudge(World world, SmudgeLayer smudgeLayer, WPos pos)
+			public Smudge(World world, SmudgeLayer smudgeLayer, WPos pos, Sprite sprite)
 			{
 				if (smudgeLayer.Info.FadeTick.Length > 1)
 					LifeTime = world.SharedRandom.Next(smudgeLayer.Info.FadeTick[0], smudgeLayer.Info.FadeTick[1]);
@@ -200,13 +204,28 @@ namespace OpenRA.Mods.Common.Traits
 				else
 					Size = smudgeLayer.Info.Size[0];
 
-				OverlayVertices = smudgeLayer.CreateTileOverlayVertex(pos, smudgeLayer.map, Size, smudgeLayer.nowZOffset * Game.Renderer.World3DRenderer.InverseCameraFrontMeterPerWPos);
+				Sprite = sprite;
+
+				if (sprite != null)
+				{
+					Samplers = new int2(smudgeLayer.GetOrAddSheetIndex(sprite.Sheet),
+						smudgeLayer.GetOrAddSheetIndex((sprite as SpriteWithSecondaryData)?.SecondarySheet));
+				}
+				else
+				{
+					Samplers = int2.Zero;
+				}
+
+				OverlayVertices = smudgeLayer.CreateTileOverlayVertex(pos, smudgeLayer.map, Size,
+					smudgeLayer.nowZOffset * Game.Renderer.World3DRenderer.InverseCameraFrontMeterPerWPos,
+					sprite, Samplers, smudgeLayer.PaletteReference?.TextureIndex ?? 0);
+
 				AlphaTint = 1;
 				Tick = LifeTime;
 				Pos = pos;
 			}
 
-			public Smudge(World world, SmudgeLayer smudgeLayer, WPos pos, int lifeTime)
+			public Smudge(World world, SmudgeLayer smudgeLayer, WPos pos, int lifeTime, Sprite sprite)
 			{
 				if (smudgeLayer.Info.Size.Length > 1)
 					Size = world.SharedRandom.Next(smudgeLayer.Info.Size[0], smudgeLayer.Info.Size[1]);
@@ -214,10 +233,25 @@ namespace OpenRA.Mods.Common.Traits
 					Size = smudgeLayer.Info.Size[0];
 
 				LifeTime = lifeTime;
-				OverlayVertices = smudgeLayer.CreateTileOverlayVertex(pos, smudgeLayer.map, Size, smudgeLayer.nowZOffset * Game.Renderer.World3DRenderer.InverseCameraFrontMeterPerWPos);
+				Sprite = sprite;
+
+				if (sprite != null)
+				{
+					Samplers = new int2(smudgeLayer.GetOrAddSheetIndex(sprite.Sheet),
+						smudgeLayer.GetOrAddSheetIndex((sprite as SpriteWithSecondaryData)?.SecondarySheet));
+				}
+				else
+				{
+					Samplers = int2.Zero;
+				}
+
+				OverlayVertices = smudgeLayer.CreateTileOverlayVertex(pos, smudgeLayer.map, Size,
+					smudgeLayer.nowZOffset * Game.Renderer.World3DRenderer.InverseCameraFrontMeterPerWPos,
+					sprite, Samplers, smudgeLayer.PaletteReference?.TextureIndex ?? 0);
 				AlphaTint = 1;
 				Tick = LifeTime;
 				Pos = pos;
+
 			}
 
 			public bool InBound(in WPos tr, in WPos br)
@@ -233,7 +267,8 @@ namespace OpenRA.Mods.Common.Traits
 
 		}
 
-		OverlayVertex[] CreateTileOverlayVertex(in WPos pos, Map map, int size, in vec3 zOffset)
+		MapVertex[] CreateTileOverlayVertex(in WPos pos, Map map, int size, in vec3 zOffset,
+			Sprite r, int2 samplers, float paletteTextureIndex)
 		{
 			var width = size;
 			var height = size;
@@ -250,7 +285,28 @@ namespace OpenRA.Mods.Common.Traits
 			int count = (BR.X - TL.X) * (BR.Y - TL.Y) * 6;
 			var TLX = pos.X - w;
 			var TLY = pos.Y - h;
-			OverlayVertex[] overlayVertices = new OverlayVertex[count];
+			MapVertex[] overlayVertices = new MapVertex[count];
+
+			float sl = 0;
+			float st = 0;
+			float lr = 0;
+			float tb = 0;
+
+			// See combined.vert for documentation on the channel attribute format
+			var attribC = r.Channel == TextureChannel.RGBA ? 0x02 : ((byte)r.Channel) << 1 | 0x01;
+			attribC |= samplers.X << 6;
+			if (r is SpriteWithSecondaryData ss)
+			{
+				sl = ss.SecondaryLeft;
+				st = ss.SecondaryTop;
+				lr = ss.SecondaryRight - sl;
+				tb = ss.SecondaryBottom - st;
+
+				attribC |= ((byte)ss.SecondaryChannel) << 4 | 0x08;
+				attribC |= samplers.Y << 9;
+			}
+
+			var fAttribC = (float)attribC;
 
 			{
 				int i = 0;
@@ -262,6 +318,7 @@ namespace OpenRA.Mods.Common.Traits
 						var iLB = x + (y + 1) * map.VertexArrayWidth;
 						var iRB = x + 1 + (y + 1) * map.VertexArrayWidth;
 						var index = iRT;
+						float2 uv;
 						if (TL.X % 2 == TL.Y % 2)
 						{
 							// ------------
@@ -270,18 +327,30 @@ namespace OpenRA.Mods.Common.Traits
 							// |  /          |
 							// ------------
 							index = iRT;
-							overlayVertices[i] = new OverlayVertex(map.VertexPos[index] + viewOffset, map.VertexTBN[index], CalUV(index, TLX, TLY, width, height));
+							uv = CalUV(index, TLX, TLY, width, height);
+							overlayVertices[i] = new MapVertex(map.VertexPos[index] + viewOffset, map.VertexTBN[index], uv,
+								r.Left + r.LR * uv.X, r.Top + r.TB * uv.Y, sl + lr * uv.X, st + tb * uv.Y, paletteTextureIndex, fAttribC);
 							index = iLT;
-							overlayVertices[i + 1] = new OverlayVertex(map.VertexPos[index] + viewOffset, map.VertexTBN[index], CalUV(index, TLX, TLY, width, height));
+							uv = CalUV(index, TLX, TLY, width, height);
+							overlayVertices[i + 1] = new MapVertex(map.VertexPos[index] + viewOffset, map.VertexTBN[index], uv,
+								r.Left + r.LR * uv.X, r.Top + r.TB * uv.Y, sl + lr * uv.X, st + tb * uv.Y, paletteTextureIndex, fAttribC);
 							index = iLB;
-							overlayVertices[i + 2] = new OverlayVertex(map.VertexPos[index] + viewOffset, map.VertexTBN[index], CalUV(index, TLX, TLY, width, height));
+							uv = CalUV(index, TLX, TLY, width, height);
+							overlayVertices[i + 2] = new MapVertex(map.VertexPos[index] + viewOffset, map.VertexTBN[index], uv,
+								r.Left + r.LR * uv.X, r.Top + r.TB * uv.Y, sl + lr * uv.X, st + tb * uv.Y, paletteTextureIndex, fAttribC);
 
 							index = iRT;
-							overlayVertices[i + 3] = new OverlayVertex(map.VertexPos[index] + viewOffset, map.VertexTBN[index], CalUV(index, TLX, TLY, width, height));
+							uv = CalUV(index, TLX, TLY, width, height);
+							overlayVertices[i + 3] = new MapVertex(map.VertexPos[index] + viewOffset, map.VertexTBN[index], uv,
+								r.Left + r.LR * uv.X, r.Top + r.TB * uv.Y, sl + lr * uv.X, st + tb * uv.Y, paletteTextureIndex, fAttribC);
 							index = iLB;
-							overlayVertices[i + 4] = new OverlayVertex(map.VertexPos[index] + viewOffset, map.VertexTBN[index], CalUV(index, TLX, TLY, width, height));
+							uv = CalUV(index, TLX, TLY, width, height);
+							overlayVertices[i + 4] = new MapVertex(map.VertexPos[index] + viewOffset, map.VertexTBN[index], uv,
+								r.Left + r.LR * uv.X, r.Top + r.TB * uv.Y, sl + lr * uv.X, st + tb * uv.Y, paletteTextureIndex, fAttribC);
 							index = iRB;
-							overlayVertices[i + 5] = new OverlayVertex(map.VertexPos[index] + viewOffset, map.VertexTBN[index], CalUV(index, TLX, TLY, width, height));
+							uv = CalUV(index, TLX, TLY, width, height);
+							overlayVertices[i + 5] = new MapVertex(map.VertexPos[index] + viewOffset, map.VertexTBN[index], uv,
+								r.Left + r.LR * uv.X, r.Top + r.TB * uv.Y, sl + lr * uv.X, st + tb * uv.Y, paletteTextureIndex, fAttribC);
 						}
 						else
 						{
@@ -292,18 +361,30 @@ namespace OpenRA.Mods.Common.Traits
 							// ------------
 
 							index = iRT;
-							overlayVertices[i] = new OverlayVertex(map.VertexPos[index] + viewOffset, map.VertexTBN[index], CalUV(index, TLX, TLY, width, height));
+							uv = CalUV(index, TLX, TLY, width, height);
+							overlayVertices[i] = new MapVertex(map.VertexPos[index] + viewOffset, map.VertexTBN[index], uv,
+								r.Left + r.LR * uv.X, r.Top + r.TB * uv.Y, sl + lr * uv.X, st + tb * uv.Y, paletteTextureIndex, fAttribC);
 							index = iLT;
-							overlayVertices[i + 1] = new OverlayVertex(map.VertexPos[index] + viewOffset, map.VertexTBN[index], CalUV(index, TLX, TLY, width, height));
+							uv = CalUV(index, TLX, TLY, width, height);
+							overlayVertices[i + 1] = new MapVertex(map.VertexPos[index] + viewOffset, map.VertexTBN[index], uv,
+								r.Left + r.LR * uv.X, r.Top + r.TB * uv.Y, sl + lr * uv.X, st + tb * uv.Y, paletteTextureIndex, fAttribC);
 							index = iRB;
-							overlayVertices[i + 2] = new OverlayVertex(map.VertexPos[index] + viewOffset, map.VertexTBN[index], CalUV(index, TLX, TLY, width, height));
+							uv = CalUV(index, TLX, TLY, width, height);
+							overlayVertices[i + 2] = new MapVertex(map.VertexPos[index] + viewOffset, map.VertexTBN[index], uv,
+								r.Left + r.LR * uv.X, r.Top + r.TB * uv.Y, sl + lr * uv.X, st + tb * uv.Y, paletteTextureIndex, fAttribC);
 
 							index = iLT;
-							overlayVertices[i + 3] = new OverlayVertex(map.VertexPos[index] + viewOffset, map.VertexTBN[index], CalUV(index, TLX, TLY, width, height));
+							uv = CalUV(index, TLX, TLY, width, height);
+							overlayVertices[i + 3] = new MapVertex(map.VertexPos[index] + viewOffset, map.VertexTBN[index], uv,
+								r.Left + r.LR * uv.X, r.Top + r.TB * uv.Y, sl + lr * uv.X, st + tb * uv.Y, paletteTextureIndex, fAttribC);
 							index = iLB;
-							overlayVertices[i + 4] = new OverlayVertex(map.VertexPos[index] + viewOffset, map.VertexTBN[index], CalUV(index, TLX, TLY, width, height));
+							uv = CalUV(index, TLX, TLY, width, height);
+							overlayVertices[i + 4] = new MapVertex(map.VertexPos[index] + viewOffset, map.VertexTBN[index], uv,
+								r.Left + r.LR * uv.X, r.Top + r.TB * uv.Y, sl + lr * uv.X, st + tb * uv.Y, paletteTextureIndex, fAttribC);
 							index = iRB;
-							overlayVertices[i + 5] = new OverlayVertex(map.VertexPos[index] + viewOffset, map.VertexTBN[index], CalUV(index, TLX, TLY, width, height));
+							uv = CalUV(index, TLX, TLY, width, height);
+							overlayVertices[i + 5] = new MapVertex(map.VertexPos[index] + viewOffset, map.VertexTBN[index], uv,
+								r.Left + r.LR * uv.X, r.Top + r.TB * uv.Y, sl + lr * uv.X, st + tb * uv.Y, paletteTextureIndex, fAttribC);
 						}
 
 						i += 6;
@@ -319,6 +400,26 @@ namespace OpenRA.Mods.Common.Traits
 			return new float2((float)(vpos.X - TLX) / width, (float)(vpos.Y - TLY) / height);
 		}
 
+		int GetOrAddSheetIndex(Sheet sheet)
+		{
+			if (sheet == null)
+				return 0;
+
+			for (var i = 0; i < sheets.Length; i++)
+			{
+				if (sheets[i] == sheet)
+					return i;
+
+				if (sheets[i] == null)
+				{
+					sheets[i] = sheet;
+					return i;
+				}
+			}
+
+			throw new InvalidDataException("Smudge Sheet overflow");
+		}
+
 		public readonly SmudgeLayerInfo Info;
 		readonly Dictionary<CPos, CellSmudge> tiles = new Dictionary<CPos, CellSmudge>();
 		readonly Dictionary<CPos, CellSmudge> dirty = new Dictionary<CPos, CellSmudge>();
@@ -327,8 +428,11 @@ namespace OpenRA.Mods.Common.Traits
 		readonly Map map;
 		readonly bool hasSmoke;
 
-		TerrainSpriteLayer render;
-		PaletteReference paletteReference;
+		readonly Sheet[] sheets;
+		readonly PaletteReference[] palettes;
+
+		//TerrainSpriteLayer render;
+		public PaletteReference PaletteReference { get; private set; }
 		bool disposed;
 
 		int nowZOffset = 10;
@@ -339,6 +443,7 @@ namespace OpenRA.Mods.Common.Traits
 			map = world.Map;
 			hasSmoke = !string.IsNullOrEmpty(info.SmokeImage) && info.SmokeSequences.Length > 0;
 			nowZOffset = info.ZOffsetMin;
+			sheets = new Sheet[MapRenderer.SheetCount];
 
 			var sequenceProvider = world.Map.Rules.Sequences;
 			var types = sequenceProvider.Sequences(Info.Sequence);
@@ -357,8 +462,8 @@ namespace OpenRA.Mods.Common.Traits
 				throw new InvalidDataException("Smudges specify different blend modes. "
 					+ "Try using different smudge types for smudges that use different blend modes.");
 
-			paletteReference = wr.Palette(Info.Palette);
-			render = new TerrainSpriteLayer(w, wr, emptySprite, blendMode, w.Type != WorldType.Editor);
+			PaletteReference = wr.Palette(Info.Palette);
+			//render = new TerrainSpriteLayer(w, wr, emptySprite, blendMode, w.Type != WorldType.Editor);
 
 			// Add map smudges
 			foreach (var kv in Info.InitialSmudges)
@@ -377,11 +482,11 @@ namespace OpenRA.Mods.Common.Traits
 				//	Sequence = seq,
 				//	OverlayVertices = CreateTileOverlayVertex(map.CenterOfCell(kv.Key), map, count * Game.Renderer.World3DRenderer.InverseCameraFrontMeterPerWPos)
 				//};
-				var smudge = new Smudge(world, this, map.CenterOfCell(kv.Key), -1);
+				var smudge = new Smudge(world, this, map.CenterOfCell(kv.Key), -1, seq.GetSprite(0));
 				cell.Add(smudge);
 
 				tiles.Add(kv.Key, cell);
-				render.Update(kv.Key, seq, paletteReference, s.Depth, true);
+				//render.Update(kv.Key, seq, paletteReference, s.Depth, true);
 			}
 		}
 
@@ -395,17 +500,17 @@ namespace OpenRA.Mods.Common.Traits
 					pos, w, Info.SmokeImage, Info.SmokeSequences.Random(w.SharedRandom), Info.SmokePalette)));
 
 			nowZOffset = nowZOffset > Info.ZOffsetMax ? Info.ZOffsetMin : nowZOffset + Info.ZOffsetAdd;
-			//var st = smudges.Keys.Random(Game.CosmeticRandom);
+			var st = smudges.Keys.Random(Game.CosmeticRandom);
 
 			if (!dirty.ContainsKey(loc))
 			{
 				dirty[loc] = new CellSmudge(Info.MaxCountPerCell);
 
-				dirty[loc].Add(new Smudge(world, this, pos));
+				dirty[loc].Add(new Smudge(world, this, pos, smudges[st].GetSprite(0)));
 			}
 			else if (dirty[loc].Count < Info.MaxCountPerCell)
 			{
-				dirty[loc].Add(new Smudge(world, this, pos));
+				dirty[loc].Add(new Smudge(world, this, pos, smudges[st].GetSprite(0)));
 			}
 		}
 
@@ -487,6 +592,7 @@ namespace OpenRA.Mods.Common.Traits
 			//Console.WriteLine("tiles.Count: " + tiles.Count);
 
 			Game.Renderer.MapRenderer.SetTextures(wr.World, UsageType.Smudge);
+			Game.Renderer.MapRenderer.SetSheets(sheets);
 
 			var tp = wr.Viewport.TopLeftPosition;
 			var br = wr.Viewport.BottomRightPosition;
@@ -514,7 +620,7 @@ namespace OpenRA.Mods.Common.Traits
 			if (disposed)
 				return;
 
-			render.Dispose();
+			//render.Dispose();
 			disposed = true;
 		}
 	}

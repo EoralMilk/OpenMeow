@@ -141,7 +141,7 @@ vec4 CalcDirLight(DirLight light, vec4 color)
 
 	if (mDrawType == DT_SMUDGE){
 		// test smudge
-		color = texture(Scroch, vTileTexCoord);
+		// color = texture(Scroch, vTileTexCoord);
 	}
 	else if (mDrawType != DT_ADDON){
 		vec2 uv = vTileTexCoord;
@@ -363,7 +363,8 @@ void main()
 		if (vTileTexCoord.x < 0.0 || vTileTexCoord.x > 1.0 || vTileTexCoord.y < 0.0 || vTileTexCoord.y > 1.0)
 			discard;
 	}
-	else{
+	
+	{
 		if (AntialiasPixelsPerTexel > 0.0)
 		{
 			vec2 textureSize = vec2(Size(vTexSampler.s));

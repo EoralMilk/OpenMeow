@@ -117,6 +117,20 @@ namespace OpenRA.Graphics
 		{ }
 
 		public MapVertex(in float3 xyz,
+									in mat3 tbn, in float2 tuv,
+									float s, float t, float u, float v,
+									float p, float c)
+			: this(xyz.X, xyz.Y, xyz.Z,
+				  s, t, u, v,
+				  p, c,
+				  0, 0, 0, 1,
+				  tbn.Column0.x, tbn.Column0.y, tbn.Column0.z,
+				  tbn.Column1.x, tbn.Column1.y, tbn.Column1.z,
+				  tbn.Column2.x, tbn.Column2.y, tbn.Column2.z,
+				  tuv.X, tuv.Y, 100)
+		{ }
+
+		public MapVertex(in float3 xyz,
 							in mat3 tbn,
 							float s, float t, float u, float v,
 							float p, float c,
@@ -189,6 +203,19 @@ namespace OpenRA.Graphics
 				S, T, U, V,
 				p, C,
 				R, G, B, A,
+				TX, TY, TZ,
+				BX, BY, BZ,
+				NX, NY, NZ,
+				TU, TV,
+				DrawType);
+		}
+
+		public MapVertex ChangeAlpha(float a)
+		{
+			return new MapVertex(X, Y, Z,
+				S, T, U, V,
+				P, C,
+				R, G, B, a,
 				TX, TY, TZ,
 				BX, BY, BZ,
 				NX, NY, NZ,
