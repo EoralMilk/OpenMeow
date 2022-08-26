@@ -64,6 +64,10 @@ namespace OpenRA.Mods.Common.Traits
 
 		public readonly int[] FadeTick = { 600, 800 };
 
+		public readonly int ZOffsetMin = 256;
+		public readonly int ZOffsetAdd = 6;
+		public readonly int ZOffsetMax = 3030;
+
 		public static object LoadInitialSmudges(MiniYaml yaml)
 		{
 			var nd = yaml.ToDictionary();
@@ -167,6 +171,7 @@ namespace OpenRA.Mods.Common.Traits
 			/// </summary>
 			public readonly int LifeTime;
 			public readonly WPos Pos;
+
 			public readonly int Size;
 
 			public OverlayVertex[] OverlayVertices;
@@ -195,7 +200,7 @@ namespace OpenRA.Mods.Common.Traits
 				else
 					Size = smudgeLayer.Info.Size[0];
 
-				OverlayVertices = smudgeLayer.CreateTileOverlayVertex(pos, smudgeLayer.map, Size, smudgeLayer.count * Game.Renderer.World3DRenderer.InverseCameraFrontMeterPerWPos);
+				OverlayVertices = smudgeLayer.CreateTileOverlayVertex(pos, smudgeLayer.map, Size, smudgeLayer.nowZOffset * Game.Renderer.World3DRenderer.InverseCameraFrontMeterPerWPos);
 				AlphaTint = 1;
 				Tick = LifeTime;
 				Pos = pos;
@@ -209,7 +214,7 @@ namespace OpenRA.Mods.Common.Traits
 					Size = smudgeLayer.Info.Size[0];
 
 				LifeTime = lifeTime;
-				OverlayVertices = smudgeLayer.CreateTileOverlayVertex(pos, smudgeLayer.map, Size, smudgeLayer.count * Game.Renderer.World3DRenderer.InverseCameraFrontMeterPerWPos);
+				OverlayVertices = smudgeLayer.CreateTileOverlayVertex(pos, smudgeLayer.map, Size, smudgeLayer.nowZOffset * Game.Renderer.World3DRenderer.InverseCameraFrontMeterPerWPos);
 				AlphaTint = 1;
 				Tick = LifeTime;
 				Pos = pos;
@@ -217,7 +222,10 @@ namespace OpenRA.Mods.Common.Traits
 
 			public bool InBound(in WPos tr, in WPos br)
 			{
-				if ((Pos.X + Size > tr.X || Pos.X - Size < br.X) && (Pos.Y + Size > tr.Y || Pos.Y - Size < br.Y))
+				var projectY = Pos.Y - Pos.Z * Game.Renderer.World3DRenderer.InverseCameraFront.y / Game.Renderer.World3DRenderer.InverseCameraFront.z;
+				if ((Pos.X + Size > tr.X && Pos.X - Size < br.X) &&
+					(projectY + Size > tr.Y &&
+					projectY - Size < br.Y))
 					return true;
 				else
 					return false;
@@ -323,15 +331,14 @@ namespace OpenRA.Mods.Common.Traits
 		PaletteReference paletteReference;
 		bool disposed;
 
-		int count = 0;
-		readonly int countAdd = 15;
-
+		int nowZOffset = 10;
 		public SmudgeLayer(Actor self, SmudgeLayerInfo info)
 		{
 			Info = info;
 			world = self.World;
 			map = world.Map;
 			hasSmoke = !string.IsNullOrEmpty(info.SmokeImage) && info.SmokeSequences.Length > 0;
+			nowZOffset = info.ZOffsetMin;
 
 			var sequenceProvider = world.Map.Rules.Sequences;
 			var types = sequenceProvider.Sequences(Info.Sequence);
@@ -362,7 +369,7 @@ namespace OpenRA.Mods.Common.Traits
 
 				var seq = smudges[s.Type];
 				var cell = new CellSmudge(Info.MaxCountPerCell);
-				count += countAdd;
+				nowZOffset = nowZOffset > Info.ZOffsetMax ? Info.ZOffsetMin : nowZOffset + Info.ZOffsetAdd;
 				//var smudge = new Smudge
 				//{
 				//	Type = s.Type,
@@ -387,18 +394,17 @@ namespace OpenRA.Mods.Common.Traits
 				world.AddFrameEndTask(w => w.Add(new SpriteEffect(
 					pos, w, Info.SmokeImage, Info.SmokeSequences.Random(w.SharedRandom), Info.SmokePalette)));
 
+			nowZOffset = nowZOffset > Info.ZOffsetMax ? Info.ZOffsetMin : nowZOffset + Info.ZOffsetAdd;
+			//var st = smudges.Keys.Random(Game.CosmeticRandom);
+
 			if (!dirty.ContainsKey(loc))
 			{
 				dirty[loc] = new CellSmudge(Info.MaxCountPerCell);
 
-				//var st = smudges.Keys.Random(Game.CosmeticRandom);
-				count += countAdd;
 				dirty[loc].Add(new Smudge(world, this, pos));
 			}
 			else if (dirty[loc].Count < Info.MaxCountPerCell)
 			{
-				//var st = smudges.Keys.Random(Game.CosmeticRandom);
-				count += countAdd;
 				dirty[loc].Add(new Smudge(world, this, pos));
 			}
 		}

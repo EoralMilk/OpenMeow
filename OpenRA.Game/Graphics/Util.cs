@@ -194,6 +194,162 @@ namespace OpenRA.Graphics
 			}
 		}
 
+		public static int FastCreateFloatBoard(Vertex[] vertices,
+			in WPos inPos, in vec3 viewOffset,
+			Sprite r, int2 samplers, float paletteTextureIndex, float scale,
+			in float3 tint, float alpha, int nv, float rotation = 0f)
+		{
+			if (r.HasMeshCreateInfo)
+			{
+				if (!r.UpdateMeshInfo())
+					throw new Exception("invalide create mesh time: sprite has not create mesh data");
+			}
+
+			if (r.SpriteMeshType != SpriteMeshType.FloatBoard)
+			{
+				throw new Exception("sprite's mesh type is not card");
+			}
+
+			if (scale < 0)
+			{
+				throw new Exception("invalide create mesh scale: only positve value supported");
+			}
+
+			float3 ssziehalf = scale * r.Ssizehalf;
+			float3 soffset = scale * r.Soffset;
+			float2 leftRight = scale * r.LeftRight;
+			float2 topBottom = scale * r.TopBottom; // In general, both top and bottom are positive
+
+			var position = Game.Renderer.World3DRenderer.Get3DRenderPositionFromWPos(inPos);
+			position += viewOffset;
+
+			// sprite only has horizental part
+			if (topBottom.X < 0)
+			{
+				//float3 leftBack = new float3(position.x + leftRight.X, position.y - topBottom.X / Game.Renderer.World3DRenderer.CosCameraPitch, position.z);
+				//float3 rightBack = new float3(position.x + leftRight.Y, leftBack.Y, position.z);
+				//float3 leftFront = new float3(leftBack.X, position.y + topBottom.Y / Game.Renderer.World3DRenderer.CosCameraPitch, position.z);
+				//float3 rightFront = new float3(rightBack.X, leftFront.Y, position.z);
+
+				float3 leftBack = new float3(position.x + scale * r.leftBack.X, position.y + scale * r.leftBack.Y, position.z);
+				float3 rightBack = new float3(position.x + leftRight.Y, leftBack.Y, position.z);
+				float3 leftFront = new float3(leftBack.X, position.y + scale * r.leftFront.Y, position.z);
+				float3 rightFront = new float3(rightBack.X, leftFront.Y, position.z);
+
+				float sl = 0;
+				float st = 0;
+				float sr = 0;
+				float sb = 0;
+
+				// See combined.vert for documentation on the channel attribute format
+				var attribC = r.Channel == TextureChannel.RGBA ? 0x02 : ((byte)r.Channel) << 1 | 0x01;
+				attribC |= samplers.X << 6;
+				if (r is SpriteWithSecondaryData ss)
+				{
+					sl = ss.SecondaryLeft;
+					st = ss.SecondaryTop;
+					sr = ss.SecondaryRight;
+					sb = ss.SecondaryBottom;
+
+					attribC |= ((byte)ss.SecondaryChannel) << 4 | 0x08;
+					attribC |= samplers.Y << 9;
+				}
+
+				var fAttribC = (float)attribC;
+
+				vertices[nv] = new Vertex(leftBack, r.Left, r.Top, sl, st, paletteTextureIndex, fAttribC, tint, alpha);
+				vertices[nv + 1] = new Vertex(rightBack, r.Right, r.Top, sr, st, paletteTextureIndex, fAttribC, tint, alpha);
+				vertices[nv + 2] = new Vertex(rightFront, r.Right, r.Bottom, sr, sb, paletteTextureIndex, fAttribC, tint, alpha);
+
+				vertices[nv + 3] = new Vertex(rightFront, r.Right, r.Bottom, sr, sb, paletteTextureIndex, fAttribC, tint, alpha);
+				vertices[nv + 4] = new Vertex(leftFront, r.Left, r.Bottom, sl, sb, paletteTextureIndex, fAttribC, tint, alpha);
+				vertices[nv + 5] = new Vertex(leftBack, r.Left, r.Top, sl, st, paletteTextureIndex, fAttribC, tint, alpha);
+
+				return 6;
+			}
+			else if (topBottom.Y < 0) // sprite only has vertical part
+			{
+				//float3 leftTop = new float3(position.x + leftRight.X, position.y, position.z + (topBottom.X) / Game.Renderer.World3DRenderer.SinCameraPitch);
+				//float3 rightTop = new float3(position.x + leftRight.Y, position.y, leftTop.Z);
+				//float3 leftBottom = new float3(leftTop.X, position.y, position.z - (topBottom.Y) / Game.Renderer.World3DRenderer.SinCameraPitch);
+				//float3 rightBottom = new float3(rightTop.X, position.y, leftBottom.Z);
+
+				float3 leftTop = new float3(position.x + scale * r.leftTop.X, position.y, position.z + scale * r.leftTop.Z);
+				float3 rightTop = new float3(position.x + leftRight.Y, position.y, leftTop.Z);
+				float3 leftBottom = new float3(leftTop.X, position.y, position.z + scale * r.leftBottom.Z);
+				float3 rightBottom = new float3(rightTop.X, position.y, leftBottom.Z);
+
+				float sl = 0;
+				float st = 0;
+				float sr = 0;
+				float sb = 0;
+
+				// See combined.vert for documentation on the channel attribute format
+				var attribC = r.Channel == TextureChannel.RGBA ? 0x02 : ((byte)r.Channel) << 1 | 0x01;
+				attribC |= samplers.X << 6;
+				if (r is SpriteWithSecondaryData ss)
+				{
+					sl = ss.SecondaryLeft;
+					st = ss.SecondaryTop;
+					sr = ss.SecondaryRight;
+					sb = ss.SecondaryBottom;
+
+					attribC |= ((byte)ss.SecondaryChannel) << 4 | 0x08;
+					attribC |= samplers.Y << 9;
+				}
+
+				var fAttribC = (float)attribC;
+
+				vertices[nv] = new Vertex(leftTop, r.Left, r.Top, sl, st, paletteTextureIndex, fAttribC, tint, alpha);
+				vertices[nv + 1] = new Vertex(rightTop, r.Right, r.Top, sr, st, paletteTextureIndex, fAttribC, tint, alpha);
+				vertices[nv + 2] = new Vertex(rightBottom, r.Right, r.Bottom, sr, sb, paletteTextureIndex, fAttribC, tint, alpha);
+
+				vertices[nv + 3] = new Vertex(rightBottom, r.Right, r.Bottom, sr, sb, paletteTextureIndex, fAttribC, tint, alpha);
+				vertices[nv + 4] = new Vertex(leftBottom, r.Left, r.Bottom, sl, sb, paletteTextureIndex, fAttribC, tint, alpha);
+				vertices[nv + 5] = new Vertex(leftTop, r.Left, r.Top, sl, st, paletteTextureIndex, fAttribC, tint, alpha);
+
+				return 6;
+			}
+			else
+			{
+				float3 leftTop = new float3(position.x + scale * r.leftTop.X, position.y, position.z + scale * r.leftTop.Z);
+				float3 rightTop = new float3(position.x + leftRight.Y, position.y, leftTop.Z);
+				float3 leftFront = new float3(leftTop.X, position.y + scale * r.leftFront.Y, position.z);
+				float3 rightFront = new float3(rightTop.X, leftFront.Y, position.z);
+
+				float sl = 0;
+				float st = 0;
+				float sr = 0;
+				float sb = 0;
+
+				// See combined.vert for documentation on the channel attribute format
+				var attribC = r.Channel == TextureChannel.RGBA ? 0x02 : ((byte)r.Channel) << 1 | 0x01;
+				attribC |= samplers.X << 6;
+				if (r is SpriteWithSecondaryData ss)
+				{
+					sl = ss.SecondaryLeft;
+					st = ss.SecondaryTop;
+					sr = ss.SecondaryRight;
+					sb = ss.SecondaryBottom;
+
+					attribC |= ((byte)ss.SecondaryChannel) << 4 | 0x08;
+					attribC |= samplers.Y << 9;
+				}
+
+				var fAttribC = (float)attribC;
+
+				vertices[nv] = new Vertex(leftTop, r.Left, r.Top, sl, st, paletteTextureIndex, fAttribC, tint, alpha);
+				vertices[nv + 1] = new Vertex(rightTop, r.Right, r.Top, sr, st, paletteTextureIndex, fAttribC, tint, alpha);
+				vertices[nv + 2] = new Vertex(rightFront, r.Right, r.Bottom, sr, sb, paletteTextureIndex, fAttribC, tint, alpha);
+
+				vertices[nv + 3] = new Vertex(leftTop, r.Left, r.Top, sl, st, paletteTextureIndex, fAttribC, tint, alpha);
+				vertices[nv + 4] = new Vertex(rightFront, r.Right, r.Bottom, sr, sb, paletteTextureIndex, fAttribC, tint, alpha);
+				vertices[nv + 5] = new Vertex(leftFront, r.Left, r.Bottom, sl, sb, paletteTextureIndex, fAttribC, tint, alpha);
+
+				return 6;
+			}
+		}
+
 		public static void FastCreatePlane(Vertex[] vertices,
 			in WPos inPos, in vec3 viewOffset,
 			Sprite r, int2 samplers, float paletteTextureIndex, float scale,

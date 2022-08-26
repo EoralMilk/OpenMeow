@@ -140,6 +140,7 @@ explosion:
 		AlphaFade: True
 		IgnoreWorldTint: True
 		BlendMode: ScreenAdditive #Additive
+		MeshType: FloatBoard
 	building: twlt070
 		Offset: 0, 0, 36
 	ionring: ring1

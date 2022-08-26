@@ -103,7 +103,7 @@ namespace OpenRA.Graphics
 					leftBottom = new float3(leftTop.X, 0, -TopBottom.Y / Game.Renderer.World3DRenderer.SinCameraPitch);
 					rightBottom = new float3(rightTop.X, 0, leftBottom.Z);
 				}
-				else if (SpriteMeshType == SpriteMeshType.Card)
+				else if (SpriteMeshType == SpriteMeshType.Card || SpriteMeshType == SpriteMeshType.FloatBoard)
 				{
 					leftTop = new float3(LeftRight.X, 0, TopBottom.X / Game.Renderer.World3DRenderer.SinCameraPitch);
 					rightTop = new float3(LeftRight.Y, 0, leftTop.Z);
