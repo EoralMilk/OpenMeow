@@ -1141,27 +1141,10 @@ namespace OpenRA
 				VertexTBN[i] = NormalizeTBN(VertexTBN[i]);
 			}
 
-			var meterPerMiniCell = (Grid.MeterPerCell * MapGrid.MapMiniCellWidth / 1024);
-			VertexUV[0] = new float2(0, 0);
-			var up = new vec3(0, 0, 1);
 			// uv retarget
 			for (int i = 0; i < VertexUV.Length; i++)
 			{
-				var n = VertexTBN[i].Column2;
-				if (up == n)
-				{
-					var length = (new float3(0, 0, VertexPos[i].Z) - VertexPos[i]).Length;
-					VertexUV[i] = new float2(length / 3.0f, VertexPos[i].Z / 3.0f);
-				}
-				else
-				{
-					var t = vec3.Cross(up, n).Normalized;
-					var bx = VertexPos[i].X * t.x / t.y;
-					var pos = new float3(VertexPos[i].X + bx, 0, VertexPos[i].Z);
-					var length = (pos - VertexPos[i]).Length;
-					VertexUV[i] = new float2(length / 3.0f, VertexPos[i].Z / 3.0f);
-				}
-				
+				VertexUV[i] = new float2(VertexPos[i].X / 5.0f, VertexPos[i].Y / 5.0f);
 			}
 
 			//for (var y = 0; y < VertexArrayHeight - 2; y++)

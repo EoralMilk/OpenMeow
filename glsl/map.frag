@@ -144,7 +144,7 @@ vec4 CalcDirLight(DirLight light, vec4 color)
 		color = texture(Scroch, vTileTexCoord);
 	}
 	else if (mDrawType != DT_ADDON){
-		vec2 uv = vFragPos.xy/5.0;
+		vec2 uv = vTileTexCoord;
 
 		// slope and cliff
 		if (vNormal != vec3(0,0,1))
@@ -172,7 +172,7 @@ vec4 CalcDirLight(DirLight light, vec4 color)
 		// water pix
 		else if (mDrawType == DT_WATER && color.b > color.r)
 		{
-			uv = uv + vec2(0.0, WaterUVOffset);
+			uv = uv + vec2(WaterUVOffset, WaterUVOffset);
 			normal = normalize(texture(WaterNormal, uv).rgb * 2.0 - 1.0);
 
 			vec4 water = texture(Caustics, uv);
@@ -188,7 +188,7 @@ vec4 CalcDirLight(DirLight light, vec4 color)
 		else if ((mDrawType == DT_GRASS && color.g > color.r && color.g > color.b))
 		// else if (mDrawType != 99)
 		{
-			uv = uv + vec2(0.0, GrassUVOffset);
+			uv = uv + vec2(GrassUVOffset, GrassUVOffset);
 			normal = normalize(texture(GrassNormal, uv).rgb * 2.0 - 1.0);
 
 			vec3 reflectDir = reflect(-lightDir, normal);
