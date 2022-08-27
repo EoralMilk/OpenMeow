@@ -234,7 +234,7 @@ void main()
 
 	if (iDrawId != -1)
 	{
-		animTexoffset = iDrawId * skinBoneCount * 4;
+		animTexoffset = iDrawId;//iDrawId * skinBoneCount * 4;
 		if (aBoneWeights[0] == 0.0f){
 			mMatrix =  mat4(iModelV1, iModelV2, iModelV3, iModelV4);
 			// mMatrix = mMatrix * rotationFix;

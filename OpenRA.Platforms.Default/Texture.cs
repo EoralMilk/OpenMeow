@@ -245,6 +245,8 @@ namespace OpenRA.Platforms.Default
 
 		bool disposed;
 
+		bool dataInit = false;
+
 		public TextureScaleFilter ScaleFilter
 		{
 			get => TextureScaleFilter.Nearest;
@@ -299,20 +301,42 @@ namespace OpenRA.Platforms.Default
 		public void SetFloatData(float[] data, int width, int height, TextureType type = TextureType.RGBA)
 		{
 			VerifyThreadAffinity();
-
-			unsafe
+			if (dataInit)
 			{
-				fixed (float* ptr = &data[0])
+				unsafe
 				{
-					OpenGL.glPixelStorei(OpenGL.GL_UNPACK_ALIGNMENT, 1);
-					OpenGL.CheckGLError();
-					OpenGL.glBindTexture(OpenGL.GL_TEXTURE_2D, texture);
-					OpenGL.CheckGLError();
-					OpenGL.glTexImage2D(OpenGL.GL_TEXTURE_2D, 0, OpenGL.GL_RGBA32F, width, height,
-						0, OpenGL.GL_RGBA, OpenGL.GL_FLOAT, new IntPtr(ptr));
-					OpenGL.CheckGLError();
+					fixed (float* ptr = &data[0])
+					{
+						OpenGL.glPixelStorei(OpenGL.GL_UNPACK_ALIGNMENT, 1);
+						OpenGL.CheckGLError();
+						OpenGL.glBindTexture(OpenGL.GL_TEXTURE_2D, texture);
+						OpenGL.CheckGLError();
+						OpenGL.glTexSubImage2D(OpenGL.GL_TEXTURE_2D, 0,
+							0, 0,
+							width, height,
+							OpenGL.GL_RGBA, OpenGL.GL_FLOAT, new IntPtr(ptr));
+						OpenGL.CheckGLError();
+					}
 				}
 			}
+			else
+			{
+				unsafe
+				{
+					fixed (float* ptr = &data[0])
+					{
+						OpenGL.glPixelStorei(OpenGL.GL_UNPACK_ALIGNMENT, 1);
+						OpenGL.CheckGLError();
+						OpenGL.glBindTexture(OpenGL.GL_TEXTURE_2D, texture);
+						OpenGL.CheckGLError();
+						OpenGL.glTexImage2D(OpenGL.GL_TEXTURE_2D, 0, OpenGL.GL_RGBA32F, width, height,
+							0, OpenGL.GL_RGBA, OpenGL.GL_FLOAT, new IntPtr(ptr));
+						OpenGL.CheckGLError();
+					}
+				}
+			}
+
+			dataInit = true;
 		}
 
 		void ITextureInternal.SetEmpty(int width, int height)

@@ -444,7 +444,8 @@ namespace OpenRA.Mods.Common.Activities
 					pos = WPos.Lerp(From, To, progress, Distance);
 
 				if (self.Location.Layer == 0)
-					pos = new WPos(pos.X, pos.Y, self.World.Map.HeightOfTerrain(pos));
+					pos -= new WVec(WDist.Zero, WDist.Zero, self.World.Map.DistanceAboveTerrain(pos));
+				// pos = new WPos(pos.X, pos.Y, self.World.Map.HeightOfTerrain(pos));
 
 				mobile.SetCenterPosition(self, pos);
 
@@ -514,7 +515,7 @@ namespace OpenRA.Mods.Common.Activities
 
 						// from pos might no need to calculate height
 						var to = Util.BetweenCells(self.World, mobile.ToCell, nextCell.Value.Cell) + (toSubcellOffset + nextSubcellOffset) / 2;
-						to = new WPos(to.X, to.Y, self.World.Map.HeightOfTerrain(to));
+						// to = new WPos(to.X, to.Y, self.World.Map.HeightOfTerrain(to));
 
 						var ret = new MoveFirstHalf(
 							Move,
@@ -537,7 +538,7 @@ namespace OpenRA.Mods.Common.Activities
 
 				var toPos = mobile.ToCell.Layer == 0 ? map.CenterOfCell(mobile.ToCell) :
 					self.World.GetCustomMovementLayers()[mobile.ToCell.Layer].CenterOfCell(mobile.ToCell);
-				toPos = new WPos(toPos.X, toPos.Y, self.World.Map.HeightOfTerrain(toPos));
+				// toPos = new WPos(toPos.X, toPos.Y, self.World.Map.HeightOfTerrain(toPos));
 
 				var ret2 = new MoveSecondHalf(
 					Move,

@@ -122,10 +122,10 @@ namespace OpenRA.Mods.Common
 			var toPos = to.Layer == 0 ? w.Map.CenterOfCell(to) :
 				w.GetCustomMovementLayers()[to.Layer].CenterOfCell(to);
 
-			// return WPos.Lerp(fromPos, toPos, 1, 2);
+			 return WPos.Lerp(fromPos, toPos, 1, 2);
 
-			var result = WPos.Lerp(fromPos, toPos, 1, 2);
-			return new WPos(result.X, result.Y, w.Map.HeightOfTerrain(result));
+			//var result = WPos.Lerp(fromPos, toPos, 1, 2);
+			//return new WPos(result.X, result.Y, w.Map.HeightOfTerrain(result));
 		}
 
 		public static WAngle GetVerticalAngle(WPos source, WPos target)

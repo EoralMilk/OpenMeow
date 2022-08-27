@@ -81,10 +81,14 @@ namespace OpenRA.Graphics
 
 		public void UpdateAllSkeletonTexture()
 		{
+
 			foreach (var sk in orderedSkeletons)
 			{
 				sk.Value.UpdateAnimTextureData();
 			}
+
+			if (OrderedSkeleton.AnimTransformDataIndex > 0)
+				OrderedSkeleton.BoneAnimTexture?.SetFloatData(OrderedSkeleton.AnimTransformData, SkeletonAsset.AnimTextureWidth, SkeletonAsset.AnimTextureHeight, TextureType.RGBA);
 		}
 	}
 }

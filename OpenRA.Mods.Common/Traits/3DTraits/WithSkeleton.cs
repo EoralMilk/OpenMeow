@@ -140,7 +140,7 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 		public int GetDrawId()
 		{
 			if (Skeleton.CanGetPose() && Drawtick > 2)
-				return Skeleton.DrawID == -1 ? -2 : Skeleton.DrawID;
+				return Skeleton.InstanceID == -1 ? -2 : Skeleton.AnimTexoffset / 4;
 			else
 				return -2;
 		}
@@ -312,7 +312,7 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 			}
 			else
 			{
-				Skeleton.DrawID = -1;
+				Skeleton.InstanceID = -1;
 			}
 
 			foreach (var child in children)

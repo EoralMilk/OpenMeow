@@ -497,7 +497,7 @@ namespace OpenRA.Mods.Common.Traits
 
 			var subcellOffset = self.World.Map.Grid.OffsetOfSubCell(subCell);
 			var pos = position + subcellOffset;
-			pos = new WPos(pos.X, pos.Y, self.World.Map.HeightOfTerrain(pos));
+			// pos = new WPos(pos.X, pos.Y, self.World.Map.HeightOfTerrain(pos));
 			SetCenterPosition(self, pos);
 			FinishedMoving(self);
 		}

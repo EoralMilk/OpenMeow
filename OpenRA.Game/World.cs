@@ -450,6 +450,8 @@ namespace OpenRA
 
 				ApplyToActorsWithTraitTimed<ITick>((actor, trait) => trait.Tick(actor), "Trait");
 
+				OrderedSkeleton.AnimTransformDataIndex = 0;
+
 				foreach (var a in actors.Values)
 				{
 					a.UpdateSkeletonDrawInfo();
