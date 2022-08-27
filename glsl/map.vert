@@ -10,6 +10,7 @@ precision mediump float;
 uniform mat4 view;
 uniform mat4 projection;
 uniform vec3 CameraInvFront;
+
 uniform vec3 viewPos;
 uniform bool RenderShroud;
 
@@ -53,6 +54,8 @@ struct DirLight {
 uniform DirLight dirLight;
 
 out	vec3 tSunDirection;
+out	vec3 tCameraInvFront;
+
 out vec3 tFragPos;
 out vec3 tViewPos;
 out vec3 tNormal;
@@ -146,7 +149,6 @@ void main()
 	else
 		mDrawType = int(aDrawType);
 
-
 	gl_Position = projection * view * aVertexPosition;
 	vTexCoord = aVertexTexCoord;
 	vTileTexCoord = aTileTexCoord;
@@ -191,7 +193,8 @@ void main()
 	// mat3 TBN = mat3(aVertexTangent, aVertexBitangent, aVertexNormal);
 
 	tNormal = TBN * aVertexNormal;
-	tSunDirection = TBN * dirLight.direction;
+	tSunDirection = normalize(TBN * dirLight.direction);
+	tCameraInvFront = normalize(TBN *CameraInvFront);
 	tViewPos = TBN * viewPos;
 	tFragPos = TBN * aVertexPosition.xyz;
 

@@ -149,6 +149,10 @@ namespace OpenRA.Graphics
 		public void SetCameraParams(in World3DRenderer w3dr, bool sunCamera)
 		{
 			Shader.SetCommonParaments(w3dr, sunCamera);
+			Shader.SetVec("CameraInvFront",
+				Game.Renderer.World3DRenderer.InverseCameraFront.x,
+				Game.Renderer.World3DRenderer.InverseCameraFront.y,
+				Game.Renderer.World3DRenderer.InverseCameraFront.z);
 		}
 
 		public void SetRenderShroud(bool flag)

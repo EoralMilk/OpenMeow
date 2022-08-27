@@ -720,6 +720,7 @@ namespace OpenRA
 		const int DT_SHORE = 23;
 		const int DT_CLIFF = 25;
 		const int DT_GRASS = 30;
+		const int DT_ROAD = 32;
 
 		public void CalculateTileVertexInfo()
 		{
@@ -728,6 +729,7 @@ namespace OpenRA
 
 			var vertexCaled = new bool[VertexArrayWidth * VertexArrayHeight];
 			var vertexNmlCaled = new bool[VertexArrayWidth * VertexArrayHeight];
+			var vertexCliffCaled = new bool[VertexArrayWidth * VertexArrayHeight];
 
 			VertexPos = new float3[VertexArrayWidth * VertexArrayHeight];
 			VertexUV = new float2[VertexArrayWidth * VertexArrayHeight];
@@ -766,6 +768,7 @@ namespace OpenRA
 					ir = mid.Y * VertexArrayWidth + mid.X + 1;
 
 					var type = Rules.TerrainInfo.GetTerrainInfo(Tiles[uv]);
+					var typename = Rules.TerrainInfo.TerrainTypes[type.TerrainType].Type;
 
 					VertexColors[im] = Color2Float3(type.GetColor(Game.CosmeticRandom));
 
@@ -956,8 +959,21 @@ namespace OpenRA
 
 					if (vertexCaled[it])
 					{
-						VertexWPos[it] = TileWPos(HMix(ht, VertexWPos[it].Z), cpos, new WPos(0, -724, 0));
-						//VertexWPos[it] = TileWPos(Math.Min(ht, VertexWPos[it].Z), cpos, new WPos(0, -724, 0));
+						if (typename == "Cliff" || vertexCliffCaled[it])
+						{
+							if (vertexCliffCaled[it] || Math.Abs(ht - VertexWPos[it].Z) > 1024)
+							{
+								VertexWPos[it] = TileWPos(Math.Max(ht, VertexWPos[it].Z), cpos, new WPos(0, -724, 0));
+								vertexCliffCaled[it] = true;
+							}
+							else
+								VertexWPos[it] = TileWPos(HMix(ht, VertexWPos[it].Z), cpos, new WPos(0, -724, 0));
+							//VertexWPos[it] = TileWPos(Math.Min(ht, VertexWPos[it].Z), cpos, new WPos(0, -724, 0));
+						}
+						else
+						{
+							VertexWPos[it] = TileWPos(HMix(ht, VertexWPos[it].Z), cpos, new WPos(0, -724, 0));
+						}
 					}
 					else
 						VertexWPos[it] = TileWPos(ht / 4, cpos, new WPos(0, -724, 0));
@@ -966,9 +982,20 @@ namespace OpenRA
 
 					if (vertexCaled[ib])
 					{
-						VertexWPos[ib] = TileWPos(HMix(hb, VertexWPos[ib].Z), cpos, new WPos(0, 724, 0));
-						//VertexWPos[ib] = TileWPos(Math.Min(hb, VertexWPos[ib].Z), cpos, new WPos(0, 724, 0));
-
+						if (typename == "Cliff" || vertexCliffCaled[ib])
+						{
+							if (vertexCliffCaled[ib] || Math.Abs(hb - VertexWPos[ib].Z) > 1024)
+							{
+								VertexWPos[ib] = TileWPos(Math.Max(hb, VertexWPos[ib].Z), cpos, new WPos(0, -724, 0));
+								vertexCliffCaled[ib] = true;
+							}
+							else
+								VertexWPos[ib] = TileWPos(HMix(hb, VertexWPos[ib].Z), cpos, new WPos(0, 724, 0));
+						}
+						else
+						{
+							VertexWPos[ib] = TileWPos(HMix(hb, VertexWPos[ib].Z), cpos, new WPos(0, 724, 0));
+						}
 					}
 					else
 						VertexWPos[ib] = TileWPos(hb / 4, cpos, new WPos(0, 724, 0));
@@ -977,9 +1004,20 @@ namespace OpenRA
 
 					if (vertexCaled[il])
 					{
-						VertexWPos[il] = TileWPos(HMix(hl, VertexWPos[il].Z), cpos, new WPos(-724, 0, 0));
-						//VertexWPos[il] = TileWPos(Math.Min(hl, VertexWPos[il].Z), cpos, new WPos(-724, 0, 0));
-
+						if (typename == "Cliff" || vertexCliffCaled[il])
+						{
+							if (vertexCliffCaled[il] || Math.Abs(hl - VertexWPos[il].Z) > 1024)
+							{
+								VertexWPos[il] = TileWPos(Math.Max(hl, VertexWPos[il].Z), cpos, new WPos(0, -724, 0));
+								vertexCliffCaled[il] = true;
+							}
+							else
+								VertexWPos[il] = TileWPos(HMix(hl, VertexWPos[il].Z), cpos, new WPos(-724, 0, 0));
+						}
+						else
+						{
+							VertexWPos[il] = TileWPos(HMix(hl, VertexWPos[il].Z), cpos, new WPos(-724, 0, 0));
+						}
 					}
 					else
 						VertexWPos[il] = TileWPos(hl / 4, cpos, new WPos(-724, 0, 0));
@@ -988,9 +1026,20 @@ namespace OpenRA
 
 					if (vertexCaled[ir])
 					{
-						VertexWPos[ir] = TileWPos(HMix(hr, VertexWPos[ir].Z), cpos, new WPos(724, 0, 0));
-						//VertexWPos[ir] = TileWPos(Math.Min(hr, VertexWPos[ir].Z), cpos, new WPos(724, 0, 0));
-
+						if (typename == "Cliff" || vertexCliffCaled[ir])
+						{
+							if (vertexCliffCaled[ir] || Math.Abs(hr - VertexWPos[ir].Z) > 1024)
+							{
+								VertexWPos[ir] = TileWPos(Math.Max(hr, VertexWPos[ir].Z), cpos, new WPos(0, -724, 0));
+								vertexCliffCaled[ir] = true;
+							}
+							else
+								VertexWPos[ir] = TileWPos(HMix(hr, VertexWPos[ir].Z), cpos, new WPos(724, 0, 0));
+						}
+						else
+						{
+							VertexWPos[ir] = TileWPos(HMix(hr, VertexWPos[ir].Z), cpos, new WPos(724, 0, 0));
+						}
 					}
 					else
 						VertexWPos[ir] = TileWPos(hr / 4, cpos, new WPos(724, 0, 0));
@@ -1038,7 +1087,15 @@ namespace OpenRA
 					pr = VertexPos[ir];
 
 					if (ramp == 0)
-						VertexPos[im] = 0.25f * pt + 0.25f * pb + 0.25f * pl + 0.25f * pr;
+					{
+						VertexWPos[im] = new WPos(VertexWPos[im].X, VertexWPos[im].Y,
+							//(int)(VertexWPos[im].Z / 5) +
+							(int)(VertexWPos[it].Z / 4) +
+							(int)(VertexWPos[ib].Z / 4) +
+							(int)(VertexWPos[il].Z / 4) +
+							(int)(VertexWPos[ir].Z / 4));
+						VertexPos[im] = TilePos(VertexWPos[im]);
+					}
 
 					pm = VertexPos[im];
 
@@ -1092,10 +1149,13 @@ namespace OpenRA
 							typeNum = DT_WATER;
 							break;
 						case "Cliff":
-							typeNum = DT_CLIFF;
+							typeNum += DT_CLIFF;
 							break;
 						case "Rough":
 							typeNum = DT_GRASS;
+							break;
+						case "Road":
+							typeNum = DT_ROAD;
 							break;
 						default:
 							break;
@@ -1146,28 +1206,6 @@ namespace OpenRA
 			{
 				VertexUV[i] = new float2(VertexPos[i].X / 5.0f, VertexPos[i].Y / 5.0f);
 			}
-
-			//for (var y = 0; y < VertexArrayHeight - 2; y++)
-			//{
-			//	for (var x = 0; x < VertexArrayWidth - 2; x++)
-			//	{
-			//		var tl = x + y * VertexArrayWidth;
-			//		var tr = x + 1 + y * VertexArrayWidth;
-			//		var bl = x + (y + 1) * VertexArrayWidth;
-			//		var br = x + 1 + (y + 1) * VertexArrayWidth;
-			//		var dx = 0.5f;// (VertexPos[tl] - VertexPos[tr]).Length / meterPerMiniCell;
-			//		var dy = 0.5f;//(VertexPos[tl] - VertexPos[bl]).Length / meterPerMiniCell;
-			//		var dxb = 0.5f;//(VertexPos[bl] - VertexPos[br]).Length / meterPerMiniCell;
-			//		var dyr = 0.5f;//(VertexPos[tr] - VertexPos[br]).Length / meterPerMiniCell;
-			//		if (VertexUV[tr] == float2.Zero)
-			//			VertexUV[tr] = new float2(VertexUV[tl].X + dx, VertexUV[tl].Y);
-			//		if (VertexUV[bl] == float2.Zero)
-			//			VertexUV[bl] = new float2(VertexUV[tl].X, VertexUV[tl].Y + dy);
-			//		if (VertexUV[br] == float2.Zero)
-			//			VertexUV[br] = new float2(VertexUV[tl].X + dxb, VertexUV[tl].Y + dyr);
-			//	}
-			//}
-
 		}
 
 		#region util for CalculateTileVertexInfo
@@ -1601,13 +1639,14 @@ namespace OpenRA
 			{
 				var center = CenterOfCell(cell);
 				var offset = Grid.SubCellOffsets[index];
-				if (Ramp.TryGetValue(cell, out var ramp) && ramp != 0)
-				{
-					var r = Grid.Ramps[ramp];
-					offset += new WVec(0, 0, r.HeightOffset(offset.X, offset.Y) - r.CenterHeightOffset);
-				}
-
-				return center + offset;
+				var result = center + offset;
+				//if (Ramp.TryGetValue(cell, out var ramp) && ramp != 0)
+				//{
+				//	var r = Grid.Ramps[ramp];
+				//	offset += new WVec(0, 0, r.HeightOffset(offset.X, offset.Y) - r.CenterHeightOffset);
+				//}
+				result = new WPos(result.X, result.Y, HeightOfTerrain(result));
+				return result;
 			}
 
 			return CenterOfCell(cell);

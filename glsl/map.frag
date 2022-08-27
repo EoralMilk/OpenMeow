@@ -9,6 +9,7 @@ precision mediump float;
 #define DT_SHORE 23
 #define DT_CLIFF 25
 #define DT_GRASS 30
+#define DT_ROAD 32
 #define DT_SMUDGE 100
 #define DT_ADDON 100
 
@@ -77,12 +78,13 @@ in vec3 vFragPos;
 in float vSunLight;
 
 in vec3 tSunDirection;
+in vec3 tCameraInvFront;
+
 in vec3 tFragPos;
 in vec3 tViewPos;
 in vec3 tNormal;
 
 flat in int mDrawType;
-
 
 out vec4 fragColor;
 
@@ -133,8 +135,8 @@ float CalShadow(){
 vec4 CalcDirLight(DirLight light, vec4 color)
 {
 	vec3 normal = tNormal;
-	vec3 viewDir = normalize(tViewPos - tFragPos);
-	vec3 lightDir = normalize(-tSunDirection);
+	vec3 viewDir = tCameraInvFront; //normalize(tViewPos - tFragPos);
+	vec3 lightDir = -tSunDirection;
 
 	vec3 specular = vec3(0.0);
 
@@ -147,18 +149,18 @@ vec4 CalcDirLight(DirLight light, vec4 color)
 		vec2 uv = vTileTexCoord;
 
 		// slope and cliff
-		if (vNormal != vec3(0,0,1))
+		if (mDrawType != DT_ROAD && vNormal != vec3(0,0,1))
 		{
 			float nndot = dot(vNormal, vec3(0,0,1));
 
-			// if (mDrawType > 0 && mDrawType < 21)
 			{
-				float mul = max(min((1.0 - nndot) * 13.0, 1.0), 0.0);
-				normal = normal + (normalize(texture(SlopeNormal, uv).rgb * 2.0 - 1.0) - normal)*mul;
-				color = vec4(color.rgb + (texture(Slope, uv).rgb - color.rgb)*min(mul, 0.7), color.a);
+				// hack uv scale
+				vec2 uvs = uv / 2.0;
+				float mul = max(min((1.0 - nndot) * 15.0, 1.0), 0.0);
+				normal = normal + (normalize(texture(SlopeNormal, uvs).rgb * 2.0 - 1.0) - normal)*mul;
+				color = vec4(color.rgb + (texture(Slope, uvs).rgb - color.rgb)*min(mul, 0.7), color.a);
 			}
 
-			// if (mDrawType == DT_CLIFF)
 			{
 				float mul = max(min((1.0 - nndot) * 5.0, 1.0), 0.0);
 				normal = normal + (normalize(texture(CliffNormal, uv).rgb * 2.0 - 1.0) - normal)*mul;
@@ -209,7 +211,7 @@ vec4 CalcDirLight(DirLight light, vec4 color)
 	diffuse = diffuse * color.rgb;
 	float shadow = 1.0 - max(CalShadow(), 0.0);
 
-	return vec4((ambient * vSunLight + diffuse * shadow  + specular) * vTint.rgb, color.a);
+	return vec4((ambient + diffuse * shadow  + specular) * vSunLight * vTint.rgb, color.a);
 }
 
 
@@ -422,6 +424,12 @@ void main()
 				
 			}
 		}
+		// else
+		// {
+		// 	float nndot = dot(vNormal, InverseCameraFront);
+		// 	if (nndot < 0.0)
+		// 		discard;
+		// }
 
 		#if __VERSION__ == 120
 		gl_FragColor = c;

@@ -121,6 +121,7 @@ namespace OpenRA.Graphics
 		public void SetCommonParaments(IShader shader, World3DRenderer w3dr, bool sunCamera)
 		{
 			shader.SetBool("RenderDepthBuffer", sunCamera);
+
 			if (sunCamera)
 			{
 				shader.SetMatrix("projection", w3dr.SunProjection.Values1D);
