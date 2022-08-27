@@ -496,7 +496,9 @@ namespace OpenRA.Mods.Common.Traits
 				self.World.GetCustomMovementLayers()[cell.Layer].CenterOfCell(cell);
 
 			var subcellOffset = self.World.Map.Grid.OffsetOfSubCell(subCell);
-			SetCenterPosition(self, position + subcellOffset);
+			var pos = position + subcellOffset;
+			pos = new WPos(pos.X, pos.Y, self.World.Map.HeightOfTerrain(pos));
+			SetCenterPosition(self, pos);
 			FinishedMoving(self);
 		}
 
