@@ -230,10 +230,6 @@ GAWEAP:
 		ForceSetType: Vehicle
 	Exit@1:
 		SpawnOffset: -384,-384,0
-		ExitCell: 4,1
-		ExitDelay: 5
-	Exit@2:
-		SpawnOffset: -384,-384,0
 		ExitCell: 3,1
 		ExitDelay: 5
 	ExitsDebugOverlay:

@@ -331,7 +331,7 @@ ART2:
 		# RequiresCondition: deployed && !init-barrel
 		MuzzleSequence: muzzle
 		Recoil: 178
-		RecoilRecovery: 32
+		RecoilRecovery: 15
 	WithMuzzleOverlay:
 	RevealOnFire:
 		ArmamentNames: deployed

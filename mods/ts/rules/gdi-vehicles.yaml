@@ -479,31 +479,31 @@ JUGG:
 		Name: deployed1
 		Turret: deployed
 		Weapon: Jugg90mm
-		LocalOffset: 820,0,800
+		LocalOffset: 925,0,800
 		FireDelay: 3
 		# RequiresCondition: deployed && !init-barrel
 		MuzzleSequence: muzzle
-		Recoil: 128
-		RecoilRecovery: 32
+		Recoil: 148
+		RecoilRecovery: 12
 	Armament@deployed2:
 		Name: deployed2
 		Turret: deployed
 		Weapon: Jugg90mm
-		LocalOffset: 820,203,800
+		LocalOffset: 925,203,800
 		# RequiresCondition: deployed && !init-barrel
 		MuzzleSequence: muzzle
-		Recoil: 128
-		RecoilRecovery: 32
+		Recoil: 148
+		RecoilRecovery: 12
 	Armament@deployed3:
 		Name: deployed3
 		Turret: deployed
 		Weapon: Jugg90mm
 		FireDelay: 7
-		LocalOffset:  820,-203,800
+		LocalOffset: 925,-203,800
 		# RequiresCondition: deployed && !init-barrel
 		MuzzleSequence: muzzle
-		Recoil: 128
-		RecoilRecovery: 32
+		Recoil: 148
+		RecoilRecovery: 12
 
 	WithMuzzleOverlay:
 	RevealOnFire:
