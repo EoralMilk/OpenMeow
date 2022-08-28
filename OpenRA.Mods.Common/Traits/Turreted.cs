@@ -30,12 +30,20 @@ namespace OpenRA.Mods.Common.Traits
 		[Desc("Number of ticks before turret is realigned. (-1 turns off realignment)")]
 		public readonly int RealignDelay = 40;
 
+		[Desc("Turret is realign when disable")]
+		public readonly bool RealignWhenDisable = false;
+
+		[Desc("Speed at which the turret 'Realign' when disable.")]
+		public readonly WAngle DisableRealignSpeed = new WAngle(512);
+
 		[Desc("Muzzle position relative to turret or body. (forward, right, up) triples")]
 		public readonly WVec Offset = WVec.Zero;
 
 		[Desc("Display order for the turret facing slider in the map editor")]
 		public readonly int EditorTurretFacingDisplayOrder = 4;
 
+		[Desc("Realign turret before deploy")]
+		public readonly bool RealignBeforeDeploy = false;
 		IEnumerable<ActorInit> IActorPreviewInitInfo.ActorPreviewInits(ActorInfo ai, ActorPreviewType type)
 		{
 			yield return new TurretFacingInit(this, InitialFacing);
@@ -127,11 +135,12 @@ namespace OpenRA.Mods.Common.Traits
 		public override object Create(ActorInitializer init) { return new Turreted(init, this); }
 	}
 
-	public class Turreted : PausableConditionalTrait<TurretedInfo>, ITick, IDeathActorInitModifier, IActorPreviewInitModifier
+	public class Turreted : PausableConditionalTrait<TurretedInfo>, ITick, IDeathActorInitModifier, IActorPreviewInitModifier, INotifyDeployTriggeredPrepare
 	{
 		AttackTurreted attack;
 		IFacing facing;
 		BodyOrientation body;
+		INotifyDeployPrepareComplete[] notify;
 
 		[Sync]
 		public int QuantizedFacings = 0;
@@ -139,7 +148,7 @@ namespace OpenRA.Mods.Common.Traits
 		WVec desiredDirection;
 		int realignTick = 0;
 		bool realignDesired;
-
+		bool forceRealigning = false;
 		public WRot WorldOrientation
 		{
 			get
@@ -174,6 +183,7 @@ namespace OpenRA.Mods.Common.Traits
 			attack = self.TraitsImplementing<AttackTurreted>().SingleOrDefault(at => ((AttackTurretedInfo)at.Info).Turrets.Contains(Info.Turret));
 			facing = self.TraitOrDefault<IFacing>();
 			body = self.Trait<BodyOrientation>();
+			notify = self.TraitsImplementing<INotifyDeployPrepareComplete>().ToArray();
 		}
 
 		void ITick.Tick(Actor self)
@@ -181,10 +191,115 @@ namespace OpenRA.Mods.Common.Traits
 			Tick(self);
 		}
 
+		int forceRealigningWait = 0;
+		public bool CanUndeploy()
+		{
+			if (Info.RealignBeforeDeploy)
+			{
+				if (LocalOrientation.Yaw == Info.InitialFacing)
+					return true;
+
+				forceRealigningWait = 2;
+				forceRealigning = true;
+
+				return false;
+			}
+
+			return true;
+		}
+
+		bool toDeploy = false;
+		bool toUndeploy = false;
+
+		int INotifyDeployTriggeredPrepare.Deploy(Actor self, bool skipMakeAnim)
+		{
+			if (Info.RealignBeforeDeploy)
+			{
+				if (LocalOrientation.Yaw == Info.InitialFacing)
+				{
+					foreach (var n in notify)
+					{
+						n.FinishedDeployPrepare(self);
+					}
+				}
+				else
+				{
+					toDeploy = true;
+					forceRealigningWait = 2;
+					forceRealigning = true;
+				}
+			}
+
+			return 1;
+		}
+
+		int INotifyDeployTriggeredPrepare.Undeploy(Actor self, bool skipMakeAnim)
+		{
+			if (Info.RealignBeforeDeploy)
+			{
+				if (LocalOrientation.Yaw == Info.InitialFacing)
+				{
+					foreach (var n in notify)
+					{
+						n.FinishedUndeployPrepare(self);
+					}
+				}
+				else
+				{
+					toUndeploy = true;
+					forceRealigningWait = 2;
+					forceRealigning = true;
+				}
+			}
+
+			return 1;
+		}
+
 		protected virtual void Tick(Actor self)
 		{
-			if (IsTraitDisabled)
+
+			if (Info.RealignBeforeDeploy && forceRealigning)
+			{
+				if (LocalOrientation.Yaw == Info.InitialFacing)
+				{
+					if (toDeploy || toUndeploy)
+					{
+						foreach (var n in notify)
+						{
+							if (toDeploy)
+								n.FinishedUndeployPrepare(self);
+							else if (toUndeploy)
+								n.FinishedUndeployPrepare(self);
+						}
+
+						toDeploy = false;
+						toUndeploy = false;
+					}
+
+					if (forceRealigningWait-- < 0)
+						forceRealigning = false;
+				}
+				else
+				{
+					forceRealigningWait = 2;
+				}
+
+				MoveTurret();
+
 				return;
+			}
+
+			if (IsTraitDisabled)
+			{
+				if (Info.RealignWhenDisable)
+				{
+					realignDesired = true;
+					desiredDirection = WVec.Zero;
+					MoveTurret(true);
+				}
+
+				return;
+			}
 
 			// NOTE: FaceTarget is called in AttackTurreted.CanAttack if the turret has a target.
 			if (attack != null)
@@ -235,13 +350,14 @@ namespace OpenRA.Mods.Common.Traits
 			}
 		}
 
-		void MoveTurret()
+		void MoveTurret(bool disable = false)
 		{
-			var desired = realignDesired ? Info.InitialFacing : DesiredLocalFacing;
+			var desired = realignDesired || forceRealigning ? Info.InitialFacing : DesiredLocalFacing;
+
 			if (desired == LocalOrientation.Yaw)
 				return;
 
-			LocalOrientation = LocalOrientation.WithYaw(Util.TickFacing(LocalOrientation.Yaw, desired, Info.TurnSpeed));
+			LocalOrientation = LocalOrientation.WithYaw(Util.TickFacing(LocalOrientation.Yaw, desired, disable ? Info.DisableRealignSpeed : Info.TurnSpeed));
 
 			if (desired == LocalOrientation.Yaw)
 			{
@@ -300,6 +416,13 @@ namespace OpenRA.Mods.Common.Traits
 		{
 			if (attack != null && attack.IsAiming)
 				attack.OnStopOrder(self);
+
+			if (Info.RealignWhenDisable)
+			{
+				realignDesired = true;
+				desiredDirection = WVec.Zero;
+				MoveTurret(true);
+			}
 		}
 	}
 

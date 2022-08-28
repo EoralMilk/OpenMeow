@@ -124,6 +124,7 @@ art2:
 		Length: *
 		Offset: 0, 0, 24
 		IgnoreWorldTint: True
+		Scale: 2
 
 weed:
 	Inherits@defaults: ^VehicleBase
@@ -274,19 +275,20 @@ jugg:
 		Offset: -4, 0, 12
 	idle: djugg
 		ShadowStart: 3
-		Offset: 0, -12, 12
+		Offset: 0, 0, 12
 	damaged-idle: djugg
 		Start: 1
 		ShadowStart: 4
-		Offset: 0, -12, 12
+		Offset: 0, 0, 12
 	make: djuggmk
-		Length: 18
+		Length: 17
 		ShadowStart: 18
-		Offset: 0, -12, 12
+		Offset: 0, 0, 12
 	muzzle: gunfire
 		Length: *
 		Offset: 0, 0, 24
 		IgnoreWorldTint: True
+		Scale: 1.6
 
 gghunt:
 	Inherits@defaults: ^VehicleBase

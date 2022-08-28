@@ -259,10 +259,22 @@ namespace OpenRA.Mods.Common.Traits
 		void AfterTransform(Actor toActor);
 	}
 
+	public interface INotifyDeployPrepareComplete
+	{
+		void FinishedDeployPrepare(Actor self);
+		void FinishedUndeployPrepare(Actor self);
+	}
+
 	public interface INotifyDeployComplete
 	{
 		void FinishedDeploy(Actor self);
 		void FinishedUndeploy(Actor self);
+	}
+
+	public interface INotifyDeployTriggeredPrepare
+	{
+		int Deploy(Actor self, bool skipMakeAnim);
+		int Undeploy(Actor self, bool skipMakeAnim);
 	}
 
 	public interface INotifyDeployTriggered

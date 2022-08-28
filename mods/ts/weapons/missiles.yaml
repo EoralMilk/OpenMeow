@@ -28,7 +28,7 @@
 		ContrailLength: 16
 		ContrailWidth: 96
 		ContrailStartColor: BB8800
-		ContrailStartColorAlpha: 167
+		ContrailStartColorAlpha: 16
 		ContrailEndColor: AA0000
 		ContrailWidthFadeRate: 1
 		ContrailDelay: 0

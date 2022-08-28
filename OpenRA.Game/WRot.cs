@@ -11,6 +11,7 @@
 
 using System;
 using GlmSharp;
+using OpenRA.Graphics;
 using TrueSync;
 
 namespace OpenRA
@@ -223,6 +224,24 @@ namespace OpenRA
 		public override bool Equals(object obj) { return obj is WRot && Equals((WRot)obj); }
 
 		public override string ToString() { return Roll + "," + Pitch + "," + Yaw; }
+
+		/// <summary>
+		/// Wrong implementation
+		/// </summary>
+		public static WRot TickRot(in WRot a, in WRot b, WAngle speed)
+		{
+			return new WRot(TickFacing(a.Roll, b.Roll, speed), TickFacing(a.Pitch, b.Pitch, speed), TickFacing(a.Yaw, b.Yaw, speed));
+		}
+
+		static WAngle TickFacing(WAngle facing, WAngle desiredFacing, WAngle step)
+		{
+			var leftTurn = (facing - desiredFacing).Angle;
+			var rightTurn = (desiredFacing - facing).Angle;
+			if (leftTurn < step.Angle || rightTurn < step.Angle)
+				return desiredFacing;
+
+			return rightTurn < leftTurn ? facing + step : facing - step;
+		}
 
 		public static WRot SLerp(in WRot a, in WRot b, int mul, int div)
 		{

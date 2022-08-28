@@ -381,7 +381,7 @@ JUGG:
 	RenderModels:
 		NormalsPalette: normals
 		ShadowPalette: shadow
-		Scale: 1.4
+		Scale: 1
 		LightAmbientColor: 0.4, 0.4, 0.4
 	RenderSprites:
 		Image: jugg
@@ -389,7 +389,7 @@ JUGG:
 		BodyNames: body, deployedbody
 	WithFacingSpriteBody:
 		Sequence: stand
-		RequiresCondition: !deployed
+		RequiresCondition: !deployed && !preparing-undeploy
 	WithMoveAnimation:
 		MoveSequence: walk
 		ValidMovementTypes: Horizontal, Turn
@@ -404,6 +404,17 @@ JUGG:
 		DeploySounds: place2.aud
 		UndeploySounds: clicky1.aud
 		Voice: Move
+	# 	DeployOnAiming: true
+	# AttackFrontal@todeploy:
+	# 	Voice: Attack
+	# 	Armaments: todeploy
+	# 	FacingTolerance: 512
+	# 	RequiresCondition: undeployed
+	# Armament@todeploy:
+	# 	Name: todeploy
+	# 	Weapon: Jugg90mmDeployCheck
+	# 	RequiresCondition: undeployed
+	# 	FacingTolerance: 512
 	EntersTunnels:
 		RequireForceMoveCondition: !undeployed
 	Repairable:
@@ -415,28 +426,37 @@ JUGG:
 	QuantizeFacingsFromSequence:
 		Sequence: turret
 	WithSpriteBody@deployed:
-		RequiresCondition: deployed && real-actor
+		RequiresCondition: deployed || preparing-undeploy && real-actor
 		Name: deployedbody
 	Turreted:
 		Turret: deployed
 		TurnSpeed: 20
-		InitialFacing: 384
-		Offset: -153,-17,633
+		InitialFacing: 0
+		Offset: -64,0,410
 		RealignDelay: -1
+		RealignWhenDisable: true
+		RequiresCondition: deployed || preparing-undeploy
+		RealignBeforeDeploy: true
+	WithModelTurret@deployed:
+		Turret: deployed
+		RequiresCondition: deployed || preparing-undeploy
+		# Recoils: false
 	WithModelBarrel:
 		Armament: deployed
-		LocalOffset: 512,0,209
+		LocalOffset: 350,0,100
 		LocalOrientation: 0, 128, 0
-		RequiresCondition: deployed
-	WithSpriteTurret@deployed:
-		Turret: deployed
-		RequiresCondition: deployed
-		Recoils: false
+		RequiresCondition: deployed || preparing-undeploy
+		RotationSpeed: 12
+		PackBarrelBeforeDeploy: true
+	# WithSpriteTurret@deployed:
+	# 	Turret: deployed
+	# 	RequiresCondition: deployed
+	# 	Recoils: false
 	AttackTurreted@deployed:
 		Voice: Attack
 		Armaments: deployed
 		Turrets: deployed
-		RequiresCondition: deployed
+		RequiresCondition: deployed && !init-barrel
 		PauseOnCondition: empdisable
 		TargetFrozenActors: True
 		ForceFireIgnoresActors: True
@@ -446,8 +466,10 @@ JUGG:
 		Turret: deployed
 		Weapon: Jugg90mm
 		LocalOffset: 820,203,800, 820,0,800, 820,-203,800
-		RequiresCondition: deployed
+		# RequiresCondition: deployed && !init-barrel
 		MuzzleSequence: muzzle
+		Recoil: 128
+		RecoilRecovery: 32
 	WithMuzzleOverlay:
 	RevealOnFire:
 		ArmamentNames: deployed

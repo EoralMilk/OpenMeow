@@ -15,7 +15,8 @@ art2:
 	barrel: art2barl
 
 jugg:
-	barrel: djuggbar
+	turret: djuggtur
+	barrel: djuggbarl
 
 subtank:
 	idle:

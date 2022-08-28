@@ -46,6 +46,9 @@ namespace OpenRA
 
 		public WVec Rotate(in WRot rot)
 		{
+			if (this == WVec.Zero)
+				return this;
+
 			rot.AsMatrix(out var mtx);
 			return Rotate(ref mtx);
 		}

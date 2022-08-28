@@ -13,8 +13,8 @@
 		ContrailStartColor: BBAA66
 		ContrailStartColorAlpha: 255
 		ContrailWidth: 0c80
-		ContrailEndColor: BB2200
-		ContrailEndColorAlpha: 255
+		ContrailEndColor: BBBBBB
+		ContrailEndColorAlpha: 10
 		ContrailWidthFadeRate: 1
 		ContrailZOffset: 3000
 		TrailImage: cannonsmokecircle
@@ -124,6 +124,22 @@ RPGTower:
 			Concrete: 35
 		DamageTypes: Prone100Percent, TriggerProne, ExplosionDeath
 
+^ArtilleryDeployCheck:
+	Range: 17c768
+	ReloadDelay: 10
+	MinRange: 5c0
+	Projectile: InstantHit
+	Warhead@1Dam: SpreadDamage
+		Damage: 1
+		Spread: 0
+		Versus:
+			None: 0
+			Wood: 0
+			Light: 0
+			Heavy: 0
+			Concrete: 0
+		ValidTargets: Ground, Water, Air
+
 155mm:
 	Inherits: ^ArtilleryWeapon
 	ReloadDelay: 110
@@ -143,6 +159,8 @@ RPGTower:
 	Warhead@4Smu: LeaveSmudge
 		SmudgeType: LargeCrater
 
+155mmDeployCheck:
+	Inherits: ^ArtilleryDeployCheck
 
 Jugg90mm:
 	Inherits: ^ArtilleryWeapon
@@ -158,10 +176,14 @@ Jugg90mm:
 		LaunchAngle: 165
 		Inaccuracy: 2c0
 	Warhead@1Dam: SpreadDamage
+		Spread: 188
 		Damage: 7500
 	Warhead@2Eff: CreateEffect
 		Explosions: small_explosion
 		ImpactSounds: expnew13.aud
+
+Jugg90mmDeployCheck:
+	Inherits: ^ArtilleryDeployCheck
 
 Grenade:
 	Inherits: ^ArtilleryWeapon

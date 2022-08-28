@@ -269,7 +269,6 @@ namespace OpenRA.Graphics
 			TerrainRenderer?.RenderTerrain(this, Viewport);
 			Game.Renderer.SetFaceCull(FaceCullFunc.None);
 
-			// ʵ����ò��û����
 			Game.Renderer.Flush();
 
 			for (var i = 0; i < preparedRenderables.Count; i++)
