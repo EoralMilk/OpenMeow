@@ -167,8 +167,8 @@ Jugg90mm:
 	ReloadDelay: 150
 	Range: 18c0
 	MinRange: 5c0
-	Burst: 3
-	BurstDelays: 3, 5
+	# Burst: 3
+	# BurstDelays: 3, 5
 	Report: jugger1-single.aud
 	TargetActorCenter: true
 	Projectile: Bullet
