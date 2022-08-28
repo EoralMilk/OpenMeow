@@ -225,31 +225,31 @@ namespace OpenRA.Mods.Common.Traits
 				alertedTicks--;
 		}
 
-		internal Actor FindClosestEnemy(Actor leader, WDist radius)
+		internal Actor FindClosestEnemy(Actor sourceActor, WDist radius)
 		{
-			var mobile = leader.TraitOrDefault<Mobile>();
+			var mobile = sourceActor.TraitOrDefault<Mobile>();
 			if (mobile == null)
-				return World.FindActorsInCircle(leader.CenterPosition, radius).Where(a => IsPreferredEnemyUnit(a) && IsNotHiddenUnit(a) && IsNotUnseenUnit(a)).ClosestTo(leader.CenterPosition);
+				return World.FindActorsInCircle(sourceActor.CenterPosition, radius).Where(a => IsPreferredEnemyUnit(a) && IsNotHiddenUnit(a) && IsNotUnseenUnit(a)).ClosestTo(sourceActor.CenterPosition);
 			else
 			{
 				var locomotor = mobile.Locomotor;
-				return World.FindActorsInCircle(leader.CenterPosition, radius).Where(a => IsPreferredEnemyUnit(a) && IsNotHiddenUnit(a) && IsNotUnseenUnit(a) && mobile.PathFinder.PathExistsForLocomotor(locomotor, leader.Location, a.Location)).ClosestTo(leader.CenterPosition);
+				return World.FindActorsInCircle(sourceActor.CenterPosition, radius).Where(a => IsPreferredEnemyUnit(a) && IsNotHiddenUnit(a) && IsNotUnseenUnit(a) && mobile.PathFinder.PathExistsForLocomotor(locomotor, sourceActor.Location, a.Location)).ClosestTo(sourceActor.CenterPosition);
 			}
 		}
 
-		internal Actor FindClosestEnemy(Actor leader)
+		internal Actor FindClosestEnemy(Actor sourceActor)
 		{
-			var mobile = leader.TraitOrDefault<Mobile>();
+			var mobile = sourceActor.TraitOrDefault<Mobile>();
 			if (mobile == null)
 			{
 				var units = World.Actors.Where(a => IsPreferredEnemyUnit(a));
-				return units.Where(IsNotHiddenUnit).ClosestTo(leader.CenterPosition) ?? units.ClosestTo(leader.CenterPosition);
+				return units.Where(IsNotHiddenUnit).ClosestTo(sourceActor.CenterPosition) ?? units.ClosestTo(sourceActor.CenterPosition);
 			}
 			else
 			{
 				var locomotor = mobile.Locomotor;
-				var units = World.Actors.Where(a => IsPreferredEnemyUnit(a) && mobile.PathFinder.PathExistsForLocomotor(locomotor, leader.Location, a.Location));
-				return units.Where(IsNotHiddenUnit).ClosestTo(leader.CenterPosition) ?? units.ClosestTo(leader.CenterPosition);
+				var units = World.Actors.Where(a => IsPreferredEnemyUnit(a) && mobile.PathFinder.PathExistsForLocomotor(locomotor, sourceActor.Location, a.Location));
+				return units.Where(IsNotHiddenUnit).ClosestTo(sourceActor.CenterPosition) ?? units.ClosestTo(sourceActor.CenterPosition);
 			}
 		}
 
