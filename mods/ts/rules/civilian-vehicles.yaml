@@ -35,18 +35,49 @@
 		Weapon: MammothTusk
 		LocalOffset: -80,233,355, -80,-233,355
 		#LocalOffset: 0,283,335, 0,-283,335
-	AttackTurreted:
-		Voice: Attack
-		PauseOnCondition: empdisable
-		FacingToTarget: true
 	ChangesHealth:
 		Step: 500
 		Delay: 10
 		StartIfBelow: 50
 		DamageCooldown: 200
-	WithModelTurret:
-	# WithModelBarrel:
+	WithModelTurret@deployed:
+		Turret: deployed
+	WithModelBarrel@1:
+		Armament: deployed1
+		LocalOffset: 350,0,100
+		LocalOrientation: 0, 128, 0
+	WithModelBarrel@2:
+		Armament: deployed2
+		LocalOffset: 350,203,100
+		LocalOrientation: 0, 128, 0
 	WithMuzzleOverlay:
+	AttackTurreted@deployed:
+		Voice: Attack
+		Armaments: deployed1, deployed2
+		Turrets: deployed
+		PauseOnCondition: empdisable
+		TargetFrozenActors: True
+		ForceFireIgnoresActors: True
+		OutsideRangeRequiresForceFire: True
+	Armament@deployed1:
+		Name: deployed1
+		Turret: deployed
+		Weapon: 120mmx
+		LocalOffset: 820,0,800
+		FireDelay: 3
+		# RequiresCondition: deployed && !init-barrel
+		MuzzleSequence: muzzle
+		Recoil: 128
+		RecoilRecovery: 32
+	Armament@deployed2:
+		Name: deployed2
+		Turret: deployed
+		Weapon: 120mmx
+		LocalOffset: 820,203,800
+		# RequiresCondition: deployed && !init-barrel
+		MuzzleSequence: muzzle
+		Recoil: 128
+		RecoilRecovery: 32
 
 ^TRUCK:
 	Inherits: ^CivilianVoxelVehicle

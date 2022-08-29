@@ -26,24 +26,9 @@ Players:
 		Name: Creeps
 		NonCombatant: True
 		Faction: Random
-		Enemies: Multi0, Multi1, Multi2, Multi3
-	PlayerReference@Multi3:
-		Name: Multi3
-		Playable: True
-		LockColor: True
-		Color: FE1100
+		Enemies: Multi3
 	PlayerReference@Multi0:
-		Name: Multi0
-		Playable: True
-		Faction: Random
-		Enemies: Creeps
-	PlayerReference@Multi1:
-		Name: Multi1
-		Playable: True
-		Faction: Random
-		Enemies: Creeps
-	PlayerReference@Multi2:
-		Name: Multi2
+		Name: Multi3
 		Playable: True
 		Faction: Random
 		Enemies: Creeps
@@ -128,15 +113,6 @@ Actors:
 		Owner: Multi3
 		Facing: 512
 		Location: 62,1
-	Actor77: mpspawn
-		Owner: Neutral
-		Location: 80,13
-	Actor78: mpspawn
-		Owner: Neutral
-		Location: 67,9
-	Actor79: mpspawn
-		Owner: Neutral
-		Location: 136,-81
 	Actor80: mpspawn
 		Owner: Neutral
 		Location: 151,-29

@@ -1026,6 +1026,13 @@
 		SpecularScale: 0.45
 		AmbientScale: 1	
 
+^With2XVoxRender:
+	RenderModels:
+		Scale: 0.7
+		LightScale: 0.15
+		SpecularScale: 0.25
+		AmbientScale: 1	
+
 ^CivilianVoxelVehicle:
 	Inherits: ^Vehicle
 	Inherits: ^VoxelActor
