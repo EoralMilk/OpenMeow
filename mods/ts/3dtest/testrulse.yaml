@@ -27,7 +27,7 @@
 	RenderMeshes:
 		Image: rumya
 		ZOffset: 15
-		Scale: 8
+		Scale: 2
 	AttachManager:
 	# AttachPoint@first:
 	# 	BoneAttach: a-s-Rig_Hand.R
@@ -38,7 +38,7 @@ RUTEST:
 	Inherits: ^Vehicle
 	Inherits@meshtest: ^WithMeshTest
 	Inherits@EXPERIENCE: ^GainsExperience
-	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	# Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Valued:
 		Cost: 500
 	Tooltip:
@@ -63,9 +63,9 @@ RUTEST:
 		RequiresCondition: !inside-tunnel
 		Range: 15c0
 		MaxHeightDelta: 3
-	AttackAttachmentTurreted:
-		Turrets: turret1, turret2
-		Voice: Attack
+	# AttackAttachmentTurreted:
+	# 	Turrets: turret1, turret2
+	# 	Voice: Attack
 	# WithSkeleton@turret1:
 	# 	SkeletonDefine: turret-test
 	# 	Name: turret_skeleton1
@@ -84,24 +84,24 @@ RUTEST:
 	# 	FromBonePose: firepose
 	# 	FacingTolerance: 40
 	# 	Turret: turret1
-	WithSkeleton@turret2:
-		SkeletonDefine: turret-test
-		Name: turret_skeleton2
-	TurretAttachment@2:
-		Name: turret2
-		SkeletonBinded: body
-		AttachingBone: a-s-Rig_Hand.L
-		AttachmentSkeleton: turret_skeleton2
-		TurretBone: a-s-Base
-		BarrelBone: a-s-Barrel
-		Scale: 4
-		Mesh: turret
-	AttachedArmament@2:
-		Weapon: ^SA
-		SkeletonToUse: turret_skeleton2
-		FromBonePose: firepose
-		FacingTolerance: 40
-		Turret: turret2
+	# WithSkeleton@turret2:
+	# 	SkeletonDefine: turret-test
+	# 	Name: turret_skeleton2
+	# TurretAttachment@2:
+	# 	Name: turret2
+	# 	SkeletonBinded: body
+	# 	AttachingBone: a-s-Rig_Hand.L
+	# 	AttachmentSkeleton: turret_skeleton2
+	# 	TurretBone: a-s-Base
+	# 	BarrelBone: a-s-Barrel
+	# 	Scale: 4
+	# 	Mesh: turret
+	# AttachedArmament@2:
+	# 	Weapon: ^SA
+	# 	SkeletonToUse: turret_skeleton2
+	# 	FromBonePose: firepose
+	# 	FacingTolerance: 40
+	# 	Turret: turret2
 	DamagedByTerrain@VEINS:
 		RequiresCondition: !inside-tunnel && !rank-elite
 	LeavesTrails@VEINS:

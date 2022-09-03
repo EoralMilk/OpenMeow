@@ -5,21 +5,25 @@ rumya:
 		Masks:
 			upper: upper
 		Anims:
-			stand: stand_Skeleton_CommonBody
+			stand: JumpFlair #stand_Skeleton_CommonBody
 			walk: catwalk_Skeleton_CommonBody
 			guard: rest_Skeleton_CommonBody
 	Meshes:
 		body: body-combine
 			Material: body
 			UseDQBSkin: true
-		hair: lp-hair_dpt1
-			Material: h-dpt1
+		hair: lp-hair_s2 #lp-hair_dpt1
+			Material: h-s2 #h-dpt1
 		cater: lp-CatEar
 			Material: catear
-		skirt-split: SplitSkirt
-			Material: skirt2
+		skirt-split: SportShorts
+			Material: sportshorts
 			BodyMaterial: body
 			UseDQBSkin: true
+		# skirt-split: SplitSkirt
+		# 	Material: skirt2
+		# 	BodyMaterial: body
+		# 	UseDQBSkin: true
 		sweater: RedCollarSweater
 			Material: sweater
 			BodyMaterial: body

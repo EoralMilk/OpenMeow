@@ -239,7 +239,7 @@ namespace OpenRA.Graphics
 			{
 				// animMask length should be same as frame length (&& animMask.Length > Bones[id].AnimId) no need
 				if (Bones[id].AnimId != -1 && animFrame.Length > Bones[id].AnimId && animMask[Bones[id].AnimId])
-					Bones[id].UpdateOffset(Offset, animFrame.Transformations[Bones[id].AnimId].Matrix);
+					Bones[id].UpdateOffset(Offset, animFrame[Bones[id].AnimId].Matrix);
 				else
 					Bones[id].UpdateOffset(Offset);
 
@@ -255,8 +255,8 @@ namespace OpenRA.Graphics
 				UpdateInner(Bones[id].ParentId, animFrame, animMask);
 
 				// animMask length should be same as frame length
-				if (Bones[id].AnimId != -1 && animFrame.Length > Bones[id].AnimId && animMask[Bones[id].AnimId])
-					Bones[id].UpdateOffset(Bones[Bones[id].ParentId].CurrentPose, animFrame.Transformations[Bones[id].AnimId].Matrix);
+				if (Bones[id].AnimId != -1 && animFrame.Length > Bones[id].AnimId && animFrame.HasTransformation[Bones[id].AnimId] && animMask[Bones[id].AnimId])
+					Bones[id].UpdateOffset(Bones[Bones[id].ParentId].CurrentPose, animFrame[Bones[id].AnimId].Matrix);
 				else
 					Bones[id].UpdateOffset(Bones[Bones[id].ParentId].CurrentPose);
 
