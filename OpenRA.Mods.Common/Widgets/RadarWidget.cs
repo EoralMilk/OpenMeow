@@ -22,6 +22,9 @@ namespace OpenRA.Mods.Common.Widgets
 {
 	public sealed class RadarWidget : Widget, IDisposable
 	{
+		public readonly int ColorFog = Color.FromArgb(128, Color.Black).ToArgb();
+		public readonly int ColorShroud = Color.Black.ToArgb();
+
 		public string WorldInteractionController = null;
 		public int AnimationLength = 5;
 		public string RadarOnlineSound = null;
@@ -176,24 +179,35 @@ namespace OpenRA.Mods.Common.Widgets
 
 			// The minimap is drawn in cell space, so we need to
 			// unproject the bounds to find the extent of the map.
+			// TODO: This attempt to find the map bounds accounting for projected cell heights is bogus.
+			// When a map with height is involved, the bounds may not be optimal, this needs fixing.
 			var projectedLeft = map.Bounds.Left;
 			var projectedRight = map.Bounds.Right;
 			var projectedTop = map.Bounds.Top;
 			var projectedBottom = map.Bounds.Bottom;
 			var top = int.MaxValue;
 			var bottom = int.MinValue;
-			var left = map.Bounds.Left * cellWidth;
-			var right = map.Bounds.Right * cellWidth;
+			var left = projectedLeft * cellWidth;
+			var right = projectedRight * cellWidth;
 
 			for (var x = projectedLeft; x < projectedRight; x++)
 			{
+				// Unprojects check can fail and return an empty list.
+				// This happens when the map tile is outside the map projected space,
+				// e.g. if a tile on the bottom edge has a height > 0.
+				// Guard against this by using the map bounds as a fallback.
 				var allTop = map.Unproject(new PPos(x, projectedTop));
 				var allBottom = map.Unproject(new PPos(x, projectedBottom));
+
 				if (allTop.Count > 0)
 					top = Math.Min(top, allTop.MinBy(uv => uv.V).V);
+				else
+					top = map.Bounds.Top;
 
 				if (allBottom.Count > 0)
 					bottom = Math.Max(bottom, allBottom.MaxBy(uv => uv.V).V);
+				else
+					bottom = map.Bounds.Bottom;
 			}
 
 			var b = Rectangle.FromLTRB(left, top, right, bottom);
@@ -240,10 +254,11 @@ namespace OpenRA.Mods.Common.Widgets
 		void UpdateShroudCell(MPos uv)
 		{
 			var color = 0;
-			if (!currentPlayer.Shroud.IsExplored(uv))
-				color = Color.Black.ToArgb();
-			else if (!currentPlayer.Shroud.IsVisible(uv))
-				color = Color.FromArgb(128, Color.Black).ToArgb();
+			var cv = currentPlayer.Shroud.GetVisibility(uv);
+			if (cv == Shroud.CellVisibility.Hidden)
+				color = ColorShroud;
+			else if (!cv.HasFlag(Shroud.CellVisibility.Visible))
+				color = ColorFog;
 
 			var stride = radarSheet.Size.Width;
 			unsafe

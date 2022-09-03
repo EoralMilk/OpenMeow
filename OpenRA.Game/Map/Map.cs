@@ -15,6 +15,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Text.RegularExpressions;
 using GlmSharp;
 using GlmSharp.Swizzle;
 using OpenRA.FileFormats;
@@ -195,6 +196,7 @@ namespace OpenRA
 	public class Map : IReadOnlyFileSystem
 	{
 		public const int SupportedMapFormat = 11;
+		public const int CurrentMapFormat = 12;
 		const short InvalidCachedTerrainIndex = -1;
 
 		/// <summary>Defines the order of the fields in map.yaml</summary>
@@ -318,6 +320,11 @@ namespace OpenRA
 
 		public static string ComputeUID(IReadOnlyPackage package)
 		{
+			return ComputeUID(package, GetMapFormat(package));
+		}
+
+		static string ComputeUID(IReadOnlyPackage package, int format)
+		{
 			// UID is calculated by taking an SHA1 of the yaml and binary data
 			var requiredFiles = new[] { "map.yaml", "map.bin" };
 			var contents = package.Contents.ToList();
@@ -329,7 +336,7 @@ namespace OpenRA
 			try
 			{
 				foreach (var filename in contents)
-					if (filename.EndsWith(".yaml") || filename.EndsWith(".bin") || filename.EndsWith(".lua"))
+					if (filename.EndsWith(".yaml") || filename.EndsWith(".bin") || filename.EndsWith(".lua") || (format >= 12 && filename == "map.png"))
 						streams.Add(package.GetStream(filename));
 
 				// Take the SHA1
@@ -347,6 +354,19 @@ namespace OpenRA
 				foreach (var stream in streams)
 					stream.Dispose();
 			}
+		}
+
+		static int GetMapFormat(IReadOnlyPackage p)
+		{
+			foreach (var line in p.GetStream("map.yaml").ReadAllLines())
+			{
+				// PERF This is a way to get MapFormat without expensive yaml parsing
+				var search = Regex.Match(line, "^MapFormat:\\s*(\\d*)\\s*$");
+				if (search.Success && search.Groups.Count > 0)
+					return FieldLoader.GetValue<int>("MapFormat", search.Groups[1].Value);
+			}
+
+			throw new InvalidDataException($"MapFormat is not definedt\n File: {p.Name}");
 		}
 
 		/// <summary>
@@ -398,7 +418,7 @@ namespace OpenRA
 			foreach (var field in YamlFields)
 				field.Deserialize(this, yaml.Nodes);
 
-			if (MapFormat != SupportedMapFormat)
+			if (MapFormat < SupportedMapFormat)
 				throw new InvalidDataException($"Map format {MapFormat} is not supported.\n File: {package.Name}");
 
 			PlayerDefinitions = MiniYaml.NodesOrEmpty(yaml, "Players");
@@ -468,7 +488,7 @@ namespace OpenRA
 			PostInit();
 			CalculateTileVertexInfo();
 
-			Uid = ComputeUID(Package);
+			Uid = ComputeUID(Package, MapFormat);
 		}
 
 		void PostInit()
@@ -687,7 +707,7 @@ namespace OpenRA
 
 		public void Save(IReadWritePackage toPackage)
 		{
-			MapFormat = SupportedMapFormat;
+			MapFormat = CurrentMapFormat;
 
 			var root = new List<MiniYamlNode>();
 			foreach (var field in YamlFields)
@@ -712,7 +732,7 @@ namespace OpenRA
 			Package = toPackage;
 
 			// Update UID to match the newly saved data
-			Uid = ComputeUID(toPackage);
+			Uid = ComputeUID(toPackage, MapFormat);
 			SaveMapAsPng("./MapToPng/");
 		}
 
