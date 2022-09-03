@@ -59,20 +59,11 @@ Packages:
 	ts|skeletons
 	ts|3dtest
 	
-<<<<<<< HEAD
-	# ts|tstest
-	# ts|tstest/asset
-	# ts|tstest/asset/mat
-	# ts|tstest/asset/audios
-	# ts|tstest/asset/anims
-=======
 	#ts|tstest
 	#ts|tstest/asset
 	#ts|tstest/asset/mat
 	#ts|tstest/asset/audios
 	#ts|tstest/asset/anims
->>>>>>> 637f8d0f1c424224e858ce0b6eea902a79d03114
-
 
 
 MapFolders:
@@ -109,11 +100,7 @@ Rules:
 
 	ts|3dtest/testrulse.yaml
 
-<<<<<<< HEAD
 	# ts|tstest/localtestrulse.yaml
-=======
-	#ts|tstest/localtestrulse.yaml
->>>>>>> 637f8d0f1c424224e858ce0b6eea902a79d03114
 
 Weapons:
 	ts|weapons/ballisticweapons.yaml
@@ -126,12 +113,7 @@ Weapons:
 	ts|weapons/superweapons.yaml
 	ts|3dtest/weapons.yaml
 	
-<<<<<<< HEAD
-	# ts|tstest/localtestweapon.yaml
-=======
 	#ts|tstest/localtestweapon.yaml
->>>>>>> 637f8d0f1c424224e858ce0b6eea902a79d03114
-
 
 Sequences:
 	ts|sequences/aircraft.yaml
@@ -144,11 +126,7 @@ Sequences:
 	ts|sequences/bridges.yaml
 	ts|sequences/critters.yaml
 
-<<<<<<< HEAD
 	# ts|tstest/localtestseq.yaml
-=======
-	#ts|tstest/localtestseq.yaml
->>>>>>> 637f8d0f1c424224e858ce0b6eea902a79d03114
 
 ModelSequences:
 	ts|sequences/voxels.yaml
@@ -156,11 +134,7 @@ ModelSequences:
 MeshSequences:
 	ts|3dtest/meshes.yaml
 
-<<<<<<< HEAD
-	# ts|tstest/localtestmes.yaml
-=======
 	#ts|tstest/localtestmes.yaml
->>>>>>> 637f8d0f1c424224e858ce0b6eea902a79d03114
 
 TileSets:
 	ts|tilesets/temperate.yaml
@@ -249,12 +223,7 @@ Translations:
 Voices:
 	ts|audio/voices.yaml
 
-<<<<<<< HEAD
-	# ts|tstest/localtestvoices.yaml
-=======
 	#ts|tstest/localtestvoices.yaml
->>>>>>> 637f8d0f1c424224e858ce0b6eea902a79d03114
-
 
 Notifications:
 	ts|audio/speech-generic.yaml
