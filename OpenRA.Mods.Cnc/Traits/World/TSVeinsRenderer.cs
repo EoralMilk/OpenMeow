@@ -237,7 +237,7 @@ namespace OpenRA.Mods.Cnc.Traits
 		void IRenderOverlay.Render(WorldRenderer wr)
 		{
 			Game.Renderer.MapRenderer.SetTextures(wr.World, UsageType.Overlay);
-			spriteLayer.Draw(wr.Viewport, false);
+			spriteLayer.Draw(wr.Viewport);
 		}
 
 		void ITickRender.TickRender(WorldRenderer wr, Actor self)

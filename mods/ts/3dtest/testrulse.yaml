@@ -10,11 +10,11 @@
 		SkeletonBinded: body
 	WithMeshCloth@skirt:
 		Mesh: skirt-split
-		Mask: 4
+		Masks: Hip
 		SkeletonBinded: body
 	WithMeshCloth@sweater:
 		Mesh: sweater
-		Mask: 2
+		Masks: Torso
 		SkeletonBinded: body
 	BlendTreeHandler:
 		SkeletonToUse: body
@@ -127,8 +127,6 @@ RUTEST2:
 		Speed: 88
 		Locomotor: tracked
 		# AlwaysTurnInPlace: true
-	# -WithMeshCloth@skirt:
-	# -WithMeshCloth@sweater:
 	AttackAttachmentTurreted:
 		Turrets: turret1, turret2
 		Voice: Attack
@@ -330,11 +328,11 @@ RUTEST4:
 		SkeletonBinded: body
 	WithMeshCloth@skirt:
 		Mesh: skirt-split
-		Mask: 4
+		Masks: Hip
 		SkeletonBinded: body
 	WithMeshCloth@sweater:
 		Mesh: sweater
-		Mask: 2
+		Masks: Torso
 		SkeletonBinded: body
 	RenderMeshes:
 		Image: rumya-2

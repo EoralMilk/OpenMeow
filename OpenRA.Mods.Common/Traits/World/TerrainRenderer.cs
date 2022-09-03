@@ -130,10 +130,10 @@ namespace OpenRA.Mods.Common.Traits
 				r.ModifyTerrainRender(wr);
 
 			spriteLayer.LightShader(wr.Viewport);
-			spriteLayer.Draw(wr.Viewport, false);
+			spriteLayer.Draw(wr.Viewport);
+			Game.Renderer.MapRenderer.Flush();
 
 			Game.Renderer.EnableDepthWrite(false);
-			Game.Renderer.MapRenderer.Flush();
 
 			foreach (var r in wr.World.WorldActor.TraitsImplementing<IRenderOverlay>())
 				r.Render(wr);

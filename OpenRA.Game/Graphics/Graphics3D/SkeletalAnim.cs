@@ -69,7 +69,7 @@ namespace OpenRA.Graphics
 			var name = filename;
 
 			if (!fileSystem.Exists(name))
-				name += ".anim";
+				name += ".ska";
 
 			if (!fileSystem.Exists(name))
 			{

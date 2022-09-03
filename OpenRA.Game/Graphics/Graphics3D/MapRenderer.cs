@@ -59,9 +59,14 @@ namespace OpenRA.Graphics
 			}
 		}
 
-		public void SetSheets(IEnumerable<Sheet> sheets)
+		public void SetSheets(IEnumerable<Sheet> sheets, BlendMode blendMode = BlendMode.None)
 		{
 			var si = 0;
+			if (currentBlend != blendMode)
+			{
+				Flush();
+				currentBlend = blendMode;
+			}
 
 			foreach (var s in sheets)
 			{
@@ -84,6 +89,16 @@ namespace OpenRA.Graphics
 			}
 
 			nv += overlayVertices.Length;
+		}
+
+		public void DrawVertices(in MapVertex[] inVertices, int start, int length)
+		{
+			if (nv + length >= vertices.Length)
+				Flush();
+
+			Array.Copy(inVertices, start, vertices, nv, length); ;
+
+			nv += length;
 		}
 
 		public void DrawVertexBuffer(IVertexBuffer buffer, int start, int length, PrimitiveType type, IEnumerable<Sheet> sheets, BlendMode blendMode)

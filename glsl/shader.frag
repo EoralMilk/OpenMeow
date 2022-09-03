@@ -302,15 +302,16 @@ void main()
 		discard;
 
 	
-	bool flag = false;
-	if (isCloth && ((drawPart & uint(0x1FF)) !=  uint(0))){
-		flag = true;
+	bool useBodyMaterial = false;
+	// if (isCloth && ((drawPart & uint(0x1FF)) !=  uint(0))){
+	if (isCloth && drawPart != uint(0xFFFFFFFF)){
+		useBodyMaterial = true;
 	}
 
 	vec3 norm = normalize(Normal);
 	vec3 viewDir = normalize(viewPos - FragPos);
 	vec4 result;
-	if (flag)
+	if (useBodyMaterial)
 		if (usePBRBody)
 			result = CalcDirLightPBR(dirLight, norm, viewDir, pbrBodyMaterial);
 		else

@@ -850,7 +850,7 @@ namespace OpenRA.Graphics
 			}
 			else
 			{
-				Console.WriteLine("BonesDict not ContainsKey " + boneName);
+				//Console.WriteLine("BonesDict not ContainsKey " + boneName);
 				return -1;
 			}
 		}

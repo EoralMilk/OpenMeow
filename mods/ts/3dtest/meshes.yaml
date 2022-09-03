@@ -1,15 +1,15 @@
 rumya:
-	Skeleton: testArmature
+	Skeleton: Skeleton_CommonBody #testArmature
 		UseDynamicAdjBonePose: false
 		# Bones:
 		Masks:
 			upper: upper
 		Anims:
-			stand: stand
-			walk: catwalk
-			guard: rest
+			stand: stand_Skeleton_CommonBody
+			walk: catwalk_Skeleton_CommonBody
+			guard: rest_Skeleton_CommonBody
 	Meshes:
-		body: combined
+		body: body-combine
 			Material: body
 			UseDQBSkin: true
 		hair: lp-hair_dpt1
@@ -28,11 +28,11 @@ rumya:
 
 rumya-2:
 	Inherits@defaults: rumya
-	Skeleton: testArmature
+	Skeleton: Skeleton_CommonBody
 		# Bones:
 		Anims:
-			stand: catidle
-			walk: catcrawl
+			stand: catidle_Skeleton_CommonBody
+			walk: catcrawl_Skeleton_CommonBody
 	Meshes:
 		skirt-split: SportShorts
 			Material: sportshorts
@@ -47,3 +47,11 @@ turret-test:
 	Meshes:
 		turret: turret_test
 			Material: turret
+
+mmr-test:
+	Meshes:
+		box: cube
+			Material: cube
+		body: body-combine
+			Material: body
+			UseDQBSkin: true

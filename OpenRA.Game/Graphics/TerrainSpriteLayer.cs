@@ -334,7 +334,8 @@ namespace OpenRA.Graphics
 		}
 
 		int firstRow, lastRow;
-		public void Draw(Viewport viewport, bool stop = true)
+
+		public void Draw(Viewport viewport)
 		{
 			//if (stop)
 			//	return;
@@ -342,28 +343,35 @@ namespace OpenRA.Graphics
 			var cells = restrictToBounds ? viewport.VisibleCellsInsideBounds : viewport.AllVisibleCells;
 
 			// Only draw the rows that are visible.
+			int2 tp = new int2(Math.Clamp(cells.CandidateMapCoords.TopLeft.U, 0, map.MapSize.X - 1), Math.Clamp(cells.CandidateMapCoords.TopLeft.V, 0, map.MapSize.Y - 1));
+			int2 br = new int2(Math.Clamp(cells.CandidateMapCoords.BottomRight.U + 1, 0, map.MapSize.X - 1), Math.Clamp(cells.CandidateMapCoords.BottomRight.V + 1, 0, map.MapSize.Y - 1));
 			firstRow = cells.CandidateMapCoords.TopLeft.V.Clamp(0, map.MapSize.Y);
 			lastRow = (cells.CandidateMapCoords.BottomRight.V + 1).Clamp(firstRow, map.MapSize.Y);
 
 			Game.Renderer.Flush();
 
 			// Flush any visible changes to the GPU
-			for (var row = firstRow; row <= lastRow; row++)
-			{
-				if (!dirtyRows.Remove(row))
-					continue;
+			//for (var row = firstRow; row <= lastRow; row++)
+			//{
+			//	if (!dirtyRows.Remove(row))
+			//		continue;
 
-				var rowOffset = rowStride * row;
-				vertexBuffer.SetData(vertices, rowOffset, rowOffset, rowStride);
+			//	var rowOffset = rowStride * row;
+			//	vertexBuffer.SetData(vertices, rowOffset, rowOffset, rowStride);
+			//}
+
+			Game.Renderer.MapRenderer.SetSheets(sheets, BlendMode);
+
+			for (int y = tp.Y; y <= br.Y; y++)
+			{
+				int xstart = y * rowStride + tp.X * Game.Renderer.MaxVerticesPerMesh;
+				int xend = y * rowStride + br.X * Game.Renderer.MaxVerticesPerMesh;
+				Game.Renderer.MapRenderer.DrawVertices(vertices, xstart, xend - xstart);
 			}
 
-			//if (stop)
-			//	return;
-			Game.Renderer.MapRenderer.DrawVertexBuffer(
-				vertexBuffer, rowStride * firstRow, rowStride * (lastRow - firstRow),
-				PrimitiveType.TriangleList, sheets, BlendMode);
-
-			Game.Renderer.Flush();
+			//Game.Renderer.MapRenderer.DrawVertexBuffer(
+			//	vertexBuffer, rowStride * firstRow, rowStride * (lastRow - firstRow),
+			//	PrimitiveType.TriangleList, sheets, BlendMode);
 		}
 
 		public void DrawAgain()

@@ -434,7 +434,7 @@ namespace OpenRA.Mods.Common.Traits
 		//TerrainSpriteLayer render;
 		public PaletteReference PaletteReference { get; private set; }
 		bool disposed;
-
+		BlendMode blendMode;
 		int nowZOffset = 10;
 		public SmudgeLayer(Actor self, SmudgeLayerInfo info)
 		{
@@ -455,7 +455,7 @@ namespace OpenRA.Mods.Common.Traits
 		{
 			var sprites = smudges.Values.SelectMany(v => Exts.MakeArray(v.Length, x => v.GetSprite(x))).ToList();
 			var sheet = sprites[0].Sheet;
-			var blendMode = sprites[0].BlendMode;
+			blendMode = sprites[0].BlendMode;
 			var emptySprite = new Sprite(sheet, Rectangle.Empty, TextureChannel.Alpha, spriteMeshType: SpriteMeshType.Plane);
 
 			if (sprites.Any(s => s.BlendMode != blendMode))
@@ -592,7 +592,7 @@ namespace OpenRA.Mods.Common.Traits
 			//Console.WriteLine("tiles.Count: " + tiles.Count);
 
 			Game.Renderer.MapRenderer.SetTextures(wr.World, UsageType.Smudge);
-			Game.Renderer.MapRenderer.SetSheets(sheets);
+			Game.Renderer.MapRenderer.SetSheets(sheets, blendMode);
 
 			var tp = wr.Viewport.TopLeftPosition;
 			var br = wr.Viewport.BottomRightPosition;

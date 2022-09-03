@@ -1081,6 +1081,31 @@ namespace OpenRA
 
 					float3 pm, pt, pb, pl, pr;
 					float2 uvm, uvt, uvb, uvl, uvr;
+
+					if (IsBoundVert(it))
+					{
+						VertexWPos[it] = VertexWPos[im];
+						VertexPos[it] = TilePos(VertexWPos[im]);
+					}
+
+					if (IsBoundVert(ib))
+					{
+						VertexWPos[ib] = VertexWPos[im];
+						VertexPos[ib] = TilePos(VertexWPos[im]);
+					}
+
+					if (IsBoundVert(il))
+					{
+						VertexWPos[il] = VertexWPos[im];
+						VertexPos[il] = TilePos(VertexWPos[im]);
+					}
+
+					if (IsBoundVert(ir))
+					{
+						VertexWPos[ir] = VertexWPos[im];
+						VertexPos[ir] = TilePos(VertexWPos[im]);
+					}
+
 					pt = VertexPos[it];
 					pb = VertexPos[ib];
 					pl = VertexPos[il];
@@ -1275,6 +1300,15 @@ namespace OpenRA
 		{
 			//return a + (b - a) / 2;
 			return a / 4 + b;
+		}
+
+		bool IsBoundVert(int vi)
+		{
+			if (vi <= VertexArrayWidth || vi >= (VertexArrayHeight - 1) * VertexArrayWidth)
+				return true;
+			if (vi % VertexArrayWidth == 0 || (vi + 1) % VertexArrayWidth == 0)
+				return true;
+			return false;
 		}
 
 		float3 Color2Float3(in Color color)

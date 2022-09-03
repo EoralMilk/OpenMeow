@@ -202,8 +202,8 @@ namespace OpenRA.Mods.Common.Traits
 		{
 			Game.Renderer.MapRenderer.SetTextures(wr.World, UsageType.Overlay);
 
-			shadowLayer?.Draw(wr.Viewport, false);
-			spriteLayer.Draw(wr.Viewport, false);
+			shadowLayer?.Draw(wr.Viewport);
+			spriteLayer.Draw(wr.Viewport);
 		}
 
 		void ITickRender.TickRender(WorldRenderer wr, Actor self)
