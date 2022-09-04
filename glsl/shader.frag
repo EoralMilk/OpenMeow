@@ -143,16 +143,7 @@ vec4 CalcDirLight(DirLight light, vec3 normal, vec3 viewDir, const BlinnPhongMat
 		specular = specular * vec3(texture(material.specular, TexCoords));
 	}
 	specular = specular * material.specularTint;
-
-	if (vTint.a < 0.0f)
-	{
-		diffuse = vTint.rgb;
-		return vec4((ambient + diffuse + specular), -vTint.a);
-	}
-	else
-	{
-		return vec4((ambient + diffuse + specular) * vTint.rgb, vTint.a);
-	}
+	return vec4((ambient + diffuse + specular), 1.0);
 }
 
 // vec3 getNormalFromMap()
@@ -278,16 +269,7 @@ vec4 CalcDirLightPBR(DirLight light, vec3 normal, vec3 viewDir, const PBRMateria
 	vec3 color = ambient + Lo * (1.0f - CalShadow(light, normal));
 
 	color = color / (color + vec3(1.0));
-	color = pow(color, vec3(1.0/2.2));  
-
-	if (vTint.a < 0.0f)
-	{
-		color = vTint.rgb;
-	}
-	else
-	{
-		color *= vTint.rgb;
-	}
+	color = pow(color, vec3(1.0/2.2));
 
 	return vec4(color, 1.0);
 } 
@@ -330,6 +312,15 @@ void main()
 				result = CalcDirLightPBR(dirLight, norm, viewDir, pbrMaterial);
 			else
 				result = CalcDirLight(dirLight, norm, viewDir, mainMaterial);
+
+		if (vTint.a < 0.0f)
+		{
+			result = vec4(vTint.rgb, -vTint.a);
+		}
+		else
+		{
+			result *= vTint;
+		}
 
 		FragColor = result;
 	}
