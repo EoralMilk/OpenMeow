@@ -91,14 +91,28 @@ namespace OpenRA.Graphics
 			nv += overlayVertices.Length;
 		}
 
-		public void DrawVertices(in MapVertex[] inVertices, int start, int length)
+		public void DrawVertices(in MapVertex[] inVertices, int start, int length, bool renderAllVert)
 		{
 			if (nv + length >= vertices.Length)
 				Flush();
+			if (renderAllVert)
+			{
+				Array.Copy(inVertices, start, vertices, nv, length); ;
 
-			Array.Copy(inVertices, start, vertices, nv, length); ;
-
-			nv += length;
+				nv += length;
+			}
+			else
+			{
+				var end = start + length;
+				for (int i = start; i < end; i++)
+				{
+					if (inVertices[i].A != 0)
+					{
+						vertices[nv] = inVertices[i];
+						nv++;
+					}
+				}
+			}
 		}
 
 		public void DrawVertexBuffer(IVertexBuffer buffer, int start, int length, PrimitiveType type, IEnumerable<Sheet> sheets, BlendMode blendMode)

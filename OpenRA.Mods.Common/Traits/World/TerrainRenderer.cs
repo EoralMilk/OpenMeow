@@ -83,7 +83,7 @@ namespace OpenRA.Mods.Common.Traits
 			colorModify = new CellLayer<float3>(map.Grid.Type, new Size(map.MapSize.X, map.MapSize.Y));
 
 			worldRenderer = wr;
-			spriteLayer = new TerrainSpriteLayer(world, wr, tileCache.MissingTile, BlendMode.Alpha, world.Type != WorldType.Editor);
+			spriteLayer = new TerrainSpriteLayer(world, wr, tileCache.MissingTile, BlendMode.Alpha, world.Type != WorldType.Editor, renderAllVert: true);
 			foreach (var cell in map.AllCells)
 				UpdateCell(cell);
 

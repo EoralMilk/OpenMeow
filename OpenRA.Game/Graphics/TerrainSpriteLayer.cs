@@ -36,8 +36,12 @@ namespace OpenRA.Graphics
 
 		readonly bool[] ignoreTint;
 		readonly HashSet<int> dirtyRows = new HashSet<int>();
+		public readonly int MaxVerticesPerMesh = 12;
 		readonly int rowStride;
 		readonly bool restrictToBounds;
+
+		// tell the MapRenderer to instantly copy all the given vertices
+		public readonly bool RenderAllVert;
 
 		readonly WorldRenderer worldRenderer;
 		readonly Map map;
@@ -45,7 +49,7 @@ namespace OpenRA.Graphics
 		readonly PaletteReference[] palettes;
 		readonly MapVertex noVertex;
 
-		public TerrainSpriteLayer(World world, WorldRenderer wr, Sprite emptySprite, BlendMode blendMode, bool restrictToBounds)
+		public TerrainSpriteLayer(World world, WorldRenderer wr, Sprite emptySprite, BlendMode blendMode, bool restrictToBounds, int maxVerticesPerMesh = 12, bool renderAllVert = false)
 		{
 			worldRenderer = wr;
 			this.restrictToBounds = restrictToBounds;
@@ -54,8 +58,9 @@ namespace OpenRA.Graphics
 			BlendMode = blendMode;
 
 			map = world.Map;
-
-			rowStride = Game.Renderer.MaxVerticesPerMesh * map.MapSize.X;
+			RenderAllVert = renderAllVert;
+			MaxVerticesPerMesh = maxVerticesPerMesh;
+			rowStride = MaxVerticesPerMesh * map.MapSize.X;
 			noVertex = new MapVertex(0);
 
 			vertices = new MapVertex[rowStride * map.MapSize.Y];
@@ -84,7 +89,7 @@ namespace OpenRA.Graphics
 			for (var i = 0; i < vertices.Length; i++)
 			{
 				var v = vertices[i];
-				var p = palettes[i / Game.Renderer.MaxVerticesPerMesh]?.TextureIndex ?? 0;
+				var p = palettes[i / MaxVerticesPerMesh]?.TextureIndex ?? 0;
 				//vertices[i] = new MapVertex(v.X, v.Y, v.Z, v.S, v.T, v.U, v.V, p, v.C, v.R, v.G, v.B, v.A, v.NX, v.NY, v.NZ, v.FNX, v.FNY, v.FNZ, v.TU, v.TV, v.DrawType);
 				vertices[i] = vertices[i].ChangePal(p);
 			}
@@ -95,7 +100,7 @@ namespace OpenRA.Graphics
 
 		public void Clear(CPos cell)
 		{
-			Update(cell, null, null, 1f, 1f, true);
+			Update(cell, null, null, 1f, 0f, true, -1, true);
 		}
 
 		public void Update(CPos cell, ISpriteSequence sequence, PaletteReference palette, int frame, bool additional = false)
@@ -125,8 +130,8 @@ namespace OpenRA.Graphics
 
 		public void ModifyTint(MPos uv, float3 colorOffset)
 		{
-			var offset = rowStride * uv.V + Game.Renderer.MaxVerticesPerMesh * uv.U;
-			for (var i = 0; i < Game.Renderer.MaxVerticesPerMesh; i++)
+			var offset = rowStride * uv.V + MaxVerticesPerMesh * uv.U;
+			for (var i = 0; i < MaxVerticesPerMesh; i++)
 			{
 				var v = vertices[offset + i];
 				var color = verticesColor[offset + i];
@@ -139,10 +144,10 @@ namespace OpenRA.Graphics
 		void UpdateTint(MPos uv)
 		{
 			return;
-			//var offset = rowStride * uv.V + Game.Renderer.MaxVerticesPerMesh * uv.U;
+			//var offset = rowStride * uv.V + MaxVerticesPerMesh * uv.U;
 			//if (ignoreTint[offset])
 			//{
-			//	for (var i = 0; i < Game.Renderer.MaxVerticesPerMesh; i++)
+			//	for (var i = 0; i < MaxVerticesPerMesh; i++)
 			//	{
 			//		var v = vertices[offset + i];
 			//		vertices[offset + i] = new MapVertex(v.X, v.Y, v.Z, v.S, v.T, v.U, v.V, v.P, v.C, v.A * float3.Ones, v.A, v.NX, v.NY, v.NZ, v.FNX, v.FNY, v.FNZ, v.TU, v.TV, v.DrawType);
@@ -176,7 +181,7 @@ namespace OpenRA.Graphics
 
 			//// Apply tint directly to the underlying vertices
 			//// This saves us from having to re-query the sprite information, which has not changed
-			//for (var i = 0; i < Game.Renderer.MaxVerticesPerMesh; i++)
+			//for (var i = 0; i < MaxVerticesPerMesh; i++)
 			//{
 			//	var v = vertices[offset + i];
 			//	var color = verticesColor[offset + i];
@@ -218,19 +223,12 @@ namespace OpenRA.Graphics
 		{
 			if (alpha == 0)
 			{
-				var nv = rowStride * uv.V + Game.Renderer.MaxVerticesPerMesh * uv.U;
-				vertices[nv] = noVertex;
-				vertices[nv + 1] = noVertex;
-				vertices[nv + 2] = noVertex;
-				vertices[nv + 3] = noVertex;
-				vertices[nv + 4] = noVertex;
-				vertices[nv + 5] = noVertex;
-				vertices[nv + 6] = noVertex;
-				vertices[nv + 7] = noVertex;
-				vertices[nv + 8] = noVertex;
-				vertices[nv + 9] = noVertex;
-				vertices[nv + 10] = noVertex;
-				vertices[nv + 11] = noVertex;
+				var nv = rowStride * uv.V + MaxVerticesPerMesh * uv.U;
+				for (int i = 0; i < MaxVerticesPerMesh; i++)
+				{
+					vertices[nv + i] = noVertex;
+				}
+
 				dirtyRows.Add(uv.V);
 				return;
 			}
@@ -261,7 +259,7 @@ namespace OpenRA.Graphics
 			if (!map.Tiles.Contains(uv))
 				return;
 
-			var offset = rowStride * uv.V + Game.Renderer.MaxVerticesPerMesh * uv.U;
+			var offset = rowStride * uv.V + MaxVerticesPerMesh * uv.U;
 			var cellinfo = map.CellInfos[uv];
 
 			//switch (spriteMeshType)
@@ -279,7 +277,7 @@ namespace OpenRA.Graphics
 			//}
 			var viewOffset = Game.Renderer.World3DRenderer.InverseCameraFrontMeterPerWPos * (zOffset - 15);
 
-			if (additional)
+			if (additional || MaxVerticesPerMesh == 6)
 			{
 				//var spriteMeshType = sprite.SpriteMeshType;
 
@@ -287,6 +285,8 @@ namespace OpenRA.Graphics
 			}
 			else
 			{
+				if (MaxVerticesPerMesh != 12)
+					throw new Exception("The MaxVerticesPerMesh for common terrain sprite layer must be 12 , now is " + MaxVerticesPerMesh);
 				if (shroud)
 				{
 					Util.FastCreateTile(vertices, verticesColor,
@@ -364,9 +364,9 @@ namespace OpenRA.Graphics
 
 			for (int y = tp.Y; y <= br.Y; y++)
 			{
-				int xstart = y * rowStride + tp.X * Game.Renderer.MaxVerticesPerMesh;
-				int xend = y * rowStride + br.X * Game.Renderer.MaxVerticesPerMesh;
-				Game.Renderer.MapRenderer.DrawVertices(vertices, xstart, xend - xstart);
+				int xstart = y * rowStride + tp.X * MaxVerticesPerMesh;
+				int xend = y * rowStride + br.X * MaxVerticesPerMesh;
+				Game.Renderer.MapRenderer.DrawVertices(vertices, xstart, xend - xstart, RenderAllVert);
 			}
 
 			//Game.Renderer.MapRenderer.DrawVertexBuffer(

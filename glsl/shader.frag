@@ -146,13 +146,12 @@ vec4 CalcDirLight(DirLight light, vec3 normal, vec3 viewDir, const BlinnPhongMat
 
 	if (vTint.a < 0.0f)
 	{
-		diffuse =vTint.rgb;
+		diffuse = vTint.rgb;
 		return vec4((ambient + diffuse + specular), -vTint.a);
 	}
 	else
 	{
-		diffuse *= vTint.rgb;
-		return vec4((ambient + diffuse + specular), 1.0);
+		return vec4((ambient + diffuse + specular) * vTint.rgb, vTint.a);
 	}
 }
 
@@ -301,28 +300,6 @@ void main()
 	if (isDraw == 0)
 		discard;
 
-	
-	bool useBodyMaterial = false;
-	// if (isCloth && ((drawPart & uint(0x1FF)) !=  uint(0))){
-	if (isCloth && drawPart != uint(0xFFFFFFFF)){
-		useBodyMaterial = true;
-	}
-
-	vec3 norm = normalize(Normal);
-	vec3 viewDir = normalize(viewPos - FragPos);
-	vec4 result;
-	if (useBodyMaterial)
-		if (usePBRBody)
-			result = CalcDirLightPBR(dirLight, norm, viewDir, pbrBodyMaterial);
-		else
-			result = CalcDirLight(dirLight, norm, viewDir, bodyMaterial);
-	else
-		if (usePBR)
-			result = CalcDirLightPBR(dirLight, norm, viewDir, pbrMaterial);
-		else
-			result = CalcDirLight(dirLight, norm, viewDir, mainMaterial);
-
-
 	if (EnableDepthPreview)
 	{
 		float intensity = 1.0 - gl_FragCoord.z;//clamp(DepthPreviewParams.x * gl_FragCoord.z - 0.5 * DepthPreviewParams.x - DepthPreviewParams.y + 0.5, 0.0, 1.0);
@@ -334,6 +311,26 @@ void main()
 		#endif
 	}
 	else{
+		bool useBodyMaterial = false;
+		// if (isCloth && ((drawPart & uint(0x1FF)) !=  uint(0))){
+		if (isCloth && drawPart != uint(0xFFFFFFFF)){
+			useBodyMaterial = true;
+		}
+
+		vec3 norm = normalize(Normal);
+		vec3 viewDir = normalize(viewPos - FragPos);
+		vec4 result;
+		if (useBodyMaterial)
+			if (usePBRBody)
+				result = CalcDirLightPBR(dirLight, norm, viewDir, pbrBodyMaterial);
+			else
+				result = CalcDirLight(dirLight, norm, viewDir, bodyMaterial);
+		else
+			if (usePBR)
+				result = CalcDirLightPBR(dirLight, norm, viewDir, pbrMaterial);
+			else
+				result = CalcDirLight(dirLight, norm, viewDir, mainMaterial);
+
 		FragColor = result;
 	}
 }
