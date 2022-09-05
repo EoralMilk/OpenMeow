@@ -212,73 +212,42 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 				guardTick++;
 			}
 
-			if (move.CurrentMovementTypes != MovementType.None)
+			var angle = (myFacing.Facing - (turret?.WorldOrientation.Yaw) ?? WAngle.Zero).Angle;
+			FP x = FP.Zero, y = FP.Zero;
+			if (angle <= 128 || angle >= 896)
+			{
+				y = FP.One;
+				x = FP.One * (angle >= 896 ? 1024 - angle : -angle) / 128;
+			}
+			else if (angle > 128 && angle <= 384)
+			{
+				x = -FP.One;
+				y = FP.One * (256 - angle) / 128;
+			}
+			else if (angle > 384 && angle <= 640)
+			{
+				y = -FP.One;
+				x = FP.One * (angle - 512) / 128;
+			}
+			else
+			{
+				x = FP.One;
+				y = FP.One * (angle - 768) / 128;
+			}
+
+			locomotion.BlendPos = new TSVector2(x, y);
+			locomotion.BlendPos = locomotion.BlendPos * lerpSpeed;
+
+			if (move.CurrentSpeed != WVec.Zero)
 			{
 				//moveSwitch.SetFlag(true);
-				//var angle = (-(turret?.LocalOrientation.Yaw) ?? WAngle.Zero);
-				//WVec vec = new WVec(0, -1024, 0).Rotate(WRot.None.WithYaw(angle));
-
-				var angle = (myFacing.Facing - (turret?.WorldOrientation.Yaw) ?? WAngle.Zero).Angle;
-				FP x = FP.Zero, y = FP.Zero;
-				if (angle <= 128 || angle >= 896)
-				{
-					y = FP.One;
-					x = FP.One * (angle >= 896 ? 1024 - angle : -angle) / 128;
-				}
-				else if (angle > 128 && angle <= 384)
-				{
-					x = -FP.One;
-					y = FP.One * (256 - angle) / 128;
-				}
-				else if (angle > 384 && angle <= 640)
-				{
-					y = -FP.One;
-					x = FP.One * (angle - 512) / 128;
-				}
-				else
-				{
-					x = FP.One;
-					y = FP.One * (angle - 768) / 128;
-				}
-
-				lerpSpeed = lerpSpeed < FP.One ? lerpSpeed + FP.FromFloat(0.1f) : FP.One;
-				locomotion.BlendPos = new TSVector2(x, y);
-				locomotion.BlendPos = locomotion.BlendPos * lerpSpeed;
-				//Console.WriteLine(locomotion.BlendPos);
+				lerpSpeed = lerpSpeed < FP.One ? lerpSpeed + (FP.One / info.Stand2WalkTick) : FP.One;
 			}
 			else
 			{
 				//moveSwitch.SetFlag(false);
-				lerpSpeed = lerpSpeed > FP.Zero ? lerpSpeed - FP.FromFloat(0.1f) : FP.Zero;
-
-				locomotion.BlendPos = locomotion.BlendPos.normalized * lerpSpeed;
+				lerpSpeed = lerpSpeed > FP.Zero ? lerpSpeed - (FP.One / info.Stand2WalkTick) : FP.Zero;
 			}
-
-			//var angle = (-(turret?.LocalOrientation.Yaw) ?? WAngle.Zero).Angle;
-			//FP x = FP.Zero, y = FP.Zero;
-			//if (angle <= 128 || angle >= 896)
-			//{
-			//	y = FP.One;
-			//	x = FP.One * (angle >= 896 ? 1024 - angle : -angle) / 128;
-			//}
-			//else if (angle > 128 && angle <= 384)
-			//{
-			//	x = -FP.One;
-			//	y = FP.One * (256 - angle) / 128;
-			//}
-			//else if (angle > 384 && angle <= 640)
-			//{
-			//	y = -FP.One;
-			//	x = FP.One * (angle - 512) / 128;
-			//}
-			//else
-			//{
-			//	x = FP.One;
-			//	y = FP.One * (angle - 768) / 128;
-			//}
-
-			//locomotion.BlendPos = new TSVector2(x, y);
-			//Console.WriteLine(locomotion.BlendPos);
 		}
 	}
 }

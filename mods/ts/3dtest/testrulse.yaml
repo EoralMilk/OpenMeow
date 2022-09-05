@@ -67,7 +67,8 @@ RUTEST:
 		TurnSpeed: 66
 		Speed: 100
 		Locomotor: tracked
-		AlwaysTurnInPlace: true
+		# AlwaysTurnInPlace: true
+		CanMoveBackward: true
 	Health:
 		HP: 100000
 	Armor:
@@ -128,10 +129,10 @@ RUTEST:
 		Turret: primary
 		LocalOffset: 1024,0,1024
 	Turreted:
-		TurnSpeed: 66
+		TurnSpeed: 88
 		Turret: primary
 		Offset: 0,0,0
-		Floating: true
+		# Floating: true
 	AttackTurreted:
 		Voice: Attack
 		PauseOnCondition: empdisable
