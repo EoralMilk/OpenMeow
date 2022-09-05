@@ -4,10 +4,25 @@ rumya:
 		# Bones:
 		Masks:
 			upper: upper
+			lower: lower
 		Anims:
-			stand: JumpFlair #stand_Skeleton_CommonBody
+			stand: stand_Skeleton_CommonBody
 			walk: catwalk_Skeleton_CommonBody
-			guard: rest_Skeleton_CommonBody
+			guard: Rifle_Aim
+			walk-back: WalkBack
+			run-left: RunLeft
+			run-right: RunRight
+			forwardAnim: Rifle_Forward
+			forwardRightAnim: Rifle_ForwardRight
+			forwardLeftAnim: Rifle_ForwardLeft
+			strafeRightAnim: Rifle_Right
+			standAnim: Rifle_Idle
+			strafeLeftAnim: Rifle_Left
+			backwardAnim: Rifle_Back
+			backwardRightAnim: Rifle_BackRight
+			backwardLeftAnim: Rifle_BackLeft
+
+
 	Meshes:
 		body: body-combine
 			Material: body

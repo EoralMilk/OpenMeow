@@ -24,6 +24,8 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 	{
 		BlendTreeNodeOutPut GetResult();
 		void UpdateTick();
+
+		WRot FacingOverride();
 	}
 
 	public class WithSkeletonInfo : ConditionalTraitInfo, Requires<RenderMeshesInfo>
@@ -133,7 +135,10 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 				BlendTreeHandler.UpdateTick();
 
 			lastSelfPos = self.CenterPosition;
-			lastSelfRot = myFacing.Orientation;
+			if (BlendTreeHandler != null)
+				lastSelfRot = BlendTreeHandler.FacingOverride();
+			else
+				lastSelfRot = myFacing.Orientation;
 			lastScale = Scale;
 		}
 

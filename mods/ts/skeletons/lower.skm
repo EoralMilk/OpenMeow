@@ -1,0 +1,18 @@
+a-Rig_Hips:
+    Using: true
+a-Rig_UpperLeg.L:
+	Using: true
+a-Rig_LowerLeg.L:
+    Using: true
+a-s-Rig_Foot.L:
+    Using: true
+a-s-Rig_ToeBase.L:
+    Using: true
+a-Rig_UpperLeg.R:
+    Using: true
+a-Rig_LowerLeg.R:
+    Using: true
+a-s-Rig_Foot.R:
+    Using: true
+a-s-Rig_ToeBase.R:
+    Using: true

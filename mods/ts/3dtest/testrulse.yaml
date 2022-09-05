@@ -18,10 +18,23 @@
 		SkeletonBinded: body
 	BlendTreeHandler:
 		SkeletonToUse: body
-		Stand: stand
 		Walk: walk
+		WalkBack: walk-back
+		
+		Forward: forwardAnim
+		ForwardRight: forwardRightAnim
+		ForwardLeft: forwardLeftAnim
+		StrafeRight: strafeRightAnim
+		Stand: standAnim
+		StrafeLeft: strafeLeftAnim
+		Backward: backwardAnim
+		BackwardLeft: backwardLeftAnim
+		BackwardRight: backwardRightAnim
+
 		Guard: guard
+		GuardBlendTick: 20
 		UpperMask: upper
+		LowerMask: lower
 	WithSkeleton:
 		Name: body
 	RenderMeshes:
@@ -51,10 +64,10 @@ RUTEST:
 		BuildPaletteOrder: 0
 		Prerequisites: ~none
 	Mobile:
-		TurnSpeed: 44
+		TurnSpeed: 66
 		Speed: 100
 		Locomotor: tracked
-		# AlwaysTurnInPlace: true
+		AlwaysTurnInPlace: true
 	Health:
 		HP: 100000
 	Armor:
@@ -110,6 +123,30 @@ RUTEST:
 		QuantizedFacings: 0
 	RenderSprites:
 		Image: bike
+	Armament:
+		Weapon: HoverMissileDual
+		Turret: primary
+		LocalOffset: 1024,0,1024
+	Turreted:
+		TurnSpeed: 66
+		Turret: primary
+		Offset: 0,0,0
+		Floating: true
+	AttackTurreted:
+		Voice: Attack
+		PauseOnCondition: empdisable
+		# FacingToTarget: true
+	BlendTreeHandler:
+		DirectionTurret: primary
+
+	RenderModels:
+		NormalsPalette: normals
+		ShadowPalette: shadow
+		Scale: 1.4
+		LightScale: 0.6
+		SpecularScale: 0.15
+		Image: bike
+	WithModelBody:
 
 
 RUTEST2:

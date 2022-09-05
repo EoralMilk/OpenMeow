@@ -44,6 +44,8 @@ namespace OpenRA.Mods.Common.Traits
 
 		[Desc("Realign turret before deploy")]
 		public readonly bool RealignBeforeDeploy = false;
+
+		public readonly bool Floating = false;
 		IEnumerable<ActorInit> IActorPreviewInitInfo.ActorPreviewInits(ActorInfo ai, ActorPreviewType type)
 		{
 			yield return new TurretFacingInit(this, InitialFacing);
@@ -153,7 +155,7 @@ namespace OpenRA.Mods.Common.Traits
 		{
 			get
 			{
-				var world = facing != null ? LocalOrientation.Rotate(facing.Orientation) : LocalOrientation;
+				var world = facing != null && !Info.Floating ? LocalOrientation.Rotate(facing.Orientation) : LocalOrientation;
 				if (QuantizedFacings == 0)
 					return world;
 
@@ -336,7 +338,7 @@ namespace OpenRA.Mods.Common.Traits
 				if (desiredDirection == WVec.Zero)
 					return LocalOrientation.Yaw;
 
-				if (facing == null)
+				if (facing == null || Info.Floating)
 					return desiredDirection.Yaw;
 
 				// PERF: If the turret rotation axis is vertical we can directly take the difference in facing/yaw
@@ -352,17 +354,35 @@ namespace OpenRA.Mods.Common.Traits
 
 		void MoveTurret(bool disable = false)
 		{
-			var desired = realignDesired || forceRealigning ? Info.InitialFacing : DesiredLocalFacing;
-
-			if (desired == LocalOrientation.Yaw)
-				return;
-
-			LocalOrientation = LocalOrientation.WithYaw(Util.TickFacing(LocalOrientation.Yaw, desired, disable ? Info.DisableRealignSpeed : Info.TurnSpeed));
-
-			if (desired == LocalOrientation.Yaw)
+			if (Info.Floating)
 			{
-				realignDesired = false;
-				desiredDirection = WVec.Zero;
+				var desired = realignDesired || forceRealigning ? facing.Facing + Info.InitialFacing : DesiredLocalFacing;
+
+				if (desired == LocalOrientation.Yaw)
+					return;
+
+				LocalOrientation = LocalOrientation.WithYaw(Util.TickFacing(LocalOrientation.Yaw, desired, disable ? Info.DisableRealignSpeed : Info.TurnSpeed));
+
+				if (desired == LocalOrientation.Yaw)
+				{
+					realignDesired = false;
+					desiredDirection = WVec.Zero;
+				}
+			}
+			else
+			{
+				var desired = realignDesired || forceRealigning ? Info.InitialFacing : DesiredLocalFacing;
+
+				if (desired == LocalOrientation.Yaw)
+					return;
+
+				LocalOrientation = LocalOrientation.WithYaw(Util.TickFacing(LocalOrientation.Yaw, desired, disable ? Info.DisableRealignSpeed : Info.TurnSpeed));
+
+				if (desired == LocalOrientation.Yaw)
+				{
+					realignDesired = false;
+					desiredDirection = WVec.Zero;
+				}
 			}
 		}
 
@@ -390,8 +410,16 @@ namespace OpenRA.Mods.Common.Traits
 		{
 			get
 			{
-				var desired = realignDesired ? Info.InitialFacing : DesiredLocalFacing;
-				return desired == LocalOrientation.Yaw;
+				if (Info.Floating)
+				{
+					var desired = realignDesired ? facing.Facing + Info.InitialFacing : DesiredLocalFacing;
+					return desired == LocalOrientation.Yaw;
+				}
+				else
+				{
+					var desired = realignDesired ? Info.InitialFacing : DesiredLocalFacing;
+					return desired == LocalOrientation.Yaw;
+				}
 			}
 		}
 
