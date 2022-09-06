@@ -54,7 +54,11 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 
 		readonly AnimationNode guardAnim;
 		readonly AnimationNode idleAnim;
+		readonly AnimationNode guardUpperAnim;
+		readonly AnimationNode idleUpperAnim;
 		readonly Switch guardSwitch;
+		readonly Switch guardUpperSwitch;
+
 
 		readonly AnimationNode forwardAnim;
 		readonly AnimationNode forwardRightAnim;
@@ -130,31 +134,35 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 			var allvalidmask = withSkeleton.OrderedSkeleton.SkeletonAsset.AllValidMask;
 			walkAnim = new AnimationNode(info.Walk, 1, blendTree, allvalidmask, walk);
 			walkBackAnim = new AnimationNode(info.WalkBack, 2, blendTree, allvalidmask, walkBack);
-			guardAnim = new AnimationNode("guard", 3, blendTree, uppermask, guard);
-			idleAnim = new AnimationNode("idle", 15, blendTree, uppermask, stand);
+			guardAnim = new AnimationNode("guard", 3, blendTree, allvalidmask, guard);
+			idleAnim = new AnimationNode("idle", 15, blendTree, allvalidmask, stand);
+			guardUpperAnim = new AnimationNode("guard", 3, blendTree, uppermask, guard);
+			idleUpperAnim = new AnimationNode("idle", 15, blendTree, uppermask, stand);
 
-			forwardLeftAnim = new AnimationNode("FL", 11, blendTree, lowermask, forwardLeft);
-			forwardAnim = new AnimationNode("F", 12, blendTree, lowermask, forward);
-			forwardRightAnim = new AnimationNode("FR", 13, blendTree, lowermask, forwardRight);
-			strafeLeftAnim = new AnimationNode("L", 14, blendTree, lowermask, strafeLeft);
-			standAnim = new AnimationNode("M", 15, blendTree, lowermask, stand);
-			strafeRightAnim = new AnimationNode("R", 16, blendTree, lowermask, strafeRight);
-			backwardLeftAnim = new AnimationNode("BL", 17, blendTree, lowermask, backwardLeft);
-			backwardAnim = new AnimationNode("B", 18, blendTree, lowermask, backward);
-			backwardRightAnim = new AnimationNode("BR", 19, blendTree, lowermask, backwardRight);
-			var locomotionInput = new AnimationNode[9]
+			forwardLeftAnim = new AnimationNode("FL", 11, blendTree, allvalidmask, forwardLeft);
+			forwardAnim = new AnimationNode("F", 12, blendTree, allvalidmask, forward);
+			forwardRightAnim = new AnimationNode("FR", 13, blendTree, allvalidmask, forwardRight);
+			strafeLeftAnim = new AnimationNode("L", 14, blendTree, allvalidmask, strafeLeft);
+			standAnim = new AnimationNode("M", 15, blendTree, allvalidmask, stand);
+			strafeRightAnim = new AnimationNode("R", 16, blendTree, allvalidmask, strafeRight);
+			backwardLeftAnim = new AnimationNode("BL", 17, blendTree, allvalidmask, backwardLeft);
+			backwardAnim = new AnimationNode("B", 18, blendTree, allvalidmask, backward);
+			backwardRightAnim = new AnimationNode("BR", 19, blendTree, allvalidmask, backwardRight);
+
+			guardSwitch = new Switch("idle2guard", 22, blendTree, allvalidmask, idleAnim, guardAnim, info.GuardBlendTick);
+			var locomotionInput = new BlendTreeNode[9]
 			{
 				forwardLeftAnim, forwardAnim, forwardRightAnim,
-				strafeLeftAnim, standAnim, strafeRightAnim,
+				strafeLeftAnim, guardSwitch, strafeRightAnim,
 				backwardLeftAnim, backwardAnim, backwardRightAnim,
 			};
+			guardUpperSwitch = new Switch("idle2guard", 22, blendTree, uppermask, idleUpperAnim, guardUpperAnim, info.GuardBlendTick);
+			locomotion = new Blend9Pos("locomotion", 5, blendTree, allvalidmask, locomotionInput);
 
-			locomotion = new Blend9Pos("locomotion", 5, blendTree, lowermask, locomotionInput);
-			guardSwitch = new Switch("idle2guard", 22, blendTree, uppermask, idleAnim, guardAnim, info.GuardBlendTick);
 			// moveSwitch = new Switch("Stand2Walk", 20, blendTree, allvalidmask, standAnim, locomotion, info.Stand2WalkTick);
-			guardBlend2 = new Blend2("GuardBlend", 21, blendTree, allvalidmask, locomotion, guardSwitch);
+			guardBlend2 = new Blend2("GuardBlend", 21, blendTree, allvalidmask, locomotion, guardUpperSwitch);
 			blendTree.InitTree(guardBlend2);
-			guardBlend2.BlendValue = FP.One;
+			guardBlend2.BlendValue = FP.FromFloat(0.8f);
 			withSkeleton.BlendTreeHandler = this;
 			guardBlendSpeed = FP.One / info.GuardBlendTick;
 		}
@@ -189,6 +197,7 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 		public bool PrepareForAttack(in Target target)
 		{
 			guardSwitch.SetFlag(true);
+			guardUpperSwitch.SetFlag(true);
 			guardTick = 0;
 			if (guardSwitch.BlendValue < FP.One)
 			{
@@ -201,18 +210,36 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 		}
 
 		FP lerpSpeed = 0;
+		int angle;
+		int lastangle;
 		public void Tick(Actor self)
 		{
 			if (guardTick == guardTime)
 			{
 				guardSwitch.SetFlag(false);
+				guardUpperSwitch.SetFlag(false);
 			}
 			else
 			{
 				guardTick++;
 			}
 
-			var angle = (myFacing.Facing - (turret?.WorldOrientation.Yaw) ?? WAngle.Zero).Angle;
+			if (move.CurrentSpeed != WVec.Zero)
+			{
+				//moveSwitch.SetFlag(true);
+				lerpSpeed = lerpSpeed < FP.One ? lerpSpeed + (FP.One / info.Stand2WalkTick) : FP.One;
+			}
+			else if (lastangle != angle)
+			{
+				lerpSpeed = lerpSpeed > FP.Half ? lerpSpeed - (FP.One / info.Stand2WalkTick) : FP.Half;
+			}
+			else
+			{
+				//moveSwitch.SetFlag(false);
+				lerpSpeed = lerpSpeed > FP.Zero ? lerpSpeed - (FP.One / info.Stand2WalkTick) : FP.Zero;
+			}
+
+			angle = (myFacing.Facing - (turret?.WorldOrientation.Yaw) ?? WAngle.Zero).Angle;
 			FP x = FP.Zero, y = FP.Zero;
 			if (angle <= 128 || angle >= 896)
 			{
@@ -237,17 +264,7 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 
 			locomotion.BlendPos = new TSVector2(x, y);
 			locomotion.BlendPos = locomotion.BlendPos * lerpSpeed;
-
-			if (move.CurrentSpeed != WVec.Zero)
-			{
-				//moveSwitch.SetFlag(true);
-				lerpSpeed = lerpSpeed < FP.One ? lerpSpeed + (FP.One / info.Stand2WalkTick) : FP.One;
-			}
-			else
-			{
-				//moveSwitch.SetFlag(false);
-				lerpSpeed = lerpSpeed > FP.Zero ? lerpSpeed - (FP.One / info.Stand2WalkTick) : FP.Zero;
-			}
+			lastangle = angle;
 		}
 	}
 }

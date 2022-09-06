@@ -1,18 +1,22 @@
 a-Rig_Hips:
-    Using: true
+	Using: True
+a-Rig_Spine:
+	Using: True
+a-Rig_Chest:
+	Using: True
 a-Rig_UpperLeg.L:
-	Using: true
+	Using: True
 a-Rig_LowerLeg.L:
-    Using: true
+	Using: True
 a-s-Rig_Foot.L:
-    Using: true
+	Using: True
 a-s-Rig_ToeBase.L:
-    Using: true
+	Using: True
 a-Rig_UpperLeg.R:
-    Using: true
+	Using: True
 a-Rig_LowerLeg.R:
-    Using: true
+	Using: True
 a-s-Rig_Foot.R:
-    Using: true
+	Using: True
 a-s-Rig_ToeBase.R:
-    Using: true
+	Using: True

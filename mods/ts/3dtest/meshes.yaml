@@ -22,7 +22,6 @@ rumya:
 			backwardRightAnim: Rifle_BackRight
 			backwardLeftAnim: Rifle_BackLeft
 
-
 	Meshes:
 		body: body-combine
 			Material: body
@@ -43,6 +42,8 @@ rumya:
 			Material: sweater
 			BodyMaterial: body
 			UseDQBSkin: true
+		arrow: Arrow
+			Material: white
 
 
 rumya-2:

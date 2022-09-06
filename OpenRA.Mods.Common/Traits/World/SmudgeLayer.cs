@@ -156,6 +156,15 @@ namespace OpenRA.Mods.Common.Traits
 				if (Smudges[i].AlphaTint <= 0)
 					Remove(i);
 			}
+
+			public void SetNew()
+			{
+				for (int i = 0; i < Smudges.Length; i++)
+				{
+					if (Smudges[i].LifeTime > 0)
+						Smudges[i].Tick = Smudges[i].LifeTime;
+				}
+			}
 		}
 
 		struct Smudge
@@ -511,6 +520,10 @@ namespace OpenRA.Mods.Common.Traits
 			else if (dirty[loc].Count < Info.MaxCountPerCell)
 			{
 				dirty[loc].Add(new Smudge(world, this, pos, smudges[st].GetSprite(0)));
+			}
+			else
+			{
+				dirty[loc].SetNew();
 			}
 		}
 

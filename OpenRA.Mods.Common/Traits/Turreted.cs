@@ -186,6 +186,12 @@ namespace OpenRA.Mods.Common.Traits
 			facing = self.TraitOrDefault<IFacing>();
 			body = self.Trait<BodyOrientation>();
 			notify = self.TraitsImplementing<INotifyDeployPrepareComplete>().ToArray();
+			if (Info.Floating)
+			{
+				realignDesired = true;
+				desiredDirection = WVec.Zero;
+				MoveTurret(true);
+			}
 		}
 
 		void ITick.Tick(Actor self)
