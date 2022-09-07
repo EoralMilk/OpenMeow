@@ -45,6 +45,7 @@ namespace OpenRA.Mods.Common.Widgets.Logic
 				var viewportSize = worldRenderer.Viewport.Rectangle.Size;
 				return $"FPS: {fps}\nTick {Game.LocalTick} @ {PerfHistory.Items["tick_time"].Average(Game.Settings.Debug.Samples):F1} ms\n" +
 					$"Render {Game.RenderFrame} @ {PerfHistory.Items["render"].Average(Game.Settings.Debug.Samples):F1} ms\n" +
+					$"Bones: {OrderedSkeleton.AnimTransformDataIndex} using {(float)OrderedSkeleton.AnimTransformDataIndex / OrderedSkeleton.AnimTransformData.Length} \n" +
 					$"Batches: {PerfHistory.Items["batches"].LastValue}\n" +
 					$"Viewport Size: {viewportSize.Width} x {viewportSize.Height} / {Game.Renderer.WorldDownscaleFactor}\n" +
 					$"WFB Size: {wfbSize.Width} x {wfbSize.Height}";

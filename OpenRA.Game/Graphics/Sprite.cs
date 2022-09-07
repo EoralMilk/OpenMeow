@@ -24,7 +24,7 @@ namespace OpenRA.Graphics
 		public readonly float ZRamp;
 		public readonly float3 Size;
 		public readonly float3 Offset;
-		public readonly float Top, Left, Bottom, Right;
+		public readonly float Top, Left, Bottom, Right, TB, LR;
 
 		public readonly SpriteMeshType SpriteMeshType;
 		public bool HasMeshCreateInfo;
@@ -72,7 +72,8 @@ namespace OpenRA.Graphics
 			Top = (Math.Min(bounds.Top, bounds.Bottom) + inset) / sheet.Size.Height;
 			Right = (Math.Max(bounds.Left, bounds.Right) - inset) / sheet.Size.Width;
 			Bottom = (Math.Max(bounds.Top, bounds.Bottom) - inset) / sheet.Size.Height;
-
+			TB = Bottom - Top;
+			LR = Right - Left;
 			UpdateMeshInfo();
 		}
 
@@ -102,7 +103,7 @@ namespace OpenRA.Graphics
 					leftBottom = new float3(leftTop.X, 0, -TopBottom.Y / Game.Renderer.World3DRenderer.SinCameraPitch);
 					rightBottom = new float3(rightTop.X, 0, leftBottom.Z);
 				}
-				else if (SpriteMeshType == SpriteMeshType.Card)
+				else if (SpriteMeshType == SpriteMeshType.Card || SpriteMeshType == SpriteMeshType.FloatBoard)
 				{
 					leftTop = new float3(LeftRight.X, 0, TopBottom.X / Game.Renderer.World3DRenderer.SinCameraPitch);
 					rightTop = new float3(LeftRight.Y, 0, leftTop.Z);

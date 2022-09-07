@@ -18,6 +18,7 @@ using OpenRA.Traits;
 
 namespace OpenRA.Mods.Common.Warheads
 {
+	[Desc("Creates a smudge in `SmudgeLayer`.")]
 	public class LeaveSmudgeWarhead : Warhead
 	{
 		[Desc("Size of the area. A smudge will be created in each tile.", "Provide 2 values for a ring effect (outer/inner).")]
@@ -66,7 +67,7 @@ namespace OpenRA.Mods.Common.Warheads
 				if (!smudgeLayers.TryGetValue(smudgeType, out var smudgeLayer))
 					throw new NotImplementedException($"Unknown smudge type `{smudgeType}`");
 
-				smudgeLayer.AddSmudge(sc);
+				smudgeLayer.AddSmudge(sc, pos);
 			}
 		}
 	}

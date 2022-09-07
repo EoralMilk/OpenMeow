@@ -63,13 +63,13 @@ Packages:
 	ts|materials
 	ts|textures
 	ts|skeletons
-
+	ts|3dtest
+	
 	#ts|tstest
 	#ts|tstest/asset
 	#ts|tstest/asset/mat
 	#ts|tstest/asset/audios
 	#ts|tstest/asset/anims
-
 
 
 MapFolders:
@@ -106,7 +106,7 @@ Rules:
 
 	ts|3dtest/testrulse.yaml
 
-	#ts|tstest/localtestrulse.yaml
+	# ts|tstest/localtestrulse.yaml
 
 Weapons:
 	ts|weapons/ballisticweapons.yaml
@@ -121,7 +121,6 @@ Weapons:
 	
 	#ts|tstest/localtestweapon.yaml
 
-
 Sequences:
 	ts|sequences/aircraft.yaml
 	ts|sequences/infantry.yaml
@@ -133,7 +132,7 @@ Sequences:
 	ts|sequences/bridges.yaml
 	ts|sequences/critters.yaml
 
-	#ts|tstest/localtestseq.yaml
+	# ts|tstest/localtestseq.yaml
 
 ModelSequences:
 	ts|sequences/voxels.yaml
@@ -154,6 +153,10 @@ MapGrid:
 	MaximumTerrainHeight: 16
 	# SubCellOffsets: 0,0,0, -362,0,0, 0,362,0, 362,0,0
 	DefaultSubCell: 2
+
+WorldViewportSizes:
+	ZoomScale: 0.5
+	MaxZoomScale: 3
 
 Cursors:
 	ts|cursors.yaml
@@ -227,7 +230,6 @@ Voices:
 	ts|audio/voices.yaml
 
 	#ts|tstest/localtestvoices.yaml
-
 
 Notifications:
 	ts|audio/speech-generic.yaml
@@ -306,7 +308,7 @@ SpriteFormats: ShpTS, TmpTS, ShpTD, PngSheet
 
 ModelFormats: Vxl
 
-MeshFormats: Mes
+MeshFormats: Mes, Mmr
 
 VideoFormats: Vqa
 

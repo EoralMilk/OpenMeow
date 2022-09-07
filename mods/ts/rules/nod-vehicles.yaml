@@ -39,6 +39,7 @@ BGGY:
 	-DamagedByTerrain@VEINS:
 	-LeavesTrails@VEINS:
 
+
 BIKE:
 	Inherits: ^Vehicle
 	Inherits@VOXELS: ^VoxelActor
@@ -113,7 +114,7 @@ TTNK:
 	Health:
 		HP: 35000
 	Armor:
-		Type: Light
+		Type: Heavy
 		RequiresCondition: undeployed
 	Armament@PRIMARY:
 		Weapon: 90mm
@@ -164,16 +165,19 @@ TTNK:
 	Turreted:
 		TurnSpeed: 24
 		Turret: deployed
-		InitialFacing: 640
+		InitialFacing: 0
 		Offset: -20, -130, 74
 		RealignDelay: -1
+		RequiresCondition: deployed || preparing-undeploy
+		RealignWhenDisable: true
+		RealignBeforeDeploy: true
 	WithModelBarrel:
 		Armament: deployed
 		LocalOffset: 181,0,209
-		RequiresCondition: deployed
+		RequiresCondition: deployed || preparing-undeploy
 	WithModelTurret@deployed:
 		Turret: deployed
-		RequiresCondition: deployed
+		RequiresCondition: deployed || preparing-undeploy
 	AttackTurreted@deployed:
 		Voice: Attack
 		Armaments: deployed
@@ -188,6 +192,8 @@ TTNK:
 		LocalOffset: 543,0,209
 		RequiresCondition: !rank-elite
 		MuzzleSequence: muzzle
+		Recoil: 76
+		RecoilRecovery: 32
 	Armament@deployedElite:
 		Name: deployed
 		Turret: deployed
@@ -195,12 +201,17 @@ TTNK:
 		LocalOffset: 543,0,209
 		RequiresCondition: rank-elite
 		MuzzleSequence: muzzle
+		Recoil: 76
+		RecoilRecovery: 32
 	Armor@deployed:
 		Type: Concrete
 		RequiresCondition: deployed
 	DetectCloaked:
 		Range: 1c768
 		RequiresCondition: rank-elite
+	RangeMultiplier@deployed:
+		Modifier: 125
+		RequiresCondition: deployed
 	RenderDetectionCircle:
 	RevealOnFire:
 		ArmamentNames: primary, deployed
@@ -251,11 +262,20 @@ ART2:
 		UndeployedCondition: undeployed
 		UndeployOnMove: true
 		UndeployOnPickup: true
-		Facing: 384
+		Facing: -128
 		AllowedTerrainTypes: Clear, Road, DirtRoad, Rough
 		DeploySounds: place2.aud
 		UndeploySounds: clicky1.aud
 		Voice: Move
+		# DeployOnAiming: true
+	# AttackFrontal@todeploy:
+	# 	Voice: Attack
+	# 	FacingTolerance: 512
+	# 	RequiresCondition: undeployed
+	# Armament@todeploy:
+	# 	Name: todeploy
+	# 	Weapon: 155mmDeployCheck
+	# 	RequiresCondition: undeployed
 	EntersTunnels:
 		RequireForceMoveCondition: !undeployed
 	Repairable:
@@ -271,14 +291,30 @@ ART2:
 	Turreted:
 		Turret: deployed
 		TurnSpeed: 20
-		InitialFacing: 384
+		InitialFacing: 0
 		Offset: 0,0,256
 		RealignDelay: -1
+		RealignWhenDisable: true
+		RequiresCondition: deployed || preparing-undeploy #!undeployed
+		RealignBeforeDeploy: true
+		DeployOnAiming: true
+	AttackFrontal@todeploy:
+		Voice: Attack
+		Armaments: todeploy
+		FacingTolerance: 512
+		RequiresCondition: undeployed
+	Armament@todeploy:
+		Name: todeploy
+		Weapon: 155mmDeployCheck
+		RequiresCondition: undeployed
+		FacingTolerance: 512
 	WithModelBarrel:
 		Armament: deployed
 		LocalOffset: 203,0,0
 		LocalOrientation: 0, 128, 0
 		RequiresCondition: !undeployed
+		RotationSpeed: 12
+		PackBarrelBeforeDeploy: true
 	WithModelTurret@deployed:
 		Turret: deployed
 		RequiresCondition: !undeployed
@@ -286,7 +322,7 @@ ART2:
 		Voice: Attack
 		Armaments: deployed
 		Turrets: deployed
-		RequiresCondition: deployed
+		RequiresCondition: deployed && !init-barrel
 		PauseOnCondition: empdisable
 		TargetFrozenActors: True
 		ForceFireIgnoresActors: True
@@ -295,9 +331,11 @@ ART2:
 		Name: deployed
 		Turret: deployed
 		Weapon: 155mm
-		LocalOffset: 820,0,800
-		RequiresCondition: deployed
+		LocalOffset: 1148,0,1120 #820,0,800
+		# RequiresCondition: deployed && !init-barrel
 		MuzzleSequence: muzzle
+		Recoil: 178
+		RecoilRecovery: 15
 	WithMuzzleOverlay:
 	RevealOnFire:
 		ArmamentNames: deployed
@@ -469,17 +507,20 @@ SUBTANK:
 	Health:
 		HP: 30000
 	Armor:
-		Type: Light
+		Type: Heavy
 	RevealsShroud:
 		RequiresCondition: !inside-tunnel && !submerged
 		Range: 5c0
 		MaxHeightDelta: 3
 	Armament:
-		Weapon: FireballLauncher
+		Weapon: DualFireballLauncher
+		BurstPerFireCount: 2
+		LocalOffset: 112,-347,277, 112,347,277
 	AttackFrontal:
 		Voice: Attack
 		PauseOnCondition: empdisable
-		FacingTolerance: 0
+		FacingTolerance: 23
+		FacingFullOnTarget: true
 	WithModelBody:
 		RequiresCondition: !submerged
 	Targetable:

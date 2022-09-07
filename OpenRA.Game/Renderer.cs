@@ -47,6 +47,8 @@ namespace OpenRA
 		internal int TempBufferSize { get; }
 
 		readonly IVertexBuffer<Vertex> tempBuffer;
+		readonly IVertexBuffer<MapVertex> tempMapBuffer;
+
 		readonly Stack<Rectangle> scissorState = new Stack<Rectangle>();
 
 		ITexture screenTexture;
@@ -118,6 +120,7 @@ namespace OpenRA
 			RgbaColorRenderer = new RgbaColorRenderer(SpriteRenderer);
 			ScreenRenderer = new ScreenRenderer(this, Context.CreateUnsharedShader<ScreenShaderBindings>());
 			tempBuffer = Context.CreateVertexBuffer<Vertex>(TempBufferSize);
+			tempMapBuffer = Context.CreateVertexBuffer<MapVertex>(TempBufferSize);
 		}
 
 		static Size GetResolution(GraphicSettings graphicsSettings)
@@ -471,6 +474,12 @@ namespace OpenRA
 			DrawBatch(shader, tempBuffer, 0, numVertices, type);
 		}
 
+		public void DrawMapBatch(IShader shader, MapVertex[] vertices, int numVertices, PrimitiveType type)
+		{
+			tempMapBuffer.SetData(vertices, numVertices);
+			DrawBatch(shader, tempMapBuffer, 0, numVertices, type);
+		}
+
 		public void DrawBatch(IShader shader, IVertexBuffer vertices,
 			int firstVertex, int numVertices, PrimitiveType type, bool enableDepthTest = false)
 		{
@@ -707,6 +716,7 @@ namespace OpenRA
 		{
 			WorldVxlRenderer.Dispose();
 			tempBuffer.Dispose();
+			tempMapBuffer.Dispose();
 			fontSheetBuilder?.Dispose();
 			if (Fonts != null)
 				foreach (var font in Fonts.Values)

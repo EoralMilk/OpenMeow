@@ -69,15 +69,15 @@ namespace OpenRA.Graphics
 
 			for (int i = 0; i < inPutValue1.OutPutFrame.Length; i++)
 			{
-				if (inPutValue1.AnimMask.Mask[i] && inPutValue2.AnimMask.Mask[i])
+				if (inPutValue1.AnimMask.Mask[i] && inPutValue1.OutPutFrame.HasTransformation[i] && inPutValue2.AnimMask.Mask[i] && inPutValue2.OutPutFrame.HasTransformation[i])
 					outPut[i] = Transformation.Blend(inPutValue1.OutPutFrame[i], inPutValue2.OutPutFrame[i], t);
-				else if (inPutValue1.AnimMask.Mask[i])
+				else if (inPutValue1.AnimMask.Mask[i] && inPutValue1.OutPutFrame.HasTransformation[i])
 					outPut[i] = inPutValue1.OutPutFrame[i];
-				else if (inPutValue2.AnimMask.Mask[i])
+				else if (inPutValue2.AnimMask.Mask[i] && inPutValue2.OutPutFrame.HasTransformation[i])
 					outPut[i] = inPutValue2.OutPutFrame[i];
 				else
 				{
-					outPut[i] = Transformation.Identify;
+					outPut.SetNoneTransform(i);
 					animMask[i] = false;
 				}
 			}

@@ -1,38 +1,58 @@
 rumya:
-	Skeleton: testArmature
+	Skeleton: Skeleton_CommonBody #testArmature
 		UseDynamicAdjBonePose: false
 		# Bones:
 		Masks:
 			upper: upper
+			lower: lower
 		Anims:
-			stand: stand
-			walk: catwalk
-			guard: rest
+			stand: stand_Skeleton_CommonBody
+			walk: catwalk_Skeleton_CommonBody
+			guard: Rifle_Aim
+			walk-back: WalkBack
+			run-left: RunLeft
+			run-right: RunRight
+			forwardAnim: Rifle_Forward
+			forwardRightAnim: Rifle_ForwardRight
+			forwardLeftAnim: Rifle_ForwardLeft
+			strafeRightAnim: Rifle_Right
+			standAnim: Rifle_Idle
+			strafeLeftAnim: Rifle_Left
+			backwardAnim: Rifle_Back
+			backwardRightAnim: Rifle_BackRight
+			backwardLeftAnim: Rifle_BackLeft
+
 	Meshes:
-		body: combined
+		body: body-combine
 			Material: body
 			UseDQBSkin: true
-		hair: lp-hair_dpt1
-			Material: h-dpt1
+		hair: lp-hair_s2 #lp-hair_dpt1
+			Material: h-s2 #h-dpt1
 		cater: lp-CatEar
 			Material: catear
-		skirt-split: SplitSkirt
-			Material: skirt2
+		skirt-split: SportShorts
+			Material: sportshorts
 			BodyMaterial: body
 			UseDQBSkin: true
+		# skirt-split: SplitSkirt
+		# 	Material: skirt2
+		# 	BodyMaterial: body
+		# 	UseDQBSkin: true
 		sweater: RedCollarSweater
 			Material: sweater
 			BodyMaterial: body
 			UseDQBSkin: true
+		arrow: Arrow
+			Material: white
 
 
 rumya-2:
 	Inherits@defaults: rumya
-	Skeleton: testArmature
+	Skeleton: Skeleton_CommonBody
 		# Bones:
 		Anims:
-			stand: catidle
-			walk: catcrawl
+			stand: catidle_Skeleton_CommonBody
+			walk: catcrawl_Skeleton_CommonBody
 	Meshes:
 		skirt-split: SportShorts
 			Material: sportshorts
@@ -47,3 +67,11 @@ turret-test:
 	Meshes:
 		turret: turret_test
 			Material: turret
+
+mmr-test:
+	Meshes:
+		box: cube
+			Material: cube
+		body: body-combine
+			Material: body
+			UseDQBSkin: true

@@ -37,6 +37,9 @@ uniform mat4 projection;
 uniform mat4 rotationFix;
 
 uniform bool useDQB;
+
+// bind pose might contains modified adjust bone's rest pose from rig bone
+// but there is no different to shader anyway.
 uniform mat4 BindTransformData[128];
 
 uniform sampler2D boneAnimTexture;
@@ -49,6 +52,9 @@ mat4 mMatrix = mat4(0.0f);
 
 int animTexoffset;
 mat4 GetMat4ById(int id){
+	if (id < 0)
+		return mat4(1.0);
+
 	int y = (animTexoffset + id * 4) / skinBoneTexWidth;
 	int x = (animTexoffset + id * 4) % skinBoneTexWidth;
 	vec4 c1 = texelFetch(boneAnimTexture, ivec2(x, y), 0);
@@ -228,13 +234,14 @@ void main()
 	else{
 		isDraw = 1;
 	}
+
 	drawPart = aDrawPart;
 
 	mat4 scaleMatrix = mat4(0.0f);
 
-	if (iDrawId != -1)
+	if (iDrawId != -1 && aBoneId[0] != -1)
 	{
-		animTexoffset = iDrawId * skinBoneCount * 4;
+		animTexoffset = iDrawId;//iDrawId * skinBoneCount * 4;
 		if (aBoneWeights[0] == 0.0f){
 			mMatrix =  mat4(iModelV1, iModelV2, iModelV3, iModelV4);
 			// mMatrix = mMatrix * rotationFix;

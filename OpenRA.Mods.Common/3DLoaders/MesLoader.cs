@@ -255,7 +255,7 @@ namespace OpenRA.Mods.Common.Graphics
 				renderData.Shader.SetInt("skinBoneCount", Skeleton.SkeletonAsset.SkinBonesIndices.Length);
 				renderData.Shader.SetInt("skinBoneTexWidth", SkeletonAsset.AnimTextureWidth);
 
-				renderData.Shader.SetTexture("boneAnimTexture", Skeleton.BoneAnimTexture);
+				renderData.Shader.SetTexture("boneAnimTexture", OrderedSkeleton.BoneAnimTexture);
 				renderData.Shader.SetMatrix("BindTransformData", Skeleton.BindTransformData, 128);
 			}
 

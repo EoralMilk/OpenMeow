@@ -10,7 +10,7 @@ namespace OpenRA.Graphics
 		public TSVector Scale;
 		public TSQuaternion Rotation;
 		public TSVector Position;
-		public static Transformation Identify { get { return new Transformation(TSVector.one, TSQuaternion.identity, TSVector.zero); } }
+		public static Transformation Identity { get { return new Transformation(TSVector.one, TSQuaternion.identity, TSVector.zero); } }
 		public TSMatrix4x4 Matrix { get { return TSMatrix4x4.TRS(Position, Rotation, Scale); } }
 		public Transformation(TSVector s, TSQuaternion r, TSVector t)
 		{

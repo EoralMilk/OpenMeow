@@ -24,6 +24,7 @@ namespace OpenRA.Graphics
 		Card,
 		Plane,
 		Board,
+		FloatBoard,
 		UI,
 		NullType,
 	}

@@ -1,0 +1,4 @@
+white:
+	DiffuseTint: 1, 1, 1
+	SpecularTint: 0, 0, 0
+	Shininess: 0

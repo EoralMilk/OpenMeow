@@ -104,6 +104,9 @@ namespace OpenRA
 	{
 		public const float MapHeightToYPos = 1.73205f;
 		public const int MapHeightStep = 418;
+		public const int MapMiniCellWidth = 724;
+		public readonly float MeterPerCell = 4.0f;
+
 		public readonly MapGridType Type = MapGridType.Rectangular;
 		public readonly Size TileSize = new Size(24, 24);
 		public readonly byte MaximumTerrainHeight = 0;

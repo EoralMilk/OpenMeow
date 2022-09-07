@@ -499,6 +499,10 @@ namespace OpenRA.Platforms.Default
 			int width, int height, int border, int format, int type, IntPtr pixels);
 		public static TexImage2D glTexImage2D { get; private set; }
 
+		public delegate void TexSubImage2D(int target, int level, int xoffset, int yoffset, 
+			int width, int height, int format, int type, IntPtr pixels);
+		public static TexSubImage2D glTexSubImage2D { get; private set; }
+
 		public delegate void GetTexImage(int target, int level,
 			int format, int type, IntPtr pixels);
 		public static GetTexImage glGetTexImage { get; private set; }
@@ -677,6 +681,7 @@ namespace OpenRA.Platforms.Default
 				glCopyTexSubImage2D = Bind<CopyTexSubImage2D>("glCopyTexSubImage2D");
 				glPixelStorei = Bind<PixelStorei>("glPixelStorei");
 				glTexImage2D = Bind<TexImage2D>("glTexImage2D");
+				glTexSubImage2D = Bind<TexSubImage2D>("glTexSubImage2D");
 				glTexParameteri = Bind<TexParameteri>("glTexParameteri");
 				glTexParameterf = Bind<TexParameterf>("glTexParameterf");
 				glGenerateMipmap = Bind<GenerateMipmap>("glGenerateMipmap");

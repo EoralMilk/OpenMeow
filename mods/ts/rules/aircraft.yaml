@@ -606,7 +606,14 @@ APACHE:
 	# WithShadow:
 	WithModelBody:
 		ShowShadow: False
-
+	WithMesh@testmmr:
+		Mesh: box
+	WithMesh@testbody:
+		Mesh: body
+	RenderMeshes:
+		Image: mmr-test
+		ZOffset: 15
+		Scale: 7
 
 HUNTER:
 	Inherits@2: ^ExistsInWorld

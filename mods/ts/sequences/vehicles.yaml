@@ -31,9 +31,7 @@ harv.gdi:
 	Inherits: ^VehicleOverlays
 	harvest: harvestr
 		Length: *
-		ZRamp: 1
-		Offset: 0, 0, 1
-		ZOffset: 3
+		ZOffset: 10
 		MeshType: Plane
 	icon: sidebar-gdi|harvicon
 
@@ -42,9 +40,7 @@ harv.nod:
 	Inherits: ^VehicleOverlays
 	harvest: harvestr
 		Length: *
-		ZRamp: 1
-		Offset: 0, 0, 1
-		ZOffset: -3
+		ZOffset: 10
 		MeshType: Plane
 	icon: sidebar-nod|harvicon
 
@@ -59,6 +55,7 @@ hvr:
 	muzzle: gunfire
 		Length: *
 		IgnoreWorldTint: True
+		MeshType: FloatBoard
 	icon: hovricon
 
 lpst.gdi:
@@ -128,6 +125,8 @@ art2:
 		Length: *
 		Offset: 0, 0, 24
 		IgnoreWorldTint: True
+		Scale: 2
+		MeshType: FloatBoard
 
 weed:
 	Inherits@defaults: ^VehicleBase
@@ -158,6 +157,7 @@ hmec:
 				Length: 6
 		Facings: 8
 		Length: 6
+		MeshType: FloatBoard
 		IgnoreWorldTint: True
 
 bike:
@@ -191,6 +191,7 @@ bggy:
 		Facings: 8
 		Length: 6
 		IgnoreWorldTint: True
+		MeshType: FloatBoard
 	icon: bggyicon
 		Offset: 0, 0
 
@@ -228,6 +229,7 @@ ttnk:
 		Length: *
 		Offset: 0, 0, 24
 		IgnoreWorldTint: True
+		MeshType: FloatBoard
 	icon: tickicon
 
 stnk:
@@ -257,6 +259,7 @@ mmch:
 		Length: *
 		Offset: 0, 0, 12
 		IgnoreWorldTint: True
+		MeshType: FloatBoard
 	icon: mmchicon
 
 jugg:
@@ -279,19 +282,21 @@ jugg:
 		Offset: -4, 0, 12
 	idle: djugg
 		ShadowStart: 3
-		Offset: 0, -12, 12
+		Offset: 0, 0, 12
 	damaged-idle: djugg
 		Start: 1
 		ShadowStart: 4
-		Offset: 0, -12, 12
+		Offset: 0, 0, 12
 	make: djuggmk
-		Length: 18
+		Length: 17
 		ShadowStart: 18
-		Offset: 0, -12, 12
+		Offset: 0, 0, 12
 	muzzle: gunfire
 		Length: *
 		Offset: 0, 0, 24
 		IgnoreWorldTint: True
+		Scale: 1.6
+		MeshType: FloatBoard
 
 gghunt:
 	Inherits@defaults: ^VehicleBase

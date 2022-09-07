@@ -161,6 +161,8 @@ namespace OpenRA.Mods.Cnc.Traits
 		PaletteReference veinPalette;
 		TerrainSpriteLayer spriteLayer;
 
+		int count = 0;
+
 		public TSVeinsRenderer(Actor self, TSVeinsRendererInfo info)
 		{
 			this.info = info;
@@ -198,7 +200,7 @@ namespace OpenRA.Mods.Cnc.Traits
 
 			var first = veinSequence.GetSprite(0);
 			var emptySprite = new Sprite(first.Sheet, Rectangle.Empty, TextureChannel.Alpha, spriteMeshType: SpriteMeshType.Plane);
-			spriteLayer = new TerrainSpriteLayer(w, wr, emptySprite, first.BlendMode, wr.World.Type != WorldType.Editor);
+			spriteLayer = new TerrainSpriteLayer(w, wr, emptySprite, first.BlendMode, wr.World.Type != WorldType.Editor, 6);
 
 			// Initialize the renderIndices with the initial map state so it is visible
 			// through the fog with the Explored Map option enabled
@@ -230,13 +232,17 @@ namespace OpenRA.Mods.Cnc.Traits
 			}
 		}
 
+		void IRenderOverlay.ModifyTerrainRender(WorldRenderer wr) { }
+
 		void IRenderOverlay.Render(WorldRenderer wr)
 		{
+			Game.Renderer.MapRenderer.SetTextures(wr.World, UsageType.Overlay);
 			spriteLayer.Draw(wr.Viewport);
 		}
 
 		void ITickRender.TickRender(WorldRenderer wr, Actor self)
 		{
+			count = 0;
 			foreach (var cell in dirty)
 			{
 				if (!resourceLayer.IsVisible(cell))
@@ -295,6 +301,7 @@ namespace OpenRA.Mods.Cnc.Traits
 
 			foreach (var c in Common.Util.ExpandFootprint(cell, false))
 				UpdateBorderSprite(c);
+			count++;
 		}
 
 		void UpdateBorderSprite(CPos cell)

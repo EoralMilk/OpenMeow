@@ -136,7 +136,7 @@ namespace OpenRA.Mods.Common.Traits
 				{
 					var first = resourceVariants.First().Value.GetSprite(0);
 					var emptySprite = new Sprite(first.Sheet, Rectangle.Empty, TextureChannel.Alpha, spriteMeshType: SpriteMeshType.Plane);
-					spriteLayer = new TerrainSpriteLayer(w, wr, emptySprite, first.BlendMode, wr.World.Type != WorldType.Editor);
+					spriteLayer = new TerrainSpriteLayer(w, wr, emptySprite, first.BlendMode, wr.World.Type != WorldType.Editor, 6);
 				}
 
 				if (shadowLayer == null)
@@ -146,7 +146,7 @@ namespace OpenRA.Mods.Common.Traits
 					{
 						var first = firstWithShadow.GetShadow(0, WAngle.Zero);
 						var emptySprite = new Sprite(first.Sheet, Rectangle.Empty, TextureChannel.Alpha, spriteMeshType: SpriteMeshType.Plane);
-						shadowLayer = new TerrainSpriteLayer(w, wr, emptySprite, BlendMode.Alpha, wr.World.Type != WorldType.Editor);
+						shadowLayer = new TerrainSpriteLayer(w, wr, emptySprite, BlendMode.Alpha, wr.World.Type != WorldType.Editor, 6);
 					}
 				}
 
@@ -196,8 +196,12 @@ namespace OpenRA.Mods.Common.Traits
 			}
 		}
 
+		void IRenderOverlay.ModifyTerrainRender(WorldRenderer wr) { }
+
 		void IRenderOverlay.Render(WorldRenderer wr)
 		{
+			Game.Renderer.MapRenderer.SetTextures(wr.World, UsageType.Overlay);
+
 			shadowLayer?.Draw(wr.Viewport);
 			spriteLayer.Draw(wr.Viewport);
 		}

@@ -56,7 +56,7 @@ namespace OpenRA.Mods.D2k.Traits
 
 		void IWorldLoaded.WorldLoaded(World w, WorldRenderer wr)
 		{
-			render = new TerrainSpriteLayer(w, wr, terrainRenderer.MissingTile, BlendMode.Alpha, wr.World.Type != WorldType.Editor);
+			render = new TerrainSpriteLayer(w, wr, terrainRenderer.MissingTile, BlendMode.Alpha, wr.World.Type != WorldType.Editor, 6);
 			paletteReference = wr.Palette(info.Palette);
 		}
 
@@ -125,8 +125,12 @@ namespace OpenRA.Mods.D2k.Traits
 				dirty.Remove(r);
 		}
 
+		void IRenderOverlay.ModifyTerrainRender(WorldRenderer wr) { }
+
 		void IRenderOverlay.Render(WorldRenderer wr)
 		{
+			Game.Renderer.MapRenderer.SetTextures(wr.World, UsageType.Overlay);
+
 			render.Draw(wr.Viewport);
 		}
 

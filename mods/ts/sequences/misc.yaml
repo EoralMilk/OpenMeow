@@ -140,6 +140,7 @@ explosion:
 		AlphaFade: True
 		IgnoreWorldTint: True
 		BlendMode: ScreenAdditive #Additive
+		MeshType: FloatBoard
 	building: twlt070
 		Offset: 0, 0, 36
 	ionring: ring1
@@ -343,7 +344,7 @@ flameall:
 	idle:
 		Length: 19
 		Facings: -8
-		Tick: 160
+		Tick: 80
 		ZOffset: 1023
 		Offset: 0, 0, 24
 		IgnoreWorldTint: True
@@ -438,7 +439,7 @@ resources:
 		Offset: 0, -12, 1
 		ZRamp: 1
 		IgnoreWorldTint: true
-		ZOffset: 22
+		ZOffset: 8
 		MeshType: Plane
 	tib01: tib01
 	tib02: tib02
@@ -515,6 +516,7 @@ smallscorches:
 		Offset: 0, -12, 1
 		ZRamp: 1
 		MeshType: Plane
+		ZOffset: 10
 	sc1: burnt01
 	sc2: burnt02
 	sc3: burnt03
@@ -528,6 +530,7 @@ mediumscorches:
 		Offset: 0, -18, 1
 		ZRamp: 1
 		MeshType: Plane
+		ZOffset: 10
 	sc7: burnt07
 	sc8: burnt08
 	sc9: burnt09
@@ -539,6 +542,7 @@ largescorches:
 		Offset: 0, -24, 1
 		ZRamp: 1
 		MeshType: Plane
+		ZOffset: 10
 	sc11: burnt11
 	sc12: burnt12
 
@@ -548,6 +552,7 @@ smallcraters:
 		Offset: 0, -12, 1
 		ZRamp: 1
 		MeshType: Plane
+		ZOffset: 10
 	cr1: crater01
 	cr2: crater02
 	cr3: crater03
@@ -561,6 +566,7 @@ mediumcraters:
 		Offset: 0, -12, 1
 		ZRamp: 1
 		MeshType: Plane
+		ZOffset: 10
 	cr7: crater07
 	cr8: crater08
 	cr9: crater09
@@ -572,6 +578,7 @@ largecraters:
 		Offset: 0, -24, 1
 		ZRamp: 1
 		MeshType: Plane
+		ZOffset: 10
 	cr11: crater11
 	cr12: crater12
 
@@ -594,7 +601,6 @@ clustermissile:
 	idle:
 		ShadowStart: 1
 		UseTilesetExtension: true
-		Offset: 0, -12
 
 trock01:
 	Inherits: ^rock
@@ -816,16 +822,18 @@ podring:
 fire1:
 	idle-overlay:
 		Length: 17
-		BlendMode: Translucent
+		BlendMode: Additive #Translucent
 		Offset: 0, -24, 24
-		ZOffset: 10
+		ZOffset: 15
+		IgnoreWorldTint: true
 
 fire2:
 	idle-overlay:
 		Length: 17
-		BlendMode: Translucent
+		BlendMode: Additive #Translucent
 		Offset: 0, -18, 18
-		ZOffset: 10
+		ZOffset: 15
+		IgnoreWorldTint: true
 
 cannonsmokecircle:
 	idle:

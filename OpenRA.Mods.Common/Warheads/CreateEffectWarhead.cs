@@ -19,6 +19,7 @@ using OpenRA.Traits;
 
 namespace OpenRA.Mods.Common.Warheads
 {
+	[Desc("Spawn a sprite with sound.")]
 	public class CreateEffectWarhead : Warhead
 	{
 		[SequenceReference(nameof(Image), allowNullImage: true)]
@@ -37,6 +38,9 @@ namespace OpenRA.Mods.Common.Warheads
 
 		[Desc("Display explosion effect at ground level, regardless of explosion altitude.")]
 		public readonly bool ForceDisplayAtGroundLevel = false;
+
+		[Desc("Display explosion effect over ground level, when explosion altitude underground.")]
+		public readonly bool ForceDisplayOverGround = true;
 
 		[Desc("List of sounds that can be played on impact.")]
 		public readonly string[] ImpactSounds = Array.Empty<string>();
@@ -120,6 +124,12 @@ namespace OpenRA.Mods.Common.Warheads
 				{
 					var dat = world.Map.DistanceAboveTerrain(pos);
 					pos -= new WVec(0, 0, dat.Length);
+				}
+				else if (ForceDisplayOverGround)
+				{
+					var z = world.Map.HeightOfTerrain(pos);
+					if (pos.Z < z)
+						pos = new WPos(pos.X, pos.Y, z);
 				}
 
 				var palette = ExplosionPalette;

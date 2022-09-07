@@ -213,6 +213,7 @@ namespace OpenRA.Traits
 		bool AnyActorsAt(CPos a);
 		bool AnyActorsAt(CPos a, SubCell sub, bool checkTransient = true);
 		bool AnyActorsAt(CPos a, SubCell sub, Func<Actor, bool> withCondition);
+		IEnumerable<Actor> AllActors();
 		void AddInfluence(Actor self, IOccupySpace ios);
 		void RemoveInfluence(Actor self, IOccupySpace ios);
 		int AddCellTrigger(CPos[] cells, Action<Actor> onEntry, Action<Actor> onExit);
@@ -400,7 +401,10 @@ namespace OpenRA.Traits
 	}
 
 	[RequireExplicitImplementation]
-	public interface IRenderOverlay { void Render(WorldRenderer wr); }
+	public interface IRenderOverlay {
+		void Render(WorldRenderer wr);
+		void ModifyTerrainRender(WorldRenderer wr);
+	}
 
 	[RequireExplicitImplementation]
 	public interface INotifyBecomingIdle { void OnBecomingIdle(Actor self); }
@@ -413,8 +417,8 @@ namespace OpenRA.Traits
 
 	[RequireExplicitImplementation]
 	public interface IRenderTerrain {
-		void RenderTerrainEarly(WorldRenderer wr, Viewport viewport);
 		void RenderTerrain(WorldRenderer wr, Viewport viewport);
+		void ModifyCellTint(in CPos cell, in float3 color);
 	}
 
 	[RequireExplicitImplementation]

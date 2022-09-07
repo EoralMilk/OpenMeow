@@ -157,9 +157,6 @@ namespace OpenRA
 		IEnumerable<ShaderVertexAttribute> InstanceAttributes { get; }
 
 		void SetCommonParaments(IShader shader,World3DRenderer w3dr, bool sunCamera);
-
-		// 实际上没什么意义，后面删掉它
-		//void SetRenderData(IShader shader, ModelRenderData renderData);
 	}
 
 	public interface IShader

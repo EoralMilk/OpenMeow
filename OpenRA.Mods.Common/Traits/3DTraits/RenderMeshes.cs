@@ -63,13 +63,13 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 			//Console.WriteLine("Draw Count: " + RenderMeshes.drawCount);
 			//Console.WriteLine("Max DrawId: " + RenderMeshes.maxDrawId);
 
-			RenderMeshes.drawCount = 0;
-			RenderMeshes.maxDrawId = 0;
+			//RenderMeshes.drawCount = 0;
+			//RenderMeshes.maxDrawId = 0;
 			inScreen = false;
 		}
 
-		static int drawCount;
-		static int maxDrawId;
+		//static int drawCount;
+		//static int maxDrawId;
 
 		/// <summary>
 		/// call WithSkeletons for update
@@ -96,8 +96,8 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 						if (withSkeletons.ContainsKey(mesh.SkeletonBinded))
 						{
 							mesh.DrawId = withSkeletons[mesh.SkeletonBinded].GetDrawId();
-							if (maxDrawId < mesh.DrawId)
-								maxDrawId = mesh.DrawId;
+							//if (maxDrawId < mesh.DrawId)
+							//	maxDrawId = mesh.DrawId;
 						}
 					}
 				}

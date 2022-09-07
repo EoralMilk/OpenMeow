@@ -42,6 +42,21 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 		}
 	}
 
+	public enum BodyMask
+	{
+		Head,
+		Torso,
+		Hip,
+		Thigh,
+		Leg,
+		Foot,
+		UpperArm,
+		LowerArm,
+		Hand,
+
+		None,
+	}
+
 	public class WithMeshBodyInfo : WithMeshInfo
 	{
 		public override object Create(ActorInitializer init) { return new WithMeshBody(init.Self, this); }
@@ -74,19 +89,53 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 
 	public class WithMeshClothInfo : WithMeshInfo, Requires<WithMeshBodyInfo>
 	{
-		public readonly int Mask = 0;
+		public readonly BodyMask[] Masks = { BodyMask.None };
 		public override object Create(ActorInitializer init) { return new WithMeshCloth(init.Self, this); }
 	}
 
 	public class WithMeshCloth : WithMesh
 	{
 		WithMeshBody withMeshBody;
-		readonly int mask;
+		readonly int mask = 0;
 
 		public WithMeshCloth(Actor self, WithMeshClothInfo info)
 			: base(self, info)
 		{
-			mask = info.Mask;
+			foreach (var t in info.Masks)
+			{
+				switch (t)
+				{
+					case BodyMask.Head:
+						mask = mask | (1 << 0);
+						break;
+					case BodyMask.Torso:
+						mask = mask | (1 << 1);
+						break;
+					case BodyMask.Hip:
+						mask = mask | (1 << 2);
+						break;
+					case BodyMask.Thigh:
+						mask = mask | (1 << 3);
+						break;
+					case BodyMask.Leg:
+						mask = mask | (1 << 4);
+						break;
+					case BodyMask.Foot:
+						mask = mask | (1 << 5);
+						break;
+					case BodyMask.UpperArm:
+						mask = mask | (1 << 6);
+						break;
+					case BodyMask.LowerArm:
+						mask = mask | (1 << 7);
+						break;
+					case BodyMask.Hand:
+						mask = mask | (1 << 8);
+						break;
+					default:
+						break;
+				}
+			}
 		}
 
 		protected override void Created(Actor self)

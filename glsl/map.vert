@@ -4,9 +4,13 @@
 #ifdef GL_ES
 precision mediump float;
 #endif
+
+#define DT_NONE -1
+
 uniform mat4 view;
 uniform mat4 projection;
 uniform vec3 CameraInvFront;
+
 uniform vec3 viewPos;
 uniform bool RenderShroud;
 
@@ -50,6 +54,8 @@ struct DirLight {
 uniform DirLight dirLight;
 
 out	vec3 tSunDirection;
+out	vec3 tCameraInvFront;
+
 out vec3 tFragPos;
 out vec3 tViewPos;
 out vec3 tNormal;
@@ -137,18 +143,17 @@ void main()
 {
 	if (aVertexTint.a == 0.0) 
 	{
-		mDrawType = 0;
+		mDrawType = DT_NONE;
 		return;
 	}
 	else
 		mDrawType = int(aDrawType);
 
-
 	gl_Position = projection * view * aVertexPosition;
 	vTexCoord = aVertexTexCoord;
 	vTileTexCoord = aTileTexCoord;
-	vTexMetadata = aVertexTexMetadata;
 
+	vTexMetadata = aVertexTexMetadata;
 	vec4 attrib = UnpackChannelAttributes(aVertexTexMetadata.t);
 	vChannelMask = SelectChannelMask(attrib.s);
 	vColorFraction = SelectColorFraction(attrib.s);
@@ -156,22 +161,29 @@ void main()
 	vPalettedFraction = SelectPalettedFraction(attrib.s);
 	vTexSampler = attrib.pq;
 
-	vec3 tint = vec3(0.0);
-	for (int i = 0; i < MAX_TERRAIN_LIGHT; ++i){
-		if (TerrainLightPos[i].xy == vec2(0.0))
-			break;
-		float dist = length(aVertexPosition.xy - TerrainLightPos[i].xy);
-		if (dist > TerrainLightColorRange[i].a)
-			continue;
-		float falloff = (TerrainLightColorRange[i].a - dist) / TerrainLightColorRange[i].a;
-		tint += falloff * TerrainLightColorRange[i].rgb;
+	// ignoreTint
+	if (aVertexTint.a < 0.0){
+		vTint = aVertexTint;
+	}
+	else{
+		vec3 tint = vec3(0.0);
+
+		for (int i = 0; i < MAX_TERRAIN_LIGHT; ++i)
+		{
+			if (TerrainLightPos[i].xy == vec2(0.0))
+				break;
+			float dist = length(aVertexPosition.xy - TerrainLightPos[i].xy);
+			if (dist > TerrainLightColorRange[i].a)
+				continue;
+			float falloff = (TerrainLightColorRange[i].a - dist) / TerrainLightColorRange[i].a;
+			tint += falloff * TerrainLightColorRange[i].rgb;
+		}
+		vTint = vec4(tint * 4.0 + vec3(1.0) + aVertexTint.rgb, aVertexTint.a);
+
 	}
 
 	// HeightStep
 	vSunLight = 1.0 + aVertexPosition.z * TerrainLightHeightStep;
-
-	// vTint = aVertexTint;
-	vTint = vec4(tint * 4.0 + vec3(1.0), aVertexTint.a);
 
 	vNormal = aVertexNormal;
 	vFragPos = aVertexPosition.xyz;
@@ -181,7 +193,8 @@ void main()
 	// mat3 TBN = mat3(aVertexTangent, aVertexBitangent, aVertexNormal);
 
 	tNormal = TBN * aVertexNormal;
-	tSunDirection = TBN * dirLight.direction;
+	tSunDirection = normalize(TBN * dirLight.direction);
+	tCameraInvFront = normalize(TBN *CameraInvFront);
 	tViewPos = TBN * viewPos;
 	tFragPos = TBN * aVertexPosition.xyz;
 

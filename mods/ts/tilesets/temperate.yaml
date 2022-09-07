@@ -18,6 +18,7 @@ Terrain:
 		RestrictPlayerColor: true
 	TerrainType@Road:
 		Type: Road
+		AcceptsSmudgeType: SmallScorch, MediumScorch, LargeScorch
 		Color: 745537
 		TargetTypes: Ground
 	TerrainType@Bridge:
@@ -26,6 +27,7 @@ Terrain:
 		TargetTypes: Ground
 	TerrainType@Rail:
 		Type: Rail
+		AcceptsSmudgeType: SmallScorch, MediumScorch, LargeScorch
 		Color: 745537
 		TargetTypes: Ground
 	TerrainType@Impassable:
@@ -39,10 +41,12 @@ Terrain:
 		RestrictPlayerColor: true
 	TerrainType@DirtRoad:
 		Type: DirtRoad
+		AcceptsSmudgeType: SmallCrater, MediumCrater, LargeCrater, SmallScorch, MediumScorch, LargeScorch
 		Color: 745537
 		TargetTypes: Ground
 	TerrainType@Rough:
 		Type: Rough
+		AcceptsSmudgeType: SmallCrater, MediumCrater, LargeCrater, SmallScorch, MediumScorch, LargeScorch
 		Color: 745537
 		TargetTypes: Ground
 	TerrainType@Cliff:
@@ -15700,19 +15704,19 @@ Templates:
 		Images: proad02.tem, proad02a.tem, proad02b.tem, proad02c.tem #prslpe04.tem
 		Size: 3, 1
 		Tiles:
-			0: DirtRoad
+			0: Road
 				RampType: 4
 				MinColor: 4F4B45
 				MaxColor: 3E3D3B
 				ZOffset: -12
 				ZRamp: 0
-			1: DirtRoad
+			1: Road
 				RampType: 4
 				MinColor: 3E3B34
 				MaxColor: 3C3B38
 				ZOffset: -12
 				ZRamp: 0
-			2: DirtRoad
+			2: Road
 				RampType: 4
 				MinColor: 3F3F3D
 				MaxColor: 4D4A45

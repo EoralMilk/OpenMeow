@@ -1257,15 +1257,17 @@
 		Type: Circle
 			Radius: 134
 			VerticalTopOffset: 612
-	BlocksProjectiles:
-		IsBindage: true
-		Height: 612
+	# BlocksProjectiles:
+	# 	IsBindage: true
+	# 	Height: 612
 	Health:
-		HP: 200000
+		HP: 20000
 	Armor:
 		Type: Wood
 	Targetable:
-		TargetTypes: Trees, NoAutoTarget
+		TargetTypes: Ground, Trees, NoAutoTarget
+	ExternalCondition@burning:
+		Condition: burning
 	GrantConditionOnDamageState@Small:
 		Condition: small-fire
 		ValidDamageStates: Medium
@@ -1285,12 +1287,13 @@
 		SpreadCondition: burning
 	ChangesHealth:
 		StartIfBelow: 101
-		Step: -500
+		Step: -50
 		RequiresCondition: small-fire || large-fire || burning
 
 ^Rock:
 	Inherits@1: ^SpriteActor
 	Interactable:
+	CombatDebugOverlay:
 	HiddenUnderShroud:
 	RenderSprites:
 		Palette: terraindecoration
@@ -1300,18 +1303,20 @@
 		Dimensions: 1, 1
 	BlocksProjectiles:
 		IsBindage: true
-		Height: 444
+		Height: 666
 	HitShape:
 		TargetableOffsets: 0,0,120
 		Type: Circle
 			Radius: 255
-			VerticalTopOffset: 444
+			VerticalTopOffset: 666
 	Tooltip:
 		Name: Rock
 	MapEditorData:
 		Categories: Decoration
 	RequiresSpecificOwners:
 		ValidOwnerNames: Neutral
+	Targetable:
+		TargetTypes: Ground, Rock, NoAutoTarget
 
 ^Decoration:
 	Inherits@1: ^SpriteActor

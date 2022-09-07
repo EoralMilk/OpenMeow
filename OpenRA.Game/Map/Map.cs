@@ -15,6 +15,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Text.RegularExpressions;
 using GlmSharp;
 using GlmSharp.Swizzle;
 using OpenRA.FileFormats;
@@ -195,6 +196,7 @@ namespace OpenRA
 	public class Map : IReadOnlyFileSystem
 	{
 		public const int SupportedMapFormat = 11;
+		public const int CurrentMapFormat = 12;
 		const short InvalidCachedTerrainIndex = -1;
 
 		/// <summary>Defines the order of the fields in map.yaml</summary>
@@ -287,9 +289,8 @@ namespace OpenRA
 
 		public WPos[] VertexWPos;
 		public float3[] VertexPos;
-		//public float3[] VertexTangent;
-		//public float3[] VertexBitangent;
 		public mat3[] VertexTBN;
+		public float2[] VertexUV;
 		public vec3[][] FaceNormal;
 		public float3[] VertexColors;
 		public int VertexArrayWidth, VertexArrayHeight;
@@ -319,6 +320,11 @@ namespace OpenRA
 
 		public static string ComputeUID(IReadOnlyPackage package)
 		{
+			return ComputeUID(package, GetMapFormat(package));
+		}
+
+		static string ComputeUID(IReadOnlyPackage package, int format)
+		{
 			// UID is calculated by taking an SHA1 of the yaml and binary data
 			var requiredFiles = new[] { "map.yaml", "map.bin" };
 			var contents = package.Contents.ToList();
@@ -330,7 +336,7 @@ namespace OpenRA
 			try
 			{
 				foreach (var filename in contents)
-					if (filename.EndsWith(".yaml") || filename.EndsWith(".bin") || filename.EndsWith(".lua"))
+					if (filename.EndsWith(".yaml") || filename.EndsWith(".bin") || filename.EndsWith(".lua") || (format >= 12 && filename == "map.png"))
 						streams.Add(package.GetStream(filename));
 
 				// Take the SHA1
@@ -348,6 +354,19 @@ namespace OpenRA
 				foreach (var stream in streams)
 					stream.Dispose();
 			}
+		}
+
+		static int GetMapFormat(IReadOnlyPackage p)
+		{
+			foreach (var line in p.GetStream("map.yaml").ReadAllLines())
+			{
+				// PERF This is a way to get MapFormat without expensive yaml parsing
+				var search = Regex.Match(line, "^MapFormat:\\s*(\\d*)\\s*$");
+				if (search.Success && search.Groups.Count > 0)
+					return FieldLoader.GetValue<int>("MapFormat", search.Groups[1].Value);
+			}
+
+			throw new InvalidDataException($"MapFormat is not definedt\n File: {p.Name}");
 		}
 
 		/// <summary>
@@ -399,7 +418,7 @@ namespace OpenRA
 			foreach (var field in YamlFields)
 				field.Deserialize(this, yaml.Nodes);
 
-			if (MapFormat != SupportedMapFormat)
+			if (MapFormat < SupportedMapFormat)
 				throw new InvalidDataException($"Map format {MapFormat} is not supported.\n File: {package.Name}");
 
 			PlayerDefinitions = MiniYaml.NodesOrEmpty(yaml, "Players");
@@ -469,7 +488,7 @@ namespace OpenRA
 			PostInit();
 			CalculateTileVertexInfo();
 
-			Uid = ComputeUID(Package);
+			Uid = ComputeUID(Package, MapFormat);
 		}
 
 		void PostInit()
@@ -688,7 +707,7 @@ namespace OpenRA
 
 		public void Save(IReadWritePackage toPackage)
 		{
-			MapFormat = SupportedMapFormat;
+			MapFormat = CurrentMapFormat;
 
 			var root = new List<MiniYamlNode>();
 			foreach (var field in YamlFields)
@@ -713,9 +732,15 @@ namespace OpenRA
 			Package = toPackage;
 
 			// Update UID to match the newly saved data
-			Uid = ComputeUID(toPackage);
+			Uid = ComputeUID(toPackage, MapFormat);
 			SaveMapAsPng("./MapToPng/");
 		}
+
+		const int DT_WATER = 22;
+		const int DT_SHORE = 23;
+		const int DT_CLIFF = 25;
+		const int DT_GRASS = 30;
+		const int DT_ROAD = 32;
 
 		public void CalculateTileVertexInfo()
 		{
@@ -724,8 +749,10 @@ namespace OpenRA
 
 			var vertexCaled = new bool[VertexArrayWidth * VertexArrayHeight];
 			var vertexNmlCaled = new bool[VertexArrayWidth * VertexArrayHeight];
+			var vertexCliffCaled = new bool[VertexArrayWidth * VertexArrayHeight];
 
 			VertexPos = new float3[VertexArrayWidth * VertexArrayHeight];
+			VertexUV = new float2[VertexArrayWidth * VertexArrayHeight];
 			//VertexTangent = new float3[VertexArrayWidth * VertexArrayHeight];
 			//VertexBitangent = new float3[VertexArrayWidth * VertexArrayHeight];
 			VertexTBN = new mat3[VertexArrayWidth * VertexArrayHeight];
@@ -761,6 +788,7 @@ namespace OpenRA
 					ir = mid.Y * VertexArrayWidth + mid.X + 1;
 
 					var type = Rules.TerrainInfo.GetTerrainInfo(Tiles[uv]);
+					var typename = Rules.TerrainInfo.TerrainTypes[type.TerrainType].Type;
 
 					VertexColors[im] = Color2Float3(type.GetColor(Game.CosmeticRandom));
 
@@ -951,8 +979,21 @@ namespace OpenRA
 
 					if (vertexCaled[it])
 					{
-						VertexWPos[it] = TileWPos(HMix(ht, VertexWPos[it].Z), cpos, new WPos(0, -724, 0));
-						//VertexWPos[it] = TileWPos(Math.Min(ht, VertexWPos[it].Z), cpos, new WPos(0, -724, 0));
+						if (typename == "Cliff" || vertexCliffCaled[it])
+						{
+							if (vertexCliffCaled[it] || Math.Abs(ht - VertexWPos[it].Z) > 1024)
+							{
+								VertexWPos[it] = TileWPos(Math.Max(ht, VertexWPos[it].Z), cpos, new WPos(0, -724, 0));
+								vertexCliffCaled[it] = true;
+							}
+							else
+								VertexWPos[it] = TileWPos(HMix(ht, VertexWPos[it].Z), cpos, new WPos(0, -724, 0));
+							//VertexWPos[it] = TileWPos(Math.Min(ht, VertexWPos[it].Z), cpos, new WPos(0, -724, 0));
+						}
+						else
+						{
+							VertexWPos[it] = TileWPos(HMix(ht, VertexWPos[it].Z), cpos, new WPos(0, -724, 0));
+						}
 					}
 					else
 						VertexWPos[it] = TileWPos(ht / 4, cpos, new WPos(0, -724, 0));
@@ -961,9 +1002,20 @@ namespace OpenRA
 
 					if (vertexCaled[ib])
 					{
-						VertexWPos[ib] = TileWPos(HMix(hb, VertexWPos[ib].Z), cpos, new WPos(0, 724, 0));
-						//VertexWPos[ib] = TileWPos(Math.Min(hb, VertexWPos[ib].Z), cpos, new WPos(0, 724, 0));
-
+						if (typename == "Cliff" || vertexCliffCaled[ib])
+						{
+							if (vertexCliffCaled[ib] || Math.Abs(hb - VertexWPos[ib].Z) > 1024)
+							{
+								VertexWPos[ib] = TileWPos(Math.Max(hb, VertexWPos[ib].Z), cpos, new WPos(0, -724, 0));
+								vertexCliffCaled[ib] = true;
+							}
+							else
+								VertexWPos[ib] = TileWPos(HMix(hb, VertexWPos[ib].Z), cpos, new WPos(0, 724, 0));
+						}
+						else
+						{
+							VertexWPos[ib] = TileWPos(HMix(hb, VertexWPos[ib].Z), cpos, new WPos(0, 724, 0));
+						}
 					}
 					else
 						VertexWPos[ib] = TileWPos(hb / 4, cpos, new WPos(0, 724, 0));
@@ -972,9 +1024,20 @@ namespace OpenRA
 
 					if (vertexCaled[il])
 					{
-						VertexWPos[il] = TileWPos(HMix(hl, VertexWPos[il].Z), cpos, new WPos(-724, 0, 0));
-						//VertexWPos[il] = TileWPos(Math.Min(hl, VertexWPos[il].Z), cpos, new WPos(-724, 0, 0));
-
+						if (typename == "Cliff" || vertexCliffCaled[il])
+						{
+							if (vertexCliffCaled[il] || Math.Abs(hl - VertexWPos[il].Z) > 1024)
+							{
+								VertexWPos[il] = TileWPos(Math.Max(hl, VertexWPos[il].Z), cpos, new WPos(0, -724, 0));
+								vertexCliffCaled[il] = true;
+							}
+							else
+								VertexWPos[il] = TileWPos(HMix(hl, VertexWPos[il].Z), cpos, new WPos(-724, 0, 0));
+						}
+						else
+						{
+							VertexWPos[il] = TileWPos(HMix(hl, VertexWPos[il].Z), cpos, new WPos(-724, 0, 0));
+						}
 					}
 					else
 						VertexWPos[il] = TileWPos(hl / 4, cpos, new WPos(-724, 0, 0));
@@ -983,9 +1046,20 @@ namespace OpenRA
 
 					if (vertexCaled[ir])
 					{
-						VertexWPos[ir] = TileWPos(HMix(hr, VertexWPos[ir].Z), cpos, new WPos(724, 0, 0));
-						//VertexWPos[ir] = TileWPos(Math.Min(hr, VertexWPos[ir].Z), cpos, new WPos(724, 0, 0));
-
+						if (typename == "Cliff" || vertexCliffCaled[ir])
+						{
+							if (vertexCliffCaled[ir] || Math.Abs(hr - VertexWPos[ir].Z) > 1024)
+							{
+								VertexWPos[ir] = TileWPos(Math.Max(hr, VertexWPos[ir].Z), cpos, new WPos(0, -724, 0));
+								vertexCliffCaled[ir] = true;
+							}
+							else
+								VertexWPos[ir] = TileWPos(HMix(hr, VertexWPos[ir].Z), cpos, new WPos(724, 0, 0));
+						}
+						else
+						{
+							VertexWPos[ir] = TileWPos(HMix(hr, VertexWPos[ir].Z), cpos, new WPos(724, 0, 0));
+						}
 					}
 					else
 						VertexWPos[ir] = TileWPos(hr / 4, cpos, new WPos(724, 0, 0));
@@ -1027,13 +1101,46 @@ namespace OpenRA
 
 					float3 pm, pt, pb, pl, pr;
 					float2 uvm, uvt, uvb, uvl, uvr;
+
+					if (IsBoundVert(it))
+					{
+						VertexWPos[it] = VertexWPos[im];
+						VertexPos[it] = TilePos(VertexWPos[im]);
+					}
+
+					if (IsBoundVert(ib))
+					{
+						VertexWPos[ib] = VertexWPos[im];
+						VertexPos[ib] = TilePos(VertexWPos[im]);
+					}
+
+					if (IsBoundVert(il))
+					{
+						VertexWPos[il] = VertexWPos[im];
+						VertexPos[il] = TilePos(VertexWPos[im]);
+					}
+
+					if (IsBoundVert(ir))
+					{
+						VertexWPos[ir] = VertexWPos[im];
+						VertexPos[ir] = TilePos(VertexWPos[im]);
+					}
+
 					pt = VertexPos[it];
 					pb = VertexPos[ib];
 					pl = VertexPos[il];
 					pr = VertexPos[ir];
 
 					if (ramp == 0)
-						VertexPos[im] = 0.25f * pt + 0.25f * pb + 0.25f * pl + 0.25f * pr;
+					{
+						VertexWPos[im] = new WPos(VertexWPos[im].X, VertexWPos[im].Y,
+							//(int)(VertexWPos[im].Z / 5) +
+							(int)(VertexWPos[it].Z / 4) +
+							(int)(VertexWPos[ib].Z / 4) +
+							(int)(VertexWPos[il].Z / 4) +
+							(int)(VertexWPos[ir].Z / 4));
+						VertexPos[im] = TilePos(VertexWPos[im]);
+					}
 
 					pm = VertexPos[im];
 
@@ -1079,15 +1186,21 @@ namespace OpenRA
 
 					var type = Rules.TerrainInfo.GetTerrainInfo(Tiles[uv]);
 					var typename = Rules.TerrainInfo.TerrainTypes[type.TerrainType].Type;
-					uint typeNum = 1;
+					uint typeNum = (uint)Ramp[uv];
+
 					switch (typename)
 					{
 						case "Water":
+							typeNum = DT_WATER;
+							break;
 						case "Cliff":
-							typeNum = 2;
+							typeNum += DT_CLIFF;
 							break;
 						case "Rough":
-							typeNum = 3;
+							typeNum = DT_GRASS;
+							break;
+						case "Road":
+							typeNum = DT_ROAD;
 							break;
 						default:
 							break;
@@ -1131,6 +1244,12 @@ namespace OpenRA
 			for (int i = 0; i < VertexTBN.Length; i++)
 			{
 				VertexTBN[i] = NormalizeTBN(VertexTBN[i]);
+			}
+
+			// uv retarget
+			for (int i = 0; i < VertexUV.Length; i++)
+			{
+				VertexUV[i] = new float2(VertexPos[i].X / 5.0f, VertexPos[i].Y / 5.0f);
 			}
 		}
 
@@ -1201,6 +1320,15 @@ namespace OpenRA
 		{
 			//return a + (b - a) / 2;
 			return a / 4 + b;
+		}
+
+		bool IsBoundVert(int vi)
+		{
+			if (vi <= VertexArrayWidth || vi >= (VertexArrayHeight - 1) * VertexArrayWidth)
+				return true;
+			if (vi % VertexArrayWidth == 0 || (vi + 1) % VertexArrayWidth == 0)
+				return true;
+			return false;
 		}
 
 		float3 Color2Float3(in Color color)
@@ -1565,22 +1693,89 @@ namespace OpenRA
 			{
 				var center = CenterOfCell(cell);
 				var offset = Grid.SubCellOffsets[index];
-				if (Ramp.TryGetValue(cell, out var ramp) && ramp != 0)
-				{
-					var r = Grid.Ramps[ramp];
-					offset += new WVec(0, 0, r.HeightOffset(offset.X, offset.Y) - r.CenterHeightOffset);
-				}
-
-				return center + offset;
+				var result = center + offset;
+				//if (Ramp.TryGetValue(cell, out var ramp) && ramp != 0)
+				//{
+				//	var r = Grid.Ramps[ramp];
+				//	offset += new WVec(0, 0, r.HeightOffset(offset.X, offset.Y) - r.CenterHeightOffset);
+				//}
+				result = new WPos(result.X, result.Y, HeightOfTerrain(result));
+				return result;
 			}
 
 			return CenterOfCell(cell);
 		}
 
-		public int HeightOfCell(WPos pos)
+		int Lerp(int a, int b, int mul, int div)
 		{
-			var cell = CellContaining(pos);
-			return Height.Contains(cell) ? MapGrid.MapHeightStep * Height[cell] + Grid.Ramps[Ramp[cell]].CenterHeightOffset : 0;
+			return a + (b - a) * mul / div;
+		}
+
+		public int HeightOfTerrain(in WPos pos)
+		{
+			var u = pos.X / MapGrid.MapMiniCellWidth;
+			var v = pos.Y / MapGrid.MapMiniCellWidth;
+			if (u < 0 || v < 0 || u >= VertexArrayWidth - 1 || v >= VertexArrayHeight - 1)
+				return 0;
+
+			var tx = pos.X % MapGrid.MapMiniCellWidth;
+			var ty = pos.Y % MapGrid.MapMiniCellWidth;
+			var LT = VertexWPos[u + v * VertexArrayWidth].Z;
+			var RT = VertexWPos[u + 1 + v * VertexArrayWidth].Z;
+			var LB = VertexWPos[u + (v + 1) * VertexArrayWidth].Z;
+			var RB = VertexWPos[u + 1 + (v + 1) * VertexArrayWidth].Z;
+
+			if (u % 2 == v % 2)
+			{
+				// ------------
+				// |           / |
+				// |      /      |
+				// |  /          |
+				// ------------
+				if (ty == 724 - tx)
+				{
+					return Lerp(LB, RT, tx, 724);
+				}
+				else if (ty < 724 - tx)
+				{
+					var a = Lerp(LT, LB, ty, 724);
+					var b = Lerp(RT, LB, ty, 724);
+					return Lerp(a, b, tx, 724 - ty);
+				}
+				else
+				{
+					var a = Lerp(LB, RB, tx, 724);
+					var b = Lerp(LB, RT, tx, 724);
+					return Lerp(a, b, 724 - ty, tx);
+				}
+			}
+			else
+			{
+				// ------------
+				// |  \          |
+				// |      \      |
+				// |          \  |
+				// ------------
+				if (tx == ty)
+				{
+					return Lerp(LT, RB, tx, 724);
+				}
+				else if (tx > ty)
+				{
+					var a = Lerp(LT, RT, tx, 724);
+					var b = Lerp(LT, RB, tx, 724);
+					return Lerp(a, b, ty, tx);
+				}
+				else
+				{
+					var a = Lerp(LT, LB, ty, 724);
+					var b = Lerp(LT, RB, ty, 724);
+					return Lerp(a, b, tx, ty);
+				}
+			}
+
+			//var cell = CellContaining(pos);
+			//return Height.Contains(cell) ? MapGrid.MapHeightStep * Height[cell] + Grid.Ramps[Ramp[cell]].CenterHeightOffset : 0;
 		}
 
 		public int HeightOfCell(CPos cell)
@@ -1590,22 +1785,24 @@ namespace OpenRA
 			else
 				return Height.Contains(cell) ? MapGrid.MapHeightStep * Height[cell] + Grid.Ramps[Ramp[cell]].CenterHeightOffset : 0;
 		}
+
 		public WDist DistanceAboveTerrain(WPos pos)
 		{
 			if (Grid.Type == MapGridType.Rectangular)
 				return new WDist(pos.Z);
 
-			// Apply ramp offset
-			var cell = CellContaining(pos);
-			var offset = pos - CenterOfCell(cell);
+			//// Apply ramp offset
+			//var cell = CellContaining(pos);
+			//var offset = pos - CenterOfCell(cell);
 
-			if (Ramp.TryGetValue(cell, out var ramp) && ramp != 0)
-			{
-				var r = Grid.Ramps[ramp];
-				return new WDist(offset.Z + r.CenterHeightOffset - r.HeightOffset(offset.X, offset.Y));
-			}
+			//if (Ramp.TryGetValue(cell, out var ramp) && ramp != 0)
+			//{
+			//	var r = Grid.Ramps[ramp];
+			//	return new WDist(offset.Z + r.CenterHeightOffset - r.HeightOffset(offset.X, offset.Y));
+			//}
 
-			return new WDist(offset.Z);
+			//return new WDist(offset.Z);
+			return new WDist(pos.Z - HeightOfTerrain(pos));
 		}
 
 		public WRot TerrainOrientation(CPos cell)

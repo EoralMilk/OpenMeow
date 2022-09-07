@@ -85,8 +85,8 @@ A10Napalm:
 		ContrailWidth: 50
 		ContrailStartColor: FFFF88
 		ContrailStartColorAlpha: 255
-		ContrailEndColor: BBBB00
-		ContrailEndColorAlpha: 64
+		ContrailEndColor: BBBBBB
+		ContrailEndColorAlpha: 10
 		ContrailWidthFadeRate: 0.75
 		ContrailDelay: 0
 		#ContrailBlendMode: ScreenAdditive
@@ -109,7 +109,7 @@ A10Napalm:
 			None: 100
 			Wood: 60
 			Light: 40
-			Heavy: 25
+			Heavy: 15
 			Concrete: 10
 		DamageTypes: Prone70Percent, TriggerProne, BulletDeath
 		ValidTargets: Ground, Water, Air

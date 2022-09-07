@@ -136,7 +136,8 @@ namespace OpenRA.Graphics
 		readonly bool[] updateFlags;
 		readonly bool skipUpdateAdjBonePose;
 		public TSMatrix4x4 Offset { get; private set; }
-		public int DrawID = -1;
+		public int InstanceID = -1;
+		public int AnimTexoffset { get; private set; }
 
 		TSVector offsetVec;
 		FP offsetScale;
@@ -226,6 +227,7 @@ namespace OpenRA.Graphics
 			LastSkeletonPose = new TSMatrix4x4[boneSize];
 			UpdateOffset();
 			UpdateLastPose();
+			AnimTexoffset = -1;
 		}
 
 		void UpdateInner(int id, in Frame animFrame, in AnimMask animMask)
@@ -237,7 +239,7 @@ namespace OpenRA.Graphics
 			{
 				// animMask length should be same as frame length (&& animMask.Length > Bones[id].AnimId) no need
 				if (Bones[id].AnimId != -1 && animFrame.Length > Bones[id].AnimId && animMask[Bones[id].AnimId])
-					Bones[id].UpdateOffset(Offset, animFrame.Transformations[Bones[id].AnimId].Matrix);
+					Bones[id].UpdateOffset(Offset, animFrame[Bones[id].AnimId].Matrix);
 				else
 					Bones[id].UpdateOffset(Offset);
 
@@ -253,8 +255,8 @@ namespace OpenRA.Graphics
 				UpdateInner(Bones[id].ParentId, animFrame, animMask);
 
 				// animMask length should be same as frame length
-				if (Bones[id].AnimId != -1 && animFrame.Length > Bones[id].AnimId && animMask[Bones[id].AnimId])
-					Bones[id].UpdateOffset(Bones[Bones[id].ParentId].CurrentPose, animFrame.Transformations[Bones[id].AnimId].Matrix);
+				if (Bones[id].AnimId != -1 && animFrame.Length > Bones[id].AnimId && animFrame.HasTransformation[Bones[id].AnimId] && animMask[Bones[id].AnimId])
+					Bones[id].UpdateOffset(Bones[Bones[id].ParentId].CurrentPose, animFrame[Bones[id].AnimId].Matrix);
 				else
 					Bones[id].UpdateOffset(Bones[Bones[id].ParentId].CurrentPose);
 
@@ -316,15 +318,16 @@ namespace OpenRA.Graphics
 
 		public void ProcessManagerData()
 		{
-			if (DrawID == -1 || !hasUpdatedLast)
+			if (InstanceID == -1 || !hasUpdatedLast)
 				return;
 			int dataWidth = asset.SkinBonesIndices.Length * 16;
-
-			if ((DrawID * dataWidth) >= skeleton.AnimTransformData.Length)
+			int start = OrderedSkeleton.AnimTransformDataIndex;
+			if ((start + dataWidth) >= OrderedSkeleton.AnimTransformData.Length)
 				throw new Exception("ProcessManagerData: Skeleton Instance drawId out of range: might be too many skeleton to draw!");
-
+			OrderedSkeleton.AnimTransformDataIndex = start + dataWidth;
+			AnimTexoffset = start;
 			int i = 0;
-			int y = DrawID * dataWidth;
+			//int start = DrawID * dataWidth;
 			for (int x = 0; x < dataWidth; x += 16)
 			{
 				int id = asset.SkinBonesIndices[i];
@@ -334,22 +337,22 @@ namespace OpenRA.Graphics
 				var c1 = LastSkeletonPose[id].Column1;
 				var c2 = LastSkeletonPose[id].Column2;
 				var c3 = LastSkeletonPose[id].Column3;
-				skeleton.AnimTransformData[y + x + 0] = (float)c0.x;
-				skeleton.AnimTransformData[y + x + 1] = (float)c0.y;
-				skeleton.AnimTransformData[y + x + 2] = (float)c0.z;
-				skeleton.AnimTransformData[y + x + 3] = (float)c0.w;
-				skeleton.AnimTransformData[y + x + 4] = (float)c1.x;
-				skeleton.AnimTransformData[y + x + 5] = (float)c1.y;
-				skeleton.AnimTransformData[y + x + 6] = (float)c1.z;
-				skeleton.AnimTransformData[y + x + 7] = (float)c1.w;
-				skeleton.AnimTransformData[y + x + 8] = (float)c2.x;
-				skeleton.AnimTransformData[y + x + 9] = (float)c2.y;
-				skeleton.AnimTransformData[y + x + 10] = (float)c2.z;
-				skeleton.AnimTransformData[y + x + 11] = (float)c2.w;
-				skeleton.AnimTransformData[y + x + 12] = (float)c3.x;
-				skeleton.AnimTransformData[y + x + 13] = (float)c3.y;
-				skeleton.AnimTransformData[y + x + 14] = (float)c3.z;
-				skeleton.AnimTransformData[y + x + 15] = (float)c3.w;
+				OrderedSkeleton.AnimTransformData[start + x + 0] = (float)c0.x;
+				OrderedSkeleton.AnimTransformData[start + x + 1] = (float)c0.y;
+				OrderedSkeleton.AnimTransformData[start + x + 2] = (float)c0.z;
+				OrderedSkeleton.AnimTransformData[start + x + 3] = (float)c0.w;
+				OrderedSkeleton.AnimTransformData[start + x + 4] = (float)c1.x;
+				OrderedSkeleton.AnimTransformData[start + x + 5] = (float)c1.y;
+				OrderedSkeleton.AnimTransformData[start + x + 6] = (float)c1.z;
+				OrderedSkeleton.AnimTransformData[start + x + 7] = (float)c1.w;
+				OrderedSkeleton.AnimTransformData[start + x + 8] = (float)c2.x;
+				OrderedSkeleton.AnimTransformData[start + x + 9] = (float)c2.y;
+				OrderedSkeleton.AnimTransformData[start + x + 10] = (float)c2.z;
+				OrderedSkeleton.AnimTransformData[start + x + 11] = (float)c2.w;
+				OrderedSkeleton.AnimTransformData[start + x + 12] = (float)c3.x;
+				OrderedSkeleton.AnimTransformData[start + x + 13] = (float)c3.y;
+				OrderedSkeleton.AnimTransformData[start + x + 14] = (float)c3.z;
+				OrderedSkeleton.AnimTransformData[start + x + 15] = (float)c3.w;
 				i++;
 				if (i >= asset.SkinBonesIndices.Length)
 				{
@@ -373,8 +376,9 @@ namespace OpenRA.Graphics
 		/// update each tick, by actor skeleton trait.
 		/// </summary>
 		readonly List<SkeletonInstance> skeletonInstances = new List<SkeletonInstance>();
-		public float[] AnimTransformData = new float[SkeletonAsset.AnimTextureWidth * SkeletonAsset.AnimTextureHeight * 4];
-		public ITexture BoneAnimTexture;
+		public static float[] AnimTransformData = new float[SkeletonAsset.AnimTextureWidth * SkeletonAsset.AnimTextureHeight * 4];
+		public static ITexture BoneAnimTexture;
+		public static int AnimTransformDataIndex = 0;
 		int instanceCount = 0;
 
 		public readonly SkeletonAsset SkeletonAsset;
@@ -439,7 +443,8 @@ namespace OpenRA.Graphics
 			//	PreBakedAnimations.Add(animName, bakedAnim);
 			//}
 
-			BoneAnimTexture = Game.Renderer.CreateInfoTexture(new Primitives.Size(SkeletonAsset.AnimTextureWidth, SkeletonAsset.AnimTextureHeight));
+			if (BoneAnimTexture == null)
+				BoneAnimTexture = Game.Renderer.CreateInfoTexture(new Primitives.Size(SkeletonAsset.AnimTextureWidth, SkeletonAsset.AnimTextureHeight));
 
 			foreach (var bone in SkeletonAsset.Bones)
 			{
@@ -514,7 +519,6 @@ namespace OpenRA.Graphics
 				return;
 			instanceCount = 0;
 			skeletonInstances.Clear();
-			BoneAnimTexture.SetFloatData(AnimTransformData, SkeletonAsset.AnimTextureWidth, SkeletonAsset.AnimTextureHeight, TextureType.RGBA);
 		}
 
 		public SkeletonInstance CreateInstance()
@@ -532,7 +536,7 @@ namespace OpenRA.Graphics
 		public void AddInstance(in SkeletonInstance skeletonInstance)
 		{
 			skeletonInstances.Add(skeletonInstance);
-			skeletonInstance.DrawID = instanceCount;
+			skeletonInstance.InstanceID = instanceCount;
 			instanceCount++;
 		}
 	}
@@ -846,7 +850,7 @@ namespace OpenRA.Graphics
 			}
 			else
 			{
-				Console.WriteLine("BonesDict not ContainsKey " + boneName);
+				//Console.WriteLine("BonesDict not ContainsKey " + boneName);
 				return -1;
 			}
 		}

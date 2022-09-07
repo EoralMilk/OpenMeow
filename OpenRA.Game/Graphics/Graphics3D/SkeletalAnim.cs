@@ -68,8 +68,19 @@ namespace OpenRA.Graphics
 
 			var name = filename;
 
+			bool oldType = false;
+
 			if (!fileSystem.Exists(name))
-				name += ".anim";
+			{
+				name = filename + ".ska";
+				oldType = false;
+			}
+
+			if (!fileSystem.Exists(name))
+			{
+				name = filename + ".anim";
+				oldType = true;
+			}
 
 			if (!fileSystem.Exists(name))
 			{
@@ -79,7 +90,7 @@ namespace OpenRA.Graphics
 			SkeletalAnimReader reader;
 			using (var s = fileSystem.Open(name))
 			{
-				reader = new SkeletalAnimReader(s, assetBind);
+				reader = new SkeletalAnimReader(s, assetBind, oldType);
 			}
 
 			Frames = new Frame[reader.Frames.Length];
@@ -90,24 +101,42 @@ namespace OpenRA.Graphics
 
 	public class Frame
 	{
-		public Transformation[] Transformations;
-		public int Length => Transformations.Length;
+		Transformation[] transformations;
+
+		public bool[] HasTransformation { get; private set; }
+		public int Length => transformations.Length;
 
 		public Transformation this[int index]
 		{
 			get
 			{
-				return Transformations[index];
+				return transformations[index];
 			}
 			set
 			{
-				Transformations[index] = value;
+				transformations[index] = value;
+				HasTransformation[index] = true;
 			}
+		}
+
+		public bool SetNoneTransform(int index)
+		{
+			if (index >= Length)
+				return false;
+			HasTransformation[index] = false;
+			transformations[index] = Transformation.Identity;
+			return true;
 		}
 
 		public Frame(int size)
 		{
-			Transformations = new Transformation[size];
+			transformations = new Transformation[size];
+			HasTransformation = new bool[size];
+			for (int i = 0; i < size; i++)
+			{
+				HasTransformation[i] = false;
+				transformations[i] = Transformation.Identity;
+			}
 		}
 	}
 
@@ -117,7 +146,7 @@ namespace OpenRA.Graphics
 		public Frame[] Frames;
 		public string animName;
 
-		public SkeletalAnimReader(Stream s, SkeletonAsset skeleton)
+		public SkeletalAnimReader(Stream s, SkeletonAsset skeleton, bool oldType)
 		{
 			string header = s.ReadASCII(8);
 
@@ -144,24 +173,28 @@ namespace OpenRA.Graphics
 				Frames[i] = new Frame((int)skeleton.BoneNameAnimIndex.Count);
 				for (int j = 0; j < bones; j++)
 				{
+					var id = j;
+					if (!oldType)
+						id = s.ReadInt32();
+
 					var scale = ReadVec3(s);
 					var rotation = ReadQuat(s);
 					rotation.Normalize();
 					var translation = ReadVec3(s);
 
-					if (!boneIdtoNames.ContainsKey(j))
+					if (!boneIdtoNames.ContainsKey(id))
 					{
 						continue;
 					}
 
-					if (skeleton != null && skeleton.BoneNameAnimIndex.ContainsKey(boneIdtoNames[j]))
+					if (skeleton != null && skeleton.BoneNameAnimIndex.ContainsKey(boneIdtoNames[id]))
 					{
-						Frames[i].Transformations[skeleton.BoneNameAnimIndex[boneIdtoNames[j]]] = new Transformation(scale, rotation, translation);
+						Frames[i][skeleton.BoneNameAnimIndex[boneIdtoNames[id]]] = new Transformation(scale, rotation, translation);
 					}
 					else
 					{
 						continue;
-						Console.WriteLine("No Match Bone: " + boneIdtoNames[j] + " in skeleton: " + skeleton.Name);
+						Console.WriteLine("No Match Bone: " + boneIdtoNames[id] + " in skeleton: " + skeleton.Name);
 					}
 				}
 			}

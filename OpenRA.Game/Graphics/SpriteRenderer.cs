@@ -184,6 +184,12 @@ namespace OpenRA.Graphics
 			nv += 6;
 		}
 
+		public void DrawFloatBoardSprite(Sprite s, PaletteReference pal, in WPos wPos, in vec3 viewOffset, float scale, in float3 tint, float alpha, float rotation = 0f)
+		{
+			var samplers = SetRenderStateForSprite(s);
+			nv += Util.FastCreateFloatBoard(vertices, wPos, viewOffset, s, samplers, ResolveTextureIndex(s, pal), scale, tint, alpha, nv, rotation);
+		}
+
 		public void DrawBoardSprite(Sprite s, PaletteReference pal, in WPos wPos, in vec3 viewOffset, float scale, in float3 tint, float alpha, float rotation = 0f)
 		{
 			var samplers = SetRenderStateForSprite(s);

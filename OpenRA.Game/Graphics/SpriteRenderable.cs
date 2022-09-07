@@ -133,6 +133,8 @@ namespace OpenRA.Graphics
 				wsr.DrawCardSprite(sprite, palette, Pos, viewOffset, scale, t, a);
 			else if (sprite.SpriteMeshType == SpriteMeshType.Board)
 				wsr.DrawBoardSprite(sprite, palette, Pos, viewOffset, scale, t, a);
+			else if (sprite.SpriteMeshType == SpriteMeshType.FloatBoard)
+				wsr.DrawFloatBoardSprite(sprite, palette, Pos, viewOffset, scale, t, a);
 		}
 
 		public void RenderDebugGeometry(WorldRenderer wr)

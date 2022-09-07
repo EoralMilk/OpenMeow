@@ -132,8 +132,11 @@ namespace OpenRA.Server
 		[TranslationReference("player")]
 		static readonly string LobbyDisconnected = "lobby-disconnected";
 
-		[TranslationReference("player", "team")]
+		[TranslationReference("player")]
 		static readonly string PlayerDisconnected = "player-disconnected";
+
+		[TranslationReference("player", "team")]
+		static readonly string PlayerTeamDisconnected = "player-team-disconnected";
 
 		[TranslationReference("player")]
 		static readonly string ObserverDisconnected = "observer-disconnected";
@@ -431,7 +434,7 @@ namespace OpenRA.Server
 				var ms = new MemoryStream(8);
 				ms.WriteArray(BitConverter.GetBytes(ProtocolVersion.Handshake));
 				ms.WriteArray(BitConverter.GetBytes(newConn.PlayerIndex));
-				newConn.SendData(ms.ToArray());
+				newConn.TrySendData(ms.ToArray());
 
 				// Dispatch a handshake order
 				var request = new HandshakeRequest
@@ -734,14 +737,10 @@ namespace OpenRA.Server
 
 		void DispatchFrameToClient(Connection c, int client, byte[] frameData)
 		{
-			try
-			{
-				c.SendData(frameData);
-			}
-			catch (Exception e)
+			if (!c.TrySendData(frameData))
 			{
 				DropClient(c);
-				Log.Write("server", $"Dropping client {client.ToString(CultureInfo.InvariantCulture)} because dispatching orders failed: {e}");
+				Log.Write("server", $"Dropping client {client.ToString(CultureInfo.InvariantCulture)} because dispatching orders failed!");
 			}
 		}
 
@@ -1178,8 +1177,10 @@ namespace OpenRA.Server
 				{
 					if (dropClient.IsObserver)
 						SendLocalizedMessage(ObserverDisconnected, Translation.Arguments("player", dropClient.Name));
+					else if (dropClient.Team > 0)
+						SendLocalizedMessage(PlayerTeamDisconnected, Translation.Arguments("player", dropClient.Name, "team", dropClient.Team));
 					else
-						SendLocalizedMessage(PlayerDisconnected, Translation.Arguments("player", dropClient.Name, "team", dropClient.Team));
+						SendLocalizedMessage(PlayerDisconnected, Translation.Arguments("player", dropClient.Name));
 				}
 				else
 					SendLocalizedMessage(LobbyDisconnected, Translation.Arguments("player", dropClient.Name));

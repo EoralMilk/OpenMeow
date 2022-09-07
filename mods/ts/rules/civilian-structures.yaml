@@ -1569,11 +1569,11 @@ GALITE:
 	Power:
 		Amount: 0
 	TerrainLightSource:
-		Range: 19c544
-		Intensity: 0.2
-		RedTint: 0.05
-		GreenTint: 0.05
-		BlueTint: 0.01
+		Range: 8c0
+		Intensity: 0.35
+		RedTint: 0.9
+		GreenTint: 0.8
+		BlueTint: 0.8
 	-Cloak@EXTERNALCLOAK:
 	-ExternalCondition@CLOAKGENERATOR:
 	-ExternalCondition@CRATE-CLOAK:

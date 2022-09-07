@@ -143,17 +143,7 @@ vec4 CalcDirLight(DirLight light, vec3 normal, vec3 viewDir, const BlinnPhongMat
 		specular = specular * vec3(texture(material.specular, TexCoords));
 	}
 	specular = specular * material.specularTint;
-
-	if (vTint.a < 0.0f)
-	{
-		diffuse =vTint.rgb;
-		return vec4((ambient + diffuse + specular), -vTint.a);
-	}
-	else
-	{
-		diffuse *= vTint.rgb;
-		return vec4((ambient + diffuse + specular), 1.0);
-	}
+	return vec4((ambient + diffuse + specular), 1.0);
 }
 
 // vec3 getNormalFromMap()
@@ -279,16 +269,7 @@ vec4 CalcDirLightPBR(DirLight light, vec3 normal, vec3 viewDir, const PBRMateria
 	vec3 color = ambient + Lo * (1.0f - CalShadow(light, normal));
 
 	color = color / (color + vec3(1.0));
-	color = pow(color, vec3(1.0/2.2));  
-
-	if (vTint.a < 0.0f)
-	{
-		color = vTint.rgb;
-	}
-	else
-	{
-		color *= vTint.rgb;
-	}
+	color = pow(color, vec3(1.0/2.2));
 
 	return vec4(color, 1.0);
 } 
@@ -301,27 +282,6 @@ void main()
 	if (isDraw == 0)
 		discard;
 
-	
-	bool flag = false;
-	if (isCloth && ((drawPart & uint(0x1FF)) !=  uint(0))){
-		flag = true;
-	}
-
-	vec3 norm = normalize(Normal);
-	vec3 viewDir = normalize(viewPos - FragPos);
-	vec4 result;
-	if (flag)
-		if (usePBRBody)
-			result = CalcDirLightPBR(dirLight, norm, viewDir, pbrBodyMaterial);
-		else
-			result = CalcDirLight(dirLight, norm, viewDir, bodyMaterial);
-	else
-		if (usePBR)
-			result = CalcDirLightPBR(dirLight, norm, viewDir, pbrMaterial);
-		else
-			result = CalcDirLight(dirLight, norm, viewDir, mainMaterial);
-
-
 	if (EnableDepthPreview)
 	{
 		float intensity = 1.0 - gl_FragCoord.z;//clamp(DepthPreviewParams.x * gl_FragCoord.z - 0.5 * DepthPreviewParams.x - DepthPreviewParams.y + 0.5, 0.0, 1.0);
@@ -333,6 +293,35 @@ void main()
 		#endif
 	}
 	else{
+		bool useBodyMaterial = false;
+		// if (isCloth && ((drawPart & uint(0x1FF)) !=  uint(0))){
+		if (isCloth && drawPart != uint(0xFFFFFFFF)){
+			useBodyMaterial = true;
+		}
+
+		vec3 norm = normalize(Normal);
+		vec3 viewDir = normalize(viewPos - FragPos);
+		vec4 result;
+		if (useBodyMaterial)
+			if (usePBRBody)
+				result = CalcDirLightPBR(dirLight, norm, viewDir, pbrBodyMaterial);
+			else
+				result = CalcDirLight(dirLight, norm, viewDir, bodyMaterial);
+		else
+			if (usePBR)
+				result = CalcDirLightPBR(dirLight, norm, viewDir, pbrMaterial);
+			else
+				result = CalcDirLight(dirLight, norm, viewDir, mainMaterial);
+
+		if (vTint.a < 0.0f)
+		{
+			result = vec4(vTint.rgb, -vTint.a);
+		}
+		else
+		{
+			result *= vTint;
+		}
+
 		FragColor = result;
 	}
 }

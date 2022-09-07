@@ -61,7 +61,7 @@ float CalShadow(DirLight light){
 	float currentDepth = projCoords.z;
 
 	float shadow = 0.0f;
-	float bias = ShadowBias * 0.025f;
+	float bias = ShadowBias * 0.03f;
 
 	if(projCoords.z <= 1.0f)
 	{

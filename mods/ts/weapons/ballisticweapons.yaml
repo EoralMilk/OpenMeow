@@ -13,8 +13,8 @@
 		ContrailStartColor: BBAA66
 		ContrailStartColorAlpha: 255
 		ContrailWidth: 0c80
-		ContrailEndColor: BB2200
-		ContrailEndColorAlpha: 255
+		ContrailEndColor: BBBBBB
+		ContrailEndColorAlpha: 10
 		ContrailWidthFadeRate: 1
 		ContrailZOffset: 3000
 		TrailImage: cannonsmokecircle
@@ -22,7 +22,7 @@
 		TrailDelay: 0
 		TrailInterval: 1
 		Speed: 800
-		Inaccuracy: 300
+		Inaccuracy: 450
 		UseVerticalInaccuracy: true
 		OnlyHitToExplode: true
 		ExplodeUnderThisAltitude: -418
@@ -32,16 +32,16 @@
 		Falloff: 100, 50, 25, 12, 6, 3, 0
 		Damage: 4800
 		Versus:
-			None: 25
+			None: 50
 			Wood: 65
 			Light: 75
 			Heavy: 100
 			Concrete: 60
-		DamageTypes: Prone50Percent, TriggerProne, SmallExplosionDeath
+		DamageTypes: Prone70Percent, TriggerProne, SmallExplosionDeath
 	Warhead@2Eff: CreateEffect
 		Explosions: medium_clsn
 		ImpactSounds: expnew14.aud
-		ValidTargets: Ground, Air
+		ValidTargets: Ground, Air, Trees
 	Warhead@3EffWater: CreateEffect
 		Explosions: small_watersplash
 		ExplosionPalette: player
@@ -66,6 +66,7 @@
 		ContrailWidth: 0c96
 		Blockable: false
 		LaunchAngle: 0
+		Inaccuracy: 340
 	Warhead@1Dam: SpreadDamage
 		Damage: 9000
 
@@ -110,8 +111,8 @@ RPGTower:
 	Inherits: ^Cannon
 	Projectile: Bullet
 		Blockable: false
-		ContrailLength: 12
-		ContrailWidth: 88
+		ContrailLength: 10
+		ContrailWidth: 85
 		LaunchAngle: 75
 	Warhead@1Dam: SpreadDamage
 		Spread: 216
@@ -123,6 +124,22 @@ RPGTower:
 			Concrete: 35
 		DamageTypes: Prone100Percent, TriggerProne, ExplosionDeath
 
+^ArtilleryDeployCheck:
+	Range: 17c768
+	ReloadDelay: 10
+	MinRange: 5c0
+	Projectile: InstantHit
+	Warhead@1Dam: SpreadDamage
+		Damage: 1
+		Spread: 0
+		Versus:
+			None: 0
+			Wood: 0
+			Light: 0
+			Heavy: 0
+			Concrete: 0
+		ValidTargets: Ground, Water, Air
+
 155mm:
 	Inherits: ^ArtilleryWeapon
 	ReloadDelay: 110
@@ -131,20 +148,27 @@ RPGTower:
 	Projectile: Bullet
 		Speed: 384
 		LaunchAngle: 165
+		ContrailWidth: 105
+		ContrailLength: 12
 	MinRange: 5c0
 	Warhead@1Dam: SpreadDamage
 		Damage: 15000
 	Warhead@2Eff: CreateEffect
 		Explosions: large_explosion
 		ImpactSounds: expnew06.aud
+	Warhead@4Smu: LeaveSmudge
+		SmudgeType: LargeCrater
+
+155mmDeployCheck:
+	Inherits: ^ArtilleryDeployCheck
 
 Jugg90mm:
 	Inherits: ^ArtilleryWeapon
 	ReloadDelay: 150
 	Range: 18c0
 	MinRange: 5c0
-	Burst: 3
-	BurstDelays: 3, 5
+	# Burst: 3
+	# BurstDelays: 3, 5
 	Report: jugger1-single.aud
 	TargetActorCenter: true
 	Projectile: Bullet
@@ -152,10 +176,14 @@ Jugg90mm:
 		LaunchAngle: 165
 		Inaccuracy: 2c0
 	Warhead@1Dam: SpreadDamage
+		Spread: 188
 		Damage: 7500
 	Warhead@2Eff: CreateEffect
 		Explosions: small_explosion
 		ImpactSounds: expnew13.aud
+
+Jugg90mmDeployCheck:
+	Inherits: ^ArtilleryDeployCheck
 
 Grenade:
 	Inherits: ^ArtilleryWeapon

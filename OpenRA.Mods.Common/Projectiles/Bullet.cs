@@ -18,6 +18,7 @@ using OpenRA.Traits;
 
 namespace OpenRA.Mods.Common.Projectiles
 {
+	[Desc("Projectile that travels in a straight line or arc.")]
 	public class BulletInfo : CorporealProjectileInfo, IProjectileInfo, IRulesetLoaded<WeaponInfo>
 	{
 		public readonly bool InstantDropToGround = false;
@@ -149,7 +150,7 @@ namespace OpenRA.Mods.Common.Projectiles
 			if (info.InstantDropToGround)
 			{
 				target = args.Source;
-				target = new WPos(target.X, target.Y, world.Map.HeightOfCell(target));
+				target = new WPos(target.X, target.Y, world.Map.HeightOfTerrain(target));
 			}
 			else
 			{
@@ -261,7 +262,7 @@ namespace OpenRA.Mods.Common.Projectiles
 				if (AnyValidTargetsInRadius(world, pos, info.Width, args.SourceActor, true))
 					return true;
 
-				var ph = world.Map.HeightOfCell(pos);
+				var ph = world.Map.HeightOfTerrain(pos);
 
 				// rebounce
 				if (bounceHeight > ph)
@@ -339,7 +340,7 @@ namespace OpenRA.Mods.Common.Projectiles
 			if (posToLastPos.Z <= 0)
 				return;
 
-			var th = world.Map.HeightOfCell(pos);
+			var th = world.Map.HeightOfTerrain(pos);
 			if (th > pos.Z && th < lastPos.Z)
 				pos += posToLastPos * (th - pos.Z) / (posToLastPos.Z);
 		}

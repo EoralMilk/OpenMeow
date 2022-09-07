@@ -16590,19 +16590,19 @@ Templates:
 		Images: proad02.sno, proad02a.sno, proad02b.sno, proad02c.sno #prslpe04.sno
 		Size: 3, 1
 		Tiles:
-			0: DirtRoad
+			0: Road
 				RampType: 4
 				MinColor: A2A9AE
 				MaxColor: 5F6265
 				ZOffset: -12
 				ZRamp: 0
-			1: DirtRoad
+			1: Road
 				RampType: 4
 				MinColor: 575855
 				MaxColor: 575858
 				ZOffset: -12
 				ZRamp: 0
-			2: DirtRoad
+			2: Road
 				RampType: 4
 				MinColor: 64696D
 				MaxColor: 8B949A
