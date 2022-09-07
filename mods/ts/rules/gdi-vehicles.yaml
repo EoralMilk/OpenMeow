@@ -59,6 +59,7 @@ HVR:
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits: ^WithRA2VoxRender
+	#RenderModels: LightScale: 0.04SpecularScale: 0.8
 	Valued:
 		Cost: 900
 	Tooltip:
@@ -306,7 +307,7 @@ SONIC:
 	Inherits@VOXELS: ^VoxelActor
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
-	Inherits: ^With2XVoxRender
+	Inherits: ^WithVoxelRenderFromIssly
 	Valued:
 		Cost: 1300
 	Tooltip:
@@ -340,8 +341,10 @@ SONIC:
 		OpportunityFire: False
 	Turreted:
 		TurnSpeed: 20
-		Offset: -208,0,0
+		Offset: -448,0,0 #-208,0,0
 	WithModelTurret:
+	WithModelBarrel:
+		LocalOffset: 0,0,0	
 	Explodes:
 		RequiresCondition: !rank-elite && !traped
 	Explodes@ELITE:

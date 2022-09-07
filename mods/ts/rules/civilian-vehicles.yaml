@@ -25,59 +25,57 @@
 		MaxHeightDelta: 3
 		RequiresCondition: !inside-tunnel
 	Turreted:
-		TurnSpeed: 12
-	Armament@PRIMARY:
+		Turret: primary
+		TurnSpeed: 28
+	WithModelTurret@primary:
+  		Turret: primary
+	WithModelBarrel@1:
+		Armament: primary1
+		LocalOffset: 235,133,300
+		LocalOrientation: 0, 0, 0
+	WithModelBarrel@2:
+		Armament: primary2
+		LocalOffset: 235,-133,300
+		LocalOrientation: 0, 0, 0
+	Armament@primary1:
+		Name: primary1
+		Turret: primary
 		Weapon: 120mmx
-		LocalOffset: 907,85,430, 907,-120,434
-		#LocalOffset: 707,85,264, 707,-120,264
+		LocalOffset: 907,133,330
+		FireDelay: 3
 		MuzzleSequence: muzzle
+		Recoil: 148
+		RecoilRecovery: 12
+	Armament@primary2:
+		Name: primary2
+		Turret: primary
+		Weapon: 120mmx
+		LocalOffset: 907,-133,330
+		MuzzleSequence: muzzle
+		Recoil: 148
+		RecoilRecovery: 12
 	Armament@SECONDARY:
+		Name: SECONDARY
+		Turret: primary
 		Weapon: MammothTusk
-		LocalOffset: -80,233,355, -80,-233,355
+		LocalOffset: -60,233,355, -60,-233,355
 		#LocalOffset: 0,283,335, 0,-283,335
+	AttackTurreted@primary:
+		Voice: Attack
+		Armaments: primary1,primary2,SECONDARY
+		Turrets: primary
+		PauseOnCondition: empdisable
+		FacingToTarget: true
 	ChangesHealth:
 		Step: 500
 		Delay: 10
 		StartIfBelow: 50
 		DamageCooldown: 200
-	WithModelTurret@deployed:
-		Turret: deployed
-	WithModelBarrel@1:
-		Armament: deployed1
-		LocalOffset: 350,0,100
-		LocalOrientation: 0, 128, 0
-	WithModelBarrel@2:
-		Armament: deployed2
-		LocalOffset: 350,203,100
-		LocalOrientation: 0, 128, 0
+	WithModelTurret:
+	# WithModelBarrel:
 	WithMuzzleOverlay:
-	AttackTurreted@deployed:
-		Voice: Attack
-		Armaments: deployed1, deployed2
-		Turrets: deployed
-		PauseOnCondition: empdisable
-		TargetFrozenActors: True
-		ForceFireIgnoresActors: True
-		OutsideRangeRequiresForceFire: True
-	Armament@deployed1:
-		Name: deployed1
-		Turret: deployed
-		Weapon: 120mmx
-		LocalOffset: 820,0,800
-		FireDelay: 3
-		# RequiresCondition: deployed && !init-barrel
-		MuzzleSequence: muzzle
-		Recoil: 128
-		RecoilRecovery: 32
-	Armament@deployed2:
-		Name: deployed2
-		Turret: deployed
-		Weapon: 120mmx
-		LocalOffset: 820,203,800
-		# RequiresCondition: deployed && !init-barrel
-		MuzzleSequence: muzzle
-		Recoil: 128
-		RecoilRecovery: 32
+
+	
 
 ^TRUCK:
 	Inherits: ^CivilianVoxelVehicle

@@ -27,7 +27,7 @@ Players:
 		NonCombatant: True
 		Faction: Random
 		Enemies: Multi3
-	PlayerReference@Multi0:
+	PlayerReference@Multi3:
 		Name: Multi3
 		Playable: True
 		Faction: Random
@@ -227,9 +227,6 @@ Actors:
 		Owner: Multi3
 		Facing: 512
 		Location: 130,-23
-	Actor138: srock01
-		Owner: Neutral
-		Location: 136,-23
 	Actor139: srock01
 		Owner: Neutral
 		Location: 101,-50
@@ -618,3 +615,158 @@ Actors:
 		Owner: Multi3
 		Facing: 384
 		Location: 102,-42
+	Actor246: srock01
+		Owner: Neutral
+		Location: 133,-15
+	Actor248: hvr
+		Owner: Multi3
+		Facing: 0
+		Location: 139,-16
+	Actor249: hvr
+		Owner: Multi3
+		Facing: 128
+		Location: 138,-14
+	Actor250: hvr
+		Owner: Multi3
+		Facing: 896
+		Location: 141,-17
+	Actor251: hvr
+		Owner: Multi3
+		Facing: 256
+		Location: 139,-12
+	Actor252: hvr
+		Owner: Multi3
+		Facing: 768
+		Location: 143,-16
+	Actor253: hvr
+		Owner: Multi3
+		Facing: 384
+		Location: 141,-11
+	Actor254: hvr
+		Owner: Multi3
+		Facing: 618
+		Location: 144,-14
+	Actor255: hvr
+		Owner: Multi3
+		Facing: 512
+		Location: 143,-12
+	Actor256: srock01
+		Owner: Neutral
+		Location: 132,-16
+	Actor257: srock01
+		Owner: Neutral
+		Location: 134,-21
+	Actor258: srock01
+		Owner: Neutral
+		Location: 141,-25
+	Actor259: srock01
+		Owner: Neutral
+		Location: 142,-24
+	Actor260: hvr
+		Owner: Multi3
+		Facing: 0
+		Location: 148,-25
+	Actor261: hvr
+		Owner: Multi3
+		Facing: 128
+		Location: 147,-23
+	Actor262: hvr
+		Owner: Multi3
+		Facing: 896
+		Location: 150,-26
+	Actor263: hvr
+		Owner: Multi3
+		Facing: 256
+		Location: 148,-21
+	Actor264: hvr
+		Owner: Multi3
+		Facing: 768
+		Location: 152,-25
+	Actor265: hvr
+		Owner: Multi3
+		Facing: 384
+		Location: 150,-20
+	Actor266: hvr
+		Owner: Multi3
+		Facing: 618
+		Location: 153,-23
+	Actor267: hvr
+		Owner: Multi3
+		Facing: 512
+		Location: 152,-21
+	Actor268: srock01
+		Owner: Neutral
+		Location: 156,-39
+	Actor269: srock01
+		Owner: Neutral
+		Location: 157,-38
+	Actor270: hvr
+		Owner: Multi3
+		Facing: 0
+		Location: 163,-39
+	Actor271: hvr
+		Owner: Multi3
+		Facing: 128
+		Location: 162,-37
+	Actor272: hvr
+		Owner: Multi3
+		Facing: 896
+		Location: 165,-40
+	Actor273: hvr
+		Owner: Multi3
+		Facing: 256
+		Location: 163,-35
+	Actor274: hvr
+		Owner: Multi3
+		Facing: 768
+		Location: 167,-39
+	Actor275: hvr
+		Owner: Multi3
+		Facing: 384
+		Location: 165,-34
+	Actor276: hvr
+		Owner: Multi3
+		Facing: 618
+		Location: 168,-37
+	Actor277: hvr
+		Owner: Multi3
+		Facing: 512
+		Location: 167,-35
+	Actor278: srock01
+		Owner: Neutral
+		Location: 119,-4
+	Actor279: srock01
+		Owner: Neutral
+		Location: 120,-3
+	Actor280: hvr
+		Owner: Multi3
+		Facing: 0
+		Location: 126,-4
+	Actor281: hvr
+		Owner: Multi3
+		Facing: 128
+		Location: 125,-2
+	Actor282: hvr
+		Owner: Multi3
+		Facing: 896
+		Location: 128,-5
+	Actor283: hvr
+		Owner: Multi3
+		Facing: 256
+		Location: 126,0
+	Actor284: hvr
+		Owner: Multi3
+		Facing: 768
+		Location: 130,-4
+	Actor285: hvr
+		Owner: Multi3
+		Facing: 384
+		Location: 128,1
+	Actor286: hvr
+		Owner: Multi3
+		Facing: 618
+		Location: 131,-2
+	Actor287: hvr
+		Owner: Multi3
+		Facing: 512
+		Location: 130,0
