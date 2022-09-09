@@ -1,6 +1,12 @@
 mcv:
 	idle:
 
+nmcv:
+	idle:
+
+gmcv:
+	idle:
+
 harv:
 	idle:
 	unload: horv
