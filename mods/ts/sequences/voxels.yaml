@@ -22,6 +22,7 @@ subtank:
 	idle:
 
 bggy:
+	turret: bggytur
 	idle:
 
 nalasr:

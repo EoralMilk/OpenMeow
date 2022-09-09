@@ -1,8 +1,8 @@
-MapFormat: 11
+MapFormat: 12
 
 RequiresMod: ts
 
-Title: GDI Units
+Title: GDI Units2
 
 Author: kaspr
 
@@ -770,3 +770,67 @@ Actors:
 		Owner: Multi3
 		Facing: 512
 		Location: 130,0
+	Actor288: dshp
+		Owner: Neutral
+		Facing: 384
+		Location: 49,-11
+	Actor289: a10
+		Owner: Neutral
+		Facing: 384
+		Location: 46,-11
+	Actor290: visc_sml
+		Owner: Neutral
+		Facing: 384
+		Location: 51,-10
+	Actor291: visc_lrg
+		Owner: Neutral
+		Facing: 384
+		Location: 51,-8
+	Actor292: visc_lrg
+		Owner: Neutral
+		Facing: 384
+		Location: 52,-9
+	Actor293: visc_lrg
+		Owner: Neutral
+		Facing: 384
+		Location: 53,-10
+	Actor294: visc_sml
+		Owner: Neutral
+		Facing: 384
+		Location: 51,-12
+	Actor295: jfish
+		Owner: Neutral
+		Facing: 384
+		Location: 48,-6
+	Actor296: jfish
+		Owner: Neutral
+		Facing: 384
+		Location: 50,-7
+	Actor297: jfish
+		Owner: Neutral
+		Facing: 384
+		Location: 52,-7
+	Actor298: jfish
+		Owner: Neutral
+		Facing: 384
+		Location: 52,-4
+	Actor299: jfish
+		Owner: Neutral
+		Facing: 384
+		Location: 49,-3
+	Actor300: jfish
+		Owner: Neutral
+		Facing: 384
+		Location: 54,-6
+	Actor301: gakodk
+		Owner: Neutral
+		Location: 54,1
+	Actor302: namntk
+		Owner: Neutral
+		Location: 51,0
+	Actor303: ntpyra
+		Owner: Neutral
+		Location: 57,5
+	Actor304: ufo
+		Owner: Neutral
+		Location: 64,4
