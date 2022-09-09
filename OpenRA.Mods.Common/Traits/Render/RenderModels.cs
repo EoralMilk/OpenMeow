@@ -30,6 +30,9 @@ namespace OpenRA.Mods.Common.Traits.Render
 		[Desc("Defaults to the actor name.")]
 		public readonly string Image = null;
 
+		[Desc("A dictionary of faction-specific image overrides.")]
+		public readonly Dictionary<string, string> FactionImages = null;
+
 		[Desc("Custom palette name")]
 		[PaletteReference]
 		public readonly string Palette = null;
@@ -119,10 +122,12 @@ namespace OpenRA.Mods.Common.Traits.Render
 		readonly BodyOrientation body;
 		readonly WRot camera;
 		readonly WRot lightSource;
+		readonly string faction;
 
 		public RenderModels(Actor self, RenderModelsInfo info)
 		{
 			this.self = self;
+			faction = self.Owner.Faction.InternalName;
 			Info = info;
 			ScaleOverride = info.Scale;
 			body = self.Trait<BodyOrientation>();
@@ -159,7 +164,7 @@ namespace OpenRA.Mods.Common.Traits.Render
 			{
 				new ModelRenderable(
 					components, self.CenterPosition, Info.ZOffset, camera, ScaleOverride,
-					Info.LightAmbientColor, Info.LightDiffuseColor, Info.LightScale, Info.AmbientScale, Info.SpecularScale, 
+					Info.LightAmbientColor, Info.LightDiffuseColor, Info.LightScale, Info.AmbientScale, Info.SpecularScale,
 					colorPalette, normalsPalette, shadowPalette)
 			};
 		}
@@ -172,7 +177,16 @@ namespace OpenRA.Mods.Common.Traits.Render
 					yield return c.ScreenBounds(pos, wr, ScaleOverride);
 		}
 
-		public string Image => Info.Image ?? self.Info.Name;
+		public string Image
+		{
+			get
+			{
+				if (Info.FactionImages != null && !string.IsNullOrEmpty(faction) && Info.FactionImages.TryGetValue(faction, out var factionImage))
+					return factionImage.ToLowerInvariant();
+
+				return Info.Image ?? self.Info.Name;
+			}
+		}
 
 		public void Add(ModelAnimation m)
 		{

@@ -1,6 +1,5 @@
 MCV:
 	Inherits: ^Tank
-	Inherits@VOXELS: ^VoxelActor
 	Inherits@selection: ^SelectableSupportUnit
 	Buildable:
 		Queue: Vehicle
@@ -41,6 +40,20 @@ MCV:
 		FactionImages:
 			gdi: mcv.gdi
 			nod: mcv.nod
+	RenderModels:
+		Image: gmcv
+		FactionImages:
+			gdi: gmcv
+			nod: nmcv
+		NormalsPalette: normals
+		ShadowPalette: shadow
+		Scale: 1
+		LightScale: 0.22
+		SpecularScale: 0.08
+		AmbientScale: 0.7
+	BodyOrientation:
+		QuantizedFacings: 0
+	WithModelBody:
 
 HARV:
 	Inherits: ^Tank
