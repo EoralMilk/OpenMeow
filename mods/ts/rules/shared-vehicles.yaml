@@ -1,7 +1,6 @@
 MCV:
 	Inherits: ^Tank
 	Inherits@selection: ^SelectableSupportUnit
-	Inherits: ^WithRA2VoxRender
 	Buildable:
 		Queue: Vehicle
 		BuildPaletteOrder: 160
