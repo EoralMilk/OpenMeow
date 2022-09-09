@@ -232,9 +232,8 @@ MMCH:
 	RenderModels:
 		NormalsPalette: normals
 		ShadowPalette: shadow
-	Inherits: ^WithVoxelRenderFromIssly
 	WithModelBarrel:
-		Scale: 0.14
+		Scale: 1.4
 		LocalOffset: 0,51,256
 	Selectable:
 		Bounds: 905, 2534, 0, -482
