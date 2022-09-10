@@ -444,21 +444,12 @@ namespace OpenRA
 				using (new PerfSample("tick_actors"))
 					foreach (var a in actors.Values)
 					{
+						a.FlushSkeletonLogicPose();
 						a.Tick();
 						a.UpdateSkeleton();
 					}
 
 				ApplyToActorsWithTraitTimed<ITick>((actor, trait) => trait.Tick(actor), "Trait");
-
-				OrderedSkeleton.AnimTransformDataIndex = 0;
-
-				foreach (var a in actors.Values)
-				{
-					a.UpdateSkeletonDrawInfo();
-				}
-
-				// after actor tick ,we should update skeleton info?
-				SkeletonCache.UpdateAllSkeletonTexture();
 
 				effects.DoTimed(e => e.Tick(this), "Effect");
 			}

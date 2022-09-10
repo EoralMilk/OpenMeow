@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Linq;
 using OpenRA.Graphics;
+using OpenRA.Mods.Common.Activities;
 using OpenRA.Mods.Common.Graphics;
 using OpenRA.Primitives;
 using OpenRA.Traits;
@@ -33,12 +35,12 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 		public override object Create(ActorInitializer init) { return new TurretAttachment(init.Self, this); }
 	}
 
-	public class TurretAttachment : MeshAttachment, ITick
+	public class TurretAttachment : MeshAttachment, ITurreted, ITick, INotifyCreated
 	{
-		public readonly string Name;
 		public readonly TurretAttachmentInfo TurretInfo;
+		AttackTurreted attack;
 		readonly bool hasBarrel = false;
-
+		readonly string name;
 		public readonly int TurretBoneId = -1;
 		public readonly int BarrelBoneId = -1;
 		readonly TurretIK turretIk;
@@ -47,9 +49,8 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 		public TurretAttachment(Actor self, TurretAttachmentInfo info)
 			: base(self, info, false)
 		{
-			Name = info.Name;
 			TurretInfo = info;
-
+			name = info.Name;
 			if (AttachmentSkeleton == null)
 				throw new Exception(self.Info.Name + " Turret Attachment Can not find attachment skeleton " + info.AttachmentSkeleton);
 
@@ -72,35 +73,58 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 
 			realignDelay = info.RealignDelay;
 
-			turretIk.State = AimState.Realign;
+			turretIk.NextState = AimState.Realign;
 			if (hasBarrel)
 			{
-				barrelIk.State = AimState.Realign;
+				barrelIk.NextState = AimState.Realign;
 			}
 
 			realignTick = realignDelay - 1;
 		}
 
+		protected override void Created(Actor self)
+		{
+			attack = self.TraitsImplementing<AttackTurreted>().SingleOrDefault(at => ((AttackTurretedInfo)at.Info).Turrets.Contains(name));
+			base.Created(self);
+		}
+
+		public bool HasAchievedDesiredFacing
+		{
+			get
+			{
+				return FacingWithInTolerance(WAngle.Zero);
+			}
+		}
+
+		public WRot LocalOrientation => WRot.None;
+		public WRot WorldOrientation => WRot.None;
+		public WVec Offset => WVec.Zero;
+		public string Name => name;
+
 		FP deg;
 		int realignTick;
-		public bool FacingTarget(in Target target, in WPos targetPos)
+		public bool FaceTarget(Actor self, in Target target)
 		{
+			AttachmentSkeleton.CallForUpdate(BarrelBoneId);
+
+			var targetPos = attack.GetTargetPosition(AttachmentSkeleton.GetWPosFromBoneId(TurretBoneId), target);
 			realignTick = 0;
 
-			turretIk.TargetPos = targetPos;
-			turretIk.State = AimState.Aim;
+			turretIk.NextTargetPos = targetPos;
+			turretIk.NextState = AimState.Aim;
 			if (hasBarrel)
 			{
-				barrelIk.TargetPos = targetPos;
-				barrelIk.State = AimState.Aim;
+				barrelIk.NextTargetPos = targetPos;
+				barrelIk.NextState = AimState.Aim;
 			}
 
-			AttachmentSkeleton.CallForUpdate();
 			return true;
 		}
 
 		public bool FacingWithInTolerance(in WAngle facingTolerance)
 		{
+			AttachmentSkeleton.CallForUpdate(TurretBoneId);
+
 			deg = (FP)facingTolerance.Angle / 512 * 180;
 			if (hasBarrel)
 			{
@@ -110,14 +134,14 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 				return turretIk.FacingWithInTolerance(deg);
 		}
 
-		public override void Tick(Actor self)
+		public void Tick(Actor self)
 		{
 			if (realignTick == realignDelay)
 			{
-				turretIk.State = AimState.Realign;
+				turretIk.NextState = AimState.Realign;
 				if (hasBarrel)
 				{
-					barrelIk.State = AimState.Realign;
+					barrelIk.NextState = AimState.Realign;
 				}
 			}
 			else
@@ -137,9 +161,19 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 	class TurretIK : IBonePoseModifier
 	{
 		readonly World3DRenderer w3dr;
-		public WPos TargetPos;
+		public WPos NextTargetPos;
+		WPos targetPos;
+		public AimState NextState = AimState.Realign;
+		AimState state = AimState.Realign;
+		bool calculated = false;
+		public void UpdateTarget()
+		{
+			targetPos = NextTargetPos;
+			state = NextState;
+			calculated = false;
+		}
+
 		public FP RotateSpeed;
-		public AimState State = AimState.Realign;
 
 		TSQuaternion initFacing = TSQuaternion.LookRotation(TSVector.forward);
 		TSQuaternion forward = TSQuaternion.LookRotation(TSVector.forward);
@@ -181,7 +215,13 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 
 		public void CalculateIK(ref TSMatrix4x4 self)
 		{
-			if (State == AimState.Realign)
+			if (calculated)
+			{
+				self = self * TSMatrix4x4.Rotate(forward);
+				return;
+			}
+
+			if (state == AimState.Realign)
 			{
 				if (!initFacing.Equals(forward))
 				{
@@ -190,24 +230,21 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 				}
 				else
 				{
-					State = AimState.Keep;
+					state = AimState.Keep;
 					ikState = InverseKinematicState.Keeping;
 				}
 
 				self = self * TSMatrix4x4.Rotate(forward);
 			}
-			else if (State == AimState.Aim)
+			else if (state == AimState.Aim)
 			{
 				ikState = InverseKinematicState.Resolving;
-				end = w3dr.Get3DPositionFromWPos(TargetPos);
+				end = w3dr.Get3DPositionFromWPos(targetPos);
 
 				offsetedTurBaseRot = Transformation.MatRotation(self);
 				start = Transformation.MatPosition(self);
 				dir = end - start;
 				localDir = offsetedTurBaseRot * dir;
-
-				//var yawDir = TSQuaternion.FromToRotation(TSVector.forward, new TSVector(localDir.x, 0, localDir.z));
-				//Console.WriteLine("yawDir.eulerAngles: " + yawDir.eulerAngles + "   angle: " + (TSMath.Atan(localDir.x / localDir.z) * TSMath.Rad2Deg) + "  vec: " + new TSVector(localDir.x, 0, localDir.z));
 
 				CalculateRoataion();
 
@@ -215,6 +252,8 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 					forward = TSQuaternion.RotateTowards(forward, yawRot, RotateSpeed);
 				self = self * TSMatrix4x4.Rotate(forward);
 			}
+
+			calculated = true;
 		}
 
 		void CalculateRoataion()
@@ -282,11 +321,11 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 			if (checkAngleLimitation)
 			{
 				var yawDir = TSQuaternion.FromToRotation(TSVector.forward, new TSVector(localDir.x, 0, localDir.z));
-				return State == AimState.Aim && FP.Abs(TSQuaternion.Angle(forward, yawDir)) <= deg;
+				return state == AimState.Aim && FP.Abs(TSQuaternion.Angle(forward, yawDir)) <= deg;
 			}
 			else
 			{
-				return State == AimState.Aim && FP.Abs(TSQuaternion.Angle(forward, yawRot)) <= deg;
+				return state == AimState.Aim && FP.Abs(TSQuaternion.Angle(forward, yawRot)) <= deg;
 			}
 		}
 
@@ -300,9 +339,20 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 	class BarrelIk : IBonePoseModifier
 	{
 		readonly World3DRenderer w3dr;
-		public WPos TargetPos;
+		public WPos NextTargetPos;
+		WPos targetPos;
+		public AimState NextState = AimState.Realign;
+		AimState state = AimState.Realign;
+		bool calculated = false;
+
+		public void UpdateTarget()
+		{
+			targetPos = NextTargetPos;
+			state = NextState;
+			calculated = false;
+		}
+
 		public FP RotateSpeed;
-		public AimState State = AimState.Realign;
 
 		TSQuaternion forward = TSQuaternion.LookRotation(TSVector.forward);
 		TSQuaternion initFacing = TSQuaternion.LookRotation(TSVector.forward);
@@ -337,7 +387,13 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 
 		public void CalculateIK(ref TSMatrix4x4 self)
 		{
-			if (State == AimState.Realign)
+			if (calculated)
+			{
+				self = self * TSMatrix4x4.Rotate(forward);
+				return;
+			}
+
+			if (state == AimState.Realign)
 			{
 				if (!initFacing.Equals(forward))
 				{
@@ -346,16 +402,16 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 				}
 				else
 				{
-					State = AimState.Keep;
+					state = AimState.Keep;
 					ikState = InverseKinematicState.Keeping;
 				}
 
 				self = self * TSMatrix4x4.Rotate(forward);
 			}
-			else if (State == AimState.Aim)
+			else if (state == AimState.Aim)
 			{
 				ikState = InverseKinematicState.Resolving;
-				end = w3dr.Get3DPositionFromWPos(TargetPos);
+				end = w3dr.Get3DPositionFromWPos(targetPos);
 
 				offsetedBarrelBaseRot = Transformation.MatRotation(self);
 				start = Transformation.MatPosition(self);
@@ -372,6 +428,8 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 					forward = TSQuaternion.RotateTowards(forward, pitchRot, RotateSpeed);
 				self = self * TSMatrix4x4.Rotate(forward);
 			}
+
+			calculated = true;
 		}
 
 		void CalculateRotate()
@@ -401,11 +459,11 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 			if (checkAngleLimitation)
 			{
 				var pitchDir = TSQuaternion.FromToRotation(TSVector.up, new TSVector(0, localDir.y, localDir.z));
-				return State == AimState.Aim && FP.Abs(TSQuaternion.Angle(forward, pitchDir)) <= deg;
+				return state == AimState.Aim && FP.Abs(TSQuaternion.Angle(forward, pitchDir)) <= deg;
 			}
 			else
 			{
-				return State == AimState.Aim && FP.Abs(TSQuaternion.Angle(forward, pitchRot)) <= deg;
+				return state == AimState.Aim && FP.Abs(TSQuaternion.Angle(forward, pitchRot)) <= deg;
 			}
 		}
 

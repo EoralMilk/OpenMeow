@@ -9,13 +9,15 @@
  */
 #endregion
 
+using System;
 using System.Linq;
+using System.Reflection;
 using OpenRA.Traits;
 
 namespace OpenRA.Mods.Common.Traits
 {
 	[Desc("Actor has a visual turret used to attack.")]
-	public class AttackTurretedInfo : AttackFollowInfo, Requires<TurretedInfo>
+	public class AttackTurretedInfo : AttackFollowInfo
 	{
 		[Desc("Turret names")]
 		public readonly string[] Turrets = { "primary" };
@@ -23,14 +25,21 @@ namespace OpenRA.Mods.Common.Traits
 		public override object Create(ActorInitializer init) { return new AttackTurreted(init.Self, this); }
 	}
 
-	public class AttackTurreted : AttackFollow
+	public class AttackTurreted : AttackFollow, INotifyCreated
 	{
-		protected Turreted[] turrets;
-
+		protected ITurreted[] turrets;
+		public readonly AttackTurretedInfo Info;
 		public AttackTurreted(Actor self, AttackTurretedInfo info)
 			: base(self, info)
 		{
-			turrets = self.TraitsImplementing<Turreted>().Where(t => info.Turrets.Contains(t.Info.Turret)).ToArray();
+			Info = info;
+			//turrets = self.TraitsImplementing<ITurreted>().Where(t => info.Turrets.Contains(t.Name)).ToArray();
+		}
+
+		protected override void Created(Actor self)
+		{
+			turrets = self.TraitsImplementing<ITurreted>().Where(t => Info.Turrets.Contains(t.Name)).ToArray();
+			base.Created(self);
 		}
 
 		protected override bool CanAttack(Actor self, in Target target)

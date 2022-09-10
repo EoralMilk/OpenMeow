@@ -60,16 +60,8 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 				wskv.Value.Draw = inScreen;
 			}
 
-			//Console.WriteLine("Draw Count: " + RenderMeshes.drawCount);
-			//Console.WriteLine("Max DrawId: " + RenderMeshes.maxDrawId);
-
-			//RenderMeshes.drawCount = 0;
-			//RenderMeshes.maxDrawId = 0;
 			inScreen = false;
 		}
-
-		//static int drawCount;
-		//static int maxDrawId;
 
 		/// <summary>
 		/// call WithSkeletons for update

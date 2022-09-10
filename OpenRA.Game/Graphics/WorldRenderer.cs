@@ -125,8 +125,23 @@ namespace OpenRA.Graphics
 		}
 
 		// PERF: Avoid LINQ.
+		long lastUpdate = 0;
 		void GenerateRenderables()
 		{
+			if (Math.Abs(Game.RunTime - lastUpdate) > 33)
+			{
+				OrderedSkeleton.AnimTransformDataIndex = 0;
+
+				foreach (var a in onScreenActors)
+				{
+					a.UpdateSkeletonDrawInfo();
+				}
+
+				World.SkeletonCache.UpdateAllSkeletonTexture();
+
+				lastUpdate = Game.RunTime;
+			}
+
 			foreach (var actor in onScreenActors)
 				renderablesBuffer.AddRange(actor.Render(this));
 

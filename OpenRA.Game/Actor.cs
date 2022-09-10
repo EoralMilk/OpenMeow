@@ -105,7 +105,6 @@ namespace OpenRA
 		internal SyncHash[] SyncHashes { get; }
 
 		readonly IWithSkeleton[] skeletons;
-		readonly IUpdateWithSkeleton[] updateWithSkeletons;
 
 		readonly IFacing facing;
 		readonly IHealth health;
@@ -148,7 +147,6 @@ namespace OpenRA
 
 				Info = world.Map.Rules.Actors[name];
 				var skeletonsList = new List<IWithSkeleton>();
-				var updaetWithSkeletons = new List<IUpdateWithSkeleton>();
 				var resolveOrdersList = new List<IResolveOrder>();
 				var renderModifiersList = new List<IRenderModifier>();
 				var rendersList = new List<IRender>();
@@ -175,7 +173,6 @@ namespace OpenRA
 					{ if (trait is IFacing t) facing = t; }
 					{ if (trait is IHealth t) health = t; }
 					{ if (trait is IWithSkeleton t) skeletonsList.Add(t); }
-					{ if (trait is IUpdateWithSkeleton t) updaetWithSkeletons.Add(t); }
 					{ if (trait is IResolveOrder t) resolveOrdersList.Add(t); }
 					{ if (trait is IRenderModifier t) renderModifiersList.Add(t); }
 					{ if (trait is IRender t) rendersList.Add(t); }
@@ -190,7 +187,6 @@ namespace OpenRA
 				}
 
 				skeletons = skeletonsList.ToArray();
-				updateWithSkeletons = updaetWithSkeletons.ToArray();
 				resolveOrders = resolveOrdersList.ToArray();
 				renderModifiers = renderModifiersList.ToArray();
 				renders = rendersList.ToArray();
@@ -265,16 +261,24 @@ namespace OpenRA
 				World.Add(this);
 		}
 
+		public void FlushSkeletonLogicPose()
+		{
+			foreach (var s in skeletons)
+				s.FlushLogicPose();
+		}
+
+		public void FlushSkeletonRenderPose()
+		{
+			foreach (var s in skeletons)
+				s.FlushRenderPose();
+		}
+
 		public void UpdateSkeleton()
 		{
 			if (!Disposed && IsInWorld)
 			{
-				foreach (var arm in updateWithSkeletons)
-					arm.UpdateEarly(this);
 				foreach (var s in skeletons)
-					s.UpdateSkeleton();
-				foreach (var arm in updateWithSkeletons)
-					arm.UpdateLate(this);
+					s.UpdateSkeletonTick();
 			}
 		}
 
@@ -282,8 +286,12 @@ namespace OpenRA
 		{
 			if (!Disposed && IsInWorld)
 			{
+				FlushSkeletonRenderPose();
 				foreach (var s in skeletons)
-					s.UpdateDrawInfo();
+				{
+					s.UpdateWholeSkeleton(false);
+					s.UpdateDrawInfo(false);
+				}
 			}
 		}
 

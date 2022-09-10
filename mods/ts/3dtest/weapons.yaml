@@ -75,7 +75,7 @@ A10Napalm:
 	ValidTargets: Ground, Water, Air
 	ReloadDelay: 3
 	MinRange: 0c128
-	Range: 15c0
+	Range: 50c0
 	Report: infgun_a.wav, infgun_b.wav, infgun_c.wav, infgun_d.wav
 	BurstDelays: 1
 	Projectile: Bullet

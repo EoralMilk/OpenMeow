@@ -137,13 +137,13 @@ namespace OpenRA.Mods.Common.Traits
 		public override object Create(ActorInitializer init) { return new Turreted(init, this); }
 	}
 
-	public class Turreted : PausableConditionalTrait<TurretedInfo>, ITick, IDeathActorInitModifier, IActorPreviewInitModifier, INotifyDeployTriggeredPrepare
+	public class Turreted : PausableConditionalTrait<TurretedInfo>, ITurreted, ITick, IDeathActorInitModifier, IActorPreviewInitModifier, INotifyDeployTriggeredPrepare
 	{
 		AttackTurreted attack;
 		IFacing facing;
 		BodyOrientation body;
 		INotifyDeployPrepareComplete[] notify;
-
+		Actor self;
 		[Sync]
 		public int QuantizedFacings = 0;
 
@@ -182,6 +182,7 @@ namespace OpenRA.Mods.Common.Traits
 		protected override void Created(Actor self)
 		{
 			base.Created(self);
+			this.self = self;
 			attack = self.TraitsImplementing<AttackTurreted>().SingleOrDefault(at => ((AttackTurretedInfo)at.Info).Turrets.Contains(Info.Turret));
 			facing = self.TraitOrDefault<IFacing>();
 			body = self.Trait<BodyOrientation>();

@@ -123,7 +123,7 @@ RUTEST3:
 		Speed: 88
 		Locomotor: tracked
 		# AlwaysTurnInPlace: true
-	AttackAttachmentTurreted:
+	AttackTurreted:
 		Turrets: turret1, turret2
 		Voice: Attack
 		FiringAngle: 512
@@ -135,7 +135,7 @@ RUTEST3:
 	TurretAttachment@1:
 		Name: turret1
 		SkeletonBinded: body
-		AttachingBone: a-s-Rig_Hand.R
+		AttachingBone: s-Adj_Butt.R #a-s-Rig_Hand.R
 		AttachmentSkeleton: turret_skeleton1
 		TurretBone: a-s-Base
 		BarrelBone: a-s-Barrel
@@ -144,8 +144,8 @@ RUTEST3:
 		RotationSpeed: 3
 		BarrelRotationSpeed: 5
 		InitTurretAngle: -90
-		TurretRotationMin: -180
-		TurretRoataionMax: 0
+		# TurretRotationMin: -180
+		# TurretRoataionMax: 0
 		InitBarrelAngle: 45
 		BarrelMaxDepression: 15
 		BarrelMaxElevation: 80
@@ -164,7 +164,7 @@ RUTEST3:
 	TurretAttachment@2:
 		Name: turret2
 		SkeletonBinded: body
-		AttachingBone: a-s-Rig_Hand.L
+		AttachingBone: s-Adj_Butt.L #a-s-Rig_Hand.L
 		AttachmentSkeleton: turret_skeleton2
 		TurretBone: a-s-Base
 		BarrelBone: a-s-Barrel
@@ -173,8 +173,8 @@ RUTEST3:
 		RotationSpeed: 3
 		BarrelRotationSpeed: 5
 		InitTurretAngle: 90
-		TurretRotationMin: 0
-		TurretRoataionMax: 180
+		# TurretRotationMin: 0
+		# TurretRoataionMax: 180
 		InitBarrelAngle: 45
 		BarrelMaxDepression: 15
 		BarrelMaxElevation: 80
@@ -187,150 +187,3 @@ RUTEST3:
 		FacingTolerance: 40
 		Turret: turret2
 
-	# WithSkeleton@turret3:
-	# 	SkeletonDefine: turret-test
-	# 	Name: turret_skeleton3
-	# TurretAttachment@3:
-	# 	Name: turret3
-	# 	SkeletonBinded: body
-	# 	AttachingBone: s-Rig_Bust2.R
-	# 	AttachmentSkeleton: turret_skeleton3
-	# 	TurretBone: a-s-Base
-	# 	BarrelBone: a-s-Barrel
-	# 	Scale: 6
-	# 	Mesh: turret
-	# 	RotationSpeed: 3
-	# 	BarrelRotationSpeed: 5
-	# 	InitTurretAngle: 90
-	# 	TurretRotationMin: 0
-	# 	TurretRoataionMax: 180
-	# 	InitBarrelAngle: 45
-	# 	BarrelMaxDepression: 15
-	# 	BarrelMaxElevation: 80
-	# 	TurretFireAngleLimitation: true
-	# 	BarrelFireAngleLimitation: true
-	# AttachedArmament@3:
-	# 	Weapon: ^SA
-	# 	SkeletonToUse: turret_skeleton3
-	# 	FromBonePose: firepose
-	# 	FacingTolerance: 40
-	# 	Turret: turret3
-
-	# WithSkeleton@turret4:
-	# 	SkeletonDefine: turret-test
-	# 	Name: turret_skeleton4
-	# TurretAttachment@4:
-	# 	Name: turret4
-	# 	SkeletonBinded: body
-	# 	AttachingBone: s-Rig_Bust2.L
-	# 	AttachmentSkeleton: turret_skeleton4
-	# 	TurretBone: a-s-Base
-	# 	BarrelBone: a-s-Barrel
-	# 	Scale: 6
-	# 	Mesh: turret
-	# 	RotationSpeed: 3
-	# 	BarrelRotationSpeed: 5
-	# 	InitTurretAngle: -90
-	# 	TurretRotationMin: -180
-	# 	TurretRoataionMax: 0
-	# 	InitBarrelAngle: 45
-	# 	BarrelMaxDepression: 15
-	# 	BarrelMaxElevation: 80
-	# 	TurretFireAngleLimitation: true
-	# 	BarrelFireAngleLimitation: true
-	# AttachedArmament@4:
-	# 	Weapon: ^SA
-	# 	SkeletonToUse: turret_skeleton4
-	# 	FromBonePose: firepose
-	# 	FacingTolerance: 40
-	# 	Turret: turret4
-
-RUTEST4:
-	Inherits: ^EMPableAircraft
-	# Inherits@meshtest: ^WithMeshTest
-	Inherits@EXPERIENCE: ^GainsExperience
-	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
-	Valued:
-		Cost: 1500
-	Tooltip:
-		Name: Test fly
-	UpdatesPlayerStatistics:
-		AddToArmyValue: true
-	# Buildable:
-	# 	Queue: Air
-	# 	BuildPaletteOrder: 0
-	# 	Prerequisites: ~nahpad, natech
-	# 	Description: Advanced fighter-bomber craft\nwith twin plasma cannons.\n  Strong vs Buildings, Vehicles\n  Weak vs Infantry, Aircraft
-	Selectable:
-		Bounds: 905, 1448
-	Voiced:
-		VoiceSet: Scrin
-	Aircraft:
-		CruiseAltitude: 5c0
-		TurnSpeed: 15
-		Speed: 245
-		IdleTurnSpeed: 6
-		IdleSpeed: 140
-		TakeoffSounds: dropup1.aud
-		LandingSounds: dropdwn1.aud
-		CanHover: false
-		CanSlide: false
-	Health:
-		HP: 100000
-	Armor:
-		Type: Light
-	RevealsShroud:
-		Range: 2c0
-		Type: CenterPosition
-	Armament:
-		Weapon: Proton
-		PauseOnCondition: !ammo
-		SkeletonToUse: body
-		FromBonePose: a-s-Rig_Hand.R, a-s-Rig_Hand.L
-	AttackAircraft:
-		Voice: Attack
-		FacingTolerance: 80
-		PersistentTargeting: false
-		PauseOnCondition: empdisable
-	AmmoPool:
-		Ammo: 15
-		ReloadCount: 5
-		AmmoCondition: ammo
-	RenderSprites:
-	DeathSounds:
-	Rearmable:
-		RearmActors: gahpad, nahpad
-	-SpawnActorOnDeath:
-	WithAmmoPipsDecoration:
-		Position: BottomLeft
-		RequiresSelection: true
-		Margin: 4, 5
-		PipCount: 3
-		FullSequence: pip-ammo
-		EmptySequence: pip-ammoempty
-		Palette: pips
-	RenderSprites:
-		Image: scrin
-	-RenderModels:
-	-WithModelBody:
-	WithMeshBody@body:
-		Mesh: body
-		SkeletonBinded: body
-	WithMesh@hair:
-		Mesh: hair
-		SkeletonBinded: body
-	WithMesh@cater:
-		Mesh: cater
-		SkeletonBinded: body
-	WithMeshCloth@skirt:
-		Mesh: skirt-split
-		Masks: Hip
-		SkeletonBinded: body
-	WithMeshCloth@sweater:
-		Mesh: sweater
-		Masks: Torso
-		SkeletonBinded: body
-	RenderMeshes:
-		Image: rumya-2
-		ZOffset: 15
-		Scale: 8

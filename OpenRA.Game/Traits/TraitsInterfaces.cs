@@ -20,6 +20,7 @@ using OpenRA.Graphics;
 using OpenRA.Network;
 using OpenRA.Primitives;
 using OpenRA.Support;
+using TrueSync;
 
 namespace OpenRA.Traits
 {
@@ -296,9 +297,33 @@ namespace OpenRA.Traits
 
 	public interface IWithSkeleton
 	{
-		void UpdateSkeleton();
-		void UpdateDrawInfo();
+		void FlushLogicPose();
+		void FlushRenderPose();
+		void UpdateSkeletonTick();
+		void UpdateWholeSkeleton(bool callbyParent);
+		void UpdateDrawInfo(bool callbyParent);
 		void SkeletonTick();
+		void CallForUpdate(int boneid);
+		int GetDrawId();
+		int GetBoneId(string boneName);
+		bool HasChild(IWithSkeleton skeleton);
+		void ReleaseFromParent();
+		bool SetParent(IWithSkeleton parent, int boneId, float scaleOverride = 0.0f);
+
+		/// <summary>
+		/// must call by IWithSkeleton
+		/// </summary>
+		void AddChild(IWithSkeleton child);
+
+		/// <summary>
+		/// must call by IWithSkeleton
+		/// </summary>
+		void RemoveChild(IWithSkeleton child);
+
+		WPos GetWPosFromBoneId(int id);
+		WRot GetWRotFromBoneId(int id);
+		TSMatrix4x4 GetMatrixFromBoneId(int id);
+		TSQuaternion GetQuatFromBoneId(int id);
 	}
 
 	public interface IPrepareForAttack
@@ -306,10 +331,14 @@ namespace OpenRA.Traits
 		bool PrepareForAttack(in Target target);
 	}
 
-	public interface IUpdateWithSkeleton
+	public interface ITurreted
 	{
-		void UpdateEarly(Actor self);
-		void UpdateLate(Actor self);
+		string Name { get; }
+		WRot WorldOrientation { get; }
+		WRot LocalOrientation { get; }
+		WVec Offset { get; }
+		bool HasAchievedDesiredFacing { get; }
+		bool FaceTarget(Actor self, in Target target);
 	}
 
 	public interface IFacing

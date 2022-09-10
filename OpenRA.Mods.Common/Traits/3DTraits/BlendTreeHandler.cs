@@ -239,7 +239,7 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 				lerpSpeed = lerpSpeed > FP.Zero ? lerpSpeed - (FP.One / info.Stand2WalkTick) : FP.Zero;
 			}
 
-			angle = (myFacing.Facing - (turret?.WorldOrientation.Yaw) ?? WAngle.Zero).Angle;
+			angle = (myFacing.Facing - (turret?.WorldOrientation.Yaw) ?? myFacing.Facing).Angle;
 			FP x = FP.Zero, y = FP.Zero;
 			if (angle <= 128 || angle >= 896)
 			{

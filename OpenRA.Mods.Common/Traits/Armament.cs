@@ -75,7 +75,7 @@ namespace OpenRA.Mods.Common.Traits
 		public readonly string ReloadingCondition = null;
 
 		[Desc("Tolerance for attack angle. Range [0, 512], 512 covers 360 degrees. 1023 Means to use attack trait value. Only influence self fire checking.")]
-		public readonly WAngle FacingTolerance = new WAngle(1023);
+		public readonly WAngle FacingTolerance = new WAngle(512);
 
 		[Desc("Whether to calculate target movement to correct trajectory.")]
 		public readonly bool CalculateTargetMoving = true;
@@ -124,7 +124,7 @@ namespace OpenRA.Mods.Common.Traits
 			if (WeaponInfo.Burst > 1 && WeaponInfo.BurstDelays.Length > 1 && (WeaponInfo.BurstDelays.Length != WeaponInfo.Burst - 1))
 				throw new YamlException($"Weapon '{weaponToLower}' has an invalid number of BurstDelays, must be single entry or Burst - 1.");
 
-			if (FacingTolerance.Angle > 512 && FacingTolerance.Angle != 1023)
+			if (FacingTolerance.Angle > 512)
 				throw new YamlException("Facing tolerance must be in range of [0, 512], 512 covers 360 degrees.");
 
 			base.RulesetLoaded(rules, ai);
@@ -137,8 +137,8 @@ namespace OpenRA.Mods.Common.Traits
 		public Barrel[] Barrels { get; protected set; }
 
 		readonly Actor self;
-		IFacing facing;
-		Turreted turret;
+		protected IFacing facing;
+		ITurreted turret;
 		BodyOrientation coords;
 		INotifyBurstComplete[] notifyBurstComplete;
 		INotifyAttack[] notifyAttacks;
@@ -151,10 +151,10 @@ namespace OpenRA.Mods.Common.Traits
 		IEnumerable<int> inaccuracyModifiers;
 
 		int ticksSinceLastShot;
-		int currentBarrel;
+		protected int currentBarrel;
 		protected int barrelCount;
 		readonly bool hasFacingTolerance;
-
+		readonly int[] boneIds;
 		readonly List<(int Ticks, int Burst, Action<int> Func)> delayedActions = new List<(int, int, Action<int>)>();
 
 		public WDist Recoil;
@@ -166,7 +166,7 @@ namespace OpenRA.Mods.Common.Traits
 		{
 			this.self = self;
 
-			hasFacingTolerance = info.FacingTolerance.Angle != 1023;
+			hasFacingTolerance = info.FacingTolerance.Angle != 512;
 
 			Weapon = info.WeaponInfo;
 			Burst = Weapon.Burst;
@@ -201,7 +201,7 @@ namespace OpenRA.Mods.Common.Traits
 
 		protected override void Created(Actor self)
 		{
-			turret = self.TraitsImplementing<Turreted>().FirstOrDefault(t => t.Name == Info.Turret);
+			turret = self.TraitsImplementing<ITurreted>().FirstOrDefault(t => t.Name == Info.Turret);
 			coords = self.Trait<BodyOrientation>();
 			notifyBurstComplete = self.TraitsImplementing<INotifyBurstComplete>().ToArray();
 			notifyAttacks = self.TraitsImplementing<INotifyAttack>().ToArray();
@@ -349,7 +349,7 @@ namespace OpenRA.Mods.Common.Traits
 			return offset;
 		}
 
-		bool CanFire(Actor self, in Target target)
+		protected virtual bool CanFire(Actor self, in Target target)
 		{
 			if (IsReloading || IsTraitPaused)
 				return false;
@@ -364,7 +364,7 @@ namespace OpenRA.Mods.Common.Traits
 			if (!Weapon.IsValidAgainst(target, self.World, self))
 				return false;
 
-			if (hasFacingTolerance && facing != null)
+			if (turret == null && hasFacingTolerance && facing != null)
 			{
 				var delta = target.CenterPosition - self.CenterPosition;
 				return Util.FacingWithinTolerance(facing.Facing, delta.Yaw + Info.FiringAngle, Info.FacingTolerance);
@@ -538,12 +538,16 @@ namespace OpenRA.Mods.Common.Traits
 			// Turret coordinates to body coordinates
 			var bodyOrientation = coords.QuantizeOrientation(self.Orientation);
 			if (turret != null)
+			{
 				localOffset = localOffset.Rotate(turret.WorldOrientation) + turret.Offset.Rotate(bodyOrientation);
+				return self.CenterPosition + coords.LocalToWorld(localOffset);
+			}
 			else
+			{
 				localOffset = localOffset.Rotate(bodyOrientation);
 
-			// Body coordinates to world coordinates
-			return self.CenterPosition + coords.LocalToWorld(localOffset);
+				return self.CenterPosition + coords.LocalToWorld(localOffset);
+			}
 		}
 
 		public WRot MuzzleOrientation(Actor self, Barrel b)

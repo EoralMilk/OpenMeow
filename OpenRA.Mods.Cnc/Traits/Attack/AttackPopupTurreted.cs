@@ -52,7 +52,7 @@ namespace OpenRA.Mods.Cnc.Traits
 
 		readonly AttackPopupTurretedInfo info;
 		readonly WithSpriteBody wsb;
-		readonly Turreted turret;
+		readonly ITurreted turret;
 
 		int idleTicks = 0;
 		PopupState state = PopupState.Open;

@@ -17,6 +17,8 @@
 *  3. This notice may not be removed or altered from any source distribution. 
 */
 
+using GlmSharp;
+
 namespace TrueSync
 {
 
@@ -1259,6 +1261,27 @@ namespace TrueSync
 			TSMatrix4x4 result;
 			AxisAngle(ref axis, angle, out result);
 			return result;
+		}
+
+		public mat4 ToMat4()
+		{
+			return new mat4(
+			FP.ToFloat(M11),
+			FP.ToFloat(M21),
+			FP.ToFloat(M31),
+			FP.ToFloat(M41),
+			FP.ToFloat(M12),
+			FP.ToFloat(M22),
+			FP.ToFloat(M32),
+			FP.ToFloat(M42),
+			FP.ToFloat(M13),
+			FP.ToFloat(M23),
+			FP.ToFloat(M33),
+			FP.ToFloat(M43),
+			FP.ToFloat(M14),
+			FP.ToFloat(M24),
+			FP.ToFloat(M34),
+			FP.ToFloat(M44));
 		}
 
 		public override string ToString()

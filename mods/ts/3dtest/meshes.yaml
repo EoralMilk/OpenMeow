@@ -53,6 +53,17 @@ rumya-2:
 		Anims:
 			stand: catidle_Skeleton_CommonBody
 			walk: catcrawl_Skeleton_CommonBody
+			guard: catidle_Skeleton_CommonBody
+
+			forwardAnim: catcrawl_Skeleton_CommonBody
+			forwardRightAnim: catcrawl_Skeleton_CommonBody
+			forwardLeftAnim: catcrawl_Skeleton_CommonBody
+			strafeRightAnim: catcrawl_Skeleton_CommonBody
+			standAnim: catidle_Skeleton_CommonBody
+			strafeLeftAnim: catcrawl_Skeleton_CommonBody
+			backwardAnim: catcrawl_Skeleton_CommonBody
+			backwardRightAnim: catcrawl_Skeleton_CommonBody
+			backwardLeftAnim: catcrawl_Skeleton_CommonBody
 	Meshes:
 		skirt-split: SportShorts
 			Material: sportshorts

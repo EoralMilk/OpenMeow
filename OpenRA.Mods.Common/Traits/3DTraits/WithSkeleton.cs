@@ -42,25 +42,12 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 		public readonly SkeletonInstance Skeleton;
 		public readonly string Name;
 		public readonly string Image;
-		readonly List<IBonePoseModifier> bonePoseModifiers = new List<IBonePoseModifier>();
+		readonly Dictionary<int, IBonePoseModifier> bonePoseModifiers = new Dictionary<int, IBonePoseModifier>();
 
 		public void AddBonePoseModifier(int id, IBonePoseModifier ik)
 		{
-			bonePoseModifiers.Add(ik);
+			bonePoseModifiers.Add(id, ik);
 			Skeleton.AddInverseKinematic(id, ik);
-		}
-
-		public void CheckIKUpdate()
-		{
-			foreach (var ik in bonePoseModifiers)
-			{
-				if (ik.IKState != InverseKinematicState.Keeping)
-				{
-					CallForUpdate();
-					//ikUpdate++;
-					break;
-				}
-			}
 		}
 
 		readonly World3DRenderer w3dr;
@@ -68,17 +55,7 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 		public bool Draw;
 		int tick = 0;
 		public int Drawtick = 0;
-		int lastDrawtick = 0;
-		int toUpdate = 0;
-		public int ToUpdateTick { get => toUpdate; }
-
-		public bool ToUpdateSkeleton
-		{
-			get
-			{
-				return Draw || (toUpdate > 0);
-			}
-		}
+		int lastDrawtick = -1;
 
 		public float Scale = 1;
 		readonly Actor self;
@@ -104,25 +81,18 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 			Skeleton = OrderedSkeleton.CreateInstance();
 
 			w3dr = Game.Renderer.World3DRenderer;
-			UpdateSkeleton();
 		}
 
 		protected override void Created(Actor self)
 		{
-			UpdateSkeleton();
+			UpdateSkeletonTick();
+			UpdateWholeSkeleton(false);
 		}
-
-		//static int skeletonUpdate = 0;
-		//static int ikUpdate = 0;
 
 		void ITick.Tick(Actor self)
 		{
 			tick++;
 			Drawtick++;
-			//if (skeletonUpdate != 0)
-			//	Console.WriteLine("SkeletonUpdate: " + skeletonUpdate + " ikUpdate: " + ikUpdate);
-			//skeletonUpdate = 0;
-			//ikUpdate = 0;
 		}
 
 		WPos lastSelfPos;
@@ -140,11 +110,14 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 			else
 				lastSelfRot = myFacing.Orientation;
 			lastScale = Scale;
+
+			foreach (var kv in bonePoseModifiers)
+				kv.Value.UpdateTarget();
 		}
 
 		public int GetDrawId()
 		{
-			if (Skeleton.CanGetPose() && Drawtick > 2)
+			if (Skeleton.CanDraw() && Drawtick > 2)
 				return Skeleton.InstanceID == -1 ? -2 : Skeleton.AnimTexoffset / 4;
 			else
 				return -2;
@@ -160,26 +133,35 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 
 		public WPos GetWPosFromBoneId(int id)
 		{
+			CallForUpdate(id);
 			return Skeleton.BoneWPos(id, w3dr);
 		}
 
 		public WRot GetWRotFromBoneId(int id)
 		{
+			CallForUpdate(id);
 			return Skeleton.BoneWRot(id, w3dr);
+		}
+
+		public TSMatrix4x4 GetMatrixFromBoneId(int id)
+		{
+			CallForUpdate(id);
+			return Skeleton.BoneOffsetMat(id);
 		}
 
 		public TSQuaternion GetQuatFromBoneId(int id)
 		{
-			return Transformation.MatRotation(Skeleton.LastSkeletonPose[id]);
+			CallForUpdate(id);
+			return Transformation.MatRotation(Skeleton.BoneOffsetMat(id));
 		}
 
 		public bool HasUpdated { get; private set; }
-		WithSkeleton parent = null;
+		IWithSkeleton parent = null;
 		int parentBoneId = -1;
 		FP scaleAsChild = 1;
-		readonly List<WithSkeleton> children = new List<WithSkeleton>();
+		readonly HashSet<IWithSkeleton> children = new HashSet<IWithSkeleton>();
 
-		public bool SetParent(WithSkeleton parent, int boneId, float scaleOverride = 0.0f)
+		public bool SetParent(IWithSkeleton parent, int boneId, float scaleOverride = 0.0f)
 		{
 			if (HasChild(parent))
 				return false;
@@ -191,8 +173,18 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 			this.parent = parent;
 			parentBoneId = boneId;
 			scaleAsChild = scaleOverride == 0.0f ? Scale : scaleOverride;
-			parent.children.Add(this);
+			parent.AddChild(this);
 			return true;
+		}
+
+		public void AddChild(IWithSkeleton child)
+		{
+			children.Add(child);
+		}
+
+		public void RemoveChild(IWithSkeleton child)
+		{
+			children.Remove(child);
 		}
 
 		public void ReleaseFromParent()
@@ -200,13 +192,13 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 			if (parent == null)
 				return;
 
-			parent.children.Remove(this);
+			parent.RemoveChild(this);
 			parent = null;
 			parentBoneId = -1;
 			scaleAsChild = 1;
 		}
 
-		public bool HasChild(WithSkeleton skeleton)
+		public bool HasChild(IWithSkeleton skeleton)
 		{
 			if (children.Count == 0)
 				return false;
@@ -222,36 +214,55 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 			return false;
 		}
 
-		public void CallForUpdate(int tickForUpdate = 2)
+
+		public void CallForUpdate(int boneid)
 		{
 			if (OnlyUpdateForDraw)
 				throw new Exception("This WithSkeleton " + Name + " is OnlyUpdateForDraw, Can't CallForUpdate by logic");
 
-			toUpdate = tickForUpdate;
-
 			if (parent != null)
 			{
-				parent.CallForUpdate();
+				parent.CallForUpdate(parentBoneId);
 			}
+
+			if (BlendTreeHandler != null)
+			{
+				Skeleton.UpdateBone(boneid, BlendTreeHandler.GetResult());
+			}
+			else
+				Skeleton.UpdateBone(boneid);
 		}
 
-		public void UpdateSkeleton()
+		public void FlushLogicPose()
+		{
+			Skeleton.FlushLogicOffset();
+		}
+
+		public void FlushRenderPose()
+		{
+			Skeleton.FlushRenderOffset();
+		}
+
+		public void UpdateSkeletonTick()
 		{
 			HasUpdated = false;
 
 			SkeletonTick();
-			CheckIKUpdate();
+			UpdateSkeletonRoot();
+		}
 
-			if (parent != null)
+		public void UpdateWholeSkeleton(bool callbyParent)
+		{
+			if (!callbyParent && parent != null)
 				return;
 
-			UpdateSkeletonInner(ToUpdateSkeleton);
+			UpdateSkeletonInner();
 		}
 
 		/// <summary>
 		/// notice that! the ik and some other trait which can update skeleton need to use the last tick anim params
 		/// </summary>
-		void UpdateSkeletonInner(bool callbyParent)
+		void UpdateSkeletonInner()
 		{
 			if (OnlyUpdateForDraw)
 			{
@@ -260,39 +271,41 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 					UpdateDirectly();
 				}
 			}
-			else if (callbyParent)
+			else
 			{
 				UpdateDirectly();
 			}
 
 			foreach (var child in children)
-				child.UpdateSkeletonInner(callbyParent);
+				child.UpdateWholeSkeleton(true);
 		}
 
-		void UpdateDirectly()
+		void UpdateSkeletonRoot()
 		{
 			if (parent == null)
 				Skeleton.SetOffset(lastSelfPos, lastSelfRot, lastScale);
 			else
-				Skeleton.SetOffset(Transformation.MatWithNewScale(parent.Skeleton.BoneOffsetMat(parentBoneId), scaleAsChild));
+				Skeleton.SetOffset(Transformation.MatWithNewScale(parent.GetMatrixFromBoneId(parentBoneId), scaleAsChild));
+		}
+
+		void UpdateDirectly()
+		{
+			if (HasUpdated)
+				return;
 
 			if (BlendTreeHandler != null)
 			{
-				Skeleton.UpdateOffset(BlendTreeHandler.GetResult());
+				Skeleton.UpdateRenderOffset(BlendTreeHandler.GetResult());
 			}
 			else
-				Skeleton.UpdateOffset();
+				Skeleton.UpdateRenderOffset();
 
-			// TODO: this is using for multiple thread in future
-			Skeleton.UpdateLastPose();
 			HasUpdated = true;
-			if (toUpdate > 0)
-				toUpdate--;
 		}
 
-		public void UpdateDrawInfo()
+		public void UpdateDrawInfo(bool callbyParent)
 		{
-			if (parent != null)
+			if (!callbyParent && parent != null)
 				return;
 
 			UpdateDrawInfoInner(Draw);
@@ -303,7 +316,7 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 			if (lastDrawtick == Drawtick)
 			{
 				foreach (var child in children)
-					child.UpdateDrawInfoInner(callbyParent);
+					child.UpdateDrawInfo(true);
 				return;
 			}
 
@@ -321,7 +334,7 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 			}
 
 			foreach (var child in children)
-				child.UpdateDrawInfoInner(callbyParent);
+				child.UpdateDrawInfo(true);
 		}
 	}
 }

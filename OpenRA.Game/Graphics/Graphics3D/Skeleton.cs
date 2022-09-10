@@ -120,20 +120,21 @@ namespace OpenRA.Graphics
 		InverseKinematicState IKState { get; }
 		void InitIK(ref TSMatrix4x4 self);
 		void CalculateIK(ref TSMatrix4x4 self);
+		void UpdateTarget();
 	}
 
 	public class SkeletonInstance
 	{
 		public readonly BoneInstance[] Bones;
-		bool hasUpdated = false;
-		bool hasUpdatedLast = false;
-		public readonly TSMatrix4x4[] LastSkeletonPose;
+		bool hasUpdatedAll = false;
 
 		readonly SkeletonAsset asset;
 		readonly OrderedSkeleton skeleton;
 
 		readonly int boneSize;
+		readonly bool[] renderUpdateFlags;
 		readonly bool[] updateFlags;
+
 		readonly bool skipUpdateAdjBonePose;
 		public TSMatrix4x4 Offset { get; private set; }
 		public int InstanceID = -1;
@@ -174,7 +175,7 @@ namespace OpenRA.Graphics
 
 		public TSMatrix4x4 BoneOffsetMat(int id)
 		{
-			return LastSkeletonPose[id];
+			return Bones[id].CurrentPose;
 		}
 
 		public void SetBoneOffsetMat(int id, TSMatrix4x4 mat, bool ignoreScale = false)
@@ -194,7 +195,7 @@ namespace OpenRA.Graphics
 		/// </summary>
 		public WPos BoneWPos(int id, in World3DRenderer w3dr)
 		{
-			return w3dr.GetWPosFromMatrix(LastSkeletonPose[id]);
+			return w3dr.GetWPosFromMatrix(Bones[id].CurrentPose);
 		}
 
 		/// <summary>
@@ -202,7 +203,7 @@ namespace OpenRA.Graphics
 		/// </summary>
 		public WRot BoneWRot(int id, in World3DRenderer w3dr)
 		{
-			return w3dr.GetWRotFromMatrix(LastSkeletonPose[id]);
+			return w3dr.GetWRotFromMatrix(Bones[id].CurrentPose);
 		}
 
 		public SkeletonInstance(in BoneAsset[] boneAssets, in SkeletonAsset asset, in OrderedSkeleton skeleton)
@@ -211,7 +212,9 @@ namespace OpenRA.Graphics
 			this.skeleton = skeleton;
 			skipUpdateAdjBonePose = !skeleton.UseDynamicAdjBonePose;
 			boneSize = boneAssets.Length;
+			renderUpdateFlags = new bool[boneSize];
 			updateFlags = new bool[boneSize];
+
 			Bones = new BoneInstance[boneSize];
 			for (int i = 0; i < boneSize; i++)
 			{
@@ -224,15 +227,32 @@ namespace OpenRA.Graphics
 				Bones[mb.Value.Id].RestPose = mb.Value.RestPose;
 			}
 
-			LastSkeletonPose = new TSMatrix4x4[boneSize];
-			UpdateOffset();
-			UpdateLastPose();
+			FlushRenderOffset();
+			FlushLogicOffset();
+
 			AnimTexoffset = -1;
 		}
 
-		void UpdateInner(int id, in Frame animFrame, in AnimMask animMask)
+		public void UpdateBone(int id, in BlendTreeNodeOutPut treeNodeOutPut)
 		{
-			if (updateFlags[id] == true)
+			if (updateFlags[id])
+				return;
+			UpdateBoneInner(id, treeNodeOutPut.OutPutFrame, treeNodeOutPut.AnimMask, false);
+		}
+
+		public void UpdateBone(int id)
+		{
+			if (updateFlags[id])
+				return;
+			UpdateBoneInner(id, EmptyFrame, asset.AllValidMask, false);
+		}
+
+		void UpdateBoneInner(int id, in Frame animFrame, in AnimMask animMask, bool render)
+		{
+			if (render && renderUpdateFlags[id] == true)
+				return;
+
+			if (!render && updateFlags[id] == true)
 				return;
 
 			if (Bones[id].ParentId == -1)
@@ -248,11 +268,14 @@ namespace OpenRA.Graphics
 					currentIK.CalculateIK(ref Bones[id].CurrentPose);
 				}
 
-				updateFlags[id] = true;
+				if (render)
+					renderUpdateFlags[id] = true;
+				else
+					updateFlags[id] = true;
 			}
 			else
 			{
-				UpdateInner(Bones[id].ParentId, animFrame, animMask);
+				UpdateBoneInner(Bones[id].ParentId, animFrame, animMask, render);
 
 				// animMask length should be same as frame length
 				if (Bones[id].AnimId != -1 && animFrame.Length > Bones[id].AnimId && animFrame.HasTransformation[Bones[id].AnimId] && animMask[Bones[id].AnimId])
@@ -265,60 +288,51 @@ namespace OpenRA.Graphics
 					currentIK.CalculateIK(ref Bones[id].CurrentPose);
 				}
 
-				updateFlags[id] = true;
+				if (render)
+					renderUpdateFlags[id] = true;
+				else
+					updateFlags[id] = true;
 			}
 		}
 
-		public void UpdateOffset(in Frame animFrame = null, in AnimMask animMask = null)
+		public void FlushLogicOffset()
 		{
 			for (int i = 0; i < boneSize; i++)
 			{
 				updateFlags[i] = false;
 			}
+		}
 
+		public void FlushRenderOffset()
+		{
+			for (int i = 0; i < boneSize; i++)
+			{
+				renderUpdateFlags[i] = false;
+			}
+
+			hasUpdatedAll = false;
+		}
+
+		public void UpdateRenderOffset(in Frame animFrame = null, in AnimMask animMask = null)
+		{
 			for (int i = 0; i < boneSize; i++)
 			{
 				if (skipUpdateAdjBonePose && asset.Bones[i].IsAdjBone)
 					continue;
-				UpdateInner(i, animFrame == null ? EmptyFrame : animFrame, animMask == null ? asset.AllValidMask : animMask);
+				UpdateBoneInner(i, animFrame == null ? EmptyFrame : animFrame, animMask == null ? asset.AllValidMask : animMask, true);
 			}
 
-			hasUpdated = true;
+			hasUpdatedAll = true;
 		}
 
-		public void UpdateOffset(in BlendTreeNodeOutPut treeNodeOutPut)
+		public void UpdateRenderOffset(in BlendTreeNodeOutPut treeNodeOutPut)
 		{
-			for (int i = 0; i < boneSize; i++)
-			{
-				updateFlags[i] = false;
-			}
-
-			for (int i = 0; i < boneSize; i++)
-			{
-				if (skipUpdateAdjBonePose && asset.Bones[i].IsAdjBone)
-					continue;
-				UpdateInner(i, treeNodeOutPut.OutPutFrame, treeNodeOutPut.AnimMask);
-			}
-
-			hasUpdated = true;
-		}
-
-		public void UpdateLastPose()
-		{
-			if (hasUpdated)
-				for (int i = 0; i < boneSize; i++)
-				{
-					LastSkeletonPose[i] = Bones[i].CurrentPose;
-				}
-			else
-				return;
-
-			hasUpdatedLast = true;
+			UpdateRenderOffset(treeNodeOutPut.OutPutFrame, treeNodeOutPut.AnimMask);
 		}
 
 		public void ProcessManagerData()
 		{
-			if (InstanceID == -1 || !hasUpdatedLast)
+			if (InstanceID == -1 || !hasUpdatedAll)
 				return;
 			int dataWidth = asset.SkinBonesIndices.Length * 16;
 			int start = OrderedSkeleton.AnimTransformDataIndex;
@@ -327,32 +341,33 @@ namespace OpenRA.Graphics
 			OrderedSkeleton.AnimTransformDataIndex = start + dataWidth;
 			AnimTexoffset = start;
 			int i = 0;
-			//int start = DrawID * dataWidth;
+
 			for (int x = 0; x < dataWidth; x += 16)
 			{
 				int id = asset.SkinBonesIndices[i];
 				if (skipUpdateAdjBonePose)
 					id = asset.SkinBonesMatchIndices[i];
-				var c0 = LastSkeletonPose[id].Column0;
-				var c1 = LastSkeletonPose[id].Column1;
-				var c2 = LastSkeletonPose[id].Column2;
-				var c3 = LastSkeletonPose[id].Column3;
-				OrderedSkeleton.AnimTransformData[start + x + 0] = (float)c0.x;
-				OrderedSkeleton.AnimTransformData[start + x + 1] = (float)c0.y;
-				OrderedSkeleton.AnimTransformData[start + x + 2] = (float)c0.z;
-				OrderedSkeleton.AnimTransformData[start + x + 3] = (float)c0.w;
-				OrderedSkeleton.AnimTransformData[start + x + 4] = (float)c1.x;
-				OrderedSkeleton.AnimTransformData[start + x + 5] = (float)c1.y;
-				OrderedSkeleton.AnimTransformData[start + x + 6] = (float)c1.z;
-				OrderedSkeleton.AnimTransformData[start + x + 7] = (float)c1.w;
-				OrderedSkeleton.AnimTransformData[start + x + 8] = (float)c2.x;
-				OrderedSkeleton.AnimTransformData[start + x + 9] = (float)c2.y;
-				OrderedSkeleton.AnimTransformData[start + x + 10] = (float)c2.z;
-				OrderedSkeleton.AnimTransformData[start + x + 11] = (float)c2.w;
-				OrderedSkeleton.AnimTransformData[start + x + 12] = (float)c3.x;
-				OrderedSkeleton.AnimTransformData[start + x + 13] = (float)c3.y;
-				OrderedSkeleton.AnimTransformData[start + x + 14] = (float)c3.z;
-				OrderedSkeleton.AnimTransformData[start + x + 15] = (float)c3.w;
+				var mat4 = Bones[id].CurrentPose.ToMat4();
+				var c0 = mat4.Column0;
+				var c1 = mat4.Column1;
+				var c2 = mat4.Column2;
+				var c3 = mat4.Column3;
+				OrderedSkeleton.AnimTransformData[start + x + 0] = c0.x;
+				OrderedSkeleton.AnimTransformData[start + x + 1] = c0.y;
+				OrderedSkeleton.AnimTransformData[start + x + 2] = c0.z;
+				OrderedSkeleton.AnimTransformData[start + x + 3] = c0.w;
+				OrderedSkeleton.AnimTransformData[start + x + 4] = c1.x;
+				OrderedSkeleton.AnimTransformData[start + x + 5] = c1.y;
+				OrderedSkeleton.AnimTransformData[start + x + 6] = c1.z;
+				OrderedSkeleton.AnimTransformData[start + x + 7] = c1.w;
+				OrderedSkeleton.AnimTransformData[start + x + 8] = c2.x;
+				OrderedSkeleton.AnimTransformData[start + x + 9] = c2.y;
+				OrderedSkeleton.AnimTransformData[start + x + 10] = c2.z;
+				OrderedSkeleton.AnimTransformData[start + x + 11] = c2.w;
+				OrderedSkeleton.AnimTransformData[start + x + 12] = c3.x;
+				OrderedSkeleton.AnimTransformData[start + x + 13] = c3.y;
+				OrderedSkeleton.AnimTransformData[start + x + 14] = c3.z;
+				OrderedSkeleton.AnimTransformData[start + x + 15] = c3.w;
 				i++;
 				if (i >= asset.SkinBonesIndices.Length)
 				{
@@ -361,9 +376,9 @@ namespace OpenRA.Graphics
 			}
 		}
 
-		public bool CanGetPose()
+		public bool CanDraw()
 		{
-			return hasUpdatedLast && hasUpdated;
+			return AnimTexoffset >= 0;
 		}
 	}
 

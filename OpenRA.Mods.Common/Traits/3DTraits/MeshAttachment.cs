@@ -17,7 +17,7 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 		public override object Create(ActorInitializer init) { return new MeshAttachment(init.Self, this); }
 	}
 
-	public class MeshAttachment : WithMesh, ITick
+	public class MeshAttachment : WithMesh
 	{
 		protected readonly int AttachBoneId = -1;
 		protected readonly WithSkeleton MainSkeleton;
@@ -63,17 +63,6 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 
 				RenderMeshes.Add(MeshInstance);
 			}
-		}
-
-		//int tick = 0;
-		//TSMatrix4x4 mat;
-		public virtual void Tick(Actor self)
-		{
-			if (AttachmentSkeleton != null)
-				AttachmentSkeleton.Skeleton.SetOffset(Transformation.MatWithNewScale(MainSkeleton.Skeleton.BoneOffsetMat(AttachBoneId), Scale));
-
-			//tick = (tick + 1) % 60;
-			//mat = TSMatrix4x4.RotateY((FP)tick * FP.Pi / 30);
 		}
 	}
 }

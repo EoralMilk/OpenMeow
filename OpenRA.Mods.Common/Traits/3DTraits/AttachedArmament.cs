@@ -13,6 +13,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using OpenRA.GameRules;
+using OpenRA.Graphics;
 using OpenRA.Mods.Common.Projectiles;
 using OpenRA.Mods.Common.Traits.Render;
 using OpenRA.Mods.Common.Traits.Trait3D;
@@ -30,25 +31,11 @@ namespace OpenRA.Mods.Common.Traits
 
 	}
 
-	public class AttachedArmament : Armament, IUpdateWithSkeleton
+	public class AttachedArmament : Armament
 	{
 		readonly WithSkeleton withSkeleton;
 		TurretAttachment turret;
-		AttackBase attack;
-		IFacing facing;
-		BodyOrientation coords;
-		INotifyBurstComplete[] notifyBurstComplete;
-		INotifyAttack[] notifyAttacks;
 
-		int conditionToken = Actor.InvalidConditionToken;
-
-		IEnumerable<int> rangeModifiers;
-		IEnumerable<int> reloadModifiers;
-		IEnumerable<int> damageModifiers;
-		IEnumerable<int> inaccuracyModifiers;
-
-		int ticksSinceLastShot;
-		int currentBarrel;
 		readonly bool hasFacingTolerance;
 		readonly List<(int Ticks, int Burst, Action<int> Func)> delayedActions = new List<(int, int, Action<int>)>();
 
@@ -92,96 +79,16 @@ namespace OpenRA.Mods.Common.Traits
 
 		protected override void Created(Actor self)
 		{
-			turret = self.TraitsImplementing<TurretAttachment>().FirstOrDefault(t => t.Name == Info.Turret);
-			attack = self.TraitsImplementing<AttackBase>().First();
-			coords = self.Trait<BodyOrientation>();
-			notifyBurstComplete = self.TraitsImplementing<INotifyBurstComplete>().ToArray();
-			notifyAttacks = self.TraitsImplementing<INotifyAttack>().ToArray();
-			rangeModifiers = self.TraitsImplementing<IRangeModifier>().ToArray().Select(m => m.GetRangeModifier());
-			reloadModifiers = self.TraitsImplementing<IReloadModifier>().ToArray().Select(m => m.GetReloadModifier());
-			damageModifiers = self.TraitsImplementing<IFirepowerModifier>().ToArray().Select(m => m.GetFirepowerModifier());
-			inaccuracyModifiers = self.TraitsImplementing<IInaccuracyModifier>().ToArray().Select(m => m.GetInaccuracyModifier());
-			facing = self.TraitOrDefault<IFacing>();
 			base.Created(self);
+			turret = self.TraitsImplementing<TurretAttachment>().FirstOrDefault(t => t.Name == Info.Turret);
 		}
 
-		void UpdateCondition(Actor self)
+		protected override bool CanFire(Actor self, in Target target)
 		{
-			if (string.IsNullOrEmpty(Info.ReloadingCondition))
-				return;
-
-			var enabled = !IsTraitDisabled && IsReloading;
-
-			if (enabled && conditionToken == Actor.InvalidConditionToken)
-				conditionToken = self.GrantCondition(Info.ReloadingCondition);
-			else if (!enabled && conditionToken != Actor.InvalidConditionToken)
-				conditionToken = self.RevokeCondition(conditionToken);
-		}
-
-		protected override void Tick(Actor self)
-		{
-			// keep empty
-		}
-
-		void TickEarly(Actor self)
-		{
-			// We need to disable conditions if IsTraitDisabled is true, so we have to update conditions before the return below.
-			UpdateCondition(self);
-
-			if (IsTraitDisabled)
-				return;
-
-			if (ticksSinceLastShot < Weapon.ReloadDelay)
-				++ticksSinceLastShot;
-
-			if (FireDelay > 0)
-				--FireDelay;
-
-			Recoil = new WDist(Math.Max(0, Recoil.Length - Info.RecoilRecovery.Length));
-
-			for (var i = 0; i < delayedActions.Count; i++)
-			{
-				var x = delayedActions[i];
-				if (--x.Ticks <= 0)
-					x.Func(x.Burst);
-				delayedActions[i] = x;
-			}
-
-			delayedActions.RemoveAll(a => a.Ticks <= 0);
-		}
-
-		protected new void ScheduleDelayedAction(int t, int b, Action<int> a)
-		{
-			if (t > 0)
-				delayedActions.Add((t, b, a));
-			else
-				a(b);
-		}
-
-		// Note: facing is only used by the legacy positioning code
-		// The world coordinate model uses Actor.Orientation
-		public override Barrel CheckFire(Actor self, IFacing facing, in Target target)
-		{
-			if (hasFacingTolerance && facing != null)
-			{
-				delayedFaceAngle = facing.Facing;
-			}
-
-			delayedTarget = target;
-			delayedIFacing = facing;
-			needDelayedCheckFire = true;
-			lastIsReloading = IsReloading;
-			lastTraitPaused = IsTraitPaused;
-			return delayedBarrel;
-		}
-
-		bool lastIsReloading;
-		bool lastTraitPaused;
-
-		protected bool CanFire(Actor self, in Target target)
-		{
-			if (lastIsReloading || lastTraitPaused)
+			if (IsReloading || IsTraitPaused)
 				return false;
+
+			withSkeleton.CallForUpdate(boneIds[currentBarrel % boneIds.Length]);
 
 			if (turret != null && !turret.FacingWithInTolerance(Info.FacingTolerance))
 				return false;
@@ -193,71 +100,13 @@ namespace OpenRA.Mods.Common.Traits
 			if (!Weapon.IsValidAgainst(target, self.World, self))
 				return false;
 
-			if (hasFacingTolerance && facing != null)
+			if (turret == null && hasFacingTolerance && facing != null)
 			{
 				var delta = target.CenterPosition - self.CenterPosition;
-				return Util.FacingWithinTolerance(delayedFaceAngle, delta.Yaw + Info.FiringAngle, Info.FacingTolerance);
+				return Util.FacingWithinTolerance(facing.Facing, delta.Yaw + Info.FiringAngle, Info.FacingTolerance);
 			}
 
 			return true;
-		}
-
-		public void UpdateEarly(Actor self)
-		{
-			if (!needDelayedCheckFire)
-				return;
-
-			if (turret != null)
-			{
-				turret.FacingTarget(delayedTarget, attack.GetTargetPosition(self.CenterPosition, delayedTarget));
-			}
-			else
-			{
-				withSkeleton.CallForUpdate();
-			}
-		}
-
-		bool needDelayedCheckFire = false;
-		WAngle delayedFaceAngle;
-		Target delayedTarget;
-		IFacing delayedIFacing;
-		Barrel delayedBarrel = null;
-		public void UpdateLate(Actor self)
-		{
-			if (!needDelayedCheckFire || withSkeleton.ToUpdateTick <= 0)
-			{
-				delayedBarrel = null;
-			}
-			else
-			{
-				needDelayedCheckFire = false;
-
-				if (!CanFire(self, delayedTarget))
-				{
-					delayedBarrel = null;
-				}
-				else
-				{
-					if (ticksSinceLastShot >= Weapon.ReloadDelay)
-						Burst = Weapon.Burst;
-
-					ticksSinceLastShot = 0;
-
-					for (int i = 0; i < Info.BurstPerFireCount; i++)
-					{
-						// If Weapon.Burst == 1, cycle through all LocalOffsets, otherwise use the offset corresponding to current Burst
-						currentBarrel %= barrelCount;
-						delayedBarrel = Weapon.Burst == 1 ? Barrels[currentBarrel] : Barrels[Burst % Barrels.Length];
-						currentBarrel++;
-
-						FireBarrel(self, delayedIFacing, delayedTarget, delayedBarrel);
-
-						UpdateBurst(self, delayedTarget);
-					}
-				}
-			}
-
-			TickEarly(self);
 		}
 
 		protected override WPos CalculateMuzzleWPos(Actor self, Barrel b)
@@ -268,78 +117,6 @@ namespace OpenRA.Mods.Common.Traits
 		protected override WRot CalculateMuzzleOrientation(Actor self, Barrel b)
 		{
 			return withSkeleton.GetWRotFromBoneId(b.BoneId);
-		}
-
-		protected override void FireBarrel(Actor self, IFacing facing, in Target target, Barrel barrel)
-		{
-			foreach (var na in notifyAttacks)
-				na.PreparingAttack(self, target, this, barrel);
-			Func<WPos> muzzlePosition = () => CalculateMuzzleWPos(self, barrel);
-			Func<WAngle> muzzleFacing = () => CalculateMuzzleOrientation(self, barrel).Yaw;
-			var muzzleOrientation = WRot.FromYaw(muzzleFacing());
-
-			var targetOffset = AimTargetOn(self, muzzlePosition(), target);
-			var passiveTarget = Weapon.TargetActorCenter ? target.CenterPosition + targetOffset : target.Positions.PositionClosestTo(muzzlePosition()) + targetOffset;
-			var initialOffset = Weapon.FirstBurstTargetOffset;
-			if (initialOffset != WVec.Zero)
-			{
-				// We want this to match Armament.LocalOffset, so we need to convert it to forward, right, up
-				initialOffset = new WVec(initialOffset.Y, -initialOffset.X, initialOffset.Z);
-				passiveTarget += initialOffset.Rotate(muzzleOrientation);
-			}
-
-			var followingOffset = Weapon.FollowingBurstTargetOffset;
-			if (followingOffset != WVec.Zero)
-			{
-				// We want this to match Armament.LocalOffset, so we need to convert it to forward, right, up
-				followingOffset = new WVec(followingOffset.Y, -followingOffset.X, followingOffset.Z);
-				passiveTarget += ((Weapon.Burst - Burst) * followingOffset).Rotate(muzzleOrientation);
-			}
-
-			var args = new ProjectileArgs
-			{
-				Weapon = Weapon,
-				Rotation = TrueSync.TSQuaternion.Inverse(withSkeleton.GetQuatFromBoneId(barrel.BoneId)),
-				Facing = muzzleFacing(),
-				CurrentMuzzleFacing = muzzleFacing,
-
-				DamageModifiers = damageModifiers.ToArray(),
-
-				InaccuracyModifiers = inaccuracyModifiers.ToArray(),
-
-				RangeModifiers = rangeModifiers.ToArray(),
-
-				Source = muzzlePosition(),
-				CurrentSource = muzzlePosition,
-				SourceActor = self,
-				PassiveTarget = passiveTarget,
-				GuidedTarget = target
-			};
-
-			// Lambdas can't use 'in' variables, so capture a copy for later
-			var delayedTarget = target;
-			ScheduleDelayedAction(Info.FireDelay, Burst, (burst) =>
-			{
-				if (args.Weapon.Projectile != null)
-				{
-					var projectile = args.Weapon.Projectile.Create(args);
-					if (projectile != null)
-					{
-						self.World.Add(projectile);
-					}
-
-					if (args.Weapon.Report != null && args.Weapon.Report.Length > 0)
-						Game.Sound.Play(SoundType.World, args.Weapon.Report, self.World, self.CenterPosition);
-
-					if (burst == args.Weapon.Burst && args.Weapon.StartBurstReport != null && args.Weapon.StartBurstReport.Length > 0)
-						Game.Sound.Play(SoundType.World, args.Weapon.StartBurstReport, self.World, self.CenterPosition);
-
-					foreach (var na in notifyAttacks)
-						na.Attacking(self, delayedTarget, this, barrel);
-
-					Recoil = Info.Recoil;
-				}
-			});
 		}
 
 	}
