@@ -20,7 +20,6 @@ namespace OpenRA.Mods.Common.Activities
 	public class DeliverUnit : Activity
 	{
 		readonly Carryall carryall;
-		readonly BodyOrientation body;
 		readonly bool assignTargetOnFirstRun;
 		readonly WDist deliverRange;
 		readonly Color? targetLineColor;
@@ -42,7 +41,6 @@ namespace OpenRA.Mods.Common.Activities
 			this.targetLineColor = targetLineColor;
 
 			carryall = self.Trait<Carryall>();
-			body = self.Trait<BodyOrientation>();
 		}
 
 		protected override void OnFirstRun(Actor self)

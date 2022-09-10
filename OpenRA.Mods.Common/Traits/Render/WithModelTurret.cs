@@ -49,15 +49,11 @@ namespace OpenRA.Mods.Common.Traits.Render
 
 	public class WithModelTurret : ConditionalTrait<WithModelTurretInfo>
 	{
-		readonly Actor self;
 		readonly Turreted turreted;
-		readonly BodyOrientation body;
 
 		public WithModelTurret(Actor self, WithModelTurretInfo info)
 			: base(info)
 		{
-			this.self = self;
-			body = self.Trait<BodyOrientation>();
 			turreted = self.TraitsImplementing<Turreted>()
 				.First(tt => tt.Name == Info.Turret);
 
