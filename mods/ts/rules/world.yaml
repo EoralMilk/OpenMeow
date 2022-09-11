@@ -313,6 +313,7 @@ World:
 		MaxCountPerCell: 1
 	TSResourceLayer:
 		VeinholeActors: veinhole
+		VeinType: Veins
 		ResourceTypes:
 			Tiberium:
 				ResourceIndex: 1

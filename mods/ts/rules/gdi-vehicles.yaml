@@ -225,7 +225,7 @@ MMCH:
 	RenderDetectionCircle:
 	WithMuzzleOverlay:
 	WithModelBarrel:
-		LocalOffset: 0,51,256
+		LocalOffset: 0,51,0
 	Selectable:
 		Bounds: 905, 2534, 0, -482
 	Carryable:

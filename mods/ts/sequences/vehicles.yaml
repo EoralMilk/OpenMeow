@@ -32,6 +32,7 @@ harv.gdi:
 	harvest: harvestr
 		Length: *
 		ZOffset: 10
+		Facings: 1
 		MeshType: Plane
 	icon: sidebar-gdi|harvicon
 
@@ -41,6 +42,7 @@ harv.nod:
 	harvest: harvestr
 		Length: *
 		ZOffset: 10
+		Facings: 1
 		MeshType: Plane
 	icon: sidebar-nod|harvicon
 

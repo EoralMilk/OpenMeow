@@ -87,6 +87,9 @@ BIKE:
 		RequiresCondition: !inside-tunnel && !rank-elite
 	LeavesTrails@VEINS:
 		RequiresCondition: !inside-tunnel && !rank-elite
+	-DamagedByTerrain@VEINS:
+	-LeavesTrails@VEINS:
+
 
 TTNK:
 	Inherits: ^Tank

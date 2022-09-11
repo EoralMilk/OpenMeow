@@ -1,4 +1,4 @@
-MapFormat: 11
+MapFormat: 12
 
 RequiresMod: ts
 
@@ -1545,5 +1545,8 @@ Actors:
 		Facing: 384
 		SubCell: 2
 		Location: 58,9
+	Actor484: veinhole
+		Owner: Neutral
+		Location: 68,18
 
 Rules: rules.yaml

@@ -125,6 +125,15 @@ VEINHOLE:
 	MapEditorData:
 		Categories: Resource spawn
 	Interactable:
+	SeedsResource:
+		ResourceType: Veins
+		Interval: 125
+	TerrainLightSource:
+		Range: 7c128
+		Intensity: 0.36
+		RedTint: 0.65
+		GreenTint: 0.01
+		BlueTint: 0.01
 
 ^TibFlora:
 	Inherits: ^Tree

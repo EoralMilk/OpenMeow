@@ -178,7 +178,7 @@ void main()
 			float falloff = (TerrainLightColorRange[i].a - dist) / TerrainLightColorRange[i].a;
 			tint += falloff * TerrainLightColorRange[i].rgb;
 		}
-		vTint = vec4(tint * 4.0 + vec3(1.0) + aVertexTint.rgb, aVertexTint.a);
+		vTint = vec4(tint * 5.0 + vec3(1.0) + aVertexTint.rgb, aVertexTint.a);
 
 	}
 
