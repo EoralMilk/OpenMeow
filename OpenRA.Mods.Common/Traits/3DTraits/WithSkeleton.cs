@@ -300,16 +300,8 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 
 		void UpdateDrawInfoInner(bool callbyParent)
 		{
-			if (Draw || callbyParent)
-			{
-				// update my skeletonInstance drawId
-				OrderedSkeleton.AddInstance(Skeleton);
-				Skeleton.ProcessManagerData();
-			}
-			else
-			{
-				Skeleton.InstanceID = -1;
-			}
+			OrderedSkeleton.AddInstance(Skeleton);
+			Skeleton.ProcessManagerData();
 
 			foreach (var child in children)
 				child.UpdateDrawInfo(true);

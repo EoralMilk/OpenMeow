@@ -21,7 +21,7 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 		public override object Create(ActorInitializer init) { return new RenderMeshes(init.Self, this); }
 	}
 
-	public class RenderMeshes : IRender, ITick, INotifyOwnerChanged, INotifyCreated
+	public class RenderMeshes : IRender, INotifyOwnerChanged, INotifyCreated
 	{
 		public readonly RenderMeshesInfo Info;
 		readonly List<MeshInstance> meshes = new List<MeshInstance>();
@@ -50,24 +50,6 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 
 		bool initializePalettes = true;
 		public void OnOwnerChanged(Actor self, Player oldOwner, Player newOwner) { initializePalettes = true; }
-
-		void ITick.Tick(Actor self)
-		{
-			foreach (var wskv in withSkeletons)
-			{
-				wskv.Value.Draw = inScreen;
-			}
-
-			inScreen = false;
-		}
-
-		/// <summary>
-		/// call WithSkeletons for update
-		/// </summary>
-		public void CallWhenInSceen()
-		{
-			inScreen = true;
-		}
 
 		IEnumerable<IRenderable> IRender.Render(Actor self, WorldRenderer wr)
 		{

@@ -82,7 +82,7 @@ namespace OpenRA.Mods.Common.Graphics
 		public IFinalizedRenderable PrepareRender(WorldRenderer wr)
 		{
 			var renderable = this;
-			RenderMeshes.CallWhenInSceen();
+			// RenderMeshes.CallWhenInSceen();
 			var t = renderable.tint;
 			if (wr.TerrainLighting != null && (renderable.tintModifiers & TintModifiers.IgnoreWorldTint) == 0)
 				t *= wr.TerrainLighting.TintAt(renderable.pos);
