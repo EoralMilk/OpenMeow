@@ -80,7 +80,7 @@ HVR:
 		Range: 7c0
 		MaxHeightDelta: 3
 	Armament:
-		Weapon: HoverMissileDual
+		Weapon: HoverMissileQuad
 		Turret: primary
 		#LocalOffset: 122,172,666, 122,-172,666, 122,211,666, 122,-211,666
 		LocalOffset: 122,172,666, 122,-172,666, 122,211,606, 122,-211,606
@@ -297,6 +297,7 @@ SONIC:
 	Inherits@VOXELS: ^VoxelActor
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@WithRA2VoxRender: ^WithRA2VoxRender
 	Valued:
 		Cost: 1300
 	Tooltip:
@@ -501,3 +502,8 @@ JUGG:
 		ArmamentNames: deployed
 	Selectable:
 		DecorationBounds: 1448, 2413, 0, -482
+	RenderModels:
+		Scale: 1
+		LightScale: 0.22
+		SpecularScale: 0.33
+		AmbientScale: 0.88

@@ -76,7 +76,7 @@ BIKE:
 		RequiresCondition: !rank-elite
 		LocalOffset: -153,-204,294, -153,204,294
 	Armament@ELITE:
-		Weapon: HoverMissile
+		Weapon: BikeMissileDual
 		RequiresCondition: rank-elite
 		LocalOffset: -153,-204,294, -153,204,294
 	AttackFrontal:
@@ -168,14 +168,14 @@ TTNK:
 		TurnSpeed: 24
 		Turret: deployed
 		InitialFacing: 0
-		Offset: -20, -130, 274
+		Offset: -20, -130, 0
 		RealignDelay: -1
 		RequiresCondition: deployed || preparing-undeploy
 		RealignWhenDisable: true
 		RealignBeforeDeploy: true
 	WithModelBarrel:
 		Armament: deployed
-		LocalOffset: 181,0, 0 
+		LocalOffset: 181,0, 209
 		RequiresCondition: deployed || preparing-undeploy
 	WithModelTurret@deployed:
 		Turret: deployed

@@ -1008,12 +1008,14 @@
 	RenderModels:
 		NormalsPalette: normals
 		ShadowPalette: shadow
-		Scale: 1.4
-		LightScale: 0.28
-		SpecularScale: 0.4
-		AmbientScale: 1
+		Scale: 1.35
+		LightScale: 0.37
+		SpecularScale: 0.44
+		AmbientScale: 0.8
 	BodyOrientation:
 		QuantizedFacings: -1
+		UseClassicPerspectiveFudge: False
+		CameraPitch: 85
 
 ^VoxelActor:
 	Inherits@RenderVoxel: ^RenderVoxel
@@ -1023,10 +1025,10 @@
 
 ^WithRA2VoxRender:
 	RenderModels:
-		Scale: 1.12
-		LightScale: 0.22
-		SpecularScale: 0.33
-		AmbientScale: 0.88	
+		Scale: 1.11
+		# LightScale: 0.22
+		# SpecularScale: 0.33
+		# AmbientScale: 0.88
 
 
 ^CivilianVoxelVehicle:

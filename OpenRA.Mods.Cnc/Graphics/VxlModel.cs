@@ -221,6 +221,8 @@ namespace OpenRA.Mods.Cnc.Graphics
 
 	public class VxlModel : IModel
 	{
+		const float SCALE = 0.0833329975605011f;
+
 		readonly Limb[] limbData;
 		readonly float[] transforms;
 		readonly uint frames;
@@ -257,7 +259,6 @@ namespace OpenRA.Mods.Cnc.Graphics
 			}
 		}
 
-		// Milk: I don't understand
 		public float[] TransformationMatrix(uint limb, uint frame)
 		{
 			if (frame >= frames)
@@ -274,9 +275,10 @@ namespace OpenRA.Mods.Cnc.Graphics
 			t[13] *= l.Scale * (l.Bounds[4] - l.Bounds[1]) / l.Size[1];
 			t[14] *= l.Scale * (l.Bounds[5] - l.Bounds[2]) / l.Size[2];
 
-			// Center, flip and scale
+			// Center and scale, no flip!
 			t = OpenRA.Graphics.Util.MatrixMultiply(t, OpenRA.Graphics.Util.TranslationMatrix(l.Bounds[0], l.Bounds[1], l.Bounds[2]));
-			t = OpenRA.Graphics.Util.MatrixMultiply(OpenRA.Graphics.Util.ScaleMatrix(l.Scale, l.Scale, l.Scale), t);
+			// t = OpenRA.Graphics.Util.MatrixMultiply(OpenRA.Graphics.Util.ScaleMatrix(l.Scale, l.Scale, l.Scale), t);
+			t = OpenRA.Graphics.Util.MatrixMultiply(OpenRA.Graphics.Util.ScaleMatrix(SCALE, SCALE, SCALE), t);
 
 			return t;
 		}

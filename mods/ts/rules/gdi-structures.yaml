@@ -339,6 +339,9 @@ GAHPAD:
 GADEPT:
 	Inherits: ^Building
 	Inherits@SHAPE: ^3x3Shape
+	IsometricSelectable:
+		Height: 1
+		DecorationHeight: 24
 	Valued:
 		Cost: 1200
 	Tooltip:
