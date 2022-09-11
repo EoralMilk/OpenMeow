@@ -59,6 +59,7 @@ HARV:
 	Inherits: ^Tank
 	Inherits@VOXELS: ^VoxelActor
 	Inherits@selection: ^SelectableEconomicUnit
+	Inherits: ^WithRA2VoxRender
 	Valued:
 		Cost: 1400
 	Tooltip:

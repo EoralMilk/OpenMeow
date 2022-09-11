@@ -2,6 +2,7 @@ APC:
 	Inherits: ^Tank
 	Inherits@VOXELS: ^VoxelActor
 	Inherits@CARGOPIPS: ^CargoPips
+	Inherits: ^WithVoxelRenderFromIssly
 	Valued:
 		Cost: 800
 	Tooltip:
@@ -57,6 +58,8 @@ HVR:
 	Inherits@VOXELS: ^VoxelActor
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits: ^WithRA2VoxRender
+	#RenderModels: LightScale: 0.04SpecularScale: 0.8
 	Valued:
 		Cost: 900
 	Tooltip:
@@ -85,7 +88,8 @@ HVR:
 	Armament:
 		Weapon: HoverMissileDual
 		Turret: primary
-		LocalOffset: 122,172,666, 122,-172,666, 122,211,666, 122,-211,666
+		#LocalOffset: 122,172,666, 122,-172,666, 122,211,666, 122,-211,666
+		LocalOffset: 122,172,666, 122,-172,666, 122,211,606, 122,-211,606
 	Turreted:
 		TurnSpeed: 28
 		Turret: primary
@@ -228,8 +232,8 @@ MMCH:
 	RenderModels:
 		NormalsPalette: normals
 		ShadowPalette: shadow
-		Scale: 1.4
 	WithModelBarrel:
+		Scale: 1.4
 		LocalOffset: 0,51,256
 	Selectable:
 		Bounds: 905, 2534, 0, -482
@@ -302,6 +306,7 @@ SONIC:
 	Inherits@VOXELS: ^VoxelActor
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits: ^WithVoxelRenderFromIssly
 	Valued:
 		Cost: 1300
 	Tooltip:
@@ -328,15 +333,17 @@ SONIC:
 		MaxHeightDelta: 3
 	Armament:
 		Weapon: SonicZap
-		LocalOffset: -71,0,335
+		LocalOffset: -71,0,635
 	AttackTurreted:
 		Voice: Attack
 		PauseOnCondition: empdisable
 		OpportunityFire: False
 	Turreted:
 		TurnSpeed: 20
-		Offset: -170,0,0
+		Offset: -448,0,0 #-208,0,0
 	WithModelTurret:
+	WithModelBarrel:
+		LocalOffset: 0,0,0	
 	Explodes:
 		RequiresCondition: !rank-elite && !traped
 	Explodes@ELITE:

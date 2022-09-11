@@ -3,6 +3,7 @@
 	Inherits@VOXELS: ^VoxelActor
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits: ^WithVoxelRenderFromIssly
 	Buildable:
 		Queue: Air
 		BuildPaletteOrder: 1
@@ -24,16 +25,45 @@
 		MaxHeightDelta: 3
 		RequiresCondition: !inside-tunnel
 	Turreted:
-		TurnSpeed: 12
-	Armament@PRIMARY:
+		Turret: primary
+		TurnSpeed: 28
+	WithModelTurret@primary:
+  		Turret: primary
+	WithModelBarrel@1:
+		Armament: primary1
+		LocalOffset: 235,133,300
+		LocalOrientation: 0, 0, 0
+	WithModelBarrel@2:
+		Armament: primary2
+		LocalOffset: 235,-133,300
+		LocalOrientation: 0, 0, 0
+	Armament@primary1:
+		Name: primary1
+		Turret: primary
 		Weapon: 120mmx
-		LocalOffset: 707,85,264, 707,-120,264
+		LocalOffset: 907,133,330
+		FireDelay: 3
 		MuzzleSequence: muzzle
+		Recoil: 148
+		RecoilRecovery: 12
+	Armament@primary2:
+		Name: primary2
+		Turret: primary
+		Weapon: 120mmx
+		LocalOffset: 907,-133,330
+		MuzzleSequence: muzzle
+		Recoil: 148
+		RecoilRecovery: 12
 	Armament@SECONDARY:
+		Name: SECONDARY
+		Turret: primary
 		Weapon: MammothTusk
-		LocalOffset: 0,283,335, 0,-283,335
-	AttackTurreted:
+		LocalOffset: -60,233,355, -60,-233,355
+		#LocalOffset: 0,283,335, 0,-283,335
+	AttackTurreted@primary:
 		Voice: Attack
+		Armaments: primary1,primary2,SECONDARY
+		Turrets: primary
 		PauseOnCondition: empdisable
 		FacingToTarget: true
 	ChangesHealth:
@@ -44,6 +74,8 @@
 	WithModelTurret:
 	# WithModelBarrel:
 	WithMuzzleOverlay:
+
+	
 
 ^TRUCK:
 	Inherits: ^CivilianVoxelVehicle

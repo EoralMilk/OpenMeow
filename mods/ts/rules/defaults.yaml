@@ -947,6 +947,7 @@
 	Guardable:
 	BodyOrientation:
 		CameraPitch: 85
+		UseClassicPerspectiveFudge	False
 	Explodes:
 		Weapon: UnitExplodeSmall
 		EmptyWeapon: UnitExplodeSmall
@@ -1006,11 +1007,33 @@
 ^VoxelActor:
 	BodyOrientation:
 		QuantizedFacings: 0
+		UseClassicPerspectiveFudge	False
 	RenderModels:
 		NormalsPalette: normals
 		ShadowPalette: shadow
 		Scale: 1.4
 	WithModelBody:
+
+^WithVoxelRenderFromIssly:
+	RenderModels:
+		Scale: 0.14
+		LightScale: 0.28
+		SpecularScale: 0.4
+		AmbientScale: 1		
+
+^WithRA2VoxRender:
+	RenderModels:
+		Scale: 0.11
+		LightScale: 0.3
+		SpecularScale: 0.45
+		AmbientScale: 1	
+
+^With2XVoxRender:
+	RenderModels:
+		Scale: 0.7
+		LightScale: 0.05
+		SpecularScale: 0.45
+		AmbientScale: 1	
 
 ^CivilianVoxelVehicle:
 	Inherits: ^Vehicle

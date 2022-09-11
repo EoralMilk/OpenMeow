@@ -47,9 +47,15 @@ Packages:
 	~e01vox01.mix
 	~e01vox02.mix
 	~ecache01.mix
+
 	ts|bits
 	ts|bits/audios
 	ts|bits/vxls
+
+	# Issly's Voxel
+	ts|bits/vxls/VxlFromIssly
+	
+	ts|bits/vxls/replace
 	ts|bits/caustics
 
 	ts|uibits

@@ -3,6 +3,7 @@ BGGY:
 	Inherits@VOXELS: ^VoxelActor
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits: ^WithVoxelRenderFromIssly
 	Valued:
 		Cost: 400
 	Tooltip:
@@ -27,13 +28,18 @@ BGGY:
 		MaxHeightDelta: 3
 	Armament:
 		Weapon: RaiderCannonMG
-		LocalOffset: 0,-61,313, 0,61,313
+		Turret: primary
+		LocalOffset: 240,-31,453, 240,31,453
 		MuzzleSequence: muzzle
 		UseBlindage: true
-	AttackFrontal:
+	Turreted:
+		TurnSpeed: 28
+		Turret: primary
+		Offset: -215,0,0
+	AttackTurreted:
 		Voice: Attack
 		PauseOnCondition: empdisable
-		FacingTolerance: 0
+	WithModelTurret:
 	WithMuzzleOverlay:
 	-DamagedByTerrain@VEINS:
 	-LeavesTrails@VEINS:
@@ -44,6 +50,7 @@ BIKE:
 	Inherits@VOXELS: ^VoxelActor
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits: ^WithVoxelRenderFromIssly
 	Valued:
 		Cost: 600
 	Tooltip:
@@ -88,6 +95,7 @@ TTNK:
 	Inherits@VOXELS: ^VoxelActor
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits: ^WithVoxelRenderFromIssly
 	Valued:
 		Cost: 800
 	Tooltip:
@@ -115,12 +123,12 @@ TTNK:
 		RequiresCondition: undeployed
 	Armament@PRIMARY:
 		Weapon: 90mm
-		LocalOffset: 407,0,209
+		LocalOffset: 892,178,476 #407,0,209
 		RequiresCondition: !rank-elite
 		MuzzleSequence: muzzle
 	Armament@ELITE:
 		Weapon: 120mmx
-		LocalOffset: 407,0,209
+		LocalOffset: 565,208,416
 		RequiresCondition: rank-elite
 		MuzzleSequence: muzzle
 	WithMuzzleOverlay:
@@ -186,7 +194,7 @@ TTNK:
 		Name: deployed
 		Turret: deployed
 		Weapon: 90mm
-		LocalOffset: 543,0,209
+		LocalOffset: 565,208,416 #543,0,209
 		RequiresCondition: !rank-elite
 		MuzzleSequence: muzzle
 		Recoil: 76
@@ -212,14 +220,14 @@ TTNK:
 	RenderDetectionCircle:
 	RevealOnFire:
 		ArmamentNames: primary, deployed
-	RenderModels:
-		Scale: 1.4
+	
 
 ART2:
 	Inherits: ^Tank
 	Inherits@VOXELS: ^VoxelActor
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits: ^WithVoxelRenderFromIssly
 	Valued:
 		Cost: 975
 	Tooltip:
@@ -289,7 +297,7 @@ ART2:
 		Turret: deployed
 		TurnSpeed: 20
 		InitialFacing: 0
-		Offset: 0,0,256
+		Offset: -385,0,36 #0,0,256
 		RealignDelay: -1
 		RealignWhenDisable: true
 		RequiresCondition: deployed || preparing-undeploy #!undeployed
@@ -307,7 +315,7 @@ ART2:
 		FacingTolerance: 512
 	WithModelBarrel:
 		Armament: deployed
-		LocalOffset: 203,0,0
+		LocalOffset: 0,0,0 #203,0,0
 		LocalOrientation: 0, 128, 0
 		RequiresCondition: !undeployed
 		RotationSpeed: 12
@@ -328,7 +336,7 @@ ART2:
 		Name: deployed
 		Turret: deployed
 		Weapon: 155mm
-		LocalOffset: 1148,0,1120 #820,0,800
+		LocalOffset: 1009,0,1289 #820,0,8001148,0,1120
 		# RequiresCondition: deployed && !init-barrel
 		MuzzleSequence: muzzle
 		Recoil: 178
@@ -340,6 +348,7 @@ ART2:
 REPAIR:
 	Inherits: ^Tank
 	Inherits@VOXELS: ^VoxelActor
+	Inherits: ^WithRA2VoxRender
 	Buildable:
 		Queue: Vehicle
 		BuildPaletteOrder: 70
@@ -461,7 +470,8 @@ SAPC:
 		UnloadVoice: Unload
 		LoadingCondition: loading
 		EjectOnDeath: true
-	WithModelBody:
+	WithModelWalkerBody:
+		TickRate: 1
 		RequiresCondition: !submerged
 	Targetable:
 		RequiresCondition: !inside-tunnel && !submerged
@@ -483,6 +493,7 @@ SUBTANK:
 	Inherits@VOXELS: ^VoxelActor
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits: ^WithRA2VoxRender
 	Valued:
 		Cost: 750
 	Tooltip:
@@ -537,6 +548,7 @@ STNK:
 	Inherits@VOXELS: ^VoxelActor
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits: ^WithRA2VoxRender
 	Valued:
 		Cost: 1100
 	Tooltip:

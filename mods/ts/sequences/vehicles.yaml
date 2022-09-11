@@ -209,6 +209,7 @@ sonic:
 	Inherits@defaults: ^VehicleBase
 	Inherits: ^VehicleOverlays
 	icon: soniicon
+	Offset: 224, 0, 0
 
 ttnk:
 	Inherits@defaults: ^VehicleBase

@@ -28,6 +28,7 @@ subtank:
 	idle:
 
 bggy:
+	turret: bggytur
 	idle:
 
 nalasr:
@@ -35,6 +36,7 @@ nalasr:
 
 sapc:
 	idle:
+	water: apcw
 
 bike:
 	idle:
@@ -133,6 +135,7 @@ cargocar:
 sonic:
 	idle:
 	turret: sonictur
+	barrel: sonicbarl
 
 #truk: # TODO: unused
 #	idle:
