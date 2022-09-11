@@ -3,7 +3,6 @@
 	Inherits@VOXELS: ^VoxelActor
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
-	Inherits: ^WithVoxelRenderFromIssly
 	Buildable:
 		Queue: Air
 		BuildPaletteOrder: 1

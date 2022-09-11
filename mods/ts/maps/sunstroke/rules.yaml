@@ -23,16 +23,10 @@ World:
 		AmbientIntensity: 0.12
 
 ^VoxelActor:
-	BodyOrientation:
-		QuantizedFacings: 0
 	RenderModels:
-		NormalsPalette: normals
-		ShadowPalette: shadow
-		Scale: 1.4
 		LightScale: 0.3
 		SpecularScale: 0.9
 		AmbientScale: 0.8
-	WithModelBody:
 
 GAOLDCC2:
 	CaptureManager:

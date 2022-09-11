@@ -2,7 +2,6 @@ APC:
 	Inherits: ^Tank
 	Inherits@VOXELS: ^VoxelActor
 	Inherits@CARGOPIPS: ^CargoPips
-	Inherits: ^WithVoxelRenderFromIssly
 	Valued:
 		Cost: 800
 	Tooltip:
@@ -48,18 +47,13 @@ APC:
 		TerrainTypes: Water
 		StationaryInterval: 18
 		MovingInterval: 6
-	# RenderModels:
-	# 	LightScale: 0.34
-	# 	SpecularScale: 0.12
-	# 	AmbientScale: 1.1
 
 HVR:
 	Inherits: ^Vehicle
 	Inherits@VOXELS: ^VoxelActor
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
-	Inherits: ^WithRA2VoxRender
-	#RenderModels: LightScale: 0.04SpecularScale: 0.8
+	Inherits@WithRA2VoxRender: ^WithRA2VoxRender
 	Valued:
 		Cost: 900
 	Tooltip:
@@ -179,6 +173,7 @@ MMCH:
 	Inherits: ^Tank
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@renderVoxel: ^RenderVoxel
 	Valued:
 		Cost: 800
 	Tooltip:
@@ -229,11 +224,7 @@ MMCH:
 		RequiresCondition: rank-elite
 	RenderDetectionCircle:
 	WithMuzzleOverlay:
-	RenderModels:
-		NormalsPalette: normals
-		ShadowPalette: shadow
 	WithModelBarrel:
-		Scale: 1.4
 		LocalOffset: 0,51,256
 	Selectable:
 		Bounds: 905, 2534, 0, -482
@@ -306,7 +297,6 @@ SONIC:
 	Inherits@VOXELS: ^VoxelActor
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
-	Inherits: ^WithVoxelRenderFromIssly
 	Valued:
 		Cost: 1300
 	Tooltip:
@@ -342,8 +332,6 @@ SONIC:
 		TurnSpeed: 20
 		Offset: -448,0,0 #-208,0,0
 	WithModelTurret:
-	WithModelBarrel:
-		LocalOffset: 0,0,0	
 	Explodes:
 		RequiresCondition: !rank-elite && !traped
 	Explodes@ELITE:
@@ -355,6 +343,7 @@ JUGG:
 	Inherits@SPRITES: ^SpriteActor
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@renderVoxel: ^RenderVoxel
 	Valued:
 		Cost: 950
 	Tooltip:
@@ -385,11 +374,6 @@ JUGG:
 		RequiresCondition: !inside-tunnel
 		Range: 9c0
 		MaxHeightDelta: 3
-	RenderModels:
-		NormalsPalette: normals
-		ShadowPalette: shadow
-		Scale: 1
-		LightAmbientColor: 0.4, 0.4, 0.4
 	RenderSprites:
 		Image: jugg
 	WithMakeAnimation:

@@ -26,7 +26,7 @@ A10.Husk:
 		TickRate: 2
 	RenderModels:
 		Image: a10husk
-		Scale: 1
+		Scale: 0.05
 
 A10.Husk.EMP:
 	Inherits: A10.Husk
@@ -61,7 +61,6 @@ ORCAB.Husk:
 		Image: orcab
 	RenderModels:
 		Image: orcab
-		Scale: 0.14
 
 ORCAB.Husk.EMP:
 	Inherits: ORCAB.Husk
@@ -94,7 +93,6 @@ TRNSPORT.Husk:
 		Image: trnsport
 	RenderModels:
 		Image: trnsport
-		Scale: 0.14
 
 TRNSPORT.Husk.EMP:
 	Inherits: TRNSPORT.Husk

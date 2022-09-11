@@ -54,7 +54,6 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 		readonly RenderMeshes rm;
 		public bool Draw;
 		int tick = 0;
-		public int Drawtick = 0;
 		int lastDrawtick = -1;
 
 		public float Scale = 1;
@@ -92,7 +91,6 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 		void ITick.Tick(Actor self)
 		{
 			tick++;
-			Drawtick++;
 		}
 
 		WPos lastSelfPos;
@@ -117,7 +115,7 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 
 		public int GetDrawId()
 		{
-			if (Skeleton.CanDraw() && Drawtick > 2)
+			if (Skeleton.CanDraw())
 				return Skeleton.InstanceID == -1 ? -2 : Skeleton.AnimTexoffset / 4;
 			else
 				return -2;
@@ -155,7 +153,6 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 			return Transformation.MatRotation(Skeleton.BoneOffsetMat(id));
 		}
 
-		public bool HasUpdated { get; private set; }
 		IWithSkeleton parent = null;
 		int parentBoneId = -1;
 		FP scaleAsChild = 1;
@@ -245,8 +242,6 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 
 		public void UpdateSkeletonTick()
 		{
-			HasUpdated = false;
-
 			SkeletonTick();
 			UpdateSkeletonRoot();
 		}
@@ -264,12 +259,9 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 		/// </summary>
 		void UpdateSkeletonInner()
 		{
-			if (OnlyUpdateForDraw)
+			if (OnlyUpdateForDraw && Draw)
 			{
-				if (Draw)
-				{
-					UpdateDirectly();
-				}
+				UpdateDirectly();
 			}
 			else
 			{
@@ -290,17 +282,12 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 
 		void UpdateDirectly()
 		{
-			if (HasUpdated)
-				return;
-
 			if (BlendTreeHandler != null)
 			{
 				Skeleton.UpdateRenderOffset(BlendTreeHandler.GetResult());
 			}
 			else
 				Skeleton.UpdateRenderOffset();
-
-			HasUpdated = true;
 		}
 
 		public void UpdateDrawInfo(bool callbyParent)
@@ -313,15 +300,6 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 
 		void UpdateDrawInfoInner(bool callbyParent)
 		{
-			if (lastDrawtick == Drawtick)
-			{
-				foreach (var child in children)
-					child.UpdateDrawInfo(true);
-				return;
-			}
-
-			lastDrawtick = Drawtick;
-
 			if (Draw || callbyParent)
 			{
 				// update my skeletonInstance drawId

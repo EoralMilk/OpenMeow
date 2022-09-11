@@ -256,7 +256,7 @@ namespace OpenRA.Mods.Common.Traits
 			return !map.Ramp.Contains(location) || map.Ramp[location] == 0;
 		}
 
-		void INotifyDeployPrepareComplete.FinishedDeployPrepare(Actor self)
+		public void FinishedDeployPrepare(Actor self)
 		{
 			notifiedDeploy--;
 			if (notifiedDeploy > 0)
@@ -270,6 +270,7 @@ namespace OpenRA.Mods.Common.Traits
 
 			// If there is no animation to play just grant the condition that is used while deployed.
 			// Alternatively, play the deploy animation and then grant the condition.
+
 			if (notify.Length == 0)
 				OnDeployCompleted();
 			else
@@ -279,7 +280,7 @@ namespace OpenRA.Mods.Common.Traits
 			notifiedDeploy = notifyEarlier.Length;
 		}
 
-		void INotifyDeployPrepareComplete.FinishedUndeployPrepare(Actor self)
+		public void FinishedUndeployPrepare(Actor self)
 		{
 			notifiedUndeploy--;
 			if (notifiedUndeploy > 0)
@@ -331,16 +332,19 @@ namespace OpenRA.Mods.Common.Traits
 				OnDeployStarted();
 			notifiedDeploy = 0;
 
-			foreach (var n in notifyEarlier)
-				notifiedDeploy += n.Deploy(self, Info.SkipMakeAnimation);
+			if (notifyEarlier.Length == 0)
+				FinishedDeployPrepare(self);
+			else
+			{
+				foreach (var n in notifyEarlier)
+					notifiedDeploy += n.Deploy(self, Info.SkipMakeAnimation);
+			}
 
 		}
 
-		//bool toUndeploy = false;
 		void ITick.Tick(Actor self)
 		{
-			//if (toUndeploy)
-			//	Undeploy(false);
+
 		}
 
 		/// <summary>Play undeploy sound and animation and after that revoke the condition.</summary>
@@ -355,9 +359,13 @@ namespace OpenRA.Mods.Common.Traits
 				OnUndeployStarted();
 			notifiedUndeploy = 0;
 
-			foreach (var n in notifyEarlier)
-				notifiedUndeploy += n.Undeploy(self, Info.SkipMakeAnimation);
-
+			if (notifyEarlier.Length == 0)
+				FinishedUndeployPrepare(self);
+			else
+			{
+				foreach (var n in notifyEarlier)
+					notifiedUndeploy += n.Undeploy(self, Info.SkipMakeAnimation);
+			}
 		}
 
 		void OnDeployStarted()

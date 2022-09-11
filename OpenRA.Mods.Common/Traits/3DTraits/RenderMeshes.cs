@@ -55,8 +55,6 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 		{
 			foreach (var wskv in withSkeletons)
 			{
-				if (!wskv.Value.Draw)
-					wskv.Value.Drawtick = 1;
 				wskv.Value.Draw = inScreen;
 			}
 

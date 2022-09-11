@@ -276,7 +276,7 @@ namespace OpenRA.Mods.Cnc.Graphics
 
 			// Center, flip and scale
 			t = OpenRA.Graphics.Util.MatrixMultiply(t, OpenRA.Graphics.Util.TranslationMatrix(l.Bounds[0], l.Bounds[1], l.Bounds[2]));
-			t = OpenRA.Graphics.Util.MatrixMultiply(OpenRA.Graphics.Util.ScaleMatrix(l.Scale, -l.Scale, l.Scale), t);
+			t = OpenRA.Graphics.Util.MatrixMultiply(OpenRA.Graphics.Util.ScaleMatrix(l.Scale, l.Scale, l.Scale), t);
 
 			return t;
 		}

@@ -1,6 +1,7 @@
 MCV:
 	Inherits: ^Tank
 	Inherits@selection: ^SelectableSupportUnit
+	Inherits@RenderVoxel: ^RenderVoxel
 	Buildable:
 		Queue: Vehicle
 		BuildPaletteOrder: 160
@@ -59,7 +60,7 @@ HARV:
 	Inherits: ^Tank
 	Inherits@VOXELS: ^VoxelActor
 	Inherits@selection: ^SelectableEconomicUnit
-	Inherits: ^WithRA2VoxRender
+	Inherits@WithRA2VoxRender: ^WithRA2VoxRender
 	Valued:
 		Cost: 1400
 	Tooltip:
@@ -155,8 +156,8 @@ LPST:
 		RequireForceMoveCondition: !undeployed
 	RevealsShroud:
 		RequiresCondition: !inside-tunnel && undeployed
-		Range: 10c0
-		MaxHeightDelta: 3
+		Range: 14c0
+		MaxHeightDelta: 4
 	RevealsShroud@DEPLOYED:
 		RequiresCondition: !undeployed
 		Range: 8c0
@@ -205,5 +206,4 @@ LPST:
 		Range: 18c0
 	RenderDetectionCircle:
 		TrailCount: 3
-	RenderModels:
-		Scale: 1.4
+

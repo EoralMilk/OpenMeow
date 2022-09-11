@@ -171,6 +171,7 @@ NALASR:
 	Inherits: ^Defense
 	Inherits@IDISABLE: ^DisableOnPowerDown
 	Inherits@AUTOTARGET: ^AutoTargetGround
+	Inherits@RenderVoxel: ^RenderVoxel
 	Valued:
 		Cost: 300
 	Tooltip:
@@ -199,9 +200,6 @@ NALASR:
 		Weapon: TurretLaserFire
 		LocalOffset: 498,0,183
 	RenderModels:
-		NormalsPalette: normals
-		ShadowPalette: shadow
-		Scale: 1.4
 		ZOffset: 678
 	WithModelTurret:
 		RequiresCondition: !build-incomplete

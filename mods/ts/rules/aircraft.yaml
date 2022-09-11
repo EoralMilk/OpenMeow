@@ -92,7 +92,6 @@ DPOD2E2:
 DSHP:
 	Inherits: ^Aircraft
 	Inherits@CARGOPIPS: ^CargoPips
-	Inherits: ^WithVoxelRenderFromIssly
 	Valued:
 		Cost: 1000
 	Tooltip:
@@ -196,21 +195,12 @@ A10:
 	Rearmable:
 		RearmActors: gahpad, nahpad
 	RenderModels:
-		Scale: 1
-	# WithAmmoPipsDecoration:
-	# 	Position: BottomLeft
-	# 	RequiresSelection: true
-	# 	Margin: 4, 5
-	# 	PipCount: 3
-	# 	FullSequence: pip-ammo
-	# 	EmptySequence: pip-ammoempty
-	# 	Palette: pips
+		Scale: 0.06
 
 ORCA:
 	Inherits: ^EMPableAircraft
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
-	Inherits: ^WithVoxelRenderFromIssly
 	Valued:
 		Cost: 1000
 	Tooltip:
@@ -270,16 +260,11 @@ ORCA:
 		FullSequence: pip-ammo
 		EmptySequence: pip-ammoempty
 		Palette: pips
-	# RenderModels:
-	# 	LightScale: 0.34
-	# 	SpecularScale: 0.12
-	# 	AmbientScale: 1.1
 
 ORCAB:
 	Inherits: ^EMPableAircraft
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
-	Inherits: ^WithVoxelRenderFromIssly
 	Valued:
 		Cost: 1400
 	Tooltip:
@@ -392,7 +377,6 @@ ORCATRAN:
 
 TRNSPORT:
 	Inherits: ^EMPableAircraft
-	Inherits: ^WithVoxelRenderFromIssly
 	Valued:
 		Cost: 750
 	Tooltip:

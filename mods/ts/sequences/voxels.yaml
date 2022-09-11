@@ -135,7 +135,6 @@ cargocar:
 sonic:
 	idle:
 	turret: sonictur
-	barrel: sonicbarl
 
 #truk: # TODO: unused
 #	idle:

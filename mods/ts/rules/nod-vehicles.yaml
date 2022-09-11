@@ -3,7 +3,6 @@ BGGY:
 	Inherits@VOXELS: ^VoxelActor
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
-	Inherits: ^WithVoxelRenderFromIssly
 	Valued:
 		Cost: 400
 	Tooltip:
@@ -50,7 +49,6 @@ BIKE:
 	Inherits@VOXELS: ^VoxelActor
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
-	Inherits: ^WithVoxelRenderFromIssly
 	Valued:
 		Cost: 600
 	Tooltip:
@@ -95,7 +93,6 @@ TTNK:
 	Inherits@VOXELS: ^VoxelActor
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
-	Inherits: ^WithVoxelRenderFromIssly
 	Valued:
 		Cost: 800
 	Tooltip:
@@ -171,14 +168,14 @@ TTNK:
 		TurnSpeed: 24
 		Turret: deployed
 		InitialFacing: 0
-		Offset: -20, -130, 74
+		Offset: -20, -130, 274
 		RealignDelay: -1
 		RequiresCondition: deployed || preparing-undeploy
 		RealignWhenDisable: true
 		RealignBeforeDeploy: true
 	WithModelBarrel:
 		Armament: deployed
-		LocalOffset: 181,0,209
+		LocalOffset: 181,0, 0 
 		RequiresCondition: deployed || preparing-undeploy
 	WithModelTurret@deployed:
 		Turret: deployed
@@ -227,7 +224,6 @@ ART2:
 	Inherits@VOXELS: ^VoxelActor
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
-	Inherits: ^WithVoxelRenderFromIssly
 	Valued:
 		Cost: 975
 	Tooltip:
@@ -256,8 +252,6 @@ ART2:
 		RequiresCondition: !inside-tunnel
 		Range: 9c0
 		MaxHeightDelta: 3
-	RenderModels:
-		LightAmbientColor: 0.4, 0.4, 0.4
 	RenderSprites:
 		Image: art2
 	WithMakeAnimation:
@@ -348,7 +342,7 @@ ART2:
 REPAIR:
 	Inherits: ^Tank
 	Inherits@VOXELS: ^VoxelActor
-	Inherits: ^WithRA2VoxRender
+	Inherits@WithRA2VoxRender: ^WithRA2VoxRender
 	Buildable:
 		Queue: Vehicle
 		BuildPaletteOrder: 70
@@ -493,7 +487,7 @@ SUBTANK:
 	Inherits@VOXELS: ^VoxelActor
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
-	Inherits: ^WithRA2VoxRender
+	Inherits@WithRA2VoxRender: ^WithRA2VoxRender
 	Valued:
 		Cost: 750
 	Tooltip:
@@ -548,7 +542,7 @@ STNK:
 	Inherits@VOXELS: ^VoxelActor
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
-	Inherits: ^WithRA2VoxRender
+	Inherits@WithRA2VoxRender: ^WithRA2VoxRender
 	Valued:
 		Cost: 1100
 	Tooltip:

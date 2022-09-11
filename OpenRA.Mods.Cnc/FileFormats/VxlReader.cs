@@ -139,6 +139,7 @@ namespace OpenRA.Mods.Cnc.FileFormats
 				limbDataOffset[i] = s.ReadUInt32();
 				s.Seek(8, SeekOrigin.Current);
 				Limbs[i].Scale = s.ReadFloat();
+				Limbs[i].Scale = 0.0833329975605011f; // don't use the vxl scale
 				s.Seek(48, SeekOrigin.Current);
 
 				Limbs[i].Bounds = new float[6];

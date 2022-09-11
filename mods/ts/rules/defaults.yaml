@@ -947,7 +947,6 @@
 	Guardable:
 	BodyOrientation:
 		CameraPitch: 85
-		UseClassicPerspectiveFudge	False
 	Explodes:
 		Weapon: UnitExplodeSmall
 		EmptyWeapon: UnitExplodeSmall
@@ -1004,36 +1003,31 @@
 	Mobile:
 		Locomotor: tracked
 
-^VoxelActor:
-	BodyOrientation:
-		QuantizedFacings: 0
-		UseClassicPerspectiveFudge	False
+
+^RenderVoxel:
 	RenderModels:
 		NormalsPalette: normals
 		ShadowPalette: shadow
 		Scale: 1.4
-	WithModelBody:
-
-^WithVoxelRenderFromIssly:
-	RenderModels:
-		Scale: 0.14
 		LightScale: 0.28
 		SpecularScale: 0.4
-		AmbientScale: 1		
+		AmbientScale: 1
+	BodyOrientation:
+		QuantizedFacings: -1
+
+^VoxelActor:
+	Inherits@RenderVoxel: ^RenderVoxel
+	BodyOrientation:
+		QuantizedFacings: 0
+	WithModelBody:
 
 ^WithRA2VoxRender:
 	RenderModels:
-		Scale: 0.11
-		LightScale: 0.3
-		SpecularScale: 0.45
-		AmbientScale: 1	
+		Scale: 1.12
+		LightScale: 0.22
+		SpecularScale: 0.33
+		AmbientScale: 0.88	
 
-^With2XVoxRender:
-	RenderModels:
-		Scale: 0.7
-		LightScale: 0.05
-		SpecularScale: 0.45
-		AmbientScale: 1	
 
 ^CivilianVoxelVehicle:
 	Inherits: ^Vehicle
@@ -1050,6 +1044,7 @@
 	Inherits@3: ^Cloakable
 	Inherits@selection: ^SelectableCombatUnit
 	Inherits@handicaps: ^PlayerHandicaps
+	Inherits@renderVoxel: ^VoxelActor
 	Huntable:
 	OwnerLostAction:
 		Action: Kill
@@ -1099,11 +1094,6 @@
 		Voice: Move
 	Guardable:
 	MustBeDestroyed:
-	RenderModels:
-		NormalsPalette: normals
-		ShadowPalette: shadow
-		Scale: 1.4
-	WithModelBody:
 	RevealOnFire:
 	HitShape:
 		TargetableOffsets: 0,0,250
@@ -1130,12 +1120,8 @@
 		RequiresCondition: airborne && empdisable && !traped
 
 ^AircraftHusk:
-	RenderModels:
-		NormalsPalette: normals
-		ShadowPalette: shadow
-		Scale: 1.4
+	Inherits@renderVoxel: ^VoxelActor
 	RenderSprites:
-	WithModelBody:
 	BodyOrientation:
 		QuantizedFacings: 0
 		CameraPitch: 85
@@ -1374,13 +1360,9 @@
 	Inherits@3: ^Cloakable
 	Inherits@selection: ^SelectableCombatUnit
 	Inherits@handicaps: ^PlayerHandicaps
+	Inherits@renderVoxel: ^VoxelActor
 	Huntable:
-	RenderModels:
-		NormalsPalette: normals
-		ShadowPalette: shadow
-		Scale: 1.4
 	RenderSprites:
-	WithModelBody:
 	Mobile:
 		TurnSpeed: 20
 		Voice: Move
