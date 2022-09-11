@@ -113,7 +113,7 @@ RUTEST3:
 	RenderMeshes:
 		Image: rumya-2
 		ZOffset: 0
-		Scale: 15
+		Scale: 10
 	Tooltip:
 		Name: Test 3
 	Health:
@@ -135,7 +135,7 @@ RUTEST3:
 	TurretAttachment@1:
 		Name: turret1
 		SkeletonBinded: body
-		AttachingBone: s-Adj_Butt.R #a-s-Rig_Hand.R
+		AttachingBone: a-s-Rig_Hand.R
 		AttachmentSkeleton: turret_skeleton1
 		TurretBone: a-s-Base
 		BarrelBone: a-s-Barrel
@@ -164,7 +164,7 @@ RUTEST3:
 	TurretAttachment@2:
 		Name: turret2
 		SkeletonBinded: body
-		AttachingBone: s-Adj_Butt.L #a-s-Rig_Hand.L
+		AttachingBone: a-s-Rig_Hand.L
 		AttachmentSkeleton: turret_skeleton2
 		TurretBone: a-s-Base
 		BarrelBone: a-s-Barrel
