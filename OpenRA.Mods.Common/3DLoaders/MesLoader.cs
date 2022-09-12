@@ -4,7 +4,6 @@ using System.IO;
 using OpenRA.FileSystem;
 using OpenRA.Graphics;
 using OpenRA.Primitives;
-using StbImageSharp;
 using TrueSync;
 
 namespace OpenRA.Mods.Common.Graphics
@@ -557,8 +556,8 @@ namespace OpenRA.Mods.Common.Graphics
 		readonly float shininess;
 		readonly string diffMapName;
 		readonly string specMapName;
-		readonly ITexture diffuseTex;
-		readonly ITexture specularTex;
+		readonly Sheet diffuseTex;
+		readonly Sheet specularTex;
 		readonly bool blinn;
 
 		// PBR
@@ -566,10 +565,10 @@ namespace OpenRA.Mods.Common.Graphics
 		readonly float roughness;
 		readonly float metallic;
 		readonly float ao;
-		readonly ITexture albedoTex;
-		readonly ITexture roughnessTex;
-		readonly ITexture matallicTex;
-		readonly ITexture aoTex;
+		readonly Sheet albedoTex;
+		readonly Sheet roughnessTex;
+		readonly Sheet matallicTex;
+		readonly Sheet aoTex;
 
 		readonly FaceCullFunc faceCullFunc;
 		readonly IReadOnlyFileSystem fileSystem;
@@ -690,11 +689,11 @@ namespace OpenRA.Mods.Common.Graphics
 
 		}
 
-		void PrepareTexture(string name, out ITexture texture)
+		void PrepareTexture(string name, out Sheet texture)
 		{
 			if (cache.HasTexture(name))
 			{
-				texture = cache.GetTexture(name);
+				texture = cache.GetSheet(name);
 			}
 			else
 			{
@@ -703,15 +702,9 @@ namespace OpenRA.Mods.Common.Graphics
 					throw new Exception(filename + " Can not find texture " + name);
 				}
 
-				ImageResult image;
-				using (var ss = fileSystem.Open(name))
-				{
-					image = ImageResult.FromStream(ss, ColorComponents.RedGreenBlueAlpha);
-				}
+				var sheet = new Sheet(SheetType.BGRA, fileSystem.Open(name), TextureWrap.ClampToEdge, false);
 
-				texture = Game.Renderer.CreateTexture();
-				texture.SetData(image.Data, image.Width, image.Height, TextureType.RGBA);
-				cache.AddOrGetTexture(name, texture);
+				texture = cache.AddOrGetSheet(name, sheet);
 			}
 		}
 

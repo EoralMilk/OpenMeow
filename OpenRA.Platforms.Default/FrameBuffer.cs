@@ -290,7 +290,8 @@ namespace OpenRA.Platforms.Default
 			if (disposed)
 				return;
 			disposed = true;
-			texture.Dispose();
+			texture?.Dispose();
+			depthTexture?.Dispose();
 
 			OpenGL.glDeleteFramebuffers(1, ref framebuffer);
 			OpenGL.CheckGLError();

@@ -12,11 +12,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Security.Cryptography;
-using OpenRA.Primitives;
-using System.Xml.Linq;
-using OpenRA.Traits;
-using StbImageSharp;
 
 namespace OpenRA.Graphics
 {
@@ -337,9 +332,6 @@ namespace OpenRA.Graphics
 
 		public void Draw(Viewport viewport)
 		{
-			//if (stop)
-			//	return;
-
 			var cells = restrictToBounds ? viewport.VisibleCellsInsideBounds : viewport.AllVisibleCells;
 
 			// Only draw the rows that are visible.
@@ -350,16 +342,6 @@ namespace OpenRA.Graphics
 
 			Game.Renderer.Flush();
 
-			// Flush any visible changes to the GPU
-			//for (var row = firstRow; row <= lastRow; row++)
-			//{
-			//	if (!dirtyRows.Remove(row))
-			//		continue;
-
-			//	var rowOffset = rowStride * row;
-			//	vertexBuffer.SetData(vertices, rowOffset, rowOffset, rowStride);
-			//}
-
 			Game.Renderer.MapRenderer.SetSheets(sheets, BlendMode);
 
 			for (int y = tp.Y; y <= br.Y; y++)
@@ -368,10 +350,6 @@ namespace OpenRA.Graphics
 				int xend = y * rowStride + br.X * MaxVerticesPerMesh;
 				Game.Renderer.MapRenderer.DrawVertices(vertices, xstart, xend - xstart, RenderAllVert);
 			}
-
-			//Game.Renderer.MapRenderer.DrawVertexBuffer(
-			//	vertexBuffer, rowStride * firstRow, rowStride * (lastRow - firstRow),
-			//	PrimitiveType.TriangleList, sheets, BlendMode);
 		}
 
 		public void DrawAgain()

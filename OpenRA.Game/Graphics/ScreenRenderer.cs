@@ -22,7 +22,11 @@ namespace OpenRA.Graphics
 		readonly IShader shader;
 
 		readonly ScreenVertex[] vertices;
+		readonly ScreenVertex[] verticesUI;
+
 		readonly IVertexBuffer<ScreenVertex> vBuffer;
+		readonly IVertexBuffer<ScreenVertex> vBufferUI;
+
 
 		readonly float vertPos = 1.0f;
 		float3 screenLight = float3.Ones;
@@ -32,6 +36,8 @@ namespace OpenRA.Graphics
 			this.renderer = renderer;
 			this.shader = shader;
 			vertices = new ScreenVertex[6];
+			verticesUI = new ScreenVertex[6];
+
 
 			float[] quadVertices = {
 							// positions			// texCoords
@@ -44,13 +50,31 @@ namespace OpenRA.Graphics
 							vertPos, vertPos,		1.0f, 1.0f
 			};
 
+			float[] quadVerticesInvUV = {
+							// positions			// texCoords
+							-vertPos, vertPos,  0.0f, 0.0f,
+							-vertPos, -vertPos, 0.0f, 1.0f,
+							vertPos, -vertPos,  1.0f, 1.0f,
+
+							-vertPos, vertPos,  0.0f, 0.0f,
+							vertPos, -vertPos,  1.0f, 1.0f,
+							vertPos, vertPos,   1.0f, 0.0f
+			};
+
 			for (int i = 0; i < 6; i++)
 			{
 				vertices[i] = new ScreenVertex(quadVertices[i * 4], quadVertices[i * 4 + 1], quadVertices[i * 4 + 2], quadVertices[i * 4 + 3]);
 			}
 
+			for (int i = 0; i < 6; i++)
+			{
+				verticesUI[i] = new ScreenVertex(quadVerticesInvUV[i * 4], quadVerticesInvUV[i * 4 + 1], quadVerticesInvUV[i * 4 + 2], quadVerticesInvUV[i * 4 + 3]);
+			}
+
 			vBuffer = renderer.CreateVertexBuffer<ScreenVertex>(6);
 			vBuffer.SetData(vertices, 6);
+			vBufferUI = renderer.CreateVertexBuffer<ScreenVertex>(6);
+			vBufferUI.SetData(verticesUI, 6);
 			SetScreenLight(Color.White);
 		}
 
@@ -81,10 +105,25 @@ namespace OpenRA.Graphics
 		public void DrawScreen(ITexture screenTexture, BlendMode blendMode = BlendMode.None)
 		{
 			//Console.WriteLine("ScreenLight: " + screenLight + " ScreenTint: " + ScreenTint);
+			shader.SetBool("DrawUI", false);
 			shader.SetTexture("screenTexture", screenTexture);
 			renderer.Context.SetBlendMode(blendMode);
 			shader.PrepareRender();
 			renderer.DrawBatch(shader, vBuffer, 0, 6, PrimitiveType.TriangleList);
+			renderer.Context.SetBlendMode(BlendMode.None);
+		}
+
+		public void DrawUIScreen(ITexture screenTexture, float2 pos, float2 scale, BlendMode blendMode = BlendMode.None)
+		{
+			//Console.WriteLine("ScreenLight: " + screenLight + " ScreenTint: " + ScreenTint);
+			shader.SetTexture("screenTexture", screenTexture);
+			shader.SetBool("DrawUI", true);
+			shader.SetVec("UIPos", pos.X, pos.Y);
+			shader.SetVec("UIScale", scale.X,scale.Y);
+
+			renderer.Context.SetBlendMode(blendMode);
+			shader.PrepareRender();
+			renderer.DrawBatch(shader, vBufferUI, 0, 6, PrimitiveType.TriangleList);
 			renderer.Context.SetBlendMode(BlendMode.None);
 		}
 

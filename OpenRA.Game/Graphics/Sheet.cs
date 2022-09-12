@@ -20,9 +20,11 @@ namespace OpenRA.Graphics
 	{
 		bool dirty;
 		bool releaseBufferOnCommit;
+		readonly bool releaseData = true;
 		ITexture texture;
 		byte[] data;
 
+		public readonly TextureWrap WrapType = TextureWrap.ClampToEdge;
 		public readonly Size Size;
 		public readonly SheetType Type;
 
@@ -34,27 +36,31 @@ namespace OpenRA.Graphics
 
 		public bool Buffered => data != null || texture == null;
 
-		public Sheet(SheetType type, Size size)
+		public Sheet(SheetType type, Size size, TextureWrap textureWrap = TextureWrap.ClampToEdge)
 		{
 			Type = type;
 			Size = size;
+			WrapType = textureWrap;
 		}
 
-		public Sheet(SheetType type, ITexture texture)
+		public Sheet(SheetType type, ITexture texture, TextureWrap textureWrap = TextureWrap.ClampToEdge)
 		{
 			Type = type;
 			this.texture = texture;
 			Size = texture.Size;
+			WrapType = textureWrap;
 		}
 
-		public Sheet(SheetType type, Stream stream)
+		public Sheet(SheetType type, Stream stream, TextureWrap textureWrap = TextureWrap.ClampToEdge, bool releaseData = true)
 		{
+			WrapType = textureWrap;
 			var png = new Png(stream);
 			Size = new Size(png.Width, png.Height);
 			data = new byte[4 * Size.Width * Size.Height];
 			Util.FastCopyIntoSprite(new Sprite(this, new Rectangle(0, 0, png.Width, png.Height), TextureChannel.Red), png);
 
 			Type = type;
+			this.releaseData = releaseData;
 			ReleaseBuffer();
 		}
 
@@ -63,6 +69,7 @@ namespace OpenRA.Graphics
 			if (texture == null)
 			{
 				texture = Game.Renderer.Context.CreateTexture();
+				texture.WrapType = WrapType;
 				dirty = true;
 			}
 
@@ -70,7 +77,7 @@ namespace OpenRA.Graphics
 			{
 				texture.SetData(data, Size.Width, Size.Height);
 				dirty = false;
-				if (releaseBufferOnCommit)
+				if (releaseBufferOnCommit && releaseData)
 					data = null;
 			}
 
@@ -143,6 +150,12 @@ namespace OpenRA.Graphics
 		public void Dispose()
 		{
 			texture?.Dispose();
+		}
+
+		public void RefreshTexture()
+		{
+			texture?.Dispose();
+			texture = null;
 		}
 	}
 }

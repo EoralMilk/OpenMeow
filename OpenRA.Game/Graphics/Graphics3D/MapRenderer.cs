@@ -145,17 +145,17 @@ namespace OpenRA.Graphics
 					foreach (var key in world.MapTextureCache.TerrainTexturesSet)
 					{
 						Shader.SetTexture(world.MapTextureCache.Textures[key].Item1,
-							world.MapTextureCache.Textures[key].Item2);
+							world.MapTextureCache.Textures[key].Item2.GetTexture());
 					}
 
-					Shader.SetTexture(MapTextureCache.TN_Caustics, world.MapTextureCache.CausticsTextures[Math.Min((Game.LocalTick % 93) / 3, world.MapTextureCache.CausticsTextures.Length - 1)]);
+					Shader.SetTexture(MapTextureCache.TN_Caustics, world.MapTextureCache.CausticsTextures[Math.Min((Game.LocalTick % 93) / 3, world.MapTextureCache.CausticsTextures.Length - 1)].GetTexture());
 					break;
 				case UsageType.Smudge:
 
 					foreach (var key in world.MapTextureCache.SmudgeTexturesSet)
 					{
 						Shader.SetTexture(world.MapTextureCache.Textures[key].Item1,
-							world.MapTextureCache.Textures[key].Item2);
+							world.MapTextureCache.Textures[key].Item2.GetTexture());
 					}
 
 					break;

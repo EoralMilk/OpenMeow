@@ -23,7 +23,7 @@ namespace OpenRA.Graphics
 		readonly IMeshLoader[] loaders;
 		readonly IReadOnlyFileSystem fileSystem;
 		readonly Dictionary<string, IMaterial> materials = new Dictionary<string, IMaterial>();
-		readonly Dictionary<string, ITexture> textures = new Dictionary<string, ITexture>();
+		readonly Dictionary<string, Sheet> textures = new Dictionary<string, Sheet>();
 
 		readonly Dictionary<string, MeshVertexData> meshDatas = new Dictionary<string, MeshVertexData>();
 		readonly Dictionary<string, IOrderedMesh> meshes = new Dictionary<string, IOrderedMesh>();
@@ -33,6 +33,14 @@ namespace OpenRA.Graphics
 		{
 			this.loaders = loaders;
 			this.fileSystem = fileSystem;
+		}
+
+		public void RefreshAllTextures()
+		{
+			foreach (var kv in textures)
+			{
+				kv.Value?.RefreshTexture();
+			}
 		}
 
 		public void CacheMesh(string unit, string sequence, MiniYaml definition, SkeletonAsset skeletonType, OrderedSkeleton skeleton)
@@ -143,7 +151,7 @@ namespace OpenRA.Graphics
 				return false;
 		}
 
-		public ITexture GetTexture(string name)
+		public Sheet GetSheet(string name)
 		{
 			if (!textures.ContainsKey(name))
 			{
@@ -153,7 +161,7 @@ namespace OpenRA.Graphics
 			return textures[name];
 		}
 
-		public ITexture AddOrGetTexture(string name, ITexture texture)
+		public Sheet AddOrGetSheet(string name, Sheet texture)
 		{
 			if (!textures.ContainsKey(name))
 			{

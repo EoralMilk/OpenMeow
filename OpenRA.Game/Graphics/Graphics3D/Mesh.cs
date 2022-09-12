@@ -94,15 +94,20 @@ namespace OpenRA.Graphics
 		public readonly string Name;
 		public readonly bool HasDiffuseMap;
 		public readonly float3 DiffuseTint;
-		public readonly ITexture DiffuseMap;
+		public readonly Sheet DiffuseMap;
 		public readonly bool HasSpecularMap;
 		public readonly float3 SpecularTint;
-		public readonly ITexture SpecularMap;
+		public readonly Sheet SpecularMap;
 		public readonly float Shininess;
 		public readonly bool Blinn;
 		readonly FaceCullFunc faceCullFunc;
 		public FaceCullFunc FaceCullFunc => faceCullFunc;
-		public BlinnPhongMaterial(string name, bool hasDiffuseMap, float3 diffuseTint, ITexture diffuseMap, bool hasSpecularMap, float3 specularTint, ITexture specularMap, float shininess, FaceCullFunc faceCullFunc, bool blinn)
+		public BlinnPhongMaterial(string name,
+			bool hasDiffuseMap,
+			float3 diffuseTint, Sheet diffuseMap,
+			bool hasSpecularMap,
+			float3 specularTint, Sheet specularMap,
+			float shininess, FaceCullFunc faceCullFunc, bool blinn)
 		{
 			Name = name;
 			HasDiffuseMap = hasDiffuseMap;
@@ -124,13 +129,13 @@ namespace OpenRA.Graphics
 			shader.SetBool(matname + ".hasDiffuseMap", HasDiffuseMap);
 			shader.SetVec(matname + ".diffuseTint", DiffuseTint.X, DiffuseTint.Y, DiffuseTint.Z);
 			if (HasDiffuseMap)
-				shader.SetTexture(matname + ".diffuse", DiffuseMap);
+				shader.SetTexture(matname + ".diffuse", DiffuseMap.GetTexture());
 
 			// specular
 			shader.SetBool(matname + ".hasSpecularMap", HasSpecularMap);
 			shader.SetVec(matname + ".specularTint", SpecularTint.X, SpecularTint.Y, SpecularTint.Z);
 			if (HasSpecularMap)
-				shader.SetTexture(matname + ".specular", SpecularMap);
+				shader.SetTexture(matname + ".specular", SpecularMap.GetTexture());
 			shader.SetFloat(matname + ".shininess", Shininess);
 		}
 	}
@@ -140,22 +145,22 @@ namespace OpenRA.Graphics
 		public readonly string Name;
 		public readonly bool HasAlbedoMap;
 		public readonly float3 AlbedoTint;
-		public readonly ITexture AlbedoMap;
+		public readonly Sheet AlbedoMap;
 		public readonly bool HasRoughnessMap;
 		public readonly float Roughness;
-		public readonly ITexture RoughnessMap;
+		public readonly Sheet RoughnessMap;
 		public readonly bool HasMetallicMap;
 		public readonly float Metallic;
-		public readonly ITexture MetallicMap;
+		public readonly Sheet MetallicMap;
 		public readonly bool HasAOMap;
 		public readonly float AO;
-		public readonly ITexture AOMap;
+		public readonly Sheet AOMap;
 		readonly FaceCullFunc faceCullFunc;
 		public FaceCullFunc FaceCullFunc => faceCullFunc;
-		public PBRMaterial(string name, bool hasAlbedoMap, float3 albedoTint, ITexture albedoMap,
-			bool hasRoughnessMap, float roughness, ITexture roughnessMap,
-			bool hasMetallicMap, float metallic, ITexture metallicMap,
-			bool hasAOMap, float ao, ITexture aoMap,
+		public PBRMaterial(string name, bool hasAlbedoMap, float3 albedoTint, Sheet albedoMap,
+			bool hasRoughnessMap, float roughness, Sheet roughnessMap,
+			bool hasMetallicMap, float metallic, Sheet metallicMap,
+			bool hasAOMap, float ao, Sheet aoMap,
 			FaceCullFunc faceCullFunc)
 		{
 			Name = name;
@@ -180,25 +185,25 @@ namespace OpenRA.Graphics
 			shader.SetBool(matname + ".hasAlbedoMap", HasAlbedoMap);
 			shader.SetVec(matname + ".albedoTint", AlbedoTint.X, AlbedoTint.Y, AlbedoTint.Z);
 			if (HasAlbedoMap)
-				shader.SetTexture(matname + ".albedoMap", AlbedoMap);
+				shader.SetTexture(matname + ".albedoMap", AlbedoMap.GetTexture());
 
 			// roughness
 			shader.SetBool(matname + ".hasRoughnessMap", HasRoughnessMap);
 			shader.SetFloat(matname + ".roughness", Roughness);
 			if (HasRoughnessMap)
-				shader.SetTexture(matname + ".roughnessMap", RoughnessMap);
+				shader.SetTexture(matname + ".roughnessMap", RoughnessMap.GetTexture());
 
 			// matallic
 			shader.SetBool(matname + ".hasMetallicMap", HasMetallicMap);
 			shader.SetFloat(matname + ".metallic", Metallic);
 			if (HasMetallicMap)
-				shader.SetTexture(matname + ".metallicMap", MetallicMap);
+				shader.SetTexture(matname + ".metallicMap", MetallicMap.GetTexture());
 
 			// ao
 			shader.SetBool(matname + ".hasAOMap", HasAOMap);
 			shader.SetFloat(matname + ".ao", AO);
 			if (HasAOMap)
-				shader.SetTexture(matname + ".aoMap", AOMap);
+				shader.SetTexture(matname + ".aoMap", AOMap.GetTexture());
 		}
 	}
 

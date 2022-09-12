@@ -458,8 +458,8 @@ namespace OpenRA.Graphics
 			//	PreBakedAnimations.Add(animName, bakedAnim);
 			//}
 
-			if (BoneAnimTexture == null)
-				BoneAnimTexture = Game.Renderer.CreateInfoTexture(new Primitives.Size(SkeletonAsset.AnimTextureWidth, SkeletonAsset.AnimTextureHeight));
+			//if (BoneAnimTexture == null)
+			//	BoneAnimTexture = Game.Renderer.CreateInfoTexture(new Primitives.Size(SkeletonAsset.AnimTextureWidth, SkeletonAsset.AnimTextureHeight));
 
 			foreach (var bone in SkeletonAsset.Bones)
 			{

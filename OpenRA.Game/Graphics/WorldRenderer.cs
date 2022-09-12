@@ -49,7 +49,14 @@ namespace OpenRA.Graphics
 
 		internal WorldRenderer(ModData modData, World world)
 		{
+			OrderedSkeleton.BoneAnimTexture?.Dispose();
+			OrderedSkeleton.BoneAnimTexture = Game.Renderer.CreateInfoTexture(new Primitives.Size(SkeletonAsset.AnimTextureWidth, SkeletonAsset.AnimTextureHeight));
+
 			World = world;
+
+			World.MapTextureCache?.RefreshAllTextures();
+			World.MeshCache?.RefreshAllTextures();
+
 			TileSize = World.Map.Grid.TileSize;
 			TileScale = World.Map.Grid.Type == MapGridType.RectangularIsometric ? 1448 : 1024;
 			Viewport = new Viewport(this, world.Map);

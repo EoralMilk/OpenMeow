@@ -20,6 +20,9 @@ uniform float FrameShadowBias;
 
 uniform vec3 ScreenLight;
 uniform float AmbientIntencity;
+
+uniform bool DrawUI;
+
 const float offset = 1.0 / 512.0;
 const float blurWeight[5] = float[] (0.227027, 0.1945946, 0.1216216, 0.054054, 0.016216);
 
@@ -31,7 +34,17 @@ float ColorLuminance(vec3 rgb){
 
 void main()
 {
-	vec3 col = texture(screenTexture, TexCoords).rgb;
+	vec4 scolor = texture(screenTexture, TexCoords);
+	if (scolor.a < 0.0001)
+		discard;
+	
+	if (DrawUI)
+	{
+		FragColor = scolor;
+		return;
+	}
+
+	vec3 col = scolor.rgb;
 
 	if (FrameBufferShadow || FrameBufferPosition){
 		float depth = texture(screenDepthTexture, TexCoords).r;

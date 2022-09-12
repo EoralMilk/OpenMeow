@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using System.Xml.Linq;
 using OpenRA.FileSystem;
 using OpenRA.Primitives;
-using StbImageSharp;
 
 namespace OpenRA.Graphics
 {
@@ -21,8 +20,8 @@ namespace OpenRA.Graphics
 	public class MapTextureCache
 	{
 		readonly IReadOnlyFileSystem fileSystem;
-		public readonly ITexture[] CausticsTextures;
-		public readonly Dictionary<string, (string, ITexture)> Textures = new Dictionary<string, (string, ITexture)>();
+		public readonly Sheet[] CausticsTextures;
+		public readonly Dictionary<string, (string, Sheet)> Textures = new Dictionary<string, (string, Sheet)>();
 		public readonly HashSet<string> TerrainTexturesSet = new HashSet<string>();
 		public readonly HashSet<string> SmudgeTexturesSet = new HashSet<string>();
 
@@ -47,27 +46,27 @@ namespace OpenRA.Graphics
 
 			AddTexture("Scroch", "Scroch.png", TN_Scroch, UsageType.Smudge);
 
-			CausticsTextures = new ITexture[32];
+			CausticsTextures = new Sheet[32];
 
 			for (int i = 0; i < CausticsTextures.Length; i++)
 			{
-				var filename = "caustics_" + (i + 1).ToString().PadLeft(3, '0') + ".bmp";
+				var filename = "caustics_" + (i + 1).ToString().PadLeft(3, '0') + ".png";
 				if (!fileSystem.Exists(filename))
 				{
 					throw new Exception(" Can not find texture " + filename);
 				}
 
-				ImageResult image;
-				using (var ss = fileSystem.Open(filename))
-				{
-					image = ImageResult.FromStream(ss, ColorComponents.RedGreenBlueAlpha);
-				}
+				CausticsTextures[i] = new Sheet(SheetType.BGRA, fileSystem.Open(filename), TextureWrap.Repeat, false);
+			}
+		}
 
-				var texture = Game.Renderer.CreateTexture();
-				texture.WrapType = TextureWrap.Repeat;
-				//texture.ScaleFilter = TextureScaleFilter.Linear;
-				texture.SetData(image.Data, image.Width, image.Height, TextureType.RGBA);
-				CausticsTextures[i] = texture;
+		public void RefreshAllTextures()
+		{
+			foreach (var sheet in CausticsTextures)
+				sheet?.RefreshTexture();
+			foreach (var t in Textures.Values)
+			{
+				t.Item2?.RefreshTexture();
 			}
 		}
 
@@ -93,17 +92,9 @@ namespace OpenRA.Graphics
 				throw new Exception(filename + " Can not find texture " + name);
 			}
 
-			ImageResult image;
-			using (var ss = fileSystem.Open(filename))
-			{
-				image = ImageResult.FromStream(ss, ColorComponents.RedGreenBlueAlpha);
-			}
+			var sheet = new Sheet(SheetType.BGRA, fileSystem.Open(filename), TextureWrap.Repeat, false);
 
-			var texture = Game.Renderer.CreateTexture();
-			texture.WrapType = TextureWrap.Repeat;
-			//texture.ScaleFilter = TextureScaleFilter.Linear;
-			texture.SetData(image.Data, image.Width, image.Height, TextureType.RGBA);
-			Textures.Add(name, (uniform, texture));
+			Textures.Add(name, (uniform, sheet));
 			switch (type)
 			{
 				case UsageType.Terrain:

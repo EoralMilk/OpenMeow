@@ -51,25 +51,16 @@ namespace OpenRA
 
 		readonly Stack<Rectangle> scissorState = new Stack<Rectangle>();
 
-		//ITexture screenTexture;
 		IFrameBuffer screenBuffer;
 		Sprite screenSprite;
+
 		Size worldBufferSize;
 		IFrameBuffer worldBuffer;
 		ITexture worldTexture;
-		public ITexture WorldTexture { get
-			{
-				return worldTexture;
-			}
-		}
 
-		ITexture worldDepthTexture;
 		IFrameBuffer worldShadowBuffer;
 		ITexture worldShadowDepthTexture;
-		ITexture worldShadowTexture;
 
-		//Sheet worldSheet;
-		//Sprite worldSprite;
 		int worldDownscaleFactor = 1;
 		Size lastMaximumViewportSize;
 		Size lastWorldViewportSize;
@@ -183,19 +174,15 @@ namespace OpenRA
 			WorldRgbaColorRenderer.UpdateWorldRenderOffset(World3DRenderer);
 		}
 
+		float2 screenUISize;
 		void BeginFrame()
 		{
 			Context.Clear();
 
+			renderui = toRenderUI;
+
 			var surfaceSize = Window.SurfaceSize;
 			var surfaceBufferSize = surfaceSize.NextPowerOf2();
-
-			if (worldShadowDepthTexture == null || worldShadowBuffer == null)
-			{
-				worldShadowBuffer = Context.CreateDepthFrameBuffer(new Size(2048,2048));
-				//worldShadowTexture = worldShadowBuffer.Texture;
-				worldShadowDepthTexture = worldShadowBuffer.DepthTexture;
-			}
 
 			if (screenSprite == null || screenSprite.Sheet.Size != surfaceBufferSize)
 			{
@@ -205,14 +192,15 @@ namespace OpenRA
 				screenBuffer = Context.CreateFrameBuffer(surfaceBufferSize, Color.FromArgb(0x00, 0, 0, 0));
 			}
 
-			if (screenSprite == null || surfaceSize.Width != screenSprite.Bounds.Width || -surfaceSize.Height != screenSprite.Bounds.Height)
+			if (renderui && (screenSprite == null || surfaceSize.Width != screenSprite.Bounds.Width || -surfaceSize.Height != screenSprite.Bounds.Height))
 			{
 				var screenSheet = new Sheet(SheetType.BGRA, screenBuffer.Texture);
 
 				// Flip sprite in Y to match OpenGL's bottom-left origin
 				var screenBounds = Rectangle.FromLTRB(0, surfaceSize.Height, surfaceSize.Width, 0);
+
+				screenUISize = new float2(screenBounds.Size.Width, screenBounds.Size.Height);
 				screenSprite = new Sprite(screenSheet, screenBounds, TextureChannel.RGBA);
-				// screenTexture = screenBuffer.Texture;
 			}
 
 			// In HiDPI windows we follow Apple's convention of defining window coordinates as for standard resolution windows
@@ -247,24 +235,20 @@ namespace OpenRA
 			if (worldTexture == null || worldTexture.Size != worldBufferSize)
 			{
 				worldBuffer?.Dispose();
+				worldShadowBuffer?.Dispose();
+
+				worldShadowBuffer = Context.CreateDepthFrameBuffer(new Size(2048, 2048));
+				worldShadowDepthTexture = worldShadowBuffer.DepthTexture;
 
 				// If enableWorldFrameBufferDownscale and the world is more than twice the size of the final output size do we allow it to be downsampled!
 				worldBuffer = Context.CreateFrameBuffer(worldBufferSize);
 
-				worldShadowBuffer = Context.CreateDepthFrameBuffer(new Size(2048, 2048));
-				//worldShadowTexture = worldShadowBuffer.Texture;
-				worldShadowDepthTexture = worldShadowBuffer.DepthTexture;
-
 				// Pixel art scaling mode is a customized bilinear sampling
 				worldBuffer.Texture.ScaleFilter = TextureScaleFilter.Linear;
 				worldTexture = worldBuffer.Texture;
-				//worldDepthTexture = worldBuffer.DepthTexture;
-
-				//worldSheet = new Sheet(SheetType.BGRA, worldBuffer.Texture);
 
 				// Invalidate cached state to force a shader update
 				lastWorldViewport = Rectangle.Empty;
-				//worldSprite = null;
 			}
 
 			lastMaximumViewportSize = size;
@@ -279,22 +263,6 @@ namespace OpenRA
 
 			if (worldTexture == null)
 				throw new InvalidOperationException($"BeginWorld called before SetMaximumViewportSize has been set.");
-
-			//if (worldSprite == null || worldViewport.Size != lastWorldViewportSize)
-			//{
-			//	// Downscale world rendering if needed to fit within the framebuffer
-			//	var vw = worldViewport.Size.Width;
-			//	var vh = worldViewport.Size.Height;
-			//	var bw = worldSheet.Size.Width;
-			//	var bh = worldSheet.Size.Height;
-			//	worldDownscaleFactor = 1;
-			//	while (vw / worldDownscaleFactor > bw || vh / worldDownscaleFactor > bh)
-			//		worldDownscaleFactor++;
-
-			//	var s = new Size(vw / worldDownscaleFactor, vh / worldDownscaleFactor);
-			//	worldSprite = new Sprite(worldSheet, new Rectangle(int2.Zero, s), TextureChannel.RGBA);
-			//	lastWorldViewportSize = worldViewport.Size;
-			//}
 
 			MapRenderer.SetShadowParams();
 
@@ -324,15 +292,15 @@ namespace OpenRA
 		public void UpdateShadowBuffer(WorldRenderer wr)
 		{
 			worldShadowBuffer.Bind();
-			Game.Renderer.Context.EnableDepthBuffer(DepthFunc.LessEqual);
+			Context.EnableDepthBuffer(DepthFunc.LessEqual);
 			Draw3DMeshesInstance(wr, true);
 
 			//MapRenderer.SetCameraParams(World3DRenderer, true);
 			//wr.TerrainRenderer?.RenderTerrainEarly(wr, wr.Viewport);
 
-			Game.Renderer.Context.DisableDepthBuffer();
+			Context.DisableDepthBuffer();
 			worldShadowBuffer.Unbind();
-			Game.Renderer.Context.Clear();
+			Context.Clear();
 			worldBuffer.Bind();
 
 			MapRenderer.SetCameraParams(World3DRenderer, false);
@@ -408,14 +376,17 @@ namespace OpenRA
 				// Complete world rendering
 				Flush();
 				worldBuffer.Unbind();
-				ScreenRenderer.DrawScreen(worldTexture);
+				ScreenRenderer.DrawScreen(worldBuffer.Texture);
 			}
+
+			renderType = RenderType.World;
 		}
 
 		bool renderui = true;
+		bool toRenderUI = true;
 		public void ToggleUIRender()
 		{
-			renderui = !renderui;
+			toRenderUI = !toRenderUI;
 		}
 
 		public void BeginUI()
@@ -423,7 +394,8 @@ namespace OpenRA
 			if (renderType == RenderType.World)
 			{
 				// Render the world buffer into the UI buffer
-				screenBuffer.Bind();
+				if (renderui)
+					screenBuffer.Bind();
 
 				SpriteRenderer.SetAntialiasingPixelsPerTexel(0);
 			}
@@ -431,7 +403,8 @@ namespace OpenRA
 			{
 				// World rendering was skipped
 				BeginFrame();
-				screenBuffer.Bind();
+				if (renderui)
+					screenBuffer.Bind();
 			}
 
 			renderType = RenderType.UI;
@@ -459,17 +432,22 @@ namespace OpenRA
 				throw new InvalidOperationException($"EndFrame called with renderType = {renderType}, expected RenderType.UI.");
 
 			Flush();
-
-			screenBuffer.Unbind();
+			if (renderui)
+				screenBuffer.Unbind();
 
 			// Render the compositor buffers to the screen
 			// HACK / PERF: Fudge the coordinates to cover the actual window while keeping the buffer viewport parameters
 			// This saves us two redundant (and expensive) SetViewportParams each frame
-
 			if (renderui)
 			{
 				RgbaSpriteRenderer.DrawSprite(screenSprite, new float3(0, lastBufferSize.Height, 0), new float3(lastBufferSize.Width / screenSprite.Size.X, -lastBufferSize.Height / screenSprite.Size.Y, 1f));
 				Flush();
+
+				//ScreenRenderer.DrawUIScreen(screenBuffer.Texture,
+				//	new float2(0, 1.0f + screenBuffer.Texture.Size.Height / screenUISize.Y),
+				//	new float2(screenBuffer.Texture.Size.Width / screenUISize.X,
+				//	-screenBuffer.Texture.Size.Height / screenUISize.Y),
+				//	BlendMode.Alpha);
 			}
 
 			Window.PumpInput(inputHandler);
@@ -558,11 +536,6 @@ namespace OpenRA
 				orderedMeshes.Add(typeName, iom);
 				return orderedMeshes[typeName];
 			}
-		}
-
-		public ITexture CreateTexture()
-		{
-			return Context.CreateTexture();
 		}
 
 		public ITexture CreateInfoTexture(Size size)
@@ -698,12 +671,11 @@ namespace OpenRA
 			var worldsrcHeight = worldTexture.Size.Height;
 			var worlddestHeight = -worldTexture.Size.Height;
 
-
 			// Pull the data from the Texture directly to prevent the sheet from buffering it
-			var src = screenBuffer.Texture.GetData();
-			var srcWidth = screenSprite.Sheet.Size.Width;
-			var destWidth = screenSprite.Bounds.Width;
-			var destHeight = -screenSprite.Bounds.Height;
+			// var src = screenBuffer.Texture.GetData();
+			// var srcWidth = screenSprite.Sheet.Size.Width;
+			// var destWidth = screenSprite.Bounds.Width;
+			// var destHeight = -screenSprite.Bounds.Height;
 
 			ThreadPool.QueueUserWorkItem(_ =>
 			{
