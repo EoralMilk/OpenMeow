@@ -260,7 +260,7 @@ MechPulseGun:
 	Inherits: AssaultVulcan
 	Burst: 10
 	Report: silencer.aud
-	Range: 7c256
+	Range: 9c512
 	ReloadDelay: 25
 	Projectile: Bullet
 		LifeTime: 11

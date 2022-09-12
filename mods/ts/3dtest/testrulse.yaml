@@ -88,10 +88,11 @@ RUTEST:
 
 RUTEST2:
 	Inherits: RUTEST
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Tooltip:
 		Name: Test 2
 	Armament:
-		Weapon: HoverMissile
+		Weapon: HarpyClawMG
 		Turret: primary
 		LocalOffset: 1024,0,1024
 	Turreted:

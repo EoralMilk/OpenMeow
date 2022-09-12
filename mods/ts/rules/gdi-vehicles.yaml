@@ -247,7 +247,7 @@ HMEC:
 		BuildPaletteOrder: 140
 		Prerequisites: ~gaweap, gatech, ~techlevel.high
 		BuildLimit: 1
-		Description: Slow heavy walker.\nArmed with dual railguns and rocket launchers.\n  Strong vs Infantry, Vehicles, Aircraft and Buildings\n  Weak vs Nothing\nMaximum 1 can be built.
+		Description: Slow heavy walker.\nArmed with dual railguns, rocket launchers and chain gun.\n  Strong vs Infantry, Vehicles, Aircraft and Buildings\n  Weak vs Nothing\nMaximum 1 can be built.
 	Mobile:
 		TurnSpeed: 12
 		Speed: 42
@@ -274,7 +274,7 @@ HMEC:
 		MuzzleSequence: muzzle
 		MuzzlePalette: effectcyan
 	Armament@MISSILES:
-		Weapon: MammothTusk
+		Weapon: MammothTuskMk2
 		LocalOffset: -243,-368,697, -243,368,697
 		FacingTolerance: 256
 	Armament@RAILGUN:

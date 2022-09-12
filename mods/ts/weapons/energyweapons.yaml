@@ -1,18 +1,47 @@
 ^Railgun:
 	ReloadDelay: 60
-	Range: 7c0
+	Range: 8c0
 	Report: bigggun1.aud
 	Projectile: Railgun
 		Duration: 15
 		Blockable: true
 		DamageActorsInLine: true
+		LineWeapon: ^RailgunLineDamage
 		BeamColor: 0080FFC8
 		HelixColor: 0080FFC8
-		BeamBlendMode: ScreenAdditive
+		BeamBlendMode: Additive #ScreenAdditive
 	Warhead@1Dam: SpreadDamage
 		Range: 0, 32
 		Falloff: 100, 100
 		Damage: 15000
+		AffectsParent: false
+		Versus:
+			None: 100
+			Wood: 130
+			Light: 150
+			Heavy: 110
+			Concrete: 5
+		DamageTypes: Prone100Percent, TriggerProne, ExplosionDeath
+	Warhead@2Eff: CreateEffect
+		Explosions: proton_explo
+		ExplosionPalette: effectcyan
+		ImpactSounds: expnew12.aud
+		ValidTargets: Ground, Air
+	Warhead@3EffWater: CreateEffect
+		Explosions: small_watersplash
+		ExplosionPalette: player
+		ImpactSounds: ssplash3.aud
+		ValidTargets: Water
+		InvalidTargets: Vehicle
+	Warhead@4Smu: LeaveSmudge
+		SmudgeType: SmallScorch
+		InvalidTargets: Vehicle, Building, Wall
+
+^RailgunLineDamage:
+	Warhead@1Dam: SpreadDamage
+		Range: 0, 32
+		Falloff: 100, 100
+		Damage: 7500
 		AffectsParent: false
 		Versus:
 			None: 100
@@ -42,7 +71,7 @@ LtRail:
 
 MechRailgun:
 	Inherits: ^Railgun
-	Range: 9c0
+	Range: 9c512
 	Report: railuse5.aud
 	Projectile: Railgun
 		BeamColor: 00FFFFC8

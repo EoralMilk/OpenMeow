@@ -20,10 +20,16 @@ using OpenRA.Traits;
 namespace OpenRA.Mods.Common.Projectiles
 {
 	[Desc("Laser effect with helix coiling around.")]
-	public class RailgunInfo : IProjectileInfo
+	public class RailgunInfo : IProjectileInfo, IRulesetLoaded<WeaponInfo>
 	{
 		[Desc("Damage all units hit by the beam instead of just the target?")]
 		public readonly bool DamageActorsInLine = false;
+
+		[WeaponReference]
+		[Desc("Weapon fire to any actor in line.")]
+		public readonly string LineWeapon = null;
+
+		public WeaponInfo LineWeaponInfo { get; private set; }
 
 		[Desc("The maximum/constant/incremental inaccuracy used in conjunction with the InaccuracyType property.")]
 		public readonly WDist Inaccuracy = WDist.Zero;
@@ -98,6 +104,15 @@ namespace OpenRA.Mods.Common.Projectiles
 
 		[PaletteReference]
 		public readonly string HitAnimPalette = "effect";
+
+		void IRulesetLoaded<WeaponInfo>.RulesetLoaded(Ruleset rules, WeaponInfo info)
+		{
+			WeaponInfo weapon;
+
+			if (!rules.Weapons.TryGetValue(LineWeapon.ToLowerInvariant(), out weapon))
+				throw new YamlException("Weapons Ruleset does not contain an entry '{0}'".F(LineWeapon.ToLowerInvariant()));
+			LineWeaponInfo = weapon;
+		}
 
 		public IProjectile Create(ProjectileArgs args)
 		{
@@ -205,22 +220,12 @@ namespace OpenRA.Mods.Common.Projectiles
 				else
 					animationComplete = true;
 
-				if (!info.DamageActorsInLine)
-				{
-					var warheadArgs = new WarheadArgs(args)
-					{
-						ImpactOrientation = new WRot(WAngle.Zero, Util.GetVerticalAngle(args.Source, target), args.Facing),
-						ImpactPosition = target,
-					};
-
-					args.Weapon.Impact(Target.FromPos(target), warheadArgs);
-				}
-				else
+				if (info.DamageActorsInLine && info.LineWeaponInfo != null)
 				{
 					var actors = world.FindActorsOnLine(args.Source, target, info.BeamWidth);
 					foreach (var a in actors)
 					{
-						var warheadArgs = new WarheadArgs(args)
+						var lineAgs = new WarheadArgs(args)
 						{
 							ImpactOrientation = new WRot(WAngle.Zero, Util.GetVerticalAngle(args.Source, target), args.Facing),
 
@@ -231,9 +236,17 @@ namespace OpenRA.Mods.Common.Projectiles
 							Blocker = blocker,
 						};
 
-						args.Weapon.Impact(Target.FromActor(a), warheadArgs);
+						info.LineWeaponInfo.Impact(Target.FromActor(a), lineAgs);
 					}
 				}
+
+				var warheadArgs = new WarheadArgs(args)
+				{
+					ImpactOrientation = new WRot(WAngle.Zero, Util.GetVerticalAngle(args.Source, target), args.Facing),
+					ImpactPosition = target,
+				};
+
+				args.Weapon.Impact(Target.FromPos(target), warheadArgs);
 			}
 
 			hitanim?.Tick();
