@@ -132,6 +132,9 @@ namespace OpenRA.Mods.Common.Traits
 		[Desc("Range to search for an alternative landing location if the ordered cell is blocked.")]
 		public readonly WDist LandRange = WDist.FromCells(5);
 
+		[Desc("Take up space on terrain when landing.")]
+		public readonly bool TakeUpCellWhenLand = true;
+
 		[Desc("How fast this actor ascends or descends during horizontal movement.")]
 		public readonly WAngle MaximumPitch = WAngle.FromDegrees(10);
 
@@ -888,6 +891,9 @@ namespace OpenRA.Mods.Common.Traits
 
 		public void AddInfluence(IEnumerable<CPos> landingCells)
 		{
+			if (!Info.TakeUpCellWhenLand)
+				return;
+
 			if (this.landingCells.Any())
 				throw new InvalidOperationException(
 					$"Cannot {nameof(AddInfluence)} until previous influence is removed with {nameof(RemoveInfluence)}");
@@ -899,7 +905,8 @@ namespace OpenRA.Mods.Common.Traits
 
 		public void AddInfluence(CPos landingCell)
 		{
-			AddInfluence(new[] { landingCell });
+			if (Info.TakeUpCellWhenLand)
+				AddInfluence(new[] { landingCell });
 		}
 
 		public void RemoveInfluence()
@@ -912,7 +919,7 @@ namespace OpenRA.Mods.Common.Traits
 
 		public bool HasInfluence()
 		{
-			return landingCells.Any() || self.World.Map.DistanceAboveTerrain(CenterPosition).Length < Info.MinAirborneAltitude;
+			return (Info.TakeUpCellWhenLand && landingCells.Any()) || self.World.Map.DistanceAboveTerrain(CenterPosition).Length < Info.MinAirborneAltitude;
 		}
 
 		#endregion
