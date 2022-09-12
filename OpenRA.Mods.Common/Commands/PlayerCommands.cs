@@ -32,6 +32,8 @@ namespace OpenRA.Mods.Common.Commands
 			help.RegisterHelp("pause", "pause or unpause the game");
 			console.RegisterCommand("surrender", this);
 			help.RegisterHelp("surrender", "self-destruct everything and lose the game");
+			console.RegisterCommand("rui", this);
+			help.RegisterHelp("rui", "toggle render ui");
 		}
 
 		public void InvokeCommand(string name, string arg)
@@ -46,6 +48,10 @@ namespace OpenRA.Mods.Common.Commands
 				case "surrender":
 					if (world.LocalPlayer != null)
 						world.IssueOrder(new Order("Surrender", world.LocalPlayer.PlayerActor, false));
+
+					break;
+				case "rui":
+					Game.Renderer.ToggleUIRender();
 
 					break;
 			}

@@ -51,7 +51,7 @@ namespace OpenRA
 
 		readonly Stack<Rectangle> scissorState = new Stack<Rectangle>();
 
-		ITexture screenTexture;
+		//ITexture screenTexture;
 		IFrameBuffer screenBuffer;
 		Sprite screenSprite;
 		Size worldBufferSize;
@@ -207,12 +207,12 @@ namespace OpenRA
 
 			if (screenSprite == null || surfaceSize.Width != screenSprite.Bounds.Width || -surfaceSize.Height != screenSprite.Bounds.Height)
 			{
-				screenTexture = screenBuffer.Texture;
 				var screenSheet = new Sheet(SheetType.BGRA, screenBuffer.Texture);
 
 				// Flip sprite in Y to match OpenGL's bottom-left origin
 				var screenBounds = Rectangle.FromLTRB(0, surfaceSize.Height, surfaceSize.Width, 0);
 				screenSprite = new Sprite(screenSheet, screenBounds, TextureChannel.RGBA);
+				// screenTexture = screenBuffer.Texture;
 			}
 
 			// In HiDPI windows we follow Apple's convention of defining window coordinates as for standard resolution windows
@@ -250,6 +250,10 @@ namespace OpenRA
 
 				// If enableWorldFrameBufferDownscale and the world is more than twice the size of the final output size do we allow it to be downsampled!
 				worldBuffer = Context.CreateFrameBuffer(worldBufferSize);
+
+				worldShadowBuffer = Context.CreateDepthFrameBuffer(new Size(2048, 2048));
+				//worldShadowTexture = worldShadowBuffer.Texture;
+				worldShadowDepthTexture = worldShadowBuffer.DepthTexture;
 
 				// Pixel art scaling mode is a customized bilinear sampling
 				worldBuffer.Texture.ScaleFilter = TextureScaleFilter.Linear;
@@ -404,12 +408,14 @@ namespace OpenRA
 				// Complete world rendering
 				Flush();
 				worldBuffer.Unbind();
-
-				//ScreenRenderer.SetAntialiasingPixelsPerTexel(Window.SurfaceSize.Height * 1f / worldTexture.Size.Height);
-				//ScreenRenderer.SetShadowParams(worldShadowDepthTexture, worldDepthTexture, World3DRenderer);
 				ScreenRenderer.DrawScreen(worldTexture);
-				//ScreenRenderer.SetAntialiasingPixelsPerTexel(0);
 			}
+		}
+
+		bool renderui = true;
+		public void ToggleUIRender()
+		{
+			renderui = !renderui;
 		}
 
 		public void BeginUI()
@@ -459,8 +465,12 @@ namespace OpenRA
 			// Render the compositor buffers to the screen
 			// HACK / PERF: Fudge the coordinates to cover the actual window while keeping the buffer viewport parameters
 			// This saves us two redundant (and expensive) SetViewportParams each frame
-			RgbaSpriteRenderer.DrawSprite(screenSprite, new float3(0, lastBufferSize.Height, 0), new float3(lastBufferSize.Width / screenSprite.Size.X, -lastBufferSize.Height / screenSprite.Size.Y, 1f));
-			Flush();
+
+			if (renderui)
+			{
+				RgbaSpriteRenderer.DrawSprite(screenSprite, new float3(0, lastBufferSize.Height, 0), new float3(lastBufferSize.Width / screenSprite.Size.X, -lastBufferSize.Height / screenSprite.Size.Y, 1f));
+				Flush();
+			}
 
 			Window.PumpInput(inputHandler);
 			Context.Present();

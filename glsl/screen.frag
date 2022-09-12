@@ -80,7 +80,7 @@ void main()
 	}
 
 	// Blur the pixels when they are bright enough
-	float light = ColorLuminance(col);
+	// float light = ColorLuminance(col);
 	// if (light > 0.825f)
 	// {
 	// 	vec2 offsets[9] = vec2[](
