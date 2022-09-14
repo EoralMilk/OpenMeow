@@ -452,7 +452,7 @@ namespace OpenRA.Traits
 
 		public CellVisibility GetVisibility(WPos pos)
 		{
-			return GetVisibility(map.ProjectedCellCovering(pos));
+			return GetVisibility(map.CellContaining(pos).ToMPos(map));
 		}
 
 		// PERF: Combine IsExplored and IsVisible.

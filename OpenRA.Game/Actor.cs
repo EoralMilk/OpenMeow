@@ -576,10 +576,9 @@ namespace OpenRA
 
 		public IEnumerable<WPos> GetTargetablePositions(WVec offset)
 		{
-			if (enabledTargetablePositions.Any())
-				foreach (var t in enabledTargetableWorldPositions) {
+			if (EnabledTargetablePositions.Any())
+				foreach (var t in enabledTargetableWorldPositions)
 					yield return t + offset;
-				}
 			else
 				yield return CenterPosition + offset;
 		}
