@@ -1301,6 +1301,15 @@ namespace TrueSync
 			FP.ToFloat(M44));
 		}
 
+		public static TSMatrix4x4 FromMat4(in mat4 m)
+		{
+			return new TSMatrix4x4(
+				m.m00, m.m10, m.m20, m.m30,
+				m.m01, m.m11, m.m21, m.m31,
+				m.m02, m.m12, m.m22, m.m32,
+				m.m03, m.m13, m.m23, m.m33);
+		}
+
 		public override string ToString()
 		{
 			return string.Format("{0}|{1}|{2}|{3}|{4}|{5}|{6}|{7}|{8}|{9}|{10}|{11}|{12}|{13}|{14}|{15}",

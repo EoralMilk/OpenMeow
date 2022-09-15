@@ -86,7 +86,25 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 		protected override void Created(Actor self)
 		{
 			UpdateSkeletonTick();
+
+			// init the current pose by rest pose and offset
 			UpdateWholeSkeleton(false);
+		}
+
+		void UpdateWholeSkeleton(bool callbyParent)
+		{
+			if (!callbyParent && parent != null)
+				return;
+
+			UpdateSkeletonInner();
+		}
+
+		void UpdateSkeletonInner()
+		{
+			Skeleton.UpdateAll();
+
+			foreach (var child in children)
+				child.RenderUpdateWholeSkeleton(true);
 		}
 
 		void ITick.Tick(Actor self)
@@ -212,7 +230,6 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 			return false;
 		}
 
-
 		public void CallForUpdate(int boneid)
 		{
 			if (OnlyUpdateForDraw)
@@ -247,32 +264,6 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 			UpdateSkeletonRoot();
 		}
 
-		public void UpdateWholeSkeleton(bool callbyParent)
-		{
-			if (!callbyParent && parent != null)
-				return;
-
-			UpdateSkeletonInner();
-		}
-
-		/// <summary>
-		/// notice that! the ik and some other trait which can update skeleton need to use the last tick anim params
-		/// </summary>
-		void UpdateSkeletonInner()
-		{
-			if (OnlyUpdateForDraw && Draw)
-			{
-				UpdateDirectly();
-			}
-			else
-			{
-				UpdateDirectly();
-			}
-
-			foreach (var child in children)
-				child.UpdateWholeSkeleton(true);
-		}
-
 		void UpdateSkeletonRoot()
 		{
 			if (parent == null)
@@ -286,7 +277,33 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 				Skeleton.SetOffset(Transformation.MatWithNewScale(parent.GetMatrixFromBoneId(parentBoneId), scaleAsChild));
 		}
 
-		void UpdateDirectly()
+		public void RenderUpdateWholeSkeleton(bool callbyParent)
+		{
+			if (!callbyParent && parent != null)
+				return;
+
+			RenderUpdateSkeletonInner();
+		}
+
+		/// <summary>
+		/// notice that! the ik and some other trait which can update skeleton need to use the last tick anim params
+		/// </summary>
+		void RenderUpdateSkeletonInner()
+		{
+			if (OnlyUpdateForDraw && Draw)
+			{
+				RenderUpdateDirectly();
+			}
+			else
+			{
+				RenderUpdateDirectly();
+			}
+
+			foreach (var child in children)
+				child.RenderUpdateWholeSkeleton(true);
+		}
+
+		void RenderUpdateDirectly()
 		{
 			if (BlendTreeHandler != null)
 			{

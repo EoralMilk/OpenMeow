@@ -300,7 +300,7 @@ namespace OpenRA.Traits
 		void FlushLogicPose();
 		void FlushRenderPose();
 		void UpdateSkeletonTick();
-		void UpdateWholeSkeleton(bool callbyParent);
+		void RenderUpdateWholeSkeleton(bool callbyParent);
 		void UpdateDrawInfo(bool callbyParent);
 		void SkeletonTick();
 		void CallForUpdate(int boneid);

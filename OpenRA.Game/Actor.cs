@@ -289,7 +289,7 @@ namespace OpenRA
 				FlushSkeletonRenderPose();
 				foreach (var s in skeletons)
 				{
-					s.UpdateWholeSkeleton(false);
+					s.RenderUpdateWholeSkeleton(false);
 					s.UpdateDrawInfo(false);
 				}
 			}

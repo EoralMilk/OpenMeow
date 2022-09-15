@@ -40,11 +40,15 @@ namespace OpenRA.Graphics
 		public readonly int AnimId;
 
 		public readonly int ParentId;
-		public readonly TSMatrix4x4 BaseRestPoseInv;
-
 		public bool ModifiedRest;
-		public TSMatrix4x4 RestPose;
+
+		public readonly TSMatrix4x4 BaseRestPoseInv;
+		public readonly mat4 RenderBaseRestPoseInv;
+
+		public TSMatrix4x4 RestPose { get; private set; }
 		public TSMatrix4x4 CurrentPose;
+		public mat4 RenderRestPose { get; private set; }
+		public mat4 RenderCurrentPose;
 		public bool OverridePose;
 
 		public BoneInstance(in BoneAsset asset)
@@ -54,18 +58,24 @@ namespace OpenRA.Graphics
 			ParentId = asset.ParentId;
 			RestPose = asset.RestPose;
 			BaseRestPoseInv = asset.RestPoseInv;
-			ModifiedRest = false;
 			CurrentPose = RestPose;
+			RenderRestPose = RestPose.ToMat4();
+			RenderCurrentPose = RenderRestPose;
+			RenderBaseRestPoseInv = BaseRestPoseInv.ToMat4();
 			OverridePose = false;
+			ModifiedRest = false;
+		}
+
+		public void SetRestPose(TSMatrix4x4 pos)
+		{
+			RestPose = pos;
+			RenderRestPose = RestPose.ToMat4();
 		}
 
 		public void UpdateOffset(in TSMatrix4x4 parent)
 		{
 			if (OverridePose)
-			{
-				OverridePose = false;
 				return;
-			}
 
 			CurrentPose = parent * RestPose;
 		}
@@ -73,15 +83,35 @@ namespace OpenRA.Graphics
 		public void UpdateOffset(in TSMatrix4x4 parent, in TSMatrix4x4 anim)
 		{
 			if (OverridePose)
-			{
-				OverridePose = false;
 				return;
-			}
 
 			if (ModifiedRest)
 				CurrentPose = parent * (anim * BaseRestPoseInv) * RestPose;
 			else
 				CurrentPose = parent * anim;
+		}
+
+		public void UpdateRenderOffset(in mat4 parent)
+		{
+			if (OverridePose)
+			{
+				return;
+			}
+
+			RenderCurrentPose = parent * RenderRestPose;
+		}
+
+		public void UpdateRenderOffset(in mat4 parent, in mat4 anim)
+		{
+			if (OverridePose)
+			{
+				return;
+			}
+
+			if (ModifiedRest)
+				RenderCurrentPose = parent * (anim * RenderBaseRestPoseInv) * RenderRestPose;
+			else
+				RenderCurrentPose = parent * anim;
 		}
 	}
 
@@ -179,7 +209,7 @@ namespace OpenRA.Graphics
 			Offset = translateMat * (scaleMat * rotMat);
 		}
 
-		public void SetOffset(in TSMatrix4x4 matrix)
+		public void SetOffset(TSMatrix4x4 matrix)
 		{
 			Offset = matrix;
 		}
@@ -198,6 +228,7 @@ namespace OpenRA.Graphics
 			}
 
 			Bones[id].CurrentPose = mat;
+			Bones[id].RenderCurrentPose = Bones[id].CurrentPose.ToMat4();
 			Bones[id].OverridePose = true;
 		}
 
@@ -235,12 +266,11 @@ namespace OpenRA.Graphics
 			foreach (var mb in skeleton.ModifiedBoneRestPoses)
 			{
 				Bones[mb.Value.Id].ModifiedRest = true;
-				Bones[mb.Value.Id].RestPose = mb.Value.RestPose;
+				Bones[mb.Value.Id].SetRestPose(mb.Value.RestPose);
 			}
 
 			FlushRenderOffset();
 			FlushLogicOffset();
-
 			AnimTexoffset = -1;
 		}
 
@@ -248,22 +278,30 @@ namespace OpenRA.Graphics
 		{
 			if (updateFlags[id])
 				return;
-			UpdateBoneInner(id, treeNodeOutPut.OutPutFrame, treeNodeOutPut.AnimMask, false);
+			UpdateBoneInner(id, treeNodeOutPut.OutPutFrame, treeNodeOutPut.AnimMask);
 		}
 
 		public void UpdateBone(int id)
 		{
 			if (updateFlags[id])
 				return;
-			UpdateBoneInner(id, EmptyFrame, asset.AllValidMask, false);
+			UpdateBoneInner(id, EmptyFrame, asset.AllValidMask);
 		}
 
-		void UpdateBoneInner(int id, in Frame animFrame, in AnimMask animMask, bool render)
+		public void UpdateAll()
 		{
-			if (render && renderUpdateFlags[id] == true)
-				return;
+			// init update the current pose
+			for (int i = 0; i < boneSize; i++)
+			{
+				if (skipUpdateAdjBonePose && asset.Bones[i].IsAdjBone)
+					continue;
+				UpdateBoneInner(i, EmptyFrame, asset.AllValidMask);
+			}
+		}
 
-			if (!render && updateFlags[id] == true)
+		void UpdateBoneInner(int id, in Frame animFrame, in AnimMask animMask)
+		{
+			if (updateFlags[id] == true)
 				return;
 
 			if (Bones[id].ParentId == -1)
@@ -279,14 +317,11 @@ namespace OpenRA.Graphics
 					currentIK.CalculateIK(ref Bones[id].CurrentPose);
 				}
 
-				if (render)
-					renderUpdateFlags[id] = true;
-				else
-					updateFlags[id] = true;
+				updateFlags[id] = true;
 			}
 			else
 			{
-				UpdateBoneInner(Bones[id].ParentId, animFrame, animMask, render);
+				UpdateBoneInner(Bones[id].ParentId, animFrame, animMask);
 
 				// animMask length should be same as frame length
 				if (Bones[id].AnimId != -1 && animFrame.Length > Bones[id].AnimId && animFrame.HasTransformation[Bones[id].AnimId] && animMask[Bones[id].AnimId])
@@ -299,10 +334,7 @@ namespace OpenRA.Graphics
 					currentIK.CalculateIK(ref Bones[id].CurrentPose);
 				}
 
-				if (render)
-					renderUpdateFlags[id] = true;
-				else
-					updateFlags[id] = true;
+				updateFlags[id] = true;
 			}
 		}
 
@@ -311,6 +343,7 @@ namespace OpenRA.Graphics
 			for (int i = 0; i < boneSize; i++)
 			{
 				updateFlags[i] = false;
+				Bones[i].OverridePose = false;
 			}
 		}
 
@@ -324,13 +357,56 @@ namespace OpenRA.Graphics
 			hasUpdatedAll = false;
 		}
 
+		void RenderUpdateBoneInner(int id, in Frame animFrame, in AnimMask animMask)
+		{
+			if (renderUpdateFlags[id] == true)
+				return;
+
+			if (Bones[id].ParentId == -1)
+			{
+				// animMask length should be same as frame length (&& animMask.Length > Bones[id].AnimId) no need
+				if (Bones[id].AnimId != -1 && animFrame.Length > Bones[id].AnimId && animMask[Bones[id].AnimId])
+					Bones[id].UpdateRenderOffset(Offset.ToMat4(), animFrame[Bones[id].AnimId].Matrix.ToMat4());
+				else
+					Bones[id].UpdateRenderOffset(Offset.ToMat4());
+
+				if (inverseKinematics.TryGetValue(id, out currentIK))
+				{
+					var m = TSMatrix4x4.FromMat4(Bones[id].RenderCurrentPose);
+					currentIK.CalculateIK(ref m);
+					Bones[id].RenderCurrentPose = m.ToMat4();
+				}
+
+				renderUpdateFlags[id] = true;
+			}
+			else
+			{
+				RenderUpdateBoneInner(Bones[id].ParentId, animFrame, animMask);
+
+				// animMask length should be same as frame length
+				if (Bones[id].AnimId != -1 && animFrame.Length > Bones[id].AnimId && animFrame.HasTransformation[Bones[id].AnimId] && animMask[Bones[id].AnimId])
+					Bones[id].UpdateRenderOffset(Bones[Bones[id].ParentId].RenderCurrentPose, animFrame[Bones[id].AnimId].Matrix.ToMat4());
+				else
+					Bones[id].UpdateRenderOffset(Bones[Bones[id].ParentId].RenderCurrentPose);
+
+				if (inverseKinematics.TryGetValue(id, out currentIK))
+				{
+					var m = TSMatrix4x4.FromMat4(Bones[id].RenderCurrentPose);
+					currentIK.CalculateIK(ref m);
+					Bones[id].RenderCurrentPose = m.ToMat4();
+				}
+
+				renderUpdateFlags[id] = true;
+			}
+		}
+
 		public void UpdateRenderOffset(in Frame animFrame = null, in AnimMask animMask = null)
 		{
 			for (int i = 0; i < boneSize; i++)
 			{
 				if (skipUpdateAdjBonePose && asset.Bones[i].IsAdjBone)
 					continue;
-				UpdateBoneInner(i, animFrame == null ? EmptyFrame : animFrame, animMask == null ? asset.AllValidMask : animMask, true);
+				RenderUpdateBoneInner(i, animFrame == null ? EmptyFrame : animFrame, animMask == null ? asset.AllValidMask : animMask);
 			}
 
 			hasUpdatedAll = true;
@@ -358,7 +434,7 @@ namespace OpenRA.Graphics
 				int id = asset.SkinBonesIndices[i];
 				if (skipUpdateAdjBonePose)
 					id = asset.SkinBonesMatchIndices[i];
-				var mat4 = Bones[id].CurrentPose.ToMat4();
+				var mat4 = Bones[id].RenderCurrentPose;
 				var c0 = mat4.Column0;
 				var c1 = mat4.Column1;
 				var c2 = mat4.Column2;
@@ -448,7 +524,7 @@ namespace OpenRA.Graphics
 
 			foreach (var newPose in ModifiedBoneRestPoses)
 			{
-				preBakeInstance.Bones[newPose.Value.Id].RestPose = newPose.Value.RestPose;
+				preBakeInstance.Bones[newPose.Value.Id].SetRestPose(newPose.Value.RestPose);
 			}
 
 			//foreach (var animkv in asset.Animations)
@@ -553,7 +629,7 @@ namespace OpenRA.Graphics
 
 			foreach (var newPose in ModifiedBoneRestPoses)
 			{
-				skeletonInstance.Bones[newPose.Value.Id].RestPose = newPose.Value.RestPose;
+				skeletonInstance.Bones[newPose.Value.Id].SetRestPose(newPose.Value.RestPose);
 			}
 
 			return skeletonInstance;
