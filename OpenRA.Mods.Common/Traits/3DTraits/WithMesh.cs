@@ -29,7 +29,7 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 		{
 			SkeletonBinded = info.SkeletonBinded;
 
-			var body = self.Trait<BodyOrientation>();
+			var body = self.TraitOrDefault<BodyOrientation>();
 			RenderMeshes = self.Trait<RenderMeshes>();
 
 			var image = RenderMeshes.Image;
@@ -43,7 +43,7 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 			{
 				var mesh = self.World.MeshCache.GetMeshSequence(image, info.Mesh);
 				MeshInstance = new MeshInstance(mesh, () => self.CenterPosition,
-					() => facing == null ? body.QuantizeOrientation(self.Orientation) : facing.Orientation,
+					() => facing == null ? body?.QuantizeOrientation(self.Orientation) ?? self.Orientation : facing.Orientation,
 					() => !IsTraitDisabled,
 					SkeletonBinded);
 

@@ -73,8 +73,8 @@ namespace OpenRA
 		public bool IsIdle => CurrentActivity == null;
 		public bool IsDead => Disposed || (health != null && health.IsDead);
 
-		public CPos Location => OccupiesSpace.TopLeft;
-		public WPos CenterPosition => OccupiesSpace.CenterPosition;
+		public CPos Location => OccupiesSpace?.TopLeft ?? CPos.Zero;
+		public WPos CenterPosition => OccupiesSpace?.CenterPosition ?? WPos.Zero;
 
 		public WRot Orientation => facing?.Orientation ?? WRot.None;
 

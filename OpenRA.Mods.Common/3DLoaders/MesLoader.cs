@@ -702,7 +702,7 @@ namespace OpenRA.Mods.Common.Graphics
 					throw new Exception(filename + " Can not find texture " + name);
 				}
 
-				var sheet = new Sheet(SheetType.BGRA, fileSystem.Open(name), TextureWrap.ClampToEdge, false);
+				var sheet = new Sheet(fileSystem.Open(name), TextureWrap.ClampToEdge);
 
 				texture = cache.AddOrGetSheet(name, sheet);
 			}

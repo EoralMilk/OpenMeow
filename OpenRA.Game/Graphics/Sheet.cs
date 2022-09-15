@@ -62,6 +62,24 @@ namespace OpenRA.Graphics
 			Type = type;
 			this.releaseData = releaseData;
 			ReleaseBuffer();
+			if (!releaseData)
+				GetTexture();
+		}
+
+		public Sheet(Stream stream, TextureWrap textureWrap = TextureWrap.ClampToEdge)
+		{
+			WrapType = textureWrap;
+			var png = new Png(stream);
+			Size = new Size(png.Width, png.Height);
+			data = new byte[4 * Size.Width * Size.Height];
+			Util.FastCopyIntoSprite(new Sprite(this, new Rectangle(0, 0, png.Width, png.Height), TextureChannel.Red), png);
+
+			Type = SheetType.BGRA;
+			releaseData = false;
+			dirty = true;
+			texture = null;
+			GetTexture();
+			dirty = false;
 		}
 
 		public ITexture GetTexture()
@@ -154,7 +172,7 @@ namespace OpenRA.Graphics
 
 		public void RefreshTexture()
 		{
-			//texture?.Dispose();
+			texture?.Dispose();
 			texture = null;
 			GetTexture();
 		}

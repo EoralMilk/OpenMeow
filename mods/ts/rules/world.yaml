@@ -253,6 +253,13 @@
 		Name: Veins
 		Palette: player
 		VeinholeActors: veinhole
+	WithMesh@arrow:
+		Mesh: arrow
+	RenderMeshes:
+		Image: mmr-test
+		ZOffset: 15
+		Scale: 5
+
 
 World:
 	Inherits: ^BaseWorld

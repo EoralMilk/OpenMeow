@@ -8,7 +8,7 @@ using OpenRA.Traits;
 
 namespace OpenRA.Mods.Common.Traits.Trait3D
 {
-	public class RenderMeshesInfo : TraitInfo, Requires<BodyOrientationInfo>
+	public class RenderMeshesInfo : TraitInfo
 	{
 		[Desc("Defaults to the actor name.")]
 		public readonly string Image = null;
@@ -32,7 +32,7 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 		readonly Dictionary<string, WithSkeleton> withSkeletons = new Dictionary<string, WithSkeleton>();
 		readonly Actor self;
 		Color remap;
-		bool inScreen = false;
+
 		public RenderMeshes(Actor self, RenderMeshesInfo info)
 		{
 			this.self = self;
@@ -82,17 +82,11 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 						if (withSkeletons.ContainsKey(mesh.SkeletonBinded))
 						{
 							mesh.DrawId = withSkeletons[mesh.SkeletonBinded].GetDrawId();
-							//if (maxDrawId < mesh.DrawId)
-							//	maxDrawId = mesh.DrawId;
 						}
 					}
 				}
 			}
 
-			//return new IRenderable[]
-			//{
-			//	new MeshRenderable(meshes, self.CenterPosition, Info.ZOffset, remap, Info.Scale, this)
-			//};
 			yield return new MeshRenderable(meshes, self.CenterPosition, Info.ZOffset, remap, Info.Scale, this);
 		}
 

@@ -56,7 +56,7 @@ namespace OpenRA.Graphics
 					throw new Exception(" Can not find texture " + filename);
 				}
 
-				CausticsTextures[i] = new Sheet(SheetType.BGRA, fileSystem.Open(filename), TextureWrap.Repeat, false);
+				CausticsTextures[i] = new Sheet( fileSystem.Open(filename), TextureWrap.Repeat);
 			}
 		}
 
@@ -92,7 +92,7 @@ namespace OpenRA.Graphics
 				throw new Exception(filename + " Can not find texture " + name);
 			}
 
-			var sheet = new Sheet(SheetType.BGRA, fileSystem.Open(filename), TextureWrap.Repeat, false);
+			var sheet = new Sheet(fileSystem.Open(filename), TextureWrap.Repeat);
 
 			Textures.Add(name, (uniform, sheet));
 			switch (type)

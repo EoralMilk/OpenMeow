@@ -88,6 +88,8 @@ mmr-test:
 			UseDQBSkin: true
 		idle: Missile
 			Material: turret
+		arrow: Arrow
+			Material: white
 
 turret-test2:
 	Skeleton: TextTurret
