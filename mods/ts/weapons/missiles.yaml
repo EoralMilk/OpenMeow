@@ -8,10 +8,13 @@
 		Blockable: false
 		Shadow: true
 		Inaccuracy: 128
-		Image: DRAGON
+		Unit: missile
+		Meshes: idle
+		MeshScale: 4
+		# Image: DRAGON
+		# Palette: ra
 		HorizontalRateOfTurn: 100
 		RangeLimit: 15c0
-		Palette: ra
 		MinimumLaunchSpeed: 75
 		Speed: 300
 		Acceleration: 96
@@ -58,6 +61,95 @@
 	Warhead@Smu: LeaveSmudge
 		SmudgeType: SmallCrater
 		InvalidTargets: Vehicle, Building, Wall
+
+^VectorBooster:
+	Range: 7c0
+	Report: hovrmis1.aud
+	ReloadDelay: 60
+	MinRange: 1c0
+	ValidTargets: Ground, Water, Air, Trees
+	Projectile: VectorBooster
+		HorizonRotationRate: 15
+		VerticalRotationRate: 5
+		Acceleration: 18
+		Speed: 120
+		LockOnDelay: 3
+		IgnitionDelay: 2
+		MinSpeed: 64
+		MaxSpeed: 346
+		LifeTime: 50
+		ProximityRange: 0
+		ProximitySnapping: true
+		ContrailLength: 16
+		ContrailWidth: 96
+		ContrailStartColor: BB8800
+		ContrailStartColorAlpha: 167
+		ContrailEndColor: AA0000
+		ContrailWidthFadeRate: 1
+		ContrailDelay: 0
+		ContrailBlendMode: ScreenAdditive
+		LaunchAngle: 27
+		ZOffset: 10
+		Inaccuracy: 1c0
+		UseVerticalInaccuracy: false
+		LockOnInaccuracy: 200
+		UseLockOnVerticalInaccuracy: true
+		LockOnTargetTypes: Vehicle, Air, Building, Defense, Cyborg
+		Unit: missile
+		Meshes: idle
+		MeshScale: 4
+		TrailImage: small_smoke_trail
+		TrailInterval: 1
+		TrailCount: 2
+		TrailDelay: 0
+		ExplodeUnderThisAltitude: 0
+		UsingScat: false
+		ScatWeapon: Grenade
+		ScatDist: 3c512
+		ScatCount: 3
+		DetectTargetOnCurve: true
+		DetectTargetFromLength: 0.7
+		DetectTargetBeforeDist: 3c0
+	Warhead@1Dam: Spread3DDamage
+		Spread: 0c256
+		Falloff: 100, 50, 25, 12, 6, 3, 0
+		Damage: 6000
+		ValidTargets: Ground, Water, Air, Trees
+		Versus:
+			None: 25
+			Wood: 65
+			Light: 75
+			Heavy: 100
+			Concrete: 60
+		DamageTypes: Prone50Percent, TriggerProne, SmallExplosionDeath
+	Warhead@2Eff: CreateEffect
+		Explosions: small_clsn
+		ImpactSounds: expnew12.aud
+		ValidTargets: Ground, Air, Trees
+	Warhead@3EffWater: CreateEffect
+		Explosions: small_watersplash
+		ExplosionPalette: player
+		ImpactSounds: ssplash3.aud
+		ValidTargets: Water
+		InvalidTargets: Vehicle
+	Warhead@Smu: LeaveSmudge
+		SmudgeType: SmallCrater
+		InvalidTargets: Vehicle, Building, Wall
+
+VectorBoosterMul:
+	Inherits: ^VectorBooster
+	Range: 15c0
+	Projectile: VectorBooster
+		UsingScat: true
+		ScatWeapon: ^VectorBooster
+		ScatDist: 7c512
+		ScatCount: 3
+
+VectorBazooka:
+	Inherits: ^VectorBooster
+	ReloadDelay: 60
+	Range: 7c0
+	MinRange: 0c512
 
 Bazooka:
 	Inherits: ^DefaultMissile
@@ -109,11 +201,25 @@ MammothTuskMk2:
 	MinRange: 0c512
 
 BikeMissile:
-	Inherits: ^DefaultMissile
+	# Inherits: ^DefaultMissile
+	Inherits: ^VectorBooster
+	Range: 7c512
+	MinRange: 0c512
 	Report: misl1.aud
 	ValidTargets: Ground
 	ReloadDelay: 35
-	Warhead@1Dam: SpreadDamage
+	Projectile: VectorBooster
+		HorizonRotationRate: 17
+		VerticalRotationRate: 6
+		Acceleration: 20
+		Speed: 99
+		LockOnDelay: 5
+		IgnitionDelay: 5
+		MinSpeed: 64
+		MaxSpeed: 377
+		LifeTime: 66
+		LaunchAngle: 33
+	Warhead@1Dam: Spread3DDamage
 		Damage: 5000
 
 BikeMissileDual:
@@ -145,21 +251,57 @@ Hellfire:
 			Heavy: 100
 			Concrete: 30
 
+VectorHellfire:
+	Inherits: ^VectorBooster
+	ReloadDelay: 10
+	Report: orcamis1.aud
+	ValidTargets: Ground, Water, Air
+	Projectile: VectorBooster
+		HorizonRotationRate: 14
+		VerticalRotationRate: 12
+		Acceleration: 25
+		Speed: 72
+		LockOnDelay: 5
+		IgnitionDelay: 0
+		LaunchAngle: 0
+		LifeTime: 46
+	Warhead@1Dam: Spread3DDamage
+		Spread: 72
+		Damage: 3000
+		ValidTargets: Ground, Water, Air, Trees
+		Versus:
+			None: 30
+			Wood: 65
+			Light: 150
+			Heavy: 100
+			Concrete: 30
+
 RedEye2:
-	Inherits: ^DefaultMissile
+	# Inherits: ^DefaultMissile
+	Inherits: ^VectorBooster
 	ReloadDelay: 55
 	Range: 15c0
 	Report: samshot1.aud
 	ValidTargets: Air
-	Projectile: Missile
-		Arm: 1
-		VerticalRateOfTurn: 140
-		RangeLimit: 25c0
-		Speed: 288
-	Warhead@1Dam: SpreadDamage
+	# Projectile: Missile
+	# 	Arm: 1
+	# 	VerticalRateOfTurn: 140
+	# 	RangeLimit: 25c0
+	# 	Speed: 288
+	Projectile: VectorBooster
+		HorizonRotationRate: 13
+		VerticalRotationRate: 9
+		Acceleration: 17
+		Speed: 165
+		LockOnDelay: 3
+		IgnitionDelay: 0
+		LaunchAngle: 64
+		MinSpeed: 88
+		MaxSpeed: 388
+		LifeTime: 75
+	Warhead@1Dam: Spread3DDamage
 		Spread: 128
-		Damage: 4400
-		ValidTargets: Air, Ground
+		Damage: 7800
 		DamageTypes: SmallExplosionDeath
 	Warhead@2Eff: CreateEffect
 		Explosions: large_grey_explosion

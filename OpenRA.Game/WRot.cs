@@ -58,10 +58,17 @@ namespace OpenRA
 		//{
 		//	return FromQuat(TSQuaternion.LookRotation(end - start));
 		//}
-
+		public static int rollAdd = -256, pitchAdd, yawAdd;
 		public TSQuaternion ToQuat()
 		{
-			WRot rot = new WRot(Pitch - new WAngle(256), Roll, -Yaw);
+			WRot rot = new WRot(Pitch + new WAngle(rollAdd), Roll + new WAngle(pitchAdd), -Yaw + new WAngle(yawAdd));
+
+			return new TSQuaternion((FP)rot.x / (FP)1024, (FP)rot.y / (FP)1024, (FP)rot.z / (FP)1024, (FP)rot.w / (FP)1024);
+		}
+
+		public TSQuaternion ToQuatNoConvert()
+		{
+			WRot rot = new WRot(Pitch, Roll, new WAngle(512) - Yaw);
 
 			return new TSQuaternion((FP)rot.x / (FP)1024, (FP)rot.y / (FP)1024, (FP)rot.z / (FP)1024, (FP)rot.w / (FP)1024);
 		}

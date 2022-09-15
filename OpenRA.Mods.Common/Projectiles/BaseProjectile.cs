@@ -1,13 +1,18 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using OpenRA.GameRules;
 using OpenRA.Graphics;
+using OpenRA.Mods.Common.Activities;
 using OpenRA.Mods.Common.Effects;
 using OpenRA.Mods.Common.Graphics;
 using OpenRA.Mods.Common.Traits;
+using OpenRA.Mods.Common.Traits.Trait3D;
 using OpenRA.Primitives;
+using OpenRA.Primitives.FixPoint;
 using OpenRA.Traits;
+using TrueSync;
 
 namespace OpenRA.Mods.Common.Projectiles
 {
@@ -24,6 +29,15 @@ namespace OpenRA.Mods.Common.Projectiles
 
 		[Desc("Controls the way inaccuracy is calculated. Possible values are 'Maximum' - scale from 0 to max with range, 'PerCellIncrement' - scale from 0 with range and 'Absolute' - use set value regardless of range.")]
 		public readonly InaccuracyType InaccuracyType = InaccuracyType.Maximum;
+
+		[Desc("3D Unit to display.")]
+		public readonly string Unit = null;
+
+		[Desc("Loop a randomly chosen mesh of Unit from this list while this projectile is moving.")]
+		public readonly string[] Meshes = { "idle" };
+
+		[Desc("3D mesh display Scale.")]
+		public readonly float MeshScale = 1f;
 
 		[Desc("Image to display.")]
 		public readonly string Image = null;
@@ -149,9 +163,17 @@ namespace OpenRA.Mods.Common.Projectiles
 		readonly CorporealProjectileInfo info;
 		readonly ProjectileArgs args;
 
+		protected	readonly TSVector front;
+
+		Color remapColor = Color.White;
+		List<MeshInstance> meshes = new List<MeshInstance>();
+
 		bool hasInitPal = false;
 		readonly Animation anim;
 		readonly Animation jetanim;
+		protected bool renderJet = true;
+		protected bool renderTrail = true;
+		protected bool renderContrail = true;
 
 		PaletteReference pal;
 		PaletteReference jetPal;
@@ -163,6 +185,8 @@ namespace OpenRA.Mods.Common.Projectiles
 		readonly ContrailRenderable contrail;
 		int trailTicks;
 		WPos trailLastPos, pos;
+		TSMatrix4x4 effectMatrix;
+		protected WVec matVec = WVec.Zero;
 
 		protected bool explode = false;
 
@@ -171,6 +195,24 @@ namespace OpenRA.Mods.Common.Projectiles
 			this.info = info;
 			this.args = args;
 			var world = args.SourceActor.World;
+			front = World3DCoordinate.Front;
+
+			if (!string.IsNullOrEmpty(info.Unit))
+			{
+				if (args.Matrix != TSMatrix4x4.Identity)
+				{
+					effectMatrix = args.Matrix;
+					matVec = World3DCoordinate.TSVec3ToWPos(Transformation.MatWithOutScale(effectMatrix) * front) - args.Source;
+				}
+
+				if (args.SourceActor != null)
+					remapColor = args.SourceActor.Owner.Color;
+				var mesh = world.MeshCache.GetMeshSequence(info.Unit, info.Meshes[0]);
+				meshes.Add(new MeshInstance(mesh,
+					GetMatrix,
+					() => true,
+					null));
+			}
 
 			if (!string.IsNullOrEmpty(info.Image))
 			{
@@ -203,18 +245,28 @@ namespace OpenRA.Mods.Common.Projectiles
 			return WAngle.Zero;
 		}
 
+		protected virtual TSMatrix4x4 GetMatrix()
+		{
+			var effectFacing = TSQuaternion.FromToRotation(front, World3DCoordinate.WVecToTSVec3(matVec));
+			effectMatrix = TSMatrix4x4.Rotate(effectFacing);
+			effectMatrix.SetTranslatePart(World3DCoordinate.WPosToTSVec3(pos));
+			return Transformation.MatWithNewScale(effectMatrix, info.MeshScale);
+		}
+
 		protected virtual void RenderTick(World world, in WPos pos)
 		{
 			anim?.Tick();
-			jetanim?.Tick();
+			if (renderJet)
+				jetanim?.Tick();
 			this.pos = pos;
+			matVec = pos - trailLastPos;
 
-			if (info.ContrailLength > 0)
+			if (info.ContrailLength > 0 && renderContrail)
 				contrail.Update(pos);
 
 			if (hasInitPal)
 			{
-				if (info.TrailImage != null && info.TrailCount > 0 && --trailTicks < 0)
+				if (info.TrailImage != null && info.TrailCount > 0 && --trailTicks < 0 && renderTrail)
 				{
 					var v = (pos - trailLastPos) / info.TrailCount;
 
@@ -244,15 +296,26 @@ namespace OpenRA.Mods.Common.Projectiles
 			jetPal = wr.Palette(info.JetPalette + (info.JetUsePlayerPalette ? args.SourceActor.Owner.InternalName : ""));
 		}
 
+		protected virtual IEnumerable<IRenderable> RenderSelf(WorldRenderer wr) { return Array.Empty<IRenderable>(); }
+
 		public virtual IEnumerable<IRenderable> Render(WorldRenderer wr)
 		{
+			var rs = RenderSelf(wr);
+			foreach (var r in rs)
+			{
+				yield return r;
+			}
+
+			if (meshes.Count > 0)
+				yield return new MeshRenderable(meshes, pos, 0, args.SourceActor.Owner.Color, info.MeshScale, null);
+
 			if (!hasInitPal)
 			{
 				UpdatePalette(wr);
 				hasInitPal = true;
 			}
 
-			if (info.ContrailLength > 0)
+			if (info.ContrailLength > 0 && renderContrail)
 				yield return contrail;
 
 			if (explode)
@@ -277,7 +340,7 @@ namespace OpenRA.Mods.Common.Projectiles
 						yield return r;
 				}
 
-				if (jetanim != null)
+				if (jetanim != null && renderJet)
 				{
 					foreach (var r in jetanim.Render(pos, jetPal))
 						yield return r;

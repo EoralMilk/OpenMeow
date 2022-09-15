@@ -32,7 +32,7 @@
 		BackwardRight: backwardRightAnim
 
 		Guard: guard
-		GuardBlendTick: 20
+		GuardBlendTick: 10
 		UpperMask: upper
 		LowerMask: lower
 	WithSkeleton:
@@ -91,19 +91,58 @@ RUTEST2:
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Tooltip:
 		Name: Test 2
-	Armament:
-		Weapon: HarpyClawMG
-		Turret: primary
-		LocalOffset: 1024,0,1024
+
 	Turreted:
 		TurnSpeed: 88
+		RealignSpeed: 33
 		Turret: primary
 		Offset: 0,0,0
 		Floating: true
 	AttackTurreted:
 		Voice: Attack
 		PauseOnCondition: empdisable
+		Turrets: primary, turret2
 		# FacingToTarget: true
+
+	# WithSkeleton@turret2:
+	# 	SkeletonDefine: turret-test2
+	# 	Name: turret_skeleton2
+	# 	AxisConvert: false
+	# TurretAttachment@2:
+	# 	Name: turret2
+	# 	SkeletonBinded: body
+	# 	AttachingBone: a-Position
+	# 	AttachmentSkeleton: turret_skeleton2
+	# 	TurretBone: a-s-Base
+	# 	BarrelBone: a-s-Barrel
+	# 	Scale: 5
+	# 	Mesh: turret
+	# 	RotationSpeed: 3
+	# 	BarrelRotationSpeed: 5
+	# 	InitTurretAngle: 0
+	# 	# TurretRotationMin: 0
+	# 	# TurretRoataionMax: 180
+	# 	InitBarrelAngle: 45
+	# 	BarrelMaxDepression: 80
+	# 	BarrelMaxElevation: 80
+	# 	TurretFireAngleLimitation: true
+	# 	BarrelFireAngleLimitation: false
+	# AttachedArmament@2:
+	# 	Weapon: ^VectorBooster
+	# 	SkeletonToUse: turret_skeleton2
+	# 	FromBonePose: firepose
+	# 	FacingTolerance: 512
+	# 	Turret: turret2
+	# AttachedArmament@3:
+	# 	Weapon: HarpyClawMG
+	# 	SkeletonToUse: turret_skeleton2
+	# 	FromBonePose: firepose
+	# 	FacingTolerance: 40
+	# 	Turret: turret2
+	Armament:
+		Weapon: HarpyClawMG
+		Turret: primary
+		LocalOffset: 1024,0,1024
 	BlendTreeHandler:
 		DirectionTurret: primary
 	WithMesh@Arrow:
@@ -151,7 +190,7 @@ RUTEST3:
 		BarrelMaxDepression: 15
 		BarrelMaxElevation: 80
 		TurretFireAngleLimitation: true
-		BarrelFireAngleLimitation: true
+		BarrelFireAngleLimitation: false
 	AttachedArmament@1:
 		Weapon: ^SA
 		SkeletonToUse: turret_skeleton1
@@ -180,9 +219,9 @@ RUTEST3:
 		BarrelMaxDepression: 15
 		BarrelMaxElevation: 80
 		TurretFireAngleLimitation: true
-		BarrelFireAngleLimitation: true
+		BarrelFireAngleLimitation: false
 	AttachedArmament@2:
-		Weapon: VectorBoosterMul
+		Weapon: ^VectorBooster
 		SkeletonToUse: turret_skeleton2
 		FromBonePose: firepose
 		FacingTolerance: 40

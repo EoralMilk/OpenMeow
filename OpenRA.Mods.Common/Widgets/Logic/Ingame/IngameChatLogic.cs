@@ -143,19 +143,27 @@ namespace OpenRA.Mods.Common.Widgets.Logic
 				var team = teamChat && !disableTeamChat;
 				if (chatText.Text != "")
 				{
+					if (chatText.Text == "mat")
+					{
+						AttachedArmament.mat3 = !AttachedArmament.mat3;
+					}
+
 					if (chatText.Text.StartsWith("-"))
 					{
 						var ss = chatText.Text;
 						var ii = int.Parse(ss.Substring(2));
-						if (Game.Renderer.World3DRenderer != null)
-						{
-							if (chatText.Text.StartsWith("-r"))
-								Game.Renderer.World3DRenderer.rollAdd = ii;
-							else if (chatText.Text.StartsWith("-p"))
-								Game.Renderer.World3DRenderer.pitchAdd = ii;
-							else if (chatText.Text.StartsWith("-y"))
-								Game.Renderer.World3DRenderer.yawAdd = ii;
-						}
+						if (chatText.Text.StartsWith("-r"))
+							WRot.rollAdd = ii;
+						else if (chatText.Text.StartsWith("-p"))
+							WRot.pitchAdd = ii;
+						else if (chatText.Text.StartsWith("-y"))
+							WRot.yawAdd = ii;
+						else if (chatText.Text.StartsWith("-x"))
+							AttachedArmament.FrontX = ii;
+						else if (chatText.Text.StartsWith("-y"))
+							AttachedArmament.FrontY = ii;
+						else if (chatText.Text.StartsWith("-z"))
+							AttachedArmament.FrontZ = ii;
 					}
 
 					if (!chatText.Text.StartsWith("/", StringComparison.Ordinal))

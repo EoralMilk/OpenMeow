@@ -48,6 +48,8 @@ namespace OpenRA.Mods.Common.Traits
 
 		public readonly int OpenPosition;
 
+		bool IBlocksProjectiles.IsBlocking => Position != OpenPosition;
+
 		[Sync]
 		public int Position { get; private set; }
 

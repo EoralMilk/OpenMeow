@@ -168,6 +168,17 @@ namespace OpenRA.Graphics
 			Offset = translateMat * (scaleMat * rotMat);
 		}
 
+		public void SetOffsetNoConvert(WPos wPos, WRot wRot, float scale)
+		{
+			offsetScale = FP.FromFloat(scale);
+			scaleMat = TSMatrix4x4.Scale(offsetScale);
+			offsetVec = Game.Renderer.World3DRenderer.Get3DPositionFromWPos(wPos);
+			translateMat = TSMatrix4x4.Translate(offsetVec);
+			offsetRot = wRot.ToQuatNoConvert();
+			rotMat = TSMatrix4x4.Rotate(offsetRot);
+			Offset = translateMat * (scaleMat * rotMat);
+		}
+
 		public void SetOffset(in TSMatrix4x4 matrix)
 		{
 			Offset = matrix;

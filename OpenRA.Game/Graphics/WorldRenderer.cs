@@ -49,13 +49,7 @@ namespace OpenRA.Graphics
 
 		internal WorldRenderer(ModData modData, World world)
 		{
-			OrderedSkeleton.BoneAnimTexture?.Dispose();
-			OrderedSkeleton.BoneAnimTexture = Game.Renderer.CreateInfoTexture(new Primitives.Size(SkeletonAsset.AnimTextureWidth, SkeletonAsset.AnimTextureHeight));
-
 			World = world;
-
-			World.MapTextureCache?.RefreshAllTextures();
-			World.MeshCache?.RefreshAllTextures();
 
 			TileSize = World.Map.Grid.TileSize;
 			TileScale = World.Map.Grid.Type == MapGridType.RectangularIsometric ? 1448 : 1024;
@@ -82,6 +76,14 @@ namespace OpenRA.Graphics
 			{
 				preparedBlendRenderables[i] = new List<IFinalizedRenderable>();
 			}
+		}
+
+		public void RefreshTextures()
+		{
+			OrderedSkeleton.BoneAnimTexture?.Dispose();
+			OrderedSkeleton.BoneAnimTexture = Game.Renderer.CreateInfoTexture(new Primitives.Size(SkeletonAsset.AnimTextureWidth, SkeletonAsset.AnimTextureHeight));
+			World.MapTextureCache?.RefreshAllTextures();
+			World.MeshCache?.RefreshAllTextures();
 		}
 
 		public void UpdatePalettesForPlayer(string internalName, Color color, bool replaceExisting)
@@ -410,7 +412,7 @@ namespace OpenRA.Graphics
 
 		public float3 Render3DPosition(WPos pos)
 		{
-			return new float3(-(float)pos.X / Game.Renderer.World3DRenderer.WPosPerMeter, (float)pos.Y / Game.Renderer.World3DRenderer.WPosPerMeter, (float)pos.Z / Game.Renderer.World3DRenderer.WPosPerMeterHeight);
+			return new float3(-(float)pos.X / Game.Renderer.World3DRenderer.WPosPerMeter, (float)pos.Y / Game.Renderer.World3DRenderer.WPosPerMeter, (float)pos.Z / Game.Renderer.World3DRenderer.WPosPerMeter);
 		}
 
 		public float3 Screen3DPosition(WPos pos)
@@ -457,7 +459,7 @@ namespace OpenRA.Graphics
 
 		public float3 RenderVectorComponents(in WVec vec)
 		{
-			return new float3(-(float)vec.X / Game.Renderer.World3DRenderer.WPosPerMeter, (float)vec.Y / Game.Renderer.World3DRenderer.WPosPerMeter, (float)vec.Z / Game.Renderer.World3DRenderer.WPosPerMeterHeight);
+			return new float3(-(float)vec.X / Game.Renderer.World3DRenderer.WPosPerMeter, (float)vec.Y / Game.Renderer.World3DRenderer.WPosPerMeter, (float)vec.Z / Game.Renderer.World3DRenderer.WPosPerMeter);
 		}
 
 		// For scaling vectors to pixel sizes in the model renderer

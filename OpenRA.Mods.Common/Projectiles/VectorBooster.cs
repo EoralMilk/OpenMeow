@@ -12,14 +12,17 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using GlmSharp;
 using OpenRA.GameRules;
 using OpenRA.Graphics;
 using OpenRA.Mods.Common.Effects;
 using OpenRA.Mods.Common.Graphics;
 using OpenRA.Mods.Common.Traits;
 using OpenRA.Primitives;
+using OpenRA.Primitives.FixPoint;
 using OpenRA.Support;
 using OpenRA.Traits;
+using TagLib.Matroska;
 using TrueSync;
 
 namespace OpenRA.Mods.Common.Projectiles
@@ -27,13 +30,31 @@ namespace OpenRA.Mods.Common.Projectiles
 	public class VectorBoosterInfo : CorporealProjectileInfo, IProjectileInfo, IRulesetLoaded<WeaponInfo>
 	{
 
-		public readonly float RotationSpeed = 15.0f;
+		public readonly BitSet<TargetableType> LockOnTargetTypes = new BitSet<TargetableType>("Vehicle", "Air", "Building", "Defense");
+		public readonly BitSet<TargetableType> InvalidLockOnTargetTypes = new BitSet<TargetableType>("MissileUnLock");
+
+		[Desc("Projectile acceleration when propulsion activated.")]
+		public readonly WDist Acceleration = new WDist(5);
+
+		public readonly WDist MaxSpeed = new WDist(512);
+		public readonly WDist MinSpeed = new WDist(64);
+
+		public readonly WAngle HorizonRotationRate = new WAngle(15);
+		public readonly WAngle VerticalRotationRate = new WAngle(15);
+
+		public readonly int LockOnDelay = 5;
+
+		public readonly int IgnitionDelay = 5;
+
+		public readonly int JetDelay = -1;
 
 		public readonly WDist ProximityRange = new WDist(256);
 
 		public readonly bool ProximitySnapping = false;
 
-		public readonly bool LostTarget = false;
+		public readonly bool ExplodeWhenLostTarget = false;
+
+		public readonly bool KeepDirectionWhenLostTarget = true;
 
 		public readonly bool DetectTargetOnCurve = false;
 		public readonly WDist DetectTargetBeforeDist = WDist.Zero;
@@ -108,7 +129,7 @@ namespace OpenRA.Mods.Common.Projectiles
 
 		readonly WAngle facing;
 		readonly WAngle angle;
-		readonly FP speed;
+		int speed;
 
 		readonly WeaponInfo scatWeapon;
 
@@ -116,21 +137,26 @@ namespace OpenRA.Mods.Common.Projectiles
 
 		[Sync]
 		WPos pos, lastPos, target, source;
+		[Sync]
+		int hFacing;
+		[Sync]
+		int vFacing;
 
 		int liveTicks;
+		readonly int jetDelay, contrailDelay, trailDelay;
 		readonly int lifetime;
 
 		public Actor SourceActor { get { return args.SourceActor; } }
 		protected Actor blocker;
 
-		TSQuaternion currentFacing, desireFacing;
-		TSVector sourcePos, currentPos, targetPos;
-		FP rotationSpeed;
-		readonly int proximityRange;
+		WVec tDir;
+		WVec velocity;
+
+		int proximityRange;
 		readonly long detectTargetBeforeDistSquare;
 
 		public VectorBooster(VectorBoosterInfo info, ProjectileArgs args)
-			:base(info, args)
+			: base(info, args)
 		{
 			this.info = info;
 			this.args = args;
@@ -146,7 +172,7 @@ namespace OpenRA.Mods.Common.Projectiles
 				scatWeapon = info.ScatWeaponInfo;
 			}
 
-			if (args.Rotation == TSQuaternion.identity && info.LaunchAngle.Length > 1)
+			if (args.Matrix == TSMatrix4x4.Identity && info.LaunchAngle.Length > 1)
 				angle = new WAngle(world.SharedRandom.Next(info.LaunchAngle[0].Angle, info.LaunchAngle[1].Angle));
 			else
 				angle = info.LaunchAngle[0];
@@ -156,16 +182,14 @@ namespace OpenRA.Mods.Common.Projectiles
 			else
 				speed = info.Speed[0].Length;
 
-			if ((int)speed > info.ProximityRange.Length)
-				proximityRange = (int)speed + 2;
-			else
-				proximityRange = info.ProximityRange.Length;
-
-			speed /= Game.Renderer.World3DRenderer.WPosPerMeter;
+			proximityRange = info.ProximityRange.Length;
 
 			if (args.GuidedTarget.Actor != null && args.GuidedTarget.Actor.IsInWorld && !args.GuidedTarget.Actor.IsDead)
 			{
-				if (world.SharedRandom.Next(100) <= info.LockOnProbability)
+				var targetTypes = args.GuidedTarget.Actor.GetEnabledTargetTypes();
+				if (info.LockOnTargetTypes.Overlaps(targetTypes) &&
+					!info.InvalidLockOnTargetTypes.Overlaps(targetTypes) &&
+					world.SharedRandom.Next(100) <= info.LockOnProbability)
 					lockOn = true;
 			}
 
@@ -195,22 +219,50 @@ namespace OpenRA.Mods.Common.Projectiles
 
 			facing = (target - pos).Yaw;
 
-			rotationSpeed = FP.FromFloat(info.RotationSpeed);
+			if (args.Matrix == TSMatrix4x4.Identity)
+			{
+				vFacing = (sbyte)(angle.Angle >> 2);
+				hFacing = args.Facing.Facing;
 
-			sourcePos = Game.Renderer.World3DRenderer.Get3DPositionFromWPos(source);
-			currentPos = sourcePos;
-			targetPos = Game.Renderer.World3DRenderer.Get3DPositionFromWPos(target);
-			if (args.Rotation == TSQuaternion.identity)
-				currentFacing = new WRot(new WAngle(0), angle, facing).ToQuat();
+				velocity = new WVec(0, -speed, 0)
+					.Rotate(new WRot(WAngle.FromFacing(vFacing), WAngle.Zero, WAngle.Zero))
+					.Rotate(new WRot(WAngle.Zero, WAngle.Zero, WAngle.FromFacing(hFacing)));
+			}
 			else
-				currentFacing = args.Rotation;
-			desireFacing = TSQuaternion.FromToRotation(TSVector.forward, targetPos - sourcePos);
-			//facingVec = new WVec(0, -1, 0).Rotate(new WRot(new WAngle(0), angle, facing));
+			{
+				var dir = World3DCoordinate.TSVec3ToWPos(Transformation.MatWithOutScale(args.Matrix) * (front.normalized)) - args.Source;
+				hFacing = dir.Yaw.Facing;
+				var hLength = new WVec(dir.X, dir.Y, 0).Length;
+				vFacing = new WVec(-dir.Z, -hLength, 0).Yaw.Facing;
+
+				velocity = dir * speed / dir.Length;
+			}
+
+			tDir = target - pos;
+
+			if (info.JetDelay < 0)
+				jetDelay = info.IgnitionDelay;
+			else
+				jetDelay = info.JetDelay;
+
+			if (info.TrailDelay < 0)
+				trailDelay = info.IgnitionDelay;
+			else
+				trailDelay = info.TrailDelay;
+
+			if (info.ContrailDelay < 0)
+				contrailDelay = info.IgnitionDelay;
+			else
+				contrailDelay = info.ContrailDelay;
 
 			lifetime = info.LifeTime.Length == 2
 					? world.SharedRandom.Next(info.LifeTime[0], info.LifeTime[1])
 					: info.LifeTime[0];
 			liveTicks = 0;
+
+			renderJet = false;
+			renderTrail = false;
+			renderContrail = false;
 		}
 
 		public void Tick(World world)
@@ -219,28 +271,87 @@ namespace OpenRA.Mods.Common.Projectiles
 			SelfTick(world);
 		}
 
+		DebugLineRenderable DebugDrawLine(WPos pos, TSQuaternion q, Color color)
+		{
+			var start = World3DCoordinate.Float3toVec3(Game.Renderer.WorldRgbaColorRenderer.Render3DPosition(pos));
+			var end = World3DCoordinate.TSVec3ToRVec3(q * (front * 5)) + start;
+
+			return new DebugLineRenderable(pos, 0,
+				World3DCoordinate.Vec2Float3(start),
+				World3DCoordinate.Vec2Float3(end),
+				new WDist(64), color, BlendMode.None);
+		}
+
+		//protected override IEnumerable<IRenderable> RenderSelf(WorldRenderer wr)
+		//{
+		//	yield return DebugDrawLine(pos, initFacing, Color.Coral);
+
+		//	yield return DebugDrawLine(pos, desireHorizonFacing, Color.Azure);
+		//	yield return DebugDrawLine(pos, currentFacing, Color.Green);
+		//}
+
 		protected virtual void SelfTick(World world)
 		{
 			lastPos = pos;
-			currentPos += currentFacing * TSVector.forward * speed;
-			pos = Game.Renderer.World3DRenderer.GetWPosFromTSVector(currentPos);
 
-			if (lockOn && args.GuidedTarget.Actor.IsInWorld)
+			if (liveTicks > jetDelay)
+				renderJet = true;
+			if (liveTicks > trailDelay)
+				renderTrail = true;
+			if (liveTicks > contrailDelay)
+				renderContrail = true;
+
+			if (lockOn && liveTicks >= info.LockOnDelay && args.GuidedTarget.Actor.IsInWorld)
 			{
 				if (!args.GuidedTarget.Actor.IsDead)
 				{
 					target = args.Weapon.TargetActorCenter ? args.GuidedTarget.CenterPosition + offset : args.GuidedTarget.Positions.PositionClosestTo(args.Source) + offset;
-					targetPos = Game.Renderer.World3DRenderer.Get3DPositionFromWPos(target);
 				}
+			}
 
-				desireFacing = TSQuaternion.FromToRotation(TSVector.forward, targetPos - currentPos);
-				currentFacing = TSQuaternion.RotateTowards(currentFacing, desireFacing, rotationSpeed);
-			}
-			else if (!lockOn && !info.LostTarget)
+			// lost target
+			if (lockOn && (!args.GuidedTarget.Actor.IsInWorld || args.GuidedTarget.Actor.IsDead))
 			{
-				desireFacing = TSQuaternion.FromToRotation(TSVector.forward, targetPos - currentPos);
-				currentFacing = TSQuaternion.RotateTowards(currentFacing, desireFacing, rotationSpeed);
+				if (info.ExplodeWhenLostTarget)
+				{
+					Explode(world);
+					explode = true;
+					return;
+				}
+				else if (!info.KeepDirectionWhenLostTarget)
+					tDir = target - pos;
 			}
+			else
+				tDir = target - pos;
+
+			if (liveTicks >= info.IgnitionDelay)
+			{
+				var desiredHFacing = tDir.Yaw.Facing;
+				var hLength = tDir.HorizontalLength;
+				var desiredVFacing = new WVec(-tDir.Z, -hLength, 0).Yaw.Facing;
+
+				hFacing = Util.TickFacing(hFacing, desiredHFacing, info.HorizonRotationRate.Angle);
+				vFacing = Util.TickFacing(vFacing, desiredVFacing, info.VerticalRotationRate.Angle);
+
+				// pass target
+				if (WVec.Dot(velocity, tDir) < 0)
+				{
+					speed -= info.Acceleration.Length;
+					speed = speed <= 0 ? info.MinSpeed.Length : speed;
+				}
+				else
+				{
+					speed += info.Acceleration.Length;
+					speed = speed >= info.MaxSpeed.Length ? info.MaxSpeed.Length : speed;
+				}
+			}
+
+			velocity = new WVec(0, -1024 * speed, 0)
+				.Rotate(new WRot(WAngle.FromFacing(vFacing), WAngle.Zero, WAngle.Zero))
+				.Rotate(new WRot(WAngle.Zero, WAngle.Zero, WAngle.FromFacing(hFacing)))
+				/ 1024;
+
+			pos += velocity;
 
 			if (ShouldExplode(world))
 			{
@@ -280,7 +391,12 @@ namespace OpenRA.Mods.Common.Projectiles
 				}
 			}
 
-			var distToTarget = (pos - target).Length;
+			var distToTarget = tDir.Length;
+
+			if (speed > proximityRange * 2)
+				proximityRange = speed / 2;
+			else
+				proximityRange = info.ProximityRange.Length;
 
 			if (distToTarget < proximityRange)
 			{
@@ -321,7 +437,7 @@ namespace OpenRA.Mods.Common.Projectiles
 				var pArgs = new ProjectileArgs
 				{
 					Weapon = scatWeapon,
-					Rotation = currentFacing,
+					Matrix = GetMatrix(),
 					Facing = (target - pos).Yaw,
 					CurrentMuzzleFacing = () => (target - pos).Yaw,
 

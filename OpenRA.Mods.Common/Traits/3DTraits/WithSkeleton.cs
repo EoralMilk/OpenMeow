@@ -33,6 +33,7 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 		public readonly string SkeletonDefine = null;
 		public readonly string Name = "body";
 		public readonly bool OnlyUpdateForDraw = false;
+		public readonly bool AxisConvert = true;
 		public override object Create(ActorInitializer init) { return new WithSkeleton(init.Self, this); }
 	}
 
@@ -275,7 +276,12 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 		void UpdateSkeletonRoot()
 		{
 			if (parent == null)
-				Skeleton.SetOffset(lastSelfPos, lastSelfRot, lastScale);
+			{
+				if (Info.AxisConvert)
+					Skeleton.SetOffset(lastSelfPos, lastSelfRot, lastScale);
+				else
+					Skeleton.SetOffsetNoConvert(lastSelfPos, lastSelfRot, lastScale);
+			}
 			else
 				Skeleton.SetOffset(Transformation.MatWithNewScale(parent.GetMatrixFromBoneId(parentBoneId), scaleAsChild));
 		}

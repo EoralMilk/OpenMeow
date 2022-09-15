@@ -12,12 +12,17 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using GlmSharp;
 using OpenRA.GameRules;
 using OpenRA.Graphics;
+using OpenRA.Mods.Common.Graphics;
 using OpenRA.Mods.Common.Projectiles;
 using OpenRA.Mods.Common.Traits.Render;
 using OpenRA.Mods.Common.Traits.Trait3D;
+using OpenRA.Primitives;
+using OpenRA.Primitives.FixPoint;
 using OpenRA.Traits;
+using TrueSync;
 
 namespace OpenRA.Mods.Common.Traits
 {
@@ -109,6 +114,11 @@ namespace OpenRA.Mods.Common.Traits
 			return true;
 		}
 
+		protected override TSMatrix4x4 GetProjectileMatrix(Actor self, Barrel b)
+		{
+			return withSkeleton.GetMatrixFromBoneId(b.BoneId);
+		}
+
 		protected override WPos CalculateMuzzleWPos(Actor self, Barrel b)
 		{
 			return withSkeleton.GetWPosFromBoneId(b.BoneId);
@@ -119,5 +129,37 @@ namespace OpenRA.Mods.Common.Traits
 			return withSkeleton.GetWRotFromBoneId(b.BoneId);
 		}
 
+		public static bool mat3 = true;
+		public static int FrontX = 0, FrontY = 1, FrontZ = 0;
+		DebugLineRenderable DebugDrawLine(TSMatrix4x4 m, Color color, bool mat)
+		{
+			var startpos = Transformation.MatPosition(m);
+			var start = World3DCoordinate.TSVec3ToRVec3(startpos);
+			var end = new vec3();
+			if (mat)
+			{
+				end = new mat3(World3DCoordinate.TSMatrix4x4ToMat4(m)) * (new vec3(FrontX, FrontY, FrontZ) * 5) + start;
+			}
+			else
+			{
+				end = (new quat(World3DCoordinate.TSMatrix4x4ToMat4(Transformation.MatWithOutScale(m)))).Normalized * (new vec3(FrontX, FrontY, FrontZ) * 5) + start;
+			}
+
+			return new DebugLineRenderable(World3DCoordinate.TSVec3ToWPos(startpos), 0,
+				World3DCoordinate.Vec2Float3(start),
+				World3DCoordinate.Vec2Float3(end),
+				new WDist(32), color, BlendMode.None);
+		}
+
+		public DebugLineRenderable DebugDraw1()
+		{
+			return DebugDrawLine(withSkeleton.GetMatrixFromBoneId(boneIds[currentBarrel % boneIds.Length]), Color.Azure, true);
+
+		}
+
+		public DebugLineRenderable DebugDraw2()
+		{
+			return DebugDrawLine(withSkeleton.GetMatrixFromBoneId(boneIds[currentBarrel % boneIds.Length]), Color.Red, false);
+		}
 	}
 }

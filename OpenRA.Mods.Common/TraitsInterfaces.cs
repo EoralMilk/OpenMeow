@@ -51,6 +51,8 @@ namespace OpenRA.Mods.Common.Traits
 		WDist BlockingHeight { get; }
 
 		PlayerRelationship ValidRelationships { get; }
+
+		bool IsBlocking { get; }
 	}
 
 	[RequireExplicitImplementation]

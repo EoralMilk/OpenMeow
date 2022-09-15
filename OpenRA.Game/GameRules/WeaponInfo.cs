@@ -25,7 +25,7 @@ namespace OpenRA.GameRules
 		public int[] DamageModifiers;
 		public int[] InaccuracyModifiers;
 		public int[] RangeModifiers;
-		public TSQuaternion Rotation = TSQuaternion.identity;
+		public TSMatrix4x4 Matrix = TSMatrix4x4.Identity;
 		public WAngle Facing;
 		public Func<WAngle> CurrentMuzzleFacing;
 		public WPos Source;

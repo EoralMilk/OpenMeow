@@ -230,8 +230,8 @@ ORCA:
 		Range: 10c0
 		Type: GroundPosition
 	Armament:
-		Weapon: Hellfire
-		BurstPerFireCount: 2
+		Weapon: VectorHellfire #Hellfire
+		# BurstPerFireCount: 2
 		LocalOffset: 300,195,70, 300,-195,70
 		PauseOnCondition: !ammo
 	AttackAircraft:
@@ -589,8 +589,12 @@ APACHE:
 		Palette: pips
 	# WithShadow:
 	WithModelBody:
-
-
+	# WithMesh@idle:
+	# 	Mesh: idle
+	# RenderMeshes:
+	# 	Image: missile
+	# 	ZOffset: 15
+	# 	Scale: 20
 
 HUNTER:
 	Inherits@2: ^ExistsInWorld

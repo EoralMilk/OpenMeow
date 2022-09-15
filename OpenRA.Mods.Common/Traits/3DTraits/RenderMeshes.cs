@@ -25,6 +25,8 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 	{
 		public readonly RenderMeshesInfo Info;
 		readonly List<MeshInstance> meshes = new List<MeshInstance>();
+		AttachedArmament[] armaments;
+
 		public readonly World3DRenderer W3dr;
 		bool hasSkeleton;
 		readonly Dictionary<string, WithSkeleton> withSkeletons = new Dictionary<string, WithSkeleton>();
@@ -46,6 +48,8 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 			}
 
 			hasSkeleton = withSkeletons.Count > 0;
+
+			armaments = self.TraitsImplementing<AttachedArmament>().ToArray();
 		}
 
 		bool initializePalettes = true;
@@ -53,6 +57,16 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 
 		IEnumerable<IRenderable> IRender.Render(Actor self, WorldRenderer wr)
 		{
+			if (armaments != null && armaments.Length > 0)
+			{
+				foreach (var a in armaments)
+				{
+					yield return a.DebugDraw1();
+					yield return a.DebugDraw2();
+
+				}
+			}
+
 			if (initializePalettes)
 			{
 				remap = self.Owner.Color;
@@ -75,10 +89,11 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 				}
 			}
 
-			return new IRenderable[]
-			{
-				new MeshRenderable(meshes, self.CenterPosition, Info.ZOffset, remap, Info.Scale, this)
-			};
+			//return new IRenderable[]
+			//{
+			//	new MeshRenderable(meshes, self.CenterPosition, Info.ZOffset, remap, Info.Scale, this)
+			//};
+			yield return new MeshRenderable(meshes, self.CenterPosition, Info.ZOffset, remap, Info.Scale, this);
 		}
 
 		IEnumerable<Rectangle> IRender.ScreenBounds(Actor self, WorldRenderer wr)

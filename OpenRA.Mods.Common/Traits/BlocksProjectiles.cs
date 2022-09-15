@@ -38,6 +38,7 @@ namespace OpenRA.Mods.Common.Traits
 
 		PlayerRelationship IBlocksProjectiles.ValidRelationships { get { return Info.ValidRelationships; } }
 		bool IBlocksProjectiles.IsBindage { get { return Info.IsBindage; } }
+		bool IBlocksProjectiles.IsBlocking => true;
 
 		public static bool AnyBlockingActorAt(World world, WPos pos)
 		{
@@ -60,7 +61,7 @@ namespace OpenRA.Mods.Common.Traits
 					continue;
 
 				var blockers = a.TraitsImplementing<IBlocksProjectiles>()
-					.Where(Exts.IsTraitEnabled).Where(t => (t.ValidRelationships.HasRelationship(a.Owner.RelationshipWith(owner))))
+					.Where(Exts.IsTraitEnabled).Where(t => (t.ValidRelationships.HasRelationship(a.Owner.RelationshipWith(owner)) && t.IsBlocking))
 					.ToList();
 
 				if (blockers.Count == 0)

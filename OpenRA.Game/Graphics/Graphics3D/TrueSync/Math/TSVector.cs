@@ -119,6 +119,10 @@ namespace TrueSync
 			}
 		}
 
+		public TSVector2 XY => new TSVector2(x, y);
+
+		public TSVector XY_ => new TSVector(x, y, 0);
+
 		/// <summary>
 		/// Gets the length of the vector.
 		/// </summary>

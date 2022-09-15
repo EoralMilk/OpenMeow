@@ -3,7 +3,7 @@ TurretTest:
 	DiffuseTint: 1.5, 1.5, 1.5
 	SpecularTint: 0.9, 0.9,0.9
 	Shininess: 32.0
-
+	FaceCull: None
 	# Type: PBR
 	# PBR
 	Roughness: 0.25

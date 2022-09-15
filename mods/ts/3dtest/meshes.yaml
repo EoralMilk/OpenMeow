@@ -86,3 +86,18 @@ mmr-test:
 		body: body-combine
 			Material: body
 			UseDQBSkin: true
+		idle: Missile
+			Material: turret
+
+turret-test2:
+	Skeleton: TextTurret
+	Meshes:
+		turret: TurretMesh
+			Material: turret
+		idle: Missile
+			Material: turret
+
+missile:
+	Meshes:
+		idle: Missile
+			Material: turret

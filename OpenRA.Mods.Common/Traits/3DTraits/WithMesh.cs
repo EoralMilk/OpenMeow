@@ -6,6 +6,7 @@ using OpenRA.Mods.Common.Graphics;
 using OpenRA.Primitives;
 using OpenRA.Traits;
 using TrueSync;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace OpenRA.Mods.Common.Traits.Trait3D
 {
@@ -13,6 +14,7 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 	{
 		public readonly string Mesh = "idle";
 		public readonly string SkeletonBinded = null;
+		public readonly string Image = null;
 		public override object Create(ActorInitializer init) { return new WithMesh(init.Self, this); }
 	}
 
@@ -26,12 +28,20 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 			: base(info)
 		{
 			SkeletonBinded = info.SkeletonBinded;
+
 			var body = self.Trait<BodyOrientation>();
 			RenderMeshes = self.Trait<RenderMeshes>();
+
+			var image = RenderMeshes.Image;
+			if (Info.Image != null)
+			{
+				image = Info.Image;
+			}
+
 			IFacing facing = self.TraitOrDefault<IFacing>();
 			if (!replaceMeshInit)
 			{
-				var mesh = self.World.MeshCache.GetMeshSequence(RenderMeshes.Image, info.Mesh);
+				var mesh = self.World.MeshCache.GetMeshSequence(image, info.Mesh);
 				MeshInstance = new MeshInstance(mesh, () => self.CenterPosition,
 					() => facing == null ? body.QuantizeOrientation(self.Orientation) : facing.Orientation,
 					() => !IsTraitDisabled,

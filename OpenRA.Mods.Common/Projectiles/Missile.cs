@@ -18,6 +18,7 @@ using OpenRA.Mods.Common.Graphics;
 using OpenRA.Mods.Common.Traits;
 using OpenRA.Primitives;
 using OpenRA.Traits;
+using TrueSync;
 
 namespace OpenRA.Mods.Common.Projectiles
 {
@@ -185,9 +186,14 @@ namespace OpenRA.Mods.Common.Projectiles
 
 			DetermineLaunchSpeedAndAngle(world, out speed, out vFacing);
 
-			velocity = new WVec(0, -speed, 0)
-				.Rotate(new WRot(WAngle.FromFacing(vFacing), WAngle.Zero, WAngle.Zero))
-				.Rotate(new WRot(WAngle.Zero, WAngle.Zero, WAngle.FromFacing(hFacing)));
+			if (args.Matrix != TSMatrix4x4.Identity)
+			{
+				velocity = matVec * speed / 1024;
+			}
+			else
+				velocity = new WVec(0, -speed, 0)
+					.Rotate(new WRot(WAngle.FromFacing(vFacing), WAngle.Zero, WAngle.Zero))
+					.Rotate(new WRot(WAngle.Zero, WAngle.Zero, WAngle.FromFacing(hFacing)));
 		}
 
 		protected override WAngle GetEffectiveFacing()

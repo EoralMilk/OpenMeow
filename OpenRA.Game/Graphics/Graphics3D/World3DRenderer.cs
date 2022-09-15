@@ -22,7 +22,6 @@ namespace OpenRA.Graphics
 		public readonly float TanCameraPitch;
 		public readonly float CosCameraPitch;
 		public readonly float SinCameraPitch;
-		public readonly float WPosPerMeterHeight;
 		public readonly float MaxTerrainHeight;
 
 		public readonly vec3 SunPosOne = new vec3(2.39773f, 1.0f, 3.51021f);
@@ -59,7 +58,6 @@ namespace OpenRA.Graphics
 			MeterPerPix = (float)((1024 / WPosPerMeter) / (mapGrid.TileSize.Width / 1.4142135d));
 			MeterPerPixHalf = MeterPerPix / 2.0f;
 
-			WPosPerMeterHeight = WPosPerMeter ;// 1773.62f / (1024.0f / WPosPerMeter);
 			TanCameraPitch = (float)Math.Tan(glm.Radians(CameraPitch));
 			CosCameraPitch = (float)Math.Cos(glm.Radians(CameraPitch));
 			SinCameraPitch = (float)Math.Sin(glm.Radians(CameraPitch));
@@ -68,7 +66,7 @@ namespace OpenRA.Graphics
 			InverseCameraFront = glm.Normalized(new vec3(0, 1, 1 / TanCameraPitch));
 			InverseCameraFrontMeterPerWPos = InverseCameraFront / WPosPerMeter;
 
-			MaxTerrainHeight = mapGrid.MaximumTerrainHeight * MapGrid.MapHeightStep * 2f / WPosPerMeterHeight;
+			MaxTerrainHeight = mapGrid.MaximumTerrainHeight * MapGrid.MapHeightStep * 2f / WPosPerMeter;
 
 			UpdateSunPos(SunPosOne, vec3.Zero);
 			var chordPow = (SunPosOne.x * SunPosOne.x + SunPosOne.y * SunPosOne.y) + (SunPosOne.z * SunPosOne.z);
@@ -166,35 +164,35 @@ namespace OpenRA.Graphics
 		{
 			return new TSVector(-FP.FromFloat((float)pos.X / WPosPerMeter),
 												FP.FromFloat((float)pos.Y / WPosPerMeter),
-												FP.FromFloat((float)pos.Z / WPosPerMeterHeight));
+												FP.FromFloat((float)pos.Z / WPosPerMeter));
 		}
 
 		public TSVector Get3DPositionFromWVec(WVec vec)
 		{
 			return new TSVector(-FP.FromFloat((float)vec.X / WPosPerMeter),
 												FP.FromFloat((float)vec.Y / WPosPerMeter),
-												FP.FromFloat((float)vec.Z / WPosPerMeterHeight));
+												FP.FromFloat((float)vec.Z / WPosPerMeter));
 		}
 
 		public vec3 Get3DRenderPositionFromWPos(WPos pos)
 		{
 			return new vec3(-(float)pos.X / WPosPerMeter,
 										(float)pos.Y / WPosPerMeter,
-										(float)pos.Z / WPosPerMeterHeight);
+										(float)pos.Z / WPosPerMeter);
 		}
 
 		public WPos GetWPosFromTSVector(in TSVector vec)
 		{
 			return new WPos(-(int)(vec.x * WPosPerMeter),
 										(int)(vec.y * WPosPerMeter),
-										(int)(vec.z * WPosPerMeterHeight));
+										(int)(vec.z * WPosPerMeter));
 		}
 
 		public WPos GetWPosFromMatrix(in TSMatrix4x4 matrix)
 		{
 			return new WPos(-(int)(matrix.M14 * WPosPerMeter),
 										(int)(matrix.M24 * WPosPerMeter),
-										(int)(matrix.M34 * WPosPerMeterHeight));
+										(int)(matrix.M34 * WPosPerMeter));
 		}
 
 		public int rollAdd = 0;

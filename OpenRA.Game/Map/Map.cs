@@ -22,9 +22,10 @@ using OpenRA.FileFormats;
 using OpenRA.FileSystem;
 using OpenRA.Graphics;
 using OpenRA.Primitives;
+using OpenRA.Primitives.FixPoint;
 using OpenRA.Support;
 using OpenRA.Traits;
-using static System.Net.WebRequestMethods;
+using TrueSync;
 
 namespace OpenRA
 {
@@ -1267,9 +1268,9 @@ namespace OpenRA
 		mat3 CalTBN(float3 a, float3 b, float3 c, float2 uva, float2 uvb, float2 uvc)
 		{
 			// positions
-			vec3 pos1 = Float3toVec3(a);
-			vec3 pos2 = Float3toVec3(b);
-			vec3 pos3 = Float3toVec3(c);
+			vec3 pos1 = World3DCoordinate.Float3toVec3(a);
+			vec3 pos2 = World3DCoordinate.Float3toVec3(b);
+			vec3 pos3 = World3DCoordinate.Float3toVec3(c);
 
 			// texture coordinates
 			vec2 uv1 = new vec2(uva.X, uva.Y);
@@ -1304,16 +1305,6 @@ namespace OpenRA
 		mat3 NormalizeTBN (mat3 tbn)
 		{
 			return new mat3(tbn.Column0.NormalizedSafe, tbn.Column1.NormalizedSafe, tbn.Column2.NormalizedSafe);
-		}
-
-		float3 Vec2Float3(vec3 vec)
-		{
-			return new float3(vec.x, vec.y, vec.z);
-		}
-
-		vec3 Float3toVec3(float3 f3)
-		{
-			return new vec3(f3.X, f3.Y, f3.Z);
 		}
 
 		int HMix(int a, int b)
@@ -1809,8 +1800,103 @@ namespace OpenRA
 		{
 			if (Ramp.TryGetValue(cell, out var ramp))
 				return Grid.Ramps[ramp].Orientation;
+			else
+				return WRot.None;
 
-			return WRot.None;
+			var pos = CenterOfCell(cell);
+
+			var u = pos.X / MapGrid.MapMiniCellWidth;
+			var v = pos.Y / MapGrid.MapMiniCellWidth;
+			if (u < 0 || v < 0 || u >= VertexArrayWidth - 1 || v >= VertexArrayHeight - 1)
+				return WRot.None;
+
+			vec3 normal = new vec3(0, 0, 1);
+
+			var tx = pos.X % MapGrid.MapMiniCellWidth;
+			var ty = pos.Y % MapGrid.MapMiniCellWidth;
+			var LT = VertexTBN[u + v * VertexArrayWidth].Column2;
+			var RT = VertexTBN[u + 1 + v * VertexArrayWidth].Column2;
+			var LB = VertexTBN[u + (v + 1) * VertexArrayWidth].Column2;
+			var RB = VertexTBN[u + 1 + (v + 1) * VertexArrayWidth].Column2;
+
+			if (u % 2 == v % 2)
+			{
+				// ------------
+				// |           / |
+				// |      /      |
+				// |  /          |
+				// ------------
+				if (ty == 724 - tx)
+				{
+					normal = vec3.Lerp(LB, RT, (float)tx / 724);
+				}
+				else if (ty < 724 - tx)
+				{
+					var a = vec3.Lerp(LT, LB, (float)ty / 724);
+					var b = vec3.Lerp(RT, LB, (float)ty /724);
+					normal = vec3.Lerp(a, b, (float)tx / (724 - ty));
+				}
+				else
+				{
+					var a = vec3.Lerp(LB, RB, (float)tx / 724);
+					var b = vec3.Lerp(LB, RT, (float)tx / 724);
+					normal = vec3.Lerp(a, b, (float)(724 - ty) / tx);
+				}
+			}
+			else
+			{
+				// ------------
+				// |  \          |
+				// |      \      |
+				// |          \  |
+				// ------------
+				if (tx == ty)
+				{
+					normal = vec3.Lerp(LT, RB, (float)tx / 724);
+				}
+				else if (tx > ty)
+				{
+					var a = vec3.Lerp(LT, RT, (float)tx / 724);
+					var b = vec3.Lerp(LT, RB, (float)tx / 724);
+					normal = vec3.Lerp(a, b, (float)ty / tx);
+				}
+				else
+				{
+					var a = vec3.Lerp(LT, LB, (float)ty / 724);
+					var b = vec3.Lerp(LT, RB, (float)ty / 724);
+					normal = vec3.Lerp(a, b, (float)tx / ty);
+				}
+			}
+
+			normal = normal.Normalized;
+			var w = vec3.Cross(new vec3(0, 0, 1), normal);
+			var q = new quat(w.x, w.y, w.z, vec3.Dot(new vec3(0, 0, 1), normal));
+			q.w += MathF.Sqrt(new vec3(0, 0, 1).LengthSqr * normal.LengthSqr);
+			q = q.Normalized;
+
+			//if (Game.Renderer != null)
+			//{
+			//	var end = new vec3(0,0,8);
+			//	var start = World3DCoordinate.Float3toVec3(Game.Renderer.WorldRgbaColorRenderer.Render3DPosition(pos));
+			//	//mat3 rot = new mat3(q);
+			//	end = q * end + start;
+
+			//	Game.Renderer.WorldRgbaColorRenderer.DrawWorldLine(
+			//			World3DCoordinate.Vec2Float3(start),
+			//			World3DCoordinate.Vec2Float3(end),
+			//			0.2f,
+			//			Color.AliceBlue);
+			//	Game.Renderer.WorldRgbaColorRenderer.DrawWorldLine(
+			//		World3DCoordinate.Vec2Float3(start),
+			//		World3DCoordinate.Vec2Float3(start + normal * 8),
+			//		0.2f,
+			//		Color.Red);
+			//}
+
+			var worldPitch = new WAngle((int)(q.Pitch * 512 / Math.PI));
+			var worldRoll = new WAngle((int)(q.Roll * 512 / Math.PI));
+
+			return new WRot(worldPitch, worldRoll, WAngle.Zero);
 		}
 
 		public WVec Offset(CVec delta, int dz)

@@ -413,6 +413,11 @@ namespace OpenRA.Mods.Common.Traits
 			return barrel;
 		}
 
+		protected virtual TSMatrix4x4 GetProjectileMatrix(Actor self, Barrel b)
+		{
+			return TSMatrix4x4.Identity;
+		}
+
 		protected virtual void FireBarrel(Actor self, IFacing facing, in Target target, Barrel barrel)
 		{
 			foreach (var na in notifyAttacks)
@@ -454,7 +459,8 @@ namespace OpenRA.Mods.Common.Traits
 				CurrentSource = muzzlePosition,
 				SourceActor = self,
 				PassiveTarget = passiveTarget,
-				GuidedTarget = target
+				GuidedTarget = target,
+				Matrix = GetProjectileMatrix(self, barrel),
 			};
 
 			if (Info.UseBlindage)

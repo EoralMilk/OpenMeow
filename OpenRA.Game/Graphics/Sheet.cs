@@ -154,8 +154,9 @@ namespace OpenRA.Graphics
 
 		public void RefreshTexture()
 		{
-			texture?.Dispose();
+			//texture?.Dispose();
 			texture = null;
+			GetTexture();
 		}
 	}
 }

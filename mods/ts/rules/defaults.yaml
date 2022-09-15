@@ -879,6 +879,9 @@
 		GrantPermanently: true
 	Mobile:
 		PauseOnCondition: empdisable || traped
+	Targetable@cyborg:
+		TargetTypes: Cyborg
+
 
 ^CivilianInfantry:
 	Inherits@1: ^Infantry

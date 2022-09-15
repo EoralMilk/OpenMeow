@@ -25,6 +25,9 @@ namespace OpenRA.Mods.Common.Traits
 		[Desc("Speed at which the turret turns.")]
 		public readonly WAngle TurnSpeed = new WAngle(512);
 
+		[Desc("Speed at which the turret realigns, 1023 means use TurnSpeed.")]
+		public readonly WAngle RealignSpeed = new WAngle(1023);
+
 		public readonly WAngle InitialFacing = WAngle.Zero;
 
 		[Desc("Number of ticks before turret is realigned. (-1 turns off realignment)")]
@@ -151,6 +154,7 @@ namespace OpenRA.Mods.Common.Traits
 		int realignTick = 0;
 		bool realignDesired;
 		bool forceRealigning = false;
+		WAngle realignSpeed;
 		public WRot WorldOrientation
 		{
 			get
@@ -176,6 +180,10 @@ namespace OpenRA.Mods.Common.Traits
 		public Turreted(ActorInitializer init, TurretedInfo info)
 			: base(info)
 		{
+			if (info.RealignSpeed.Angle == 1023)
+				realignSpeed = info.TurnSpeed;
+			else
+				realignSpeed = info.RealignSpeed;
 			LocalOrientation = WRot.FromYaw(info.LocalFacingFromInit(init)());
 		}
 
@@ -368,7 +376,8 @@ namespace OpenRA.Mods.Common.Traits
 				if (desired == LocalOrientation.Yaw)
 					return;
 
-				LocalOrientation = LocalOrientation.WithYaw(Util.TickFacing(LocalOrientation.Yaw, desired, disable ? Info.DisableRealignSpeed : Info.TurnSpeed));
+				LocalOrientation = LocalOrientation.WithYaw(Util.TickFacing(LocalOrientation.Yaw, desired,
+					disable ? Info.DisableRealignSpeed : (realignDesired ? realignSpeed : Info.TurnSpeed)));
 
 				if (desired == LocalOrientation.Yaw)
 				{

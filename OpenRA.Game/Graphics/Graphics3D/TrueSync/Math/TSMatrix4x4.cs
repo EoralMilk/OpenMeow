@@ -774,6 +774,23 @@ namespace TrueSync
 			return result;
 		}
 
+		public static TSVector4 operator * (TSMatrix4x4 m, TSVector4 v)
+		{
+			return new TSVector4(
+				(m.M11 * v.x + m.M12 * v.y) + (m.M13 * v.z + m.M14 * v.w),
+				(m.M21 * v.x + m.M22 * v.y) + (m.M23 * v.z + m.M24 * v.w),
+				(m.M31 * v.x + m.M32 * v.y) + (m.M33 * v.z + m.M34 * v.w),
+				(m.M41 * v.x + m.M42 * v.y) + (m.M43 * v.z + m.M44 * v.w));
+		}
+
+		public static TSVector operator *(TSMatrix4x4 m, TSVector v)
+		{
+			return new TSVector(
+				(m.M11 * v.x + m.M12 * v.y) + m.M13 * v.z + m.M14,
+				(m.M21 * v.x + m.M22 * v.y) + m.M23 * v.z + m.M24,
+				(m.M31 * v.x + m.M32 * v.y) + m.M33 * v.z + m.M34);
+		}
+
 		public static bool operator ==(TSMatrix4x4 value1, TSMatrix4x4 value2)
 		{
 			return value1.M11 == value2.M11 &&
@@ -1311,6 +1328,13 @@ namespace TrueSync
 		//    TRS(transform.localPosition, transform.localRotation, transform.localScale, out result);
 		//    return result;
 		//}
+
+		public void SetTranslatePart(TSVector pos)
+		{
+			M14 = pos.x;
+			M24 = pos.y;
+			M34 = pos.z;
+		}
 
 	}
 
