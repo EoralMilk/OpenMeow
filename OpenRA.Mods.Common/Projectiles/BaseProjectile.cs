@@ -133,24 +133,42 @@ namespace OpenRA.Mods.Common.Projectiles
 		[Desc("Width of the contrail.")]
 		public readonly WDist ContrailWidth = new WDist(64);
 
+		// color
+		public readonly bool ContrailUseInnerOuterColor = false;
+
+		// _start
+		[Desc("Use player remap color instead of a custom color when the contrail starts.")]
+		public readonly bool ContrailStartColorUsePlayerColor = false;
+
 		[Desc("RGB color when the contrail starts.")]
 		public readonly Color ContrailStartColor = Color.White;
 
-		[Desc("Use player remap color instead of a custom color when the contrail starts.")]
-		public readonly bool ContrailStartColorUsePlayerColor = false;
+		[Desc("RGB Outer color when the contrail starts.")]
+		public readonly Color ContrailStartColorOuter = Color.White;
 
 		[Desc("The alpha value [from 0 to 255] of color when the contrail starts.")]
 		public readonly int ContrailStartColorAlpha = 255;
 
+		[Desc("The alpha value [from 0 to 255] of Outer color when the contrail starts.")]
+		public readonly int ContrailStartColorAlphaOuter = 255;
+
+		// _end
+		[Desc("Use player remap color instead of a custom color when the contrail ends.")]
+		public readonly bool ContrailEndColorUsePlayerColor = false;
+
 		[Desc("RGB color when the contrail ends.")]
 		public readonly Color ContrailEndColor = Color.White;
 
-		[Desc("Use player remap color instead of a custom color when the contrail ends.")]
-		public readonly bool ContrailEndColorUsePlayerColor = false;
+		[Desc("RGB Outer color when the contrail ends.")]
+		public readonly Color ContrailEndColorOuter = Color.White;
 
 		[Desc("The alpha value [from 0 to 255] of color when the contrail ends.")]
 		public readonly int ContrailEndColorAlpha = 0;
 
+		[Desc("The alpha value [from 0 to 255] of Outer color when the contrail ends.")]
+		public readonly int ContrailEndColorAlphaOuter = 0;
+
+		// fade rate
 		[Desc("Contrail will fade with contrail width. Set 1.0 to make contrail fades just by length. Can be set with negative value")]
 		public readonly float ContrailWidthFadeRate = 0;
 
@@ -230,7 +248,15 @@ namespace OpenRA.Mods.Common.Projectiles
 			{
 				var startcolor = info.ContrailStartColorUsePlayerColor ? Color.FromArgb(info.ContrailStartColorAlpha, args.SourceActor.Owner.Color) : Color.FromArgb(info.ContrailStartColorAlpha, info.ContrailStartColor);
 				var endcolor = info.ContrailEndColorUsePlayerColor ? Color.FromArgb(info.ContrailEndColorAlpha, args.SourceActor.Owner.Color) : Color.FromArgb(info.ContrailEndColorAlpha, info.ContrailEndColor);
-				contrail = new ContrailRenderable(world, startcolor, endcolor, info.ContrailWidth, info.ContrailLength, info.ContrailDelay, info.ContrailZOffset, info.ContrailWidthFadeRate, info.ContrailBlendMode);
+
+				if (info.ContrailUseInnerOuterColor)
+				{
+					var startcolorOuter = info.ContrailStartColorUsePlayerColor ? Color.FromArgb(info.ContrailStartColorAlphaOuter, args.SourceActor.Owner.Color) : Color.FromArgb(info.ContrailStartColorAlphaOuter, info.ContrailStartColorOuter);
+					var endcolorOuter = info.ContrailEndColorUsePlayerColor ? Color.FromArgb(info.ContrailEndColorAlphaOuter, args.SourceActor.Owner.Color) : Color.FromArgb(info.ContrailEndColorAlphaOuter, info.ContrailEndColorOuter);
+					contrail = new ContrailRenderable(world, startcolor, endcolor, info.ContrailWidth, info.ContrailLength, info.ContrailDelay, info.ContrailZOffset, info.ContrailWidthFadeRate, info.ContrailBlendMode, startcolorOuter, endcolorOuter);
+				}
+				else
+					contrail = new ContrailRenderable(world, startcolor, endcolor, info.ContrailWidth, info.ContrailLength, info.ContrailDelay, info.ContrailZOffset, info.ContrailWidthFadeRate, info.ContrailBlendMode);
 			}
 
 			trailTicks = info.TrailDelay;

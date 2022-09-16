@@ -232,7 +232,7 @@ ART2:
 	Valued:
 		Cost: 975
 	Tooltip:
-		Name: Artillery
+		Name: Mobile Artillery
 		RequiresCondition: !deployed
 	Tooltip@DEPLOYED:
 		Name: Artillery (deployed)
@@ -243,7 +243,7 @@ ART2:
 		Queue: Vehicle
 		BuildPaletteOrder: 100
 		Prerequisites: ~naweap, naradr, ~techlevel.high
-		Description: Mobile Artillery.\nNeeds to deploy in order to shoot.\n  Strong vs Ground units\n  Weak vs Aircraft
+		Description: Heavy Long Range Mobile Artillery.\nNeeds to deploy in order to shoot.\n  Strong vs Ground units\n  Weak vs Aircraft
 	Health:
 		HP: 30000
 	Armor:
@@ -301,17 +301,17 @@ ART2:
 		RealignWhenDisable: true
 		RequiresCondition: deployed || preparing-undeploy #!undeployed
 		RealignBeforeDeploy: true
-		DeployOnAiming: true
-	AttackFrontal@todeploy:
-		Voice: Attack
-		Armaments: todeploy
-		FacingTolerance: 512
-		RequiresCondition: undeployed
-	Armament@todeploy:
-		Name: todeploy
-		Weapon: 155mmDeployCheck
-		RequiresCondition: undeployed
-		FacingTolerance: 512
+		# DeployOnAiming: true
+	# AttackFrontal@todeploy:
+	# 	Voice: Attack
+	# 	Armaments: todeploy
+	# 	FacingTolerance: 512
+	# 	RequiresCondition: undeployed
+	# Armament@todeploy:
+	# 	Name: todeploy
+	# 	Weapon: 155mmDeployCheck
+	# 	RequiresCondition: undeployed
+	# 	FacingTolerance: 512
 	WithModelBarrel:
 		Armament: deployed
 		LocalOffset: 0,0,0 #203,0,0

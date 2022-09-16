@@ -5,7 +5,7 @@ namespace OpenRA.Primitives.FixPoint
 {
 	public class World3DCoordinate
 	{
-		const int WPosPerMeter = 256;
+		public const int WPosPerMeter = 256;
 		public static TSVector Front = new TSVector(0, 1, 0);
 		public static TSVector Up = new TSVector(0, 0, 1);
 
@@ -42,7 +42,7 @@ namespace OpenRA.Primitives.FixPoint
 			return new vec3(vec.x.AsFloat(), vec.y.AsFloat(), vec.z.AsFloat());
 		}
 
-		public static float3 Vec2Float3(vec3 vec)
+		public static float3 Vec3toFloat3(vec3 vec)
 		{
 			return new float3(vec.x, vec.y, vec.z);
 		}

@@ -181,6 +181,13 @@ namespace OpenRA.Graphics
 										(float)pos.Z / WPosPerMeter);
 		}
 
+		public vec3 Get3DRenderVecFromWVec(WVec vec)
+		{
+			return new vec3(-(float)vec.X / WPosPerMeter,
+										(float)vec.Y / WPosPerMeter,
+										(float)vec.Z / WPosPerMeter);
+		}
+
 		public WPos GetWPosFromTSVector(in TSVector vec)
 		{
 			return new WPos(-(int)(vec.x * WPosPerMeter),

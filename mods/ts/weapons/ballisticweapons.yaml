@@ -10,11 +10,21 @@
 		DetectTargetBeforeDist: 2c512
 		ContrailDelay: 0
 		ContrailLength: 4
-		ContrailStartColor: BBAA66
+		ContrailWidth: 0c112
+
+		ContrailUseInnerOuterColor: true
+
+		ContrailStartColor: CEAE66
+		ContrailStartColorOuter: BEAE66
 		ContrailStartColorAlpha: 255
-		ContrailWidth: 0c80
+		ContrailStartColorAlphaOuter: 32
+
 		ContrailEndColor: BBBBBB
+		ContrailEndColorOuter: BBBBBB
 		ContrailEndColorAlpha: 10
+		ContrailEndColorAlphaOuter: 0
+
+		ContrailBlendMode: Alpha
 		ContrailWidthFadeRate: 1
 		ContrailZOffset: 3000
 		TrailImage: cannonsmokecircle
@@ -81,22 +91,28 @@
 RPGTower:
 	Inherits: ^Cannon
 	ReloadDelay: 80
-	Range: 8c0
+	Range: 9c0
 	Report: glnch4.aud
 	Projectile: Bullet
-		Speed: 384
+		Speed: 76
+		Acceleration: 9
+		MaxSpeed: 1024
+		Inaccuracy: 550
+		UseVerticalInaccuracy: true
 		Blockable: false
 		Image: canister
 		Shadow: true
 		LaunchAngle: 75
 		Palette: player
-		ContrailLength: 4
-		ContrailWidth: 66
-		ContrailStartColor: FFFFFFA0
+		ContrailLength: 7
+		ContrailWidth: 0c146
+		ContrailStartColor: FFCF66A0
+		ContrailStartColorOuter: FFCF66A0
 		ContrailDelay: 0
 		ContrailBlendMode: Alpha
 	Warhead@1Dam: SpreadDamage
-		Damage: 14000
+		Damage: 15500
+		Spread: 300
 		Versus:
 			None: 30
 			Wood: 75
@@ -111,8 +127,10 @@ RPGTower:
 	Inherits: ^Cannon
 	Projectile: Bullet
 		Blockable: false
+		Image: 120mm
+		Palette: ra
 		ContrailLength: 10
-		ContrailWidth: 85
+		ContrailWidth: 195
 		LaunchAngle: 75
 	Warhead@1Dam: SpreadDamage
 		Spread: 216
@@ -148,7 +166,6 @@ RPGTower:
 	Projectile: Bullet
 		Speed: 384
 		LaunchAngle: 165
-		ContrailWidth: 105
 		ContrailLength: 12
 	MinRange: 5c0
 	Warhead@1Dam: SpreadDamage
@@ -202,7 +219,15 @@ Grenade:
 		Palette: effect
 		BounceCount: 2
 		Width: 256
-		ContrailLength: 0
+		ContrailLength: 4
+		ContrailStartColor: FFFFFF
+		ContrailStartColorOuter: FFFFFF
+		ContrailStartColorAlpha: 128
+		ContrailStartColorAlphaOuter: 64
+		ContrailEndColor: FFFFFF
+		ContrailEndColorOuter: FFFFFF
+		ContrailEndColorAlpha: 10
+		ContrailEndColorAlphaOuter: 5
 	Warhead@1Dam: SpreadDamage
 		Spread: 154
 		Damage: 5500

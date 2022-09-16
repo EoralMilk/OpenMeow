@@ -146,8 +146,8 @@ namespace OpenRA.Mods.Common.Traits
 			}
 
 			return new DebugLineRenderable(World3DCoordinate.TSVec3ToWPos(startpos), 0,
-				World3DCoordinate.Vec2Float3(start),
-				World3DCoordinate.Vec2Float3(end),
+				World3DCoordinate.Vec3toFloat3(start),
+				World3DCoordinate.Vec3toFloat3(end),
 				new WDist(32), color, BlendMode.None);
 		}
 

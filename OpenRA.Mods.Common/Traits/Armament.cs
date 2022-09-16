@@ -289,13 +289,18 @@ namespace OpenRA.Mods.Common.Traits
 					FP projSpeed = FP.Zero;
 					if (Weapon.Projectile is BulletInfo)
 					{
-						var speeds = (Weapon.Projectile as BulletInfo).Speed;
+						var bullet = Weapon.Projectile as BulletInfo;
+						var speeds = bullet.Speed;
 						if (speeds.Length == 1)
 							projSpeed = speeds[0].Length;
 						else
 						{
 							projSpeed = (speeds[0].Length + speeds[1].Length) / 2;
 						}
+
+						// A very imprecise calculation
+						if (bullet.Acceleration.Length != 0)
+							projSpeed = (projSpeed + bullet.MaxSpeed.Length) / 2;
 					}
 
 					if (projSpeed == FP.Zero)

@@ -11,10 +11,8 @@
 		DetectTargetBeforeDist: 2c0
 		ContrailLength: 3
 		ContrailWidth: 50
-		ContrailStartColor: FFFF88
-		ContrailStartColorAlpha: 255
-		ContrailEndColor: BBBBBB
-		ContrailEndColorAlpha: 10
+		ContrailStartColor: FFFF88FF
+		ContrailEndColor: BBBBBB0A
 		ContrailWidthFadeRate: 0.75
 		ContrailDelay: 0
 		#ContrailBlendMode: ScreenAdditive

@@ -271,8 +271,8 @@ namespace OpenRA.Mods.Common.Projectiles
 			var end = World3DCoordinate.TSVec3ToRVec3(q * (front * 5)) + start;
 
 			return new DebugLineRenderable(pos, 0,
-				World3DCoordinate.Vec2Float3(start),
-				World3DCoordinate.Vec2Float3(end),
+				World3DCoordinate.Vec3toFloat3(start),
+				World3DCoordinate.Vec3toFloat3(end),
 				new WDist(64), color, BlendMode.None);
 		}
 

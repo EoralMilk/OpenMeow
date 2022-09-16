@@ -502,18 +502,34 @@ SCRIN:
 		Offset: -395,145,45
 		ZOffset: 88
 		TrailLength: 4
-		TrailWidth: 70
+		TrailWidth: 142
 		BlendMode: Additive
-		UsePlayerColor: false
-		Color: 80FF80CF
+		StartColorUsePlayerColor: false
+		EndColorUsePlayerColor: false
+		StartColorAlpha: 255
+		EndColorAlpha: 12
+		StartColor: 80FF80CF
+		EndColor: 80FF80CF
+		StartColorAlphaOuter: 64
+		EndColorAlphaOuter: 0
+		StartColorOuter: 80FF80CF
+		EndColorOuter: 80FF80CF
 	Contrail@b:
 		Offset: -395,-145,45
 		ZOffset: 88
 		TrailLength: 4
-		TrailWidth: 70
+		TrailWidth: 142
 		BlendMode: Additive
-		UsePlayerColor: false
-		Color: 80FF80CF
+		StartColorUsePlayerColor: false
+		EndColorUsePlayerColor: false
+		StartColorAlpha: 255
+		EndColorAlpha: 12
+		StartColor: 80FF80CF
+		EndColor: 80FF80CF
+		StartColorAlphaOuter: 64
+		EndColorAlphaOuter: 0
+		StartColorOuter: 80FF80CF
+		EndColorOuter: 80FF80CF
 
 APACHE:
 	Inherits: ^EMPableAircraft

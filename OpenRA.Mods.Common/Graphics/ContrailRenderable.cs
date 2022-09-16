@@ -9,9 +9,14 @@
  */
 #endregion
 
+using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
+using GlmSharp;
 using OpenRA.Graphics;
 using OpenRA.Primitives;
+using OpenRA.Primitives.FixPoint;
+using TagLib.Riff;
 
 namespace OpenRA.Mods.Common.Graphics
 {
@@ -22,6 +27,9 @@ namespace OpenRA.Mods.Common.Graphics
 		public int Length => trail.Length;
 
 		readonly World world;
+		readonly bool useInnerOuterColor;
+		readonly Color startcolorOuter;
+		readonly Color endcolorOuter;
 		readonly Color startcolor;
 		readonly Color endcolor;
 		readonly int zOffset;
@@ -30,12 +38,34 @@ namespace OpenRA.Mods.Common.Graphics
 		// Store trail positions in a circular buffer
 		readonly WPos[] trail;
 		readonly WDist width;
+
+		struct ContrailPart
+		{
+			public vec3 Start;
+			public vec3 End;
+
+			public Color StartColor;
+			public Color EndColor;
+			public Color StartColorOuter;
+			public Color EndColorOuter;
+
+			public vec3 StartUp;
+			public vec3 StartDown;
+			public vec3 EndUp;
+			public vec3 EndDown;
+		}
+
+		readonly List<ContrailPart> partToRender = new List<ContrailPart>();
+
 		int next;
 		int length;
 		readonly int skip;
 
 		public ContrailRenderable(World world, Color startcolor, Color endcolor, WDist width, int length, int skip, int zOffset, float widthFadeRate, BlendMode blendMode)
 			: this(world, new WPos[length], width, 0, 0, skip, startcolor, endcolor, zOffset, widthFadeRate, blendMode) { }
+
+		public ContrailRenderable(World world, Color startcolor, Color endcolor, WDist width, int length, int skip, int zOffset, float widthFadeRate, BlendMode blendMode, Color startcolorOuter, Color endcolorOuter)
+			: this(world, new WPos[length], width, 0, 0, skip, startcolor, endcolor, zOffset, widthFadeRate, blendMode, startcolorOuter, endcolorOuter) { }
 
 		ContrailRenderable(World world, WPos[] trail, WDist width, int next, int length, int skip, Color startcolor, Color endcolor, int zOffset, float widthFadeRate, BlendMode blendMode)
 		{
@@ -50,6 +80,25 @@ namespace OpenRA.Mods.Common.Graphics
 			this.zOffset = zOffset;
 			this.widthFadeRate = widthFadeRate;
 			this.blendMode = blendMode;
+			this.useInnerOuterColor = false;
+		}
+
+		ContrailRenderable(World world, WPos[] trail, WDist width, int next, int length, int skip, Color startcolor, Color endcolor, int zOffset, float widthFadeRate, BlendMode blendMode, Color startcolorOuter, Color endcolorOuter)
+		{
+			this.world = world;
+			this.trail = trail;
+			this.width = width;
+			this.next = next;
+			this.length = length;
+			this.skip = skip;
+			this.startcolor = startcolor;
+			this.endcolor = endcolor;
+			this.zOffset = zOffset;
+			this.widthFadeRate = widthFadeRate;
+			this.blendMode = blendMode;
+			this.useInnerOuterColor = true;
+			this.startcolorOuter = startcolorOuter;
+			this.endcolorOuter = endcolorOuter;
 		}
 
 		public WPos Pos => trail[Index(next - 1)];
@@ -59,12 +108,21 @@ namespace OpenRA.Mods.Common.Graphics
 		readonly BlendMode blendMode;
 		public BlendMode BlendMode => blendMode;
 
-		public IRenderable WithZOffset(int newOffset) { return new ContrailRenderable(world, (WPos[])trail.Clone(), width, next, length, skip, startcolor, endcolor, newOffset, widthFadeRate, blendMode); }
+		public IRenderable WithZOffset(int newOffset) {
+			if (useInnerOuterColor)
+				return new ContrailRenderable(world, (WPos[])trail.Clone(), width, next, length, skip, startcolor, endcolor, newOffset, widthFadeRate, blendMode, startcolorOuter, endcolorOuter);
+			else
+				return new ContrailRenderable(world, (WPos[])trail.Clone(), width, next, length, skip, startcolor, endcolor, newOffset, widthFadeRate, blendMode);
+		}
+
 		public IRenderable OffsetBy(in WVec vec)
 		{
 			// Lambdas can't use 'in' variables, so capture a copy for later
 			var offset = vec;
-			return new ContrailRenderable(world, trail.Select(pos => pos + offset).ToArray(), width, next, length, skip, startcolor, endcolor, zOffset, widthFadeRate, blendMode);
+			if (useInnerOuterColor)
+				return new ContrailRenderable(world, trail.Select(pos => pos + offset).ToArray(), width, next, length, skip, startcolor, endcolor, zOffset, widthFadeRate, blendMode, startcolorOuter, endcolorOuter);
+			else
+				return new ContrailRenderable(world, trail.Select(pos => pos + offset).ToArray(), width, next, length, skip, startcolor, endcolor, zOffset, widthFadeRate, blendMode);
 		}
 
 		public IRenderable AsDecoration() { return this; }
@@ -72,23 +130,29 @@ namespace OpenRA.Mods.Common.Graphics
 		public IFinalizedRenderable PrepareRender(WorldRenderer wr) { return this; }
 		public void Render(WorldRenderer wr)
 		{
+			var w3dr = Game.Renderer.World3DRenderer;
+			var cam = w3dr.InverseCameraFront;
+
 			// Note: The length of contrail is now actually the number of the points to draw the contrail
 			// and we require at least two points to draw a tail
 			var renderLength = length - skip;
 			if (renderLength <= 1)
 				return;
 
-			var screenWidth = wr.RenderVector(new WVec(width, WDist.Zero, WDist.Zero))[0];
+			var screenWidth = (float)width.Length / World3DCoordinate.WPosPerMeter;
 			var wcr = Game.Renderer.WorldRgbaColorRenderer;
 
 			// Start of the first line segment is the tail of the list - don't smooth it.
 			var curPos = trail[Index(next - skip - 1)];
+
 			var curColor = startcolor;
+			var curColorOuter = startcolorOuter;
 
 			for (var i = 1; i < renderLength; i++)
 			{
 				var j = next - skip - 1 - i;
 				var nextColor = Exts.ColorLerp(i * 1f / (renderLength - 1), startcolor, endcolor);
+				var nextColorOuter = Exts.ColorLerp(i * 1f / (renderLength - 1), startcolorOuter, endcolorOuter);
 
 				var nextX = 0L;
 				var nextY = 0L;
@@ -107,13 +171,75 @@ namespace OpenRA.Mods.Common.Graphics
 				if (!world.FogObscures(curPos) && !world.FogObscures(nextPos))
 				{
 					var wfade = (renderLength * 1f - (i - 1) * widthFadeRate) / renderLength;
-					if (wfade > 0)
-						wcr.DrawWorldLine(wr.Render3DPosition(curPos), wr.Render3DPosition(nextPos), screenWidth * wfade, curColor, nextColor, blendMode);
+					if (wfade > 0 && curPos != nextPos)
+					{
+						vec3 dir = w3dr.Get3DRenderVecFromWVec(nextPos - curPos).Normalized;
+						vec3 cross;
+						if (dir == cam)
+							cross = Game.Renderer.World3DRenderer.CameraUp;
+						else
+							cross = vec3.Cross(cam, dir).Normalized;
+						var widthOffset = (screenWidth * wfade / 2) * cross;
+						var start = w3dr.Get3DRenderPositionFromWPos(curPos);
+						var end = w3dr.Get3DRenderPositionFromWPos(nextPos);
+
+						partToRender.Add(new ContrailPart()
+						{
+							Start = start,
+							End = end,
+							StartUp = start + widthOffset,
+							StartDown = start - widthOffset,
+							EndUp = end + widthOffset,
+							EndDown = end - widthOffset,
+							StartColor = curColor,
+							EndColor = nextColor,
+							StartColorOuter = curColorOuter,
+							EndColorOuter = nextColorOuter,
+						});;
+					}
 				}
 
 				curPos = nextPos;
 				curColor = nextColor;
+				curColorOuter = nextColorOuter;
 			}
+
+			if (useInnerOuterColor)
+				for (int i = 0; i < partToRender.Count; i++)
+				{
+					var startUp = i == 0 ? partToRender[i].StartUp : vec3.Lerp(partToRender[i - 1].EndUp, partToRender[i].StartUp, 0.5f);
+					var startDown = i == 0 ? partToRender[i].StartDown : vec3.Lerp(partToRender[i - 1].EndDown, partToRender[i].StartDown, 0.5f);
+					var endUp = i == partToRender.Count - 1 ? partToRender[i].EndUp : vec3.Lerp(partToRender[i].EndUp, partToRender[i + 1].StartUp, 0.5f);
+					var endDown = i == partToRender.Count - 1 ? partToRender[i].EndDown : vec3.Lerp(partToRender[i].EndDown, partToRender[i + 1].StartDown, 0.5f);
+					wcr.DrawWorldLine(World3DCoordinate.Vec3toFloat3(startUp),
+													World3DCoordinate.Vec3toFloat3(partToRender[i].Start),
+													World3DCoordinate.Vec3toFloat3(startDown),
+													World3DCoordinate.Vec3toFloat3(endUp),
+													World3DCoordinate.Vec3toFloat3(partToRender[i].End),
+													World3DCoordinate.Vec3toFloat3(endDown),
+													partToRender[i].StartColor,
+													partToRender[i].EndColor,
+													partToRender[i].StartColorOuter,
+													partToRender[i].EndColorOuter,
+													blendMode);
+				}
+			else
+				for (int i = 0; i < partToRender.Count; i++)
+				{
+					var startUp = i == 0 ? partToRender[i].StartUp : vec3.Lerp(partToRender[i - 1].EndUp, partToRender[i].StartUp, 0.5f);
+					var startDown = i == 0 ? partToRender[i].StartDown : vec3.Lerp(partToRender[i - 1].EndDown, partToRender[i].StartDown, 0.5f);
+					var endUp = i == partToRender.Count - 1 ? partToRender[i].EndUp : vec3.Lerp(partToRender[i].EndUp, partToRender[i + 1].StartUp, 0.5f);
+					var endDown = i == partToRender.Count - 1 ? partToRender[i].EndDown : vec3.Lerp(partToRender[i].EndDown, partToRender[i + 1].StartDown, 0.5f);
+					wcr.DrawWorldLine(World3DCoordinate.Vec3toFloat3(startUp),
+													World3DCoordinate.Vec3toFloat3(startDown),
+													World3DCoordinate.Vec3toFloat3(endUp),
+													World3DCoordinate.Vec3toFloat3(endDown),
+													partToRender[i].StartColor,
+													partToRender[i].EndColor,
+													blendMode);
+				}
+
+			partToRender.Clear();
 		}
 
 		public void RenderDebugGeometry(WorldRenderer wr) { }

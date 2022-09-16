@@ -57,6 +57,20 @@ namespace OpenRA.Mods.Common.Traits
 		[Desc("The alpha value [from 0 to 255] of color when the contrail ends.")]
 		public readonly int EndColorAlpha = 0;
 
+		public readonly bool UseInnerOuterColor = false;
+
+		[Desc("RGB color when the contrail starts.")]
+		public readonly Color StartColorOuter = Color.White;
+
+		[Desc("RGB color when the contrail ends.")]
+		public readonly Color EndColorOuter = Color.White;
+
+		[Desc("The alpha value [from 0 to 255] of color when the contrail starts.")]
+		public readonly int StartColorAlphaOuter = 255;
+
+		[Desc("The alpha value [from 0 to 255] of color when the contrail ends.")]
+		public readonly int EndColorAlphaOuter = 0;
+
 		public readonly BlendMode BlendMode = BlendMode.Alpha;
 
 		public override object Create(ActorInitializer init) { return new Contrail(init.Self, this); }
@@ -68,6 +82,8 @@ namespace OpenRA.Mods.Common.Traits
 		readonly BodyOrientation body;
 		readonly Color startcolor;
 		readonly Color endcolor;
+		readonly Color startcolorOuter;
+		readonly Color endcolorOuter;
 
 		// This is a mutable struct, so it can't be readonly.
 		ContrailRenderable trail;
@@ -80,7 +96,15 @@ namespace OpenRA.Mods.Common.Traits
 			startcolor = info.StartColorUsePlayerColor ? Color.FromArgb(info.StartColorAlpha, self.Owner.Color) : Color.FromArgb(info.StartColorAlpha, info.StartColor);
 			endcolor = info.EndColorUsePlayerColor ? Color.FromArgb(info.EndColorAlpha, self.Owner.Color) : Color.FromArgb(info.EndColorAlpha, info.EndColor);
 
-			trail = new ContrailRenderable(self.World, startcolor, endcolor, info.TrailWidth, info.TrailLength, info.TrailDelay, info.ZOffset, info.WidthFadeRate, info.BlendMode);
+			if (info.UseInnerOuterColor)
+			{
+				startcolorOuter = info.StartColorUsePlayerColor ? Color.FromArgb(info.StartColorAlphaOuter, self.Owner.Color) : Color.FromArgb(info.StartColorAlphaOuter, info.StartColorOuter);
+				endcolorOuter = info.EndColorUsePlayerColor ? Color.FromArgb(info.EndColorAlphaOuter, self.Owner.Color) : Color.FromArgb(info.EndColorAlphaOuter, info.EndColorOuter);
+
+				trail = new ContrailRenderable(self.World, startcolor, endcolor, info.TrailWidth, info.TrailLength, info.TrailDelay, info.ZOffset, info.WidthFadeRate, info.BlendMode, startcolorOuter, endcolorOuter);
+			}
+			else
+				trail = new ContrailRenderable(self.World, startcolor, endcolor, info.TrailWidth, info.TrailLength, info.TrailDelay, info.ZOffset, info.WidthFadeRate, info.BlendMode);
 
 			body = self.Trait<BodyOrientation>();
 		}
@@ -109,7 +133,10 @@ namespace OpenRA.Mods.Common.Traits
 
 		void INotifyAddedToWorld.AddedToWorld(Actor self)
 		{
-			trail = new ContrailRenderable(self.World, startcolor, endcolor, info.TrailWidth, info.TrailLength, info.TrailDelay, info.ZOffset, info.WidthFadeRate, info.BlendMode);
+			if (info.UseInnerOuterColor)
+				trail = new ContrailRenderable(self.World, startcolor, endcolor, info.TrailWidth, info.TrailLength, info.TrailDelay, info.ZOffset, info.WidthFadeRate, info.BlendMode, startcolorOuter, endcolorOuter);
+			else
+				trail = new ContrailRenderable(self.World, startcolor, endcolor, info.TrailWidth, info.TrailLength, info.TrailDelay, info.ZOffset, info.WidthFadeRate, info.BlendMode);
 		}
 	}
 }

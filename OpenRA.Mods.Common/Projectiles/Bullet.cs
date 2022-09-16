@@ -27,6 +27,12 @@ namespace OpenRA.Mods.Common.Projectiles
 
 		public readonly WDist DetectTargetBeforeDist = WDist.Zero;
 
+		[Desc("Projectile acceleration.")]
+		public readonly WDist Acceleration = WDist.Zero;
+
+		[Desc("Projectile MaxSpeed.")]
+		public readonly WDist MaxSpeed = new WDist(int.MaxValue);
+
 		[Desc("Up to how many times does this bullet bounce when touching ground without hitting a target.",
 			"0 implies exploding on contact with the originally targeted position.")]
 		public readonly int BounceCount = 0;
@@ -99,7 +105,7 @@ namespace OpenRA.Mods.Common.Projectiles
 
 		readonly WAngle facing;
 		readonly WAngle angle;
-		readonly WDist speed;
+		WDist speed;
 
 		readonly WeaponInfo scatWeapon;
 		readonly WeaponInfo bonceWeapon;
@@ -207,6 +213,14 @@ namespace OpenRA.Mods.Common.Projectiles
 		{
 			lastPos = pos;
 			bounceHeight = bounceHeight < pos.Z ? pos.Z : bounceHeight;
+
+			if (info.Acceleration.Length != 0)
+			{
+				speed = speed >= info.MaxSpeed ? info.MaxSpeed : speed + info.Acceleration;
+				speed = speed >= info.MaxSpeed ? info.MaxSpeed : speed;
+				length = Math.Max((target - source).Length / speed.Length, 1);
+			}
+
 			pos = WPos.LerpQuadratic(source, target, angle, ticks, length);
 
 			if (ShouldExplode(world))
