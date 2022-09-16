@@ -355,8 +355,9 @@ namespace OpenRA.Mods.Common.Traits
 					fogPos += fogSprite.Sprite.Offset - 0.5f * fogSprite.Sprite.Size;
 				*/
 
-				shroudLayer.Update(uv, shroudSprite.Sprite, shroudPaletteReference, shroudPos, shroudSprite.Scale, edgesShroud == Edges.None ? 0 : shroudSprite.Alpha, true, 0, false, true);
-				fogLayer.Update(uv, fogSprite.Sprite, fogPaletteReference, fogPos, fogSprite.Scale, edgesFog == Edges.None ? 0 : fogSprite.Alpha, true, 0, false, true);
+				// alpha = 2 and ignoreTint means the vTint in shader should be -2, tell the shader that this is a empty cell
+				shroudLayer.Update(uv, shroudSprite.Sprite, shroudPaletteReference, shroudPos, shroudSprite.Scale, edgesShroud == Edges.None ? 2f : shroudSprite.Alpha, true, 20, false, true);
+				fogLayer.Update(uv, fogSprite.Sprite, fogPaletteReference, fogPos, fogSprite.Scale, edgesFog == Edges.None ? 2f : fogSprite.Alpha, true, 0, false, true);
 			}
 
 			anyCellDirty = false;
@@ -366,10 +367,16 @@ namespace OpenRA.Mods.Common.Traits
 		{
 			// middle
 			UpdateShroud(map.ProjectedCells);
-			fogLayer.Draw(wr.Viewport);
+			Game.Renderer.ClearDepthBuffer();
+			Game.Renderer.EnableDepthWrite(true);
+			Game.Renderer.EnableDepthBuffer();
+			shroudLayer.Draw(wr.Viewport, true);
 			Game.Renderer.MapRenderer.Flush();
-			shroudLayer.Draw(wr.Viewport);
+
+			Game.Renderer.ClearDepthBuffer();
+			fogLayer.Draw(wr.Viewport, true);
 			Game.Renderer.MapRenderer.Flush();
+
 		}
 
 		void UpdateShroudCell(MPos uv)

@@ -12,6 +12,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using OpenRA.Traits;
 
 namespace OpenRA.Graphics
 {
@@ -330,7 +331,7 @@ namespace OpenRA.Graphics
 
 		int firstRow, lastRow;
 
-		public void Draw(Viewport viewport)
+		public void Draw(Viewport viewport, bool reverse = false)
 		{
 			var cells = restrictToBounds ? viewport.VisibleCellsInsideBounds : viewport.AllVisibleCells;
 
@@ -344,12 +345,20 @@ namespace OpenRA.Graphics
 
 			Game.Renderer.MapRenderer.SetSheets(sheets, BlendMode);
 
-			for (int y = tp.Y; y <= br.Y; y++)
-			{
-				int xstart = y * rowStride + tp.X * MaxVerticesPerMesh;
-				int xend = y * rowStride + br.X * MaxVerticesPerMesh;
-				Game.Renderer.MapRenderer.DrawVertices(vertices, xstart, xend - xstart, RenderAllVert);
-			}
+			if (reverse)
+				for (int y = br.Y; y >= tp.Y; y--)
+				{
+					int xstart = y * rowStride + tp.X * MaxVerticesPerMesh;
+					int xend = y * rowStride + br.X * MaxVerticesPerMesh;
+					Game.Renderer.MapRenderer.DrawVertices(vertices, xstart, xend - xstart, RenderAllVert);
+				}
+			else
+				for (int y = tp.Y; y <= br.Y; y++)
+				{
+					int xstart = y * rowStride + tp.X * MaxVerticesPerMesh;
+					int xend = y * rowStride + br.X * MaxVerticesPerMesh;
+					Game.Renderer.MapRenderer.DrawVertices(vertices, xstart, xend - xstart, RenderAllVert);
+				}
 		}
 
 		public void DrawAgain()

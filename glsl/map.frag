@@ -358,6 +358,10 @@ void main()
 		return;
 	}
 
+	if (RenderShroud && vTint.a == -2.0){
+		return;
+	}
+
 	vec2 coords = vTexCoord.st;
 	vec4 c;
 
@@ -396,7 +400,7 @@ void main()
 		}
 
 		// Discard any transparent fragments (both color and depth)
-		if (c.a == 0.0)
+		if (c.a == 0.0 && !RenderShroud)
 			discard;
 		
 		if (vRGBAFraction.r > 0.0 && vTexMetadata.s > 0.0)
@@ -414,22 +418,20 @@ void main()
 	}
 	else
 	{
-		if (!RenderShroud){
+		if (RenderShroud){
+			// if (c.a == 0.0)
+			// 	c.a = 0.2;
+		}
+		else
+		{
 			// a < 0 is ignoreTint
 			if (vTint.a < 0.0)
 				c = vec4(c.rgb * vSunLight, c.a * (-vTint.a));
 			else{
 				c = CalcDirLight(dirLight, c);
 				c = c * vTint.a;
-				
 			}
 		}
-		// else
-		// {
-		// 	float nndot = dot(vNormal, InverseCameraFront);
-		// 	if (nndot < 0.0)
-		// 		discard;
-		// }
 
 		#if __VERSION__ == 120
 		gl_FragColor = c;
