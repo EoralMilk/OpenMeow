@@ -296,6 +296,7 @@ namespace OpenRA.Graphics
 			//Game.Renderer.EnableScissor(bounds);
 
 			Game.Renderer.Context.EnableDepthBuffer(DepthFunc.LessEqual);
+			Game.Renderer.EnableDepthWrite(true);
 
 			Game.Renderer.SetFaceCull(FaceCullFunc.Back);
 			TerrainRenderer?.RenderTerrain(this, Viewport);
@@ -325,7 +326,7 @@ namespace OpenRA.Graphics
 
 			Game.Renderer.Flush();
 
-			Game.Renderer.EnableDepthWrite(true);
+			Game.Renderer.EnableDepthWrite(false);
 
 			Game.Renderer.DisableDepthTest();
 

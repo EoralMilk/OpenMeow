@@ -51,6 +51,7 @@ namespace OpenRA.Mods.Common.Traits
 		readonly FootprintPlaceBuildingPreviewInfo info;
 		readonly IPlaceBuildingDecorationInfo[] decorations;
 		readonly int2 topLeftScreenOffset;
+		readonly int validZOffset, blockedZOffset;
 		readonly Sprite validTile, blockedTile;
 		readonly float validAlpha, blockedAlpha;
 
@@ -70,17 +71,20 @@ namespace OpenRA.Mods.Common.Traits
 				var validSequence = world.Map.Rules.Sequences.GetSequence("overlay", $"build-valid-{tileset}");
 				validTile = validSequence.GetSprite(0);
 				validAlpha = validSequence.GetAlpha(0);
+				validZOffset = validSequence.ZOffset;
 			}
 			else
 			{
 				var validSequence = world.Map.Rules.Sequences.GetSequence("overlay", "build-valid");
 				validTile = validSequence.GetSprite(0);
 				validAlpha = validSequence.GetAlpha(0);
+				validZOffset = validSequence.ZOffset;
 			}
 
 			var blockedSequence = world.Map.Rules.Sequences.GetSequence("overlay", "build-invalid");
 			blockedTile = blockedSequence.GetSprite(0);
 			blockedAlpha = blockedSequence.GetAlpha(0);
+			blockedZOffset = blockedSequence.ZOffset;
 		}
 
 		protected virtual void TickInner() { }
@@ -99,8 +103,9 @@ namespace OpenRA.Mods.Common.Traits
 				var sequenceAlpha = (c.Value & PlaceBuildingCellType.Invalid) != 0 ? blockedAlpha : validAlpha;
 				var pos = wr.World.Map.CenterOfCell(c.Key);
 				var offset = new WVec(0, 0, topLeftPos.Z - pos.Z);
+				var zoffset = (c.Value & PlaceBuildingCellType.Invalid) != 0 ? blockedZOffset : validZOffset;
 				var traitAlpha = (c.Value & PlaceBuildingCellType.LineBuild) != 0 ? info.LineBuildFootprintAlpha : info.FootprintAlpha;
-				yield return new SpriteRenderable(tile, pos, offset, -511, palette, 1f, sequenceAlpha * traitAlpha, float3.Ones, TintModifiers.IgnoreWorldTint, true);
+				yield return new SpriteRenderable(tile, pos, offset, zoffset, palette, 1f, sequenceAlpha * traitAlpha, float3.Ones, TintModifiers.IgnoreWorldTint, true);
 			}
 		}
 

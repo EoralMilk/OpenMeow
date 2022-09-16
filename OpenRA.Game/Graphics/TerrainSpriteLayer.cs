@@ -99,12 +99,12 @@ namespace OpenRA.Graphics
 			Update(cell, null, null, 1f, 0f, true, -1, true);
 		}
 
-		public void Update(CPos cell, ISpriteSequence sequence, PaletteReference palette, int frame, bool additional = false)
+		public void Update(CPos cell, ISpriteSequence sequence, PaletteReference palette, int frame, bool additional = false, bool rotation = true)
 		{
-			Update(cell, sequence.GetSprite(frame), palette, sequence.Scale, sequence.GetAlpha(frame), sequence.IgnoreWorldTint, sequence.ZOffset, additional: additional);
+			Update(cell, sequence.GetSprite(frame), palette, sequence.Scale, sequence.GetAlpha(frame), sequence.IgnoreWorldTint, sequence.ZOffset, additional: additional, rotation: rotation);
 		}
 
-		public void Update(CPos cell, Sprite sprite, PaletteReference palette, float scale = 1f, float alpha = 1f, bool ignoreTint = false, int zOffset = -1, bool additional = false)
+		public void Update(CPos cell, Sprite sprite, PaletteReference palette, float scale = 1f, float alpha = 1f, bool ignoreTint = false, int zOffset = -1, bool additional = false, bool rotation = true)
 		{
 			WPos wPos = WPos.Zero;
 			if (sprite != null)
@@ -112,7 +112,7 @@ namespace OpenRA.Graphics
 				wPos = map.CenterOfCell(cell) - new WVec(0, 0, map.Grid.Ramps[map.Ramp[cell]].CenterHeightOffset);
 			}
 
-			Update(cell.ToMPos(map.Grid.Type), sprite, palette, wPos, scale, alpha, ignoreTint, zOffset, additional, false);
+			Update(cell.ToMPos(map.Grid.Type), sprite, palette, wPos, scale, alpha, ignoreTint, zOffset, additional, rotation: rotation);
 		}
 
 		readonly float[] weights = new float[]
@@ -215,7 +215,7 @@ namespace OpenRA.Graphics
 		}
 
 		readonly float3 shroudColor = float3.Zero;
-		public void Update(MPos uv, Sprite sprite, PaletteReference palette, in WPos pos, float scale, float alpha, bool ignoreTint, int zOffset = -1, bool additional = false, bool shroud = false)
+		public void Update(MPos uv, Sprite sprite, PaletteReference palette, in WPos pos, float scale, float alpha, bool ignoreTint, int zOffset = -1, bool additional = false, bool rotation = true)
 		{
 			if (alpha == 0)
 			{
@@ -283,30 +283,15 @@ namespace OpenRA.Graphics
 			{
 				if (MaxVerticesPerMesh != 12)
 					throw new Exception("The MaxVerticesPerMesh for common terrain sprite layer must be 12 , now is " + MaxVerticesPerMesh);
-				if (shroud)
-				{
-					Util.FastCreateTile(vertices, verticesColor,
-												map, cellinfo,
-												float3.Zero,
-												float3.Zero,
-												float3.Zero,
-												float3.Zero,
-												float3.Zero,
-												cellinfo.Type,
-												sprite, samplers, palette?.TextureIndex ?? 0, viewOffset, ignoreTint ? -alpha : alpha, offset, false);
-				}
-				else
-				{
-					Util.FastCreateTile(vertices, verticesColor,
-												map, cellinfo,
-												float3.Zero,
-												float3.Zero,
-												float3.Zero,
-												float3.Zero,
-												float3.Zero,
-												cellinfo.Type,
-												sprite, samplers, palette?.TextureIndex ?? 0, viewOffset, ignoreTint ? -alpha : alpha, offset, true);
-				}
+				Util.FastCreateTile(vertices, verticesColor,
+																map, cellinfo,
+																float3.Zero,
+																float3.Zero,
+																float3.Zero,
+																float3.Zero,
+																float3.Zero,
+																cellinfo.Type,
+																sprite, samplers, palette?.TextureIndex ?? 0, viewOffset, ignoreTint ? -alpha : alpha, offset, rotation);
 			}
 
 			palettes[uv.V * map.MapSize.X + uv.U] = palette;

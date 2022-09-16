@@ -21,7 +21,7 @@ MCV:
 		Speed: 42
 	RevealsShroud:
 		RequiresCondition: !inside-tunnel
-		Range: 6c0
+		Range: 7c0
 		MaxHeightDelta: 3
 	MustBeDestroyed:
 		RequiredForShortGame: true
@@ -75,10 +75,11 @@ HARV:
 		DecorationBounds: 1086, 2172
 	Harvester:
 		DeliveryBuildings: proc
-		Capacity: 28
+		Capacity: 30
 		Resources: Tiberium, BlueTiberium
 		BaleLoadDelay: 15
 		BaleUnloadDelay: 15
+		BaleUnloadAmount: 2
 		FullyLoadedSpeed: 100
 		SearchFromProcRadius: 36
 		SearchFromHarvesterRadius: 18
@@ -98,11 +99,11 @@ HARV:
 		Type: Heavy
 	RevealsShroud:
 		RequiresCondition: !inside-tunnel
-		Range: 4c0
+		Range: 6c512
 		MaxHeightDelta: 3
 	-WithModelBody:
 	WithModelUnloadBody:
-	Explodes:
+	Explodes@TiberiumExplosion:
 		RequiresCondition: !no-tiberium && !traped
 		Weapon: TiberiumExplosion
 	WithHarvestOverlay:
@@ -156,11 +157,11 @@ LPST:
 		RequireForceMoveCondition: !undeployed
 	RevealsShroud:
 		RequiresCondition: !inside-tunnel && undeployed
-		Range: 14c0
+		Range: 8c0
 		MaxHeightDelta: 4
 	RevealsShroud@DEPLOYED:
 		RequiresCondition: !undeployed
-		Range: 8c0
+		Range: 14c0
 		MaxHeightDelta: 3
 	WithMakeAnimation:
 	GrantCondition@PREVIEWWORKAROUND:

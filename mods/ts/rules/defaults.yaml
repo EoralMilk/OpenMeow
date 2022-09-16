@@ -820,7 +820,7 @@
 	Inherits@1: ^Infantry
 	Inherits@2: ^RegularInfantryDeath
 	RevealsShroud:
-		Range: 4c0
+		Range: 6c512
 	MustBeDestroyed:
 	TakeCover:
 		DamageModifiers:
@@ -854,7 +854,7 @@
 		RequiresCondition: !traped
 	DeathSounds:
 	RevealsShroud:
-		Range: 4c0
+		Range: 7c0
 	MustBeDestroyed:
 	TakeCover:
 		RequiresCondition: critical
@@ -891,6 +891,8 @@
 	Tooltip:
 		Name: Civilian
 	ScaredyCat:
+	RevealsShroud:
+		Range: 6c0
 	Wanders:
 		MinMoveDelay: 150
 		MaxMoveDelay: 750

@@ -356,8 +356,8 @@ namespace OpenRA.Mods.Common.Traits
 				*/
 
 				// alpha = 2 and ignoreTint means the vTint in shader should be -2, tell the shader that this is a empty cell
-				shroudLayer.Update(uv, shroudSprite.Sprite, shroudPaletteReference, shroudPos, shroudSprite.Scale, edgesShroud == Edges.None ? 2f : shroudSprite.Alpha, true, 20, false, true);
-				fogLayer.Update(uv, fogSprite.Sprite, fogPaletteReference, fogPos, fogSprite.Scale, edgesFog == Edges.None ? 2f : fogSprite.Alpha, true, 0, false, true);
+				shroudLayer.Update(uv, shroudSprite.Sprite, shroudPaletteReference, shroudPos, shroudSprite.Scale, edgesShroud == Edges.None ? 2f : shroudSprite.Alpha, true, 20, false, rotation: false);
+				fogLayer.Update(uv, fogSprite.Sprite, fogPaletteReference, fogPos, fogSprite.Scale, edgesFog == Edges.None ? 2f : fogSprite.Alpha, true, 0, false, rotation: false);
 			}
 
 			anyCellDirty = false;
