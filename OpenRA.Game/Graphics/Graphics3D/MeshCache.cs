@@ -43,6 +43,14 @@ namespace OpenRA.Graphics
 			}
 		}
 
+		public void DisposeAllTextures()
+		{
+			foreach (var kv in textures)
+			{
+				kv.Value?.Dispose();
+			}
+		}
+
 		public void CacheMesh(string unit, string sequence, MiniYaml definition, SkeletonAsset skeletonType, OrderedSkeleton skeleton)
 		{
 			// this is not only meshName, Also can add others info such as texture

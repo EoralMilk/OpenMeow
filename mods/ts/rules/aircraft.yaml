@@ -77,6 +77,7 @@ DPOD2:
 		Explosion: DropPodExplode
 		Moves: true
 		Velocity: 768
+		MaxVelocity: 768
 		MaximumSpinSpeed: 0
 
 DPOD2E1:
@@ -140,7 +141,7 @@ A10:
 		Queue: Air
 		BuildPaletteOrder: 100
 		Prerequisites: ~none
-		Description: Armoured assult-bomber craft\nwith Naplam bombs and Vulcan cannon.\n  Strong vs Ground Target\n  Weak vs Aircraft
+		Description: Armoured ground killer craft\nwith Naplam bombs and Vulcan cannon.\n  Strong vs Ground Target\n  Weak vs Aircraft
 	Selectable:
 		Bounds: 905, 1448
 	Voiced:
@@ -195,7 +196,7 @@ A10:
 	Rearmable:
 		RearmActors: gahpad, nahpad
 	RenderModels:
-		Scale: 0.06
+		Scale: 1
 
 ORCA:
 	Inherits: ^EMPableAircraft
@@ -204,14 +205,14 @@ ORCA:
 	Valued:
 		Cost: 1000
 	Tooltip:
-		Name: Orca Fighter
+		Name: "Orca" Fighter
 	UpdatesPlayerStatistics:
 		AddToArmyValue: true
 	Buildable:
 		Queue: Air
 		BuildPaletteOrder: 10
 		Prerequisites: ~gahpad
-		Description: Fast assault gunship with\ndual missile launchers.\n  Strong vs Buildings, Vehicles\n  Weak vs Infantry, Aircraft
+		Description: Fast assault fighter with\ndual missile launchers.\n  Strong vs Buildings, Vehicles, Aircraft\n  Weak vs Infantry
 	Selectable:
 		Bounds: 905, 1448
 	Aircraft:
@@ -266,23 +267,23 @@ ORCAB:
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Valued:
-		Cost: 1400
+		Cost: 1500
 	Tooltip:
-		Name: Orca Bomber
+		Name: "Orca" Bomber
 	UpdatesPlayerStatistics:
 		AddToArmyValue: true
 	Buildable:
 		Queue: Air
 		BuildPaletteOrder: 30
 		Prerequisites: ~gahpad, gatech
-		Description: Heavy bomber.\n  Strong vs Buildings, Vehicles\n  Weak vs Infantry, Aircraft
+		Description: Heavy Assault bomber.\n  Strong vs Buildings, Vehicles\n  Weak vs Infantry, Aircraft
 	Selectable:
 		Bounds: 905, 1448
 	Aircraft:
 		# CruiseAltitude: 5c512
 		TurnSpeed: 12
 		IdleTurnSpeed: 4
-		Speed: 126
+		Speed: 144
 		IdleSpeed: 72
 		CruisingCondition: cruising
 		TakeoffSounds: orcaup1.aud
@@ -425,16 +426,16 @@ SCRIN:
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Valued:
-		Cost: 1500
+		Cost: 1700
 	Tooltip:
-		Name: Banshee Fighter
+		Name: "Banshee" Fighter
 	UpdatesPlayerStatistics:
 		AddToArmyValue: true
 	Buildable:
 		Queue: Air
 		BuildPaletteOrder: 40
 		Prerequisites: ~nahpad, natech
-		Description: Advanced fighter-bomber craft\nwith twin plasma cannons.\n  Strong vs Buildings, Vehicles\n  Weak vs Infantry, Aircraft
+		Description: Advanced fighter-bomber craft\nwith twin plasma pulse cannons and proton bombs.\n  Strong vs All
 	Selectable:
 		Bounds: 905, 1448
 	Voiced:
@@ -521,7 +522,7 @@ APACHE:
 	Valued:
 		Cost: 1000
 	Tooltip:
-		Name: Harpy
+		Name: "Harpy" Attack Helicopter
 	UpdatesPlayerStatistics:
 		AddToArmyValue: true
 	Buildable:

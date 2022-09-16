@@ -26,11 +26,33 @@ namespace OpenRA.Mods.Common.Traits
 			"0 disables spinning. Leave undefined for no limit.")]
 		public readonly WAngle? MaximumSpinSpeed = null;
 
+		[Desc("Init Spin Speed.")]
+		public readonly int SpinSpeed = 0;
+
+		public readonly int SpinChangeInterval = 5;
+
+		[Desc("Spin Acceleration.")]
+		public readonly int SpinAcceleration = 1;
+
 		[Desc("Does the aircraft (husk) move forward at aircraft speed?")]
 		public readonly bool Moves = false;
 
+		[Desc("Init Gravity at which aircraft falls to ground.")]
+		public readonly WDist Gravity = new WDist(0);
+
+		[Desc("Gravity (effect gravity per GravityChangeInterval tick) at which aircraft falls to ground.")]
+		public readonly WDist GravityAcceleration = new WDist(1);
+
+		public readonly int GravityChangeInterval = 1;
+
+		[Desc("Max Gravity at which aircraft falls to ground.")]
+		public readonly WDist MaxGravity = new WDist(18);
+
+		[Desc("Init velocity at which aircraft falls to ground.")]
+		public readonly WDist Velocity = WDist.Zero;
+
 		[Desc("Velocity (per tick) at which aircraft falls to ground.")]
-		public readonly WDist Velocity = new WDist(43);
+		public readonly WDist MaxVelocity = new WDist(512);
 
 		public WeaponInfo ExplosionWeapon { get; private set; }
 

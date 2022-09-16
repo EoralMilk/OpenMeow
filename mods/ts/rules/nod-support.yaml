@@ -192,7 +192,7 @@ NALASR:
 	Turreted:
 		TurnSpeed: 40
 		InitialFacing: 896
-		Offset: 298,-171,288
+		Offset: 298,-171,0
 		RealignDelay: -1
 	AttackTurreted:
 		PauseOnCondition: empdisable || disabled || build-incomplete

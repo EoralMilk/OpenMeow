@@ -74,11 +74,13 @@ BIKE:
 	Armament@PRIMARY:
 		Weapon: BikeMissile
 		RequiresCondition: !rank-elite
-		LocalOffset: -153,-204,294, -153,204,294
+		LocalOffset: -153,-204,334, -153,204,334
+		LocalYaw: 76, -76
 	Armament@ELITE:
 		Weapon: BikeMissileDual
 		RequiresCondition: rank-elite
-		LocalOffset: -153,-204,294, -153,204,294
+		LocalOffset: -153,-204,334, -153,204,334
+		LocalYaw: 128, -128
 	AttackFrontal:
 		Voice: Attack
 		PauseOnCondition: empdisable

@@ -612,7 +612,7 @@
 			LocalYaw: 128
 			TopLeft: -512, -512
 			BottomRight: 512, 512
-			VerticalTopOffset: 768
+			VerticalTopOffset: 512
 			VerticalBottomOffset: -1024
 	AppearsOnMapPreview:
 	MapEditorData:
@@ -622,7 +622,7 @@
 	CustomSellValue:
 		Value: 0
 	BlocksProjectiles:
-		Height: 768
+		Height: 512
 
 ^BuildingPlug:
 	Interactable:
@@ -1144,9 +1144,22 @@
 		GenericName: Destroyed Aircraft
 	FallsToEarth:
 		Moves: true
-		Velocity: 112
-		MaximumSpinSpeed: 40
+		SpinSpeed: 0
+		SpinChangeInterval: 6
+		SpinAcceleration: 1
+		MaximumSpinSpeed: 18
+		Gravity: 1
+		GravityAcceleration: 1
+		GravityChangeInterval: 5
+		MaxGravity: 14
+		Velocity: 0
+		MaxVelocity: 445
 	HitShape:
+	LeavesTrails:
+		Image: largesmoke
+		MovingInterval: 3
+		SpawnAtLastPosition: False
+		Type: CenterPosition
 
 ^Visceroid:
 	Inherits@1: ^ExistsInWorld

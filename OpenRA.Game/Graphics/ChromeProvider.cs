@@ -129,7 +129,7 @@ namespace OpenRA.Graphics
 				{
 					Sheet sheet;
 					using (var stream = fileSystem.Open(image))
-						sheet = new Sheet(SheetType.BGRA, stream);
+						sheet = new Sheet(stream);
 
 					sheet.GetTexture().ScaleFilter = TextureScaleFilter.Linear;
 

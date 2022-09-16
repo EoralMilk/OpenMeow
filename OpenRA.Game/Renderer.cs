@@ -186,14 +186,16 @@ namespace OpenRA
 
 			if (screenSprite == null || screenSprite.Sheet.Size != surfaceBufferSize)
 			{
+				Console.WriteLine("ScreenBuffer Refresh");
 				screenBuffer?.Dispose();
 
 				// Render the screen into a frame buffer to simplify reading back screenshots
 				screenBuffer = Context.CreateFrameBuffer(surfaceBufferSize, Color.FromArgb(0x00, 0, 0, 0));
 			}
 
-			if (renderui && (screenSprite == null || surfaceSize.Width != screenSprite.Bounds.Width || -surfaceSize.Height != screenSprite.Bounds.Height))
+			if (screenSprite == null || surfaceSize.Width != screenSprite.Bounds.Width || -surfaceSize.Height != screenSprite.Bounds.Height)
 			{
+				Console.WriteLine("screenSheet Refresh");
 				var screenSheet = new Sheet(SheetType.BGRA, screenBuffer.Texture);
 
 				// Flip sprite in Y to match OpenGL's bottom-left origin

@@ -95,6 +95,60 @@ Bomb:
 	Warhead@5Res: DestroyResource
 		Size: 1
 
+
+A10Napalm:
+	ReloadDelay: 100
+	Burst: 6
+	BurstDelays: 2
+	Range: 2c256
+	TargetActorCenter: true
+	ValidTargets: Ground, Trees
+	Projectile: GravityBomb
+		Velocity: 72, 0, -90
+		Acceleration: 0, 0, -8
+		Shadow: true
+		Palette: ra
+		Image: zbomb
+		Palette: player
+		IsPlayerPalette: true
+	# Projectile: Bullet
+	# 	InstantDropToGround: true
+	# 	Speed: 226
+	# 	Blockable: true
+	# 	Shadow: true
+	# 	LaunchAngle: 60
+	# 	Inaccuracy: 800
+	# 	Image: DISCUS
+	# 	Palette: effect
+	# 	BounceCount: 5
+	# 	Width: 324
+	Warhead@1Dam: SpreadDamage
+		Spread: 512
+		Falloff: 100, 50, 25, 12, 6, 3, 0
+		Damage: 16000
+		Versus:
+			None: 200
+			Wood: 90
+			Light: 75
+			Heavy: 32
+			Concrete: 100
+		DamageTypes: Prone100Percent, TriggerProne, ExplosionDeath
+		ValidTargets: Ground, Trees
+	Warhead@2Eff: CreateEffect
+		Explosions: large_brnl
+		ImpactSounds: expnew09.aud
+		ValidTargets: Ground, Trees, Air
+	Warhead@3EffWater: CreateEffect
+		Explosions: small_watersplash
+		ExplosionPalette: player
+		ImpactSounds: ssplash3.aud
+		ValidTargets: Water
+		InvalidTargets: Vehicle
+	Warhead@4Smu: LeaveSmudge
+		SmudgeType: LargeScorch
+		InvalidTargets: Vehicle, Building, Wall
+
+
 FiendShard:
 	ReloadDelay: 30
 	Burst: 3

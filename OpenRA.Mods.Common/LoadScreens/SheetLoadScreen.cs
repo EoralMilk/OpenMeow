@@ -74,7 +74,7 @@ namespace OpenRA.Mods.Common.LoadScreens
 
 				using (var stream = ModData.DefaultFileSystem.Open(Platform.ResolvePath(Info[key])))
 				{
-					sheet = new Sheet(SheetType.BGRA, stream);
+					sheet = new Sheet(stream);
 					sheet.GetTexture().ScaleFilter = TextureScaleFilter.Linear;
 				}
 			}

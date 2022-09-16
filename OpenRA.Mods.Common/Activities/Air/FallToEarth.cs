@@ -21,7 +21,13 @@ namespace OpenRA.Mods.Common.Activities
 		readonly Aircraft aircraft;
 		readonly FallsToEarthInfo info;
 
-		readonly int acceleration;
+		readonly int rot;
+		int rotSpeed = 0;
+		int speed = 0;
+		int gravity = 0;
+		int gravityTick = 0;
+		int rotTick = 0;
+
 		int spin;
 
 		public FallToEarth(Actor self, FallsToEarthInfo info)
@@ -31,7 +37,11 @@ namespace OpenRA.Mods.Common.Activities
 			IsInterruptible = false;
 			aircraft = self.Trait<Aircraft>();
 			if (!info.MaximumSpinSpeed.HasValue || info.MaximumSpinSpeed.Value != WAngle.Zero)
-				acceleration = self.World.SharedRandom.Next(2) * 2 - 1;
+				rot = self.World.SharedRandom.Next(2) * 2 - 1;
+			rotSpeed = info.SpinSpeed;
+			speed = info.Velocity.Length;
+			gravity = info.Gravity.Length;
+			gravityTick = 0;
 		}
 
 		public override bool Tick(Actor self)
@@ -49,17 +59,30 @@ namespace OpenRA.Mods.Common.Activities
 				return true;
 			}
 
-			if (acceleration != 0)
+			if (rot != 0)
 			{
+				if (rotTick++ >= info.SpinChangeInterval)
+				{
+					rotSpeed = rotSpeed + info.SpinAcceleration;
+					rotTick = 0;
+				}
+
 				if (!info.MaximumSpinSpeed.HasValue || Math.Abs(spin) < info.MaximumSpinSpeed.Value.Angle)
-					spin += 4 * acceleration; // TODO: Possibly unhardcode this
+					spin += rot * rotSpeed;
 
 				// Allow for negative spin values and convert from facing to angle units
 				aircraft.Facing = new WAngle(aircraft.Facing.Angle + spin);
 			}
 
 			var move = info.Moves ? aircraft.FlyStep(aircraft.Facing) : WVec.Zero;
-			move -= new WVec(WDist.Zero, WDist.Zero, info.Velocity);
+			if (gravityTick++ >= info.GravityChangeInterval)
+			{
+				gravity = gravity >= info.MaxGravity.Length ? info.MaxGravity.Length : gravity + info.GravityAcceleration.Length;
+				gravityTick = 0;
+			}
+
+			speed = speed >= info.MaxVelocity.Length ? info.MaxVelocity.Length : speed + gravity;
+			move -= new WVec(WDist.Zero, WDist.Zero, new WDist(speed));
 			aircraft.SetPosition(self, aircraft.CenterPosition + move);
 
 			return false;

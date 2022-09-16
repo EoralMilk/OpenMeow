@@ -78,7 +78,8 @@
 		MinSpeed: 64
 		MaxSpeed: 346
 		LifeTime: 50
-		ProximityRange: 0
+		Width: 76
+		ProximityRange: 256
 		ProximitySnapping: true
 		ContrailLength: 16
 		ContrailWidth: 96
@@ -101,7 +102,8 @@
 		TrailImage: small_smoke_trail
 		TrailInterval: 1
 		TrailCount: 2
-		TrailDelay: 0
+		TrailDelay: -1 # use IgnitionDelay
+		JetDelay: -1 # use IgnitionDelay
 		ExplodeUnderThisAltitude: 0
 		UsingScat: false
 		ScatWeapon: Grenade
@@ -209,14 +211,18 @@ BikeMissile:
 	ValidTargets: Ground
 	ReloadDelay: 35
 	Projectile: VectorBooster
-		HorizonRotationRate: 17
-		VerticalRotationRate: 6
-		Acceleration: 20
-		Speed: 99
-		LockOnDelay: 5
+		HorizonRotationRate: 11
+		VerticalRotationRate: 8
+		Acceleration: 18
+		Speed: 120
+		Width: 40
+		MeshScale: 2.7
+		ProximityRange: 200
+		LockOnDelay: 4
 		IgnitionDelay: 5
-		MinSpeed: 64
-		MaxSpeed: 377
+		ContrailDelay: 0
+		MinSpeed: 55
+		MaxSpeed: 388
 		LifeTime: 66
 		LaunchAngle: 33
 	Warhead@1Dam: Spread3DDamage
@@ -225,7 +231,7 @@ BikeMissile:
 BikeMissileDual:
 	Inherits: BikeMissile
 	Burst: 2
-	ReloadDelay: 45
+	ReloadDelay: 40
 
 Dragon:
 	Inherits: ^DefaultMissile
@@ -265,12 +271,18 @@ VectorHellfire:
 		IgnitionDelay: 0
 		LaunchAngle: 0
 		LifeTime: 46
+		Width: 40
+		MeshScale: 2.4
+		ProximityRange: 200
+		UseVerticalInaccuracy: true
+		LockOnInaccuracy: 300
+		UseLockOnVerticalInaccuracy: false
 	Warhead@1Dam: Spread3DDamage
-		Spread: 72
+		Spread: 128
 		Damage: 3000
 		ValidTargets: Ground, Water, Air, Trees
 		Versus:
-			None: 30
+			None: 40
 			Wood: 65
 			Light: 150
 			Heavy: 100
@@ -299,6 +311,9 @@ RedEye2:
 		MinSpeed: 88
 		MaxSpeed: 388
 		LifeTime: 75
+		Width: 40
+		MeshScale: 5
+		ProximityRange: 289
 	Warhead@1Dam: Spread3DDamage
 		Spread: 128
 		Damage: 7800

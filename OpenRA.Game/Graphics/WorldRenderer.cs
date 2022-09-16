@@ -86,6 +86,14 @@ namespace OpenRA.Graphics
 			World.MeshCache?.RefreshAllTextures();
 		}
 
+		public void DisposeTextures()
+		{
+			OrderedSkeleton.BoneAnimTexture?.Dispose();
+			OrderedSkeleton.BoneAnimTexture = null;
+			World.MapTextureCache?.DisposeAllTextures();
+			World.MeshCache?.DisposeAllTextures();
+		}
+
 		public void UpdatePalettesForPlayer(string internalName, Color color, bool replaceExisting)
 		{
 			foreach (var pal in World.WorldActor.TraitsImplementing<ILoadsPlayerPalettes>())
@@ -480,6 +488,7 @@ namespace OpenRA.Graphics
 
 		public void Dispose()
 		{
+			DisposeTextures();
 			// HACK: Disposing the world from here violates ownership
 			// but the WorldRenderer lifetime matches the disposal
 			// behavior we want for the world, and the root object setup

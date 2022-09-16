@@ -143,7 +143,7 @@ namespace OpenRA.Mods.Common.Projectiles
 		int vFacing;
 
 		int liveTicks;
-		readonly int jetDelay, contrailDelay, trailDelay;
+		readonly int jetDelay, trailDelay;
 		readonly int lifetime;
 
 		public Actor SourceActor { get { return args.SourceActor; } }
@@ -250,11 +250,6 @@ namespace OpenRA.Mods.Common.Projectiles
 			else
 				trailDelay = info.TrailDelay;
 
-			if (info.ContrailDelay < 0)
-				contrailDelay = info.IgnitionDelay;
-			else
-				contrailDelay = info.ContrailDelay;
-
 			lifetime = info.LifeTime.Length == 2
 					? world.SharedRandom.Next(info.LifeTime[0], info.LifeTime[1])
 					: info.LifeTime[0];
@@ -262,7 +257,6 @@ namespace OpenRA.Mods.Common.Projectiles
 
 			renderJet = false;
 			renderTrail = false;
-			renderContrail = false;
 		}
 
 		public void Tick(World world)
@@ -298,8 +292,6 @@ namespace OpenRA.Mods.Common.Projectiles
 				renderJet = true;
 			if (liveTicks > trailDelay)
 				renderTrail = true;
-			if (liveTicks > contrailDelay)
-				renderContrail = true;
 
 			if (lockOn && liveTicks >= info.LockOnDelay && args.GuidedTarget.Actor.IsInWorld)
 			{

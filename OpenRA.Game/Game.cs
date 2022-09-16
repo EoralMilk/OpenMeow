@@ -229,14 +229,13 @@ namespace OpenRA
 
 		public static void RestartGame()
 		{
+			Console.WriteLine("Restarting");
 			var replay = OrderManager.Connection as ReplayConnection;
 			var replayName = replay?.Filename;
 			var lobbyInfo = OrderManager.LobbyInfo;
 
 			// Reseed the RNG so this isn't an exact repeat of the last game
 			lobbyInfo.GlobalSettings.RandomSeed = CosmeticRandom.Next();
-
-			worldRenderer?.RefreshTextures();
 
 			// Note: the map may have been changed on disk outside the game, changing its UID.
 			// Use the updated UID if we have tracked the update instead of failing.
@@ -264,6 +263,9 @@ namespace OpenRA
 				JoinReplay(replayName);
 			else
 				CreateAndStartLocalServer(lobbyInfo.GlobalSettings.Map, orders);
+
+			worldRenderer.RefreshTextures();
+			worldRenderer.RefreshPalette();
 		}
 
 		public static void CreateAndStartLocalServer(string mapUID, IEnumerable<Order> setupOrders)

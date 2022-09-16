@@ -26,7 +26,7 @@ A10.Husk:
 		TickRate: 2
 	RenderModels:
 		Image: a10husk
-		Scale: 0.05
+		Scale: 1
 
 A10.Husk.EMP:
 	Inherits: A10.Husk

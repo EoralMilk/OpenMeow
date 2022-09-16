@@ -33,10 +33,10 @@ namespace OpenRA.Mods.Warheads
 		public readonly bool DamageOne = false;
 
 		[Desc("Only deals damage to blockers (if any), If no blocker, logic run as common.")]
-		public readonly bool DamageBlocker = false;
+		public readonly bool OnlyDamageBlockerWhenBlocked = false;
 
 		[Desc("Only deals damage to blockers. Won't deal damage to any other actors")]
-		public readonly bool OnlyBlocker = false;
+		public readonly bool OnlyDamageDirectlyHit = false;
 
 		[Desc("If the impact point is less than ground, force the impact point to ground")]
 		public bool ForceUnderGroundHitToSurface = true;
@@ -95,7 +95,7 @@ namespace OpenRA.Mods.Warheads
 			if (ForceUnderGroundHitToSurface && firedBy.World.Map.DistanceAboveTerrain(args.ImpactPosition) < WDist.Zero)
 				args.ImpactPosition = new WPos(args.ImpactPosition.X, args.ImpactPosition.Y, args.ImpactPosition.Z - firedBy.World.Map.DistanceAboveTerrain(args.ImpactPosition).Length);
 
-			if ((OnlyBlocker || DamageBlocker) && args.Blocker != null && args.Blocker.IsInWorld && !args.Blocker.IsDead)
+			if ((OnlyDamageDirectlyHit || OnlyDamageBlockerWhenBlocked) && args.Blocker != null && args.Blocker.IsInWorld && !args.Blocker.IsDead)
 			{
 				if (!IsValidAgainst(args.Blocker, firedBy))
 					return;
@@ -127,7 +127,7 @@ namespace OpenRA.Mods.Warheads
 				return;
 			}
 
-			if (OnlyBlocker)
+			if (OnlyDamageDirectlyHit)
 				return;
 
 			bestTarget = null;

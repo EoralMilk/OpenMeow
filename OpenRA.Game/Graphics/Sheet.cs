@@ -168,6 +168,7 @@ namespace OpenRA.Graphics
 		public void Dispose()
 		{
 			texture?.Dispose();
+			texture = null;
 		}
 
 		public void RefreshTexture()

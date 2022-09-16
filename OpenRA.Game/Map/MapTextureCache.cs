@@ -70,6 +70,16 @@ namespace OpenRA.Graphics
 			}
 		}
 
+		public void DisposeAllTextures()
+		{
+			foreach (var sheet in CausticsTextures)
+				sheet?.Dispose();
+			foreach (var t in Textures.Values)
+			{
+				t.Item2?.Dispose();
+			}
+		}
+
 		public bool AddTexture(string name, string filename, string uniform, UsageType type = UsageType.Terrain)
 		{
 			if (Textures.ContainsKey(name))
