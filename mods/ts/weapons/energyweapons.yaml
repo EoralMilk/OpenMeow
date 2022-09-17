@@ -152,7 +152,7 @@ CyCannon:
 		MaximumLaunchSpeed: 192
 		Blockable: false
 		HorizontalRateOfTurn: 8
-		Shadow: true
+		Shadow: false
 		Image: proton_projectile
 		MinimumLaunchSpeed: 75
 		Speed: 384
@@ -160,7 +160,7 @@ CyCannon:
 		TerrainHeightAware: true
 	Warhead@1Dam: SpreadDamage
 		ValidTargets: Ground, Trees
-		Spread: 43
+		Spread: 0c128
 		Damage: 12000
 		Versus:
 			None: 350
@@ -171,7 +171,7 @@ CyCannon:
 		DamageTypes: Prone350Percent, TriggerProne, EnergyDeath
 	Warhead@2Eff: CreateEffect
 		Explosions: proton_explo
-		ValidTargets: Ground, Trees
+		ValidTargets: Ground, Water, Air, Trees
 
 Proton:
 	Inherits: ^EnergyBlast

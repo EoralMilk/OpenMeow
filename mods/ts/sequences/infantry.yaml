@@ -71,6 +71,7 @@
 		Facings: 8
 		ShadowStart: 456
 	attack-muzzle:
+		Tick: 25
 		Start: 164
 		Length: 6
 		Facings: 8
@@ -106,6 +107,8 @@ e2:
 e3:
 	Inherits: ^BasicInfantry
 	Inherits@attack: ^BasicInfantryAttack
+	attack-muzzle:
+		Tick: 80
 	icon: e4icon
 
 engineer.gdi:
@@ -236,6 +239,7 @@ cyborg:
 		Facings: 8
 		ShadowStart: 534
 	attack-muzzle:
+		Tick: 20
 		Start: 164
 		Length: 6
 		Facings: 8
@@ -413,6 +417,7 @@ jumpjet:
 		Start: 292
 		ShadowStart: 743
 	flying-muzzle:
+		Tick: 20
 		Facings: 8
 		Length: 6
 		Start: 292
@@ -443,6 +448,7 @@ jumpjet:
 		Facings: 8
 		ShadowStart: 615
 	attack-muzzle:
+		Tick: 20
 		Start: 164
 		Length: 6
 		Facings: 8

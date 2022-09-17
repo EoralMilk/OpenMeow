@@ -760,6 +760,11 @@
 		Sequence: infantry
 		Palette: player
 		IsPlayerPalette: true
+	BodyOrientation:
+		UseClassicPerspectiveFudge: False
+		CameraPitch: 85
+		QuantizedFacings: 8
+
 
 ^RegularInfantryDeath:
 	WithDeathAnimation@normal:
