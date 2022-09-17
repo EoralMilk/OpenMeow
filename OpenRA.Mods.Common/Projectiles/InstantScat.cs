@@ -8,9 +8,8 @@ namespace OpenRA.Mods.TA.Projectiles
 	public class InstantScatInfo : IProjectileInfo, IRulesetLoaded<WeaponInfo>
 	{
 		[Desc("sub weapon count.")]
-		public readonly int ScatCount = 5;
+		public readonly int ScatCount = 0;
 
-		[FieldLoader.Require]
 		[WeaponReference]
 		[Desc("Weapon fire when projectile die.")]
 		public readonly string ScatWeapon = null;
@@ -21,6 +20,9 @@ namespace OpenRA.Mods.TA.Projectiles
 
 		void IRulesetLoaded<WeaponInfo>.RulesetLoaded(Ruleset rules, WeaponInfo info)
 		{
+			if (ScatWeapon == null)
+				return;
+
 			WeaponInfo weapon;
 
 			if (!rules.Weapons.TryGetValue(ScatWeapon.ToLowerInvariant(), out weapon))
@@ -43,31 +45,34 @@ namespace OpenRA.Mods.TA.Projectiles
 		{
 			world.AddFrameEndTask(w => w.Remove(this));
 
-			var pArgs = new ProjectileArgs
+			if (info.ScatCount > 0 && info.ScatWeaponInfo != null)
 			{
-				Weapon = info.ScatWeaponInfo,
-				Facing = args.Facing,
-				CurrentMuzzleFacing = args.CurrentMuzzleFacing,
-
-				DamageModifiers = args.DamageModifiers,
-
-				InaccuracyModifiers = args.InaccuracyModifiers,
-
-				RangeModifiers = args.RangeModifiers,
-
-				Source = args.Source,
-				CurrentSource =args.CurrentSource,
-				SourceActor = args.SourceActor,
-				PassiveTarget = args.PassiveTarget,
-				GuidedTarget = args.GuidedTarget
-			};
-
-			if (pArgs.Weapon.Projectile != null)
-			{
-				for (var i = -1; i < info.ScatCount; i++)
+				var pArgs = new ProjectileArgs
 				{
-					var projectile = info.ScatWeaponInfo.Projectile.Create(pArgs);
-					world.AddFrameEndTask(w => w.Add(projectile));
+					Weapon = info.ScatWeaponInfo,
+					Facing = args.Facing,
+					CurrentMuzzleFacing = args.CurrentMuzzleFacing,
+
+					DamageModifiers = args.DamageModifiers,
+
+					InaccuracyModifiers = args.InaccuracyModifiers,
+
+					RangeModifiers = args.RangeModifiers,
+
+					Source = args.Source,
+					CurrentSource = args.CurrentSource,
+					SourceActor = args.SourceActor,
+					PassiveTarget = args.PassiveTarget,
+					GuidedTarget = args.GuidedTarget
+				};
+
+				if (pArgs.Weapon.Projectile != null)
+				{
+					for (var i = 0; i < info.ScatCount; i++)
+					{
+						var projectile = info.ScatWeaponInfo.Projectile.Create(pArgs);
+						world.AddFrameEndTask(w => w.Add(projectile));
+					}
 				}
 			}
 

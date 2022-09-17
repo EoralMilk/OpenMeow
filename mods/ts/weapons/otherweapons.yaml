@@ -194,18 +194,60 @@ Tentacle:
 	ReloadDelay: 80
 	Range: 1c384
 	Report: floatk1.aud
-	Projectile: InstantHit
+	Projectile: InstantScat #not scat sub weapon but instant explode projectile
+		ScatWeapon: TentacleElectric
+		ScatCount: 1
 	InvalidTargets: Wall, Bridge
 	Warhead@1Dam: SpreadDamage
-		Damage: 16000
-		InvalidTargets: Wall, Bridge
+		Damage: 10000
+		Spread: 0c425
+		Falloff: 100, 75, 75, 35, 15, 3
+		InvalidTargets: Wall, Bridge, Floater
 		Versus:
-			None: 60
+			None: 100
 			Wood: 45
-			Light: 90
+			Light: 100
 			Heavy: 55
 			Concrete: 10
-		DamageTypes: Prone50Percent, TriggerProne, SmallExplosionDeath
+		DamageTypes: Prone50Percent, TriggerProne, EnergyDeath
+	Warhead@Cluster: FireCluster
+		Weapon: TentacleElectric
+		RandomClusterCount: 5
+		ValidTargets: Ground, Water, Air, Trees
+		Dimensions: 5,5
+		Footprint: __x__ _xxx_ xx_xx _xxx_ __x__
+
+TentacleElectric:
+	Range: 3c0
+	ReloadDelay: 8
+	ValidTargets: Ground, Water, Air, Trees
+	# Projectile: TeslaZap
+	# 	Image: litning
+	# 	Duration: 4
+	# 	Palette: player
+	# 	TrackTarget: false
+	Projectile: LaserZap
+		Width: 72
+		Duration: 15
+		ZOffset: 2047
+		Color: FF000080
+		SecondaryBeam: true
+		SecondaryBeamWidth: 180
+		SecondaryBeamZOffset: 2047
+		SecondaryBeamColor: FF000040
+	Warhead@1Dam: SpreadDamage
+		Spread: 0c122
+		Falloff: 100, 75, 35
+		InvalidTargets: Wall, Bridge, Floater
+		Damage: 8000
+		Versus:
+			None: 100
+			Wood: 45
+			Light: 100
+			Heavy: 55
+			Concrete: 10
+		DamageTypes: Prone50Percent, TriggerProne, EnergyDeath
+
 
 Veins:
 	ReloadDelay: 16
@@ -220,6 +262,7 @@ Veins:
 	Range: 5c0
 	Projectile: Bullet
 		Speed: 64, 128
+		Inaccuracy: 512
 		LaunchAngle: 80, 192
 		Image: dbrissm
 		Sequences: 1, 2, 3, 4, 5, 6, 7, 8, 9, 10
@@ -273,3 +316,37 @@ LargeDebrisWithTrail:
 		Sequences: 1, 5, 8
 		TrailImage: small_smoke_trail
 		TrailInterval: 1
+
+
+TiberiumDebris:
+	Inherits: ^Debris
+	Projectile: Bullet
+		Inaccuracy: 1c0
+		Image: CRYSTAL4
+		Sequences: idle
+		Shadow: true
+		Palette: greentiberium
+	Warhead@2Eff: CreateEffect
+		Explosions: tiny_twlt
+		ValidTargets: Ground, Air
+	Warhead@3EffWater: CreateEffect
+		Explosions: small_watersplash
+		ExplosionPalette: player
+		ImpactSounds: ssplash3.aud
+		ValidTargets: Water
+		InvalidTargets: Vehicle
+	Warhead@1Dam: SpreadDamage
+		Spread: 200
+		Falloff: 100, 100, 0
+		Damage: 1000
+		Versus:
+			None: 100
+			Wood: 85
+			Light: 70
+			Heavy: 35
+			Concrete: 28
+		DamageTypes: Prone100Percent, TriggerProne, ExplosionDeath
+	Warhead@4Res: CreateResource
+		AddsResourceType: Tiberium
+		Size: 0,0
+		ValidTargets: Ground, Air

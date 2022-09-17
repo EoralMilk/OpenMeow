@@ -215,6 +215,7 @@ Grenade:
 		Shadow: true
 		LaunchAngle: 60
 		Inaccuracy: 400
+		TrailCount: 0
 		Image: DISCUS
 		Palette: effect
 		BounceCount: 2

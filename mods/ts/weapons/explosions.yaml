@@ -41,6 +41,21 @@ CyborgExplode:
 	Warhead@1Eff: CreateEffect
 		Explosions: medium_bang
 		ImpactSounds: expnew10.aud
+	Warhead@Cluster: FireCluster
+		Weapon: TiberiumDebris
+		RandomClusterCount: 1
+		Dimensions: 5,5
+		Footprint: __x__ _xxx_ xx_xx _xxx_ __x__
+
+VisceroidExplode:
+	Warhead@1Eff: CreateEffect
+		Explosions: medium_bang
+		ImpactSounds: expnew10.aud
+	Warhead@Cluster: FireCluster
+		Weapon: TiberiumDebris
+		RandomClusterCount: 2
+		Dimensions: 5,5
+		Footprint: __x__ _xxx_ xx_xx _xxx_ __x__
 
 TiberiumExplosion:
 	Inherits: ^DamagingExplosion
@@ -54,6 +69,11 @@ TiberiumExplosion:
 	Warhead@2Eff: CreateEffect
 		Explosions: large_explosion
 	-Warhead@4Smu:
+	Warhead@Cluster: FireCluster
+		Weapon: TiberiumDebris
+		RandomClusterCount: 3
+		Dimensions: 7,7
+		Footprint: __xxx__ _xxxxx_ xxx_xxx xx___xx xxx_xxx _xxxxx_ __xxx__
 
 TiberiumDeath:
 	Warhead@1Dam: SpreadDamage

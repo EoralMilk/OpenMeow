@@ -30,11 +30,12 @@ DOGGIE:
 		TargetTypes: Ground, Creep
 	Armament:
 		Weapon: FiendShard
-		FiringAngle: 512
+		LocalOffset: 0,0,313
+		# FiringAngle: 512
 	AttackFrontal:
 		Voice: Attack
 		FacingTolerance: 0
-		FiringAngle: 512
+		# FiringAngle: 512
 	AttackWander:
 		WanderMoveRadius: 2
 		MinMoveDelay: 200
@@ -62,7 +63,7 @@ DOGGIE:
 		StartSequence: laydown
 		Sequence: hide
 	WithInfantryBody:
-		RequiresCondition: !hidingplace || moving || attacking
+		RequiresCondition: !hidingplace
 
 VISC_SML:
 	Inherits: ^Visceroid
@@ -125,6 +126,10 @@ JFISH:
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Tooltip:
 		Name: Tiberium Floater
+	Buildable:
+		Queue: Infantry
+		BuildPaletteOrder: 0
+		Prerequisites: ~none
 	Valued:
 		Cost: 500
 	Health:
@@ -136,6 +141,7 @@ JFISH:
 		Locomotor: hover
 	Armament:
 		Weapon: Tentacle
+		LocalOffset: 0,0,100
 		FireDelay: 10
 	AutoTarget:
 		ScanRadius: 5
@@ -163,3 +169,5 @@ JFISH:
 		Type: Circle
 			Radius: 363
 			VerticalTopOffset: 768
+	Targetable@floater:
+		TargetTypes: Floater

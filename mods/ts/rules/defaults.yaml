@@ -1223,6 +1223,10 @@
 		Categories: Critter
 	GrantConditionOnTunnelLayer:
 		Condition: inside-tunnel
+	Explodes:
+		Weapon: VisceroidExplode
+		EmptyWeapon: VisceroidExplode
+		RequiresCondition: !traped
 
 ^BlossomTree:
 	Inherits@1: ^SpriteActor

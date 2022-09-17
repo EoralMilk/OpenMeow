@@ -1,7 +1,7 @@
 doggie:
 	Defaults:
 		Tick: 80
-		Offset: 0, 0, 16
+		Offset: 0, 0, 0
 	stand:
 		Facings: 8
 		ShadowStart: 119

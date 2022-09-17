@@ -322,6 +322,17 @@ crystal4:
 		MeshType: Plane
 		BlendMode: ScreenAdditive
 
+litning:
+	Defaults:
+		ZOffset: 512
+		IgnoreWorldTint: True
+		MeshType: FloatBoard
+		BlendMode: Additive
+	bright:
+		Length: 4
+	dim:
+		Start: 4
+		Length: 4
 
 torpedo:
 	idle:
