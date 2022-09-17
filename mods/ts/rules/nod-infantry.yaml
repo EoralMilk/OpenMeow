@@ -68,7 +68,7 @@ CYBORG:
 		Range: 6c512
 	Armament:
 		Weapon: CyborgMG #Vulcan3
-		LocalOffset: 240,120,558
+		LocalOffset: 240,120,589
 		UseBlindage: true
 	AttackFrontal:
 		Voice: Attack

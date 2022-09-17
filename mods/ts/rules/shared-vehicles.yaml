@@ -22,7 +22,7 @@ MCV:
 	RevealsShroud:
 		RequiresCondition: !inside-tunnel
 		Range: 7c0
-		MaxHeightDelta: 1260
+		MaxHeightDelta: 1100
 	MustBeDestroyed:
 		RequiredForShortGame: true
 	BaseBuilding:
@@ -100,7 +100,7 @@ HARV:
 	RevealsShroud:
 		RequiresCondition: !inside-tunnel
 		Range: 6c512
-		MaxHeightDelta: 1260
+		MaxHeightDelta: 1100
 	-WithModelBody:
 	WithModelUnloadBody:
 	Explodes@TiberiumExplosion:
@@ -158,7 +158,7 @@ LPST:
 	RevealsShroud:
 		RequiresCondition: !inside-tunnel && undeployed
 		Range: 8c0
-		MaxHeightDelta: 1260
+		MaxHeightDelta: 1100
 	RevealsShroud@DEPLOYED:
 		RequiresCondition: !undeployed
 		Range: 14c0

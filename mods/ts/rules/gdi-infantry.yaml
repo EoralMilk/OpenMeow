@@ -116,9 +116,14 @@ JUMPJET:
 	Passenger:
 		CustomPipType: green
 	RevealsShroud:
-		Range: 6c0
+		RequiresCondition: !airborne && !inside-tunnel
+	RevealsShroud@airborne:
+		RequiresCondition: airborne
+		Range: 9c0
+		MaxHeightDelta: 1100
 	Armament:
-		Weapon: JumpCannon
+		LocalOffset: 360,0,433
+		Weapon: JumpVulcan #JumpCannon
 		UseBlindage: true
 	-Crushable:
 	AttackFrontal:

@@ -22,7 +22,7 @@ DPOD:
 		UnloadVoice: Move
 		EjectOnDeath: true
 	Armament:
-		Weapon: VulcanMG #Vulcan2
+		Weapon: TurretVulcan #Vulcan2
 	AttackAircraft:
 		Voice: Attack
 	AmmoPool:
@@ -165,9 +165,6 @@ A10:
 		HP: 28000
 	Armor:
 		Type: Light
-	RevealsShroud:
-		Range: 10c0
-		Type: CenterPosition
 	Armament@GUNS:
 		Weapon: A10Vulcan
 		LocalOffset: 1440,0,84
@@ -227,9 +224,6 @@ ORCA:
 		HP: 20000
 	Armor:
 		Type: Light
-	RevealsShroud:
-		Range: 10c0
-		Type: GroundPosition
 	Armament:
 		Weapon: VectorHellfire #Hellfire
 		# BurstPerFireCount: 2
@@ -294,9 +288,6 @@ ORCAB:
 		HP: 30000
 	Armor:
 		Type: Light
-	RevealsShroud:
-		Range: 10c0
-		Type: GroundPosition
 	Armament:
 		Weapon: Bomb
 		PauseOnCondition: !ammo
@@ -356,9 +347,6 @@ ORCATRAN:
 		HP: 20000
 	Armor:
 		Type: Light
-	RevealsShroud:
-		Range: 10c0
-		Type: GroundPosition
 	Cargo:
 		Types: Infantry
 		MaxWeight: 5
@@ -406,9 +394,6 @@ TRNSPORT:
 		HP: 17500
 	Armor:
 		Type: Light
-	RevealsShroud:
-		Range: 10c0
-		Type: GroundPosition
 	RenderSprites:
 	Selectable:
 		Bounds: 1327, 1930, 0, -482
@@ -453,9 +438,8 @@ SCRIN:
 		HP: 28000
 	Armor:
 		Type: Light
-	RevealsShroud:
+	RevealsShroud@airborne:
 		Range: 12c0
-		Type: GroundPosition
 	Armament@PulseGun:
 		Weapon: ProtonPulse
 		LocalOffset: 555,155,120, 555,-155,120
@@ -561,9 +545,6 @@ APACHE:
 		HP: 22500
 	Armor:
 		Type: Light
-	RevealsShroud:
-		Range: 10c0
-		Type: GroundPosition
 	Armament:
 		LocalOffset: 418,0,40
 		Weapon: HarpyClawMG
@@ -606,6 +587,8 @@ APACHE:
 		Palette: pips
 	# WithShadow:
 	WithModelBody:
+	RenderModels:
+		Scale: 1.2
 	# WithMesh@idle:
 	# 	Mesh: idle
 	# RenderMeshes:

@@ -130,6 +130,7 @@ APACHE.Husk:
 		Image: apache
 	RenderModels:
 		Image: apache
+		Scale: 1.2
 
 APACHE.Husk.EMP:
 	Inherits: APACHE.Husk

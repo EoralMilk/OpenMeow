@@ -199,6 +199,8 @@ NALASR:
 	Armament:
 		Weapon: TurretLaserFire
 		LocalOffset: 498,0,183
+	RevealsShroud:
+		Range: 7c0
 	RenderModels:
 		ZOffset: 678
 	WithModelTurret:
@@ -230,7 +232,8 @@ NAOBEL:
 	Armor:
 		Type: Wood
 	RevealsShroud:
-		Range: 8c0
+		Range: 11c0
+		MaxHeightDelta: 1740
 	Armament:
 		Weapon: ObeliskLaserFire
 		LocalOffset: 1980,297,653
@@ -282,6 +285,8 @@ NASAM:
 	WithSpriteTurret:
 		RequiresCondition: !build-incomplete
 		Recoils: false
+	RevealsShroud:
+		Range: 8c0
 	Armament:
 		Weapon: RedEye2
 		LocalOffset: 543,0,455

@@ -497,7 +497,7 @@
 		Type: Wood
 	RevealsShroud:
 		Range: 4c0
-		MaxHeightDelta: 1260
+		MaxHeightDelta: 1100
 	RenderSprites:
 		Palette: terraindecoration
 	MapEditorData:
@@ -664,7 +664,7 @@
 	RevealsShroud:
 		RequiresCondition: !inside-tunnel
 		Range: 5c512
-		MaxHeightDelta: 1260
+		MaxHeightDelta: 1100
 	Mobile:
 		Voice: Move
 		TurnSpeed: 150
@@ -1008,7 +1008,7 @@
 	RevealsShroud:
 		RequiresCondition: !inside-tunnel
 		Range: 6c512
-		MaxHeightDelta: 1260
+		MaxHeightDelta: 1100
 
 ^RenderVoxel:
 	RenderModels:
@@ -1044,7 +1044,7 @@
 	RevealsShroud:
 		RequiresCondition: !inside-tunnel
 		Range: 6c0
-		MaxHeightDelta: 1260
+		MaxHeightDelta: 1100
 	Armor:
 		Type: Light
 
@@ -1073,6 +1073,16 @@
 	Repairable:
 		RepairActors: gadept
 		Voice: Move
+	RevealsShroud:
+		Range: 6c0
+		RequiresCondition: !airborne
+		Type: CenterPosition
+		MaxHeightDelta: 1100
+	RevealsShroud@airborne:
+		Range: 10c0
+		RequiresCondition: airborne
+		Type: CenterPosition
+		MaxHeightDelta: 1100
 	Aircraft:
 		AirborneCondition: airborne
 		CruisingCondition: cruising
@@ -1368,7 +1378,8 @@
 	RenderRangeCircle:
 	RenderDetectionCircle:
 	RevealsShroud:
-		Range: 6c0
+		Range: 7c0
+		MaxHeightDelta: 1100
 	DetectCloaked:
 		Range: 5c0
 	Targetable:
@@ -1407,7 +1418,7 @@
 		Type: Light
 	RevealsShroud:
 		Range: 5c0
-		MaxHeightDelta: 1260
+		MaxHeightDelta: 1100
 		RequiresCondition: !inside-tunnel
 	Selectable:
 		Bounds: 1206, 1448

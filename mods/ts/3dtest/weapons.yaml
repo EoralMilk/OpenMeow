@@ -163,6 +163,7 @@ SergeantSMG:
 			Concrete: 15
 	Warhead@2Eff: CreateEffect
 		ExplosionPalette: effectblue
+		Explosions: piff-bright
 
 SlavickGun:
 	Inherits: SMG
@@ -191,8 +192,8 @@ SlavickGun:
 		Versus:
 			None: 150
 			Wood: 75
-			Light: 35
-			Heavy: 35
+			Light: 25
+			Heavy: 15
 			Concrete: 15
 		DamageTypes:  Prone100Percent, TriggerProne, FireDeath
 	Warhead@2Eff: CreateEffect
@@ -204,7 +205,7 @@ OxannaGun:
 	Burst: 1
 	Report: gun18.aud
 	Range: 6c512
-	ReloadDelay: 7
+	ReloadDelay: 9
 	Projectile: Bullet
 		LifeTime: 12
 		ContrailLength: 3
@@ -227,8 +228,8 @@ OxannaGun:
 		Versus:
 			None: 100
 			Wood: 70
-			Light: 45
-			Heavy: 30
+			Light: 30
+			Heavy: 20
 			Concrete: 25
 		DamageTypes:  Prone100Percent, TriggerProne, SmallExplosionDeath
 	Warhead@2Eff: CreateEffect
@@ -319,29 +320,49 @@ MechPulseGun:
 CyborgMG:
 	Inherits: AssaultVulcan
 	Range: 6c768
-	ReloadDelay: 30
-	Burst: 9
-	BurstDelays: 2
+	ReloadDelay: 3
+	# Burst: 9
+	# BurstDelays: 3
 	Report: cygun_a.wav, cygun_b.wav
 	Projectile: Bullet
 		LifeTime: 10
-		ContrailLength: 3
 		Inaccuracy: 340
 
-VulcanMG:
+TurretVulcan:
 	Inherits: AssaultVulcan
 	Report: chaingn_a.wav, chaingn_b.wav, chaingn_c.wav, chaingn_d.wav
 	Range: 7c0
 	ReloadDelay: 45
 	Burst: 16
 	BurstDelays: 2
-	ValidTargets: Ground, Water, Air
 	Projectile: Bullet
 		LifeTime: 11
 		Inaccuracy: 410
 	Warhead@1Dam: Spread3DDamage
 		Damage: 1000
 		Spread: 0c72
+
+JumpVulcan:
+	Inherits: AssaultVulcan
+	Report: jumpjet1.aud
+	Range: 7c0
+	ReloadDelay: 40
+	Burst: 10
+	BurstDelays: 2
+	ValidTargets: Ground, Water, Air
+	Projectile: Bullet
+		LifeTime: 11
+		Inaccuracy: 410
+	Warhead@1Dam: Spread3DDamage
+		Damage: 1200
+		Spread: 0c117
+		Versus:
+			None: 100
+			Wood: 60
+			Light: 40
+			Heavy: 25
+			Concrete: 10
+		DamageTypes: Prone70Percent, TriggerProne, BulletDeath
 
 SilencerSniper:
 	Inherits: InfMG

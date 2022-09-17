@@ -361,11 +361,11 @@ JUGG:
 	RevealsShroud@deploy:
 		RequiresCondition: !inside-tunnel && deployed
 		Range: 9c0
-		MaxHeightDelta: 1260
+		MaxHeightDelta: 1100
 	RevealsShroud:
 		RequiresCondition: !inside-tunnel && !deployed
 		Range: 6c512
-		MaxHeightDelta: 1260
+		MaxHeightDelta: 1100
 	RenderSprites:
 		Image: jugg
 	WithMakeAnimation:

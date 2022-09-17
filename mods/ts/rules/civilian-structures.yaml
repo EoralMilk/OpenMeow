@@ -1536,7 +1536,7 @@ GASPOT:
 		HP: 40000
 	RevealsShroud:
 		Range: 8c512
-		MaxHeightDelta: 1260
+		MaxHeightDelta: 1100
 	WithIdleOverlay@LIGHTS-BRIGHT:
 		Sequence: idle-lights-bright
 		Palette: bright
@@ -1565,7 +1565,7 @@ GALITE:
 		Type: Wood
 	RevealsShroud:
 		Range: 2c0
-		MaxHeightDelta: 1260
+		MaxHeightDelta: 1100
 	Power:
 		Amount: 0
 	TerrainLightSource:
@@ -1770,7 +1770,7 @@ GAICBM:
 		Type: Wood
 	RevealsShroud:
 		Range: 5c0
-		MaxHeightDelta: 1260
+		MaxHeightDelta: 1100
 	Transforms:
 		IntoActor: icbm
 		Offset: 1,1

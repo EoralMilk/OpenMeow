@@ -52,9 +52,11 @@ UMAGON:
 		Condition: moving.sniper
 	RevealsShroud@sniper:
 		Range: 9c512
-		RequiresCondition: moving.sniper
+		MaxHeightDelta: 1100
+		RequiresCondition: !moving.sniper
 	RevealsShroud:
 		Range: 7c0
+		RequiresCondition: moving.sniper
 	Armament:
 		LocalOffset: 126,0,438
 		Weapon: SilencerSniper

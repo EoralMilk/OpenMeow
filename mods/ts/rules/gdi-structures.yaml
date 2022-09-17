@@ -21,7 +21,7 @@ GAPOWR:
 		Type: Wood
 	RevealsShroud:
 		Range: 4c0
-		MaxHeightDelta: 1260
+		MaxHeightDelta: 1100
 	WithIdleOverlay@LIGHTS:
 		RequiresCondition: !build-incomplete && !empdisable
 		Sequence: idle-lights
@@ -128,7 +128,7 @@ GAPILE:
 		Type: Wood
 	RevealsShroud:
 		Range: 5c0
-		MaxHeightDelta: 1260
+		MaxHeightDelta: 1100
 	RallyPoint:
 		Palette: mouse
 		IsPlayerPalette: false
@@ -220,7 +220,7 @@ GAWEAP:
 		HP: 100000
 	RevealsShroud:
 		Range: 4c0
-		MaxHeightDelta: 1260
+		MaxHeightDelta: 1100
 	Armor:
 		Type: Heavy
 	RallyPoint:
@@ -293,7 +293,7 @@ GAHPAD:
 		HP: 60000
 	RevealsShroud:
 		Range: 5c0
-		MaxHeightDelta: 1260
+		MaxHeightDelta: 1100
 	Exit@1:
 		SpawnOffset: 0,-256,0
 		Facing: 896
@@ -358,7 +358,7 @@ GADEPT:
 		HP: 110000
 	RevealsShroud:
 		Range: 5c0
-		MaxHeightDelta: 1260
+		MaxHeightDelta: 1100
 	Reservable:
 	RepairsUnits:
 		HpPerStep: 1000
@@ -495,7 +495,7 @@ GATECH:
 		Type: Wood
 	RevealsShroud:
 		Range: 4c0
-		MaxHeightDelta: 1260
+		MaxHeightDelta: 1100
 	WithIdleOverlay@LIGHTS:
 		RequiresCondition: !build-incomplete && !disabled
 		Sequence: idle-lights
@@ -544,7 +544,7 @@ GAPLUG:
 		Type: Wood
 	RevealsShroud:
 		Range: 6c0
-		MaxHeightDelta: 1260
+		MaxHeightDelta: 1100
 	IonCannonPower:
 		Cursor: ioncannon
 		PauseOnCondition: disabled || empdisable
@@ -575,7 +575,7 @@ GAPLUG:
 		ChargeInterval: 10000
 		UnitTypes: DPOD2E1, DPOD2E2
 		CameraActor: camera
-		Weapon: VulcanMG
+		Weapon: TurretVulcan
 	ProduceActorPower:
 		PauseOnCondition: disabled || empdisable
 		RequiresCondition: plug.hunterseekera || plug.hunterseekerb
