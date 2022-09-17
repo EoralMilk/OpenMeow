@@ -5,7 +5,7 @@ MCV:
 	Buildable:
 		Queue: Vehicle
 		BuildPaletteOrder: 160
-		Prerequisites: ~factory, tech, ~techlevel.medium
+		Prerequisites: ~factory, sd, ~techlevel.medium
 		Description: Deploys into another Construction Yard.\n  Unarmed
 	Valued:
 		Cost: 2500
@@ -22,7 +22,7 @@ MCV:
 	RevealsShroud:
 		RequiresCondition: !inside-tunnel
 		Range: 7c0
-		MaxHeightDelta: 3
+		MaxHeightDelta: 1260
 	MustBeDestroyed:
 		RequiredForShortGame: true
 	BaseBuilding:
@@ -100,7 +100,7 @@ HARV:
 	RevealsShroud:
 		RequiresCondition: !inside-tunnel
 		Range: 6c512
-		MaxHeightDelta: 3
+		MaxHeightDelta: 1260
 	-WithModelBody:
 	WithModelUnloadBody:
 	Explodes@TiberiumExplosion:
@@ -158,11 +158,11 @@ LPST:
 	RevealsShroud:
 		RequiresCondition: !inside-tunnel && undeployed
 		Range: 8c0
-		MaxHeightDelta: 4
+		MaxHeightDelta: 1260
 	RevealsShroud@DEPLOYED:
 		RequiresCondition: !undeployed
 		Range: 14c0
-		MaxHeightDelta: 3
+		MaxHeightDelta: 3000
 	WithMakeAnimation:
 	GrantCondition@PREVIEWWORKAROUND:
 		Condition: real-actor

@@ -4,12 +4,12 @@
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Buildable:
-		Queue: Air
+		Queue: Vehicle
 		BuildPaletteOrder: 1
-		Prerequisites: ~none
+		Prerequisites: ~civilian.armory
 		Description: Mammoth Tank
 	Valued:
-		Cost: 1700
+		Cost: 1750
 	Tooltip:
 		Name: Mammoth Tank
 	Mobile:
@@ -20,8 +20,8 @@
 	Armor:
 		Type: Heavy
 	RevealsShroud:
-		Range: 6c0
-		MaxHeightDelta: 3
+		Range: 7c512
+		MaxHeightDelta: 1260
 		RequiresCondition: !inside-tunnel
 	Turreted:
 		Turret: primary
@@ -85,14 +85,8 @@
 		Name: Truck
 	Health:
 		HP: 20000
-	Armor:
-		Type: Light
 	Mobile:
 		Speed: 56
-	RevealsShroud:
-		RequiresCondition: !inside-tunnel
-		Range: 5c0
-		MaxHeightDelta: 3
 
 TRUCKA:
 	Inherits: ^TRUCK
@@ -117,7 +111,7 @@ ICBM:
 	RevealsShroud:
 		RequiresCondition: !inside-tunnel
 		Range: 7c0
-		MaxHeightDelta: 3
+		MaxHeightDelta: 1260
 	Transforms:
 		IntoActor: gaicbm
 		Offset: -1,-1
@@ -139,12 +133,6 @@ BUS:
 		PauseOnCondition: empdisable || loading || being-captured || carried || traped
 	Health:
 		HP: 10000
-	Armor:
-		Type: Light
-	RevealsShroud:
-		RequiresCondition: !inside-tunnel
-		Range: 5c0
-		MaxHeightDelta: 3
 	Cargo:
 		Types: Infantry
 		MaxWeight: 20
@@ -165,12 +153,6 @@ PICK:
 		PauseOnCondition: empdisable || loading || being-captured || carried || traped
 	Health:
 		HP: 10000
-	Armor:
-		Type: Light
-	RevealsShroud:
-		RequiresCondition: !inside-tunnel
-		Range: 5c0
-		MaxHeightDelta: 3
 	Cargo:
 		Types: Infantry
 		MaxWeight: 2
@@ -191,12 +173,6 @@ CAR:
 		PauseOnCondition: empdisable || loading || being-captured || carried || traped
 	Health:
 		HP: 10000
-	Armor:
-		Type: Light
-	RevealsShroud:
-		RequiresCondition: !inside-tunnel
-		Range: 5c0
-		MaxHeightDelta: 3
 	Cargo:
 		Types: Infantry
 		MaxWeight: 4
@@ -217,12 +193,6 @@ WINI:
 		PauseOnCondition: empdisable || loading || being-captured || carried || traped
 	Health:
 		HP: 20000
-	Armor:
-		Type: Light
-	RevealsShroud:
-		RequiresCondition: !inside-tunnel
-		Range: 5c0
-		MaxHeightDelta: 3
 	Cargo:
 		Types: Infantry
 		MaxWeight: 5

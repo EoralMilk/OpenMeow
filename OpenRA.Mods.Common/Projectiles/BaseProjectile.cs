@@ -202,7 +202,7 @@ namespace OpenRA.Mods.Common.Projectiles
 
 		readonly ContrailRenderable contrail;
 		int trailTicks;
-		WPos trailLastPos, pos;
+		WPos trailLastPos, pos, matLastPos;
 		TSMatrix4x4 effectMatrix;
 		protected WVec matVec = WVec.Zero;
 
@@ -285,7 +285,8 @@ namespace OpenRA.Mods.Common.Projectiles
 			if (renderJet)
 				jetanim?.Tick();
 			this.pos = pos;
-			matVec = pos - trailLastPos;
+			matVec = pos - matLastPos;
+			matLastPos = pos;
 
 			if (info.ContrailLength > 0 && renderContrail)
 				contrail.Update(pos);
@@ -407,19 +408,24 @@ namespace OpenRA.Mods.Common.Projectiles
 			hitPos = lineEnd;
 			foreach (var currActor in actorsInSquare)
 			{
-				if (currActor == firedBy || firedBy == null || (!(targetActor != null && currActor == targetActor) && !info.ValidDetectRelationships.HasRelationship(currActor.Owner.RelationshipWith(firedBy.Owner))))
+				if (currActor == firedBy || firedBy == null)
 					continue;
+
+				if (!((targetActor != null && currActor == targetActor) || info.ValidDetectRelationships.HasRelationship(currActor.Owner.RelationshipWith(firedBy.Owner))))
+					continue;
+
 				var shapes = currActor.TraitsImplementing<HitShape>().Where(Exts.IsTraitEnabled);
 				var checkPos = lineStart.MinimumPointLineProjection(lineEnd, currActor.CenterPosition);
 
 				foreach (var shape in shapes)
 				{
-					if (shape.DistanceFromEdge(currActor, checkPos).Length <= 0)
+					var cedge = shape.DistanceFromEdge(currActor, checkPos);
+					if (cedge <= lineWidth)
 					{
 						tempHit = shape.GetHitPos(currActor, checkPos);
 						tempHit = lineStart.MinimumPointLineProjection(lineEnd, tempHit);
 						temp = (lineStart - tempHit).Length;
-						if (temp < min)
+						if (temp <= min)
 						{
 							min = temp;
 							hitActor = currActor;

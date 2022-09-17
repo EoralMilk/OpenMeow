@@ -198,6 +198,9 @@ explosion:
 		IgnoreWorldTint: False
 	piffs: piffpiff
 		IgnoreWorldTint: False
+	piff-bright: piff
+		IgnoreWorldTint: True
+		BlendMode: Additive
 	small_explosion: explosml
 	medium_explosion: explomed
 		Offset: 0, 0, 27

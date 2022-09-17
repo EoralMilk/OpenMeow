@@ -262,6 +262,8 @@ namespace OpenRA.Mods.Common.Projectiles
 					pos = hitpos;
 					return true;
 				}
+				else if (AnyValidTargetsInRadius(world, pos, info.Width, args.SourceActor, true))
+					return true;
 			}
 
 			if (shouldBounce && dat <= 0 && bouncingTick <= 0)

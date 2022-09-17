@@ -22,10 +22,6 @@ APC:
 		HP: 20000
 	Armor:
 		Type: Heavy
-	RevealsShroud:
-		RequiresCondition: !inside-tunnel
-		Range: 5c0
-		MaxHeightDelta: 3
 	Cargo:
 		Types: Infantry
 		MaxWeight: 5
@@ -76,9 +72,7 @@ HVR:
 	Armor:
 		Type: Wood
 	RevealsShroud:
-		RequiresCondition: !inside-tunnel
-		Range: 7c0
-		MaxHeightDelta: 3
+		Range: 8c0
 	Armament:
 		Weapon: HoverMissileQuad
 		Turret: primary
@@ -136,9 +130,7 @@ SMECH:
 	Armor:
 		Type: Light
 	RevealsShroud:
-		RequiresCondition: !inside-tunnel
-		Range: 6c0
-		MaxHeightDelta: 3
+		Range: 7c0
 	AttackFrontal:
 		Voice: Attack
 		PauseOnCondition: empdisable
@@ -195,9 +187,7 @@ MMCH:
 	Armor:
 		Type: Heavy
 	RevealsShroud:
-		RequiresCondition: !inside-tunnel
-		Range: 8c0
-		MaxHeightDelta: 3
+		Range: 9c0
 	BodyOrientation:
 		QuantizedFacings: 32
 		UseClassicPerspectiveFudge: False
@@ -258,9 +248,8 @@ HMEC:
 	Armor:
 		Type: Heavy
 	RevealsShroud:
-		RequiresCondition: !inside-tunnel
 		Range: 10c0
-		MaxHeightDelta: 3
+		MaxHeightDelta: 1665
 	AttackFrontal:
 		Voice: Attack
 		PauseOnCondition: empdisable
@@ -319,9 +308,7 @@ SONIC:
 	Armor:
 		Type: Heavy
 	RevealsShroud:
-		RequiresCondition: !inside-tunnel
 		Range: 7c0
-		MaxHeightDelta: 3
 	Armament:
 		Weapon: SonicZap
 		LocalOffset: -71,0,635
@@ -371,10 +358,14 @@ JUGG:
 		ImmovableCondition: !undeployed
 		RequireForceMoveCondition: !undeployed
 		TerrainOrientationAdjustmentMargin: -1
-	RevealsShroud:
-		RequiresCondition: !inside-tunnel
+	RevealsShroud@deploy:
+		RequiresCondition: !inside-tunnel && deployed
 		Range: 9c0
-		MaxHeightDelta: 3
+		MaxHeightDelta: 1260
+	RevealsShroud:
+		RequiresCondition: !inside-tunnel && !deployed
+		Range: 6c512
+		MaxHeightDelta: 1260
 	RenderSprites:
 		Image: jugg
 	WithMakeAnimation:

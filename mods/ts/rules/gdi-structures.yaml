@@ -21,7 +21,7 @@ GAPOWR:
 		Type: Wood
 	RevealsShroud:
 		Range: 4c0
-		MaxHeightDelta: 3
+		MaxHeightDelta: 1260
 	WithIdleOverlay@LIGHTS:
 		RequiresCondition: !build-incomplete && !empdisable
 		Sequence: idle-lights
@@ -128,7 +128,7 @@ GAPILE:
 		Type: Wood
 	RevealsShroud:
 		Range: 5c0
-		MaxHeightDelta: 3
+		MaxHeightDelta: 1260
 	RallyPoint:
 		Palette: mouse
 		IsPlayerPalette: false
@@ -220,7 +220,7 @@ GAWEAP:
 		HP: 100000
 	RevealsShroud:
 		Range: 4c0
-		MaxHeightDelta: 3
+		MaxHeightDelta: 1260
 	Armor:
 		Type: Heavy
 	RallyPoint:
@@ -293,7 +293,7 @@ GAHPAD:
 		HP: 60000
 	RevealsShroud:
 		Range: 5c0
-		MaxHeightDelta: 3
+		MaxHeightDelta: 1260
 	Exit@1:
 		SpawnOffset: 0,-256,0
 		Facing: 896
@@ -358,7 +358,7 @@ GADEPT:
 		HP: 110000
 	RevealsShroud:
 		Range: 5c0
-		MaxHeightDelta: 3
+		MaxHeightDelta: 1260
 	Reservable:
 	RepairsUnits:
 		HpPerStep: 1000
@@ -417,6 +417,8 @@ GADEPT:
 	Power:
 		Amount: -30
 	ProvidesPrerequisite@buildingname:
+	ProvidesPrerequisite:
+		Prerequisite: sd
 	RenderSprites:
 		Image: gadept.gdi
 		FactionImages:
@@ -452,8 +454,8 @@ GARADR:
 		Range: 10c0
 	RenderDetectionCircle:
 	RevealsShroud:
-		Range: 10c0
-		MaxHeightDelta: 3
+		Range: 14c0
+		MaxHeightDelta: 3000
 	WithIdleOverlay@DISH:
 		RequiresCondition: !build-incomplete
 		PauseOnCondition: disabled || empdisable
@@ -493,7 +495,7 @@ GATECH:
 		Type: Wood
 	RevealsShroud:
 		Range: 4c0
-		MaxHeightDelta: 3
+		MaxHeightDelta: 1260
 	WithIdleOverlay@LIGHTS:
 		RequiresCondition: !build-incomplete && !disabled
 		Sequence: idle-lights
@@ -542,7 +544,7 @@ GAPLUG:
 		Type: Wood
 	RevealsShroud:
 		Range: 6c0
-		MaxHeightDelta: 3
+		MaxHeightDelta: 1260
 	IonCannonPower:
 		Cursor: ioncannon
 		PauseOnCondition: disabled || empdisable

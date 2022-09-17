@@ -770,7 +770,7 @@ CAARAY:
 		Footprint: xx xx
 		Dimensions: 2, 2
 	Armor:
-		Type: concrete
+		Type: Concrete
 	Health:
 		HP: 40000
 	RenderSprites:
@@ -800,9 +800,9 @@ CAARMR:
 		Footprint: xxxx xxxx xxxx xxxx
 		Dimensions: 4, 4
 	Armor:
-		Type: concrete
+		Type: Concrete
 	Health:
-		HP: 80000
+		HP: 120000
 	RenderSprites:
 		Palette: player
 	ProvidesPrerequisite:
@@ -849,7 +849,7 @@ CAHOSP:
 		Footprint: XxX xxx xxx xxx
 		Dimensions: 3, 4
 	Armor:
-		Type: concrete
+		Type: Concrete
 	Health:
 		HP: 80000
 	RenderSprites:
@@ -878,7 +878,7 @@ CAPYR01:
 		Footprint: xx xx
 		Dimensions: 2, 2
 	Armor:
-		Type: concrete
+		Type: Concrete
 	Health:
 		HP: 40000
 	MapEditorData:
@@ -896,7 +896,7 @@ CAPYR02:
 		Footprint: xxxx xxxx xxxx xxxx
 		Dimensions: 4, 4
 	Armor:
-		Type: concrete
+		Type: Concrete
 	Health:
 		HP: 40000
 	MapEditorData:
@@ -918,7 +918,7 @@ CAPYR03:
 		Footprint: xxxx xxxx xxxx xxxx
 		Dimensions: 4, 4
 	Armor:
-		Type: concrete
+		Type: Concrete
 	Health:
 		HP: 40000
 	MapEditorData:
@@ -1046,7 +1046,7 @@ CITY06:
 		Footprint: xxxx XxxX
 		Dimensions: 4, 2
 	Armor:
-		Type: concrete
+		Type: Concrete
 	Health:
 		HP: 50000
 	MapEditorData:
@@ -1155,7 +1155,7 @@ CITY12:
 		Footprint: xX xx
 		Dimensions: 2, 2
 	Armor:
-		Type: concrete
+		Type: Concrete
 	Health:
 		HP: 60000
 	MapEditorData:
@@ -1267,7 +1267,7 @@ CITY18:
 		Footprint: xxx xxx xxx xxx xxX
 		Dimensions: 3, 5
 	Armor:
-		Type: concrete
+		Type: Concrete
 	Health:
 		HP: 60000
 	MapEditorData:
@@ -1536,7 +1536,7 @@ GASPOT:
 		HP: 40000
 	RevealsShroud:
 		Range: 8c512
-		MaxHeightDelta: 3
+		MaxHeightDelta: 1260
 	WithIdleOverlay@LIGHTS-BRIGHT:
 		Sequence: idle-lights-bright
 		Palette: bright
@@ -1565,7 +1565,7 @@ GALITE:
 		Type: Wood
 	RevealsShroud:
 		Range: 2c0
-		MaxHeightDelta: 3
+		MaxHeightDelta: 1260
 	Power:
 		Amount: 0
 	TerrainLightSource:
@@ -1770,7 +1770,7 @@ GAICBM:
 		Type: Wood
 	RevealsShroud:
 		Range: 5c0
-		MaxHeightDelta: 3
+		MaxHeightDelta: 1260
 	Transforms:
 		IntoActor: icbm
 		Offset: 1,1

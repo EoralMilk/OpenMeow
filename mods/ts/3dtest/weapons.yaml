@@ -11,8 +11,17 @@
 		DetectTargetBeforeDist: 2c0
 		ContrailLength: 3
 		ContrailWidth: 50
-		ContrailStartColor: FFFF88FF
-		ContrailEndColor: BBBBBB0A
+		ContrailUseInnerOuterColor: true
+
+		ContrailStartColor: FFFF88
+		ContrailStartColorOuter: FFFF88
+		ContrailEndColor: BBBBBB
+		ContrailEndColorOuter: BBBBBB
+		ContrailStartColorAlpha: 255
+		ContrailStartColorAlphaOuter: 64
+		ContrailEndColorAlpha: 15
+		ContrailEndColorAlphaOuter: 0
+
 		ContrailWidthFadeRate: 0.75
 		ContrailDelay: 0
 		#ContrailBlendMode: ScreenAdditive
@@ -30,7 +39,7 @@
 		OnlyDamageBlockerWhenBlocked: true
 		OnlyDamageDirectlyHit: true
 		Spread: 0c76
-		Falloff: 100, 100
+		Falloff: 100, 70, 30
 		Versus:
 			None: 100
 			Wood: 60
@@ -133,7 +142,7 @@ SMG:
 SergeantSMG:
 	Inherits: SMG
 	Burst: 8
-	Report: cygun_a.wav, cygun_b.wav
+	Report: slvkgun_a.wav, slvkgun_b.wav
 	Range: 6c128
 	ReloadDelay: 22
 	Projectile: Bullet
@@ -154,6 +163,76 @@ SergeantSMG:
 			Concrete: 15
 	Warhead@2Eff: CreateEffect
 		ExplosionPalette: effectblue
+
+SlavickGun:
+	Inherits: SMG
+	Burst: 3
+	Report: slvkgun_a.wav, slvkgun_b.wav
+	Range: 7c256
+	ReloadDelay: 30
+	Projectile: Bullet
+		LifeTime: 12
+		ContrailWidth: 66
+		ContrailUseInnerOuterColor: true
+		ContrailStartColor: FF3030
+		ContrailStartColorOuter: DF5050
+		ContrailStartColorAlpha: 255
+		ContrailStartColorAlphaOuter: 64
+		ContrailEndColor: FF3030
+		ContrailEndColorOuter: DF5050
+		ContrailEndColorAlpha: 15
+		ContrailEndColorAlphaOuter: 0
+		Inaccuracy: 90
+		Speed: 1000
+		OnlyDamageDirectlyHit: false
+	Warhead@1Dam: Spread3DDamage
+		Damage: 5500
+		Spread: 0c128
+		Versus:
+			None: 150
+			Wood: 75
+			Light: 35
+			Heavy: 35
+			Concrete: 15
+		DamageTypes:  Prone100Percent, TriggerProne, FireDeath
+	Warhead@2Eff: CreateEffect
+		Explosions: piff-bright
+		ExplosionPalette: effectred
+
+OxannaGun:
+	Inherits: SMG
+	Burst: 1
+	Report: gun18.aud
+	Range: 6c512
+	ReloadDelay: 7
+	Projectile: Bullet
+		LifeTime: 12
+		ContrailLength: 3
+		ContrailWidth: 88
+		ContrailUseInnerOuterColor: true
+		ContrailStartColor: FFFE30
+		ContrailStartColorOuter: FFFE30
+		ContrailStartColorAlpha: 255
+		ContrailStartColorAlphaOuter: 32
+		ContrailEndColor: FFFE30
+		ContrailEndColorOuter: FFFE30
+		ContrailEndColorAlpha: 0
+		ContrailEndColorAlphaOuter: 15
+		Inaccuracy: 90
+		Speed: 1000
+		OnlyDamageDirectlyHit: false
+	Warhead@1Dam: Spread3DDamage
+		Damage: 8000
+		Spread: 0c128
+		Versus:
+			None: 100
+			Wood: 70
+			Light: 45
+			Heavy: 30
+			Concrete: 25
+		DamageTypes:  Prone100Percent, TriggerProne, SmallExplosionDeath
+	Warhead@2Eff: CreateEffect
+		Explosions: piff-bright
 
 
 AssaultVulcan:
@@ -184,7 +263,7 @@ HarpyClawMG:
 	MinRange: 0
 	Range: 7c768
 	ReloadDelay: 35
-	Report: slvkgun_a.wav, slvkgun_b.wav
+	Report: cygun_a.wav, cygun_b.wav #slvkgun_a.wav, slvkgun_b.wav
 	ValidTargets: Ground, Water, Air
 	Projectile: Bullet
 		LifeTime: 12
@@ -195,7 +274,7 @@ HarpyClawMG:
 	Warhead@1Dam: Spread3DDamage
 		Damage: 1250
 		Spread: 0c128
-		DamageTypes:  Prone100Percent, TriggerProne, SmallExplosionDeath, TriggerVisceroid
+		DamageTypes:  Prone100Percent, TriggerProne, SmallExplosionDeath
 	Warhead@2Eff: CreateEffect
 		ExplosionPalette: effectgreen
 
@@ -296,6 +375,7 @@ Sniper:
 		Spread: 36
 		Damage: 15000
 		Versus:
+			None: 110
 			Wood: 5
 			Light: 5
 			Heavy: 5

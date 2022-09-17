@@ -166,7 +166,7 @@ A10:
 	Armor:
 		Type: Light
 	RevealsShroud:
-		Range: 2c0
+		Range: 10c0
 		Type: CenterPosition
 	Armament@GUNS:
 		Weapon: A10Vulcan
@@ -336,7 +336,7 @@ ORCATRAN:
 	Valued:
 		Cost: 1200
 	Tooltip:
-		Name: Orca Transport
+		Name: "Orca" Transport
 	UpdatesPlayerStatistics:
 		AddToArmyValue: true
 	Buildable:
@@ -454,7 +454,7 @@ SCRIN:
 	Armor:
 		Type: Light
 	RevealsShroud:
-		Range: 10c0
+		Range: 12c0
 		Type: GroundPosition
 	Armament@PulseGun:
 		Weapon: ProtonPulse

@@ -76,7 +76,7 @@ RUTEST:
 	RevealsShroud:
 		RequiresCondition: !inside-tunnel
 		Range: 15c0
-		MaxHeightDelta: 3
+		MaxHeightDelta: 3000
 	DamagedByTerrain@VEINS:
 		RequiresCondition: !inside-tunnel && !rank-elite
 	LeavesTrails@VEINS:

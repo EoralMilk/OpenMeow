@@ -16,7 +16,7 @@ GACNST:
 		Type: Wood
 	RevealsShroud:
 		Range: 5c0
-		MaxHeightDelta: 3
+		MaxHeightDelta: 1260
 	Production:
 		Produces: Building,Defense
 		PauseOnCondition: empdisable
@@ -120,7 +120,7 @@ PROC:
 		HP: 90000
 	RevealsShroud:
 		Range: 6c0
-		MaxHeightDelta: 3
+		MaxHeightDelta: 1260
 	TiberianSunRefinery:
 		DockAngle: 640
 		DockOffset: 2,1
@@ -196,7 +196,7 @@ GASILO:
 		Type: Wood
 	RevealsShroud:
 		Range: 4c0
-		MaxHeightDelta: 3
+		MaxHeightDelta: 1260
 	RenderSprites:
 		Image: gasilo.gdi
 		FactionImages:

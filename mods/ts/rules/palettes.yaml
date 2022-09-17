@@ -109,6 +109,10 @@
 		Base: effect
 		Name: effectdarkgreen
 		Color: 00CC00
+	FixedColorPalette@effectred:
+		Base: effect
+		Name: effectred
+		Color: FF0000
 	PaletteFromFile@sidebar:
 		Name: sidebar
 		Filename: sidebar-nod|sidebar.pal

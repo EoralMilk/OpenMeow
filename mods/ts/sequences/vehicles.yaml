@@ -58,7 +58,7 @@ hvr:
 		Length: *
 		IgnoreWorldTint: True
 		MeshType: FloatBoard
-	icon: hovricon
+	icon: xxicon
 
 lpst.gdi:
 	Inherits@defaults: ^VehicleBase

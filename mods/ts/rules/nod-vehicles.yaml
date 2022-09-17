@@ -22,9 +22,7 @@ BGGY:
 	Armor:
 		Type: Light
 	RevealsShroud:
-		RequiresCondition: !inside-tunnel
-		Range: 6c0
-		MaxHeightDelta: 3
+		Range: 7c512
 	Armament:
 		Weapon: RaiderCannonMG
 		Turret: primary
@@ -68,9 +66,7 @@ BIKE:
 	Armor:
 		Type: Wood
 	RevealsShroud:
-		RequiresCondition: !inside-tunnel
-		Range: 5c0
-		MaxHeightDelta: 3
+		Range: 7c0
 	Armament@PRIMARY:
 		Weapon: BikeMissile
 		RequiresCondition: !rank-elite
@@ -134,10 +130,6 @@ TTNK:
 		RequiresCondition: rank-elite
 		MuzzleSequence: muzzle
 	WithMuzzleOverlay:
-	RevealsShroud:
-		RequiresCondition: !inside-tunnel
-		Range: 5c0
-		MaxHeightDelta: 3
 	RenderSprites:
 		Image: ttnk
 	WithMakeAnimation:
@@ -253,10 +245,14 @@ ART2:
 		TurnSpeed: 8
 		ImmovableCondition: !undeployed
 		RequireForceMoveCondition: !undeployed
-	RevealsShroud:
-		RequiresCondition: !inside-tunnel
+	RevealsShroud@deploy:
+		RequiresCondition: !inside-tunnel && deployed
 		Range: 9c0
-		MaxHeightDelta: 3
+		MaxHeightDelta: 1260
+	RevealsShroud:
+		RequiresCondition: !inside-tunnel && !deployed
+		Range: 6c512
+		MaxHeightDelta: 1260
 	RenderSprites:
 		Image: art2
 	WithMakeAnimation:
@@ -365,9 +361,7 @@ REPAIR:
 		Speed: 85
 		TurnSpeed: 20
 	RevealsShroud:
-		RequiresCondition: !inside-tunnel
-		Range: 5c0
-		MaxHeightDelta: 3
+		Range: 5c512
 	Armament:
 		Weapon: Repair
 		Cursor: repair
@@ -420,9 +414,7 @@ WEED:
 	Armor:
 		Type: Heavy
 	RevealsShroud:
-		RequiresCondition: !inside-tunnel
-		Range: 4c0
-		MaxHeightDelta: 3
+		Range: 6c0
 	-WithModelBody:
 	WithModelUnloadBody:
 	-DamagedByTerrain@VEINS:
@@ -461,8 +453,7 @@ SAPC:
 		Type: Heavy
 	RevealsShroud:
 		RequiresCondition: !inside-tunnel && !submerged
-		Range: 5c0
-		MaxHeightDelta: 3
+		Range: 6c0
 	Cargo:
 		Types: Infantry
 		MaxWeight: 5
@@ -514,8 +505,7 @@ SUBTANK:
 		Type: Heavy
 	RevealsShroud:
 		RequiresCondition: !inside-tunnel && !submerged
-		Range: 5c0
-		MaxHeightDelta: 3
+		Range: 6c512
 	Armament:
 		Weapon: DualFireballLauncher
 		BurstPerFireCount: 2
@@ -567,9 +557,7 @@ STNK:
 	Armor:
 		Type: Light
 	RevealsShroud:
-		RequiresCondition: !inside-tunnel
-		Range: 5c0
-		MaxHeightDelta: 3
+		Range: 9c0
 	Cloak:
 		InitialDelay: 90
 		CloakDelay: 90

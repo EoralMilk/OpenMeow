@@ -95,7 +95,7 @@ namespace OpenRA.Mods.Warheads
 			if (ForceUnderGroundHitToSurface && firedBy.World.Map.DistanceAboveTerrain(args.ImpactPosition) < WDist.Zero)
 				args.ImpactPosition = new WPos(args.ImpactPosition.X, args.ImpactPosition.Y, args.ImpactPosition.Z - firedBy.World.Map.DistanceAboveTerrain(args.ImpactPosition).Length);
 
-			if ((OnlyDamageDirectlyHit || OnlyDamageBlockerWhenBlocked) && args.Blocker != null && args.Blocker.IsInWorld && !args.Blocker.IsDead)
+			if (args.Blocker != null && args.Blocker.IsInWorld && !args.Blocker.IsDead)
 			{
 				if (!IsValidAgainst(args.Blocker, firedBy))
 					return;
@@ -124,7 +124,8 @@ namespace OpenRA.Mods.Warheads
 
 				AdditionalEffect(pos, firedBy, args.Blocker, args, damage);
 
-				return;
+				if (OnlyDamageDirectlyHit || OnlyDamageBlockerWhenBlocked)
+					return;
 			}
 
 			if (OnlyDamageDirectlyHit)
@@ -135,6 +136,9 @@ namespace OpenRA.Mods.Warheads
 
 			foreach (var victim in firedBy.World.FindActorsOnCircle(pos, Range[Range.Length - 1]))
 			{
+				if (args.Blocker == victim)
+					continue;
+
 				if (!IsValidAgainst(victim, firedBy))
 					continue;
 
