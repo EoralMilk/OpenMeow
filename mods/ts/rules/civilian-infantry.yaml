@@ -231,8 +231,8 @@ OXANNA:
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Buildable:
 		Queue: Infantry
-		BuildPaletteOrder: 0
-		Prerequisites: ~none
+		BuildPaletteOrder: 111
+		Prerequisites: ~civilian.armory
 	Valued:
 		Cost: 700
 	Tooltip:
@@ -260,8 +260,8 @@ SLAV:
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Buildable:
 		Queue: Infantry
-		BuildPaletteOrder: 0
-		Prerequisites: ~none
+		BuildPaletteOrder: 111
+		Prerequisites: ~civilian.armory
 	Valued:
 		Cost: 700
 	Tooltip:

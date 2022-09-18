@@ -12,15 +12,15 @@ MultiCluster:
 		AllowSnapping: false
 		VerticalRateOfTurn: 64
 	Warhead@1Dam: SpreadDamage
-		Spread: 216
-		Damage: 13000
+		Spread: 458
+		Damage: 22000
 		ValidTargets: Ground, Water, Air, Trees
 		Versus:
 			None: 100
 			Wood: 85
-			Light: 70
-			Heavy: 35
-			Concrete: 28
+			Light: 100
+			Heavy: 75
+			Concrete: 55
 		DamageTypes: Prone50Percent, TriggerProne, ExplosionDeath
 	Warhead@2Eff: CreateEffect
 		ImpactActors: false
@@ -57,16 +57,91 @@ ClusterMissile:
 		Intensity: 5
 		Multiplier: 1,1
 
-SuicideBomb:
-	Range: 0c512
+SuicideDash:
+	Range: 7c0
 	TargetActorCenter: true
 	Report: hunter2.aud
-	Projectile: InstantHit
+	Projectile: InstantScat
+		ScatWeapon: HunterDash
+		ScatCount: 1
+		Inaccuracy: 0
 	ValidTargets: Vehicle, Building, Defense, Infantry
-	Warhead@1Dam: TargetDamage
-		Damage: 1000000
-		DamageTypes: FireDeath
-		ValidTargets: Vehicle, Building, Defense, Infantry
+	Warhead@1Dam: SpreadDamage
+		Spread: 1
+
+HunterDash:
+	ReloadDelay: 1
+	Range: 10c0
+	ValidTargets: Ground, Water, Air, Trees
+	Projectile: Missile
+		MaximumLaunchSpeed: 355
+		MinimumLaunchSpeed: 355
+		MinimumLaunchAngle: 0
+		MaximumLaunchAngle: 0
+		MaxSpeed: 855
+		Acceleration: 22
+		VerticalRateOfTurn: 100
+		HorizontalRateOfTurn: 100
+		Blockable: false
+		Inaccuracy: 128
+		RangeLimit: 55c0
+		Image: gghunt
+		Palette: player
+		IsPlayerPalette: true
+		Shadow: true
+		CruiseAltitude: 3c128
+		AllowSnapping: true
+		TerrainHeightAware: true
+		ContrailZOffset: 44
+		ContrailLength: 8
+		ContrailWidth: 228
+		ContrailUseInnerOuterColor: true
+		ContrailStartColor: FFDD44
+		ContrailStartColorOuter: FFDD44
+		ContrailStartColorAlpha: 233
+		ContrailStartColorAlphaOuter: 0
+		ContrailEndColor: A8A8A8
+		ContrailEndColorOuter: A8A8A8
+		ContrailEndColorAlpha: 64
+		ContrailEndColorAlphaOuter: 0
+		ContrailWidthFadeRate: 1
+		ContrailDelay: 0
+		ContrailBlendMode: Additive
+	Warhead@1Dam: Spread3DDamage
+		Spread: 340
+		Falloff: 100, 70, 55, 32, 26, 14, 5
+		Damage: 999999
+		ValidTargets: Ground, Water, Air, Trees
+		Versus:
+			None: 100
+			Wood: 100
+			Light: 100
+			Heavy: 100
+			Concrete: 50
+		DamageTypes: Prone100Percent, TriggerProne, FireDeath
+	Warhead@2Eff: CreateEffect
+		Explosions: verylarge_twlt
+		ImpactSounds: expnew12.aud
+		ValidTargets: Ground, Air, Water
+	Warhead@Smu: LeaveSmudge
+		SmudgeType: LargeScorch
+		InvalidTargets: Building, Wall
+		AirThreshold: 512
+	Warhead@Shake: ShakeScreen
+		Duration: 7
+		Intensity: 3
+		Multiplier: 1,1
+	Warhead@LargeDebris: FireCluster
+		Weapon: LargeDebris
+		RandomClusterCount: 2
+		Dimensions: 5,5
+		Footprint: __x__ _xxx_ xx_xx _xxx_ __x__
+	Warhead@SmallDebris: FireCluster
+		Weapon: SmallDebris
+		RandomClusterCount: 4
+		Dimensions: 7,7
+		Footprint: __xxx__ _xxxxx_ xxx_xxx xx___xx xxx_xxx _xxxxx_ __xxx__
+
 
 IonCannon:
 	ValidTargets: Ground, Water, Air, Trees
@@ -76,10 +151,10 @@ IonCannon:
 		Falloff: 1000, 368, 135, 50, 18, 7, 0
 		ValidTargets: Ground, Water, Air
 		DamageTypes: Prone100Percent, TriggerProne, EnergyDeath
-	Warhead@2Dam_area: SpreadDamage
+	Warhead@2Dam_area: Spread3DDamage
 		Spread: 1c0
-		Damage: 25000
-		Falloff: 100, 50, 25, 0
+		Damage: 30000
+		Falloff: 100, 50, 25, 10
 		Delay: 3
 		ValidTargets: Ground, Water, Air, Trees
 		DamageTypes: Prone50Percent, TriggerProne, EnergyDeath
@@ -87,6 +162,10 @@ IonCannon:
 		SmudgeType: SmallScorch
 		InvalidTargets: Vehicle, Building, Wall
 		Size: 2
+		Delay: 3
+	Warhead@MiddleSmu: LeaveSmudge
+		SmudgeType: LargeScorch
+		InvalidTargets: Building, Wall
 		Delay: 3
 	Warhead@4Effect: CreateEffect
 		Explosions: ionbeam

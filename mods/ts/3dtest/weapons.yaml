@@ -228,10 +228,10 @@ OxannaGun:
 		Spread: 0c128
 		Versus:
 			None: 100
-			Wood: 70
+			Wood: 30
 			Light: 30
 			Heavy: 20
-			Concrete: 25
+			Concrete: 15
 		DamageTypes:  Prone100Percent, TriggerProne, SmallExplosionDeath
 	Warhead@2Eff: CreateEffect
 		Explosions: piff-bright

@@ -1081,6 +1081,9 @@
 	Targetable@AIRBORNE:
 		TargetTypes: Air
 		RequiresCondition: airborne
+	Targetable@REPAIR:
+		RequiresCondition: !airborne && damaged
+		TargetTypes: Repair
 	Repairable:
 		RepairActors: gadept
 		Voice: Move

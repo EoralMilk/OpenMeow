@@ -573,7 +573,8 @@ STNK:
 	Armament:
 		Weapon: Dragon
 		BurstPerFireCount: 2
-		LocalOffset: 301,61,243, 301,-61,243
+		LocalOffset: 301,-61,243, 301,61,243
+		LocalYaw: 76, -76
 	AttackFrontal:
 		Voice: Attack
 		PauseOnCondition: empdisable

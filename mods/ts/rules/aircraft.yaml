@@ -603,6 +603,11 @@ APACHE:
 
 HUNTER:
 	Inherits@2: ^ExistsInWorld
+	Inherits@autotarget: ^AutoTargetAllAssaultMove
+	AutoTarget:
+		ScanRadius: 50
+		InitialStanceAI: AttackAnything
+		InitialStance: AttackAnything
 	Valued:
 		Cost: 1000
 	Tooltip:
@@ -611,6 +616,11 @@ HUNTER:
 		HP: 50000
 	Armor:
 		Type: Light
+	AttackWander:
+		WanderMoveRadius: 45
+		MinMoveDelay: 70
+		MaxMoveDelay: 120
+		RequiresCondition: stance-attackanything
 	Aircraft:
 		TurnSpeed: 64
 		Speed: 355
@@ -619,15 +629,23 @@ HUNTER:
 		CruiseAltitude: 3c128
 		CruisingCondition: cruising
 		MoveIntoShroud: true
+	RevealsShroud:
+		Range: 8c0
+		Type: CenterPosition
+		MaxHeightDelta: 1100
 	AttackAircraft:
 		FacingTolerance: 512
 		AttackType: Hover
 	Armament@PRIMARY:
-		Weapon: SuicideBomb
+		Weapon: SuicideDash
 	GrantConditionOnAttack:
 		Condition: triggered
 	KillsSelf:
 		RequiresCondition: triggered
+	Explodes:
+		Weapon: HunterDash
+		EmptyWeapon: HunterDash
+		RequiresCondition: !triggered
 	Targetable:
 		TargetTypes: Ground, Vehicle
 	HiddenUnderFog:
