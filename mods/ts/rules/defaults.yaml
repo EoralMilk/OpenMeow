@@ -11,6 +11,8 @@
 		RequiresCondition: traped
 	ExternalCondition@avoidtarget:
 		Condition: avoidtarget
+	ExternalCondition@traped:
+		Condition: traped
 	Targetable@avoidBySpecialActor:
 		TargetTypes: Ignored, AIgnored
 		RequiresCondition: avoidtarget
@@ -913,6 +915,10 @@
 	Huntable:
 	OwnerLostAction:
 		Action: Kill
+	RevealsShroud:
+		RequiresCondition: !inside-tunnel
+		Range: 6c512
+		MaxHeightDelta: 1100
 	Mobile:
 		PauseOnCondition: empdisable || being-captured || carried || traped
 		Locomotor: wheeled

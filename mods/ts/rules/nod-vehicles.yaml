@@ -572,6 +572,7 @@ STNK:
 		ValidDamageStates: Critical
 	Armament:
 		Weapon: Dragon
+		BurstPerFireCount: 2
 		LocalOffset: 301,61,243, 301,-61,243
 	AttackFrontal:
 		Voice: Attack

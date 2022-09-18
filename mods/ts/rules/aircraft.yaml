@@ -170,10 +170,15 @@ A10:
 		LocalOffset: 1440,0,84
 		MuzzleSequence: muzzle
 		FacingTolerance: 40
+		ExhaustAllBurst: True
+		NotCheckFacingToExhaustAllBurst: True
+		NotCheckRangeToExhaustAllBurst: True
 	Armament@BOMBS:
 		Weapon: A10Napalm
 		FacingTolerance: 512
 		LocalOffset: 0,-256,27, 0,256,27
+		ExhaustAllBurst: True
+		BurstPerFireCount: 2
 	AttackAircraft:
 		Voice: Attack
 		FacingTolerance: 512

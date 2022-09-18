@@ -43,6 +43,15 @@ namespace OpenRA.Mods.Common.Traits
 		[Desc("The number of bursts fired per shot.")]
 		public readonly uint BurstPerFireCount = 1;
 
+		[Desc("Exhaust all burst per attack.")]
+		public readonly bool ExhaustAllBurst = false;
+
+		[Desc("Exhaust all burst per attack whit out Facing check.")]
+		public readonly bool NotCheckFacingToExhaustAllBurst = false;
+
+		[Desc("Exhaust all burst per attack whit out Range check.")]
+		public readonly bool NotCheckRangeToExhaustAllBurst = false;
+
 		[Desc("Which turret (if present) should this armament be assigned to.")]
 		public readonly string Turret = "primary";
 
@@ -226,16 +235,25 @@ namespace OpenRA.Mods.Common.Traits
 				conditionToken = self.RevokeCondition(conditionToken);
 		}
 
+		Target persistentTarget = Target.Invalid;
 		protected virtual void Tick(Actor self)
 		{
 			// We need to disable conditions if IsTraitDisabled is true, so we have to update conditions before the return below.
 			UpdateCondition(self);
 
 			if (IsTraitDisabled)
+			{
+				persistentTarget = Target.Invalid;
 				return;
+			}
 
 			if (ticksSinceLastShot < Weapon.ReloadDelay)
 				++ticksSinceLastShot;
+			else
+				persistentTarget = Target.Invalid;
+
+			if (persistentTarget != Target.Invalid && Info.ExhaustAllBurst)
+				CheckFire(self, facing, persistentTarget);
 
 			if (FireDelay > 0)
 				--FireDelay;
@@ -253,17 +271,10 @@ namespace OpenRA.Mods.Common.Traits
 			delayedActions.RemoveAll(a => a.Ticks <= 0);
 		}
 
-		int debugDrawTick = 0;
-		WPos lineStart, lineEnd;
 		void ITick.Tick(Actor self)
 		{
 			// Split into a protected method to allow subclassing
 			Tick(self);
-
-			//if (debugDrawTick-- >= 0)
-			//{
-			//	Game.Renderer.WorldRgbaColorRenderer.DrawWorldLine(lineStart, lineEnd, 0.5f, Primitives.Color.White, Primitives.Color.White);
-			//}
 		}
 
 		protected void ScheduleDelayedAction(int t, int b, Action<int> a)
@@ -359,11 +370,15 @@ namespace OpenRA.Mods.Common.Traits
 			if (IsReloading || IsTraitPaused)
 				return false;
 
-			if (turret != null && !turret.HasAchievedDesiredFacing)
+			var keepFireWithOutFacingCheck = Info.ExhaustAllBurst && persistentTarget.Type != TargetType.Invalid && Info.NotCheckFacingToExhaustAllBurst;
+			var keepFireWithOutRangeCheck = Info.ExhaustAllBurst && persistentTarget.Type != TargetType.Invalid && Info.NotCheckRangeToExhaustAllBurst;
+
+			if (!keepFireWithOutFacingCheck && (turret != null && !turret.HasAchievedDesiredFacing))
 				return false;
 
-			if ((!target.IsInRange(self.CenterPosition, MaxRange()))
-				|| (Weapon.MinRange != WDist.Zero && target.IsInRange(self.CenterPosition, Weapon.MinRange)))
+			if (!keepFireWithOutRangeCheck &&
+				((!target.IsInRange(self.CenterPosition, MaxRange())) ||
+				(Weapon.MinRange != WDist.Zero && target.IsInRange(self.CenterPosition, Weapon.MinRange))))
 				return false;
 
 			if (!Weapon.IsValidAgainst(target, self.World, self))
@@ -372,7 +387,7 @@ namespace OpenRA.Mods.Common.Traits
 			if (turret == null && hasFacingTolerance && facing != null)
 			{
 				var delta = target.CenterPosition - self.CenterPosition;
-				return Util.FacingWithinTolerance(facing.Facing, delta.Yaw + Info.FiringAngle, Info.FacingTolerance);
+				return Util.FacingWithinTolerance(facing.Facing, delta.Yaw + Info.FiringAngle, Info.FacingTolerance) || keepFireWithOutFacingCheck;
 			}
 
 			return true;
@@ -398,6 +413,10 @@ namespace OpenRA.Mods.Common.Traits
 		{
 			if (!CanFire(self, in target))
 				return null;
+
+			if (Info.ExhaustAllBurst)
+				persistentTarget = target;
+
 			if (ticksSinceLastShot >= Weapon.ReloadDelay)
 				Burst = Weapon.Burst;
 
@@ -517,6 +536,7 @@ namespace OpenRA.Mods.Common.Traits
 			}
 			else
 			{
+				persistentTarget = Target.Invalid;
 				var modifiers = reloadModifiers.ToArray();
 				FireDelay = Util.ApplyPercentageModifiers(Weapon.ReloadDelay, modifiers);
 				Burst = Weapon.Burst;

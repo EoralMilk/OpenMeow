@@ -228,12 +228,11 @@ MammothTuskMk2:
 	MinRange: 0c512
 
 BikeMissile:
-	# Inherits: ^DefaultMissile
 	Inherits: ^VectorBooster
 	Range: 7c512
 	MinRange: 0c512
 	Report: misl1.aud
-	ValidTargets: Ground
+	# ValidTargets: Ground, Water # bike can anti-air now
 	ReloadDelay: 35
 	Projectile: VectorBooster
 		HorizonRotationRate: 11
@@ -260,11 +259,12 @@ BikeMissileDual:
 
 Dragon:
 	Inherits: ^DefaultMissile
-	ReloadDelay: 50
-	Burst: 2
+	ReloadDelay: 70
+	Burst: 4
+	BurstDelays: 8
 	Report: misl1.aud
 	Warhead@1Dam: SpreadDamage
-		Damage: 5500
+		Damage: 4500
 
 Hellfire:
 	Inherits: ^DefaultMissile

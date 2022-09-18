@@ -130,7 +130,7 @@ RPGTower:
 		Image: 120mm
 		Palette: ra
 		ContrailLength: 10
-		ContrailWidth: 195
+		ContrailWidth: 175
 		LaunchAngle: 75
 	Warhead@1Dam: SpreadDamage
 		Spread: 216
@@ -190,7 +190,7 @@ Jugg90mm:
 	TargetActorCenter: true
 	Projectile: Bullet
 		Speed: 384
-		LaunchAngle: 165
+		LaunchAngle: 150
 		Inaccuracy: 2c0
 	Warhead@1Dam: SpreadDamage
 		Spread: 188
@@ -220,7 +220,8 @@ Grenade:
 		Palette: effect
 		BounceCount: 2
 		Width: 256
-		ContrailLength: 4
+		ContrailLength: 5
+		ContrailWidth: 180
 		ContrailStartColor: FFFFFF
 		ContrailStartColorOuter: FFFFFF
 		ContrailStartColorAlpha: 128

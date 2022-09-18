@@ -97,7 +97,7 @@ namespace OpenRA.Platforms.Default
 		uint framebuffer, depth;
 		bool disposed;
 		bool scissored;
-		bool onlyDepth;
+		readonly bool onlyDepth;
 
 		public FrameBuffer(Size size, ITextureInternal texture, Color clearColor, bool onlyDepth = false)
 		{
@@ -130,21 +130,6 @@ namespace OpenRA.Platforms.Default
 				OpenGL.glFramebufferTexture2D(OpenGL.GL_FRAMEBUFFER, OpenGL.GL_COLOR_ATTACHMENT0, OpenGL.GL_TEXTURE_2D, texture.ID, 0);
 				OpenGL.CheckGLError();
 			}
-
-			//{
-			//	OpenGL.glGenRenderbuffers(1, out depth);
-			//	OpenGL.CheckGLError();
-
-			//	OpenGL.glBindRenderbuffer(OpenGL.GL_RENDERBUFFER, depth);
-			//	OpenGL.CheckGLError();
-
-			//	var glDepth = OpenGL.Profile == GLProfile.Embedded ? OpenGL.GL_DEPTH_COMPONENT16 : OpenGL.GL_DEPTH_COMPONENT;
-			//	OpenGL.glRenderbufferStorage(OpenGL.GL_RENDERBUFFER, glDepth, size.Width, size.Height);
-			//	OpenGL.CheckGLError();
-
-			//	OpenGL.glFramebufferRenderbuffer(OpenGL.GL_FRAMEBUFFER, OpenGL.GL_DEPTH_ATTACHMENT, OpenGL.GL_RENDERBUFFER, depth);
-			//	OpenGL.CheckGLError();
-			//}
 
 			// Test for completeness
 			var status = OpenGL.glCheckFramebufferStatus(OpenGL.GL_FRAMEBUFFER);

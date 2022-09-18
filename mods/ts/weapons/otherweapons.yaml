@@ -99,8 +99,8 @@ Bomb:
 A10Napalm:
 	ReloadDelay: 100
 	Burst: 6
-	BurstDelays: 2
-	Range: 2c256
+	BurstDelays: 10
+	Range: 4c256
 	TargetActorCenter: true
 	ValidTargets: Ground, Trees
 	Projectile: GravityBomb

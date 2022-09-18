@@ -63,12 +63,12 @@ A10Vulcan:
 	ValidTargets: Ground, Water
 	ReloadDelay: 100
 	MinRange: 4c512
-	Burst: 30
+	Burst: 60
 	BurstDelays: 1
 	Range: 10c0
 	Report: cygun_a.wav, cygun_b.wav
 	FirstBurstTargetOffset: -3000,0,0
-	FollowingBurstTargetOffset: 300,0,0
+	FollowingBurstTargetOffset: 150,0,0
 	Projectile: Bullet
 		Speed: 1100
 		LaunchAngle: 0
