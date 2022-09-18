@@ -3,8 +3,8 @@
 	Shroud:
 	PlayerResources:
 		ResourceValues:
-			Tiberium: 25
-			BlueTiberium: 40
+			Tiberium: 30
+			BlueTiberium: 60
 			Veins: 0
 
 EditorPlayer:
@@ -17,7 +17,7 @@ Player:
 	ClassicProductionQueue@Building:
 		Type: Building
 		DisplayOrder: 0
-		BuildDurationModifier: 120
+		BuildDurationModifier: 100
 		LowPowerModifier: 300
 		ReadyAudio: ConstructionComplete
 		ReadyTextNotification: Construction complete.
@@ -30,7 +30,7 @@ Player:
 	ClassicProductionQueue@Defense:
 		Type: Defense
 		DisplayOrder: 1
-		BuildDurationModifier: 120
+		BuildDurationModifier: 100
 		LowPowerModifier: 300
 		ReadyAudio: ConstructionComplete
 		ReadyTextNotification: Construction complete.
@@ -43,7 +43,7 @@ Player:
 	ClassicProductionQueue@Vehicle:
 		Type: Vehicle
 		DisplayOrder: 3
-		BuildDurationModifier: 120
+		BuildDurationModifier: 100
 		LowPowerModifier: 300
 		ReadyAudio: UnitReady
 		ReadyTextNotification: Unit ready.
@@ -56,7 +56,7 @@ Player:
 	ClassicProductionQueue@Infantry:
 		Type: Infantry
 		DisplayOrder: 2
-		BuildDurationModifier: 120
+		BuildDurationModifier: 100
 		LowPowerModifier: 300
 		ReadyAudio: UnitReady
 		ReadyTextNotification: Unit ready.
@@ -69,7 +69,7 @@ Player:
 	ClassicProductionQueue@Air:
 		Type: Air
 		DisplayOrder: 4
-		BuildDurationModifier: 120
+		BuildDurationModifier: 100
 		LowPowerModifier: 300
 		ReadyAudio: UnitReady
 		ReadyTextNotification: Unit ready.
