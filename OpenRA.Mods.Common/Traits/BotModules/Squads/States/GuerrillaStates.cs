@@ -33,7 +33,7 @@ namespace OpenRA.Mods.Common.Traits.BotModules.Squads
 
 			if (owner.SquadManager.UnitCannotBeOrdered(leader) || squadsize != owner.Units.Count)
 			{
-				leader = GetPathfindLeader(owner).Actor;
+				leader = GetPathfindLeader(owner, owner.SquadManager.Info.SuggestedGroundLeaderLocomotor).Actor;
 				squadsize = owner.Units.Count;
 			}
 
@@ -72,23 +72,21 @@ namespace OpenRA.Mods.Common.Traits.BotModules.Squads
 	// There is many in common
 	class GuerrillaUnitsAttackMoveState : GuerrillaStatesBase, IState
 	{
-		const int MaxAttemptsToAdvance = 6;
-		const int MakeWayTicks = 2;
+		const int MaxMakeWayPossibility = 4;
+		const int MaxSquadStuckPossibility = 6;
+		const int MakeWayTicks = 3;
+		const int KickStuckTicks = 4;
 
 		// Give tolerance for AI grouping team at start
-		int failedAttempts = -(MaxAttemptsToAdvance * 2);
-		int makeWay = MakeWayTicks;
-		bool canMoveAfterMakeWay = true;
-		long stuckDistThreshold;
+		int shouldMakeWayPossibility = -(MaxMakeWayPossibility * 6);
+		int shouldKickStuckPossibility = -(MaxSquadStuckPossibility * 6);
+		int makeWay = 0;
+		int kickStuck = 0;
 
 		UnitWposWrapper leader = new UnitWposWrapper(null);
-		WPos lastLeaderPos = WPos.Zero;
 		int squadsize = 0;
 
-		public void Activate(Squad owner)
-		{
-			stuckDistThreshold = 142179L * owner.SquadManager.Info.AttackForceInterval;
-		}
+		public void Activate(Squad owner) { }
 
 		public void Tick(Squad owner)
 		{
@@ -101,11 +99,11 @@ namespace OpenRA.Mods.Common.Traits.BotModules.Squads
 			// which is the shortest geometric distance, but it has no relation to pathfinding distance in map.
 			if (owner.SquadManager.UnitCannotBeOrdered(leader.Actor) || squadsize != owner.Units.Count)
 			{
-				leader = GetPathfindLeader(owner);
+				leader = GetPathfindLeader(owner, owner.SquadManager.Info.SuggestedGroundLeaderLocomotor);
 				squadsize = owner.Units.Count;
 			}
 
-			if (!owner.IsTargetValid)
+			if (!owner.IsTargetValid || !CheckReachability(leader.Actor, owner.TargetActor))
 			{
 				var targetActor = owner.SquadManager.FindClosestEnemy(leader.Actor);
 				if (targetActor != null)
@@ -128,100 +126,147 @@ namespace OpenRA.Mods.Common.Traits.BotModules.Squads
 				return;
 			}
 
-			// Solve squad stuck by two method: if canMoveAfterMakeWay is true, use regular method,
-			// otherwise try kick units in squad that cannot move at all.
 			var occupiedArea = (long)WDist.FromCells(owner.Units.Count).Length * 1024;
-			if (failedAttempts >= MaxAttemptsToAdvance)
+
+			// Kick stuck units: Kick stuck units that is blocked
+			if (kickStuck > 0)
 			{
-				// Kick stuck units: Kick stuck units that cannot move at all
-				if (!canMoveAfterMakeWay)
+				var stopUnits = new List<Actor>();
+				var otherUnits = new List<Actor>();
+
+				// Check if it is the leader stuck
+				if (leader.Actor.CenterPosition == leader.WPos && !IsAttackingAndTryAttack(leader.Actor).isFiring)
 				{
-					var stopUnits = new List<Actor>();
+					stopUnits.Add(leader.Actor);
+					owner.Units.Remove(leader);
+					AIUtils.BotDebug("AI ({0}): Kick leader from squad.", owner.Bot.Player.ClientIndex);
+				}
 
-					// Check if it is the leader stuck
-					if ((leader.Actor.CenterPosition - leader.WPos).HorizontalLengthSquared < stuckDistThreshold && !IsAttackingAndTryAttack(leader.Actor).isFiring)
+				// Check if it is the units stuck
+				else
+				{
+					for (var i = 0; i < owner.Units.Count; i++)
 					{
-						stopUnits.Add(leader.Actor);
-						owner.Units.Remove(leader);
-					}
+						var u = owner.Units[i];
 
-					// Check if it is the units stuck
-					else
-					{
-						for (var i = 0; i < owner.Units.Count; i++)
+						if (u.Actor == leader.Actor)
+							continue;
+
+						var dist = (u.Actor.CenterPosition - leader.Actor.CenterPosition).HorizontalLengthSquared;
+						if (u.Actor.CenterPosition == u.WPos// Check if unit cannot move
+							&& dist >= (u.WPos - leader.WPos).HorizontalLengthSquared // Check if unit are further from leader than before
+							&& dist >= 5 * occupiedArea // Ckeck if unit in valid distance from leader
+							&& !IsAttackingAndTryAttack(u.Actor).isFiring)
 						{
-							var u = owner.Units[i];
-							var dist = (u.Actor.CenterPosition - leader.Actor.CenterPosition).HorizontalLengthSquared;
-							if ((u.Actor.CenterPosition - u.WPos).HorizontalLengthSquared <= stuckDistThreshold
-								&& dist >= (u.WPos - leader.WPos).HorizontalLengthSquared
-								&& dist >= 5 * occupiedArea
-								&& !IsAttackingAndTryAttack(u.Actor).isFiring)
-							{
-								stopUnits.Add(u.Actor);
-								owner.Units.RemoveAt(i);
-							}
-							else
-								u.WPos = u.Actor.CenterPosition;
+							stopUnits.Add(u.Actor);
+							owner.Units.RemoveAt(i);
+							i--;
+						}
+						else
+						{
+							u.WPos = u.Actor.CenterPosition;
+							otherUnits.Add(u.Actor);
 						}
 					}
 
-					if (owner.Units.Count == 0)
-						return;
-					failedAttempts = MaxAttemptsToAdvance - 2;
-					leader = GetPathfindLeader(owner);
-					owner.Bot.QueueOrder(new Order("AttackMove", leader.Actor, Target.FromCell(owner.World, owner.TargetActor.Location), false));
-					owner.Bot.QueueOrder(new Order("Stop", null, false, groupedActors: stopUnits.ToArray()));
-					makeWay = 0;
+					if (stopUnits.Count > 0)
+						AIUtils.BotDebug("AI ({0}): Kick ({1}) from squad.", owner.Bot.Player.ClientIndex, stopUnits.Count);
 				}
 
-				// Make way for leader: Make sure the guide unit has not been blocked by the rest of the squad.
-				// If canMoveAfterMakeWay is not reset to true after this, will try kick unit
-				if (makeWay > 0)
+				if (owner.Units.Count == 0)
+					return;
+
+				if (kickStuck > 1)
 				{
+					leader = GetPathfindLeader(owner, owner.SquadManager.Info.SuggestedGroundLeaderLocomotor);
+					leader.WPos = leader.Actor.CenterPosition;
 					owner.Bot.QueueOrder(new Order("AttackMove", leader.Actor, Target.FromCell(owner.World, owner.TargetActor.Location), false));
+					owner.Bot.QueueOrder(new Order("Stop", null, false, groupedActors: stopUnits.ToArray()));
+					owner.Bot.QueueOrder(new Order("AttackMove", null, Target.FromCell(owner.World, leader.Actor.Location), false, groupedActors: otherUnits.ToArray()));
+					kickStuck--;
+				}
+				else if (kickStuck == 1)
+				{
+					shouldMakeWayPossibility = 0;
+					shouldKickStuckPossibility = 0;
+					leader = GetPathfindLeader(owner, owner.SquadManager.Info.SuggestedGroundLeaderLocomotor);
 
-					var others = owner.Units.Where(u => u.Actor != leader.Actor).Select(u => u.Actor);
-					owner.Bot.QueueOrder(new Order("Scatter", null, false, groupedActors: others.ToArray()));
-					if (makeWay == 1)
-					{
-						// Give some tolerance for AI regrouping when stuck at first time
-						failedAttempts = 0 - MakeWayTicks;
-
-						// Change target that may cause the stuck, which also makes Guerrilla Squad unpredictable
-						owner.TargetActor = owner.SquadManager.FindClosestEnemy(leader.Actor);
-						makeWay = MakeWayTicks;
-						canMoveAfterMakeWay = false;
-						owner.Bot.QueueOrder(new Order("AttackMove", null, Target.FromCell(owner.World, leader.Actor.Location), true, groupedActors: others.ToArray()));
-					}
-
-					makeWay--;
+					// The end of "kickStuck": stop the leader for position record next tick
+					owner.Bot.QueueOrder(new Order("Stop", leader.Actor, false));
+					kickStuck = 0;
 				}
 
 				return;
 			}
 
-			// Check if the leader is waiting for squad too long. Skips when just after a stuck-solving process.
+			// Make way for leader: Make sure the guide unit has not been blocked by the rest of the squad.
 			if (makeWay > 0)
 			{
-				if ((leader.Actor.CenterPosition - lastLeaderPos).HorizontalLengthSquared < stuckDistThreshold / 2) // Becuase compared to kick leader check, lastLeaderPos every squad ticks so we reduce the threshold
-					failedAttempts++;
-				else
+				if (makeWay > 1)
 				{
-					failedAttempts = 0;
-					canMoveAfterMakeWay = true;
-					lastLeaderPos = leader.Actor.CenterPosition;
+					var others = owner.Units.Where(u => u.Actor != leader.Actor).Select(u => u.Actor);
+					owner.Bot.QueueOrder(new Order("Scatter", null, false, groupedActors: others.ToArray()));
+					owner.Bot.QueueOrder(new Order("AttackMove", leader.Actor, Target.FromCell(owner.World, owner.TargetActor.Location), false));
+					makeWay--;
 				}
-			}
-			else
-			{
-				makeWay = MakeWayTicks;
-				lastLeaderPos = leader.Actor.CenterPosition;
+				else if (makeWay == 1)
+				{
+					shouldMakeWayPossibility = 0;
+					shouldKickStuckPossibility = MaxSquadStuckPossibility / 2;
+
+					// The end of "makeWay": stop the leader for position record next tick
+					// set "makeWay" to -1 to inform that squad just make way for leader
+					owner.Bot.QueueOrder(new Order("Stop", leader.Actor, false));
+					makeWay = -1;
+				}
+
+				return;
 			}
 
-			// The same as ground squad regroup
+			// "leaderStopCheck" to see if leader move.
+			// "leaderWaitCheck" to see if leader should wait squad members that left behind.
+			var leaderStopCheck = leader.Actor.CenterPosition == leader.WPos;
 			var leaderWaitCheck = owner.Units.Any(u => (u.Actor.CenterPosition - leader.Actor.CenterPosition).HorizontalLengthSquared > occupiedArea * 5);
 
-			if (leaderWaitCheck)
+			// To find out the stuck problem of the squad and deal with it.
+			// 1. If leader cannot move and leader should wait, there may be squad members stuck.
+			// 2. If leader cannot move but leader should go, leader is stuck.
+			// -- Try make way for leader
+			// -- If make way cannot solve this problem, we kick stuck unit
+			// 3. If leader can move and leader should go, we consider this squad has no problem on stuck.
+			if (leaderStopCheck && leaderWaitCheck)
+				shouldKickStuckPossibility++;
+			else if (leaderStopCheck && !leaderWaitCheck)
+			{
+				if (makeWay != -1)
+					shouldMakeWayPossibility++;
+				else
+					shouldKickStuckPossibility++;
+			}
+			else if (!leaderStopCheck && !leaderWaitCheck)
+			{
+				shouldMakeWayPossibility = 0;
+				shouldKickStuckPossibility = 0;
+			}
+
+			// Check if we need to make way for leader or kick stuck units
+			if (shouldMakeWayPossibility >= MaxMakeWayPossibility)
+			{
+				AIUtils.BotDebug("AI ({0}): Make way for squad leader.", owner.Bot.Player.ClientIndex);
+				makeWay = MakeWayTicks;
+			}
+			else if (shouldKickStuckPossibility >= MaxSquadStuckPossibility)
+			{
+				AIUtils.BotDebug("AI ({0}): Kick stuck units from squad.", owner.Bot.Player.ClientIndex);
+				kickStuck = KickStuckTicks;
+			}
+
+			// Record current position of the squad leader
+			leader.WPos = leader.Actor.CenterPosition;
+
+			// Leader will wait squad members that left behind, unless
+			// next tick is kick stuck unit (we need leader move in advance).
+			if (leaderWaitCheck && kickStuck <= 0)
 				owner.Bot.QueueOrder(new Order("Stop", leader.Actor, false));
 			else
 				owner.Bot.QueueOrder(new Order("AttackMove", leader.Actor, Target.FromCell(owner.World, owner.TargetActor.Location), false));

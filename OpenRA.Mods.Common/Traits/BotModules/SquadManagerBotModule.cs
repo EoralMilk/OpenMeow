@@ -86,7 +86,10 @@ namespace OpenRA.Mods.Common.Traits
 		public readonly BitSet<TargetableType> IgnoredEnemyTargetTypes = default(BitSet<TargetableType>);
 
 		[Desc("Locomotor used by pathfinding leader for squads")]
-		public readonly HashSet<string> SuggestedLeaderLocomotor = new HashSet<string>();
+		public readonly HashSet<string> SuggestedGroundLeaderLocomotor = new HashSet<string>();
+
+		[Desc("Locomotor used by pathfinding leader for squads")]
+		public readonly HashSet<string> SuggestedNavyLeaderLocomotor = new HashSet<string>();
 
 		public override void RulesetLoaded(Ruleset rules, ActorInfo ai)
 		{

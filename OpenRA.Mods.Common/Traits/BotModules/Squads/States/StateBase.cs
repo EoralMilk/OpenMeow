@@ -325,7 +325,7 @@ namespace OpenRA.Mods.Common.Traits.BotModules.Squads
 				squad.Bot.QueueOrder(new Order("Move", null, Target.FromCell(squad.World, RandomBuildingLocation(squad)), false, groupedActors: fleeingUnits.ToArray()));
 		}
 
-		protected UnitWposWrapper GetPathfindLeader(Squad squad)
+		protected UnitWposWrapper GetPathfindLeader(Squad squad, HashSet<string> locomotorTypes)
 		{
 			UnitWposWrapper nonAircraft = new UnitWposWrapper(null); // HACK: Becuase Mobile is always affected by terrain, so we always select a nonAircraft as leader
 			foreach (var u in squad.Units)
@@ -336,7 +336,7 @@ namespace OpenRA.Mods.Common.Traits.BotModules.Squads
 				else
 				{
 					nonAircraft = u;
-					if (squad.SquadManager.Info.SuggestedLeaderLocomotor.Contains(mt.Info.Locomotor))
+					if (locomotorTypes.Contains(mt.Info.Locomotor))
 						return u;
 				}
 			}
@@ -345,6 +345,18 @@ namespace OpenRA.Mods.Common.Traits.BotModules.Squads
 				return nonAircraft;
 
 			return squad.Units.FirstOrDefault();
+		}
+
+		protected bool CheckReachability(Actor sourceActor, Actor targetActor)
+		{
+			var mobile = sourceActor.TraitOrDefault<Mobile>();
+			if (mobile == null)
+				return false;
+			else
+			{
+				var locomotor = mobile.Locomotor;
+				return mobile.PathFinder.PathExistsForLocomotor(locomotor, sourceActor.Location, targetActor.Location);
+			}
 		}
 	}
 }
