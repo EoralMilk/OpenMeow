@@ -55,8 +55,7 @@ namespace OpenRA.Mods.Common.Traits.BotModules.Squads
 
 		protected static Actor FindDefenselessTarget(Squad owner)
 		{
-			Actor target = null;
-			FindSafePlace(owner, out target, true);
+			FindSafePlace(owner, out var target, true);
 			return target;
 		}
 
