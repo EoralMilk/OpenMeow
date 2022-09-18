@@ -336,6 +336,18 @@ void main()
 	}
 	else
 	{
+		// TileOverlay use vTint "r,g" store uv, and vTint.b == -1
+		if (vTint.b == -1.0)
+		{
+			vec2 uv = vec2(vTint.xy);
+			if (uv.x < 0.0 || uv.x > 1.0 || uv.y < 0.0 || uv.y > 1.0)
+				discard;
+			if (vTint.a < 0.0)
+				c = vec4(c.rgb, c.a * -vTint.a);
+			else
+				c = vec4(c.rgb, c.a * vTint.a);
+		}
+
 		if (vTint.a < 0.0)
 			c = vec4(vTint.rgb, -vTint.a);
 		

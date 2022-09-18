@@ -317,7 +317,7 @@ namespace OpenRA.Mods.Common.Traits
 					if (projSpeed == FP.Zero)
 						return offset;
 
-					projSpeed = projSpeed / w3dr.WPosPerMeter;
+					projSpeed = projSpeed / w3dr.WDistPerMeter;
 					// var tsFIrePos = w3dr.Get3DPositionFromWPos(firePos);
 					var tsDist = w3dr.Get3DPositionFromWVec(firePos - target.Actor.CenterPosition);
 					var tsMove = w3dr.Get3DPositionFromWVec(move.CurrentSpeed);

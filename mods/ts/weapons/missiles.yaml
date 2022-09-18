@@ -24,30 +24,33 @@
 		CruiseAltitude: 3c0
 		AllowSnapping: true
 		TerrainHeightAware: true
-
 		TrailImage: small_smoke_trail
 		TrailInterval: 1
 		TrailCount: 0 #2
 		TrailDelay: 0
-
+		ContrailZOffset: 22
 		ContrailLength: 12
 		ContrailWidth: 178
-
 		ContrailUseInnerOuterColor: true
 
 		ContrailStartColor: DFA833
 		ContrailStartColorOuter: FFDD44
-		ContrailStartColorAlpha: 255
+		ContrailStartColorAlpha: 233
 		ContrailStartColorAlphaOuter: 0
 
-		ContrailEndColor: AA3010
-		ContrailEndColorOuter: AA3010
+		ContrailEndColor: A8A8A8
+		ContrailEndColorOuter: A8A8A8
 		ContrailEndColorAlpha: 64
 		ContrailEndColorAlphaOuter: 0
 
 		ContrailWidthFadeRate: 1
 		ContrailDelay: 0
 		ContrailBlendMode: Alpha #ScreenAdditive
+		
+		JetImage: mislflash
+		JetSequence: mislflash1
+		JetPalette: gray
+
 	Warhead@1Dam: SpreadDamage
 		Spread: 108
 		Falloff: 100, 50, 25, 12, 6, 3, 0
@@ -109,7 +112,8 @@
 		TrailCount: 0 #2
 		TrailDelay: -1 # use IgnitionDelay
 		JetDelay: -1 # use IgnitionDelay
-
+		
+		ContrailZOffset: 22
 		ContrailLength: 12
 		ContrailWidth: 178
 
@@ -117,11 +121,11 @@
 
 		ContrailStartColor: DFA833
 		ContrailStartColorOuter: FFDD44
-		ContrailStartColorAlpha: 255
+		ContrailStartColorAlpha: 233
 		ContrailStartColorAlphaOuter: 0
 
-		ContrailEndColor: AA3010
-		ContrailEndColorOuter: AA3010
+		ContrailEndColor: A8A8A8
+		ContrailEndColorOuter: A8A8A8
 		ContrailEndColorAlpha: 64
 		ContrailEndColorAlphaOuter: 0
 
@@ -137,6 +141,10 @@
 		DetectTargetOnCurve: true
 		DetectTargetFromLength: 0.7
 		DetectTargetBeforeDist: 3c0
+		JetImage: mislflash
+		JetSequence: mislflash1
+		JetPalette: gray
+
 	Warhead@1Dam: Spread3DDamage
 		Spread: 0c256
 		Falloff: 100, 50, 25, 12, 6, 3, 0

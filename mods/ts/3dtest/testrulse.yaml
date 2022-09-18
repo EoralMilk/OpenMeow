@@ -62,7 +62,7 @@ RUTEST:
 	Buildable:
 		Queue: Vehicle
 		BuildPaletteOrder: 0
-		Prerequisites: ~none
+		Prerequisites: ~factory
 	Mobile:
 		TurnSpeed: 66
 		Speed: 100
@@ -70,7 +70,7 @@ RUTEST:
 		# AlwaysTurnInPlace: true
 		# CanMoveBackward: true
 	Health:
-		HP: 100000
+		HP: 200000
 	Armor:
 		Type: Heavy
 	RevealsShroud:
@@ -145,8 +145,8 @@ RUTEST2:
 		LocalOffset: 1024,0,1024
 	BlendTreeHandler:
 		DirectionTurret: primary
-	WithMesh@Arrow:
-		Mesh: arrow
+	# WithMesh@Arrow:
+	# 	Mesh: arrow
 
 RUTEST3:
 	Inherits: RUTEST

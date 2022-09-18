@@ -201,24 +201,46 @@ Proton:
 	Projectile: LaserZap
 		Width: 72
 		Duration: 15
-		ZOffset: 2047
+		ZOffset: 355
 		Color: FF000080
 		SecondaryBeam: true
 		SecondaryBeamWidth: 180
 		SecondaryBeamZOffset: 2047
 		SecondaryBeamColor: FF000040
+		LaunchEffectImage: flash
+		LaunchEffectSequence: laserstart
+		LaunchEffectPalette: red
 	Warhead@1Dam: SpreadDamage
 		Spread: 42
 		Damage: 25000
 		DamageTypes: Prone60Percent, TriggerProne, EnergyDeath
+	Warhead@flash: CreateEffect
+		Image: flash
+		Explosions: laserend
+		ExplosionPalette: red
+		ValidTargets: Ground, Water, Air
+
 
 ObeliskLaserFire:
 	Inherits: ^Laser
 	ReloadDelay: 100
 	Range: 11c512
 	Report: obelray1.aud
+	Projectile: LaserZap
+		LaunchEffectSequence: oblaserstart
 	Warhead@1Dam: SpreadDamage
 		Damage: 34000
+	Warhead@2Eff: CreateEffect
+		Explosions: laserburning
+		ValidTargets: Ground
+		InvalidTargets: Vehicle, Building, Wall
+	Warhead@3Smu: LeaveSmudge
+		SmudgeType: SmallScorch
+		ValidTargets: Ground
+		InvalidTargets: Vehicle, Building, Wall
+		AirThreshold: 512
+	Warhead@flash: CreateEffect
+		Explosions: oblaserend
 
 TurretLaserFire:
 	Inherits: ^Laser
@@ -232,6 +254,16 @@ TurretLaserFire:
 		SecondaryBeamColor: FF000050
 	Warhead@1Dam: SpreadDamage
 		Damage: 3000
+	Warhead@2Eff: CreateEffect
+		Explosions: laserburningsmall
+		ValidTargets: Ground
+		InvalidTargets: Vehicle, Building, Wall
+	Warhead@3Smu: LeaveSmudge
+		SmudgeType: LaserBurnt
+		ValidTargets: Ground
+		InvalidTargets: Vehicle, Building, Wall
+
+
 
 LaserFence:
 	TargetActorCenter: true

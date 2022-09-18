@@ -13,6 +13,7 @@ using System;
 using System.Collections.Generic;
 using GlmSharp;
 using OpenRA.Primitives;
+using OpenRA.Primitives.FixPoint;
 
 namespace OpenRA.Graphics
 {
@@ -195,6 +196,14 @@ namespace OpenRA.Graphics
 			var samplers = SetRenderStateForSprite(s);
 			Util.FastCreateBoard(vertices, wPos, viewOffset, s, samplers, ResolveTextureIndex(s, pal), scale, tint, alpha, nv, rotation);
 			nv += 6;
+		}
+
+		public void DrawTileOverlaySprite(Sprite s, PaletteReference pal, in WPos wPos, in vec3 viewOffset, float scale, in float3 tint, float alpha, Map map, float rotation = 0f)
+		{
+			var samplers = SetRenderStateForSprite(s);
+			nv = Util.FastCreateTileOverlay(vertices, wPos, World3DCoordinate.Vec3toFloat3(viewOffset),
+				s, samplers, ResolveTextureIndex(s, pal),
+				scale, tint, alpha, nv, map);
 		}
 
 		internal void DrawSprite(Sprite s, float paletteTextureIndex, in float3 a, in float3 b, in float3 c, in float3 d, in float3 tint, float alpha)

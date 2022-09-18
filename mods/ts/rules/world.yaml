@@ -318,6 +318,15 @@ World:
 		Size: 1768, 2048
 		FadeTick: 1800, 2060
 		MaxCountPerCell: 1
+	SmudgeLayer@LASERBURNT:
+		Type: LaserBurnt
+		Sequence: smallscorches
+		SmokeImage: smallfire
+		SmokeSequences: idle
+		SmokeChance: 50
+		Size: 468, 524
+		FadeTick: 400, 520
+		MaxCountPerCell: 4
 	TSResourceLayer:
 		VeinholeActors: veinhole
 		VeinType: Veins

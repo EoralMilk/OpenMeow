@@ -421,7 +421,7 @@ namespace OpenRA.Graphics
 
 		public float3 Render3DPosition(WPos pos)
 		{
-			return new float3(-(float)pos.X / Game.Renderer.World3DRenderer.WPosPerMeter, (float)pos.Y / Game.Renderer.World3DRenderer.WPosPerMeter, (float)pos.Z / Game.Renderer.World3DRenderer.WPosPerMeter);
+			return new float3(-(float)pos.X / Game.Renderer.World3DRenderer.WDistPerMeter, (float)pos.Y / Game.Renderer.World3DRenderer.WDistPerMeter, (float)pos.Z / Game.Renderer.World3DRenderer.WDistPerMeter);
 		}
 
 		public float3 Screen3DPosition(WPos pos)
@@ -468,7 +468,7 @@ namespace OpenRA.Graphics
 
 		public float3 RenderVectorComponents(in WVec vec)
 		{
-			return new float3(-(float)vec.X / Game.Renderer.World3DRenderer.WPosPerMeter, (float)vec.Y / Game.Renderer.World3DRenderer.WPosPerMeter, (float)vec.Z / Game.Renderer.World3DRenderer.WPosPerMeter);
+			return new float3(-(float)vec.X / Game.Renderer.World3DRenderer.WDistPerMeter, (float)vec.Y / Game.Renderer.World3DRenderer.WDistPerMeter, (float)vec.Z / Game.Renderer.World3DRenderer.WDistPerMeter);
 		}
 
 		// For scaling vectors to pixel sizes in the model renderer

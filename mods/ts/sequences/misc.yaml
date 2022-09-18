@@ -275,6 +275,61 @@ explosion:
 		AlphaFade: False
 		Tick: 50
 		MeshType: Plane
+	laserburning: laserburn
+		ZOffset: 128
+		Tick: 70
+		BlendMode: Additive
+		MeshType: TileOverlay
+	laserburningsmall: laserburn
+		ZOffset: 128
+		Tick: 70
+		Scale: 0.55
+		BlendMode: Additive
+		MeshType: TileOverlay
+
+mislflash:
+	Defaults:
+		ZOffset: 768
+		IgnoreWorldTint: True
+		MeshType: FloatBoard
+		BlendMode: Additive
+		Tick: 80
+		Length: *
+		Scale: 0.75
+		Frames: 0,0,0,0,0, 0,0,0,0,0
+		Alpha: 1,0.9,0.8,0.7,0.6, 0.5,0.6,0.7,0.8,0.9
+
+	mislflash1: mislflash
+	mislflash2: mislflash2
+	mislflash3: mislflash3
+	mislflash1big: mislflash
+		Scale: 1.5
+	mislflash2big: mislflash2
+		Scale: 1.5
+	mislflash3big: mislflash
+		Scale: 1.5
+
+flash:
+	Defaults:
+		ZOffset: 3333
+		IgnoreWorldTint: True
+		MeshType: Board
+		BlendMode: Additive
+		Tick: 50
+		Length: *
+		Frames: 0,0,0,0,0, 0,0,0,0,0
+		Alpha: 1,1,0.95,0.9,0.83, 0.75,0.63,0.43,0.2,0.05
+
+	laserstart: mislflash
+		Scale: 0.65
+	laserend: mislflash
+		Scale: 1
+	oblaserstart: mislflash
+		Scale: 0.85
+		Tick: 80
+	oblaserend: mislflash
+		Scale: 1.3
+		Tick: 80
 
 discus:
 	idle:
@@ -400,23 +455,28 @@ small_smoke_trail:
 largefire:
 	idle: fire1
 		Length: *
-		Offset: 0, 0, 36
-		Alpha: 0.5
+		Offset: 0, 0, 0
+		Alpha: 0.75
 		IgnoreWorldTint: True
+		ZOffset: 35
+		BlendMode: Additive
 
 mediumfire:
 	idle: fire2
 		Length: *
-		Offset: 0, 0, 24
-		Alpha: 0.5
+		Offset: 0, 0, 0
+		Alpha: 0.75
 		IgnoreWorldTint: True
+		BlendMode: Additive
 
 smallfire:
 	idle: fire3
 		Length: *
-		Offset: 0, 0, 24
-		Alpha: 0.5
+		Offset: 0, 0, 0
+		Alpha: 0.75
 		IgnoreWorldTint: True
+		ZOffset: 35
+		BlendMode: Additive
 
 tinyfire:
 	idle: fire4
@@ -424,6 +484,8 @@ tinyfire:
 		Offset: 0, 0, 24
 		Alpha: 0.75
 		IgnoreWorldTint: True
+		ZOffset: 35
+		BlendMode: Additive
 
 moveflsh:
 	idle: ring
@@ -839,6 +901,7 @@ fire1:
 		BlendMode: Additive #Translucent
 		Offset: 0, -24, 24
 		ZOffset: 15
+		Alpha: 0.75
 		IgnoreWorldTint: true
 
 fire2:
@@ -847,6 +910,7 @@ fire2:
 		BlendMode: Additive #Translucent
 		Offset: 0, -18, 18
 		ZOffset: 15
+		Alpha: 0.75
 		IgnoreWorldTint: true
 
 cannonsmokecircle:

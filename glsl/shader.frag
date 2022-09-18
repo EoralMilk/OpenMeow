@@ -129,7 +129,7 @@ vec4 CalcDirLight(DirLight light, vec3 normal, vec3 viewDir, const BlinnPhongMat
 		
 		// Hack: remap color used use alpha channel to store tint color
 		if (color.a < 0.55)
-			color = vec4(vRemap * color.rgb, 1.0);
+			color = vec4(vRemap * color.rgb / color.a, 1.0);
 
 		ambient = ambient * color.rgb;
 		diffuse = diffuse * color.rgb;

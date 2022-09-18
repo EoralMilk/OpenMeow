@@ -127,14 +127,24 @@ namespace OpenRA.Graphics
 
 			var viewOffset = Game.Renderer.World3DRenderer.InverseCameraFrontMeterPerWPos * (zOffset + 1);
 
-			if (sprite.SpriteMeshType == SpriteMeshType.Plane)
-				wsr.DrawPlaneSprite(sprite, palette, Pos, viewOffset, scale, t, a);
-			else if (sprite.SpriteMeshType == SpriteMeshType.Card)
-				wsr.DrawCardSprite(sprite, palette, Pos, viewOffset, scale, t, a);
-			else if (sprite.SpriteMeshType == SpriteMeshType.Board)
-				wsr.DrawBoardSprite(sprite, palette, Pos, viewOffset, scale, t, a);
-			else if (sprite.SpriteMeshType == SpriteMeshType.FloatBoard)
-				wsr.DrawFloatBoardSprite(sprite, palette, Pos, viewOffset, scale, t, a);
+			switch (sprite.SpriteMeshType)
+			{
+				case SpriteMeshType.Plane:
+					wsr.DrawPlaneSprite(sprite, palette, Pos, viewOffset, scale, t, a);
+					break;
+				case SpriteMeshType.Card:
+					wsr.DrawCardSprite(sprite, palette, Pos, viewOffset, scale, t, a);
+					break;
+				case SpriteMeshType.Board:
+					wsr.DrawBoardSprite(sprite, palette, Pos, viewOffset, scale, t, a);
+					break;
+				case SpriteMeshType.FloatBoard:
+					wsr.DrawFloatBoardSprite(sprite, palette, Pos, viewOffset, scale, t, a);
+					break;
+				case SpriteMeshType.TileOverlay:
+					wsr.DrawTileOverlaySprite(sprite, palette, Pos, viewOffset, scale, t, a, wr.World.Map);
+					break;
+			}
 		}
 
 		public void RenderDebugGeometry(WorldRenderer wr)

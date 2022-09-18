@@ -49,14 +49,19 @@ Packages:
 	~ecache01.mix
 
 	ts|bits
+	ts|bits/terrian
 	ts|bits/audios
 	ts|bits/vxls
 
 	# Issly's Voxel
 	ts|bits/vxls/VxlFromIssly
-	
 	ts|bits/vxls/replace
 	ts|bits/caustics
+	ts|bits/actors
+	ts|bits/effects
+	ts|bits/projectiles
+	ts|bits/miscs
+
 
 	ts|uibits
 	ts|meshes

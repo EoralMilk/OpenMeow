@@ -198,7 +198,7 @@ NALASR:
 		PauseOnCondition: empdisable || disabled || build-incomplete
 	Armament:
 		Weapon: TurretLaserFire
-		LocalOffset: 498,0,183
+		LocalOffset: 543,0,411
 	RevealsShroud:
 		Range: 7c0
 	RenderModels:

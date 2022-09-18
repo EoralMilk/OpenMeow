@@ -17,7 +17,7 @@ namespace OpenRA.Graphics
 		public readonly vec3 InverseCameraFront;
 		public readonly vec3 InverseCameraFrontMeterPerWPos;
 
-		public readonly int WPosPerMeter = 256;
+		public readonly int WDistPerMeter = 256;
 		readonly float height = 256 * 200;
 		public readonly float TanCameraPitch;
 		public readonly float CosCameraPitch;
@@ -48,14 +48,17 @@ namespace OpenRA.Graphics
 		public vec3 CameraPos { get; private set; }
 		public readonly float PixPerMeter;
 		public readonly float MeterPerPix;
+		public readonly int WDistPerPix;
+
 		public readonly float MeterPerPixHalf;
 		public mat4 Projection;
 		public mat4 View;
 
 		public World3DRenderer(Renderer renderer, MapGrid mapGrid)
 		{
-			PixPerMeter = (float)(mapGrid.TileSize.Width / 1.4142135d) / (1024 / WPosPerMeter);
-			MeterPerPix = (float)((1024 / WPosPerMeter) / (mapGrid.TileSize.Width / 1.4142135d));
+			PixPerMeter = (float)(mapGrid.TileSize.Width / 1.4142135d) / (1024 / WDistPerMeter);
+			MeterPerPix = (float)((1024 / WDistPerMeter) / (mapGrid.TileSize.Width / 1.4142135d));
+			WDistPerPix = (int)(MeterPerPix * WDistPerMeter);
 			MeterPerPixHalf = MeterPerPix / 2.0f;
 
 			TanCameraPitch = (float)Math.Tan(glm.Radians(CameraPitch));
@@ -64,9 +67,9 @@ namespace OpenRA.Graphics
 			CameraUp = glm.Normalized(new vec3(0, -1, TanCameraPitch));
 			CameraRight = new vec3(1, 0, 0);
 			InverseCameraFront = glm.Normalized(new vec3(0, 1, 1 / TanCameraPitch));
-			InverseCameraFrontMeterPerWPos = InverseCameraFront / WPosPerMeter;
+			InverseCameraFrontMeterPerWPos = InverseCameraFront / WDistPerMeter;
 
-			MaxTerrainHeight = mapGrid.MaximumTerrainHeight * MapGrid.MapHeightStep * 2f / WPosPerMeter;
+			MaxTerrainHeight = mapGrid.MaximumTerrainHeight * MapGrid.MapHeightStep * 2f / WDistPerMeter;
 
 			UpdateSunPos(SunPosOne, vec3.Zero);
 			var chordPow = (SunPosOne.x * SunPosOne.x + SunPosOne.y * SunPosOne.y) + (SunPosOne.z * SunPosOne.z);
@@ -162,44 +165,44 @@ namespace OpenRA.Graphics
 
 		public TSVector Get3DPositionFromWPos(WPos pos)
 		{
-			return new TSVector(-FP.FromFloat((float)pos.X / WPosPerMeter),
-												FP.FromFloat((float)pos.Y / WPosPerMeter),
-												FP.FromFloat((float)pos.Z / WPosPerMeter));
+			return new TSVector(-FP.FromFloat((float)pos.X / WDistPerMeter),
+												FP.FromFloat((float)pos.Y / WDistPerMeter),
+												FP.FromFloat((float)pos.Z / WDistPerMeter));
 		}
 
 		public TSVector Get3DPositionFromWVec(WVec vec)
 		{
-			return new TSVector(-FP.FromFloat((float)vec.X / WPosPerMeter),
-												FP.FromFloat((float)vec.Y / WPosPerMeter),
-												FP.FromFloat((float)vec.Z / WPosPerMeter));
+			return new TSVector(-FP.FromFloat((float)vec.X / WDistPerMeter),
+												FP.FromFloat((float)vec.Y / WDistPerMeter),
+												FP.FromFloat((float)vec.Z / WDistPerMeter));
 		}
 
 		public vec3 Get3DRenderPositionFromWPos(WPos pos)
 		{
-			return new vec3(-(float)pos.X / WPosPerMeter,
-										(float)pos.Y / WPosPerMeter,
-										(float)pos.Z / WPosPerMeter);
+			return new vec3(-(float)pos.X / WDistPerMeter,
+										(float)pos.Y / WDistPerMeter,
+										(float)pos.Z / WDistPerMeter);
 		}
 
 		public vec3 Get3DRenderVecFromWVec(WVec vec)
 		{
-			return new vec3(-(float)vec.X / WPosPerMeter,
-										(float)vec.Y / WPosPerMeter,
-										(float)vec.Z / WPosPerMeter);
+			return new vec3(-(float)vec.X / WDistPerMeter,
+										(float)vec.Y / WDistPerMeter,
+										(float)vec.Z / WDistPerMeter);
 		}
 
 		public WPos GetWPosFromTSVector(in TSVector vec)
 		{
-			return new WPos(-(int)(vec.x * WPosPerMeter),
-										(int)(vec.y * WPosPerMeter),
-										(int)(vec.z * WPosPerMeter));
+			return new WPos(-(int)(vec.x * WDistPerMeter),
+										(int)(vec.y * WDistPerMeter),
+										(int)(vec.z * WDistPerMeter));
 		}
 
 		public WPos GetWPosFromMatrix(in TSMatrix4x4 matrix)
 		{
-			return new WPos(-(int)(matrix.M14 * WPosPerMeter),
-										(int)(matrix.M24 * WPosPerMeter),
-										(int)(matrix.M34 * WPosPerMeter));
+			return new WPos(-(int)(matrix.M14 * WDistPerMeter),
+										(int)(matrix.M24 * WDistPerMeter),
+										(int)(matrix.M34 * WDistPerMeter));
 		}
 
 		public int rollAdd = 0;

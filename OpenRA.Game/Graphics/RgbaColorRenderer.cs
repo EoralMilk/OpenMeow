@@ -139,7 +139,7 @@ namespace OpenRA.Graphics
 
 		public float3 Render3DPosition(WPos pos)
 		{
-			return new float3(-(float)pos.X / Game.Renderer.World3DRenderer.WPosPerMeter, (float)pos.Y / Game.Renderer.World3DRenderer.WPosPerMeter, (float)pos.Z / Game.Renderer.World3DRenderer.WPosPerMeter);
+			return new float3(-(float)pos.X / Game.Renderer.World3DRenderer.WDistPerMeter, (float)pos.Y / Game.Renderer.World3DRenderer.WDistPerMeter, (float)pos.Z / Game.Renderer.World3DRenderer.WDistPerMeter);
 		}
 
 		void DrawLine(in float3 start, in float3 end, float width, Color startColor, Color endColor, BlendMode blendMode = BlendMode.Alpha, bool world = false)
