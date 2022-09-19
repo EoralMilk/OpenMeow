@@ -286,7 +286,6 @@ SONIC:
 	Inherits@VOXELS: ^VoxelActor
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
-	Inherits@WithRA2VoxRender: ^WithRA2VoxRender
 	Valued:
 		Cost: 1300
 	Tooltip:
@@ -311,20 +310,22 @@ SONIC:
 		Range: 7c0
 	Armament:
 		Weapon: SonicZap
-		LocalOffset: -71,0,635
+		LocalOffset: -71,0,535
 	AttackTurreted:
 		Voice: Attack
 		PauseOnCondition: empdisable
 		OpportunityFire: False
 	Turreted:
 		TurnSpeed: 20
-		Offset: -448,0,0 #-208,0,0
+		Offset: -388,0,0 #-208,0,0
 	WithModelTurret:
 	Explodes:
 		RequiresCondition: !rank-elite && !traped
 	Explodes@ELITE:
 		RequiresCondition: rank-elite && !traped
 		Weapon: UnitExplode
+	RenderModels:
+		Scale: 1.2
 
 JUGG:
 	Inherits: ^Tank

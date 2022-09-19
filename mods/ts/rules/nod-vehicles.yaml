@@ -121,12 +121,12 @@ TTNK:
 		RequiresCondition: undeployed
 	Armament@PRIMARY:
 		Weapon: 90mm
-		LocalOffset: 892,178,476 #407,0,209
+		LocalOffset: 892,-178,476 #407,0,209
 		RequiresCondition: !rank-elite
 		MuzzleSequence: muzzle
 	Armament@ELITE:
 		Weapon: 120mmx
-		LocalOffset: 565,208,416
+		LocalOffset: 892,-178,476
 		RequiresCondition: rank-elite
 		MuzzleSequence: muzzle
 	WithMuzzleOverlay:
@@ -188,7 +188,7 @@ TTNK:
 		Name: deployed
 		Turret: deployed
 		Weapon: 90mm
-		LocalOffset: 565,208,416 #543,0,209
+		LocalOffset: 892,-178,476 #543,0,209
 		RequiresCondition: !rank-elite
 		MuzzleSequence: muzzle
 		Recoil: 76
@@ -197,7 +197,7 @@ TTNK:
 		Name: deployed
 		Turret: deployed
 		Weapon: 120mmx
-		LocalOffset: 543,0,209
+		LocalOffset: 892,-178,476
 		RequiresCondition: rank-elite
 		MuzzleSequence: muzzle
 		Recoil: 76
@@ -381,6 +381,7 @@ REPAIR:
 WEED:
 	Inherits: ^Tank
 	Inherits@VOXELS: ^VoxelActor
+	Inherits@WithRA2VoxRender: ^WithRA2VoxRender
 	Inherits@selection: ^SelectableEconomicUnit
 	Valued:
 		Cost: 1400
