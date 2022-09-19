@@ -26,6 +26,7 @@ namespace OpenRA.Graphics
 		Board,
 		FloatBoard,
 		TileOverlay,
+		TileActor,
 		UI,
 		NullType,
 	}

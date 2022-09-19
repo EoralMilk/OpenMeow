@@ -305,15 +305,6 @@ namespace OpenRA.Graphics
 			dirtyRows.Add(uv.V);
 		}
 
-		public void LightShader(Viewport viewport)
-		{
-			var cells = restrictToBounds ? viewport.VisibleCellsInsideBounds : viewport.AllVisibleCells;
-
-			var tlcell = cells.CandidateMapCoords.TopLeft.ToCPos(map);
-			var brcell = cells.CandidateMapCoords.BottomRight.ToCPos(map);
-			worldRenderer.TerrainLighting.LightSourcesToMapShader(map.CenterOfCell(tlcell), map.CenterOfCell(brcell), Game.Renderer.MapRenderer.Shader);
-		}
-
 		int firstRow, lastRow;
 
 		public void Draw(Viewport viewport, bool reverse = false)

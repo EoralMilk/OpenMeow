@@ -152,7 +152,7 @@ namespace OpenRA.Mods.Common.Traits
 		const int MaxLightCount = 64;
 		bool firstRender = true;
 		float heightStep = 0;
-		public void LightSourcesToMapShader(WPos tl, WPos br, IShader shader)
+		public void LightSourcesToMapShader(WPos tl, WPos br, IShader[] shaders)
 		{
 			if (firstRender)
 			{
@@ -185,9 +185,12 @@ namespace OpenRA.Mods.Common.Traits
 					break;
 			}
 
-			shader.SetVecArray("TerrainLightPos", posArray, 3, MaxLightCount);
-			shader.SetVecArray("TerrainLightColorRange", colorRangeArray, 4, MaxLightCount);
-			shader.SetFloat("TerrainLightHeightStep", heightStep);
+			foreach (IShader shader in shaders)
+			{
+				shader.SetVecArray("TerrainLightPos", posArray, 3, MaxLightCount);
+				shader.SetVecArray("TerrainLightColorRange", colorRangeArray, 4, MaxLightCount);
+				shader.SetFloat("TerrainLightHeightStep", heightStep);
+			}
 		}
 
 		public float GetGlobalAmbientIntencity()

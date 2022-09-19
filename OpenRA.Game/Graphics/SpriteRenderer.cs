@@ -10,6 +10,7 @@
 #endregion
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using GlmSharp;
 using OpenRA.Primitives;
@@ -23,7 +24,7 @@ namespace OpenRA.Graphics
 		static readonly string[] SheetIndexToTextureName = Exts.MakeArray(SheetCount, i => $"Texture{i}");
 
 		readonly Renderer renderer;
-		readonly IShader shader;
+		public readonly IShader Shader;
 
 		readonly Vertex[] vertices;
 		readonly Sheet[] sheets = new Sheet[SheetCount];
@@ -35,7 +36,7 @@ namespace OpenRA.Graphics
 		public SpriteRenderer(Renderer renderer, IShader shader)
 		{
 			this.renderer = renderer;
-			this.shader = shader;
+			this.Shader = shader;
 			vertices = new Vertex[renderer.TempBufferSize];
 		}
 
@@ -45,13 +46,13 @@ namespace OpenRA.Graphics
 			{
 				for (var i = 0; i < ns; i++)
 				{
-					shader.SetTexture(SheetIndexToTextureName[i], sheets[i].GetTexture());
+					Shader.SetTexture(SheetIndexToTextureName[i], sheets[i].GetTexture());
 					sheets[i] = null;
 				}
 
 				renderer.Context.SetBlendMode(blendMode != BlendMode.None ? blendMode : currentBlend);
-				shader.PrepareRender();
-				renderer.DrawBatch(shader, vertices, nv, PrimitiveType.TriangleList);
+				Shader.PrepareRender();
+				renderer.DrawBatch(Shader, vertices, nv, PrimitiveType.TriangleList);
 				renderer.Context.SetBlendMode(BlendMode.None);
 
 				nv = 0;
@@ -201,9 +202,17 @@ namespace OpenRA.Graphics
 		public void DrawTileOverlaySprite(Sprite s, PaletteReference pal, in WPos wPos, in vec3 viewOffset, float scale, in float3 tint, float alpha, Map map, float rotation = 0f)
 		{
 			var samplers = SetRenderStateForSprite(s);
-			nv = Util.FastCreateTileOverlay(vertices, wPos, World3DCoordinate.Vec3toFloat3(viewOffset),
+
+			var vv = Util.FastCreateTileOverlay(wPos, World3DCoordinate.Vec3toFloat3(viewOffset),
 				s, samplers, ResolveTextureIndex(s, pal),
-				scale, tint, alpha, nv, map);
+				scale, tint, alpha, map);
+
+			if (nv + vv.Length >= vertices.Length)
+				Flush();
+
+			Array.Copy(vv, 0, vertices, nv, vv.Length);
+
+			nv += vv.Length;
 		}
 
 		internal void DrawSprite(Sprite s, float paletteTextureIndex, in float3 a, in float3 b, in float3 c, in float3 d, in float3 tint, float alpha)
@@ -222,12 +231,12 @@ namespace OpenRA.Graphics
 					ThrowSheetOverflow(nameof(sheets));
 
 				if (s != null)
-					shader.SetTexture(SheetIndexToTextureName[i++], s.GetTexture());
+					Shader.SetTexture(SheetIndexToTextureName[i++], s.GetTexture());
 			}
 
 			renderer.Context.SetBlendMode(blendMode);
-			shader.PrepareRender();
-			renderer.DrawBatch(shader, buffer, start, length, type);
+			Shader.PrepareRender();
+			renderer.DrawBatch(Shader, buffer, start, length, type);
 			renderer.Context.SetBlendMode(BlendMode.None);
 		}
 
@@ -252,8 +261,8 @@ namespace OpenRA.Graphics
 
 		public void SetPalette(ITexture palette, ITexture colorShifts)
 		{
-			shader.SetTexture("Palette", palette);
-			shader.SetTexture("ColorShifts", colorShifts);
+			Shader.SetTexture("Palette", palette);
+			Shader.SetTexture("ColorShifts", colorShifts);
 		}
 
 		public void SetViewportParams(Size sheetSize, int downscale, float depthMargin, int2 scroll)
@@ -281,21 +290,21 @@ namespace OpenRA.Graphics
 			var depth = depthMargin != 0f ? 2f / (downscale * (sheetSize.Height + depthMargin)) : 0;
 
 			//shader.SetVec("DepthTextureScale", 128 * depth);
-			shader.SetVec("Scroll", scroll.X, scroll.Y, depthMargin != 0f ? scroll.Y : 0);
-			shader.SetVec("r1", width, height, -depth);
-			shader.SetVec("r2", -1, -1, depthMargin != 0f ? 1 : 0);
-			shader.SetBool("hasCamera", false);
-			shader.SetBool("renderScreen", false);
+			Shader.SetVec("Scroll", scroll.X, scroll.Y, depthMargin != 0f ? scroll.Y : 0);
+			Shader.SetVec("r1", width, height, -depth);
+			Shader.SetVec("r2", -1, -1, depthMargin != 0f ? 1 : 0);
+			Shader.SetBool("hasCamera", false);
+			Shader.SetBool("renderScreen", false);
 		}
 
 		public void SetCameraParams()
 		{
 			if (Game.Renderer.World3DRenderer != null)
 			{
-				shader.SetBool("hasCamera", true);
-				shader.SetBool("renderScreen", false);
-				shader.SetMatrix("projection", Game.Renderer.World3DRenderer.Projection.Values1D);
-				shader.SetMatrix("view", Game.Renderer.World3DRenderer.View.Values1D);
+				Shader.SetBool("hasCamera", true);
+				Shader.SetBool("renderScreen", false);
+				Shader.SetMatrix("projection", Game.Renderer.World3DRenderer.Projection.Values1D);
+				Shader.SetMatrix("view", Game.Renderer.World3DRenderer.View.Values1D);
 				//shader.SetVec("viewPos", Game.Renderer.Standalone3DRenderer.CameraPos.x, Game.Renderer.Standalone3DRenderer.CameraPos.y, Game.Renderer.Standalone3DRenderer.CameraPos.z);
 			}
 		}
@@ -304,20 +313,20 @@ namespace OpenRA.Graphics
 		{
 			if (Game.Renderer.World3DRenderer != null)
 			{
-				Game.Renderer.SetShadowParams(shader, Game.Renderer.World3DRenderer);
-				Game.Renderer.SetLightParams(shader, Game.Renderer.World3DRenderer);
+				Game.Renderer.SetShadowParams(Shader, Game.Renderer.World3DRenderer);
+				Game.Renderer.SetLightParams(Shader, Game.Renderer.World3DRenderer);
 			}
 		}
 
 		public void SetDepthPreview(bool enabled, float contrast, float offset)
 		{
-			shader.SetBool("EnableDepthPreview", enabled);
-			shader.SetVec("DepthPreviewParams", contrast, offset);
+			Shader.SetBool("EnableDepthPreview", enabled);
+			Shader.SetVec("DepthPreviewParams", contrast, offset);
 		}
 
 		public void SetAntialiasingPixelsPerTexel(float pxPerTx)
 		{
-			shader.SetVec("AntialiasPixelsPerTexel", pxPerTx);
+			Shader.SetVec("AntialiasPixelsPerTexel", pxPerTx);
 		}
 	}
 }

@@ -56,6 +56,7 @@ in vec4 vColorFraction;
 in vec4 vRGBAFraction;
 in vec4 vPalettedFraction;
 in vec4 vTint;
+in vec2 vTileUV;
 
 out vec4 fragColor;
 #endif
@@ -275,6 +276,9 @@ vec4 ColorShift(vec4 c, float p)
 
 void main()
 {
+	if (vTileUV.x < 0.0 || vTileUV.x > 1.0 || vTileUV.y < 0.0 || vTileUV.y > 1.0)
+		discard;
+
 	vec2 coords = vTexCoord.st;
 
 	vec4 c;
@@ -336,18 +340,6 @@ void main()
 	}
 	else
 	{
-		// TileOverlay use vTint "r,g" store uv, and vTint.b == -1
-		if (vTint.b == -1.0)
-		{
-			vec2 uv = vec2(vTint.xy);
-			if (uv.x < 0.0 || uv.x > 1.0 || uv.y < 0.0 || uv.y > 1.0)
-				discard;
-			if (vTint.a < 0.0)
-				c = vec4(c.rgb, c.a * -vTint.a);
-			else
-				c = vec4(c.rgb, c.a * vTint.a);
-		}
-
 		if (vTint.a < 0.0)
 			c = vec4(vTint.rgb, -vTint.a);
 		

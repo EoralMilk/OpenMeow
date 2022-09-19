@@ -28,6 +28,7 @@ Players:
 		Enemies: Creeps, Nod, GDI, Multi0
 	PlayerReference@Nod:
 		Name: Nod
+		Bot: test
 		LockFaction: True
 		Faction: nod
 		LockColor: True
@@ -35,6 +36,7 @@ Players:
 		Enemies: GDI, Creeps, Multi0
 	PlayerReference@GDI:
 		Name: GDI
+		Bot: test
 		LockFaction: True
 		Faction: gdi
 		LockColor: True
@@ -42,6 +44,7 @@ Players:
 		Enemies: Nod, Creeps, Multi0
 	PlayerReference@Multi0:
 		Name: Multi0
+		Bot: test
 		Playable: True
 		Faction: Random
 		Enemies: Creeps, Nod, GDI
@@ -1185,9 +1188,6 @@ Actors:
 	Actor375: trock04
 		Owner: Neutral
 		Location: 66,34
-	Actor376: trock03
-		Owner: Neutral
-		Location: 62,23
 	Actor377: trock05
 		Owner: Neutral
 		Location: 48,13
@@ -1451,6 +1451,8 @@ Actors:
 	Actor455: gapowr
 		Owner: Multi0
 		Location: 54,34
+		Plug@pluga: powrup
+		Plug@plugb: powrup
 	Actor456: gapowr
 		Owner: Multi0
 		Location: 52,34
@@ -1493,17 +1495,10 @@ Actors:
 	Actor471: camera
 		Owner: Multi0
 		Location: 59,4
-	Actor472: gaweap
-		Owner: Multi0
-		Location: 47,25
 	Actor473: icbm
 		Owner: Multi0
 		Facing: 384
 		Location: 51,30
-	Actor474: gapile
-		Faction: nod
-		Location: 60,23
-		Owner: Multi0
 	Actor475: gaweap
 		Faction: nod
 		Location: 55,28
@@ -1548,5 +1543,84 @@ Actors:
 	Actor484: veinhole
 		Owner: Neutral
 		Location: 68,18
+	Actor485: proc
+		Owner: Multi0
+		Location: 60,22
+	Actor486: proc
+		Owner: Multi0
+		Location: 60,25
+	Actor487: natmpl
+		Owner: Multi0
+		Location: 68,-38
+	Actor488: namisl
+		Owner: Multi0
+		Location: 104,-1
+	Actor489: nawast
+		Owner: Multi0
+		Location: 59,30
+	Actor490: napuls
+		Owner: Multi0
+		Location: 57,24
+	Actor491: naobel
+		Owner: Multi0
+		Location: 65,22
+	Actor492: nalasr
+		Owner: Multi0
+		Location: 40,24
+	Actor493: nalasr
+		Owner: Multi0
+		Location: 49,26
+	Actor494: nalasr
+		Owner: Multi0
+		Location: 66,-36
+	Actor495: nalasr
+		Owner: Multi0
+		Location: 75,-35
+	Actor496: nasam
+		Owner: Nod
+		Location: 40,3
+	Actor497: nasam
+		Owner: Nod
+		Location: 37,10
+	Actor498: gactwr
+		Owner: GDI
+		Location: 76,-9
+		Plug: tower.sam
+		TurretFacing: 896
+	Actor499: slav
+		Owner: Multi0
+		SubCell: 2
+		Location: 53,31
+		Facing: 919
+	Actor500: oxanna
+		Owner: Multi0
+		Facing: 384
+		Location: 52,31
+		SubCell: 2
+	Actor501: cyc2
+		Owner: Multi0
+		SubCell: 2
+		Location: 52,27
+		Facing: 888
+	Actor502: cyborg
+		Owner: Multi0
+		Location: 52,27
+		SubCell: 1
+		Facing: 63
+	Actor503: cyborg
+		Owner: Multi0
+		Location: 52,27
+		SubCell: 3
+		Facing: 594
+	Actor504: cyborg
+		Owner: Multi0
+		SubCell: 2
+		Location: 54,23
+		Facing: 737
+	Actor505: cyborg
+		Owner: Multi0
+		SubCell: 2
+		Location: 51,23
+		Facing: 927
 
 Rules: rules.yaml

@@ -14,6 +14,7 @@ using System.Collections.Generic;
 using System.Xml.Linq;
 using GlmSharp;
 using OpenRA.Primitives;
+using OpenRA.Primitives.FixPoint;
 
 namespace OpenRA.Graphics
 {
@@ -46,7 +47,7 @@ namespace OpenRA.Graphics
 				for (var i = 0; i < ns; i++)
 				{
 					Shader.SetTexture(SheetIndexToTextureName[i], sheets[i].GetTexture());
-					sheets[i] = null;
+					//sheets[i] = null;
 				}
 
 				renderer.Context.SetBlendMode(blendMode != BlendMode.None ? blendMode : currentBlend);
@@ -59,23 +60,98 @@ namespace OpenRA.Graphics
 			}
 		}
 
-		public void SetSheets(IEnumerable<Sheet> sheets, BlendMode blendMode = BlendMode.None)
+		public void SetSheets(Sheet[] sheets, BlendMode blendMode = BlendMode.None)
 		{
-			var si = 0;
+			int si = 0;
 			if (currentBlend != blendMode)
 			{
 				Flush();
 				currentBlend = blendMode;
 			}
 
-			foreach (var s in sheets)
+			for (int i = 0; i < sheets.Length; i++)
 			{
-				if (si >= SheetCount)
+				if (i >= SheetCount)
 					ThrowSheetOverflow(nameof(sheets));
 
-				if (s != null)
-					Shader.SetTexture(SheetIndexToTextureName[si++], s.GetTexture());
+				if (sheets[i] != null)
+				{
+					if (this.sheets[si] != null && sheets[i] != this.sheets[si])
+						Flush();
+					//Shader.SetTexture(SheetIndexToTextureName[si], sheets[i].GetTexture());
+					this.sheets[si] = sheets[i];
+					si++;
+				}
 			}
+
+			ns = Math.Max(si, ns);
+		}
+
+		int2 SetRenderStateForSprite(Sprite s)
+		{
+			if (s.BlendMode != currentBlend || nv + renderer.MaxVerticesPerMesh > renderer.TempBufferSize)
+				Flush();
+
+			currentBlend = s.BlendMode;
+
+			// Check if the sheet (or secondary data sheet) have already been mapped
+			var sheet = s.Sheet;
+			var sheetIndex = 0;
+			for (; sheetIndex < ns; sheetIndex++)
+				if (sheets[sheetIndex] == sheet)
+					break;
+
+			var secondarySheetIndex = 0;
+			var ss = s as SpriteWithSecondaryData;
+			if (ss != null)
+			{
+				var secondarySheet = ss.SecondarySheet;
+				for (; secondarySheetIndex < ns; secondarySheetIndex++)
+					if (sheets[secondarySheetIndex] == secondarySheet)
+						break;
+
+				// If neither sheet has been mapped both index values will be set to ns.
+				// This is fine if they both reference the same texture, but if they don't
+				// we must increment the secondary sheet index to the next free sampler.
+				if (secondarySheetIndex == sheetIndex && secondarySheet != sheet)
+					secondarySheetIndex++;
+			}
+
+			// Make sure that we have enough free samplers to map both if needed, otherwise flush
+			if (Math.Max(sheetIndex, secondarySheetIndex) >= sheets.Length)
+			{
+				Flush();
+				sheetIndex = 0;
+				secondarySheetIndex = ss != null && ss.SecondarySheet != sheet ? 1 : 0;
+			}
+
+			if (sheetIndex >= ns)
+			{
+				sheets[sheetIndex] = sheet;
+				ns++;
+			}
+
+			if (secondarySheetIndex >= ns && ss != null)
+			{
+				sheets[secondarySheetIndex] = ss.SecondarySheet;
+				ns++;
+			}
+
+			return new int2(sheetIndex, secondarySheetIndex);
+		}
+
+		float ResolveTextureIndex(Sprite s, PaletteReference pal)
+		{
+			if (pal == null)
+				return 0;
+
+			// PERF: Remove useless palette assignments for RGBA sprites
+			// HACK: This is working around the limitation that palettes are defined on traits rather than on sequences,
+			// and can be removed once this has been fixed
+			if (s.Channel == TextureChannel.RGBA && !pal.HasColorShift)
+				return 0;
+
+			return pal.TextureIndex;
 		}
 
 		public void DrawOverlay(in MapVertex[] overlayVertices, float alpha)
@@ -97,7 +173,7 @@ namespace OpenRA.Graphics
 				Flush();
 			if (renderAllVert)
 			{
-				Array.Copy(inVertices, start, vertices, nv, length); ;
+				Array.Copy(inVertices, start, vertices, nv, length);
 
 				nv += length;
 			}
@@ -113,6 +189,22 @@ namespace OpenRA.Graphics
 					}
 				}
 			}
+		}
+
+		public void DrawTileAdditonSprite(Sprite s, PaletteReference pal, in WPos wPos, in vec3 viewOffset, float scale, in float3 tint, float alpha, Map map, float rotation = 0f)
+		{
+			var samplers = SetRenderStateForSprite(s);
+
+			var vv = Util.FastCreateTileActor(wPos, World3DCoordinate.Vec3toFloat3(viewOffset),
+				s, samplers, ResolveTextureIndex(s, pal),
+				scale, tint, alpha, map);
+
+			if (nv + vv.Length >= vertices.Length)
+				Flush();
+
+			Array.Copy(vv, 0, vertices, nv, vv.Length);
+
+			nv += vv.Length;
 		}
 
 		public void DrawVertexBuffer(IVertexBuffer buffer, int start, int length, PrimitiveType type, IEnumerable<Sheet> sheets, BlendMode blendMode)

@@ -483,14 +483,16 @@ namespace OpenRA.Graphics
 			return new float2((float)(vpos.X - TLX) / width, (float)(vpos.Y - TLY) / height);
 		}
 
-		public static int FastCreateTileOverlay(Vertex[] vertices,
+		public static Vertex[] FastCreateTileOverlay(
 			in WPos pos, in float3 viewOffset,
 			Sprite r, int2 samplers, float paletteTextureIndex,
-			float scale, in float3 tint, float alpha, int nv,
+			float scale, in float3 tint, float alpha,
 			Map map)
 		{
 			var width = (int)(r.Bounds.Width * Game.Renderer.World3DRenderer.WDistPerPix * scale);
-			var height = (int)(r.Bounds.Height * Game.Renderer.World3DRenderer.WDistPerPix * scale);
+
+			// height * 2 for isometric tile
+			var height = (int)(r.Bounds.Height * Game.Renderer.World3DRenderer.WDistPerPix * scale * 2);
 
 			var w = width / 2;
 			var h = height / 2;
@@ -509,6 +511,8 @@ namespace OpenRA.Graphics
 			float lr = 0;
 			float tb = 0;
 
+			Vertex[] vertices = new Vertex[count];
+
 			// See combined.vert for documentation on the channel attribute format
 			var attribC = r.Channel == TextureChannel.RGBA ? 0x02 : ((byte)r.Channel) << 1 | 0x01;
 			attribC |= samplers.X << 6;
@@ -526,7 +530,7 @@ namespace OpenRA.Graphics
 			var fAttribC = (float)attribC;
 
 			{
-				int i = nv;
+				int i = 0;
 				for (int y = TL.Y; y < BR.Y; y++)
 					for (int x = TL.X; x < BR.X; x++)
 					{
@@ -545,23 +549,23 @@ namespace OpenRA.Graphics
 							// ------------
 							index = iRT;
 							uv = CalUV(map.VertexWPos[index], TLX, TLY, width, height);
-							vertices[i] = new Vertex(map.VertexPos[index] + viewOffset, r.Left + r.LR * uv.X, r.Top + r.TB * uv.Y, sl + lr * uv.X, st + tb * uv.Y, paletteTextureIndex, fAttribC, uv.X, uv.Y, -1f, alpha);
+							vertices[i] = new Vertex(map.VertexPos[index] + viewOffset, r.Left + r.LR * uv.X, r.Top + r.TB * uv.Y, sl + lr * uv.X, st + tb * uv.Y, paletteTextureIndex, fAttribC, uv.X, uv.Y, -2f, alpha);
 							index = iLT;
 							uv = CalUV(map.VertexWPos[index], TLX, TLY, width, height);
-							vertices[i + 1] = new Vertex(map.VertexPos[index] + viewOffset, r.Left + r.LR * uv.X, r.Top + r.TB * uv.Y, sl + lr * uv.X, st + tb * uv.Y, paletteTextureIndex, fAttribC, uv.X, uv.Y, -1f, alpha);
+							vertices[i + 1] = new Vertex(map.VertexPos[index] + viewOffset, r.Left + r.LR * uv.X, r.Top + r.TB * uv.Y, sl + lr * uv.X, st + tb * uv.Y, paletteTextureIndex, fAttribC, uv.X, uv.Y, -2f, alpha);
 							index = iRB;
 							uv = CalUV(map.VertexWPos[index], TLX, TLY, width, height);
-							vertices[i + 2] = new Vertex(map.VertexPos[index] + viewOffset, r.Left + r.LR * uv.X, r.Top + r.TB * uv.Y, sl + lr * uv.X, st + tb * uv.Y, paletteTextureIndex, fAttribC, uv.X, uv.Y, -1f, alpha);
+							vertices[i + 2] = new Vertex(map.VertexPos[index] + viewOffset, r.Left + r.LR * uv.X, r.Top + r.TB * uv.Y, sl + lr * uv.X, st + tb * uv.Y, paletteTextureIndex, fAttribC, uv.X, uv.Y, -2f, alpha);
 
 							index = iLT;
 							uv = CalUV(map.VertexWPos[index], TLX, TLY, width, height);
-							vertices[i + 3] = new Vertex(map.VertexPos[index] + viewOffset, r.Left + r.LR * uv.X, r.Top + r.TB * uv.Y, sl + lr * uv.X, st + tb * uv.Y, paletteTextureIndex, fAttribC, uv.X, uv.Y, -1f, alpha);
+							vertices[i + 3] = new Vertex(map.VertexPos[index] + viewOffset, r.Left + r.LR * uv.X, r.Top + r.TB * uv.Y, sl + lr * uv.X, st + tb * uv.Y, paletteTextureIndex, fAttribC, uv.X, uv.Y, -2f, alpha);
 							index = iLB;
 							uv = CalUV(map.VertexWPos[index], TLX, TLY, width, height);
-							vertices[i + 4] = new Vertex(map.VertexPos[index] + viewOffset, r.Left + r.LR * uv.X, r.Top + r.TB * uv.Y, sl + lr * uv.X, st + tb * uv.Y, paletteTextureIndex, fAttribC, uv.X, uv.Y, -1f, alpha);
+							vertices[i + 4] = new Vertex(map.VertexPos[index] + viewOffset, r.Left + r.LR * uv.X, r.Top + r.TB * uv.Y, sl + lr * uv.X, st + tb * uv.Y, paletteTextureIndex, fAttribC, uv.X, uv.Y, -2f, alpha);
 							index = iRB;
 							uv = CalUV(map.VertexWPos[index], TLX, TLY, width, height);
-							vertices[i + 5] = new Vertex(map.VertexPos[index] + viewOffset, r.Left + r.LR * uv.X, r.Top + r.TB * uv.Y, sl + lr * uv.X, st + tb * uv.Y, paletteTextureIndex, fAttribC, uv.X, uv.Y, -1f, alpha);
+							vertices[i + 5] = new Vertex(map.VertexPos[index] + viewOffset, r.Left + r.LR * uv.X, r.Top + r.TB * uv.Y, sl + lr * uv.X, st + tb * uv.Y, paletteTextureIndex, fAttribC, uv.X, uv.Y, -2f, alpha);
 
 						}
 						else
@@ -573,31 +577,161 @@ namespace OpenRA.Graphics
 							// ------------
 							index = iRT;
 							uv = CalUV(map.VertexWPos[index], TLX, TLY, width, height);
-							vertices[i] = new Vertex(map.VertexPos[index] + viewOffset, r.Left + r.LR * uv.X, r.Top + r.TB * uv.Y, sl + lr * uv.X, st + tb * uv.Y, paletteTextureIndex, fAttribC, uv.X, uv.Y, -1f, alpha);
+							vertices[i] = new Vertex(map.VertexPos[index] + viewOffset, r.Left + r.LR * uv.X, r.Top + r.TB * uv.Y, sl + lr * uv.X, st + tb * uv.Y, paletteTextureIndex, fAttribC, uv.X, uv.Y, -2f, alpha);
 							index = iLT;
 							uv = CalUV(map.VertexWPos[index], TLX, TLY, width, height);
-							vertices[i + 1] = new Vertex(map.VertexPos[index] + viewOffset, r.Left + r.LR * uv.X, r.Top + r.TB * uv.Y, sl + lr * uv.X, st + tb * uv.Y, paletteTextureIndex, fAttribC, uv.X, uv.Y, -1f, alpha);
+							vertices[i + 1] = new Vertex(map.VertexPos[index] + viewOffset, r.Left + r.LR * uv.X, r.Top + r.TB * uv.Y, sl + lr * uv.X, st + tb * uv.Y, paletteTextureIndex, fAttribC, uv.X, uv.Y, -2f, alpha);
 							index = iLB;
 							uv = CalUV(map.VertexWPos[index], TLX, TLY, width, height);
-							vertices[i + 2] = new Vertex(map.VertexPos[index] + viewOffset, r.Left + r.LR * uv.X, r.Top + r.TB * uv.Y, sl + lr * uv.X, st + tb * uv.Y, paletteTextureIndex, fAttribC, uv.X, uv.Y, -1f, alpha);
+							vertices[i + 2] = new Vertex(map.VertexPos[index] + viewOffset, r.Left + r.LR * uv.X, r.Top + r.TB * uv.Y, sl + lr * uv.X, st + tb * uv.Y, paletteTextureIndex, fAttribC, uv.X, uv.Y, -2f, alpha);
 
 							index = iRT;
 							uv = CalUV(map.VertexWPos[index], TLX, TLY, width, height);
-							vertices[i + 3] = new Vertex(map.VertexPos[index] + viewOffset, r.Left + r.LR * uv.X, r.Top + r.TB * uv.Y, sl + lr * uv.X, st + tb * uv.Y, paletteTextureIndex, fAttribC, uv.X, uv.Y, -1f, alpha);
+							vertices[i + 3] = new Vertex(map.VertexPos[index] + viewOffset, r.Left + r.LR * uv.X, r.Top + r.TB * uv.Y, sl + lr * uv.X, st + tb * uv.Y, paletteTextureIndex, fAttribC, uv.X, uv.Y, -2f, alpha);
 							index = iLB;
 							uv = CalUV(map.VertexWPos[index], TLX, TLY, width, height);
-							vertices[i + 4] = new Vertex(map.VertexPos[index] + viewOffset, r.Left + r.LR * uv.X, r.Top + r.TB * uv.Y, sl + lr * uv.X, st + tb * uv.Y, paletteTextureIndex, fAttribC, uv.X, uv.Y, -1f, alpha);
+							vertices[i + 4] = new Vertex(map.VertexPos[index] + viewOffset, r.Left + r.LR * uv.X, r.Top + r.TB * uv.Y, sl + lr * uv.X, st + tb * uv.Y, paletteTextureIndex, fAttribC, uv.X, uv.Y, -2f, alpha);
 							index = iRB;
 							uv = CalUV(map.VertexWPos[index], TLX, TLY, width, height);
-							vertices[i + 5] = new Vertex(map.VertexPos[index] + viewOffset, r.Left + r.LR * uv.X, r.Top + r.TB * uv.Y, sl + lr * uv.X, st + tb * uv.Y, paletteTextureIndex, fAttribC, uv.X, uv.Y, -1f, alpha);
-
-
+							vertices[i + 5] = new Vertex(map.VertexPos[index] + viewOffset, r.Left + r.LR * uv.X, r.Top + r.TB * uv.Y, sl + lr * uv.X, st + tb * uv.Y, paletteTextureIndex, fAttribC, uv.X, uv.Y, -2f, alpha);
 						}
 
 						i += 6;
 					}
 
-				return i;
+				return vertices;
+			}
+		}
+
+		public static MapVertex[] FastCreateTileActor(
+			in WPos pos, in float3 viewOffset,
+			Sprite r, int2 samplers, float paletteTextureIndex,
+			float scale, in float3 tint, float alpha, 
+			Map map)
+		{
+			var width = (int)(r.Bounds.Width * Game.Renderer.World3DRenderer.WDistPerPix * scale);
+
+			// height * 2 for isometric tile
+			var height = (int)(r.Bounds.Height * Game.Renderer.World3DRenderer.WDistPerPix * scale * 2);
+
+			var w = width / 2;
+			var h = height / 2;
+			var TL = new int2((pos.X - w - MapGrid.MapMiniCellWidth) / MapGrid.MapMiniCellWidth + 1,
+				(pos.Y - h - MapGrid.MapMiniCellWidth) / MapGrid.MapMiniCellWidth + 1);
+			var BR = new int2((pos.X + w + MapGrid.MapMiniCellWidth) / MapGrid.MapMiniCellWidth,
+				(pos.Y + h + MapGrid.MapMiniCellWidth) / MapGrid.MapMiniCellWidth);
+
+			// 6 vertex one minicell
+			int count = (BR.X - TL.X) * (BR.Y - TL.Y) * 6;
+			var TLX = pos.X - w;
+			var TLY = pos.Y - h;
+
+			float sl = 0;
+			float st = 0;
+			float lr = 0;
+			float tb = 0;
+
+			MapVertex[] vertices = new MapVertex[count];
+
+			// See combined.vert for documentation on the channel attribute format
+			var attribC = r.Channel == TextureChannel.RGBA ? 0x02 : ((byte)r.Channel) << 1 | 0x01;
+			attribC |= samplers.X << 6;
+			if (r is SpriteWithSecondaryData ss)
+			{
+				sl = ss.SecondaryLeft;
+				st = ss.SecondaryTop;
+				lr = ss.SecondaryRight - sl;
+				tb = ss.SecondaryBottom - st;
+
+				attribC |= ((byte)ss.SecondaryChannel) << 4 | 0x08;
+				attribC |= samplers.Y << 9;
+			}
+
+			var fAttribC = (float)attribC;
+
+			{
+				int i = 0;
+				for (int y = TL.Y; y < BR.Y; y++)
+					for (int x = TL.X; x < BR.X; x++)
+					{
+						var iLT = x + y * map.VertexArrayWidth;
+						var iRT = x + 1 + y * map.VertexArrayWidth;
+						var iLB = x + (y + 1) * map.VertexArrayWidth;
+						var iRB = x + 1 + (y + 1) * map.VertexArrayWidth;
+						var index = iRT;
+						float2 uv;
+						if (TL.X % 2 == TL.Y % 2)
+						{
+							// ------------
+							// |  \          |
+							// |      \      |
+							// |          \  |
+							// ------------
+
+							index = iRT;
+							uv = CalUV(map.VertexWPos[index], TLX, TLY, width, height);
+							vertices[i] = new MapVertex(map.VertexPos[index] + viewOffset, map.VertexTBN[index], uv,
+								r.Left + r.LR * uv.X, r.Top + r.TB * uv.Y, sl + lr * uv.X, st + tb * uv.Y, paletteTextureIndex, fAttribC);
+							index = iLT;
+							uv = CalUV(map.VertexWPos[index], TLX, TLY, width, height);
+							vertices[i + 1] = new MapVertex(map.VertexPos[index] + viewOffset, map.VertexTBN[index], uv,
+								r.Left + r.LR * uv.X, r.Top + r.TB * uv.Y, sl + lr * uv.X, st + tb * uv.Y, paletteTextureIndex, fAttribC);
+							index = iRB;
+							uv = CalUV(map.VertexWPos[index], TLX, TLY, width, height);
+							vertices[i + 2] = new MapVertex(map.VertexPos[index] + viewOffset, map.VertexTBN[index], uv,
+								r.Left + r.LR * uv.X, r.Top + r.TB * uv.Y, sl + lr * uv.X, st + tb * uv.Y, paletteTextureIndex, fAttribC);
+
+							index = iLT;
+							uv = CalUV(map.VertexWPos[index], TLX, TLY, width, height);
+							vertices[i + 3] = new MapVertex(map.VertexPos[index] + viewOffset, map.VertexTBN[index], uv,
+								r.Left + r.LR * uv.X, r.Top + r.TB * uv.Y, sl + lr * uv.X, st + tb * uv.Y, paletteTextureIndex, fAttribC);
+							index = iLB;
+							uv = CalUV(map.VertexWPos[index], TLX, TLY, width, height);
+							vertices[i + 4] = new MapVertex(map.VertexPos[index] + viewOffset, map.VertexTBN[index], uv,
+								r.Left + r.LR * uv.X, r.Top + r.TB * uv.Y, sl + lr * uv.X, st + tb * uv.Y, paletteTextureIndex, fAttribC);
+							index = iRB;
+							uv = CalUV(map.VertexWPos[index], TLX, TLY, width, height);
+							vertices[i + 5] = new MapVertex(map.VertexPos[index] + viewOffset, map.VertexTBN[index], uv,
+								r.Left + r.LR * uv.X, r.Top + r.TB * uv.Y, sl + lr * uv.X, st + tb * uv.Y, paletteTextureIndex, fAttribC);
+						}
+						else
+						{
+							// ------------
+							// |           / |
+							// |      /      |
+							// |  /          |
+							// ------------
+							index = iRT;
+							uv = CalUV(map.VertexWPos[index], TLX, TLY, width, height);
+							vertices[i] = new MapVertex(map.VertexPos[index] + viewOffset, map.VertexTBN[index], uv,
+								r.Left + r.LR * uv.X, r.Top + r.TB * uv.Y, sl + lr * uv.X, st + tb * uv.Y, paletteTextureIndex, fAttribC);
+							index = iLT;
+							uv = CalUV(map.VertexWPos[index], TLX, TLY, width, height);
+							vertices[i + 1] = new MapVertex(map.VertexPos[index] + viewOffset, map.VertexTBN[index], uv,
+								r.Left + r.LR * uv.X, r.Top + r.TB * uv.Y, sl + lr * uv.X, st + tb * uv.Y, paletteTextureIndex, fAttribC);
+							index = iLB;
+							uv = CalUV(map.VertexWPos[index], TLX, TLY, width, height);
+							vertices[i + 2] = new MapVertex(map.VertexPos[index] + viewOffset, map.VertexTBN[index], uv,
+								r.Left + r.LR * uv.X, r.Top + r.TB * uv.Y, sl + lr * uv.X, st + tb * uv.Y, paletteTextureIndex, fAttribC);
+
+							index = iRT;
+							uv = CalUV(map.VertexWPos[index], TLX, TLY, width, height);
+							vertices[i + 3] = new MapVertex(map.VertexPos[index] + viewOffset, map.VertexTBN[index], uv,
+								r.Left + r.LR * uv.X, r.Top + r.TB * uv.Y, sl + lr * uv.X, st + tb * uv.Y, paletteTextureIndex, fAttribC);
+							index = iLB;
+							uv = CalUV(map.VertexWPos[index], TLX, TLY, width, height);
+							vertices[i + 4] = new MapVertex(map.VertexPos[index] + viewOffset, map.VertexTBN[index], uv,
+								r.Left + r.LR * uv.X, r.Top + r.TB * uv.Y, sl + lr * uv.X, st + tb * uv.Y, paletteTextureIndex, fAttribC);
+							index = iRB;
+							uv = CalUV(map.VertexWPos[index], TLX, TLY, width, height);
+							vertices[i + 5] = new MapVertex(map.VertexPos[index] + viewOffset, map.VertexTBN[index], uv,
+								r.Left + r.LR * uv.X, r.Top + r.TB * uv.Y, sl + lr * uv.X, st + tb * uv.Y, paletteTextureIndex, fAttribC);
+						}
+
+						i += 6;
+					}
+
+				return vertices;
 			}
 		}
 

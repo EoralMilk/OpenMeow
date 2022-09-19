@@ -7,6 +7,12 @@ uniform mat4 projection;
 uniform bool hasCamera;
 uniform bool renderScreen;
 
+#define MAX_TERRAIN_LIGHT 64
+// use for tile overlay mesh type
+uniform vec3 TerrainLightPos[MAX_TERRAIN_LIGHT];
+uniform vec4 TerrainLightColorRange[MAX_TERRAIN_LIGHT];
+uniform float TerrainLightHeightStep;
+
 #if __VERSION__ == 120
 attribute vec4 aVertexPosition;
 attribute vec4 aVertexTexCoord;
@@ -40,6 +46,8 @@ out vec4 vColorFraction;
 out vec4 vRGBAFraction;
 out vec4 vPalettedFraction;
 out vec4 vTint;
+out vec2 vTileUV;
+
 #endif
 
 vec4 UnpackChannelAttributes(float x)
@@ -143,5 +151,39 @@ void main()
 	vPalettedFraction = SelectPalettedFraction(attrib.s);
 	vDepthMask = SelectChannelMask(attrib.t);
 	vTexSampler = attrib.pq;
-	vTint = aVertexTint;
+
+	// tile overlay mesh type use vTint to store tile uv
+	// TileOverlay use vTint "r,g" store uv, and vTint.b == -2
+	if (aVertexTint.b < -1.999)
+	{
+		vTileUV = vec2(aVertexTint.xy);
+		
+		// ignoreTint
+		if (aVertexTint.a < 0.0){
+			vTint = vec4(1.0,1.0,1.0,-aVertexTint.a);
+		}
+		else{
+			vec3 tint = vec3(0.0);
+
+			for (int i = 0; i < MAX_TERRAIN_LIGHT; ++i)
+			{
+				if (TerrainLightPos[i].xy == vec2(0.0))
+					break;
+				float dist = length(aVertexPosition.xy - TerrainLightPos[i].xy);
+				if (dist > TerrainLightColorRange[i].a)
+					continue;
+				float falloff = (TerrainLightColorRange[i].a - dist) / TerrainLightColorRange[i].a;
+				tint += falloff * TerrainLightColorRange[i].rgb;
+			}
+
+			vTint = vec4(tint + vec3(1.0), aVertexTint.a);
+		}
+
+	}
+	else
+	{
+		// set it as 0.5,0.5 to avoid discard
+		vTileUV = vec2(0.5,0.5);
+		vTint = aVertexTint;
+	}
 }

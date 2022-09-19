@@ -1,8 +1,8 @@
 ^InfantryBase:
 	Defaults:
 		Offset: 0, 0, 16
-		ShadowZOffset: 5
-		ZOffset: 5
+		ShadowZOffset: 10
+		ZOffset: 14
 	icon: xxicon
 		Facings: 1
 		Length: 1

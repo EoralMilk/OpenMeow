@@ -40,6 +40,8 @@ namespace OpenRA.Graphics
 		readonly bool enableDepthBuffer;
 
 		readonly List<IFinalizedRenderable> preparedRenderables = new List<IFinalizedRenderable>();
+		readonly List<IFinalizedRenderable> preparedMapAdditonRenderables = new List<IFinalizedRenderable>();
+
 		readonly List<IFinalizedRenderable>[] preparedBlendRenderables = new List<IFinalizedRenderable>[11];
 
 		readonly List<IFinalizedRenderable> preparedOverlayRenderables = new List<IFinalizedRenderable>();
@@ -180,7 +182,12 @@ namespace OpenRA.Graphics
 
 			// Renderables must be ordered using a stable sorting algorithm to avoid flickering artefacts
 			foreach (var renderable in renderablesBuffer.OrderBy(RenderableZPositionComparisonKey))
-				preparedRenderables.Add(renderable.PrepareRender(this));
+			{
+				if (renderable is SpriteRenderable && (renderable as SpriteRenderable).Sprite.SpriteMeshType == SpriteMeshType.TileActor)
+					preparedMapAdditonRenderables.Add(renderable.PrepareRender(this));
+				else
+					preparedRenderables.Add(renderable.PrepareRender(this));
+			}
 
 			// PERF: Reuse collection to avoid allocations.
 			renderablesBuffer.Clear();
@@ -285,6 +292,23 @@ namespace OpenRA.Graphics
 			onScreenActors.Clear();
 		}
 
+		IShader[] shadersNeedTerrainLight;
+		public void UpdateTerrainLightToShader()
+		{
+			var map = World.Map;
+			var cells = Viewport.VisibleCellsInsideBounds;
+			if (shadersNeedTerrainLight == null)
+			{
+				shadersNeedTerrainLight = new IShader[2];
+				shadersNeedTerrainLight[0] = Game.Renderer.MapRenderer.Shader;
+				shadersNeedTerrainLight[1] = Game.Renderer.WorldSpriteRenderer.Shader;
+			}
+
+			var tlcell = cells.CandidateMapCoords.TopLeft.ToCPos(map);
+			var brcell = cells.CandidateMapCoords.BottomRight.ToCPos(map);
+			TerrainLighting.LightSourcesToMapShader(map.CenterOfCell(tlcell), map.CenterOfCell(brcell), shadersNeedTerrainLight);
+		}
+
 		public void Draw()
 		{
 			if (World.WorldActor.Disposed)
@@ -298,8 +322,21 @@ namespace OpenRA.Graphics
 			Game.Renderer.Context.EnableDepthBuffer(DepthFunc.LessEqual);
 			Game.Renderer.EnableDepthWrite(true);
 
+			UpdateTerrainLightToShader();
+
 			Game.Renderer.SetFaceCull(FaceCullFunc.Back);
+
 			TerrainRenderer?.RenderTerrain(this, Viewport);
+			Game.Renderer.MapRenderer.Flush(BlendMode.Alpha);
+
+			for (var i = 0; i < preparedMapAdditonRenderables.Count; i++)
+			{
+				preparedMapAdditonRenderables[i].Render(this);
+			}
+
+			Game.Renderer.MapRenderer.Flush(BlendMode.Alpha);
+			Game.Renderer.EnableDepthWrite(true);
+
 			Game.Renderer.SetFaceCull(FaceCullFunc.None);
 
 			Game.Renderer.Flush();
@@ -400,6 +437,7 @@ namespace OpenRA.Graphics
 			Game.Renderer.Flush();
 
 			preparedRenderables.Clear();
+			preparedMapAdditonRenderables.Clear();
 			foreach (var l in preparedBlendRenderables)
 				l.Clear();
 

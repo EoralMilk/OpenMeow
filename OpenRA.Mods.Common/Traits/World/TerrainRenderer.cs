@@ -129,7 +129,6 @@ namespace OpenRA.Mods.Common.Traits
 			foreach (var r in wr.World.WorldActor.TraitsImplementing<IRenderOverlay>())
 				r.ModifyTerrainRender(wr);
 
-			spriteLayer.LightShader(wr.Viewport);
 			spriteLayer.Draw(wr.Viewport);
 			Game.Renderer.MapRenderer.Flush();
 
@@ -137,9 +136,6 @@ namespace OpenRA.Mods.Common.Traits
 
 			foreach (var r in wr.World.WorldActor.TraitsImplementing<IRenderOverlay>())
 				r.Render(wr);
-			Game.Renderer.MapRenderer.Flush(BlendMode.Alpha);
-
-			Game.Renderer.EnableDepthWrite(true);
 		}
 
 		void INotifyActorDisposing.Disposing(Actor self)
