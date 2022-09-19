@@ -118,7 +118,7 @@ namespace OpenRA.Graphics
 			var a = alpha;
 
 			// this sprite should use MapRenderer to render
-			if (Sprite.SpriteMeshType == SpriteMeshType.TileActor)
+			if (Sprite.SpriteMeshType == SpriteMeshType.TileActor || Sprite.SpriteMeshType == SpriteMeshType.TileActorNoStretch)
 			{
 				Game.Renderer.MapRenderer.DrawTileAdditonSprite(Sprite, palette, Pos, viewOffset, scale, t, a, wr.World.Map);
 				return;
@@ -127,14 +127,15 @@ namespace OpenRA.Graphics
 			var wsr = Game.Renderer.WorldSpriteRenderer;
 
 			if (Sprite.SpriteMeshType != SpriteMeshType.TileOverlay &&
+				Sprite.SpriteMeshType != SpriteMeshType.TileOverlayNoStretch &&
 				wr.TerrainLighting != null &&
 				(tintModifiers & TintModifiers.IgnoreWorldTint) == 0)
 				t *= wr.TerrainLighting.TintAt(pos);
 
 			// Shader interprets negative alpha as a flag to use the tint colour directly instead of multiplying the sprite colour
-			if ((Sprite.SpriteMeshType == SpriteMeshType.TileOverlay &&
+			if (((Sprite.SpriteMeshType == SpriteMeshType.TileOverlay || Sprite.SpriteMeshType == SpriteMeshType.TileOverlayNoStretch) &&
 				(tintModifiers & TintModifiers.IgnoreWorldTint) != 0) ||
-				(Sprite.SpriteMeshType != SpriteMeshType.TileOverlay &&
+				(!(Sprite.SpriteMeshType == SpriteMeshType.TileOverlay || Sprite.SpriteMeshType == SpriteMeshType.TileOverlayNoStretch) &&
 				(tintModifiers & TintModifiers.ReplaceColor) != 0))
 				a *= -1;
 
@@ -155,6 +156,9 @@ namespace OpenRA.Graphics
 					wsr.DrawFloatBoardSprite(Sprite, palette, Pos, viewOffset, scale, t, a);
 					break;
 				case SpriteMeshType.TileOverlay:
+					wsr.DrawTileOverlaySprite(Sprite, palette, Pos, viewOffset, scale, t, a, wr.World.Map);
+					break;
+				case SpriteMeshType.TileOverlayNoStretch:
 					wsr.DrawTileOverlaySprite(Sprite, palette, Pos, viewOffset, scale, t, a, wr.World.Map);
 					break;
 			}

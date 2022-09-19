@@ -105,26 +105,50 @@ TREE24:
 TREE25:
 	Inherits: ^Tree
 
+
 VEINHOLE:
-	HiddenUnderShroud:
+	Inherits: ^ExistsInWorld
+	Inherits@1: ^BlossomTree
+	Inherits@AUTOTARGET: ^AutoTargetGround
+	Tooltip:
+		Name: Veinhole
+	Building:
+		Footprint: === === ===
+		Dimensions: 3, 3
 	RadarColorFromTerrain:
 		Terrain: Veins
 	AppearsOnMapPreview:
 		Terrain: Veins
-	Building:
-		Footprint: === === ===
-		Dimensions: 3, 3
-	BodyOrientation:
-		QuantizedFacings: 1
-	AppearsOnRadar:
-	Tooltip:
-		Name: Veinhole
-	RenderSprites:
-		Palette: player
-	WithSpriteBody:
-	MapEditorData:
-		Categories: Resource spawn
-	Interactable:
+	FrozenUnderFog:
+	-WithIdleAnimation:
+	RevealOnFire:
+	AutoTarget:
+		InitialStance: AttackAnything
+	AttackOmni:
+		FacingTolerance: 512
+	RevealsShroud:
+		Range: 1c0
+		Type: CenterPosition
+		ValidRelationships: Neutral, Ally
+		MaxHeightDelta: 3000
+	Armament:
+		Weapon: VeinholeTest
+		LocalOffset: 0,0,0
+		FireDelay: 19
+	WithAttackAnimation:
+		Sequence: attack
+	Health:
+		HP: 100000
+	Armor:
+		Type: Heavy
+	HitShape:
+		TargetableOffsets: 0,0,0
+		Type: Circle
+			Radius: 512
+			VerticalTopOffset: 1
+	Targetable:
+		TargetTypes: Ground, Veinhole, NoAutoTarget
+	-BlocksProjectiles:
 	SeedsResource:
 		ResourceType: Veins
 		Interval: 125

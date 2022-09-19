@@ -248,7 +248,6 @@ TentacleElectric:
 			Concrete: 10
 		DamageTypes: Prone50Percent, TriggerProne, EnergyDeath
 
-
 Veins:
 	ReloadDelay: 16
 	Warhead@Damage: TargetDamage
@@ -348,5 +347,20 @@ TiberiumDebris:
 		DamageTypes: Prone100Percent, TriggerProne, ExplosionDeath
 	Warhead@4Res: CreateResource
 		AddsResourceType: Tiberium
+		Size: 0,0
+		ValidTargets: Ground, Air
+
+
+VeinholeTest:
+	Inherits: 155mm
+	ValidTargets: Ground, Water
+	Range: 15c0
+	MinRange: 1c0
+	ReloadDelay: 50
+	TargetActorCenter: false
+	Projectile: Bullet
+		LaunchAngle: 200
+	Warhead@4Res: CreateResource
+		AddsResourceType: Veins
 		Size: 0,0
 		ValidTargets: Ground, Air

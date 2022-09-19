@@ -1541,7 +1541,7 @@ Actors:
 		SubCell: 2
 		Location: 58,9
 	Actor484: veinhole
-		Owner: Neutral
+		Owner: Creeps
 		Location: 68,18
 	Actor485: proc
 		Owner: Multi0
@@ -1576,9 +1576,6 @@ Actors:
 	Actor495: nalasr
 		Owner: Multi0
 		Location: 75,-35
-	Actor496: nasam
-		Owner: Nod
-		Location: 40,3
 	Actor497: nasam
 		Owner: Nod
 		Location: 37,10
@@ -1622,5 +1619,20 @@ Actors:
 		SubCell: 2
 		Location: 51,23
 		Facing: 927
+	Actor506: naapwr
+		Owner: Multi0
+		Location: 61,-43
+	Actor507: naapwr
+		Owner: Multi0
+		Location: 64,-43
+	Actor508: naapwr
+		Owner: Multi0
+		Location: 67,-43
+	Actor509: naapwr
+		Owner: Multi0
+		Location: 61,-39
+	Actor510: naapwr
+		Owner: Multi0
+		Location: 64,-39
 
 Rules: rules.yaml

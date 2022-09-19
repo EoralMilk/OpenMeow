@@ -491,8 +491,11 @@ namespace OpenRA.Graphics
 		{
 			var width = (int)(r.Bounds.Width * Game.Renderer.World3DRenderer.WDistPerPix * scale);
 
+			var height = (int)(r.Bounds.Height * Game.Renderer.World3DRenderer.WDistPerPix * scale);
+
 			// height * 2 for isometric tile
-			var height = (int)(r.Bounds.Height * Game.Renderer.World3DRenderer.WDistPerPix * scale * 2);
+			if (r.SpriteMeshType == SpriteMeshType.TileOverlay)
+				 height *= 2;
 
 			var w = width / 2;
 			var h = height / 2;
@@ -611,8 +614,11 @@ namespace OpenRA.Graphics
 		{
 			var width = (int)(r.Bounds.Width * Game.Renderer.World3DRenderer.WDistPerPix * scale);
 
+			var height = (int)(r.Bounds.Height * Game.Renderer.World3DRenderer.WDistPerPix * scale);
+
 			// height * 2 for isometric tile
-			var height = (int)(r.Bounds.Height * Game.Renderer.World3DRenderer.WDistPerPix * scale * 2);
+			if (r.SpriteMeshType == SpriteMeshType.TileActor)
+				height *= 2;
 
 			var w = width / 2;
 			var h = height / 2;

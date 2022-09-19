@@ -162,12 +162,12 @@ RPGTower:
 	Inherits: ^ArtilleryWeapon
 	ReloadDelay: 110
 	Range: 18c0
+	MinRange: 5c0
 	TargetActorCenter: true
 	Projectile: Bullet
 		Speed: 384
 		LaunchAngle: 165
 		ContrailLength: 12
-	MinRange: 5c0
 	Warhead@1Dam: SpreadDamage
 		Damage: 15000
 	Warhead@2Eff: CreateEffect
