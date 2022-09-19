@@ -3,6 +3,12 @@
 		Offset: 0, 0, 10
 		ShadowZOffset: 5
 		ZOffset: 5
+	icon: xxicon
+		Facings: 1
+		Length: 1
+		Start: 0
+		ShadowStart: 0
+
 
 ^VehicleOverlays:
 	emp-overlay: emp_fx01
@@ -306,6 +312,7 @@ gghunt:
 		Facings: 1
 		Length: 8
 		ShadowStart: 8
+	icon: detnicon
 
 smech:
 	Inherits@defaults: ^VehicleBase

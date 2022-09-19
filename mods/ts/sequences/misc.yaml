@@ -558,6 +558,7 @@ resources:
 	veins: veins
 		Length: *
 		ShadowStart: -1
+		UseTilesetExtension: false
 		IgnoreWorldTint: false
 
 veins:

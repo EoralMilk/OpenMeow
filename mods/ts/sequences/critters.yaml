@@ -19,6 +19,7 @@ doggie:
 		Start: 88
 		Length: 2
 		ShadowStart: 207
+		MeshType: TileOverlay
 	hide:
 		Start: 90
 		ShadowStart: 209
@@ -41,7 +42,7 @@ doggie:
 		Length: 4
 		ShadowStart: 224
 		Tick: 800
-		MeshType: Plane
+		MeshType: TileOverlay
 	die-burning:
 		Start: 109
 		Length: 10
@@ -95,6 +96,9 @@ vislrg:
 		ShadowStart: 0
 
 floater:
+	Defaults:
+		ZOffset: 400
+		MeshType: TileOverlay
 	idle:
 		Length: 16
 		ShadowStart: 32

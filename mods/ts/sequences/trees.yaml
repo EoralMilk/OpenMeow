@@ -190,7 +190,7 @@ fona15:
 
 veinhole:
 	Defaults:
-		UseTilesetExtension: true
+		UseTilesetExtension: false
 		Offset: 0, -36, 0
 		ZOffset: 1
 		Length: *
