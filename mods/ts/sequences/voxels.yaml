@@ -11,6 +11,10 @@ harv:
 	idle:
 	unload: horv
 
+cmin:
+	idle:
+	unload: cmon
+
 apc:
 	idle: 
 	water: apcw
