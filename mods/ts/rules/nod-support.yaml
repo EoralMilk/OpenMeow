@@ -228,9 +228,9 @@ NAOBEL:
 		Footprint: xx xx
 		Dimensions: 2,2
 	Health:
-		HP: 72500
+		HP: 99999
 	Armor:
-		Type: Wood
+		Type: Concrete
 	RevealsShroud:
 		Range: 11c0
 		MaxHeightDelta: 1740

@@ -276,14 +276,15 @@ explosion:
 		Tick: 50
 		MeshType: Plane
 	laserburning: laserburn
-		ZOffset: 128
-		Tick: 70
+		ZOffset: 32
+		Tick: 80
 		BlendMode: Additive
 		MeshType: TileOverlay
+		Scale: 1.23
 	laserburningsmall: laserburn
-		ZOffset: 128
-		Tick: 70
-		Scale: 0.55
+		ZOffset: 32
+		Tick: 80
+		Scale: 0.85
 		BlendMode: Additive
 		MeshType: TileOverlay
 

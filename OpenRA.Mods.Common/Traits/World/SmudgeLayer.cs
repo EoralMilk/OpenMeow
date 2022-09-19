@@ -201,14 +201,16 @@ namespace OpenRA.Mods.Common.Traits
 				Samplers = int2.Zero;
 			}
 
-			public Smudge(World world, SmudgeLayer smudgeLayer, WPos pos, Sprite sprite)
+			public Smudge(World world, SmudgeLayer smudgeLayer, WPos pos, Sprite sprite, int sizeOverride)
 			{
 				if (smudgeLayer.Info.FadeTick.Length > 1)
 					LifeTime = world.SharedRandom.Next(smudgeLayer.Info.FadeTick[0], smudgeLayer.Info.FadeTick[1]);
 				else
 					LifeTime = smudgeLayer.Info.FadeTick[0];
 
-				if (smudgeLayer.Info.Size.Length > 1)
+				if (sizeOverride != 0)
+					Size = sizeOverride;
+				else if (smudgeLayer.Info.Size.Length > 1)
 					Size = world.SharedRandom.Next(smudgeLayer.Info.Size[0], smudgeLayer.Info.Size[1]);
 				else
 					Size = smudgeLayer.Info.Size[0];
@@ -331,39 +333,6 @@ namespace OpenRA.Mods.Common.Traits
 						if (TL.X % 2 == TL.Y % 2)
 						{
 							// ------------
-							// |           / |
-							// |      /      |
-							// |  /          |
-							// ------------
-							index = iRT;
-							uv = CalUV(index, TLX, TLY, width, height);
-							overlayVertices[i] = new MapVertex(map.VertexPos[index] + viewOffset, map.VertexTBN[index], uv,
-								r.Left + r.LR * uv.X, r.Top + r.TB * uv.Y, sl + lr * uv.X, st + tb * uv.Y, paletteTextureIndex, fAttribC);
-							index = iLT;
-							uv = CalUV(index, TLX, TLY, width, height);
-							overlayVertices[i + 1] = new MapVertex(map.VertexPos[index] + viewOffset, map.VertexTBN[index], uv,
-								r.Left + r.LR * uv.X, r.Top + r.TB * uv.Y, sl + lr * uv.X, st + tb * uv.Y, paletteTextureIndex, fAttribC);
-							index = iLB;
-							uv = CalUV(index, TLX, TLY, width, height);
-							overlayVertices[i + 2] = new MapVertex(map.VertexPos[index] + viewOffset, map.VertexTBN[index], uv,
-								r.Left + r.LR * uv.X, r.Top + r.TB * uv.Y, sl + lr * uv.X, st + tb * uv.Y, paletteTextureIndex, fAttribC);
-
-							index = iRT;
-							uv = CalUV(index, TLX, TLY, width, height);
-							overlayVertices[i + 3] = new MapVertex(map.VertexPos[index] + viewOffset, map.VertexTBN[index], uv,
-								r.Left + r.LR * uv.X, r.Top + r.TB * uv.Y, sl + lr * uv.X, st + tb * uv.Y, paletteTextureIndex, fAttribC);
-							index = iLB;
-							uv = CalUV(index, TLX, TLY, width, height);
-							overlayVertices[i + 4] = new MapVertex(map.VertexPos[index] + viewOffset, map.VertexTBN[index], uv,
-								r.Left + r.LR * uv.X, r.Top + r.TB * uv.Y, sl + lr * uv.X, st + tb * uv.Y, paletteTextureIndex, fAttribC);
-							index = iRB;
-							uv = CalUV(index, TLX, TLY, width, height);
-							overlayVertices[i + 5] = new MapVertex(map.VertexPos[index] + viewOffset, map.VertexTBN[index], uv,
-								r.Left + r.LR * uv.X, r.Top + r.TB * uv.Y, sl + lr * uv.X, st + tb * uv.Y, paletteTextureIndex, fAttribC);
-						}
-						else
-						{
-							// ------------
 							// |  \          |
 							// |      \      |
 							// |          \  |
@@ -383,6 +352,39 @@ namespace OpenRA.Mods.Common.Traits
 								r.Left + r.LR * uv.X, r.Top + r.TB * uv.Y, sl + lr * uv.X, st + tb * uv.Y, paletteTextureIndex, fAttribC);
 
 							index = iLT;
+							uv = CalUV(index, TLX, TLY, width, height);
+							overlayVertices[i + 3] = new MapVertex(map.VertexPos[index] + viewOffset, map.VertexTBN[index], uv,
+								r.Left + r.LR * uv.X, r.Top + r.TB * uv.Y, sl + lr * uv.X, st + tb * uv.Y, paletteTextureIndex, fAttribC);
+							index = iLB;
+							uv = CalUV(index, TLX, TLY, width, height);
+							overlayVertices[i + 4] = new MapVertex(map.VertexPos[index] + viewOffset, map.VertexTBN[index], uv,
+								r.Left + r.LR * uv.X, r.Top + r.TB * uv.Y, sl + lr * uv.X, st + tb * uv.Y, paletteTextureIndex, fAttribC);
+							index = iRB;
+							uv = CalUV(index, TLX, TLY, width, height);
+							overlayVertices[i + 5] = new MapVertex(map.VertexPos[index] + viewOffset, map.VertexTBN[index], uv,
+								r.Left + r.LR * uv.X, r.Top + r.TB * uv.Y, sl + lr * uv.X, st + tb * uv.Y, paletteTextureIndex, fAttribC);
+						}
+						else
+						{
+							// ------------
+							// |           / |
+							// |      /      |
+							// |  /          |
+							// ------------
+							index = iRT;
+							uv = CalUV(index, TLX, TLY, width, height);
+							overlayVertices[i] = new MapVertex(map.VertexPos[index] + viewOffset, map.VertexTBN[index], uv,
+								r.Left + r.LR * uv.X, r.Top + r.TB * uv.Y, sl + lr * uv.X, st + tb * uv.Y, paletteTextureIndex, fAttribC);
+							index = iLT;
+							uv = CalUV(index, TLX, TLY, width, height);
+							overlayVertices[i + 1] = new MapVertex(map.VertexPos[index] + viewOffset, map.VertexTBN[index], uv,
+								r.Left + r.LR * uv.X, r.Top + r.TB * uv.Y, sl + lr * uv.X, st + tb * uv.Y, paletteTextureIndex, fAttribC);
+							index = iLB;
+							uv = CalUV(index, TLX, TLY, width, height);
+							overlayVertices[i + 2] = new MapVertex(map.VertexPos[index] + viewOffset, map.VertexTBN[index], uv,
+								r.Left + r.LR * uv.X, r.Top + r.TB * uv.Y, sl + lr * uv.X, st + tb * uv.Y, paletteTextureIndex, fAttribC);
+
+							index = iRT;
 							uv = CalUV(index, TLX, TLY, width, height);
 							overlayVertices[i + 3] = new MapVertex(map.VertexPos[index] + viewOffset, map.VertexTBN[index], uv,
 								r.Left + r.LR * uv.X, r.Top + r.TB * uv.Y, sl + lr * uv.X, st + tb * uv.Y, paletteTextureIndex, fAttribC);
@@ -499,7 +501,7 @@ namespace OpenRA.Mods.Common.Traits
 			}
 		}
 
-		public void AddSmudge(CPos loc, WPos pos)
+		public void AddSmudge(CPos loc, WPos pos, int sizeOverride = 0)
 		{
 			if (!world.Map.Contains(loc))
 				return;
@@ -515,11 +517,11 @@ namespace OpenRA.Mods.Common.Traits
 			{
 				dirty[loc] = new CellSmudge(Info.MaxCountPerCell);
 
-				dirty[loc].Add(new Smudge(world, this, pos, smudges[st].GetSprite(0)));
+				dirty[loc].Add(new Smudge(world, this, pos, smudges[st].GetSprite(0), sizeOverride));
 			}
 			else if (dirty[loc].Count < Info.MaxCountPerCell)
 			{
-				dirty[loc].Add(new Smudge(world, this, pos, smudges[st].GetSprite(0)));
+				dirty[loc].Add(new Smudge(world, this, pos, smudges[st].GetSprite(0), sizeOverride));
 			}
 			else
 			{

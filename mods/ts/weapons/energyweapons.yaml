@@ -213,13 +213,27 @@ Proton:
 	Warhead@1Dam: SpreadDamage
 		Spread: 42
 		Damage: 25000
-		DamageTypes: Prone60Percent, TriggerProne, EnergyDeath
+		Versus:
+			None: 100
+			Wood: 100
+			Light: 100
+			Heavy: 100
+			Concrete: 60
+		DamageTypes: Prone80Percent, TriggerProne, EnergyDeath
 	Warhead@flash: CreateEffect
 		Image: flash
 		Explosions: laserend
 		ExplosionPalette: red
 		ValidTargets: Ground, Water, Air
-
+	Warhead@2Eff: CreateEffect
+		Explosions: laserburning
+		ValidTargets: Ground
+		InvalidTargets: Vehicle, Building, Wall
+	Warhead@3Smu: LeaveSmudge
+		SmudgeType: SmallScorch
+		ValidTargets: Ground
+		AirThreshold: 512
+		InvalidTargets: Vehicle, Building, Wall
 
 ObeliskLaserFire:
 	Inherits: ^Laser
@@ -229,18 +243,12 @@ ObeliskLaserFire:
 	Projectile: LaserZap
 		LaunchEffectSequence: oblaserstart
 	Warhead@1Dam: SpreadDamage
-		Damage: 34000
-	Warhead@2Eff: CreateEffect
-		Explosions: laserburning
-		ValidTargets: Ground
-		InvalidTargets: Vehicle, Building, Wall
-	Warhead@3Smu: LeaveSmudge
-		SmudgeType: SmallScorch
-		ValidTargets: Ground
-		InvalidTargets: Vehicle, Building, Wall
-		AirThreshold: 512
+		Damage: 40000
 	Warhead@flash: CreateEffect
 		Explosions: oblaserend
+	Warhead@3Smu: LeaveSmudge
+		SizePerSmudge: 968, 1024
+
 
 TurretLaserFire:
 	Inherits: ^Laser
@@ -256,13 +264,8 @@ TurretLaserFire:
 		Damage: 3000
 	Warhead@2Eff: CreateEffect
 		Explosions: laserburningsmall
-		ValidTargets: Ground
-		InvalidTargets: Vehicle, Building, Wall
 	Warhead@3Smu: LeaveSmudge
-		SmudgeType: LaserBurnt
-		ValidTargets: Ground
-		InvalidTargets: Vehicle, Building, Wall
-
+		SizePerSmudge: 723, 822
 
 
 LaserFence:
