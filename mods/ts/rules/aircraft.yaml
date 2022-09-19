@@ -626,6 +626,8 @@ HUNTER:
 		Speed: 355
 		Pitch: 0
 		Roll: 0
+		VTOL: true
+		AltitudeVelocity: 78
 		CruiseAltitude: 3c128
 		CruisingCondition: cruising
 		MoveIntoShroud: true
