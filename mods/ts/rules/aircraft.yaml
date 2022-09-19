@@ -604,6 +604,10 @@ APACHE:
 HUNTER:
 	Inherits@2: ^ExistsInWorld
 	Inherits@autotarget: ^AutoTargetAllAssaultMove
+	Buildable:
+		Queue: Air
+		BuildPaletteOrder: 99
+		Prerequisites: ~none
 	AutoTarget:
 		ScanRadius: 50
 		InitialStanceAI: AttackAnything

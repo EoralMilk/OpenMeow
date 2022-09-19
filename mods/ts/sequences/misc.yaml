@@ -146,33 +146,39 @@ explosion:
 	ionring: ring1
 		ZRamp: 1
 		Tick: 100
-		IgnoreWorldTint: False
+		BlendMode: Additive
 	ionbeam: ionbeam
 		Offset: 0, -60, 60
 		Tick: 100
-		IgnoreWorldTint: False
+		ZOffset: 898
+		BlendMode: Additive
 	ionbeam2: ionbeam
 		Offset: 0, -180, 60
 		Tick: 100
-		IgnoreWorldTint: False
+		ZOffset: 898
+		BlendMode: Additive
 	ionbeam3: ionbeam
 		Offset: 0, -300, 60
 		Tick: 100
-		IgnoreWorldTint: False
+		ZOffset: 898
+		BlendMode: Additive
 	ionbeam4: ionbeam
 		Offset: 0, -420, 60
 		Tick: 100
-		IgnoreWorldTint: False
+		ZOffset: 898
+		BlendMode: Additive
 	ionbeam5: ionbeam
 		Offset: 0, -540, 60
 		Tick: 100
-		IgnoreWorldTint: False
+		ZOffset: 898
+		BlendMode: Additive
 	ionbeam6: ionbeam
 		Offset: 0, -660, 60
 		Tick: 100
-		IgnoreWorldTint: False
+		ZOffset: 898
+		BlendMode: Additive
 	pulse_explosion: pulsefx2
-		BlendMode: ScreenAdditive
+		BlendMode: Additive
 		ZRamp: 1
 		Tick: 80
 		MeshType: Plane
@@ -287,6 +293,13 @@ explosion:
 		Scale: 0.85
 		BlendMode: Additive
 		MeshType: TileOverlay
+	laserburningbig: laserburn
+		ZOffset: 32
+		Tick: 80
+		BlendMode: Additive
+		MeshType: TileOverlay
+		Scale: 2
+
 
 mislflash:
 	Defaults:
@@ -348,7 +361,7 @@ canister:
 pulsball:
 	idle:
 		Length: *
-		BlendMode: ScreenAdditive
+		BlendMode: Additive
 		ZOffset: 1023
 		Offset: 0, 0, 24
 
@@ -457,36 +470,40 @@ largefire:
 	idle: fire1
 		Length: *
 		Offset: 0, 0, 0
-		Alpha: 0.75
+		Tick: 80
 		IgnoreWorldTint: True
 		ZOffset: 35
 		BlendMode: Additive
+		AlphaFade: True
 
 mediumfire:
 	idle: fire2
 		Length: *
 		Offset: 0, 0, 0
-		Alpha: 0.75
+		Tick: 80
 		IgnoreWorldTint: True
 		BlendMode: Additive
+		AlphaFade: True
 
 smallfire:
 	idle: fire3
 		Length: *
 		Offset: 0, 0, 0
-		Alpha: 0.75
+		Tick: 80
 		IgnoreWorldTint: True
 		ZOffset: 35
 		BlendMode: Additive
+		AlphaFade: True
 
 tinyfire:
 	idle: fire4
 		Length: *
 		Offset: 0, 0, 24
-		Alpha: 0.75
 		IgnoreWorldTint: True
 		ZOffset: 35
+		Tick: 80
 		BlendMode: Additive
+		AlphaFade: True
 
 moveflsh:
 	idle: ring

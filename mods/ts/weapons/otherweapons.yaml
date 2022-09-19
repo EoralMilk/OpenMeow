@@ -354,6 +354,7 @@ TiberiumDebris:
 VeinholeTest:
 	Inherits: 155mm
 	ValidTargets: Ground, Water
+	InvalidTargets: Building, Wall, Veinhole
 	Range: 15c0
 	MinRange: 1c0
 	ReloadDelay: 50
@@ -364,3 +365,4 @@ VeinholeTest:
 		AddsResourceType: Veins
 		Size: 0,0
 		ValidTargets: Ground, Air
+		AirThreshold: 768

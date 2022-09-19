@@ -49,9 +49,9 @@ ClusterMissile:
 		ValidTargets: Ground, Water, Air
 	Warhead@Cluster: FireCluster
 		Weapon: MultiCluster
-		RandomClusterCount: 10
+		RandomClusterCount: 13
 		Dimensions: 7,7
-		Footprint: __xxx__ _xxxxx_ xxxxxxx xxxxxxx xxxxxxx _xxxxx_ __xxx__
+		Footprint: __xxx__ _xxxxx_ xxxxxxx xxxXxxx xxxxxxx _xxxxx_ __xxx__
 	Warhead@Shake: ShakeScreen
 		Duration: 20
 		Intensity: 5
@@ -59,6 +59,11 @@ ClusterMissile:
 
 ChemicalMissile:
 	Inherits: ClusterMissile
+	Warhead@Cluster: FireCluster
+		Weapon: VeinholeTest
+		Dimensions: 5,5
+		RandomClusterCount: 22
+		Footprint: __x__ _xxx_ xxXxx _xxx_ __x__
 
 SuicideDash:
 	Range: 7c0
@@ -189,6 +194,14 @@ IonCannon:
 	Warhead@9Effect: CreateEffect
 		Explosions: ionbeam6
 		ImpactActors: false
+	Warhead@Shake: ShakeScreen
+		Duration: 18
+		Intensity: 5
+		Multiplier: 1,1
+	Warhead@burn: CreateEffect
+		Explosions: laserburningbig
+		ValidTargets: Ground
+		InvalidTargets: Vehicle, Building, Wall
 
 EMPulseCannon:
 	ReloadDelay: 100

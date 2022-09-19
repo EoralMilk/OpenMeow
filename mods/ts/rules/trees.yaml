@@ -126,11 +126,11 @@ VEINHOLE:
 		InitialStance: AttackAnything
 	AttackOmni:
 		FacingTolerance: 512
-	RevealsShroud:
-		Range: 1c0
-		Type: CenterPosition
-		ValidRelationships: Neutral, Ally
-		MaxHeightDelta: 3000
+	# RevealsShroud:
+	# 	Range: 1c0
+	# 	Type: CenterPosition
+	# 	ValidRelationships: Neutral, Ally
+	# 	MaxHeightDelta: 3000
 	Armament:
 		Weapon: VeinholeTest
 		LocalOffset: 0,0,0
@@ -147,7 +147,7 @@ VEINHOLE:
 			Radius: 512
 			VerticalTopOffset: 1
 	Targetable:
-		TargetTypes: Ground, Veinhole, NoAutoTarget
+		TargetTypes: Ground, Veinhole, NoAutoTarget, AIgnored
 	-BlocksProjectiles:
 	SeedsResource:
 		ResourceType: Veins

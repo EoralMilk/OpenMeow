@@ -635,9 +635,10 @@ NAWAST:
 		LaunchSound: icbm1.aud
 		MissileWeapon: ChemicalMissile
 		MissileImage: ClusterMissile
-		MissileDelay: 8
+		MissileDelay: 1
+		FlightDelay: 50
 		DetonationAltitude: 5c0
-		SpawnOffset: 0, 0c128, 0c512
+		SpawnOffset: 0c128, -0c128, 1c0
 		DisplayTimerRelationships: None
 		DisplayBeacon: False
 		DisplayRadarPing: True
