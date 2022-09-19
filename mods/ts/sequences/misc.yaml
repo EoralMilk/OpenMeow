@@ -661,6 +661,7 @@ largecraters:
 
 icon:
 	clustermissile: mltiicon
+	chemicalmissile: chemicon
 	ioncannon: ioncicon
 	hunterseeker: detnicon
 	emp: pulsicon

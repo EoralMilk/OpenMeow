@@ -17,6 +17,7 @@ using OpenRA.Mods.Common.Lint;
 using OpenRA.Mods.Common.Traits;
 using OpenRA.Primitives;
 using OpenRA.Widgets;
+using TagLib.Ape;
 
 namespace OpenRA.Mods.Common.Widgets
 {
@@ -209,8 +210,7 @@ namespace OpenRA.Mods.Common.Widgets
 				// Charge progress
 				var sp = p.Power;
 				clock.PlayFetchIndex(ClockSequence,
-					() => sp.TotalTicks == 0 ? clock.CurrentSequence.Length - 1 : (sp.TotalTicks - sp.RemainingTicks)
-					* (clock.CurrentSequence.Length - 1) / sp.TotalTicks);
+					() => sp.TotalTicks == 0 ? clock.CurrentSequence.Length - 1 : (int)(sp.PowerProgress() * (clock.CurrentSequence.Length - 1)));
 
 				clock.Tick();
 				WidgetUtils.DrawSpriteCentered(clock.Image, p.IconClockPalette, p.Pos + iconOffset);

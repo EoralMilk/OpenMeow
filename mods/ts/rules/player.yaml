@@ -6,6 +6,9 @@
 			Tiberium: 30
 			BlueTiberium: 60
 			Veins: 0
+		SpecialResourceValues:
+			Veins:
+				Chemicals: 1
 
 EditorPlayer:
 	Inherits: ^BasePlayer

@@ -57,6 +57,9 @@ ClusterMissile:
 		Intensity: 5
 		Multiplier: 1,1
 
+ChemicalMissile:
+	Inherits: ClusterMissile
+
 SuicideDash:
 	Range: 7c0
 	TargetActorCenter: true

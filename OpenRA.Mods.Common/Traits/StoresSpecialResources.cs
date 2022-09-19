@@ -14,24 +14,39 @@ using OpenRA.Traits;
 
 namespace OpenRA.Mods.Common.Traits
 {
-	[Desc("Adds capacity to a player's harvested resource limit.")]
-	public class StoresResourcesInfo : TraitInfo
+	[Desc("Adds a special resources capacity to a player's harvested resource limit.")]
+	public class StoresSpecialResourcesInfo : TraitInfo
 	{
+		[FieldLoader.Require]
+		public readonly string Type = null;
+
 		[FieldLoader.Require]
 		public readonly int Capacity = 0;
 
-		public override object Create(ActorInitializer init) { return new StoresResources(init.Self, this); }
+		public override object Create(ActorInitializer init) { return new StoresSpecialResources(init.Self, this); }
 	}
 
-	public class StoresResources : INotifyOwnerChanged, INotifyCapture, IStoreResources, ISync, INotifyKilled, INotifyAddedToWorld, INotifyRemovedFromWorld
+	public class StoresSpecialResources : INotifyOwnerChanged, INotifyCapture, IStoreResources, ISync, INotifyKilled, INotifyAddedToWorld, INotifyRemovedFromWorld
 	{
-		readonly StoresResourcesInfo info;
+		readonly StoresSpecialResourcesInfo info;
 		PlayerResources player;
 
 		[Sync]
-		public int Stored => player.ResourceCapacity == 0 ? 0 : (int)((long)info.Capacity * player.Resources / player.ResourceCapacity);
+		public int Stored
+		{
+			get
+			{
+				if (player.SpecialResourcesCapacity.ContainsKey(info.Type))
+				{
+					return player.SpecialResourcesCapacity[info.Type] == 0 ? 0 : (int)((long)info.Capacity * player.HasSpecialResources(info.Type) / player.SpecialResourcesCapacity[info.Type]);
+				}
+				else
+					return 0;
 
-		public StoresResources(Actor self, StoresResourcesInfo info)
+			}
+		}
+
+		public StoresSpecialResources(Actor self, StoresSpecialResourcesInfo info)
 		{
 			this.info = info;
 			player = self.Owner.PlayerActor.Trait<PlayerResources>();
@@ -49,24 +64,24 @@ namespace OpenRA.Mods.Common.Traits
 			var resources = Stored;
 			var oldpr = oldOwner.PlayerActor.Trait<PlayerResources>();
 			var newpr = newOwner.PlayerActor.Trait<PlayerResources>();
-			oldpr.TakeResources(resources);
-			newpr.GiveResources(resources);
+			newpr.GiveSpecialResources(resources, info.Type);
+			oldpr.TakeSpecialResources(resources, info.Type);
 		}
 
 		void INotifyKilled.Killed(Actor self, AttackInfo e)
 		{
 			// Lose the stored resources
-			player.TakeResources(Stored);
+			player.TakeSpecialResources(Stored, info.Type);
 		}
 
 		void INotifyAddedToWorld.AddedToWorld(Actor self)
 		{
-			player.AddStorage(info.Capacity);
+			player.AddSpecialStorage(info.Capacity, info.Type);
 		}
 
 		void INotifyRemovedFromWorld.RemovedFromWorld(Actor self)
 		{
-			player.RemoveStorage(info.Capacity);
+			player.RemoveSpecialStorage(info.Capacity, info.Type);
 		}
 	}
 }
