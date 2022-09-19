@@ -62,7 +62,7 @@ RUTEST:
 	Buildable:
 		Queue: Vehicle
 		BuildPaletteOrder: 0
-		Prerequisites: ~factory
+		Prerequisites: ~none
 	Mobile:
 		TurnSpeed: 66
 		Speed: 100
