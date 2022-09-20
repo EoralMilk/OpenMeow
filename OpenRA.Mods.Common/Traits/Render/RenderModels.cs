@@ -70,6 +70,9 @@ namespace OpenRA.Mods.Common.Traits.Render
 			var ownerName = init.Get<OwnerInit>().InternalName;
 			var sequenceProvider = init.World.Map.Rules.Sequences;
 			var image = Image ?? init.Actor.Name;
+			if (FactionImages != null && !string.IsNullOrEmpty(faction) && FactionImages.TryGetValue(faction, out var factionImage))
+				image = factionImage;
+			image = image.ToLowerInvariant();
 			var facings = body.QuantizedFacings == -1 ?
 				init.Actor.TraitInfo<IQuantizeBodyOrientationInfo>().QuantizedBodyFacings(init.Actor, sequenceProvider, faction) :
 				body.QuantizedFacings;
@@ -184,7 +187,7 @@ namespace OpenRA.Mods.Common.Traits.Render
 				if (Info.FactionImages != null && !string.IsNullOrEmpty(faction) && Info.FactionImages.TryGetValue(faction, out var factionImage))
 					return factionImage.ToLowerInvariant();
 
-				return Info.Image ?? self.Info.Name;
+				return (Info.Image ?? self.Info.Name).ToLowerInvariant();
 			}
 		}
 
