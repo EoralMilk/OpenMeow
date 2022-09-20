@@ -18,6 +18,9 @@ namespace OpenRA.Mods.Common.Warheads
 	[Desc("Creates resources in a circle.")]
 	public class CreateResourceWarhead : Warhead
 	{
+		[Desc("Density of the resource to create, null is random from 1toMax.", "Two value for random range")]
+		public readonly int[] Density = null;
+
 		[Desc("Size of the area. The resources are seeded within this area.", "Provide 2 values for a ring effect (outer/inner).")]
 		public readonly int[] Size = { 0, 0 };
 
@@ -49,9 +52,19 @@ namespace OpenRA.Mods.Common.Warheads
 			{
 				if (!resourceLayer.CanAddResource(AddsResourceType, cell))
 					continue;
-
-				var splash = world.SharedRandom.Next(1, maxDensity - resourceLayer.GetResource(cell).Density);
-				resourceLayer.AddResource(AddsResourceType, cell, splash);
+				if (Density == null)
+				{
+					var splash = world.SharedRandom.Next(1, maxDensity - resourceLayer.GetResource(cell).Density);
+					resourceLayer.AddResource(AddsResourceType, cell, splash);
+				}
+				else if (Density.Length == 1)
+				{
+					resourceLayer.AddResource(AddsResourceType, cell, Density[0]);
+				}
+				else
+				{
+					resourceLayer.AddResource(AddsResourceType, cell, world.SharedRandom.Next(Density[0], Density[1]));
+				}
 			}
 		}
 	}

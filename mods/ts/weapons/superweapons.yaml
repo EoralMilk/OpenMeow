@@ -26,7 +26,11 @@ MultiCluster:
 		ImpactActors: false
 		Explosions: large_twlt
 		ImpactSounds: expnew09.aud
-	Warhead@ResourceDestruction: DestroyResource
+	Warhead@5Res: DestroyResource
+		Size: 2
+		ResourceAmount: 4
+		ResourceTypes: Tiberium, BlueTiberium
+
 
 ClusterMissile:
 	ValidTargets: Ground, Water, Air, Trees
@@ -202,6 +206,21 @@ IonCannon:
 		Explosions: laserburningbig
 		ValidTargets: Ground
 		InvalidTargets: Vehicle, Building, Wall
+	Warhead@5Res: DestroyResource
+		Size: 1
+		Delay: 3
+		ResourceAmount: -1
+		ResourceTypes: Tiberium, BlueTiberium
+	Warhead@6Res: DestroyResource
+		Size: 2
+		Delay: 5
+		ResourceAmount: 4
+		ResourceTypes: Tiberium, BlueTiberium
+	Warhead@7Res: DestroyResource
+		Size: 3
+		Delay: 7
+		ResourceAmount: 4
+		ResourceTypes: Tiberium, BlueTiberium
 
 EMPulseCannon:
 	ReloadDelay: 100

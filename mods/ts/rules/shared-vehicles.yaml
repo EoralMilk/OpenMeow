@@ -106,8 +106,11 @@ HARV:
 	Explodes@TiberiumExplosion:
 		RequiresCondition: !no-tiberium && !traped
 		Weapon: TiberiumExplosion
+	BodyOrientation:
+		UseClassicPerspectiveFudge: False
+		CameraPitch: 85
 	WithHarvestOverlay:
-		LocalOffset: 543,0,0
+		LocalOffset: 543,0,15
 		Palette: effect
 	RenderSprites:
 		Image: harv.gdi

@@ -94,6 +94,8 @@ Bomb:
 		InvalidTargets: Vehicle, Building, Wall
 	Warhead@5Res: DestroyResource
 		Size: 1
+		ResourceAmount: 4
+		ResourceTypes: Tiberium, BlueTiberium
 
 
 A10Napalm:
@@ -349,6 +351,7 @@ TiberiumDebris:
 		AddsResourceType: Tiberium
 		Size: 0,0
 		ValidTargets: Ground, Air
+		Density: 1, 2
 
 
 VeinholeTest:

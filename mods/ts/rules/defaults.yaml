@@ -863,6 +863,9 @@
 	DeathSounds:
 	RevealsShroud:
 		Range: 7c0
+	RevealsShroudMultiplier@emp:
+		Modifier: 30
+		RequiresCondition: empdisable
 	MustBeDestroyed:
 	TakeCover:
 		RequiresCondition: critical
@@ -921,6 +924,9 @@
 		RequiresCondition: !inside-tunnel
 		Range: 6c512
 		MaxHeightDelta: 1100
+	RevealsShroudMultiplier@emp:
+		Modifier: 50
+		RequiresCondition: empdisable
 	Mobile:
 		PauseOnCondition: empdisable || being-captured || carried || traped
 		Locomotor: wheeled
@@ -1089,6 +1095,9 @@
 	Repairable:
 		RepairActors: gadept
 		Voice: Move
+	RevealsShroudMultiplier@emp:
+		Modifier: 50
+		RequiresCondition: empdisable
 	RevealsShroud:
 		Range: 6c0
 		RequiresCondition: !airborne
@@ -1161,6 +1170,13 @@
 
 ^AircraftHusk:
 	Inherits@renderVoxel: ^VoxelActor
+	RevealsShroudMultiplier@emp:
+		Modifier: 50
+		RequiresCondition: empdisable
+	RevealsShroud:
+		Range: 6c0
+		Type: CenterPosition
+		MaxHeightDelta: 1100
 	RenderSprites:
 	BodyOrientation:
 		QuantizedFacings: 0

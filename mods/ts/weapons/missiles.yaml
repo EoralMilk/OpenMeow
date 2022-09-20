@@ -144,9 +144,8 @@
 		JetImage: mislflash
 		JetSequence: mislflash1
 		JetPalette: gray
-
 	Warhead@1Dam: Spread3DDamage
-		Spread: 0c256
+		Spread: 0c108
 		Falloff: 100, 50, 25, 12, 6, 3, 0
 		Damage: 6000
 		ValidTargets: Ground, Water, Air, Trees
