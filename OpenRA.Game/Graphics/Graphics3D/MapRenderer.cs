@@ -15,6 +15,7 @@ using System.Xml.Linq;
 using GlmSharp;
 using OpenRA.Primitives;
 using OpenRA.Primitives.FixPoint;
+using static OpenRA.Graphics.TerrainSpriteLayer;
 
 namespace OpenRA.Graphics
 {
@@ -188,6 +189,21 @@ namespace OpenRA.Graphics
 						nv++;
 					}
 				}
+			}
+		}
+
+		public void DrawCells(in LayerCell[] cells, int start, int end)
+		{
+			for (int i = start; i < end; i++)
+			{
+				if (!cells[i].Draw)
+					continue;
+
+				if (nv + cells[i].Vertices.Length >= vertices.Length)
+					Flush();
+
+				Array.Copy(cells[i].Vertices, 0, vertices, nv, cells[i].Vertices.Length);
+				nv += cells[i].Vertices.Length;
 			}
 		}
 

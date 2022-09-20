@@ -527,7 +527,7 @@
 	-ExternalCondition@CLOAKGENERATOR:
 	-ExternalCondition@CRATE-CLOAK:
 	SpawnActorsOnDeath@building:
-		ActorTypes: mutant, mutant, MWMN, mutant, civ1, ctech
+		ActorTypes: mutant, mutant, mwmn, mutant, civ1, ctech
 		SpawnCountCalculateAsValue: false
 		Probability: 20
 

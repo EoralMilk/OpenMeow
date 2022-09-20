@@ -14,10 +14,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.Intrinsics.X86;
 using System.Text;
 using System.Text.RegularExpressions;
 using GlmSharp;
-using GlmSharp.Swizzle;
 using OpenRA.FileFormats;
 using OpenRA.FileSystem;
 using OpenRA.Graphics;
@@ -25,7 +25,6 @@ using OpenRA.Primitives;
 using OpenRA.Primitives.FixPoint;
 using OpenRA.Support;
 using OpenRA.Traits;
-using TrueSync;
 
 namespace OpenRA
 {
@@ -153,6 +152,15 @@ namespace OpenRA
 		}
 	}
 
+	public struct TerrainVertex
+	{
+		public float3 Pos;
+		public WPos LogicPos;
+		public mat3 TBN;
+		public float2 UV;
+		public float3 Color;
+	}
+
 	public struct CellInfo
 	{
 		public const float TU = 0f;
@@ -170,27 +178,100 @@ namespace OpenRA
 		public readonly WPos CellCenterPos;
 		public readonly uint Type;
 
-		//public readonly float3 CellNmlTLM;
-		//public readonly float3 CellNmlTMR;
-		//public readonly float3 CellNmlMLB;
-		//public readonly float3 CellNmlMBR;
+		public readonly int2 MiniCellTL, MiniCellTR, MiniCellBL, MiniCellBR;
 
 		public readonly int M, T, B, L, R;
 
+		public readonly bool Flat;
+
 		public CellInfo(WPos center, // float3 tlmn, float3 tmrn, float3 mlbn, float3 mbrn,
-			int m, int t, int b, int l, int r, uint type)
+			int m, int t, int b, int l, int r, uint type, int2 ctl, int2 ctr, int2 cbl, int2 cbr, bool flat)
 		{
 			CellCenterPos = center;
-			// CellNmlTLM = tlmn;
-			// CellNmlTMR = tmrn;
-			// CellNmlMLB = mlbn;
-			// CellNmlMBR = mbrn;
+
 			M = m;
 			T = t;
 			B = b;
 			L = l;
 			R = r;
 			Type = type;
+
+			MiniCellTL = ctl;
+			MiniCellTR = ctr;
+			MiniCellBL = cbl;
+			MiniCellBR = cbr;
+
+			Flat = flat;
+		}
+	}
+
+	public enum MiniCellType
+	{
+		/// <summary>
+		/// /
+		/// </summary>
+		TRBL,
+
+		/// <summary>
+		/// \
+		/// </summary>
+		TLBR,
+	}
+
+	public struct MiniCell
+	{
+		public readonly int A1, B1, C1;
+		public readonly int A2, B2, C2;
+
+		/// <summary>
+		/// ©°
+		/// </summary>
+		public readonly int TL;
+
+		/// <summary>
+		/// ©´
+		/// </summary>
+		public readonly int TR;
+
+		/// <summary>
+		/// ©¸
+		/// </summary>
+		public readonly int BL;
+
+		/// <summary>
+		/// ©¼
+		/// </summary>
+		public readonly int BR;
+
+		public readonly MiniCellType Type;
+		public MiniCell(
+			int tl,int tr,
+			int bl, int br,
+			MiniCellType type)
+		{
+			TL = tl;
+			TR = tr;
+			BL = bl;
+			BR = br;
+			Type = type;
+			if (Type == MiniCellType.TRBL)
+			{
+				A1 = TR;
+				B1 = TL;
+				C1 = BL;
+				A2 = TR;
+				B2 = BL;
+				C2 = BR;
+			}
+			else
+			{
+				A1 = TL;
+				B1 = BR;
+				C1 = TR;
+				A2 = TL;
+				B2 = BL;
+				C2 = BR;
+			}
 		}
 	}
 
@@ -288,12 +369,9 @@ namespace OpenRA
 
 		public CellLayer<CellInfo> CellInfos { get; private set; }
 
-		public WPos[] VertexWPos;
-		public float3[] VertexPos;
-		public mat3[] VertexTBN;
-		public float2[] VertexUV;
-		public vec3[][] FaceNormal;
-		public float3[] VertexColors;
+		public TerrainVertex[] TerrainVertices;
+		public MiniCell[,] MiniCells;
+
 		public int VertexArrayWidth, VertexArrayHeight;
 
 		//// all TerrainPatch on map
@@ -748,17 +826,12 @@ namespace OpenRA
 			VertexArrayWidth = MapSize.X * 2 + 2;
 			VertexArrayHeight = MapSize.Y + 2;
 
+			TerrainVertices = new TerrainVertex[VertexArrayHeight * VertexArrayWidth];
+			MiniCells = new MiniCell[(VertexArrayHeight - 1) , (VertexArrayWidth - 1)];
+
 			var vertexCaled = new bool[VertexArrayWidth * VertexArrayHeight];
 			var vertexNmlCaled = new bool[VertexArrayWidth * VertexArrayHeight];
 			var vertexCliffCaled = new bool[VertexArrayWidth * VertexArrayHeight];
-
-			VertexPos = new float3[VertexArrayWidth * VertexArrayHeight];
-			VertexUV = new float2[VertexArrayWidth * VertexArrayHeight];
-			//VertexTangent = new float3[VertexArrayWidth * VertexArrayHeight];
-			//VertexBitangent = new float3[VertexArrayWidth * VertexArrayHeight];
-			VertexTBN = new mat3[VertexArrayWidth * VertexArrayHeight];
-			VertexWPos = new WPos[VertexArrayWidth * VertexArrayHeight];
-			VertexColors = new float3[VertexArrayWidth * VertexArrayHeight];
 
 			for (var y = 0; y < MapSize.Y; y++)
 			{
@@ -791,27 +864,27 @@ namespace OpenRA
 					var type = Rules.TerrainInfo.GetTerrainInfo(Tiles[uv]);
 					var typename = Rules.TerrainInfo.TerrainTypes[type.TerrainType].Type;
 
-					VertexColors[im] = Color2Float3(type.GetColor(Game.CosmeticRandom));
+					TerrainVertices[im].Color = Color2Float3(type.GetColor(Game.CosmeticRandom));
 
 					if (vertexCaled[it])
-						VertexColors[it] = float3.Lerp(Color2Float3(type.GetColor(Game.CosmeticRandom)), VertexColors[it], 0.5f);
+						TerrainVertices[it].Color = float3.Lerp(Color2Float3(type.GetColor(Game.CosmeticRandom)), TerrainVertices[it].Color, 0.5f);
 					else
-						VertexColors[it] = Color2Float3(type.GetColor(Game.CosmeticRandom));
+						TerrainVertices[it].Color = Color2Float3(type.GetColor(Game.CosmeticRandom));
 
 					if (vertexCaled[ib])
-						VertexColors[ib] = float3.Lerp(Color2Float3(type.GetColor(Game.CosmeticRandom)), VertexColors[ib], 0.5f);
+						TerrainVertices[ib].Color = float3.Lerp(Color2Float3(type.GetColor(Game.CosmeticRandom)), TerrainVertices[ib].Color, 0.5f);
 					else
-						VertexColors[ib] = Color2Float3(type.GetColor(Game.CosmeticRandom));
+						TerrainVertices[ib].Color = Color2Float3(type.GetColor(Game.CosmeticRandom));
 
 					if (vertexCaled[il])
-						VertexColors[il] = float3.Lerp(Color2Float3(type.GetColor(Game.CosmeticRandom)), VertexColors[il], 0.5f);
+						TerrainVertices[il].Color = float3.Lerp(Color2Float3(type.GetColor(Game.CosmeticRandom)), TerrainVertices[il].Color, 0.5f);
 					else
-						VertexColors[il] = Color2Float3(type.GetColor(Game.CosmeticRandom));
+						TerrainVertices[il].Color = Color2Float3(type.GetColor(Game.CosmeticRandom));
 
 					if (vertexCaled[ir])
-						VertexColors[ir] = float3.Lerp(Color2Float3(type.GetColor(Game.CosmeticRandom)), VertexColors[ir], 0.5f);
+						TerrainVertices[ir].Color = float3.Lerp(Color2Float3(type.GetColor(Game.CosmeticRandom)), TerrainVertices[ir].Color, 0.5f);
 					else
-						VertexColors[ir] = Color2Float3(type.GetColor(Game.CosmeticRandom));
+						TerrainVertices[ir].Color = Color2Float3(type.GetColor(Game.CosmeticRandom));
 
 					int hm, ht, hb, hl, hr;
 					float3 pm, pt, pb, pl, pr;
@@ -974,98 +1047,98 @@ namespace OpenRA
 							break;
 					}
 					var cpos = uv.ToCPos(this);
-					VertexWPos[im] = TileWPos(hm, cpos, WPos.Zero);
-					VertexPos[im] = TilePos(VertexWPos[im]);
-					pm = VertexPos[im];
+					TerrainVertices[im].LogicPos = TileWPos(hm, cpos, WPos.Zero);
+					TerrainVertices[im].Pos = TilePos(TerrainVertices[im].LogicPos);
+					pm = TerrainVertices[im].Pos;
 
 					if (vertexCaled[it])
 					{
 						if (typename == "Cliff" || vertexCliffCaled[it])
 						{
-							if (vertexCliffCaled[it] || Math.Abs(ht - VertexWPos[it].Z) > 1024)
+							if (vertexCliffCaled[it] || Math.Abs(ht - TerrainVertices[it].LogicPos.Z) > 1024)
 							{
-								VertexWPos[it] = TileWPos(Math.Max(ht, VertexWPos[it].Z), cpos, new WPos(0, -724, 0));
+								TerrainVertices[it].LogicPos = TileWPos(Math.Max(ht, TerrainVertices[it].LogicPos.Z), cpos, new WPos(0, -724, 0));
 								vertexCliffCaled[it] = true;
 							}
 							else
-								VertexWPos[it] = TileWPos(HMix(ht, VertexWPos[it].Z), cpos, new WPos(0, -724, 0));
-							//VertexWPos[it] = TileWPos(Math.Min(ht, VertexWPos[it].Z), cpos, new WPos(0, -724, 0));
+								TerrainVertices[it].LogicPos = TileWPos(HMix(ht, TerrainVertices[it].LogicPos.Z), cpos, new WPos(0, -724, 0));
+							//TerrainVertices[it].LogicPos = TileWPos(Math.Min(ht, TerrainVertices[it].LogicPos.Z), cpos, new WPos(0, -724, 0));
 						}
 						else
 						{
-							VertexWPos[it] = TileWPos(HMix(ht, VertexWPos[it].Z), cpos, new WPos(0, -724, 0));
+							TerrainVertices[it].LogicPos = TileWPos(HMix(ht, TerrainVertices[it].LogicPos.Z), cpos, new WPos(0, -724, 0));
 						}
 					}
 					else
-						VertexWPos[it] = TileWPos(ht / 4, cpos, new WPos(0, -724, 0));
-					VertexPos[it] = TilePos(VertexWPos[it]);
-					pt = VertexPos[it];
+						TerrainVertices[it].LogicPos = TileWPos(ht / 4, cpos, new WPos(0, -724, 0));
+					TerrainVertices[it].Pos = TilePos(TerrainVertices[it].LogicPos);
+					pt = TerrainVertices[it].Pos;
 
 					if (vertexCaled[ib])
 					{
 						if (typename == "Cliff" || vertexCliffCaled[ib])
 						{
-							if (vertexCliffCaled[ib] || Math.Abs(hb - VertexWPos[ib].Z) > 1024)
+							if (vertexCliffCaled[ib] || Math.Abs(hb - TerrainVertices[ib].LogicPos.Z) > 1024)
 							{
-								VertexWPos[ib] = TileWPos(Math.Max(hb, VertexWPos[ib].Z), cpos, new WPos(0, -724, 0));
+								TerrainVertices[ib].LogicPos = TileWPos(Math.Max(hb, TerrainVertices[ib].LogicPos.Z), cpos, new WPos(0, -724, 0));
 								vertexCliffCaled[ib] = true;
 							}
 							else
-								VertexWPos[ib] = TileWPos(HMix(hb, VertexWPos[ib].Z), cpos, new WPos(0, 724, 0));
+								TerrainVertices[ib].LogicPos = TileWPos(HMix(hb, TerrainVertices[ib].LogicPos.Z), cpos, new WPos(0, 724, 0));
 						}
 						else
 						{
-							VertexWPos[ib] = TileWPos(HMix(hb, VertexWPos[ib].Z), cpos, new WPos(0, 724, 0));
+							TerrainVertices[ib].LogicPos = TileWPos(HMix(hb, TerrainVertices[ib].LogicPos.Z), cpos, new WPos(0, 724, 0));
 						}
 					}
 					else
-						VertexWPos[ib] = TileWPos(hb / 4, cpos, new WPos(0, 724, 0));
-					VertexPos[ib] = TilePos(VertexWPos[ib]);
-					pb = VertexPos[ib];
+						TerrainVertices[ib].LogicPos = TileWPos(hb / 4, cpos, new WPos(0, 724, 0));
+					TerrainVertices[ib].Pos = TilePos(TerrainVertices[ib].LogicPos);
+					pb = TerrainVertices[ib].Pos;
 
 					if (vertexCaled[il])
 					{
 						if (typename == "Cliff" || vertexCliffCaled[il])
 						{
-							if (vertexCliffCaled[il] || Math.Abs(hl - VertexWPos[il].Z) > 1024)
+							if (vertexCliffCaled[il] || Math.Abs(hl - TerrainVertices[il].LogicPos.Z) > 1024)
 							{
-								VertexWPos[il] = TileWPos(Math.Max(hl, VertexWPos[il].Z), cpos, new WPos(0, -724, 0));
+								TerrainVertices[il].LogicPos = TileWPos(Math.Max(hl, TerrainVertices[il].LogicPos.Z), cpos, new WPos(0, -724, 0));
 								vertexCliffCaled[il] = true;
 							}
 							else
-								VertexWPos[il] = TileWPos(HMix(hl, VertexWPos[il].Z), cpos, new WPos(-724, 0, 0));
+								TerrainVertices[il].LogicPos = TileWPos(HMix(hl, TerrainVertices[il].LogicPos.Z), cpos, new WPos(-724, 0, 0));
 						}
 						else
 						{
-							VertexWPos[il] = TileWPos(HMix(hl, VertexWPos[il].Z), cpos, new WPos(-724, 0, 0));
+							TerrainVertices[il].LogicPos = TileWPos(HMix(hl, TerrainVertices[il].LogicPos.Z), cpos, new WPos(-724, 0, 0));
 						}
 					}
 					else
-						VertexWPos[il] = TileWPos(hl / 4, cpos, new WPos(-724, 0, 0));
-					VertexPos[il] = TilePos(VertexWPos[il]);
-					pl = VertexPos[il];
+						TerrainVertices[il].LogicPos = TileWPos(hl / 4, cpos, new WPos(-724, 0, 0));
+					TerrainVertices[il].Pos = TilePos(TerrainVertices[il].LogicPos);
+					pl = TerrainVertices[il].Pos;
 
 					if (vertexCaled[ir])
 					{
 						if (typename == "Cliff" || vertexCliffCaled[ir])
 						{
-							if (vertexCliffCaled[ir] || Math.Abs(hr - VertexWPos[ir].Z) > 1024)
+							if (vertexCliffCaled[ir] || Math.Abs(hr - TerrainVertices[ir].LogicPos.Z) > 1024)
 							{
-								VertexWPos[ir] = TileWPos(Math.Max(hr, VertexWPos[ir].Z), cpos, new WPos(0, -724, 0));
+								TerrainVertices[ir].LogicPos = TileWPos(Math.Max(hr, TerrainVertices[ir].LogicPos.Z), cpos, new WPos(0, -724, 0));
 								vertexCliffCaled[ir] = true;
 							}
 							else
-								VertexWPos[ir] = TileWPos(HMix(hr, VertexWPos[ir].Z), cpos, new WPos(724, 0, 0));
+								TerrainVertices[ir].LogicPos = TileWPos(HMix(hr, TerrainVertices[ir].LogicPos.Z), cpos, new WPos(724, 0, 0));
 						}
 						else
 						{
-							VertexWPos[ir] = TileWPos(HMix(hr, VertexWPos[ir].Z), cpos, new WPos(724, 0, 0));
+							TerrainVertices[ir].LogicPos = TileWPos(HMix(hr, TerrainVertices[ir].LogicPos.Z), cpos, new WPos(724, 0, 0));
 						}
 					}
 					else
-						VertexWPos[ir] = TileWPos(hr / 4, cpos, new WPos(724, 0, 0));
-					VertexPos[ir] = TilePos(VertexWPos[ir]);
-					pr = VertexPos[ir];
+						TerrainVertices[ir].LogicPos = TileWPos(hr / 4, cpos, new WPos(724, 0, 0));
+					TerrainVertices[ir].Pos = TilePos(TerrainVertices[ir].LogicPos);
+					pr = TerrainVertices[ir].Pos;
 
 					vertexCaled[im] = true;
 					vertexCaled[it] = true;
@@ -1105,45 +1178,46 @@ namespace OpenRA
 
 					if (IsBoundVert(it))
 					{
-						VertexWPos[it] = VertexWPos[im];
-						VertexPos[it] = TilePos(VertexWPos[im]);
+						TerrainVertices[it].LogicPos = TerrainVertices[im].LogicPos;
+						TerrainVertices[it].Pos = TilePos(TerrainVertices[im].LogicPos);
 					}
 
 					if (IsBoundVert(ib))
 					{
-						VertexWPos[ib] = VertexWPos[im];
-						VertexPos[ib] = TilePos(VertexWPos[im]);
+						TerrainVertices[ib].LogicPos = TerrainVertices[im].LogicPos;
+						TerrainVertices[ib].Pos = TilePos(TerrainVertices[im].LogicPos);
 					}
 
 					if (IsBoundVert(il))
 					{
-						VertexWPos[il] = VertexWPos[im];
-						VertexPos[il] = TilePos(VertexWPos[im]);
+						TerrainVertices[il].LogicPos = TerrainVertices[im].LogicPos;
+						TerrainVertices[il].Pos = TilePos(TerrainVertices[im].LogicPos);
 					}
 
 					if (IsBoundVert(ir))
 					{
-						VertexWPos[ir] = VertexWPos[im];
-						VertexPos[ir] = TilePos(VertexWPos[im]);
+						TerrainVertices[ir].LogicPos = TerrainVertices[im].LogicPos;
+						TerrainVertices[ir].Pos = TilePos(TerrainVertices[im].LogicPos);
 					}
 
-					pt = VertexPos[it];
-					pb = VertexPos[ib];
-					pl = VertexPos[il];
-					pr = VertexPos[ir];
+					pt = TerrainVertices[it].Pos;
+					pb = TerrainVertices[ib].Pos;
+					pl = TerrainVertices[il].Pos;
+					pr = TerrainVertices[ir].Pos;
 
 					if (ramp == 0)
 					{
-						VertexWPos[im] = new WPos(VertexWPos[im].X, VertexWPos[im].Y,
-							//(int)(VertexWPos[im].Z / 5) +
-							(int)(VertexWPos[it].Z / 4) +
-							(int)(VertexWPos[ib].Z / 4) +
-							(int)(VertexWPos[il].Z / 4) +
-							(int)(VertexWPos[ir].Z / 4));
-						VertexPos[im] = TilePos(VertexWPos[im]);
+						TerrainVertices[im].LogicPos = new WPos(
+							TerrainVertices[im].LogicPos.X,
+							TerrainVertices[im].LogicPos.Y,
+							(int)(TerrainVertices[it].LogicPos.Z / 4) +
+							(int)(TerrainVertices[ib].LogicPos.Z / 4) +
+							(int)(TerrainVertices[il].LogicPos.Z / 4) +
+							(int)(TerrainVertices[ir].LogicPos.Z / 4));
+						TerrainVertices[im].Pos = TilePos(TerrainVertices[im].LogicPos);
 					}
 
-					pm = VertexPos[im];
+					pm = TerrainVertices[im].Pos;
 
 					uvm = new float2(0.5f, 0.5f);
 					uvt = new float2(CellInfo.TU, CellInfo.TV);
@@ -1157,27 +1231,27 @@ namespace OpenRA
 					var mbr = CalTBN(pm, pb, pr, uvm, uvb, uvr);
 
 					if (ramp != 0)
-						VertexTBN[im] = (tlm * 0.25f + tmr * 0.25f + mlb * 0.25f + mbr * 0.25f);
+						TerrainVertices[im].TBN = (tlm * 0.25f + tmr * 0.25f + mlb * 0.25f + mbr * 0.25f);
 
 					if (vertexNmlCaled[it])
-						VertexTBN[it] = 0.25f * (tlm * 0.5f + tmr * 0.5f) + VertexTBN[it];
+						TerrainVertices[it].TBN = 0.25f * (tlm * 0.5f + tmr * 0.5f) + TerrainVertices[it].TBN;
 					else
-						VertexTBN[it] = 0.25f * (tlm * 0.5f + tmr * 0.5f);
+						TerrainVertices[it].TBN = 0.25f * (tlm * 0.5f + tmr * 0.5f);
 
 					if (vertexNmlCaled[ib])
-						VertexTBN[ib] = 0.25f * (mlb * 0.5f + mbr * 0.5f) + VertexTBN[ib];
+						TerrainVertices[ib].TBN = 0.25f * (mlb * 0.5f + mbr * 0.5f) + TerrainVertices[ib].TBN;
 					else
-						VertexTBN[ib] = 0.25f * (mlb * 0.5f + mbr * 0.5f);
+						TerrainVertices[ib].TBN = 0.25f * (mlb * 0.5f + mbr * 0.5f);
 
 					if (vertexNmlCaled[il])
-						VertexTBN[il] = 0.25f * (mlb * 0.5f + tlm * 0.5f) + VertexTBN[il];
+						TerrainVertices[il].TBN = 0.25f * (mlb * 0.5f + tlm * 0.5f) + TerrainVertices[il].TBN;
 					else
-						VertexTBN[il] = 0.25f * (mlb * 0.5f + tlm * 0.5f);
+						TerrainVertices[il].TBN = 0.25f * (mlb * 0.5f + tlm * 0.5f);
 
 					if (vertexNmlCaled[ir])
-						VertexTBN[ir] = 0.25f * (tmr * 0.5f + mbr * 0.5f) + VertexTBN[ir];
+						TerrainVertices[ir].TBN = 0.25f * (tmr * 0.5f + mbr * 0.5f) + TerrainVertices[ir].TBN;
 					else
-						VertexTBN[ir] = 0.25f * (tmr * 0.5f + mbr * 0.5f);
+						TerrainVertices[ir].TBN = 0.25f * (tmr * 0.5f + mbr * 0.5f);
 
 					vertexNmlCaled[im] = true;
 					vertexNmlCaled[it] = true;
@@ -1207,7 +1281,25 @@ namespace OpenRA
 							break;
 					}
 
-					CellInfo cellInfo = new CellInfo(VertexWPos[im], im, it, ib, il, ir, typeNum);
+					var itl = (mid.Y - 1) * VertexArrayWidth + mid.X - 1;
+					var itr = (mid.Y - 1) * VertexArrayWidth + mid.X + 1;
+					var ibl = (mid.Y + 1) * VertexArrayWidth + mid.X - 1;
+					var ibr = (mid.Y + 1) * VertexArrayWidth + mid.X + 1;
+					MiniCells[mid.Y - 1, mid.X - 1] = new MiniCell(itl, it, il, im,MiniCellType.TLBR); // tl
+					MiniCells[mid.Y - 1, mid.X] = new MiniCell(it, itr, im, ir, MiniCellType.TRBL); // tr
+					MiniCells[mid.Y, mid.X - 1] = new MiniCell(il, im, ibl, ib, MiniCellType.TLBR); // bl
+					MiniCells[mid.Y, mid.X] = new MiniCell(im, ir, ib, ibr, MiniCellType.TRBL); // br
+
+					bool flatCell = false;
+					if (TerrainVertices[im].LogicPos == TerrainVertices[it].LogicPos &&
+						TerrainVertices[im].LogicPos == TerrainVertices[ib].LogicPos &&
+						TerrainVertices[im].LogicPos == TerrainVertices[ir].LogicPos &&
+						TerrainVertices[im].LogicPos == TerrainVertices[il].LogicPos)
+						flatCell = true;
+
+					CellInfo cellInfo = new CellInfo(TerrainVertices[im].LogicPos, im, it, ib, il, ir, typeNum,
+						new int2(mid.Y - 1, mid.X - 1), new int2(mid.Y - 1, mid.X),
+						new int2(mid.Y, mid.X - 1), new int2(mid.Y, mid.X), flatCell);
 
 					CellInfos[uv.ToCPos(this)] = cellInfo;
 				}
@@ -1238,19 +1330,19 @@ namespace OpenRA
 					il = mid.Y * VertexArrayWidth + mid.X - 1;
 					ir = mid.Y * VertexArrayWidth + mid.X + 1;
 
-					VertexTBN[im] = (0.25f * VertexTBN[it] + 0.25f * VertexTBN[ib] + 0.25f * VertexTBN[il] + 0.25f * VertexTBN[ir]);
+					TerrainVertices[im].TBN = (0.25f * TerrainVertices[it].TBN + 0.25f * TerrainVertices[ib].TBN + 0.25f * TerrainVertices[il].TBN + 0.25f * TerrainVertices[ir].TBN);
 				}
 			}
 
-			for (int i = 0; i < VertexTBN.Length; i++)
+			for (int i = 0; i < TerrainVertices.Length; i++)
 			{
-				VertexTBN[i] = NormalizeTBN(VertexTBN[i]);
+				TerrainVertices[i].TBN = NormalizeTBN(TerrainVertices[i].TBN);
 			}
 
 			// uv retarget
-			for (int i = 0; i < VertexUV.Length; i++)
+			for (int i = 0; i < TerrainVertices.Length; i++)
 			{
-				VertexUV[i] = new float2(VertexPos[i].X / 5.0f, VertexPos[i].Y / 5.0f);
+				TerrainVertices[i].UV = new float2(TerrainVertices[i].Pos.X / 5.0f, TerrainVertices[i].Pos.Y / 5.0f);
 			}
 		}
 
@@ -1360,22 +1452,22 @@ namespace OpenRA
 			Console.WriteLine("Saving Map " + Title + " As Png");
 			float mapMaxHeight = ((float)Grid.MaximumTerrainHeight * MapGrid.MapHeightStep) / 256;
 
-			var heightData = new byte[VertexPos.Length * 4];
-			var colorData = new byte[VertexPos.Length * 4];
+			var heightData = new byte[TerrainVertices.Length * 4];
+			var colorData = new byte[TerrainVertices.Length * 4];
 
-			for (int i = 0; i < VertexPos.Length; i++)
+			for (int i = 0; i < TerrainVertices.Length; i++)
 			{
-				heightData[i * 4] = (byte)(VertexPos[i].Z * byte.MaxValue / mapMaxHeight);
+				heightData[i * 4] = (byte)(TerrainVertices[i].Pos.Z * byte.MaxValue / mapMaxHeight);
 				heightData[i * 4 + 1] = 0;
 				heightData[i * 4 + 2] = 0;
 				heightData[i * 4 + 3] = byte.MaxValue;
 			}
 
-			for (int i = 0; i < VertexPos.Length; i++)
+			for (int i = 0; i < TerrainVertices.Length; i++)
 			{
-				colorData[i * 4] = (byte)(VertexColors[i].X * byte.MaxValue);
-				colorData[i * 4 + 1] = (byte)(VertexColors[i].Y * byte.MaxValue);
-				colorData[i * 4 + 2] = (byte)(VertexColors[i].Z * byte.MaxValue);
+				colorData[i * 4] = (byte)(TerrainVertices[i].Color.X * byte.MaxValue);
+				colorData[i * 4 + 1] = (byte)(TerrainVertices[i].Color.Y * byte.MaxValue);
+				colorData[i * 4 + 2] = (byte)(TerrainVertices[i].Color.Z * byte.MaxValue);
 				colorData[i * 4 + 3] = byte.MaxValue;
 			}
 
@@ -1711,62 +1803,65 @@ namespace OpenRA
 
 			var tx = pos.X % MapGrid.MapMiniCellWidth;
 			var ty = pos.Y % MapGrid.MapMiniCellWidth;
-			var LT = VertexWPos[u + v * VertexArrayWidth].Z;
-			var RT = VertexWPos[u + 1 + v * VertexArrayWidth].Z;
-			var LB = VertexWPos[u + (v + 1) * VertexArrayWidth].Z;
-			var RB = VertexWPos[u + 1 + (v + 1) * VertexArrayWidth].Z;
 
-			if (u % 2 == v % 2)
+			var tl = TerrainVertices[MiniCells[v, u].TL].LogicPos.Z;
+			var tr = TerrainVertices[MiniCells[v, u].TR].LogicPos.Z;
+			var bl = TerrainVertices[MiniCells[v, u].BL].LogicPos.Z;
+			var br = TerrainVertices[MiniCells[v, u].BR].LogicPos.Z;
+
+			// if (u % 2 == v % 2)
+			if (MiniCells[v, u].Type == MiniCellType.TRBL)
 			{
+				// tl           tr
 				// ------------
 				// |           / |
 				// |      /      |
 				// |  /          |
 				// ------------
+				// bl          br
 				if (ty == 724 - tx)
 				{
-					return Lerp(LB, RT, tx, 724);
+					return Lerp(bl, tr, tx, 724);
 				}
 				else if (ty < 724 - tx)
 				{
-					var a = Lerp(LT, LB, ty, 724);
-					var b = Lerp(RT, LB, ty, 724);
+					var a = Lerp(tl, bl, ty, 724);
+					var b = Lerp(tr, bl, ty, 724);
 					return Lerp(a, b, tx, 724 - ty);
 				}
 				else
 				{
-					var a = Lerp(LB, RB, tx, 724);
-					var b = Lerp(LB, RT, tx, 724);
+					var a = Lerp(bl, br, tx, 724);
+					var b = Lerp(bl, tr, tx, 724);
 					return Lerp(a, b, 724 - ty, tx);
 				}
 			}
 			else
 			{
+				// tl           tr
 				// ------------
 				// |  \          |
 				// |      \      |
 				// |          \  |
 				// ------------
+				// bl          br
 				if (tx == ty)
 				{
-					return Lerp(LT, RB, tx, 724);
+					return Lerp(tl, br, tx, 724);
 				}
 				else if (tx > ty)
 				{
-					var a = Lerp(LT, RT, tx, 724);
-					var b = Lerp(LT, RB, tx, 724);
+					var a = Lerp(tl, tr, tx, 724);
+					var b = Lerp(tl, br, tx, 724);
 					return Lerp(a, b, ty, tx);
 				}
 				else
 				{
-					var a = Lerp(LT, LB, ty, 724);
-					var b = Lerp(LT, RB, ty, 724);
+					var a = Lerp(tl, bl, ty, 724);
+					var b = Lerp(tl, br, ty, 724);
 					return Lerp(a, b, tx, ty);
 				}
 			}
-
-			//var cell = CellContaining(pos);
-			//return Height.Contains(cell) ? MapGrid.MapHeightStep * Height[cell] + Grid.Ramps[Ramp[cell]].CenterHeightOffset : 0;
 		}
 
 		public int HeightOfCell(CPos cell)
@@ -1814,10 +1909,10 @@ namespace OpenRA
 
 			var tx = pos.X % MapGrid.MapMiniCellWidth;
 			var ty = pos.Y % MapGrid.MapMiniCellWidth;
-			var LT = VertexTBN[u + v * VertexArrayWidth].Column2;
-			var RT = VertexTBN[u + 1 + v * VertexArrayWidth].Column2;
-			var LB = VertexTBN[u + (v + 1) * VertexArrayWidth].Column2;
-			var RB = VertexTBN[u + 1 + (v + 1) * VertexArrayWidth].Column2;
+			var LT = TerrainVertices[u + v * VertexArrayWidth].TBN.Column2;
+			var RT = TerrainVertices[u + 1 + v * VertexArrayWidth].TBN.Column2;
+			var LB = TerrainVertices[u + (v + 1) * VertexArrayWidth].TBN.Column2;
+			var RB = TerrainVertices[u + 1 + (v + 1) * VertexArrayWidth].TBN.Column2;
 
 			if (u % 2 == v % 2)
 			{
@@ -1873,25 +1968,6 @@ namespace OpenRA
 			var q = new quat(w.x, w.y, w.z, vec3.Dot(new vec3(0, 0, 1), normal));
 			q.w += MathF.Sqrt(new vec3(0, 0, 1).LengthSqr * normal.LengthSqr);
 			q = q.Normalized;
-
-			//if (Game.Renderer != null)
-			//{
-			//	var end = new vec3(0,0,8);
-			//	var start = World3DCoordinate.Float3toVec3(Game.Renderer.WorldRgbaColorRenderer.Render3DPosition(pos));
-			//	//mat3 rot = new mat3(q);
-			//	end = q * end + start;
-
-			//	Game.Renderer.WorldRgbaColorRenderer.DrawWorldLine(
-			//			World3DCoordinate.Vec2Float3(start),
-			//			World3DCoordinate.Vec2Float3(end),
-			//			0.2f,
-			//			Color.AliceBlue);
-			//	Game.Renderer.WorldRgbaColorRenderer.DrawWorldLine(
-			//		World3DCoordinate.Vec2Float3(start),
-			//		World3DCoordinate.Vec2Float3(start + normal * 8),
-			//		0.2f,
-			//		Color.Red);
-			//}
 
 			var worldPitch = new WAngle((int)(q.Pitch * 512 / Math.PI));
 			var worldRoll = new WAngle((int)(q.Roll * 512 / Math.PI));

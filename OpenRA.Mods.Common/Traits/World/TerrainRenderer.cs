@@ -108,7 +108,6 @@ namespace OpenRA.Mods.Common.Traits
 
 			var uv = cell.ToMPos(map.Grid.Type);
 			spriteLayer.Update(uv, sprite, paletteReference, wPos, 1, 1, false);
-			spriteLayer.ModifyTint(uv, colorModify[uv]);
 		}
 
 		CellLayer<float3> colorModify;

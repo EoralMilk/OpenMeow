@@ -551,24 +551,24 @@ namespace OpenRA.Graphics
 							// |          \  |
 							// ------------
 							index = iRT;
-							uv = CalUV(map.VertexWPos[index], TLX, TLY, width, height);
-							vertices[i] = new Vertex(map.VertexPos[index] + viewOffset, r.Left + r.LR * uv.X, r.Top + r.TB * uv.Y, sl + lr * uv.X, st + tb * uv.Y, paletteTextureIndex, fAttribC, uv.X, uv.Y, -2f, alpha);
+							uv = CalUV(map.TerrainVertices[index].LogicPos, TLX, TLY, width, height);
+							vertices[i] = new Vertex(map.TerrainVertices[index].Pos + viewOffset, r.Left + r.LR * uv.X, r.Top + r.TB * uv.Y, sl + lr * uv.X, st + tb * uv.Y, paletteTextureIndex, fAttribC, uv.X, uv.Y, -2f, alpha);
 							index = iLT;
-							uv = CalUV(map.VertexWPos[index], TLX, TLY, width, height);
-							vertices[i + 1] = new Vertex(map.VertexPos[index] + viewOffset, r.Left + r.LR * uv.X, r.Top + r.TB * uv.Y, sl + lr * uv.X, st + tb * uv.Y, paletteTextureIndex, fAttribC, uv.X, uv.Y, -2f, alpha);
+							uv = CalUV(map.TerrainVertices[index].LogicPos, TLX, TLY, width, height);
+							vertices[i + 1] = new Vertex(map.TerrainVertices[index].Pos + viewOffset, r.Left + r.LR * uv.X, r.Top + r.TB * uv.Y, sl + lr * uv.X, st + tb * uv.Y, paletteTextureIndex, fAttribC, uv.X, uv.Y, -2f, alpha);
 							index = iRB;
-							uv = CalUV(map.VertexWPos[index], TLX, TLY, width, height);
-							vertices[i + 2] = new Vertex(map.VertexPos[index] + viewOffset, r.Left + r.LR * uv.X, r.Top + r.TB * uv.Y, sl + lr * uv.X, st + tb * uv.Y, paletteTextureIndex, fAttribC, uv.X, uv.Y, -2f, alpha);
+							uv = CalUV(map.TerrainVertices[index].LogicPos, TLX, TLY, width, height);
+							vertices[i + 2] = new Vertex(map.TerrainVertices[index].Pos + viewOffset, r.Left + r.LR * uv.X, r.Top + r.TB * uv.Y, sl + lr * uv.X, st + tb * uv.Y, paletteTextureIndex, fAttribC, uv.X, uv.Y, -2f, alpha);
 
 							index = iLT;
-							uv = CalUV(map.VertexWPos[index], TLX, TLY, width, height);
-							vertices[i + 3] = new Vertex(map.VertexPos[index] + viewOffset, r.Left + r.LR * uv.X, r.Top + r.TB * uv.Y, sl + lr * uv.X, st + tb * uv.Y, paletteTextureIndex, fAttribC, uv.X, uv.Y, -2f, alpha);
+							uv = CalUV(map.TerrainVertices[index].LogicPos, TLX, TLY, width, height);
+							vertices[i + 3] = new Vertex(map.TerrainVertices[index].Pos + viewOffset, r.Left + r.LR * uv.X, r.Top + r.TB * uv.Y, sl + lr * uv.X, st + tb * uv.Y, paletteTextureIndex, fAttribC, uv.X, uv.Y, -2f, alpha);
 							index = iLB;
-							uv = CalUV(map.VertexWPos[index], TLX, TLY, width, height);
-							vertices[i + 4] = new Vertex(map.VertexPos[index] + viewOffset, r.Left + r.LR * uv.X, r.Top + r.TB * uv.Y, sl + lr * uv.X, st + tb * uv.Y, paletteTextureIndex, fAttribC, uv.X, uv.Y, -2f, alpha);
+							uv = CalUV(map.TerrainVertices[index].LogicPos, TLX, TLY, width, height);
+							vertices[i + 4] = new Vertex(map.TerrainVertices[index].Pos + viewOffset, r.Left + r.LR * uv.X, r.Top + r.TB * uv.Y, sl + lr * uv.X, st + tb * uv.Y, paletteTextureIndex, fAttribC, uv.X, uv.Y, -2f, alpha);
 							index = iRB;
-							uv = CalUV(map.VertexWPos[index], TLX, TLY, width, height);
-							vertices[i + 5] = new Vertex(map.VertexPos[index] + viewOffset, r.Left + r.LR * uv.X, r.Top + r.TB * uv.Y, sl + lr * uv.X, st + tb * uv.Y, paletteTextureIndex, fAttribC, uv.X, uv.Y, -2f, alpha);
+							uv = CalUV(map.TerrainVertices[index].LogicPos, TLX, TLY, width, height);
+							vertices[i + 5] = new Vertex(map.TerrainVertices[index].Pos + viewOffset, r.Left + r.LR * uv.X, r.Top + r.TB * uv.Y, sl + lr * uv.X, st + tb * uv.Y, paletteTextureIndex, fAttribC, uv.X, uv.Y, -2f, alpha);
 
 						}
 						else
@@ -579,24 +579,24 @@ namespace OpenRA.Graphics
 							// |  /          |
 							// ------------
 							index = iRT;
-							uv = CalUV(map.VertexWPos[index], TLX, TLY, width, height);
-							vertices[i] = new Vertex(map.VertexPos[index] + viewOffset, r.Left + r.LR * uv.X, r.Top + r.TB * uv.Y, sl + lr * uv.X, st + tb * uv.Y, paletteTextureIndex, fAttribC, uv.X, uv.Y, -2f, alpha);
+							uv = CalUV(map.TerrainVertices[index].LogicPos, TLX, TLY, width, height);
+							vertices[i] = new Vertex(map.TerrainVertices[index].Pos + viewOffset, r.Left + r.LR * uv.X, r.Top + r.TB * uv.Y, sl + lr * uv.X, st + tb * uv.Y, paletteTextureIndex, fAttribC, uv.X, uv.Y, -2f, alpha);
 							index = iLT;
-							uv = CalUV(map.VertexWPos[index], TLX, TLY, width, height);
-							vertices[i + 1] = new Vertex(map.VertexPos[index] + viewOffset, r.Left + r.LR * uv.X, r.Top + r.TB * uv.Y, sl + lr * uv.X, st + tb * uv.Y, paletteTextureIndex, fAttribC, uv.X, uv.Y, -2f, alpha);
+							uv = CalUV(map.TerrainVertices[index].LogicPos, TLX, TLY, width, height);
+							vertices[i + 1] = new Vertex(map.TerrainVertices[index].Pos + viewOffset, r.Left + r.LR * uv.X, r.Top + r.TB * uv.Y, sl + lr * uv.X, st + tb * uv.Y, paletteTextureIndex, fAttribC, uv.X, uv.Y, -2f, alpha);
 							index = iLB;
-							uv = CalUV(map.VertexWPos[index], TLX, TLY, width, height);
-							vertices[i + 2] = new Vertex(map.VertexPos[index] + viewOffset, r.Left + r.LR * uv.X, r.Top + r.TB * uv.Y, sl + lr * uv.X, st + tb * uv.Y, paletteTextureIndex, fAttribC, uv.X, uv.Y, -2f, alpha);
+							uv = CalUV(map.TerrainVertices[index].LogicPos, TLX, TLY, width, height);
+							vertices[i + 2] = new Vertex(map.TerrainVertices[index].Pos + viewOffset, r.Left + r.LR * uv.X, r.Top + r.TB * uv.Y, sl + lr * uv.X, st + tb * uv.Y, paletteTextureIndex, fAttribC, uv.X, uv.Y, -2f, alpha);
 
 							index = iRT;
-							uv = CalUV(map.VertexWPos[index], TLX, TLY, width, height);
-							vertices[i + 3] = new Vertex(map.VertexPos[index] + viewOffset, r.Left + r.LR * uv.X, r.Top + r.TB * uv.Y, sl + lr * uv.X, st + tb * uv.Y, paletteTextureIndex, fAttribC, uv.X, uv.Y, -2f, alpha);
+							uv = CalUV(map.TerrainVertices[index].LogicPos, TLX, TLY, width, height);
+							vertices[i + 3] = new Vertex(map.TerrainVertices[index].Pos + viewOffset, r.Left + r.LR * uv.X, r.Top + r.TB * uv.Y, sl + lr * uv.X, st + tb * uv.Y, paletteTextureIndex, fAttribC, uv.X, uv.Y, -2f, alpha);
 							index = iLB;
-							uv = CalUV(map.VertexWPos[index], TLX, TLY, width, height);
-							vertices[i + 4] = new Vertex(map.VertexPos[index] + viewOffset, r.Left + r.LR * uv.X, r.Top + r.TB * uv.Y, sl + lr * uv.X, st + tb * uv.Y, paletteTextureIndex, fAttribC, uv.X, uv.Y, -2f, alpha);
+							uv = CalUV(map.TerrainVertices[index].LogicPos, TLX, TLY, width, height);
+							vertices[i + 4] = new Vertex(map.TerrainVertices[index].Pos + viewOffset, r.Left + r.LR * uv.X, r.Top + r.TB * uv.Y, sl + lr * uv.X, st + tb * uv.Y, paletteTextureIndex, fAttribC, uv.X, uv.Y, -2f, alpha);
 							index = iRB;
-							uv = CalUV(map.VertexWPos[index], TLX, TLY, width, height);
-							vertices[i + 5] = new Vertex(map.VertexPos[index] + viewOffset, r.Left + r.LR * uv.X, r.Top + r.TB * uv.Y, sl + lr * uv.X, st + tb * uv.Y, paletteTextureIndex, fAttribC, uv.X, uv.Y, -2f, alpha);
+							uv = CalUV(map.TerrainVertices[index].LogicPos, TLX, TLY, width, height);
+							vertices[i + 5] = new Vertex(map.TerrainVertices[index].Pos + viewOffset, r.Left + r.LR * uv.X, r.Top + r.TB * uv.Y, sl + lr * uv.X, st + tb * uv.Y, paletteTextureIndex, fAttribC, uv.X, uv.Y, -2f, alpha);
 						}
 
 						i += 6;
@@ -673,31 +673,30 @@ namespace OpenRA.Graphics
 							// |      \      |
 							// |          \  |
 							// ------------
-
 							index = iRT;
-							uv = CalUV(map.VertexWPos[index], TLX, TLY, width, height);
-							vertices[i] = new MapVertex(map.VertexPos[index] + viewOffset, map.VertexTBN[index], uv,
+							uv = CalUV(map.TerrainVertices[index].LogicPos, TLX, TLY, width, height);
+							vertices[i] = new MapVertex(map.TerrainVertices[index].Pos + viewOffset, map.TerrainVertices[index].TBN, uv,
 								r.Left + r.LR * uv.X, r.Top + r.TB * uv.Y, sl + lr * uv.X, st + tb * uv.Y, paletteTextureIndex, fAttribC);
 							index = iLT;
-							uv = CalUV(map.VertexWPos[index], TLX, TLY, width, height);
-							vertices[i + 1] = new MapVertex(map.VertexPos[index] + viewOffset, map.VertexTBN[index], uv,
+							uv = CalUV(map.TerrainVertices[index].LogicPos, TLX, TLY, width, height);
+							vertices[i + 1] = new MapVertex(map.TerrainVertices[index].Pos + viewOffset, map.TerrainVertices[index].TBN, uv,
 								r.Left + r.LR * uv.X, r.Top + r.TB * uv.Y, sl + lr * uv.X, st + tb * uv.Y, paletteTextureIndex, fAttribC);
 							index = iRB;
-							uv = CalUV(map.VertexWPos[index], TLX, TLY, width, height);
-							vertices[i + 2] = new MapVertex(map.VertexPos[index] + viewOffset, map.VertexTBN[index], uv,
+							uv = CalUV(map.TerrainVertices[index].LogicPos, TLX, TLY, width, height);
+							vertices[i + 2] = new MapVertex(map.TerrainVertices[index].Pos + viewOffset, map.TerrainVertices[index].TBN, uv,
 								r.Left + r.LR * uv.X, r.Top + r.TB * uv.Y, sl + lr * uv.X, st + tb * uv.Y, paletteTextureIndex, fAttribC);
 
 							index = iLT;
-							uv = CalUV(map.VertexWPos[index], TLX, TLY, width, height);
-							vertices[i + 3] = new MapVertex(map.VertexPos[index] + viewOffset, map.VertexTBN[index], uv,
+							uv = CalUV(map.TerrainVertices[index].LogicPos, TLX, TLY, width, height);
+							vertices[i + 3] = new MapVertex(map.TerrainVertices[index].Pos + viewOffset, map.TerrainVertices[index].TBN, uv,
 								r.Left + r.LR * uv.X, r.Top + r.TB * uv.Y, sl + lr * uv.X, st + tb * uv.Y, paletteTextureIndex, fAttribC);
 							index = iLB;
-							uv = CalUV(map.VertexWPos[index], TLX, TLY, width, height);
-							vertices[i + 4] = new MapVertex(map.VertexPos[index] + viewOffset, map.VertexTBN[index], uv,
+							uv = CalUV(map.TerrainVertices[index].LogicPos, TLX, TLY, width, height);
+							vertices[i + 4] = new MapVertex(map.TerrainVertices[index].Pos + viewOffset, map.TerrainVertices[index].TBN, uv,
 								r.Left + r.LR * uv.X, r.Top + r.TB * uv.Y, sl + lr * uv.X, st + tb * uv.Y, paletteTextureIndex, fAttribC);
 							index = iRB;
-							uv = CalUV(map.VertexWPos[index], TLX, TLY, width, height);
-							vertices[i + 5] = new MapVertex(map.VertexPos[index] + viewOffset, map.VertexTBN[index], uv,
+							uv = CalUV(map.TerrainVertices[index].LogicPos, TLX, TLY, width, height);
+							vertices[i + 5] = new MapVertex(map.TerrainVertices[index].Pos + viewOffset, map.TerrainVertices[index].TBN, uv,
 								r.Left + r.LR * uv.X, r.Top + r.TB * uv.Y, sl + lr * uv.X, st + tb * uv.Y, paletteTextureIndex, fAttribC);
 						}
 						else
@@ -708,29 +707,29 @@ namespace OpenRA.Graphics
 							// |  /          |
 							// ------------
 							index = iRT;
-							uv = CalUV(map.VertexWPos[index], TLX, TLY, width, height);
-							vertices[i] = new MapVertex(map.VertexPos[index] + viewOffset, map.VertexTBN[index], uv,
+							uv = CalUV(map.TerrainVertices[index].LogicPos, TLX, TLY, width, height);
+							vertices[i] = new MapVertex(map.TerrainVertices[index].Pos + viewOffset, map.TerrainVertices[index].TBN, uv,
 								r.Left + r.LR * uv.X, r.Top + r.TB * uv.Y, sl + lr * uv.X, st + tb * uv.Y, paletteTextureIndex, fAttribC);
 							index = iLT;
-							uv = CalUV(map.VertexWPos[index], TLX, TLY, width, height);
-							vertices[i + 1] = new MapVertex(map.VertexPos[index] + viewOffset, map.VertexTBN[index], uv,
+							uv = CalUV(map.TerrainVertices[index].LogicPos, TLX, TLY, width, height);
+							vertices[i + 1] = new MapVertex(map.TerrainVertices[index].Pos + viewOffset, map.TerrainVertices[index].TBN, uv,
 								r.Left + r.LR * uv.X, r.Top + r.TB * uv.Y, sl + lr * uv.X, st + tb * uv.Y, paletteTextureIndex, fAttribC);
 							index = iLB;
-							uv = CalUV(map.VertexWPos[index], TLX, TLY, width, height);
-							vertices[i + 2] = new MapVertex(map.VertexPos[index] + viewOffset, map.VertexTBN[index], uv,
+							uv = CalUV(map.TerrainVertices[index].LogicPos, TLX, TLY, width, height);
+							vertices[i + 2] = new MapVertex(map.TerrainVertices[index].Pos + viewOffset, map.TerrainVertices[index].TBN, uv,
 								r.Left + r.LR * uv.X, r.Top + r.TB * uv.Y, sl + lr * uv.X, st + tb * uv.Y, paletteTextureIndex, fAttribC);
 
 							index = iRT;
-							uv = CalUV(map.VertexWPos[index], TLX, TLY, width, height);
-							vertices[i + 3] = new MapVertex(map.VertexPos[index] + viewOffset, map.VertexTBN[index], uv,
+							uv = CalUV(map.TerrainVertices[index].LogicPos, TLX, TLY, width, height);
+							vertices[i + 3] = new MapVertex(map.TerrainVertices[index].Pos + viewOffset, map.TerrainVertices[index].TBN, uv,
 								r.Left + r.LR * uv.X, r.Top + r.TB * uv.Y, sl + lr * uv.X, st + tb * uv.Y, paletteTextureIndex, fAttribC);
 							index = iLB;
-							uv = CalUV(map.VertexWPos[index], TLX, TLY, width, height);
-							vertices[i + 4] = new MapVertex(map.VertexPos[index] + viewOffset, map.VertexTBN[index], uv,
+							uv = CalUV(map.TerrainVertices[index].LogicPos, TLX, TLY, width, height);
+							vertices[i + 4] = new MapVertex(map.TerrainVertices[index].Pos + viewOffset, map.TerrainVertices[index].TBN, uv,
 								r.Left + r.LR * uv.X, r.Top + r.TB * uv.Y, sl + lr * uv.X, st + tb * uv.Y, paletteTextureIndex, fAttribC);
 							index = iRB;
-							uv = CalUV(map.VertexWPos[index], TLX, TLY, width, height);
-							vertices[i + 5] = new MapVertex(map.VertexPos[index] + viewOffset, map.VertexTBN[index], uv,
+							uv = CalUV(map.TerrainVertices[index].LogicPos, TLX, TLY, width, height);
+							vertices[i + 5] = new MapVertex(map.TerrainVertices[index].Pos + viewOffset, map.TerrainVertices[index].TBN, uv,
 								r.Left + r.LR * uv.X, r.Top + r.TB * uv.Y, sl + lr * uv.X, st + tb * uv.Y, paletteTextureIndex, fAttribC);
 						}
 
@@ -741,22 +740,20 @@ namespace OpenRA.Graphics
 			}
 		}
 
-		public static void FastCreateTile(MapVertex[] vertices, float3[] verticesColor,
-			//float3 mpos, float3 tpos, float3 bpos, float3 lpos, float3 rpos,
-			//in mat3 mtbn, in mat3 ttbn, in mat3 btbn, in mat3 ltbn, in mat3 rtbn,
+		public static MapVertex[] FastCreateTile(
 			Map map, in CellInfo cellinfo,
 			in float3 mColorOffset, in float3 tColorOffset, in float3 bColorOffset, in float3 lColorOffset, in float3 rColorOffset,
 			uint type,
 			Sprite r, int2 samplers, float paletteTextureIndex, in vec3 ZOffset,
-			float alpha, int nv, bool rotation = true)
+			float alpha, bool rotation = true)
 		{
 			var viewOffset = new float3(ZOffset.x, ZOffset.y, ZOffset.z);
 
-			var mpos = map.VertexPos[cellinfo.M] + viewOffset;
-			var tpos = map.VertexPos[cellinfo.T] + viewOffset;
-			var bpos = map.VertexPos[cellinfo.B] + viewOffset;
-			var lpos = map.VertexPos[cellinfo.L] + viewOffset;
-			var rpos = map.VertexPos[cellinfo.R] + viewOffset;
+			var mpos = map.TerrainVertices[cellinfo.M].Pos + viewOffset;
+			var tpos = map.TerrainVertices[cellinfo.T].Pos + viewOffset;
+			var bpos = map.TerrainVertices[cellinfo.B].Pos + viewOffset;
+			var lpos = map.TerrainVertices[cellinfo.L].Pos + viewOffset;
+			var rpos = map.TerrainVertices[cellinfo.R].Pos + viewOffset;
 
 			float sl = 0;
 			float st = 0;
@@ -786,6 +783,7 @@ namespace OpenRA.Graphics
 			var fAttribC = (float)attribC;
 			float baseY = r.Top - (r.Top - r.Bottom) * 0.5f;
 			float baseX = r.Right - (r.Right - r.Left) * 0.5f;
+			MapVertex[] vertices;
 
 			// rotate isomatric tile to rect
 			if (rotation)
@@ -795,80 +793,96 @@ namespace OpenRA.Graphics
 				float left = r.Left + (r.Right - r.Left) * 0.035f;
 				float right = r.Right + (r.Left - r.Right) * 0.035f;
 
-				//vertices[nv] = new MapVertex(tpos, map.VertexTBN[cellinfo.T], baseX, top, sbaseRL, st, paletteTextureIndex, fAttribC, tColorOffset, alpha, 1,0, type);
-				//vertices[nv + 1] = new MapVertex(mpos, map.VertexTBN[cellinfo.M], baseX, baseY, sbaseRL, sbaseTB, paletteTextureIndex, fAttribC, mColorOffset, alpha, 1,1, type);
-				//vertices[nv + 2] = new MapVertex(rpos, map.VertexTBN[cellinfo.R], right, baseY, sr, sbaseTB, paletteTextureIndex, fAttribC, rColorOffset, alpha, 2,1, type);
+				if (cellinfo.Flat)
+				{
+					vertices = new MapVertex[6];
+					vertices[0] = new MapVertex(tpos, map.TerrainVertices[cellinfo.T].TBN, baseX, top, sbaseRL, st, paletteTextureIndex, fAttribC, tColorOffset, alpha, map.TerrainVertices[cellinfo.T].UV, type);
+					vertices[1] = new MapVertex(bpos, map.TerrainVertices[cellinfo.B].TBN, baseX, bottom, sbaseRL, sb, paletteTextureIndex, fAttribC, bColorOffset, alpha, map.TerrainVertices[cellinfo.B].UV, type);
+					vertices[2] = new MapVertex(rpos, map.TerrainVertices[cellinfo.R].TBN, right, baseY, sr, sbaseTB, paletteTextureIndex, fAttribC, rColorOffset, alpha, map.TerrainVertices[cellinfo.R].UV, type);
 
-				//vertices[nv + 3] = new MapVertex(mpos, map.VertexTBN[cellinfo.M], baseX, baseY, sbaseRL, sbaseTB, paletteTextureIndex, fAttribC, mColorOffset, alpha, 1,1, type);
-				//vertices[nv + 4] = new MapVertex(bpos, map.VertexTBN[cellinfo.B], baseX, bottom, sbaseRL, sb, paletteTextureIndex, fAttribC, bColorOffset, alpha, 1,2, type);
-				//vertices[nv + 5] = new MapVertex(rpos, map.VertexTBN[cellinfo.R], right, baseY, sr, sbaseTB, paletteTextureIndex, fAttribC, rColorOffset, alpha, 2,1, type);
+					vertices[3] = new MapVertex(tpos, map.TerrainVertices[cellinfo.T].TBN, baseX, top, sbaseRL, st, paletteTextureIndex, fAttribC, tColorOffset, alpha, map.TerrainVertices[cellinfo.T].UV, type);
+					vertices[4] = new MapVertex(lpos, map.TerrainVertices[cellinfo.L].TBN, left, baseY, sl, sbaseTB, paletteTextureIndex, fAttribC, lColorOffset, alpha, map.TerrainVertices[cellinfo.L].UV, type);
+					vertices[5] = new MapVertex(bpos, map.TerrainVertices[cellinfo.B].TBN, baseX, bottom, sbaseRL, sb, paletteTextureIndex, fAttribC, bColorOffset, alpha, map.TerrainVertices[cellinfo.B].UV, type);
+				}
+				else
+				{
+					vertices = new MapVertex[12];
+					//vertices[nv] = new MapVertex(tpos, map.VertexTBN[cellinfo.T], baseX, top, sbaseRL, st, paletteTextureIndex, fAttribC, tColorOffset, alpha, 1,0, type);
+					//vertices[nv + 1] = new MapVertex(mpos, map.VertexTBN[cellinfo.M], baseX, baseY, sbaseRL, sbaseTB, paletteTextureIndex, fAttribC, mColorOffset, alpha, 1,1, type);
+					//vertices[nv + 2] = new MapVertex(rpos, map.VertexTBN[cellinfo.R], right, baseY, sr, sbaseTB, paletteTextureIndex, fAttribC, rColorOffset, alpha, 2,1, type);
 
-				//vertices[nv + 6] = new MapVertex(tpos, map.VertexTBN[cellinfo.T], baseX, top, sbaseRL, st, paletteTextureIndex, fAttribC, tColorOffset, alpha, 1,0, type);
-				//vertices[nv + 7] = new MapVertex(lpos, map.VertexTBN[cellinfo.L], left, baseY, sl, sbaseTB, paletteTextureIndex, fAttribC, lColorOffset, alpha, 0,1, type);
-				//vertices[nv + 8] = new MapVertex(mpos, map.VertexTBN[cellinfo.M], baseX, baseY, sbaseRL, sbaseTB, paletteTextureIndex, fAttribC, mColorOffset, alpha, 1,1, type);
+					//vertices[nv + 3] = new MapVertex(mpos, map.VertexTBN[cellinfo.M], baseX, baseY, sbaseRL, sbaseTB, paletteTextureIndex, fAttribC, mColorOffset, alpha, 1,1, type);
+					//vertices[nv + 4] = new MapVertex(bpos, map.VertexTBN[cellinfo.B], baseX, bottom, sbaseRL, sb, paletteTextureIndex, fAttribC, bColorOffset, alpha, 1,2, type);
+					//vertices[nv + 5] = new MapVertex(rpos, map.VertexTBN[cellinfo.R], right, baseY, sr, sbaseTB, paletteTextureIndex, fAttribC, rColorOffset, alpha, 2,1, type);
 
-				//vertices[nv + 9] = new MapVertex(mpos, map.VertexTBN[cellinfo.M], baseX, baseY, sbaseRL, sbaseTB, paletteTextureIndex, fAttribC, mColorOffset, alpha, 1,1, type);
-				//vertices[nv + 10] = new MapVertex(lpos, map.VertexTBN[cellinfo.L], left, baseY, sl, sbaseTB, paletteTextureIndex, fAttribC, lColorOffset, alpha, 0,1, type);
-				//vertices[nv + 11] = new MapVertex(bpos, map.VertexTBN[cellinfo.B], baseX, bottom, sbaseRL, sb, paletteTextureIndex, fAttribC, bColorOffset, alpha, 1,2, type);
+					//vertices[nv + 6] = new MapVertex(tpos, map.VertexTBN[cellinfo.T], baseX, top, sbaseRL, st, paletteTextureIndex, fAttribC, tColorOffset, alpha, 1,0, type);
+					//vertices[nv + 7] = new MapVertex(lpos, map.VertexTBN[cellinfo.L], left, baseY, sl, sbaseTB, paletteTextureIndex, fAttribC, lColorOffset, alpha, 0,1, type);
+					//vertices[nv + 8] = new MapVertex(mpos, map.VertexTBN[cellinfo.M], baseX, baseY, sbaseRL, sbaseTB, paletteTextureIndex, fAttribC, mColorOffset, alpha, 1,1, type);
 
-				vertices[nv] = new MapVertex(tpos, map.VertexTBN[cellinfo.T], baseX, top, sbaseRL, st, paletteTextureIndex, fAttribC, tColorOffset, alpha, map.VertexUV[cellinfo.T], type);
-				vertices[nv + 1] = new MapVertex(mpos, map.VertexTBN[cellinfo.M], baseX, baseY, sbaseRL, sbaseTB, paletteTextureIndex, fAttribC, mColorOffset, alpha, map.VertexUV[cellinfo.M], type);
-				vertices[nv + 2] = new MapVertex(rpos, map.VertexTBN[cellinfo.R], right, baseY, sr, sbaseTB, paletteTextureIndex, fAttribC, rColorOffset, alpha, map.VertexUV[cellinfo.R], type);
+					//vertices[nv + 9] = new MapVertex(mpos, map.VertexTBN[cellinfo.M], baseX, baseY, sbaseRL, sbaseTB, paletteTextureIndex, fAttribC, mColorOffset, alpha, 1,1, type);
+					//vertices[nv + 10] = new MapVertex(lpos, map.VertexTBN[cellinfo.L], left, baseY, sl, sbaseTB, paletteTextureIndex, fAttribC, lColorOffset, alpha, 0,1, type);
+					//vertices[nv + 11] = new MapVertex(bpos, map.VertexTBN[cellinfo.B], baseX, bottom, sbaseRL, sb, paletteTextureIndex, fAttribC, bColorOffset, alpha, 1,2, type);
 
-				vertices[nv + 3] = new MapVertex(mpos, map.VertexTBN[cellinfo.M], baseX, baseY, sbaseRL, sbaseTB, paletteTextureIndex, fAttribC, mColorOffset, alpha, map.VertexUV[cellinfo.M], type);
-				vertices[nv + 4] = new MapVertex(bpos, map.VertexTBN[cellinfo.B], baseX, bottom, sbaseRL, sb, paletteTextureIndex, fAttribC, bColorOffset, alpha, map.VertexUV[cellinfo.B], type);
-				vertices[nv + 5] = new MapVertex(rpos, map.VertexTBN[cellinfo.R], right, baseY, sr, sbaseTB, paletteTextureIndex, fAttribC, rColorOffset, alpha, map.VertexUV[cellinfo.R], type);
+					vertices[0] = new MapVertex(tpos, map.TerrainVertices[cellinfo.T].TBN, baseX, top, sbaseRL, st, paletteTextureIndex, fAttribC, tColorOffset, alpha, map.TerrainVertices[cellinfo.T].UV, type);
+					vertices[1] = new MapVertex(mpos, map.TerrainVertices[cellinfo.M].TBN, baseX, baseY, sbaseRL, sbaseTB, paletteTextureIndex, fAttribC, mColorOffset, alpha, map.TerrainVertices[cellinfo.M].UV, type);
+					vertices[2] = new MapVertex(rpos, map.TerrainVertices[cellinfo.R].TBN, right, baseY, sr, sbaseTB, paletteTextureIndex, fAttribC, rColorOffset, alpha, map.TerrainVertices[cellinfo.R].UV, type);
 
-				vertices[nv + 6] = new MapVertex(tpos, map.VertexTBN[cellinfo.T], baseX, top, sbaseRL, st, paletteTextureIndex, fAttribC, tColorOffset, alpha, map.VertexUV[cellinfo.T], type);
-				vertices[nv + 7] = new MapVertex(lpos, map.VertexTBN[cellinfo.L], left, baseY, sl, sbaseTB, paletteTextureIndex, fAttribC, lColorOffset, alpha, map.VertexUV[cellinfo.L], type);
-				vertices[nv + 8] = new MapVertex(mpos, map.VertexTBN[cellinfo.M], baseX, baseY, sbaseRL, sbaseTB, paletteTextureIndex, fAttribC, mColorOffset, alpha, map.VertexUV[cellinfo.M], type);
+					vertices[3] = new MapVertex(mpos, map.TerrainVertices[cellinfo.M].TBN, baseX, baseY, sbaseRL, sbaseTB, paletteTextureIndex, fAttribC, mColorOffset, alpha, map.TerrainVertices[cellinfo.M].UV, type);
+					vertices[4] = new MapVertex(bpos, map.TerrainVertices[cellinfo.B].TBN, baseX, bottom, sbaseRL, sb, paletteTextureIndex, fAttribC, bColorOffset, alpha, map.TerrainVertices[cellinfo.B].UV, type);
+					vertices[5] = new MapVertex(rpos, map.TerrainVertices[cellinfo.R].TBN, right, baseY, sr, sbaseTB, paletteTextureIndex, fAttribC, rColorOffset, alpha, map.TerrainVertices[cellinfo.R].UV, type);
 
-				vertices[nv + 9] = new MapVertex(mpos, map.VertexTBN[cellinfo.M], baseX, baseY, sbaseRL, sbaseTB, paletteTextureIndex, fAttribC, mColorOffset, alpha, map.VertexUV[cellinfo.M], type);
-				vertices[nv + 10] = new MapVertex(lpos, map.VertexTBN[cellinfo.L], left, baseY, sl, sbaseTB, paletteTextureIndex, fAttribC, lColorOffset, alpha, map.VertexUV[cellinfo.L], type);
-				vertices[nv + 11] = new MapVertex(bpos, map.VertexTBN[cellinfo.B], baseX, bottom, sbaseRL, sb, paletteTextureIndex, fAttribC, bColorOffset, alpha, map.VertexUV[cellinfo.B], type);
+					vertices[6] = new MapVertex(tpos, map.TerrainVertices[cellinfo.T].TBN, baseX, top, sbaseRL, st, paletteTextureIndex, fAttribC, tColorOffset, alpha, map.TerrainVertices[cellinfo.T].UV, type);
+					vertices[7] = new MapVertex(lpos, map.TerrainVertices[cellinfo.L].TBN, left, baseY, sl, sbaseTB, paletteTextureIndex, fAttribC, lColorOffset, alpha, map.TerrainVertices[cellinfo.L].UV, type);
+					vertices[8] = new MapVertex(mpos, map.TerrainVertices[cellinfo.M].TBN, baseX, baseY, sbaseRL, sbaseTB, paletteTextureIndex, fAttribC, mColorOffset, alpha, map.TerrainVertices[cellinfo.M].UV, type);
 
+					vertices[9] = new MapVertex(mpos, map.TerrainVertices[cellinfo.M].TBN, baseX, baseY, sbaseRL, sbaseTB, paletteTextureIndex, fAttribC, mColorOffset, alpha, map.TerrainVertices[cellinfo.M].UV, type);
+					vertices[10] = new MapVertex(lpos, map.TerrainVertices[cellinfo.L].TBN, left, baseY, sl, sbaseTB, paletteTextureIndex, fAttribC, lColorOffset, alpha, map.TerrainVertices[cellinfo.L].UV, type);
+					vertices[11] = new MapVertex(bpos, map.TerrainVertices[cellinfo.B].TBN, baseX, bottom, sbaseRL, sb, paletteTextureIndex, fAttribC, bColorOffset, alpha, map.TerrainVertices[cellinfo.B].UV, type);
+
+				}
 			}
 			else
 			{
-				vertices[nv] = new MapVertex(tpos, map.VertexTBN[cellinfo.T], r.Left, r.Top, sl, st, paletteTextureIndex, fAttribC, tColorOffset, alpha, map.VertexUV[cellinfo.T], type);
-				vertices[nv + 1] = new MapVertex(mpos, map.VertexTBN[cellinfo.M], baseX, baseY, sbaseRL, sbaseTB, paletteTextureIndex, fAttribC, mColorOffset, alpha, map.VertexUV[cellinfo.M], type);
-				vertices[nv + 2] = new MapVertex(rpos, map.VertexTBN[cellinfo.R], r.Right, r.Top, sr, st, paletteTextureIndex, fAttribC, rColorOffset, alpha, map.VertexUV[cellinfo.R], type);
+				if (cellinfo.Flat)
+				{
+					vertices = new MapVertex[6];
+					vertices[0] = new MapVertex(tpos, map.TerrainVertices[cellinfo.T].TBN, r.Left, r.Top, sl, st, paletteTextureIndex, fAttribC, tColorOffset, alpha, map.TerrainVertices[cellinfo.T].UV, type);
+					vertices[1] = new MapVertex(bpos, map.TerrainVertices[cellinfo.B].TBN, r.Right, r.Bottom, sr, sb, paletteTextureIndex, fAttribC, bColorOffset, alpha, map.TerrainVertices[cellinfo.B].UV, type);
+					vertices[2] = new MapVertex(rpos, map.TerrainVertices[cellinfo.R].TBN, r.Right, r.Top, sr, st, paletteTextureIndex, fAttribC, rColorOffset, alpha, map.TerrainVertices[cellinfo.R].UV, type);
 
-				vertices[nv + 3] = new MapVertex(mpos, map.VertexTBN[cellinfo.M], baseX, baseY, sbaseRL, sbaseTB, paletteTextureIndex, fAttribC, mColorOffset, alpha, map.VertexUV[cellinfo.M], type);
-				vertices[nv + 4] = new MapVertex(bpos, map.VertexTBN[cellinfo.B], r.Right, r.Bottom, sr, sb, paletteTextureIndex, fAttribC, bColorOffset, alpha, map.VertexUV[cellinfo.B], type);
-				vertices[nv + 5] = new MapVertex(rpos, map.VertexTBN[cellinfo.R], r.Right, r.Top, sr, st, paletteTextureIndex, fAttribC, rColorOffset, alpha, map.VertexUV[cellinfo.R], type);
+					vertices[3] = new MapVertex(tpos, map.TerrainVertices[cellinfo.T].TBN, r.Left, r.Top, sl, st, paletteTextureIndex, fAttribC, tColorOffset, alpha, map.TerrainVertices[cellinfo.T].UV, type);
+					vertices[4] = new MapVertex(lpos, map.TerrainVertices[cellinfo.L].TBN, r.Left, r.Bottom, sl, sb, paletteTextureIndex, fAttribC, lColorOffset, alpha, map.TerrainVertices[cellinfo.L].UV, type);
+					vertices[5] = new MapVertex(bpos, map.TerrainVertices[cellinfo.B].TBN, r.Right, r.Bottom, sr, sb, paletteTextureIndex, fAttribC, bColorOffset, alpha, map.TerrainVertices[cellinfo.B].UV, type);
+				}
+				else
+				{
+					vertices = new MapVertex[12];
+					vertices[0] = new MapVertex(tpos, map.TerrainVertices[cellinfo.T].TBN, r.Left, r.Top, sl, st, paletteTextureIndex, fAttribC, tColorOffset, alpha, map.TerrainVertices[cellinfo.T].UV, type);
+					vertices[1] = new MapVertex(mpos, map.TerrainVertices[cellinfo.M].TBN, baseX, baseY, sbaseRL, sbaseTB, paletteTextureIndex, fAttribC, mColorOffset, alpha, map.TerrainVertices[cellinfo.M].UV, type);
+					vertices[2] = new MapVertex(rpos, map.TerrainVertices[cellinfo.R].TBN, r.Right, r.Top, sr, st, paletteTextureIndex, fAttribC, rColorOffset, alpha, map.TerrainVertices[cellinfo.R].UV, type);
 
-				vertices[nv + 6] = new MapVertex(tpos, map.VertexTBN[cellinfo.T], r.Left, r.Top, sl, st, paletteTextureIndex, fAttribC, tColorOffset, alpha, map.VertexUV[cellinfo.T], type);
-				vertices[nv + 7] = new MapVertex(lpos, map.VertexTBN[cellinfo.L], r.Left, r.Bottom, sl, sb, paletteTextureIndex, fAttribC, lColorOffset, alpha, map.VertexUV[cellinfo.L], type);
-				vertices[nv + 8] = new MapVertex(mpos, map.VertexTBN[cellinfo.M], baseX, baseY, sbaseRL, sbaseTB, paletteTextureIndex, fAttribC, mColorOffset, alpha, map.VertexUV[cellinfo.M], type);
+					vertices[3] = new MapVertex(mpos, map.TerrainVertices[cellinfo.M].TBN, baseX, baseY, sbaseRL, sbaseTB, paletteTextureIndex, fAttribC, mColorOffset, alpha, map.TerrainVertices[cellinfo.M].UV, type);
+					vertices[4] = new MapVertex(bpos, map.TerrainVertices[cellinfo.B].TBN, r.Right, r.Bottom, sr, sb, paletteTextureIndex, fAttribC, bColorOffset, alpha, map.TerrainVertices[cellinfo.B].UV, type);
+					vertices[5] = new MapVertex(rpos, map.TerrainVertices[cellinfo.R].TBN, r.Right, r.Top, sr, st, paletteTextureIndex, fAttribC, rColorOffset, alpha, map.TerrainVertices[cellinfo.R].UV, type);
 
-				vertices[nv + 9] = new MapVertex(mpos, map.VertexTBN[cellinfo.M], baseX, baseY, sbaseRL, sbaseTB, paletteTextureIndex, fAttribC, mColorOffset, alpha, map.VertexUV[cellinfo.M], type);
-				vertices[nv + 10] = new MapVertex(lpos, map.VertexTBN[cellinfo.L], r.Left, r.Bottom, sl, sb, paletteTextureIndex, fAttribC, lColorOffset, alpha, map.VertexUV[cellinfo.L], type);
-				vertices[nv + 11] = new MapVertex(bpos, map.VertexTBN[cellinfo.B], r.Right, r.Bottom, sr, sb, paletteTextureIndex, fAttribC, bColorOffset, alpha, map.VertexUV[cellinfo.B], type);
+					vertices[6] = new MapVertex(tpos, map.TerrainVertices[cellinfo.T].TBN, r.Left, r.Top, sl, st, paletteTextureIndex, fAttribC, tColorOffset, alpha, map.TerrainVertices[cellinfo.T].UV, type);
+					vertices[7] = new MapVertex(lpos, map.TerrainVertices[cellinfo.L].TBN, r.Left, r.Bottom, sl, sb, paletteTextureIndex, fAttribC, lColorOffset, alpha, map.TerrainVertices[cellinfo.L].UV, type);
+					vertices[8] = new MapVertex(mpos, map.TerrainVertices[cellinfo.M].TBN, baseX, baseY, sbaseRL, sbaseTB, paletteTextureIndex, fAttribC, mColorOffset, alpha, map.TerrainVertices[cellinfo.M].UV, type);
+
+					vertices[9] = new MapVertex(mpos, map.TerrainVertices[cellinfo.M].TBN, baseX, baseY, sbaseRL, sbaseTB, paletteTextureIndex, fAttribC, mColorOffset, alpha, map.TerrainVertices[cellinfo.M].UV, type);
+					vertices[10] = new MapVertex(lpos, map.TerrainVertices[cellinfo.L].TBN, r.Left, r.Bottom, sl, sb, paletteTextureIndex, fAttribC, lColorOffset, alpha, map.TerrainVertices[cellinfo.L].UV, type);
+					vertices[11] = new MapVertex(bpos, map.TerrainVertices[cellinfo.B].TBN, r.Right, r.Bottom, sr, sb, paletteTextureIndex, fAttribC, bColorOffset, alpha, map.TerrainVertices[cellinfo.B].UV, type);
+				}
 			}
 
-			verticesColor[nv] = tColorOffset;
-			verticesColor[nv + 1] = mColorOffset;
-			verticesColor[nv + 2] = rColorOffset;
-
-			verticesColor[nv + 3] = mColorOffset;
-			verticesColor[nv + 4] = bColorOffset;
-			verticesColor[nv + 5] = rColorOffset;
-
-			verticesColor[nv + 6] = tColorOffset;
-			verticesColor[nv + 7] = lColorOffset;
-			verticesColor[nv + 8] = mColorOffset;
-
-			verticesColor[nv + 9] = mColorOffset;
-			verticesColor[nv + 10] = lColorOffset;
-			verticesColor[nv + 11] = bColorOffset;
+			return vertices;
 		}
 
-		public static void FastCreateTilePlane(MapVertex[] vertices,
+		public static MapVertex[] FastCreateTilePlane(
 				in mat3 tbn,
 				in WPos inPos, in vec3 viewOffset,
 				Sprite r, int2 samplers, float paletteTextureIndex, float scale,
-				in float3 colorOffset, float alpha, int nv)
+				in float3 colorOffset, float alpha)
 		{
 			if (r.HasMeshCreateInfo)
 			{
@@ -916,14 +930,15 @@ namespace OpenRA.Graphics
 			}
 
 			var fAttribC = (float)attribC;
+			var vertices = new MapVertex[6];
+			vertices[2] = new MapVertex(leftBack, tbn, r.Left, r.Top, sl, st, paletteTextureIndex, fAttribC, colorOffset, alpha, CellInfo.TU, CellInfo.TV, 99);
+			vertices[1] = new MapVertex(rightBack, tbn, r.Right, r.Top, sr, st, paletteTextureIndex, fAttribC, colorOffset, alpha, CellInfo.RU, CellInfo.RV, 99);
+			vertices[0] = new MapVertex(rightFront, tbn, r.Right, r.Bottom, sr, sb, paletteTextureIndex, fAttribC, colorOffset, alpha, CellInfo.BU, CellInfo.BV, 99);
 
-			vertices[nv + 2] = new MapVertex(leftBack, tbn, r.Left, r.Top, sl, st, paletteTextureIndex, fAttribC, colorOffset, alpha, CellInfo.TU, CellInfo.TV, 99);
-			vertices[nv + 1] = new MapVertex(rightBack, tbn, r.Right, r.Top, sr, st, paletteTextureIndex, fAttribC, colorOffset, alpha, CellInfo.RU, CellInfo.RV, 99);
-			vertices[nv] = new MapVertex(rightFront, tbn, r.Right, r.Bottom, sr, sb, paletteTextureIndex, fAttribC, colorOffset, alpha, CellInfo.BU, CellInfo.BV, 99);
-
-			vertices[nv + 5] = new MapVertex(rightFront, tbn, r.Right, r.Bottom, sr, sb, paletteTextureIndex, fAttribC, colorOffset, alpha, CellInfo.BU, CellInfo.BV, 99);
-			vertices[nv + 4] = new MapVertex(leftFront, tbn, r.Left, r.Bottom, sl, sb, paletteTextureIndex, fAttribC, colorOffset, alpha, CellInfo.LU, CellInfo.LV, 99);
-			vertices[nv + 3] = new MapVertex(leftBack, tbn, r.Left, r.Top, sl, st, paletteTextureIndex, fAttribC, colorOffset, alpha, CellInfo.TU, CellInfo.TV, 99);
+			vertices[5] = new MapVertex(rightFront, tbn, r.Right, r.Bottom, sr, sb, paletteTextureIndex, fAttribC, colorOffset, alpha, CellInfo.BU, CellInfo.BV, 99);
+			vertices[4] = new MapVertex(leftFront, tbn, r.Left, r.Bottom, sl, sb, paletteTextureIndex, fAttribC, colorOffset, alpha, CellInfo.LU, CellInfo.LV, 99);
+			vertices[3] = new MapVertex(leftBack, tbn, r.Left, r.Top, sl, st, paletteTextureIndex, fAttribC, colorOffset, alpha, CellInfo.TU, CellInfo.TV, 99);
+			return vertices;
 		}
 
 		public static void FastCreateQuad(Vertex[] vertices, in float3 o, Sprite r, int2 samplers, float paletteTextureIndex, int nv,

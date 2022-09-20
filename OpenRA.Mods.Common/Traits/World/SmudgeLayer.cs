@@ -340,28 +340,28 @@ namespace OpenRA.Mods.Common.Traits
 
 							index = iRT;
 							uv = CalUV(index, TLX, TLY, width, height);
-							overlayVertices[i] = new MapVertex(map.VertexPos[index] + viewOffset, map.VertexTBN[index], uv,
+							overlayVertices[i] = new MapVertex(map.TerrainVertices[index].Pos + viewOffset, map.TerrainVertices[index].TBN, uv,
 								r.Left + r.LR * uv.X, r.Top + r.TB * uv.Y, sl + lr * uv.X, st + tb * uv.Y, paletteTextureIndex, fAttribC);
 							index = iLT;
 							uv = CalUV(index, TLX, TLY, width, height);
-							overlayVertices[i + 1] = new MapVertex(map.VertexPos[index] + viewOffset, map.VertexTBN[index], uv,
+							overlayVertices[i + 1] = new MapVertex(map.TerrainVertices[index].Pos + viewOffset, map.TerrainVertices[index].TBN, uv,
 								r.Left + r.LR * uv.X, r.Top + r.TB * uv.Y, sl + lr * uv.X, st + tb * uv.Y, paletteTextureIndex, fAttribC);
 							index = iRB;
 							uv = CalUV(index, TLX, TLY, width, height);
-							overlayVertices[i + 2] = new MapVertex(map.VertexPos[index] + viewOffset, map.VertexTBN[index], uv,
+							overlayVertices[i + 2] = new MapVertex(map.TerrainVertices[index].Pos + viewOffset, map.TerrainVertices[index].TBN, uv,
 								r.Left + r.LR * uv.X, r.Top + r.TB * uv.Y, sl + lr * uv.X, st + tb * uv.Y, paletteTextureIndex, fAttribC);
 
 							index = iLT;
 							uv = CalUV(index, TLX, TLY, width, height);
-							overlayVertices[i + 3] = new MapVertex(map.VertexPos[index] + viewOffset, map.VertexTBN[index], uv,
+							overlayVertices[i + 3] = new MapVertex(map.TerrainVertices[index].Pos + viewOffset, map.TerrainVertices[index].TBN, uv,
 								r.Left + r.LR * uv.X, r.Top + r.TB * uv.Y, sl + lr * uv.X, st + tb * uv.Y, paletteTextureIndex, fAttribC);
 							index = iLB;
 							uv = CalUV(index, TLX, TLY, width, height);
-							overlayVertices[i + 4] = new MapVertex(map.VertexPos[index] + viewOffset, map.VertexTBN[index], uv,
+							overlayVertices[i + 4] = new MapVertex(map.TerrainVertices[index].Pos + viewOffset, map.TerrainVertices[index].TBN, uv,
 								r.Left + r.LR * uv.X, r.Top + r.TB * uv.Y, sl + lr * uv.X, st + tb * uv.Y, paletteTextureIndex, fAttribC);
 							index = iRB;
 							uv = CalUV(index, TLX, TLY, width, height);
-							overlayVertices[i + 5] = new MapVertex(map.VertexPos[index] + viewOffset, map.VertexTBN[index], uv,
+							overlayVertices[i + 5] = new MapVertex(map.TerrainVertices[index].Pos + viewOffset, map.TerrainVertices[index].TBN, uv,
 								r.Left + r.LR * uv.X, r.Top + r.TB * uv.Y, sl + lr * uv.X, st + tb * uv.Y, paletteTextureIndex, fAttribC);
 						}
 						else
@@ -373,28 +373,28 @@ namespace OpenRA.Mods.Common.Traits
 							// ------------
 							index = iRT;
 							uv = CalUV(index, TLX, TLY, width, height);
-							overlayVertices[i] = new MapVertex(map.VertexPos[index] + viewOffset, map.VertexTBN[index], uv,
+							overlayVertices[i] = new MapVertex(map.TerrainVertices[index].Pos + viewOffset, map.TerrainVertices[index].TBN, uv,
 								r.Left + r.LR * uv.X, r.Top + r.TB * uv.Y, sl + lr * uv.X, st + tb * uv.Y, paletteTextureIndex, fAttribC);
 							index = iLT;
 							uv = CalUV(index, TLX, TLY, width, height);
-							overlayVertices[i + 1] = new MapVertex(map.VertexPos[index] + viewOffset, map.VertexTBN[index], uv,
+							overlayVertices[i + 1] = new MapVertex(map.TerrainVertices[index].Pos + viewOffset, map.TerrainVertices[index].TBN, uv,
 								r.Left + r.LR * uv.X, r.Top + r.TB * uv.Y, sl + lr * uv.X, st + tb * uv.Y, paletteTextureIndex, fAttribC);
 							index = iLB;
 							uv = CalUV(index, TLX, TLY, width, height);
-							overlayVertices[i + 2] = new MapVertex(map.VertexPos[index] + viewOffset, map.VertexTBN[index], uv,
+							overlayVertices[i + 2] = new MapVertex(map.TerrainVertices[index].Pos + viewOffset, map.TerrainVertices[index].TBN, uv,
 								r.Left + r.LR * uv.X, r.Top + r.TB * uv.Y, sl + lr * uv.X, st + tb * uv.Y, paletteTextureIndex, fAttribC);
 
 							index = iRT;
 							uv = CalUV(index, TLX, TLY, width, height);
-							overlayVertices[i + 3] = new MapVertex(map.VertexPos[index] + viewOffset, map.VertexTBN[index], uv,
+							overlayVertices[i + 3] = new MapVertex(map.TerrainVertices[index].Pos + viewOffset, map.TerrainVertices[index].TBN, uv,
 								r.Left + r.LR * uv.X, r.Top + r.TB * uv.Y, sl + lr * uv.X, st + tb * uv.Y, paletteTextureIndex, fAttribC);
 							index = iLB;
 							uv = CalUV(index, TLX, TLY, width, height);
-							overlayVertices[i + 4] = new MapVertex(map.VertexPos[index] + viewOffset, map.VertexTBN[index], uv,
+							overlayVertices[i + 4] = new MapVertex(map.TerrainVertices[index].Pos + viewOffset, map.TerrainVertices[index].TBN, uv,
 								r.Left + r.LR * uv.X, r.Top + r.TB * uv.Y, sl + lr * uv.X, st + tb * uv.Y, paletteTextureIndex, fAttribC);
 							index = iRB;
 							uv = CalUV(index, TLX, TLY, width, height);
-							overlayVertices[i + 5] = new MapVertex(map.VertexPos[index] + viewOffset, map.VertexTBN[index], uv,
+							overlayVertices[i + 5] = new MapVertex(map.TerrainVertices[index].Pos + viewOffset, map.TerrainVertices[index].TBN, uv,
 								r.Left + r.LR * uv.X, r.Top + r.TB * uv.Y, sl + lr * uv.X, st + tb * uv.Y, paletteTextureIndex, fAttribC);
 						}
 
@@ -407,7 +407,7 @@ namespace OpenRA.Mods.Common.Traits
 
 		float2 CalUV(int index, int TLX, int TLY, int width, int height)
 		{
-			var vpos = map.VertexWPos[index];
+			var vpos = map.TerrainVertices[index].LogicPos;
 			return new float2((float)(vpos.X - TLX) / width, (float)(vpos.Y - TLY) / height);
 		}
 
