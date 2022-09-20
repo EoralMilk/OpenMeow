@@ -117,6 +117,11 @@ HARV:
 		FactionImages:
 			gdi: harv.gdi
 			nod: harv.nod
+	RenderModels:
+		Image: cmin
+		FactionImages:
+			gdi: cmin
+			nod: harv
 	-DamagedByTerrain@VEINS:
 	-LeavesTrails@VEINS:
 	WithHarvesterPipsDecoration:
