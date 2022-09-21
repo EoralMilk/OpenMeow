@@ -14,6 +14,7 @@ using Eluant;
 using Eluant.ObjectBinding;
 using OpenRA.Scripting;
 using OpenRA.Support;
+using TrueSync;
 
 namespace OpenRA
 {
@@ -37,6 +38,34 @@ namespace OpenRA
 		public static bool operator !=(in WVec me, in WVec other) { return !(me == other); }
 
 		public static int Dot(in WVec a, in WVec b) { return a.X * b.X + a.Y * b.Y + a.Z * b.Z; }
+
+		public static WVec Cross(in WVec vector1, in WVec vector2)
+		{
+			var num3 = (vector1.Y * vector2.Z * 1024) - (vector1.Z * vector2.Y * 1024);
+			var num2 = (vector1.Z * vector2.X * 1024) - (vector1.X * vector2.Z * 1024);
+			var num1 = (vector1.X * vector2.Y * 1024) - (vector1.Y * vector2.X * 1024);
+			var x = num3;
+			var y = num2;
+			var z = num1;
+			return new WVec(x, y, z);
+		}
+
+		public static WVec CrossNormalize(in WVec vector1, in WVec vector2)
+		{
+			var num3 = (vector1.Y * vector2.Z * 1024) - (vector1.Z * vector2.Y * 1024);
+			var num2 = (vector1.Z * vector2.X * 1024) - (vector1.X * vector2.Z * 1024);
+			var num1 = (vector1.X * vector2.Y * 1024) - (vector1.Y * vector2.X * 1024);
+			var x = num3;
+			var y = num2;
+			var z = num1;
+			var nml = new WVec(x, y, z);
+			var length = nml.Length;
+			return new WVec(
+				(int)((long)x * 1024 / length),
+				(int)((long)y * 1024 / length),
+				(int)((long)z * 1024 / length));
+		}
+
 		public long LengthSquared => (long)X * X + (long)Y * Y + (long)Z * Z;
 		public int Length => (int)Exts.ISqrt(LengthSquared);
 		public long HorizontalLengthSquared => (long)X * X + (long)Y * Y;

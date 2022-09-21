@@ -139,7 +139,7 @@ namespace OpenRA.Mods.Common.Graphics
 			if (renderLength <= 1)
 				return;
 
-			var screenWidth = (float)width.Length / World3DCoordinate.WPosPerMeter;
+			var screenWidth = (float)width.Length / World3DCoordinate.WDistPerMeter;
 			var wcr = Game.Renderer.WorldRgbaColorRenderer;
 
 			// Start of the first line segment is the tail of the list - don't smooth it.

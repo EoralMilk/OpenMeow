@@ -80,14 +80,16 @@ namespace OpenRA
 			return new quat((float)rot.x / 1024, (float)rot.y / 1024, (float)rot.z / 1024, (float)rot.w / 1024);
 		}
 
-		//public static WRot FromQuat(in TSQuaternion quat)
-		//{
-		//	var v = quat.eulerAngles;
-		//	return new WRot(
-		//		new WAngle((int)(v.y * 512 / 180)),
-		//		new WAngle(256 + (int)(v.x * 512 / 180)),
-		//		new WAngle((int)(v.z * 512 / 180)));
-		//}
+		public static WRot FromQuat(in TSQuaternion quat)
+		{
+			var v = quat.eulerAngles;
+			return new WRot(
+				new WAngle((int)(v.x * 512 / 180)),
+				
+				new WAngle((int)(v.y * 512 / 180)),
+				new WAngle((int)(v.z * 512 / 180))
+				);
+		}
 
 		/// <summary>
 		/// Construct a rotation from an axis and angle.
@@ -165,6 +167,16 @@ namespace OpenRA
 			var rw = ((long)rot.w * w - (long)rot.x * x - (long)rot.y * y - (long)rot.z * z) / 1024;
 
 			return new WRot((int)rx, (int)ry, (int)rz, (int)rw);
+		}
+
+		public static WRot FromToRotation(WVec fromVector, WVec toVector)
+		{
+			WVec w = WVec.Cross(fromVector, toVector);
+			var qw = WVec.Dot(fromVector, toVector);
+			qw += (int)Exts.ISqrt(fromVector.LengthSquared * toVector.LengthSquared);
+			WRot q = new WRot(w.X, w.Y, w.Z, qw);
+
+			return q;
 		}
 
 		public static bool operator ==(in WRot me, in WRot other)

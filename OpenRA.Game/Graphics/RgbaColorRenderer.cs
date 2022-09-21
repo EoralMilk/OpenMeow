@@ -199,45 +199,12 @@ namespace OpenRA.Graphics
 
 		public void DrawScreenLine(in float3 start, in float3 end, float width, Color color, BlendMode blendMode = BlendMode.Alpha)
 		{
-			DrawLine(start, end, width, color, blendMode, false);
+			DrawLine(start, end, width, color, color, blendMode, false);
 		}
 
 		public void DrawWorldLine(in float3 start, in float3 end, float width, Color color, BlendMode blendMode = BlendMode.Alpha)
 		{
-			DrawLine(start, end, width, color, blendMode, true);
-		}
-
-		void DrawLine(in float3 start, in float3 end, float width, Color color, BlendMode blendMode = BlendMode.Alpha, bool world = false)
-		{
-			var delta = (end - start) / (end - start).XY.Length;
-			var corner = width / 2 * new float2(-delta.Y, delta.X);
-
-			color = Util.PremultiplyAlpha(color);
-			var r = color.R / 255.0f;
-			var g = color.G / 255.0f;
-			var b = color.B / 255.0f;
-			var a = color.A / 255.0f;
-
-			if (world)
-			{
-				vertices[0] = new Vertex(start - corner + ViewZOffset, r, g, b, a, 0, 0);
-				vertices[1] = new Vertex(start + corner + ViewZOffset, r, g, b, a, 0, 0);
-				vertices[2] = new Vertex(end + corner + ViewZOffset, r, g, b, a, 0, 0);
-				vertices[3] = new Vertex(end + corner + ViewZOffset, r, g, b, a, 0, 0);
-				vertices[4] = new Vertex(end - corner + ViewZOffset, r, g, b, a, 0, 0);
-				vertices[5] = new Vertex(start - corner + ViewZOffset, r, g, b, a, 0, 0);
-			}
-			else
-			{
-				vertices[0] = new Vertex(start - corner + ScreenOffset, r, g, b, a, 0, 0);
-				vertices[1] = new Vertex(start + corner + ScreenOffset, r, g, b, a, 0, 0);
-				vertices[2] = new Vertex(end + corner + ScreenOffset, r, g, b, a, 0, 0);
-				vertices[3] = new Vertex(end + corner + ScreenOffset, r, g, b, a, 0, 0);
-				vertices[4] = new Vertex(end - corner + ScreenOffset, r, g, b, a, 0, 0);
-				vertices[5] = new Vertex(start - corner + ScreenOffset, r, g, b, a, 0, 0);
-			}
-
-			parent.DrawRGBAVertices(vertices, blendMode);
+			DrawLine(start, end, width, color, color, blendMode, true);
 		}
 
 		/// <summary>

@@ -18,6 +18,7 @@ using System.Runtime.Intrinsics.X86;
 using System.Text;
 using System.Text.RegularExpressions;
 using GlmSharp;
+using OpenRA.Effects;
 using OpenRA.FileFormats;
 using OpenRA.FileSystem;
 using OpenRA.Graphics;
@@ -25,6 +26,7 @@ using OpenRA.Primitives;
 using OpenRA.Primitives.FixPoint;
 using OpenRA.Support;
 using OpenRA.Traits;
+using TrueSync;
 
 namespace OpenRA
 {
@@ -184,8 +186,15 @@ namespace OpenRA
 
 		public readonly bool Flat;
 
+		public TSVector LogicNmlTL;
+		public TSVector LogicNmlTR;
+		public TSVector LogicNmlBL;
+		public TSVector LogicNmlBR;
+		public TSVector LogicNml;
+
 		public CellInfo(WPos center, // float3 tlmn, float3 tmrn, float3 mlbn, float3 mbrn,
-			int m, int t, int b, int l, int r, uint type, int2 ctl, int2 ctr, int2 cbl, int2 cbr, bool flat)
+			int m, int t, int b, int l, int r, uint type, int2 ctl, int2 ctr, int2 cbl, int2 cbr, bool flat,
+			TSVector tlnml, TSVector trnml, TSVector blnml, TSVector brnml)
 		{
 			CellCenterPos = center;
 
@@ -202,6 +211,12 @@ namespace OpenRA
 			MiniCellBR = cbr;
 
 			Flat = flat;
+			LogicNmlTL = tlnml;
+			LogicNmlTR = trnml;
+			LogicNmlBL = blnml;
+			LogicNmlBR = brnml;
+			LogicNml = (LogicNmlTL + LogicNmlTR + LogicNmlBL + LogicNmlBR) / 4;
+			LogicNml = LogicNml.normalized;
 		}
 	}
 
@@ -1230,8 +1245,7 @@ namespace OpenRA
 					var mlb = CalTBN(pm, pl, pb, uvm, uvl, uvb);
 					var mbr = CalTBN(pm, pb, pr, uvm, uvb, uvr);
 
-					if (ramp != 0)
-						TerrainVertices[im].TBN = (tlm * 0.25f + tmr * 0.25f + mlb * 0.25f + mbr * 0.25f);
+					TerrainVertices[im].TBN = (tlm * 0.25f + tmr * 0.25f + mlb * 0.25f + mbr * 0.25f);
 
 					if (vertexNmlCaled[it])
 						TerrainVertices[it].TBN = 0.25f * (tlm * 0.5f + tmr * 0.5f) + TerrainVertices[it].TBN;
@@ -1281,11 +1295,22 @@ namespace OpenRA
 							break;
 					}
 
+					WPos wposm = TerrainVertices[im].LogicPos;
+					WPos wpost = TerrainVertices[it].LogicPos;
+					WPos wposb = TerrainVertices[ib].LogicPos;
+					WPos wposl = TerrainVertices[il].LogicPos;
+					WPos wposr = TerrainVertices[ir].LogicPos;
+
+					var tlNml = CalLogicNml(wposm, wpost, wposl);
+					var trNml = CalLogicNml(wposm, wposr, wpost);
+					var blNml = CalLogicNml(wposm, wposl, wposb);
+					var brNml = CalLogicNml(wposl, wposm, wposb);
+
 					var itl = (mid.Y - 1) * VertexArrayWidth + mid.X - 1;
 					var itr = (mid.Y - 1) * VertexArrayWidth + mid.X + 1;
 					var ibl = (mid.Y + 1) * VertexArrayWidth + mid.X - 1;
 					var ibr = (mid.Y + 1) * VertexArrayWidth + mid.X + 1;
-					MiniCells[mid.Y - 1, mid.X - 1] = new MiniCell(itl, it, il, im,MiniCellType.TLBR); // tl
+					MiniCells[mid.Y - 1, mid.X - 1] = new MiniCell(itl, it, il, im, MiniCellType.TLBR); // tl
 					MiniCells[mid.Y - 1, mid.X] = new MiniCell(it, itr, im, ir, MiniCellType.TRBL); // tr
 					MiniCells[mid.Y, mid.X - 1] = new MiniCell(il, im, ibl, ib, MiniCellType.TLBR); // bl
 					MiniCells[mid.Y, mid.X] = new MiniCell(im, ir, ib, ibr, MiniCellType.TRBL); // br
@@ -1299,7 +1324,8 @@ namespace OpenRA
 
 					CellInfo cellInfo = new CellInfo(TerrainVertices[im].LogicPos, im, it, ib, il, ir, typeNum,
 						new int2(mid.Y - 1, mid.X - 1), new int2(mid.Y - 1, mid.X),
-						new int2(mid.Y, mid.X - 1), new int2(mid.Y, mid.X), flatCell);
+						new int2(mid.Y, mid.X - 1), new int2(mid.Y, mid.X), flatCell,
+						tlNml, trNml, blNml, brNml);
 
 					CellInfos[uv.ToCPos(this)] = cellInfo;
 				}
@@ -1347,6 +1373,31 @@ namespace OpenRA
 		}
 
 		#region util for CalculateTileVertexInfo
+
+		TSVector TileTSVector(WPos pos)
+		{
+			return new TSVector(-(FP)pos.X / 256,
+										(FP)pos.Y / 256,
+										(FP)pos.Z / 256);
+		}
+
+		TSVector CalLogicNml(WPos a, WPos b, WPos c)
+		{
+			var va = TileTSVector(a);
+			var vb = TileTSVector(b);
+			var vc = TileTSVector(c);
+
+			var ab = vb - va;
+			var ac = vc - va;
+			//if (ab.LengthSquared == 0 || ac.LengthSquared == 0 || ab == ac || ab == -ac)
+			//	return new TSVector(0, 0, 1);
+			//var cross = TSVector.Cross(ab, ac);
+			//if (cross.sqrMagnitude <= 0)
+			//	return new TSVector(0, 0, 1);
+			//else
+			return TSVector.Cross(ab, ac).normalized;
+		}
+
 		vec3 CalNormal(float3 a, float3 b, float3 c)
 		{
 			var va = new vec3(a.X, a.Y, a.Z);
@@ -1877,102 +1928,45 @@ namespace OpenRA
 			if (Grid.Type == MapGridType.Rectangular)
 				return new WDist(pos.Z);
 
-			//// Apply ramp offset
-			//var cell = CellContaining(pos);
-			//var offset = pos - CenterOfCell(cell);
-
-			//if (Ramp.TryGetValue(cell, out var ramp) && ramp != 0)
-			//{
-			//	var r = Grid.Ramps[ramp];
-			//	return new WDist(offset.Z + r.CenterHeightOffset - r.HeightOffset(offset.X, offset.Y));
-			//}
-
-			//return new WDist(offset.Z);
 			return new WDist(pos.Z - HeightOfTerrain(pos));
 		}
 
 		public WRot TerrainOrientation(CPos cell)
 		{
-			if (Ramp.TryGetValue(cell, out var ramp))
-				return Grid.Ramps[ramp].Orientation;
-			else
+			// if (Ramp.TryGetValue(cell, out var ramp))
+			// 	return Grid.Ramps[ramp].Orientation;
+			// else
+			// 	return WRot.None;
+
+			return NormalToTerrainOrientation(CellInfos[cell].LogicNml);
+		}
+
+		WRot NormalToTerrainOrientation(in TSVector normal)
+		{
+			if (normal.x == 0 && normal.y == 0)
 				return WRot.None;
 
-			var pos = CenterOfCell(cell);
+			var horizon = new TSVector2(normal.x, normal.y);
+			var hl = horizon.magnitude;
+			var angle = new WAngle((int)(FP.Asin(hl) * 512 / FP.Pi));
 
-			var u = pos.X / MapGrid.MapMiniCellWidth;
-			var v = pos.Y / MapGrid.MapMiniCellWidth;
-			if (u < 0 || v < 0 || u >= VertexArrayWidth - 1 || v >= VertexArrayHeight - 1)
-				return WRot.None;
+			var hnml = horizon.normalized;
+			WVec dir = new WVec(
+				(int)(-hnml.x * 1024),
+				(int)(hnml.y * 1024),
+				0);
 
-			vec3 normal = new vec3(0, 0, 1);
+			// debug draw
+			// if (Game.GetWorldRenderer() != null)
+			// {
+			// 	var pos = CenterOfCell(cell);
+			// 	var start = World3DCoordinate.WPosToFloat3(pos);
+			// 	var end = start + 10 * World3DCoordinate.TSVec3ToFloat3(normal.normalized);
+			// 	var world = Game.GetWorldRenderer().World;
+			// 	world.AddFrameEndTask(w => w.Add(new DrawWorldLineEffect(world, pos, start, end, new WDist(64), Color.AliceBlue, 5)));
+			// }
 
-			var tx = pos.X % MapGrid.MapMiniCellWidth;
-			var ty = pos.Y % MapGrid.MapMiniCellWidth;
-			var LT = TerrainVertices[u + v * VertexArrayWidth].TBN.Column2;
-			var RT = TerrainVertices[u + 1 + v * VertexArrayWidth].TBN.Column2;
-			var LB = TerrainVertices[u + (v + 1) * VertexArrayWidth].TBN.Column2;
-			var RB = TerrainVertices[u + 1 + (v + 1) * VertexArrayWidth].TBN.Column2;
-
-			if (u % 2 == v % 2)
-			{
-				// ------------
-				// |           / |
-				// |      /      |
-				// |  /          |
-				// ------------
-				if (ty == 724 - tx)
-				{
-					normal = vec3.Lerp(LB, RT, (float)tx / 724);
-				}
-				else if (ty < 724 - tx)
-				{
-					var a = vec3.Lerp(LT, LB, (float)ty / 724);
-					var b = vec3.Lerp(RT, LB, (float)ty /724);
-					normal = vec3.Lerp(a, b, (float)tx / (724 - ty));
-				}
-				else
-				{
-					var a = vec3.Lerp(LB, RB, (float)tx / 724);
-					var b = vec3.Lerp(LB, RT, (float)tx / 724);
-					normal = vec3.Lerp(a, b, (float)(724 - ty) / tx);
-				}
-			}
-			else
-			{
-				// ------------
-				// |  \          |
-				// |      \      |
-				// |          \  |
-				// ------------
-				if (tx == ty)
-				{
-					normal = vec3.Lerp(LT, RB, (float)tx / 724);
-				}
-				else if (tx > ty)
-				{
-					var a = vec3.Lerp(LT, RT, (float)tx / 724);
-					var b = vec3.Lerp(LT, RB, (float)tx / 724);
-					normal = vec3.Lerp(a, b, (float)ty / tx);
-				}
-				else
-				{
-					var a = vec3.Lerp(LT, LB, (float)ty / 724);
-					var b = vec3.Lerp(LT, RB, (float)ty / 724);
-					normal = vec3.Lerp(a, b, (float)tx / ty);
-				}
-			}
-
-			normal = normal.Normalized;
-			var w = vec3.Cross(new vec3(0, 0, 1), normal);
-			var q = new quat(w.x, w.y, w.z, vec3.Dot(new vec3(0, 0, 1), normal));
-			q.w += MathF.Sqrt(new vec3(0, 0, 1).LengthSqr * normal.LengthSqr);
-			q = q.Normalized;
-
-			var worldPitch = new WAngle((int)(q.Pitch * 512 / Math.PI));
-			var worldRoll = new WAngle((int)(q.Roll * 512 / Math.PI));
-
-			return new WRot(worldPitch, worldRoll, WAngle.Zero);
+			return new WRot(dir, angle);
 		}
 
 		public WVec Offset(CVec delta, int dz)

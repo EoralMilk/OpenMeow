@@ -5,41 +5,46 @@ namespace OpenRA.Primitives.FixPoint
 {
 	public class World3DCoordinate
 	{
-		public const int WPosPerMeter = 256;
+		public const int WDistPerMeter = 256;
 		public static TSVector Front = new TSVector(0, 1, 0);
 		public static TSVector Up = new TSVector(0, 0, 1);
 
 		public static TSVector WPosToTSVec3(WPos pos)
 		{
-			return new TSVector(-new FP(pos.X) / WPosPerMeter,
-												new FP(pos.Y) / WPosPerMeter,
-												new FP(pos.Z) / WPosPerMeter);
+			return new TSVector(-new FP(pos.X) / WDistPerMeter,
+												new FP(pos.Y) / WDistPerMeter,
+												new FP(pos.Z) / WDistPerMeter);
 		}
 
 		public static TSVector WVecToTSVec3(WVec vec)
 		{
-			return new TSVector(-new FP(vec.X) / WPosPerMeter,
-												new FP(vec.Y) / WPosPerMeter,
-												new FP(vec.Z) / WPosPerMeter);
+			return new TSVector(-new FP(vec.X) / WDistPerMeter,
+												new FP(vec.Y) / WDistPerMeter,
+												new FP(vec.Z) / WDistPerMeter);
 		}
 
 		public static WPos TSVec3ToWPos(in TSVector vec)
 		{
-			return new WPos(-(int)(vec.x * WPosPerMeter),
-										(int)(vec.y * WPosPerMeter),
-										(int)(vec.z * WPosPerMeter));
+			return new WPos(-(int)(vec.x * WDistPerMeter),
+										(int)(vec.y * WDistPerMeter),
+										(int)(vec.z * WDistPerMeter));
 		}
 
 		public static WVec TSVec3ToWVec(in TSVector vec)
 		{
-			return new WVec(-(int)(vec.x * WPosPerMeter),
-										(int)(vec.y * WPosPerMeter),
-										(int)(vec.z * WPosPerMeter));
+			return new WVec(-(int)(vec.x * WDistPerMeter),
+										(int)(vec.y * WDistPerMeter),
+										(int)(vec.z * WDistPerMeter));
 		}
 
 		public static vec3 TSVec3ToRVec3(TSVector vec)
 		{
 			return new vec3(vec.x.AsFloat(), vec.y.AsFloat(), vec.z.AsFloat());
+		}
+
+		public static float3 TSVec3ToFloat3(TSVector vec)
+		{
+			return new float3(vec.x.AsFloat(), vec.y.AsFloat(), vec.z.AsFloat());
 		}
 
 		public static float3 Vec3toFloat3(vec3 vec)
@@ -50,6 +55,30 @@ namespace OpenRA.Primitives.FixPoint
 		public static vec3 Float3toVec3(float3 f3)
 		{
 			return new vec3(f3.X, f3.Y, f3.Z);
+		}
+
+		public static float3 WPosToFloat3(WPos pos)
+		{
+			return new float3(-(float)pos.X / WDistPerMeter,
+										(float)pos.Y / WDistPerMeter,
+										(float)pos.Z / WDistPerMeter);
+		}
+
+		public static float3 WVecToFloat3(WVec vec)
+		{
+			return new float3(-(float)vec.X / WDistPerMeter,
+										(float)vec.Y / WDistPerMeter,
+										(float)vec.Z / WDistPerMeter);
+		}
+
+		/// <summary>
+		/// only use for render
+		/// </summary>
+		public static WPos Float3ToWPos(in float3 f3)
+		{
+			return new WPos(-(int)(f3.X * WDistPerMeter),
+										(int)(f3.Y * WDistPerMeter),
+										(int)(f3.Z * WDistPerMeter));
 		}
 
 		public static mat4 TSMatrix4x4ToMat4(TSMatrix4x4 tSMatrix4X4)

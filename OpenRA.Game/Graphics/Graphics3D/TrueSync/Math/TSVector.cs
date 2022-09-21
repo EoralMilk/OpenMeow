@@ -216,6 +216,11 @@ namespace TrueSync
 			return from + (to - from) * percent;
 		}
 
+		public static TSVector Lerp(TSVector from, TSVector to, FP mul, FP div)
+		{
+			return from + (to - from) * mul / div;
+		}
+
 		/// <summary>
 		/// Builds a string from the JVector.
 		/// </summary>
