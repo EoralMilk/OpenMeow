@@ -192,6 +192,12 @@ namespace OpenRA
 		public TSVector LogicNmlBR;
 		public TSVector LogicNml;
 
+		public WRot TerrainOrientationTL;
+		public WRot TerrainOrientationTR;
+		public WRot TerrainOrientationBL;
+		public WRot TerrainOrientationBR;
+		public WRot TerrainOrientationM;
+
 		public CellInfo(WPos center, // float3 tlmn, float3 tmrn, float3 mlbn, float3 mbrn,
 			int m, int t, int b, int l, int r, uint type, int2 ctl, int2 ctr, int2 cbl, int2 cbr, bool flat,
 			TSVector tlnml, TSVector trnml, TSVector blnml, TSVector brnml)
@@ -211,12 +217,18 @@ namespace OpenRA
 			MiniCellBR = cbr;
 
 			Flat = flat;
-			LogicNmlTL = tlnml;
-			LogicNmlTR = trnml;
-			LogicNmlBL = blnml;
-			LogicNmlBR = brnml;
+			LogicNmlTL = tlnml.normalized;
+			LogicNmlTR = trnml.normalized;
+			LogicNmlBL = blnml.normalized;
+			LogicNmlBR = brnml.normalized;
 			LogicNml = (LogicNmlTL + LogicNmlTR + LogicNmlBL + LogicNmlBR) / 4;
 			LogicNml = LogicNml.normalized;
+
+			TerrainOrientationTL = Map.NormalToTerrainOrientation(LogicNmlTL);
+			TerrainOrientationTR = Map.NormalToTerrainOrientation(LogicNmlTR);
+			TerrainOrientationBL = Map.NormalToTerrainOrientation(LogicNmlBL);
+			TerrainOrientationBR = Map.NormalToTerrainOrientation(LogicNmlBR);
+			TerrainOrientationM = Map.NormalToTerrainOrientation(LogicNml);
 		}
 	}
 
@@ -1937,11 +1949,18 @@ namespace OpenRA
 			// 	return Grid.Ramps[ramp].Orientation;
 			// else
 			// 	return WRot.None;
-
-			return NormalToTerrainOrientation(CellInfos[cell].LogicNml);
+			if (CellInfos.Contains(cell))
+				return CellInfos[cell].TerrainOrientationM;
+			else
+				return WRot.None;
 		}
 
-		WRot NormalToTerrainOrientation(in TSVector normal)
+		/// <summary>
+		/// calculate WRot of TerrainOrientation from fix point normal
+		/// </summary>
+		/// <param name="normal"> should be normalized</param>
+		/// <returns>TerrainOrientation</returns>
+		public static WRot NormalToTerrainOrientation(in TSVector normal)
 		{
 			if (normal.x == 0 && normal.y == 0)
 				return WRot.None;
