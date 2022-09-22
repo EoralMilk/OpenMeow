@@ -229,8 +229,9 @@ ttnk:
 		ShadowStart: 4
 		Offset: 0, -14, 14
 	make: gatickmk
-		Length: 24
-		ShadowStart: 24
+		Length: 23
+		Start: 1
+		ShadowStart: 25
 		Offset: 0, -14, 14
 	muzzle: gunfire
 		Length: *

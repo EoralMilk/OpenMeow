@@ -118,7 +118,7 @@ namespace OpenRA.Mods.Common.Traits.Render
 					foreach (var n in notify)
 					{
 						if (toDeploy)
-							n.FinishedUndeployPrepare(self);
+							n.FinishedDeployPrepare(self);
 						else if (toUndeploy)
 							n.FinishedUndeployPrepare(self);
 					}
