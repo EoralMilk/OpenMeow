@@ -274,7 +274,6 @@ namespace OpenRA.Mods.Common.Traits
 
 		protected virtual void Tick(Actor self)
 		{
-
 			if (Info.RealignBeforeDeploy && forceRealigning)
 			{
 				if (LocalOrientation.Yaw == Info.InitialFacing)
@@ -284,7 +283,7 @@ namespace OpenRA.Mods.Common.Traits
 						foreach (var n in notify)
 						{
 							if (toDeploy)
-								n.FinishedUndeployPrepare(self);
+								n.FinishedDeployPrepare(self);
 							else if (toUndeploy)
 								n.FinishedUndeployPrepare(self);
 						}
