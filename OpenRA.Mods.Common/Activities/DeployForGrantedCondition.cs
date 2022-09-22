@@ -71,7 +71,7 @@ namespace OpenRA.Mods.Common.Activities
 
 			if (deployment.DeployState == DeployState.Undeployed)
 				deployment.Deploy();
-			else
+			else if (deployment.DeployState == DeployState.Deployed)
 				deployment.Undeploy();
 
 			initiated = true;

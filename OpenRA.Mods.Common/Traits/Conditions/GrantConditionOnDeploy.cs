@@ -103,7 +103,7 @@ namespace OpenRA.Mods.Common.Traits
 	public enum DeployState { Undeployed, Deploying, Deployed, Undeploying }
 
 	public class GrantConditionOnDeploy : PausableConditionalTrait<GrantConditionOnDeployInfo>, IResolveOrder, IIssueOrder,
-		INotifyDeployComplete, INotifyDeployPrepareComplete, IIssueDeployOrder, IOrderVoice, IWrapMove, IDelayCarryallPickup, INotifyAttack, ITick
+		INotifyDeployComplete, INotifyDeployPrepareComplete, IIssueDeployOrder, IOrderVoice, IWrapMove, IDelayCarryallPickup, INotifyAttack
 	{
 		readonly Actor self;
 		readonly bool checkTerrainType;
@@ -117,6 +117,9 @@ namespace OpenRA.Mods.Common.Traits
 		int preparingDeployToken = Actor.InvalidConditionToken;
 		int preparingUndeployToken = Actor.InvalidConditionToken;
 		public DeployState DeployState => deployState;
+
+		int notifiedDeploy = 9999;
+		int notifiedUndeploy = 9999;
 
 		public GrantConditionOnDeploy(ActorInitializer init, GrantConditionOnDeployInfo info)
 			: base(info)
@@ -270,7 +273,6 @@ namespace OpenRA.Mods.Common.Traits
 
 			// If there is no animation to play just grant the condition that is used while deployed.
 			// Alternatively, play the deploy animation and then grant the condition.
-
 			if (notify.Length == 0)
 				OnDeployCompleted();
 			else
@@ -313,9 +315,6 @@ namespace OpenRA.Mods.Common.Traits
 			OnUndeployCompleted();
 		}
 
-		int notifiedDeploy = 9999;
-		int notifiedUndeploy = 9999;
-
 		/// <summary>Play deploy sound and animation.</summary>
 		public void Deploy() { Deploy(false); }
 		void Deploy(bool init)
@@ -339,11 +338,6 @@ namespace OpenRA.Mods.Common.Traits
 				foreach (var n in notifyEarlier)
 					notifiedDeploy += n.Deploy(self, Info.SkipMakeAnimation);
 			}
-
-		}
-
-		void ITick.Tick(Actor self)
-		{
 
 		}
 
@@ -386,7 +380,8 @@ namespace OpenRA.Mods.Common.Traits
 
 			deployState = DeployState.Deployed;
 
-			//if (queueTarget != Target.Invalid)
+			/*
+			if (queueTarget != Target.Invalid)
 			//{
 			//	var attacks = self.TraitsImplementing<AttackBase>();
 			//	foreach (var attack in attacks)
@@ -399,6 +394,7 @@ namespace OpenRA.Mods.Common.Traits
 
 			//	queueTarget = Target.Invalid;
 			//}
+			*/
 		}
 
 		void OnUndeployStarted()
@@ -424,7 +420,7 @@ namespace OpenRA.Mods.Common.Traits
 		{
 		}
 
-		//Target queueTarget = Target.Invalid;
+		// Target queueTarget = Target.Invalid;
 		public void PreparingAttack(Actor self, in Target target, Armament a, Barrel barrel)
 		{
 			//if (Info.DeployOnAiming && deployState == DeployState.Undeployed && CanDeploy())
