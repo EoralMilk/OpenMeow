@@ -337,6 +337,9 @@ namespace OpenRA.Mods.Common.Traits
 			{
 				foreach (var n in notifyEarlier)
 					notifiedDeploy += n.Deploy(self, Info.SkipMakeAnimation);
+
+				if (notifiedDeploy == 0)
+					FinishedDeployPrepare(self);
 			}
 
 		}
@@ -359,6 +362,9 @@ namespace OpenRA.Mods.Common.Traits
 			{
 				foreach (var n in notifyEarlier)
 					notifiedUndeploy += n.Undeploy(self, Info.SkipMakeAnimation);
+
+				if (notifiedUndeploy == 0)
+					FinishedUndeployPrepare(self);
 			}
 		}
 

@@ -431,7 +431,8 @@ JUGG:
 		LocalOrientation: 0, 128, 0
 		RequiresCondition: deployed || preparing-undeploy
 		RotationSpeed: 12
-		PackBarrelBeforeDeploy: true
+		PackBarrelBeforeUndeploy: true
+		PackBarrelBeforeDeploy: false
 	WithModelBarrel@2:
 		Armament: deployed2
 		LocalOffset: 350,203,100

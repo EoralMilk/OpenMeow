@@ -48,6 +48,9 @@ namespace OpenRA.Mods.Common.Traits.Render
 		[Desc("Pack barrel before deploy")]
 		public readonly bool PackBarrelBeforeDeploy = true;
 
+		[Desc("Pack barrel before undeploy")]
+		public readonly bool PackBarrelBeforeUndeploy = true;
+
 		public override object Create(ActorInitializer init) { return new WithModelBarrel(init.Self, this); }
 
 		public IEnumerable<ModelAnimation> RenderPreviewModels(
@@ -111,7 +114,7 @@ namespace OpenRA.Mods.Common.Traits.Render
 
 		public void Tick(Actor self)
 		{
-			if (Info.PackBarrelBeforeDeploy && (toUndeploy || toDeploy))
+			if ((Info.PackBarrelBeforeDeploy || Info.PackBarrelBeforeUndeploy) && (toUndeploy || toDeploy))
 			{
 				if (currentOrientation == targetOrientation)
 				{
@@ -173,24 +176,32 @@ namespace OpenRA.Mods.Common.Traits.Render
 
 		int INotifyDeployTriggeredPrepare.Deploy(Actor self, bool skipMakeAnim)
 		{
+			if (IsTraitDisabled)
+				return 0;
+
 			if (Info.PackBarrelBeforeDeploy)
 			{
 				targetOrientation = Info.LocalOrientation;
 				toDeploy = true;
+				return 1;
 			}
 
-			return 1;
+			return 0;
 		}
 
 		int INotifyDeployTriggeredPrepare.Undeploy(Actor self, bool skipMakeAnim)
 		{
-			if (Info.PackBarrelBeforeDeploy)
+			if (IsTraitDisabled)
+				return 0;
+
+			if (Info.PackBarrelBeforeUndeploy)
 			{
 				targetOrientation = Info.InitOrientation;
 				toUndeploy = true;
+				return 1;
 			}
 
-			return 1;
+			return 0;
 		}
 	}
 }

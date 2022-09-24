@@ -314,7 +314,8 @@ ART2:
 		LocalOrientation: 0, 128, 0
 		RequiresCondition: !undeployed
 		RotationSpeed: 12
-		PackBarrelBeforeDeploy: true
+		PackBarrelBeforeUndeploy: true
+		PackBarrelBeforeDeploy: false
 	WithModelTurret@deployed:
 		Turret: deployed
 		RequiresCondition: !undeployed

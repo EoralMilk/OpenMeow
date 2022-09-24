@@ -230,46 +230,48 @@ namespace OpenRA.Mods.Common.Traits
 
 		int INotifyDeployTriggeredPrepare.Deploy(Actor self, bool skipMakeAnim)
 		{
+			if (IsTraitDisabled)
+				return 0;
+
 			if (Info.RealignBeforeDeploy)
 			{
 				if (LocalOrientation.Yaw == Info.InitialFacing)
 				{
-					foreach (var n in notify)
-					{
-						n.FinishedDeployPrepare(self);
-					}
+					return 0;
 				}
 				else
 				{
 					toDeploy = true;
 					forceRealigningWait = 2;
 					forceRealigning = true;
+					return 1;
 				}
 			}
 
-			return 1;
+			return 0;
 		}
 
 		int INotifyDeployTriggeredPrepare.Undeploy(Actor self, bool skipMakeAnim)
 		{
+			if (IsTraitDisabled)
+				return 0;
+
 			if (Info.RealignBeforeDeploy)
 			{
 				if (LocalOrientation.Yaw == Info.InitialFacing)
 				{
-					foreach (var n in notify)
-					{
-						n.FinishedUndeployPrepare(self);
-					}
+					return 0;
 				}
 				else
 				{
 					toUndeploy = true;
 					forceRealigningWait = 2;
 					forceRealigning = true;
+					return 1;
 				}
 			}
 
-			return 1;
+			return 0;
 		}
 
 		protected virtual void Tick(Actor self)
