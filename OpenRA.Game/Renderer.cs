@@ -302,7 +302,6 @@ namespace OpenRA
 
 			Context.DisableDepthBuffer();
 			worldShadowBuffer.Unbind();
-			Context.Clear();
 			worldBuffer.Bind();
 
 			MapRenderer.SetCameraParams(World3DRenderer, false);
@@ -343,7 +342,7 @@ namespace OpenRA
 
 		public void Draw3DMeshesInstance(WorldRenderer wr, bool sunCamera)
 		{
-			// 首先对所有的3d用shader的通用参数进行赋值
+			// 锟斤拷锟饺讹拷锟斤拷锟叫碉拷3d锟斤拷shader锟斤拷通锟矫诧拷锟斤拷锟斤拷锟叫革拷值
 			foreach (var shader in orderedMeshShaders)
 			{
 				shader.Value.SetCommonParaments(World3DRenderer, sunCamera);
@@ -522,8 +521,8 @@ namespace OpenRA
 				return orderedMeshShaders[typeName];
 			else
 			{
-				// 实际上在context中也维护了一个字典防止重复定义相同类型的shader
-				// 但是在这里我们需要记录所有的shader
+				// 实锟斤拷锟斤拷锟斤拷context锟斤拷也维锟斤拷锟斤拷一锟斤拷锟街碉拷锟街癸拷馗锟斤拷锟斤拷锟斤拷锟酵拷锟斤拷偷锟絪hader
+				// 锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷要锟斤拷录锟斤拷锟叫碉拷shader
 				orderedMeshShaders.Add(typeName, Context.CreateShader<T>());
 				return orderedMeshShaders[typeName];
 			}
