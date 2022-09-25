@@ -199,6 +199,7 @@ Proton:
 
 ^Laser:
 	Projectile: LaserZap
+		TrackTarget: false
 		Width: 72
 		Duration: 15
 		ZOffset: 355
@@ -211,7 +212,8 @@ Proton:
 		LaunchEffectSequence: laserstart
 		LaunchEffectPalette: red
 	Warhead@1Dam: SpreadDamage
-		Spread: 42
+		Spread: 96
+		Falloff: 100, 45, 12, 3
 		Damage: 25000
 		Versus:
 			None: 100
@@ -275,3 +277,142 @@ LaserFence:
 		DebugOverlayColor: FF0000
 		Damage: 10000000
 		DamageTypes: FireDeath
+
+LaserChainGun:
+	Inherits: ^Laser
+	ReloadDelay: 3
+	Range: 6c768
+	Report: lastur1.aud
+	Projectile: LaserZap
+		Inaccuracy: 500
+		Width: 24
+		Duration: 5
+		Blockable: true
+		SecondaryBeamWidth: 100
+		SecondaryBeamColor: FF000050
+	Warhead@1Dam: SpreadDamage
+		Damage: 2100
+	Warhead@2Eff: CreateEffect
+		Explosions: laserburningmini
+	Warhead@3Smu: LeaveSmudge
+		SizePerSmudge: 723, 822
+	Warhead@flash: CreateEffect
+		Explosions: laserend
+
+# banshee proton pulse cannon
+ProtonPulse:
+	ReloadDelay: 50
+	Range: 7c0
+	Burst: 12
+	BurstDelays: 3
+	Report: scrin5b.aud
+	ValidTargets: Ground, Water, Air, Trees
+	Projectile: Bullet
+		Speed: 700
+		Blockable: false
+		Inaccuracy: 128
+		UseVerticalInaccuracy: true
+		OnlyHitToExplode: true
+		ExplodeUnderThisAltitude: -418
+		# Image: TORPEDO
+		Width: 256
+		DetectTargetFromLength: 0.7
+		DetectTargetBeforeDist: 2c0
+		ContrailLength: 2
+		ContrailWidth: 68
+		ContrailStartColor: 66FF66E0
+		ContrailDelay: 0
+		ContrailBlendMode: Additive
+		LaunchAngle: 0
+		ZOffset: 1024
+	Warhead@1Dam: Spread3DDamage
+		Spread: 0c172
+		Damage: 2000
+		Versus:
+			None: 25
+			Wood: 65
+			Light: 100
+			Heavy: 100
+			Concrete: 60
+		DamageTypes: Prone50Percent, TriggerProne, EnergyDeath
+		ValidTargets: Ground, Water, Air, Trees
+	Warhead@2Eff: CreateEffect
+		Explosions: proton_explo
+		ImpactSounds: expnew12.aud
+		ValidTargets: Ground, Air, Water
+	Warhead@4Smu: LeaveSmudge
+		SmudgeType: SmallScorch
+		InvalidTargets: Vehicle, Building, Wall
+
+ProtonBounce:
+	Warhead@1Dam: Spread3DDamage
+		Spread: 0c268
+		Damage: 4000
+		Versus:
+			None: 25
+			Wood: 65
+			Light: 75
+			Heavy: 100
+			Concrete: 60
+		DamageTypes: Prone50Percent, TriggerProne, EnergyDeath
+		ValidTargets: Ground, Water, Air, Trees
+	Warhead@2Eff: CreateEffect
+		Explosions: proton_explo
+		ImpactSounds: expnew12.aud
+		ValidTargets: Ground, Air, Water
+	Warhead@4Smu: LeaveSmudge
+		SmudgeType: SmallScorch
+		InvalidTargets: Vehicle, Building, Wall
+
+ProtonBomb:
+	ReloadDelay: 50
+	Burst: 3
+	BurstDelays: 2
+	Range: 3c686
+	TargetActorCenter: true
+	ValidTargets: Ground, Trees
+	FirstBurstTargetOffset: -1c0,0,0
+	FollowingBurstTargetOffset: 1c0,0,0
+	# Projectile: GravityBomb
+	# 	Velocity: 72, 0, -90
+	# 	Acceleration: 0, 0, -8
+	# 	Shadow: false
+	# 	Image: proton_projectile
+	# 	Palette: effect
+	Projectile: Bullet
+		# InstantDropToGround: true
+		Speed: 226
+		Blockable: false
+		# Image: TORPEDO
+		Image: proton_projectile
+		Palette: effect
+		Shadow: false
+		LaunchAngle: 60
+		Inaccuracy: 200
+		DetectTargetFromLength: 0.5
+		DetectTargetBeforeDist: 2c0
+		BounceCount: 1
+		BounceRangeModifier: 20
+		Width: 388
+		BounceWeapon: ProtonBounce
+		OnlyHitToExplode: true
+		ExplodeUnderThisAltitude: 0
+	Warhead@1Dam: Spread3DDamage
+		Spread: 0c488
+		Falloff: 100, 80, 65, 35, 6, 3
+		Damage: 16000
+		Versus:
+			None: 200
+			Wood: 90
+			Light: 75
+			Heavy: 32
+			Concrete: 100
+		DamageTypes: Prone100Percent, TriggerProne,  EnergyDeath
+		ValidTargets: Ground, Water, Air, Trees
+	Warhead@2Eff: CreateEffect
+		Explosions: proton_explobig
+		ImpactSounds: expnew09.aud
+		ValidTargets: Ground, Water, Trees, Air
+	Warhead@4Smu: LeaveSmudge
+		SmudgeType: LargeScorch
+		InvalidTargets: Vehicle, Building, Wall

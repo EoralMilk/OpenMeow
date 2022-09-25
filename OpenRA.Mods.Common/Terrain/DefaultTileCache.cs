@@ -109,7 +109,8 @@ namespace OpenRA.Mods.Common.Terrain
 						// The internal z axis is inverted from expectation (negative is closer)
 						var zOffset = tile != null ? -tile.ZOffset : 0;
 						var zRamp = tile != null ? tile.ZRamp : 1f;
-						var meshType = tile != null ? tile.MeshType : SpriteMeshType.Plane;
+						//var meshType = tile != null ? tile.MeshType : SpriteMeshType.Plane;
+						var meshType = SpriteMeshType.NullType;
 						var offset = new float3(f.Offset, zOffset);
 						var type = SheetBuilder.FrameTypeToSheetType(f.Type);
 

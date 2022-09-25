@@ -1634,5 +1634,22 @@ Actors:
 	Actor510: naapwr
 		Owner: Multi0
 		Location: 64,-39
+	Actor511: gaplug
+		Owner: Multi0
+		Location: 103,3
+		Plug@pluga: plug.ioncannon
+		Plug@plugb: plug.droppod
+	Actor512: naapwr
+		Owner: Multi0
+		Location: 17,1
+	Actor513: naapwr
+		Owner: Multi0
+		Location: 19,1
+	Actor514: naapwr
+		Owner: Multi0
+		Location: 23,1
+	Actor515: naapwr
+		Owner: Multi0
+		Location: 26,-1
 
 Rules: rules.yaml

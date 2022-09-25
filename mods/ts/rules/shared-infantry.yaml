@@ -20,12 +20,12 @@ E1:
 		Speed: 71
 	Armament@PRIMARY:
 		LocalOffset: 137,0,444
-		Weapon: InfMG #Minigun
+		Weapon: AR #Minigun
 		RequiresCondition: !rank-elite
 		UseBlindage: true
 	Armament@ELITE:
 		LocalOffset: 137,0,444
-		Weapon: ShotGunPro #M1Carbine
+		Weapon: AR-Enhanced
 		RequiresCondition: rank-elite
 		UseBlindage: true
 	AttackFrontal:

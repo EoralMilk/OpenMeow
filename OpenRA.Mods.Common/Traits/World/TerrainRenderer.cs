@@ -83,7 +83,7 @@ namespace OpenRA.Mods.Common.Traits
 			colorModify = new CellLayer<float3>(map.Grid.Type, new Size(map.MapSize.X, map.MapSize.Y));
 
 			worldRenderer = wr;
-			spriteLayer = new TerrainSpriteLayer(world, wr, tileCache.MissingTile, BlendMode.Alpha, world.Type != WorldType.Editor, renderAllVert: true);
+			spriteLayer = new TerrainSpriteLayer(world, wr, tileCache.MissingTile, BlendMode.Alpha, true);
 			foreach (var cell in map.AllCells)
 				UpdateCell(cell);
 
@@ -108,6 +108,7 @@ namespace OpenRA.Mods.Common.Traits
 
 			var uv = cell.ToMPos(map.Grid.Type);
 			spriteLayer.Update(uv, sprite, paletteReference, wPos, 1, 1, false);
+			//Console.WriteLine(uv);
 		}
 
 		CellLayer<float3> colorModify;

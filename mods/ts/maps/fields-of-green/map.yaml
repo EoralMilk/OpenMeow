@@ -282,9 +282,6 @@ Actors:
 	Actor78: proc
 		Owner: GDI
 		Location: 79,-7
-	Actor79: tstlamp
-		Owner: GDI
-		Location: 78,-4
 	gdibar1: gapile
 		Owner: GDI
 		Location: 85,-9
@@ -1401,17 +1398,8 @@ Actors:
 	NodBase: waypoint
 		Owner: Neutral
 		Location: 45,6
-	Actor441: ingrnlmp
-		Owner: Neutral
-		Location: 60,-6
-	Actor442: ingrnlmp
-		Owner: Neutral
-		Location: 66,-1
-	Actor443: ingrnlmp
-		Owner: Neutral
-		Location: 60,11
-	Actor444: ingrnlmp
-		Owner: Neutral
-		Location: 58,16
+	Actor79: tstlamp
+		Owner: GDI
+		Location: 78,-4
 
 Rules: rules.yaml

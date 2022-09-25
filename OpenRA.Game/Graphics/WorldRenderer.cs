@@ -373,15 +373,20 @@ namespace OpenRA.Graphics
 					trait.RenderAboveWorld(actor, this);
 			});
 
-			Game.Renderer.MapRenderer.SetRenderShroud(true);
-			Game.Renderer.SetFaceCull(FaceCullFunc.Back);
+			if (World.Type != WorldType.Editor)
+			{
+				Game.Renderer.MapRenderer.SetRenderShroud(true);
+				Game.Renderer.SetFaceCull(FaceCullFunc.Back);
 
-			World.ApplyToActorsWithTrait<IRenderShroud>((actor, trait) => trait.RenderShroud(this));
+				World.ApplyToActorsWithTrait<IRenderShroud>((actor, trait) => trait.RenderShroud(this));
 
-			Game.Renderer.SetFaceCull(FaceCullFunc.None);
-			Game.Renderer.MapRenderer.SetRenderShroud(false);
+				Game.Renderer.SetFaceCull(FaceCullFunc.None);
+				Game.Renderer.MapRenderer.SetRenderShroud(false);
+			}
 
-			//Game.Renderer.DisableScissor();
+			Game.Renderer.EnableDepthWrite(true);
+
+			// Game.Renderer.DisableScissor();
 
 			// HACK: Keep old grouping behaviour
 			var groupedOverlayRenderables = preparedOverlayRenderables.GroupBy(prs => prs.GetType());

@@ -24,13 +24,13 @@ BGGY:
 	RevealsShroud:
 		Range: 7c512
 	Armament:
-		Weapon: RaiderCannonMG
+		Weapon: RaiderMG
 		Turret: primary
 		LocalOffset: 240,-31,453, 240,31,453
 		MuzzleSequence: muzzle
 		UseBlindage: true
 	Turreted:
-		TurnSpeed: 28
+		TurnSpeed: 42
 		Turret: primary
 		Offset: -215,0,0
 	AttackTurreted:

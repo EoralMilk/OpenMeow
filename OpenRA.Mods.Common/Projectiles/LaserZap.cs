@@ -55,6 +55,9 @@ namespace OpenRA.Mods.Common.Projectiles
 		[Desc("Controls the way inaccuracy is calculated. Possible values are 'Maximum' - scale from 0 to max with range, 'PerCellIncrement' - scale from 0 with range and 'Absolute' - use set value regardless of range.")]
 		public readonly InaccuracyType InaccuracyType = InaccuracyType.Maximum;
 
+		[Desc("Inaccuracy value in Vertical space.")]
+		public readonly bool UseVerticalInaccuracy = false;
+
 		[Desc("Beam can be blocked.")]
 		public readonly bool Blockable = false;
 
@@ -136,7 +139,7 @@ namespace OpenRA.Mods.Common.Projectiles
 			if (info.Inaccuracy.Length > 0)
 			{
 				var maxInaccuracyOffset = Util.GetProjectileInaccuracy(info.Inaccuracy.Length, info.InaccuracyType, args);
-				target += WVec.FromPDF(args.SourceActor.World.SharedRandom, 2) * maxInaccuracyOffset / 1024;
+				target += WVec.FromPDF(args.SourceActor.World.SharedRandom, 2, info.UseVerticalInaccuracy) * maxInaccuracyOffset / 1024;
 			}
 
 			if (!string.IsNullOrEmpty(info.HitAnim))

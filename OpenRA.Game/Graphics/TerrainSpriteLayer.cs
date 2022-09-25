@@ -44,12 +44,7 @@ namespace OpenRA.Graphics
 		readonly LayerCell[] cells;
 
 		readonly HashSet<int> dirtyRows = new HashSet<int>();
-		public readonly int MaxVerticesPerMesh = 12;
-		readonly int rowStride;
 		readonly bool restrictToBounds;
-
-		// tell the MapRenderer to instantly copy all the given vertices
-		public readonly bool RenderAllVert;
 
 		readonly WorldRenderer worldRenderer;
 		readonly Map map;
@@ -57,7 +52,7 @@ namespace OpenRA.Graphics
 		readonly PaletteReference[] palettes;
 		static readonly MapVertex NoVertex = new MapVertex(0);
 
-		public TerrainSpriteLayer(World world, WorldRenderer wr, Sprite emptySprite, BlendMode blendMode, bool restrictToBounds, int maxVerticesPerMesh = 12, bool renderAllVert = false)
+		public TerrainSpriteLayer(World world, WorldRenderer wr, Sprite emptySprite, BlendMode blendMode, bool restrictToBounds)
 		{
 			worldRenderer = wr;
 			this.restrictToBounds = restrictToBounds;
@@ -66,9 +61,6 @@ namespace OpenRA.Graphics
 			BlendMode = blendMode;
 
 			map = world.Map;
-			RenderAllVert = renderAllVert;
-			MaxVerticesPerMesh = maxVerticesPerMesh;
-			rowStride = MaxVerticesPerMesh * map.MapSize.X;
 
 			cells = new LayerCell[map.MapSize.X * map.MapSize.Y];
 
@@ -262,25 +254,24 @@ namespace OpenRA.Graphics
 
 			var cellinfo = map.CellInfos[uv];
 
-			//switch (spriteMeshType)
-			//{
-			//	case SpriteMeshType.Plane:
-			//		Util.FastCreatePlane(vertices, pos, viewOffset, sprite, samplers, palette?.TextureIndex ?? 0, scale, alpha * float3.Ones, alpha, offset);
-			//		break;
-			//	case SpriteMeshType.Card:
-			//		Util.FastCreateCard(vertices, pos, viewOffset, sprite, samplers, palette?.TextureIndex ?? 0, scale, alpha * float3.Ones, alpha, offset);
-			//		break;
-			//	case SpriteMeshType.Board:
-			//		Util.FastCreateBoard(vertices, pos, viewOffset, sprite, samplers, palette?.TextureIndex ?? 0, scale, alpha * float3.Ones, alpha, offset);
-			//		break;
-			//	default: throw new Exception("not valid SpriteMeshType for terrain");
-			//}
+			// switch (spriteMeshType)
+			// {
+			// 	case SpriteMeshType.Plane:
+			// 		Util.FastCreatePlane(vertices, pos, viewOffset, sprite, samplers, palette?.TextureIndex ?? 0, scale, alpha * float3.Ones, alpha, offset);
+			// 		break;
+			// 	case SpriteMeshType.Card:
+			// 		Util.FastCreateCard(vertices, pos, viewOffset, sprite, samplers, palette?.TextureIndex ?? 0, scale, alpha * float3.Ones, alpha, offset);
+			// 		break;
+			// 	case SpriteMeshType.Board:
+			// 		Util.FastCreateBoard(vertices, pos, viewOffset, sprite, samplers, palette?.TextureIndex ?? 0, scale, alpha * float3.Ones, alpha, offset);
+			// 		break;
+			// 	default: throw new Exception("not valid SpriteMeshType for terrain");
+			// }
 			var viewOffset = Game.Renderer.World3DRenderer.InverseCameraFrontMeterPerWPos * (zOffset - 15);
 
-			if (additional || MaxVerticesPerMesh == 6)
+			if (additional)
 			{
-				//var spriteMeshType = sprite.SpriteMeshType;
-
+				// var spriteMeshType = sprite.SpriteMeshType;
 				cells[cellIndex].Vertices = Util.FastCreateTilePlane(map.TerrainVertices[cellinfo.M].TBN, pos, viewOffset, sprite, samplers, palette?.TextureIndex ?? 0, scale, float3.Zero, ignoreTint ? -alpha : alpha);
 				cells[cellIndex].Draw = true;
 				cells[cellIndex].IgnoreTint = ignoreTint;
@@ -288,8 +279,6 @@ namespace OpenRA.Graphics
 			}
 			else
 			{
-				if (MaxVerticesPerMesh != 12)
-					throw new Exception("The MaxVerticesPerMesh for common terrain sprite layer must be 12 , now is " + MaxVerticesPerMesh);
 				cells[cellIndex].Vertices = Util.FastCreateTile(
 																map, cellinfo,
 																float3.Zero,
@@ -314,8 +303,6 @@ namespace OpenRA.Graphics
 			dirtyRows.Add(uv.V);
 		}
 
-		// int firstRow, lastRow;
-
 		public void Draw(Viewport viewport, bool reverse = false)
 		{
 			var visiblecells = restrictToBounds ? viewport.VisibleCellsInsideBounds : viewport.AllVisibleCells;
@@ -323,8 +310,6 @@ namespace OpenRA.Graphics
 			// Only draw the rows that are visible.
 			int2 tp = new int2(Math.Clamp(visiblecells.CandidateMapCoords.TopLeft.U, 0, map.MapSize.X - 1), Math.Clamp(visiblecells.CandidateMapCoords.TopLeft.V, 0, map.MapSize.Y - 1));
 			int2 br = new int2(Math.Clamp(visiblecells.CandidateMapCoords.BottomRight.U + 1, 0, map.MapSize.X - 1), Math.Clamp(visiblecells.CandidateMapCoords.BottomRight.V + 1, 0, map.MapSize.Y - 1));
-			//firstRow = visiblecells.CandidateMapCoords.TopLeft.V.Clamp(0, map.MapSize.Y);
-			//lastRow = (visiblecells.CandidateMapCoords.BottomRight.V + 1).Clamp(firstRow, map.MapSize.Y);
 
 			Game.Renderer.Flush();
 

@@ -200,7 +200,7 @@ namespace OpenRA.Mods.Cnc.Traits
 
 			var first = veinSequence.GetSprite(0);
 			var emptySprite = new Sprite(first.Sheet, Rectangle.Empty, TextureChannel.Alpha, spriteMeshType: SpriteMeshType.Plane);
-			spriteLayer = new TerrainSpriteLayer(w, wr, emptySprite, first.BlendMode, wr.World.Type != WorldType.Editor, 6);
+			spriteLayer = new TerrainSpriteLayer(w, wr, emptySprite, first.BlendMode, true);
 
 			// Initialize the renderIndices with the initial map state so it is visible
 			// through the fog with the Explored Map option enabled

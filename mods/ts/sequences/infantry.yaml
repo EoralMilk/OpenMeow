@@ -85,6 +85,7 @@
 		Start: 212
 		Length: 6
 		Facings: 8
+		Tick: 25
 		IgnoreWorldTint: True
 
 e1.gdi:
@@ -239,7 +240,7 @@ cyborg:
 		Facings: 8
 		ShadowStart: 534
 	attack-muzzle:
-		Tick: 20
+		Tick: 14
 		Start: 164
 		Length: 6
 		Facings: 8
@@ -253,6 +254,7 @@ cyborg:
 		Start: 212
 		Length: 6
 		Facings: 8
+		Tick: 14
 		IgnoreWorldTint: True
 	emp-overlay: emp_fx01
 		Length: *

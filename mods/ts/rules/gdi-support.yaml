@@ -95,7 +95,7 @@ GACTWR:
 		Sequence: turret-sam
 	Armament@VULCPRIMARY:
 		RequiresCondition: tower.vulcan
-		Weapon: TurretVulcan #VulcanTower
+		Weapon: VulcanTower
 		BurstPerFireCount: 2
 		LocalOffset: 588,120,784, 588,-120,784
 		MuzzleSequence: muzzle

@@ -123,7 +123,7 @@ JUMPJET:
 		MaxHeightDelta: 1100
 	Armament:
 		LocalOffset: 360,0,433
-		Weapon: JumpVulcan #JumpCannon
+		Weapon: JumpVulcan
 		UseBlindage: true
 	-Crushable:
 	AttackFrontal:

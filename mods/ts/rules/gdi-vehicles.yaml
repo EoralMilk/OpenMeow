@@ -139,7 +139,7 @@ SMECH:
 		LocalOffset: 111,200,255, 111,-220,255
 		BurstPerFireCount: 2
 		UseBlindage: true
-		Weapon: AssaultVulcan #AssaultCannon
+		Weapon: AssaultVulcan
 	Voiced:
 		VoiceSet: Mech
 	QuantizeFacingsFromSequence:

@@ -116,7 +116,7 @@ namespace OpenRA.Mods.Common.Projectiles
 
 		[Desc("Altitude where this bullet should explode when reached.",
 			"Negative values allow this bullet to pass cliffs and terrain bumps.")]
-		public readonly WDist ExplodeUnderThisAltitude = new WDist(-736);
+		public readonly WDist ExplodeUnderThisAltitude = new WDist(-64);
 
 		[Desc("How long this projectile can live, LifeTime < 0 means lives forever if not hit the target.")]
 		public readonly int[] LifeTime = { -1 };

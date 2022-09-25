@@ -232,8 +232,8 @@ namespace OpenRA.Mods.Common.Traits
 			var emptySprite = new Sprite(shroudSprites[0].Sprite.Sheet, Rectangle.Empty, TextureChannel.Alpha, spriteMeshType: SpriteMeshType.Plane);
 			shroudPaletteReference = wr.Palette(info.ShroudPalette);
 			fogPaletteReference = wr.Palette(info.FogPalette);
-			shroudLayer = new TerrainSpriteLayer(w, wr, emptySprite, shroudBlend, false);
-			fogLayer = new TerrainSpriteLayer(w, wr, emptySprite, fogBlend, false);
+			shroudLayer = new TerrainSpriteLayer(w, wr, emptySprite, shroudBlend, true);
+			fogLayer = new TerrainSpriteLayer(w, wr, emptySprite, fogBlend, true);
 
 			WorldOnRenderPlayerChanged(world.RenderPlayer);
 		}
@@ -365,7 +365,6 @@ namespace OpenRA.Mods.Common.Traits
 
 		void IRenderShroud.RenderShroud(WorldRenderer wr)
 		{
-			// middle
 			UpdateShroud(map.ProjectedCells);
 			Game.Renderer.ClearDepthBuffer();
 			Game.Renderer.EnableDepthWrite(true);
@@ -376,7 +375,6 @@ namespace OpenRA.Mods.Common.Traits
 			Game.Renderer.ClearDepthBuffer();
 			fogLayer.Draw(wr.Viewport, true);
 			Game.Renderer.MapRenderer.Flush();
-
 		}
 
 		void UpdateShroudCell(MPos uv)

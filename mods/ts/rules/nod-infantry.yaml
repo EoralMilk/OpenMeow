@@ -66,9 +66,19 @@ CYBORG:
 	Passenger:
 	RevealsShroud:
 		Range: 6c512
-	Armament:
-		Weapon: CyborgMG #Vulcan3
+	# Armament:
+	# 	Weapon: CyborgVulcan
+	# 	LocalOffset: 290,120, 610
+	# 	UseBlindage: true
+	Armament@PRIMARY:
 		LocalOffset: 290,120, 610
+		Weapon: CyborgVulcan
+		RequiresCondition: !rank-elite && !empdisable
+		UseBlindage: true
+	Armament@ELITE:
+		LocalOffset: 290,120, 610
+		Weapon: LaserChainGun
+		RequiresCondition: rank-elite && !empdisable
 		UseBlindage: true
 	AttackFrontal:
 		Voice: Attack
@@ -109,6 +119,7 @@ CYC2:
 		Range: 8c0
 	Armament:
 		Weapon: CyCannon
+		RequiresCondition: !empdisable
 		LocalOffset: 240,120,558
 		UseBlindage: true
 	AttackFrontal:

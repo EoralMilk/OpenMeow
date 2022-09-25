@@ -299,7 +299,12 @@ explosion:
 		BlendMode: Additive
 		MeshType: TileOverlay
 		Scale: 2
-
+	laserburningmini: laserburn
+		ZOffset: 32
+		Tick: 60
+		Scale: 0.6
+		BlendMode: Additive
+		MeshType: TileOverlay
 
 mislflash:
 	Defaults:
@@ -338,6 +343,9 @@ flash:
 		Scale: 0.65
 	laserend: mislflash
 		Scale: 1
+	lasersmall: mislflash
+		Scale: 0.8
+		Tick: 40
 	oblaserstart: mislflash
 		Scale: 0.85
 		Tick: 80

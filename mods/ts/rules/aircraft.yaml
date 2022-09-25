@@ -22,7 +22,7 @@ DPOD:
 		UnloadVoice: Move
 		EjectOnDeath: true
 	Armament:
-		Weapon: TurretVulcan #Vulcan2
+		Weapon: VulcanTower
 	AttackAircraft:
 		Voice: Attack
 	AmmoPool:
@@ -56,7 +56,7 @@ DPOD2:
 	AttackAircraft:
 		Voice: Attack
 	Armament:
-		Weapon: DropVulcan #Vulcan2
+		Weapon: DropVulcan
 	HiddenUnderFog:
 		Type: CenterPosition
 	BodyOrientation:
@@ -552,7 +552,7 @@ APACHE:
 		Type: Light
 	Armament:
 		LocalOffset: 418,0,40
-		Weapon: HarpyClawMG
+		Weapon: HarpyClaw
 		PauseOnCondition: !ammo
 	AttackAircraft:
 		FacingTolerance: 80
