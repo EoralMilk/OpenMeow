@@ -105,6 +105,9 @@ namespace OpenRA
 		IFrameBuffer CreateDepthFrameBuffer(Size s);
 		IFrameBuffer CreateFrameBuffer(Size s);
 		IFrameBuffer CreateFrameBuffer(Size s, Color clearColor);
+		IFrameBuffer CreateFrameBuffer(Size s, uint  renderTargets);
+		IFrameBuffer CreateFrameBuffer(Size s, Color clearColor, uint textureOutput);
+
 		IShader CreateShader<T>() where T : IShaderBindings;
 		IShader CreateUnsharedShader<T>() where T : IShaderBindings;
 		void EnableScissor(int x, int y, int width, int height);
@@ -209,6 +212,7 @@ namespace OpenRA
 		void EnableScissor(Rectangle rect);
 		void DisableScissor();
 		ITexture Texture { get; }
+		ITexture Texture1 { get; }
 		ITexture DepthTexture { get; }
 	}
 

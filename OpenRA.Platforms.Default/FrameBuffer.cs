@@ -91,6 +91,8 @@ namespace OpenRA.Platforms.Default
 	sealed class FrameBuffer : ThreadAffine, IFrameBuffer
 	{
 		readonly ITexture texture;
+		readonly Texture texture1;
+
 		readonly DepthTexture depthTexture;
 		readonly Size size;
 		readonly Color clearColor;
@@ -99,7 +101,7 @@ namespace OpenRA.Platforms.Default
 		bool scissored;
 		readonly bool onlyDepth;
 
-		public FrameBuffer(Size size, ITextureInternal texture, Color clearColor, bool onlyDepth = false)
+		public FrameBuffer(Size size, ITextureInternal texture, Color clearColor, bool onlyDepth = false, uint renderTargets = 1)
 		{
 			this.onlyDepth = onlyDepth;
 			this.size = size;
@@ -131,6 +133,25 @@ namespace OpenRA.Platforms.Default
 				OpenGL.CheckGLError();
 			}
 
+			if (renderTargets > 1)
+			{
+				texture1 = new Texture(CreateInternalTexture());
+
+				OpenGL.glFramebufferTexture2D(OpenGL.GL_FRAMEBUFFER, OpenGL.GL_COLOR_ATTACHMENT1, OpenGL.GL_TEXTURE_2D, texture1.ID, 0);
+				OpenGL.CheckGLError();
+			}
+
+			// - 告诉OpenGL我们将要使用(帧缓冲的)哪种颜色附件来进行渲染
+			uint[] attachments = new uint[2] { OpenGL.GL_COLOR_ATTACHMENT0, OpenGL.GL_COLOR_ATTACHMENT1 };
+			unsafe
+			{
+				fixed (uint* ptr = &attachments[0])
+				{
+					OpenGL.glDrawBuffers(attachments.Length, new IntPtr(ptr));
+					OpenGL.CheckGLError();
+				}
+			}
+
 			// Test for completeness
 			var status = OpenGL.glCheckFramebufferStatus(OpenGL.GL_FRAMEBUFFER);
 			if (status != OpenGL.GL_FRAMEBUFFER_COMPLETE)
@@ -143,6 +164,27 @@ namespace OpenRA.Platforms.Default
 			// Restore default buffer
 			OpenGL.glBindFramebuffer(OpenGL.GL_FRAMEBUFFER, 0);
 			OpenGL.CheckGLError();
+		}
+
+		uint CreateInternalTexture()
+		{
+			uint id;
+			OpenGL.glGenTextures(1, out id);
+			OpenGL.CheckGLError();
+			OpenGL.glBindTexture(OpenGL.GL_TEXTURE_2D, id);
+			OpenGL.CheckGLError();
+			OpenGL.glTexImage2D(OpenGL.GL_TEXTURE_2D, 0, OpenGL.GL_RGBA, size.Width, size.Height,
+				0, OpenGL.GL_RGBA, OpenGL.GL_UNSIGNED_BYTE, IntPtr.Zero);
+			OpenGL.CheckGLError();
+			OpenGL.glTexParameteri(OpenGL.GL_TEXTURE_2D, OpenGL.GL_TEXTURE_MAG_FILTER, OpenGL.GL_NEAREST);
+			OpenGL.CheckGLError();
+			OpenGL.glTexParameteri(OpenGL.GL_TEXTURE_2D, OpenGL.GL_TEXTURE_MIN_FILTER, OpenGL.GL_NEAREST);
+			OpenGL.CheckGLError();
+			OpenGL.glTexParameterf(OpenGL.GL_TEXTURE_2D, OpenGL.GL_TEXTURE_WRAP_S, OpenGL.GL_CLAMP_TO_EDGE);
+			OpenGL.CheckGLError();
+			OpenGL.glTexParameterf(OpenGL.GL_TEXTURE_2D, OpenGL.GL_TEXTURE_WRAP_T, OpenGL.GL_CLAMP_TO_EDGE);
+			OpenGL.CheckGLError();
+			return id;
 		}
 
 		static int[] ViewportRectangle()
@@ -251,6 +293,16 @@ namespace OpenRA.Platforms.Default
 					throw new Exception("This buffer is Only use for DepthRender, can't get texture");
 
 				return texture;
+			}
+		}
+
+		public ITexture Texture1
+		{
+			get
+			{
+				VerifyThreadAffinity();
+
+				return texture1;
 			}
 		}
 

@@ -61,6 +61,11 @@ namespace OpenRA.Platforms.Default
 			OpenGL.CheckGLError();
 		}
 
+		public Texture(uint id)
+		{
+			texture = id;
+		}
+
 		void PrepareTexture()
 		{
 			OpenGL.CheckGLError();

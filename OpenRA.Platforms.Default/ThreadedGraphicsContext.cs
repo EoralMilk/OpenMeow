@@ -474,6 +474,16 @@ namespace OpenRA.Platforms.Default
 			return Send(getCreateFrameBuffer, (s, clearColor));
 		}
 
+		public IFrameBuffer CreateFrameBuffer(Size s, uint renderTargets)
+		{
+			return Send(getCreateFrameBuffer, (s, Color.FromArgb(0), renderTargets));
+		}
+
+		public IFrameBuffer CreateFrameBuffer(Size s, Color clearColor, uint renderTargets)
+		{
+			return Send(getCreateFrameBuffer, (s, clearColor, renderTargets));
+		}
+
 		public ITexture CreateInfoTexture(Size size)
 		{
 			return Send(getCreateInfoTexture, size);
@@ -577,7 +587,10 @@ namespace OpenRA.Platforms.Default
 	{
 		readonly ThreadedGraphicsContext device;
 		readonly Func<ITexture> getTexture;
+		readonly Func<ITexture> getTexture1;
+
 		readonly Func<ITexture> getDepthTexture;
+
 		readonly Action bind;
 		readonly Action bindNotFlush;
 		readonly Action setViewport;
@@ -592,6 +605,8 @@ namespace OpenRA.Platforms.Default
 		{
 			this.device = device;
 			getTexture = () => frameBuffer.Texture;
+			getTexture = () => frameBuffer.Texture1;
+
 			getDepthTexture = () => frameBuffer.DepthTexture;
 			bind = frameBuffer.Bind;
 			bindNotFlush = frameBuffer.BindNotFlush;
@@ -606,6 +621,8 @@ namespace OpenRA.Platforms.Default
 		}
 
 		public ITexture Texture => device.Send(getTexture);
+		public ITexture Texture1 => device.Send(getTexture1);
+
 		public ITexture DepthTexture => device.Send(getDepthTexture);
 
 		public void SetViewport()

@@ -56,6 +56,7 @@ namespace OpenRA
 
 		Size worldBufferSize;
 		IFrameBuffer worldBuffer;
+		public IFrameBuffer WorldBuffer => worldBuffer;
 		ITexture worldTexture;
 
 		IFrameBuffer worldShadowBuffer;
@@ -342,7 +343,7 @@ namespace OpenRA
 
 		public void Draw3DMeshesInstance(WorldRenderer wr, bool sunCamera)
 		{
-			// ���ȶ����е�3d��shader��ͨ�ò������и�ֵ
+			// update common shader uniform param
 			foreach (var shader in orderedMeshShaders)
 			{
 				shader.Value.SetCommonParaments(World3DRenderer, sunCamera);

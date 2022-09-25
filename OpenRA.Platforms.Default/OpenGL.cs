@@ -253,6 +253,38 @@ namespace OpenRA.Platforms.Default
 		public const int GL_FRAMEBUFFER = 0x8D40;
 		public const int GL_RENDERBUFFER = 0x8D41;
 		public const int GL_COLOR_ATTACHMENT0 = 0x8CE0;
+		public const int GL_COLOR_ATTACHMENT1 = 0x8CE1;
+		public const int GL_COLOR_ATTACHMENT2 = 0x8CE2;
+		public const int GL_COLOR_ATTACHMENT3 = 0x8CE3;
+		public const int GL_COLOR_ATTACHMENT4 = 0x8CE4;
+		public const int GL_COLOR_ATTACHMENT5 = 0x8CE5;
+		public const int GL_COLOR_ATTACHMENT6 = 0x8CE6;
+		public const int GL_COLOR_ATTACHMENT7 = 0x8CE7;
+		public const int GL_COLOR_ATTACHMENT8 = 0x8CE8;
+		public const int GL_COLOR_ATTACHMENT9 = 0x8CE9;
+		public const int GL_COLOR_ATTACHMENT10 = 0x8CEA;
+		public const int GL_COLOR_ATTACHMENT11 = 0x8CEB;
+		public const int GL_COLOR_ATTACHMENT12 = 0x8CEC;
+		public const int GL_COLOR_ATTACHMENT13 = 0x8CED;
+		public const int GL_COLOR_ATTACHMENT14 = 0x8CEE;
+		public const int GL_COLOR_ATTACHMENT15 = 0x8CEF;
+		public const int GL_COLOR_ATTACHMENT16 = 0x8CF0;
+		public const int GL_COLOR_ATTACHMENT17 = 0x8CF1;
+		public const int GL_COLOR_ATTACHMENT18 = 0x8CF2;
+		public const int GL_COLOR_ATTACHMENT19 = 0x8CF3;
+		public const int GL_COLOR_ATTACHMENT20 = 0x8CF4;
+		public const int GL_COLOR_ATTACHMENT21 = 0x8CF5;
+		public const int GL_COLOR_ATTACHMENT22 = 0x8CF6;
+		public const int GL_COLOR_ATTACHMENT23 = 0x8CF7;
+		public const int GL_COLOR_ATTACHMENT24 = 0x8CF8;
+		public const int GL_COLOR_ATTACHMENT25 = 0x8CF9;
+		public const int GL_COLOR_ATTACHMENT26 = 0x8CFA;
+		public const int GL_COLOR_ATTACHMENT27 = 0x8CFB;
+		public const int GL_COLOR_ATTACHMENT28 = 0x8CFC;
+		public const int GL_COLOR_ATTACHMENT29 = 0x8CFD;
+		public const int GL_COLOR_ATTACHMENT30 = 0x8CFE;
+		public const int GL_COLOR_ATTACHMENT31 = 0x8CFF;
+
 		public const int GL_DEPTH_ATTACHMENT = 0x8D00;
 		public const int GL_FRAMEBUFFER_COMPLETE = 0x8CD5;
 		public const int GL_FRAMEBUFFER_BINDING = 0x8CA6;
@@ -499,7 +531,7 @@ namespace OpenRA.Platforms.Default
 			int width, int height, int border, int format, int type, IntPtr pixels);
 		public static TexImage2D glTexImage2D { get; private set; }
 
-		public delegate void TexSubImage2D(int target, int level, int xoffset, int yoffset, 
+		public delegate void TexSubImage2D(int target, int level, int xoffset, int yoffset,
 			int width, int height, int format, int type, IntPtr pixels);
 		public static TexSubImage2D glTexSubImage2D { get; private set; }
 
@@ -525,6 +557,9 @@ namespace OpenRA.Platforms.Default
 		public delegate void FramebufferTexture2D(int target, int attachment,
 			int textarget, uint texture, int level);
 		public static FramebufferTexture2D glFramebufferTexture2D { get; private set; }
+
+		public delegate void DrawBuffers(int size, IntPtr pointer);
+		public static DrawBuffers glDrawBuffers { get; private set; }
 
 		public delegate void DeleteFramebuffers(int n, ref uint framebuffers);
 		public static DeleteFramebuffers glDeleteFramebuffers { get; private set; }
@@ -685,6 +720,7 @@ namespace OpenRA.Platforms.Default
 				glTexParameteri = Bind<TexParameteri>("glTexParameteri");
 				glTexParameterf = Bind<TexParameterf>("glTexParameterf");
 				glGenerateMipmap = Bind<GenerateMipmap>("glGenerateMipmap");
+				glDrawBuffers = Bind<DrawBuffers>("glDrawBuffers");
 
 				if (Profile != GLProfile.Legacy)
 				{

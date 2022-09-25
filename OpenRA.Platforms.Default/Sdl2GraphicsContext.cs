@@ -100,6 +100,18 @@ namespace OpenRA.Platforms.Default
 			return new FrameBuffer(s, new Texture(), clearColor);
 		}
 
+		public IFrameBuffer CreateFrameBuffer(Size s, uint renderTargets)
+		{
+			VerifyThreadAffinity();
+			return new FrameBuffer(s, new Texture(), Color.FromArgb(0), false, renderTargets);
+		}
+
+		public IFrameBuffer CreateFrameBuffer(Size s, Color clearColor, uint renderTargets)
+		{
+			VerifyThreadAffinity();
+			return new FrameBuffer(s, new Texture(), clearColor, false, renderTargets);
+		}
+
 		public IFrameBuffer CreateFrameBuffer(Size s, ITextureInternal texture, Color clearColor)
 		{
 			VerifyThreadAffinity();
