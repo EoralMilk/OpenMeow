@@ -137,7 +137,7 @@ namespace OpenRA.Mods.Common.Graphics
 			var map = wr.World.Map;
 			var groundOrientation = map.TerrainOrientation(map.CellContaining(model.pos));
 
-			var viewOffset = Game.Renderer.World3DRenderer.InverseCameraFrontMeterPerWPos * zOffset;
+			var viewOffset = Game.Renderer.World3DRenderer.InverseCameraFrontMeterPerWDist * zOffset;
 
 			Game.Renderer.WorldVxlRenderer.CreateRenderInstance(
 				wr, model.pos, viewOffset, draw, model.scale,

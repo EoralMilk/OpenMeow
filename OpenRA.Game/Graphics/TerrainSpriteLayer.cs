@@ -267,7 +267,7 @@ namespace OpenRA.Graphics
 			// 		break;
 			// 	default: throw new Exception("not valid SpriteMeshType for terrain");
 			// }
-			var viewOffset = Game.Renderer.World3DRenderer.InverseCameraFrontMeterPerWPos * (zOffset - 15);
+			var viewOffset = Game.Renderer.World3DRenderer.InverseCameraFrontMeterPerWDist * (zOffset - 15);
 
 			if (additional)
 			{

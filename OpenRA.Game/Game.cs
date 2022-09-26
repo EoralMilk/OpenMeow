@@ -701,6 +701,9 @@ namespace OpenRA
 					Renderer.World3DRenderer.PrepareToRender(worldRenderer);
 
 					Renderer.BeginWorld(worldRenderer.Viewport.Rectangle);
+
+					worldRenderer.World.Map.UpdateTerrainBlockTexture(Renderer.World3DRenderer, false, worldRenderer.World, worldRenderer.Viewport);
+
 					Renderer.UpdateShadowBuffer(worldRenderer);
 
 					Sound.SetListenerPosition(worldRenderer.Viewport.CenterPosition);

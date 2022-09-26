@@ -113,7 +113,7 @@ namespace OpenRA.Graphics
 		public IFinalizedRenderable PrepareRender(WorldRenderer wr) { return this; }
 		public void Render(WorldRenderer wr)
 		{
-			var viewOffset = Game.Renderer.World3DRenderer.InverseCameraFrontMeterPerWPos * (zOffset + 1);
+			var viewOffset = Game.Renderer.World3DRenderer.InverseCameraFrontMeterPerWDist * (zOffset + 1);
 			var t = alpha * tint;
 			var a = alpha;
 

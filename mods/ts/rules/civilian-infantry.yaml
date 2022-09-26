@@ -1,5 +1,12 @@
 WEEDGUY:
 	Inherits: ^Soldier
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@EXPHOSPITAL: ^InfantryExperienceHospitalOverrides
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Buildable:
+		Queue: Infantry
+		BuildPaletteOrder: 0
+		Prerequisites: ~none
 	Valued:
 		Cost: 300
 	Tooltip:
@@ -7,9 +14,9 @@ WEEDGUY:
 	Voiced:
 		VoiceSet: Weed
 	Mobile:
-		Speed: 42
+		Speed: 70
 	Health:
-		HP: 13000
+		HP: 17500
 	Crushable:
 		CrushSound: squishy2.aud
 	Armament:
@@ -228,6 +235,8 @@ TRATOS:
 
 OXANNA:
 	Inherits: ^Soldier
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@EXPHOSPITAL: ^InfantryExperienceHospitalOverrides
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Buildable:
 		Queue: Infantry
@@ -257,6 +266,8 @@ OXANNA:
 
 SLAV:
 	Inherits: ^Soldier
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@EXPHOSPITAL: ^InfantryExperienceHospitalOverrides
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Buildable:
 		Queue: Infantry

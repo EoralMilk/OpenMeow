@@ -97,6 +97,14 @@ namespace OpenRA.Platforms.Default
 
 		// Texture mapping
 		public const int GL_TEXTURE_2D = 0x0DE1;
+		public const int GL_TEXTURE_1D_ARRAY = 0x8C18;
+		public const int GL_PROXY_TEXTURE_1D_ARRAY = 0x8C19;
+		public const int GL_TEXTURE_2D_ARRAY = 0x8C1A;
+		public const int GL_PROXY_TEXTURE_2D_ARRAY = 0x8C1B;
+		public const int GL_TEXTURE_1D_ARRAY_EXT = 0x8C18;
+		public const int GL_PROXY_TEXTURE_1D_ARRAY_EXT = 0x8C19;
+		public const int GL_TEXTURE_2D_ARRAY_EXT = 0x8C1A;
+		public const int GL_PROXY_TEXTURE_2D_ARRAY_EXT = 0x8C1B;
 		public const int GL_TEXTURE_WRAP_S = 0x2802;
 		public const int GL_TEXTURE_WRAP_T = 0x2803;
 		public const int GL_TEXTURE_MAG_FILTER = 0x2800;
@@ -162,6 +170,9 @@ namespace OpenRA.Platforms.Default
 		public const int GL_FRAGMENT_SHADER = 0x8B30;
 		public const int GL_VERTEX_SHADER = 0x8B31;
 		public const int GL_SAMPLER_2D = 0x8B5E;
+		public const int GL_SAMPLER_3D = 0x8B5F;
+		public const int GL_SAMPLER_1D_ARRAY = 0x8DC0;
+		public const int GL_SAMPLER_2D_ARRAY = 0x8DC1;
 		public const int GL_COMPILE_STATUS = 0x8B81;
 		public const int GL_LINK_STATUS = 0x8B82;
 		public const int GL_INFO_LOG_LENGTH = 0x8B84;
@@ -531,9 +542,19 @@ namespace OpenRA.Platforms.Default
 			int width, int height, int border, int format, int type, IntPtr pixels);
 		public static TexImage2D glTexImage2D { get; private set; }
 
+		public delegate void TexImage3D(int target, int level, int internalFormat,
+			int width, int height, int depth, int border, int format, int type, IntPtr pixels);
+		public static TexImage3D glTexImage3D { get; private set; }
+
 		public delegate void TexSubImage2D(int target, int level, int xoffset, int yoffset,
 			int width, int height, int format, int type, IntPtr pixels);
 		public static TexSubImage2D glTexSubImage2D { get; private set; }
+
+		public delegate void TexSubImage3D(int target, int level,
+			int xoffset, int yoffset, int zoffset,
+			int width, int height, int depth,
+			int format, int type, IntPtr pixels);
+		public static TexSubImage3D glTexSubImage3D { get; private set; }
 
 		public delegate void GetTexImage(int target, int level,
 			int format, int type, IntPtr pixels);
@@ -716,7 +737,9 @@ namespace OpenRA.Platforms.Default
 				glCopyTexSubImage2D = Bind<CopyTexSubImage2D>("glCopyTexSubImage2D");
 				glPixelStorei = Bind<PixelStorei>("glPixelStorei");
 				glTexImage2D = Bind<TexImage2D>("glTexImage2D");
+				glTexImage3D = Bind<TexImage3D>("glTexImage3D");
 				glTexSubImage2D = Bind<TexSubImage2D>("glTexSubImage2D");
+				glTexSubImage3D = Bind<TexSubImage3D>("glTexSubImage3D");
 				glTexParameteri = Bind<TexParameteri>("glTexParameteri");
 				glTexParameterf = Bind<TexParameterf>("glTexParameterf");
 				glGenerateMipmap = Bind<GenerateMipmap>("glGenerateMipmap");

@@ -65,6 +65,9 @@
 	ReloadDelayMultiplier@ELITE:
 		RequiresCondition: rank-elite
 		Modifier: 75
+	RangeMultiplier@ELITE:
+		RequiresCondition: rank-elite
+		Modifier: 120
 	ChangesHealth@ELITE:
 		Step: 200
 		Delay: 100

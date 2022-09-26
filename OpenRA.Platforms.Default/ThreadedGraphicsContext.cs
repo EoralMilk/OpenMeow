@@ -56,6 +56,7 @@ namespace OpenRA.Platforms.Default
 		Func<object, IShader> getCreateShader;
 		Func<object, IShader> getCreateUnsharedShader;
 		Func<object, Type, object> getCreateVertexBuffer;
+		Func<object, ITexture> getCreateTextureArray;
 		Func<object, ITexture> getCreateInfoTexture;
 		Action<object> doDrawPrimitives;
 		Action<object> doDrawInstances;
@@ -119,6 +120,7 @@ namespace OpenRA.Platforms.Default
 
 					getCreateShader = type => new ThreadedShader(this, context.CreateShader((Type)type));
 					getCreateInfoTexture = size => context.CreateInfoTexture((Size)size);
+					getCreateTextureArray = count => new ThreadedTexture(this, (ITextureInternal)context.CreateTextureArray((int)count));
 					getCreateUnsharedShader = type => new ThreadedShader(this, context.CreateUnsharedShader((Type)type));
 					getCreateVertexBuffer = (length, type) =>
 					{
@@ -487,6 +489,11 @@ namespace OpenRA.Platforms.Default
 		public ITexture CreateInfoTexture(Size size)
 		{
 			return Send(getCreateInfoTexture, size);
+		}
+
+		public ITexture CreateTextureArray(int textureCount)
+		{
+			return Send(getCreateTextureArray, textureCount);
 		}
 
 		public IShader CreateUnsharedShader<T>()

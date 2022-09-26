@@ -60,6 +60,8 @@ uniform float AntialiasPixelsPerTexel;
 uniform bool RenderShroud;
 uniform bool RenderDepthBuffer;
 
+uniform sampler2D TerrainDepth;
+
 
 in vec4 vColor;
 
@@ -86,7 +88,10 @@ in vec3 tNormal;
 
 flat in int mDrawType;
 
-out vec4 fragColor;
+// out vec4 fragColor;
+
+layout (location = 0) out vec4 fragColor;
+// layout (location = 1) out vec4 depthColor;
 
 struct DirLight {
 	vec3 direction;
@@ -258,31 +263,6 @@ vec4 linear2srgb(vec4 c)
 	return c.a * vec4(linear2srgb(c.r / c.a), linear2srgb(c.g / c.a), linear2srgb(c.b / c.a), 1.0f);
 }
 
-#if __VERSION__ == 120
-vec2 Size(float samplerIndex)
-{
-	if (samplerIndex < 0.5)
-		return Texture0Size;
-	else if (samplerIndex < 1.5)
-		return Texture1Size;
-	else if (samplerIndex < 2.5)
-		return Texture2Size;
-
-	return Texture3Size;
-}
-
-vec4 Sample(float samplerIndex, vec2 pos)
-{
-	if (samplerIndex < 0.5)
-		return texture2D(Texture0, pos);
-	else if (samplerIndex < 1.5)
-		return texture2D(Texture1, pos);
-	else if (samplerIndex < 2.5)
-		return texture2D(Texture2, pos);
-	
-	return texture2D(Texture3, pos);
-}
-#else
 ivec2 Size(float samplerIndex)
 {
 	if (samplerIndex < 0.5)
@@ -306,7 +286,6 @@ vec4 Sample(float samplerIndex, vec2 pos)
 
 	return texture(Texture3, pos);
 }
-#endif
 
 vec4 SamplePalettedBilinear(float samplerIndex, vec2 coords, vec2 textureSize)
 {
@@ -320,28 +299,17 @@ vec4 SamplePalettedBilinear(float samplerIndex, vec2 coords, vec2 textureSize)
 	vec4 x3 = Sample(samplerIndex, tl + vec2(0., px.y));
 	vec4 x4 = Sample(samplerIndex, tl + px);
 
-	#if __VERSION__ == 120
-	vec4 c1 = texture2D(Palette, vec2(dot(x1, vChannelMask), vTexMetadata.s));
-	vec4 c2 = texture2D(Palette, vec2(dot(x2, vChannelMask), vTexMetadata.s));
-	vec4 c3 = texture2D(Palette, vec2(dot(x3, vChannelMask), vTexMetadata.s));
-	vec4 c4 = texture2D(Palette, vec2(dot(x4, vChannelMask), vTexMetadata.s));
-	#else
 	vec4 c1 = texture(Palette, vec2(dot(x1, vChannelMask), vTexMetadata.s));
 	vec4 c2 = texture(Palette, vec2(dot(x2, vChannelMask), vTexMetadata.s));
 	vec4 c3 = texture(Palette, vec2(dot(x3, vChannelMask), vTexMetadata.s));
 	vec4 c4 = texture(Palette, vec2(dot(x4, vChannelMask), vTexMetadata.s));
-	#endif
 
 	return mix(mix(c1, c2, interp.x), mix(c3, c4, interp.x), interp.y);
 }
 
 vec4 ColorShift(vec4 c, float p)
 {
-	#if __VERSION__ == 120
-	vec4 shift = texture2D(ColorShifts, vec2(0.5, p));
-	#else
 	vec4 shift = texture(ColorShifts, vec2(0.5, p));
-	#endif
 
 	vec3 hsv = rgb2hsv(srgb2linear(c).rgb);
 	if (hsv.r >= shift.b && shift.a >= hsv.r)
@@ -392,11 +360,7 @@ void main()
 		{
 			vec4 x = Sample(vTexSampler.s, coords);
 			vec2 p = vec2(dot(x, vChannelMask), vTexMetadata.s);
-			#if __VERSION__ == 120
-			c = vPalettedFraction * texture2D(Palette, p) + vRGBAFraction * x + vColorFraction * vTexCoord;
-			#else
 			c = vPalettedFraction * texture(Palette, p) + vRGBAFraction * x + vColorFraction * vTexCoord;
-			#endif
 		}
 
 		// Discard any transparent fragments (both color and depth)
@@ -410,17 +374,15 @@ void main()
 	if (EnableDepthPreview)
 	{
 		float intensity = 1.0 - gl_FragCoord.z;
-		#if __VERSION__ == 120
-		gl_FragColor = vec4(vec3(intensity), 1.0);
-		#else
 		fragColor = vec4(vec3(intensity), 1.0);
-		#endif
 	}
 	else
 	{
 		if (RenderShroud){
 			// if (c.a == 0.0)
 			// 	c.a = 0.2;
+
+			// c = vec4(vec3(texture(TerrainDepth, gl_FragCoord.xy).r), 1.0);
 		}
 		else
 		{
@@ -433,10 +395,6 @@ void main()
 			}
 		}
 
-		#if __VERSION__ == 120
-		gl_FragColor = c;
-		#else
 		fragColor = c;
-		#endif
 	}
 }

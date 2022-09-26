@@ -298,15 +298,13 @@ namespace OpenRA
 			Context.EnableDepthBuffer(DepthFunc.LessEqual);
 			Draw3DMeshesInstance(wr, true);
 
-			//MapRenderer.SetCameraParams(World3DRenderer, true);
-			//wr.TerrainRenderer?.RenderTerrainEarly(wr, wr.Viewport);
+			// MapRenderer.SetCameraParams(World3DRenderer, true);
+			// wr.TerrainRenderer?.RenderTerrainEarly(wr, wr.Viewport);
 
 			Context.DisableDepthBuffer();
 			worldShadowBuffer.Unbind();
 			worldBuffer.Bind();
-
 			MapRenderer.SetCameraParams(World3DRenderer, false);
-
 		}
 
 		public void Flush3DMeshesInstance(WorldRenderer wr)

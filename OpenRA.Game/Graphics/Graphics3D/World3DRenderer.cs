@@ -15,7 +15,7 @@ namespace OpenRA.Graphics
 		public readonly vec3 CameraRight;
 
 		public readonly vec3 InverseCameraFront;
-		public readonly vec3 InverseCameraFrontMeterPerWPos;
+		public readonly vec3 InverseCameraFrontMeterPerWDist;
 
 		public readonly int WDistPerMeter = 256;
 		readonly float height = 256 * 200;
@@ -67,7 +67,7 @@ namespace OpenRA.Graphics
 			CameraUp = glm.Normalized(new vec3(0, -1, TanCameraPitch));
 			CameraRight = new vec3(1, 0, 0);
 			InverseCameraFront = glm.Normalized(new vec3(0, 1, 1 / TanCameraPitch));
-			InverseCameraFrontMeterPerWPos = InverseCameraFront / WDistPerMeter;
+			InverseCameraFrontMeterPerWDist = InverseCameraFront / WDistPerMeter;
 
 			MaxTerrainHeight = mapGrid.MaximumTerrainHeight * MapGrid.MapHeightStep * 2f / WDistPerMeter;
 
@@ -237,7 +237,7 @@ namespace OpenRA.Graphics
 			in float3 tint, in float alpha, in Color remap)
 		{
 			var scaleMat = mat4.Scale(scale);
-			var viewOffset = Game.Renderer.World3DRenderer.InverseCameraFrontMeterPerWPos * zOffset;
+			var viewOffset = Game.Renderer.World3DRenderer.InverseCameraFrontMeterPerWDist * zOffset;
 			foreach (var m in meshes)
 			{
 				if (m.UseMatrix)

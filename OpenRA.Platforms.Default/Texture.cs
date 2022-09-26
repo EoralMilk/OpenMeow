@@ -61,9 +61,10 @@ namespace OpenRA.Platforms.Default
 			OpenGL.CheckGLError();
 		}
 
-		public Texture(uint id)
+		public Texture(uint id, Size size)
 		{
 			texture = id;
+			Size = size;
 		}
 
 		void PrepareTexture()
@@ -357,4 +358,180 @@ namespace OpenRA.Platforms.Default
 			OpenGL.glDeleteTextures(1, ref texture);
 		}
 	}
+
+	sealed class TextureArray : ThreadAffine, ITextureInternal
+	{
+		uint id;
+		int count = 0;
+		readonly int textureCount = 1;
+		TextureScaleFilter scaleFilter;
+		TextureWrap wrapType;
+		public TextureWrap WrapType
+		{
+			get => wrapType;
+			set
+			{
+				VerifyThreadAffinity();
+				if (wrapType != value)
+				{
+					wrapType = value;
+					PrepareTexture();
+				}
+			}
+		}
+
+		public uint ID => id;
+		public Size Size { get; private set; }
+
+		bool disposed;
+
+		public TextureScaleFilter ScaleFilter
+		{
+			get => scaleFilter;
+
+			set
+			{
+				VerifyThreadAffinity();
+				if (scaleFilter == value)
+					return;
+
+				scaleFilter = value;
+				PrepareTexture();
+			}
+		}
+
+		public TextureArray(int textureCount)
+		{
+			this.textureCount = textureCount;
+			OpenGL.glGenTextures(1, out id);
+			OpenGL.CheckGLError();
+		}
+
+		void PrepareTexture()
+		{
+			OpenGL.CheckGLError();
+			OpenGL.glBindTexture(OpenGL.GL_TEXTURE_2D_ARRAY, id);
+			OpenGL.CheckGLError();
+
+			var filter = scaleFilter == TextureScaleFilter.Linear ? OpenGL.GL_LINEAR : OpenGL.GL_NEAREST;
+			var wrap = wrapType == TextureWrap.ClampToEdge ? OpenGL.GL_CLAMP_TO_EDGE : OpenGL.GL_REPEAT;
+			OpenGL.glTexParameteri(OpenGL.GL_TEXTURE_2D_ARRAY, OpenGL.GL_TEXTURE_MAG_FILTER, filter);
+			OpenGL.CheckGLError();
+			OpenGL.glTexParameteri(OpenGL.GL_TEXTURE_2D_ARRAY, OpenGL.GL_TEXTURE_MIN_FILTER, filter);
+			OpenGL.CheckGLError();
+
+			OpenGL.glTexParameterf(OpenGL.GL_TEXTURE_2D_ARRAY, OpenGL.GL_TEXTURE_WRAP_S, wrap);
+			OpenGL.CheckGLError();
+			OpenGL.glTexParameterf(OpenGL.GL_TEXTURE_2D_ARRAY, OpenGL.GL_TEXTURE_WRAP_T, wrap);
+			OpenGL.CheckGLError();
+
+			if (wrapType == TextureWrap.ClampToEdge)
+			{
+				OpenGL.glTexParameteri(OpenGL.GL_TEXTURE_2D_ARRAY, OpenGL.GL_TEXTURE_BASE_LEVEL, 0);
+				OpenGL.CheckGLError();
+				OpenGL.glTexParameteri(OpenGL.GL_TEXTURE_2D_ARRAY, OpenGL.GL_TEXTURE_MAX_LEVEL, 0);
+				OpenGL.CheckGLError();
+			}
+
+		}
+
+		void SetData(IntPtr data, int width, int height, TextureType type = TextureType.BGRA)
+		{
+			PrepareTexture();
+			var glInternalFormat = type == TextureType.BGRA ? (OpenGL.Profile == GLProfile.Embedded ? OpenGL.GL_BGRA : OpenGL.GL_RGBA8) :
+												type == TextureType.RGBA ? OpenGL.GL_RGBA :
+												type == TextureType.RGB ? OpenGL.GL_RGB : OpenGL.GL_RED;
+
+			if (count == 0)
+			{
+				OpenGL.glTexImage3D(OpenGL.GL_TEXTURE_2D_ARRAY,
+					0, // level
+					glInternalFormat, // internal format
+					width, height, textureCount, // width, height, depth
+					0, // border?
+					type == TextureType.BGRA ? OpenGL.GL_BGRA : glInternalFormat, // format
+					OpenGL.GL_UNSIGNED_BYTE, IntPtr.Zero);
+				OpenGL.CheckGLError();
+			}
+
+			OpenGL.glTexSubImage3D(OpenGL.GL_TEXTURE_2D_ARRAY,
+				0, // level
+				0, 0, count, // xoffset, yoffset, zoffset
+				width, height, 1, // width, height, depth
+				type == TextureType.BGRA ? OpenGL.GL_BGRA : glInternalFormat, OpenGL.GL_UNSIGNED_BYTE, data);
+			OpenGL.CheckGLError();
+
+			count++;
+		}
+
+		public void SetData(byte[] colors, int width, int height, TextureType type = TextureType.BGRA)
+		{
+			VerifyThreadAffinity();
+			if (!Exts.IsPowerOf2(width) || !Exts.IsPowerOf2(height))
+				throw new InvalidDataException($"Non-power-of-two array {width}x{height}");
+
+			Size = new Size(width, height);
+			unsafe
+			{
+				fixed (byte* ptr = &colors[0])
+					SetData(new IntPtr(ptr), width, height, type);
+			}
+
+			if (wrapType == TextureWrap.Repeat)
+			{
+				OpenGL.glGenerateMipmap(OpenGL.GL_TEXTURE_2D);
+				OpenGL.CheckGLError();
+			}
+		}
+
+		public void SetFloatData(float[] data, int width, int height, TextureType type = TextureType.RGBA)
+		{
+			VerifyThreadAffinity();
+			if (!Exts.IsPowerOf2(width) || !Exts.IsPowerOf2(height))
+				throw new InvalidDataException("Non-power-of-two array {0}x{1}".F(width, height));
+
+			Size = new Size(width, height);
+			unsafe
+			{
+				fixed (float* ptr = &data[0])
+				{
+					PrepareTexture();
+
+					OpenGL.glTexImage2D(OpenGL.GL_TEXTURE_2D, 0, OpenGL.GL_RGBA16F, width, height,
+						0, OpenGL.GL_RGBA, OpenGL.GL_FLOAT, new IntPtr(ptr));
+					OpenGL.CheckGLError();
+				}
+			}
+
+			if (wrapType == TextureWrap.Repeat)
+			{
+				OpenGL.glGenerateMipmap(OpenGL.GL_TEXTURE_2D);
+				OpenGL.CheckGLError();
+			}
+		}
+
+		public byte[] GetData()
+		{
+			throw new Exception("Can't get data from texture array.");
+		}
+
+		public void SetEmpty(int width, int height)
+		{
+			VerifyThreadAffinity();
+			if (!Exts.IsPowerOf2(width) || !Exts.IsPowerOf2(height))
+				throw new InvalidDataException($"Non-power-of-two array {width}x{height}");
+
+			Size = new Size(width, height);
+			SetData(IntPtr.Zero, width, height);
+		}
+
+		public void Dispose()
+		{
+			if (disposed)
+				return;
+			disposed = true;
+			OpenGL.glDeleteTextures(1, ref id);
+		}
+	}
+
 }

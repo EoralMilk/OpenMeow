@@ -142,7 +142,7 @@ namespace OpenRA.Platforms.Default
 				var sampler = sb.ToString();
 				OpenGL.CheckGLError();
 
-				if (type == OpenGL.GL_SAMPLER_2D)
+				if (type == OpenGL.GL_SAMPLER_2D || type == OpenGL.GL_SAMPLER_2D_ARRAY)
 				{
 					samplers.Add(sampler, nextTexUnit);
 
@@ -186,7 +186,10 @@ namespace OpenRA.Platforms.Default
 				if (OpenGL.glIsTexture(texture.ID))
 				{
 					OpenGL.glActiveTexture(OpenGL.GL_TEXTURE0 + kv.Key);
-					OpenGL.glBindTexture(OpenGL.GL_TEXTURE_2D, texture.ID);
+					if (texture is TextureArray)
+						OpenGL.glBindTexture(OpenGL.GL_TEXTURE_2D_ARRAY, texture.ID);
+					else
+						OpenGL.glBindTexture(OpenGL.GL_TEXTURE_2D, texture.ID);
 
 					// Work around missing textureSize GLSL function by explicitly tracking sizes in a uniform
 					if (OpenGL.Profile == GLProfile.Legacy && legacySizeUniforms.TryGetValue(kv.Key, out var param))
@@ -223,7 +226,9 @@ namespace OpenRA.Platforms.Default
 			else
 			{
 				if (t == null)
-					return;
+				{
+					throw new Exception("Texture: " + name + " is Null, Can't Set Texture");
+				}
 
 				if (samplers.TryGetValue(name, out var texUnit))
 					textures[texUnit] = t;
@@ -310,6 +315,7 @@ namespace OpenRA.Platforms.Default
 		public void SetVecArray(string name, float[] vec, int vecLength, int count)
 		{
 			VerifyThreadAffinity();
+
 			var param = OpenGL.glGetUniformLocation(program, name);
 			OpenGL.CheckGLError();
 

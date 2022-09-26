@@ -284,14 +284,14 @@ LaserChainGun:
 	Range: 6c768
 	Report: lastur1.aud
 	Projectile: LaserZap
-		Inaccuracy: 500
+		Inaccuracy: 555
 		Width: 24
 		Duration: 5
 		Blockable: true
 		SecondaryBeamWidth: 100
 		SecondaryBeamColor: FF000050
 	Warhead@1Dam: SpreadDamage
-		Damage: 2100
+		Damage: 1400
 	Warhead@2Eff: CreateEffect
 		Explosions: laserburningmini
 	Warhead@3Smu: LeaveSmudge

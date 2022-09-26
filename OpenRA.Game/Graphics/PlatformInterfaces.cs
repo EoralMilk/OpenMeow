@@ -102,6 +102,7 @@ namespace OpenRA
 		IVertexBuffer<T> CreateVertexBuffer<T>(int size) where T : struct;
 		ITexture CreateTexture();
 		ITexture CreateInfoTexture(Size size);
+		ITexture CreateTextureArray(int textureCount);
 		IFrameBuffer CreateDepthFrameBuffer(Size s);
 		IFrameBuffer CreateFrameBuffer(Size s);
 		IFrameBuffer CreateFrameBuffer(Size s, Color clearColor);

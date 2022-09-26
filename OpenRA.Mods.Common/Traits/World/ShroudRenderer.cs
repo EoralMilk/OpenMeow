@@ -367,8 +367,6 @@ namespace OpenRA.Mods.Common.Traits
 		{
 			UpdateShroud(map.ProjectedCells);
 			Game.Renderer.ClearDepthBuffer();
-			Game.Renderer.EnableDepthWrite(true);
-			Game.Renderer.EnableDepthBuffer();
 			shroudLayer.Draw(wr.Viewport, true);
 			Game.Renderer.MapRenderer.Flush();
 

@@ -10,6 +10,7 @@
 #endregion
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -151,6 +152,259 @@ namespace OpenRA
 				if (required || formattedValue != ignoreIfValue)
 					nodes.Add(new MiniYamlNode(key, formattedValue));
 			}
+		}
+	}
+
+	public class TerrainRenderBlock
+	{
+		/// <summary>
+		/// Mask texture contains size*szie MiniCells
+		/// </summary>
+		public const int SizeLimit = 32;
+		public const int TextureSize = 512;
+		public const int SheetCount = 4;
+
+		public int MiniCellPix => TextureSize / SizeLimit;
+
+		public static IShader TextureBakeShader;
+		public static IShader TerrainShader;
+
+		public static Sheet[] Sheets;
+		public static vec3 ViewOffset;
+		static readonly string[] SheetIndexToTextureName = Exts.MakeArray(SheetCount, i => $"Texture{i}");
+
+		public readonly IFrameBuffer BlendFramebuffer;
+
+		public ITexture Mask1234;
+		public ITexture Mask5678;
+
+		public readonly Map Map;
+		public readonly int2 TopLeft;
+		public readonly int2 BottomRight;
+
+		/// <summary>
+		/// 0 - 1, offset of block relative to map
+		/// </summary>
+		readonly float2 topLeftOffset;
+
+		/// <summary>
+		/// 0 - 1, offset of block relative to map
+		/// </summary>
+		readonly float2 bottomRightOffset;
+
+		/// <summary>
+		/// using for render check, as wdist
+		/// </summary>
+		public readonly int LeftBound;
+
+		/// <summary>
+		/// using for render check, as wdist
+		/// </summary>
+		public readonly int RightBound;
+
+		readonly TerrainBlendingVertex[] blendVertices;
+		readonly TerrainFinalVertex[] finalVertices;
+		readonly IVertexBuffer<TerrainBlendingVertex> blendVertexBuffer;
+		readonly IVertexBuffer<TerrainFinalVertex> finalVertexBuffer;
+
+		bool needUpdateTexture = true;
+
+		public TerrainRenderBlock(Map map, int2 tl, int2 br)
+		{
+			BlendFramebuffer = Game.Renderer.Context.CreateFrameBuffer(new Size(TextureSize, TextureSize), 2);
+
+			if (TextureBakeShader == null)
+				TextureBakeShader = Game.Renderer.Context.CreateUnsharedShader<TerrainBlendingShaderBindings>();
+			if (TerrainShader == null)
+				TerrainShader = Game.Renderer.Context.CreateUnsharedShader<TerrainFinalShaderBindings>();
+
+			Map = map;
+			TopLeft = tl;
+			BottomRight = br;
+			LeftBound = (tl.X - 1) * 724;
+			RightBound = (br.X + 1) * 724;
+			var topLeftOffsetX = (float)TopLeft.X / (Map.VertexArrayWidth - 1);
+			var topLeftOffsetY = (float)TopLeft.Y / (Map.VertexArrayHeight - 1);
+			topLeftOffset = new float2(topLeftOffsetX, topLeftOffsetY);
+			var bottomRightOffsetX = (float)(BottomRight.X + 1) / (Map.VertexArrayWidth - 1);
+			var bottomRightOffsetY = (float)(BottomRight.Y + 1)/ (Map.VertexArrayHeight - 1);
+			bottomRightOffset = new float2(bottomRightOffsetX, bottomRightOffsetY);
+			var sizeX = br.X - tl.X + 1;
+			var sizeY = br.Y - tl.Y + 1;
+			if (sizeX > SizeLimit || sizeY > SizeLimit)
+			{
+				throw new Exception("TerrainBlock size limit as " + SizeLimit + " but giving " + tl + " " + br);
+			}
+
+			var index = 0;
+			blendVertices = new TerrainBlendingVertex[sizeX * sizeY * 6];
+			finalVertices = new TerrainFinalVertex[sizeX * sizeY * 6];
+			for (int y = TopLeft.Y; y <= BottomRight.Y; y++)
+			{
+				for (int x = TopLeft.X; x <= BottomRight.X; x++)
+				{
+					MiniCell cell = Map.MiniCells[y, x];
+					var vertTL = Map.TerrainVertices[cell.TL];
+					var vertTR = Map.TerrainVertices[cell.TR];
+					var vertBL = Map.TerrainVertices[cell.BL];
+					var vertBR = Map.TerrainVertices[cell.BR];
+
+					var maskuvTL = CalMaskUV(new int2(x, y), TopLeft);
+					var maskuvTR = CalMaskUV(new int2(x + 1, y), TopLeft);
+					var maskuvBL = CalMaskUV(new int2(x, y + 1), TopLeft);
+					var maskuvBR = CalMaskUV(new int2(x + 1, y + 1), TopLeft);
+
+					if (cell.Type == MiniCellType.TRBL)
+					{
+						blendVertices[index + 0] = new TerrainBlendingVertex(vertTR.UV, maskuvTR, vertTR.TBN, vertTR.Color, 1.0f, 1);
+						blendVertices[index + 1] = new TerrainBlendingVertex(vertBL.UV, maskuvBL, vertBL.TBN, vertBL.Color, 1.0f, 1);
+						blendVertices[index + 2] = new TerrainBlendingVertex(vertBR.UV, maskuvBR, vertBR.TBN, vertBR.Color, 1.0f, 1);
+
+						blendVertices[index + 3] = new TerrainBlendingVertex(vertTR.UV, maskuvTR, vertTR.TBN, vertTR.Color, 1.0f, 1);
+						blendVertices[index + 4] = new TerrainBlendingVertex(vertTL.UV, maskuvTL, vertTL.TBN, vertTL.Color, 1.0f, 1);
+						blendVertices[index + 5] = new TerrainBlendingVertex(vertBL.UV, maskuvBL, vertBL.TBN, vertBL.Color, 1.0f, 1);
+					}
+					else
+					{
+						blendVertices[index + 0] = new TerrainBlendingVertex(vertTL.UV, maskuvTL, vertTL.TBN, vertTL.Color, 1.0f, 1);
+						blendVertices[index + 1] = new TerrainBlendingVertex(vertBL.UV, maskuvBL, vertBL.TBN, vertBL.Color, 1.0f, 1);
+						blendVertices[index + 2] = new TerrainBlendingVertex(vertBR.UV, maskuvBR, vertBR.TBN, vertBR.Color, 1.0f, 1);
+
+						blendVertices[index + 3] = new TerrainBlendingVertex(vertTR.UV, maskuvTR, vertTR.TBN, vertTR.Color, 1.0f, 1);
+						blendVertices[index + 4] = new TerrainBlendingVertex(vertTL.UV, maskuvTL, vertTL.TBN, vertTL.Color, 1.0f, 1);
+						blendVertices[index + 5] = new TerrainBlendingVertex(vertBR.UV, maskuvBR, vertBR.TBN, vertBR.Color, 1.0f, 1);
+					}
+
+					if (cell.Type == MiniCellType.TRBL)
+					{
+						finalVertices[index + 0] = new TerrainFinalVertex(vertTR.Pos, maskuvTR);
+						finalVertices[index + 1] = new TerrainFinalVertex(vertBL.Pos, maskuvBL);
+						finalVertices[index + 2] = new TerrainFinalVertex(vertBR.Pos, maskuvBR);
+
+						finalVertices[index + 3] = new TerrainFinalVertex(vertTR.Pos, maskuvTR);
+						finalVertices[index + 4] = new TerrainFinalVertex(vertTL.Pos, maskuvTL);
+						finalVertices[index + 5] = new TerrainFinalVertex(vertBL.Pos, maskuvBL);
+					}
+					else
+					{
+						finalVertices[index + 0] = new TerrainFinalVertex(vertTL.Pos, maskuvTL);
+						finalVertices[index + 1] = new TerrainFinalVertex(vertBL.Pos, maskuvBL);
+						finalVertices[index + 2] = new TerrainFinalVertex(vertBR.Pos, maskuvBR);
+
+						finalVertices[index + 3] = new TerrainFinalVertex(vertTR.Pos, maskuvTR);
+						finalVertices[index + 4] = new TerrainFinalVertex(vertTL.Pos, maskuvTL);
+						finalVertices[index + 5] = new TerrainFinalVertex(vertBR.Pos, maskuvBR);
+					}
+
+					index += 6;
+				}
+			}
+
+			blendVertexBuffer = Game.Renderer.CreateVertexBuffer<TerrainBlendingVertex>(blendVertices.Length);
+			blendVertexBuffer.SetData(blendVertices, blendVertices.Length);
+
+			finalVertexBuffer = Game.Renderer.CreateVertexBuffer<TerrainFinalVertex>(finalVertices.Length);
+			finalVertexBuffer.SetData(finalVertices, finalVertices.Length);
+		}
+
+		float2 CalMaskUV(int2 idx, int2 topLeft)
+		{
+			float x = (float)(idx.X - topLeft.X) / SizeLimit;
+			float y = (float)(idx.Y - topLeft.Y) / SizeLimit;
+
+			return new float2(x, y);
+		}
+
+		public void UpdateTexture(int left, int right, World world)
+		{
+			if (TextureBakeShader == null)
+				return;
+
+			if (LeftBound > right || RightBound < left)
+				return;
+
+			if (!needUpdateTexture)
+				return;
+
+			needUpdateTexture = false;
+
+			BlendFramebuffer.Bind();
+
+			var mask1234 = world.MapTextureCache.Textures["Mask1234"];
+			TextureBakeShader.SetTexture(mask1234.Item1, mask1234.Item2.GetTexture());
+
+			TextureBakeShader.SetTexture("Tiles", world.MapTextureCache.TileTextureArray);
+
+			TextureBakeShader.SetVec("Offset",
+				topLeftOffset.X,
+				topLeftOffset.Y);
+			TextureBakeShader.SetVec("Range",
+				bottomRightOffset.X - topLeftOffset.X,
+				bottomRightOffset.Y - topLeftOffset.Y);
+
+			Game.Renderer.Context.SetBlendMode(BlendMode.None);
+			TextureBakeShader.PrepareRender();
+
+			Game.Renderer.DrawBatch(TextureBakeShader, blendVertexBuffer, 0, blendVertices.Length, PrimitiveType.TriangleList);
+
+			Game.Renderer.Context.SetBlendMode(BlendMode.None);
+
+			BlendFramebuffer.Unbind();
+
+			// SaveAsPng("./MapToPng/");
+		}
+
+		public void RenderBlock(int left, int right)
+		{
+			if (TerrainShader == null)
+				return;
+
+			if (LeftBound > right || RightBound < left)
+				return;
+
+			TerrainShader.SetTexture("BakedTerrainTexture", BlendFramebuffer.Texture);
+			TerrainShader.SetTexture("BakedTerrainNormalTexture", BlendFramebuffer.Texture1);
+
+			Game.Renderer.Context.SetBlendMode(BlendMode.None);
+			TerrainShader.PrepareRender();
+
+			Game.Renderer.DrawBatch(TerrainShader, finalVertexBuffer, 0, finalVertices.Length, PrimitiveType.TriangleList);
+
+			Game.Renderer.Context.SetBlendMode(BlendMode.None);
+		}
+
+		public static void SetCameraParams(in World3DRenderer w3dr, bool sunCamera)
+		{
+			if (TerrainShader == null)
+				return;
+			TerrainShader.SetCommonParaments(w3dr, sunCamera);
+			ViewOffset = Game.Renderer.World3DRenderer.InverseCameraFrontMeterPerWDist * (-17);
+
+			TerrainShader.SetVec("ViewOffset",
+				ViewOffset.x,
+				ViewOffset.y,
+				ViewOffset.z);
+			TerrainShader.SetVec("CameraInvFront",
+				Game.Renderer.World3DRenderer.InverseCameraFront.x,
+				Game.Renderer.World3DRenderer.InverseCameraFront.y,
+				Game.Renderer.World3DRenderer.InverseCameraFront.z);
+		}
+
+		public static void SetShadowParams(in World3DRenderer w3dr)
+		{
+			if (TerrainShader == null)
+				return;
+
+			Game.Renderer.SetShadowParams(TerrainShader, w3dr);
+			Game.Renderer.SetLightParams(TerrainShader, w3dr);
+		}
+
+		public void SaveAsPng(string path)
+		{
+			var colorData = BlendFramebuffer.Texture1.GetData();
+			Console.WriteLine(colorData.Length);
+
+			new Png(colorData, SpriteFrameType.Bgra32, TextureSize, TextureSize).Save(path + Map.Title + "_" + TopLeft.X + "-"+ TopLeft.Y + ".png");
 		}
 	}
 
@@ -396,8 +650,9 @@ namespace OpenRA
 
 		public CellLayer<CellInfo> CellInfos { get; private set; }
 
-		public TerrainVertex[] TerrainVertices;
-		public MiniCell[,] MiniCells;
+		public TerrainVertex[] TerrainVertices { get; private set; }
+		public MiniCell[,] MiniCells { get; private set; }
+		public TerrainRenderBlock[,] TerrainBlocks { get; private set; }
 
 		public int VertexArrayWidth, VertexArrayHeight;
 
@@ -1378,9 +1633,51 @@ namespace OpenRA
 			}
 
 			// uv retarget
+			float texScale = 10f;
 			for (int i = 0; i < TerrainVertices.Length; i++)
 			{
-				TerrainVertices[i].UV = new float2(TerrainVertices[i].Pos.X / 5.0f, TerrainVertices[i].Pos.Y / 5.0f);
+				TerrainVertices[i].UV = new float2(TerrainVertices[i].Pos.X / texScale, TerrainVertices[i].Pos.Y / texScale);
+			}
+
+			// Create Terrain Render Blocks
+			var blockX = (VertexArrayWidth - 1) / TerrainRenderBlock.SizeLimit;
+			if ((VertexArrayWidth - 1) % TerrainRenderBlock.SizeLimit != 0)
+				blockX += 1;
+			var blockY = (VertexArrayHeight - 1) / TerrainRenderBlock.SizeLimit;
+			if ((VertexArrayHeight - 1) % TerrainRenderBlock.SizeLimit != 0)
+				blockY += 1;
+			TerrainBlocks = new TerrainRenderBlock[blockY, blockX];
+			for (int y = 0; y < blockY; y++)
+				for (int x = 0; x < blockX; x++)
+				{
+					int2 tl = new int2(x * TerrainRenderBlock.SizeLimit, y * TerrainRenderBlock.SizeLimit);
+					int2 br = new int2(
+						Math.Min((x + 1) * TerrainRenderBlock.SizeLimit, VertexArrayWidth - 1) - 1,
+						Math.Min((y + 1) * TerrainRenderBlock.SizeLimit, VertexArrayHeight - 1) - 1);
+					TerrainBlocks[y, x] = new TerrainRenderBlock(this, tl, br);
+				}
+		}
+
+		public void UpdateTerrainBlockTexture(in World3DRenderer w3dr, bool sunCamera, World world, Viewport vp)
+		{
+			TerrainRenderBlock.SetCameraParams(w3dr, sunCamera);
+			TerrainRenderBlock.SetShadowParams(w3dr);
+
+			var left = vp.TopLeftPosition.X;
+			var right = vp.BottomRightPosition.X;
+			foreach (var block in TerrainBlocks)
+			{
+				block.UpdateTexture(left, right, world);
+			}
+		}
+
+		public void DrawTerrainBlock(Viewport vp)
+		{
+			var left = vp.TopLeftPosition.X;
+			var right = vp.BottomRightPosition.X;
+			foreach (var block in TerrainBlocks)
+			{
+				block.RenderBlock(left, right);
 			}
 		}
 

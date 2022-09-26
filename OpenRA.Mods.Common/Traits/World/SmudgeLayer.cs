@@ -228,7 +228,7 @@ namespace OpenRA.Mods.Common.Traits
 				}
 
 				OverlayVertices = smudgeLayer.CreateTileOverlayVertex(pos, smudgeLayer.map, Size,
-					smudgeLayer.nowZOffset * Game.Renderer.World3DRenderer.InverseCameraFrontMeterPerWPos,
+					smudgeLayer.nowZOffset * Game.Renderer.World3DRenderer.InverseCameraFrontMeterPerWDist,
 					sprite, Samplers, smudgeLayer.PaletteReference?.TextureIndex ?? 0);
 
 				AlphaTint = 1;
@@ -257,7 +257,7 @@ namespace OpenRA.Mods.Common.Traits
 				}
 
 				OverlayVertices = smudgeLayer.CreateTileOverlayVertex(pos, smudgeLayer.map, Size,
-					smudgeLayer.nowZOffset * Game.Renderer.World3DRenderer.InverseCameraFrontMeterPerWPos,
+					smudgeLayer.nowZOffset * Game.Renderer.World3DRenderer.InverseCameraFrontMeterPerWDist,
 					sprite, Samplers, smudgeLayer.PaletteReference?.TextureIndex ?? 0);
 				AlphaTint = 1;
 				Tick = LifeTime;

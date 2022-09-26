@@ -151,14 +151,14 @@ namespace OpenRA.Graphics
 
 		public MapVertex(in OverlayVertex vertex,
 					float a, uint type)
-: this(vertex.X, vertex.Y, vertex.Z,
-  0, 0, 0, 0,
-  0, 0,
-  0,0,0,a,
-  vertex.TX, vertex.TY, vertex.TZ,
-  vertex.BX, vertex.BY, vertex.BZ,
-  vertex.NX, vertex.NY, vertex.NZ,
-  vertex.U, vertex.V, type)
+		: this(vertex.X, vertex.Y, vertex.Z,
+		  0, 0, 0, 0,
+		  0, 0,
+		  0,0,0,a,
+		  vertex.TX, vertex.TY, vertex.TZ,
+		  vertex.BX, vertex.BY, vertex.BZ,
+		  vertex.NX, vertex.NY, vertex.NZ,
+		  vertex.U, vertex.V, type)
 		{ }
 
 		public MapVertex(float x, float y, float z,
@@ -260,4 +260,75 @@ namespace OpenRA.Graphics
 			NX = nx; NY = ny; NZ = nz;
 		}
 	}
+
+	public struct TerrainBlendingVertex
+	{
+		public readonly float U, V;
+		public readonly float MaskU, MaskV;
+
+		// Color tint
+		public readonly float R, G, B, A;
+
+		// TBN
+		public readonly float TX, TY, TZ;
+		public readonly float BX, BY, BZ;
+		public readonly float NX, NY, NZ;
+
+		public readonly uint DrawType;
+
+		public TerrainBlendingVertex(
+									in float2 uv,
+									in float2 maskuv,
+									in mat3 tbn,
+									in float3 tint, float a,
+									uint type)
+			: this(
+				  uv.X, uv.Y,
+				  maskuv.X, maskuv.Y,
+				  tint.X, tint.Y, tint.Z, a,
+				  tbn.Column0.x, tbn.Column0.y, tbn.Column0.z,
+				  tbn.Column1.x, tbn.Column1.y, tbn.Column1.z,
+				  tbn.Column2.x, tbn.Column2.y, tbn.Column2.z,
+				  type)
+		{ }
+
+		public TerrainBlendingVertex(float u, float v,
+									float masku, float maskv,
+									float r, float g, float b, float a,
+									float tx, float ty, float tz,
+									float bx, float by, float bz,
+									float nx, float ny, float nz,
+									uint type)
+		{
+			U = u; V = v;
+			MaskU = masku; MaskV = maskv;
+			R = r; G = g; B = b; A = a;
+			TX = tx; TY = ty; TZ = tz;
+			BX = bx; BY = by; BZ = bz;
+			NX = nx; NY = ny; NZ = nz;
+			DrawType = type;
+		}
+
+	};
+
+	public struct TerrainFinalVertex
+	{
+		public readonly float X, Y, Z;
+		public readonly float U, V;
+
+		public TerrainFinalVertex(in float3 xyz, in float2 uv)
+			: this(
+				  xyz.X, xyz.Y, xyz.Z,
+				  uv.X, uv.Y)
+		{ }
+
+		public TerrainFinalVertex(
+			float x, float y, float z,
+			float u, float v
+			)
+		{
+			X = x; Y = y; Z = z;
+			U = u; V = v;
+		}
+	};
 }

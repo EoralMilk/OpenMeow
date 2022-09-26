@@ -135,7 +135,7 @@ namespace OpenRA.Platforms.Default
 
 			if (renderTargets > 1)
 			{
-				texture1 = new Texture(CreateInternalTexture());
+				texture1 = new Texture(CreateInternalTexture(), size);
 
 				OpenGL.glFramebufferTexture2D(OpenGL.GL_FRAMEBUFFER, OpenGL.GL_COLOR_ATTACHMENT1, OpenGL.GL_TEXTURE_2D, texture1.ID, 0);
 				OpenGL.CheckGLError();
