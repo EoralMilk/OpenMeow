@@ -142,6 +142,38 @@ namespace OpenRA.Graphics
 		}
 	}
 
+	public class TerrainMaskShaderBindings : IShaderBindings
+	{
+		public string VertexShaderName { get; }
+		public string FragmentShaderName { get; }
+		public string GeometryShaderName => null;
+
+		public int Stride => 4 * sizeof(float);
+
+		public IEnumerable<ShaderVertexAttribute> Attributes { get; } = new[]
+		{
+			new ShaderVertexAttribute("aPosition", 0, 2, 0),
+			new ShaderVertexAttribute("aTexCoords", 1, 2, 2 * sizeof(float)),
+		};
+
+		public bool Instanced => false;
+
+		public int InstanceStrde => throw new System.NotImplementedException();
+
+		public IEnumerable<ShaderVertexAttribute> InstanceAttributes => throw new System.NotImplementedException();
+
+		public TerrainMaskShaderBindings()
+		{
+			var name = "terrain-mask";
+			VertexShaderName = name;
+			FragmentShaderName = name;
+		}
+
+		public void SetCommonParaments(IShader shader, World3DRenderer w3dr, bool sunCamera)
+		{
+		}
+	}
+
 	public class TerrainBlendingShaderBindings : IShaderBindings
 	{
 		public string VertexShaderName { get; }

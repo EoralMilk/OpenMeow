@@ -263,7 +263,8 @@ namespace OpenRA
 
 		public static bool IsPowerOf2(int v)
 		{
-			return (v & (v - 1)) == 0;
+			//return (v & (v - 1)) == 0;
+			return true;
 		}
 
 		public static Size NextPowerOf2(this Size s) { return new Size(NextPowerOf2(s.Width), NextPowerOf2(s.Height)); }

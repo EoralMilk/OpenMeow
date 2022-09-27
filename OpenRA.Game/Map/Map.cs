@@ -162,21 +162,10 @@ namespace OpenRA
 		/// </summary>
 		public const int SizeLimit = 32;
 		public const int TextureSize = 512;
-		public const int SheetCount = 4;
 
-		public int MiniCellPix => TextureSize / SizeLimit;
+		public static int MiniCellPix => TextureSize / SizeLimit;
 
-		public static IShader TextureBakeShader;
-		public static IShader TerrainShader;
-
-		public static Sheet[] Sheets;
 		public static vec3 ViewOffset;
-		static readonly string[] SheetIndexToTextureName = Exts.MakeArray(SheetCount, i => $"Texture{i}");
-
-		public readonly IFrameBuffer BlendFramebuffer;
-
-		public ITexture Mask1234;
-		public ITexture Mask5678;
 
 		public readonly Map Map;
 		public readonly int2 TopLeft;
@@ -202,19 +191,30 @@ namespace OpenRA
 		/// </summary>
 		public readonly int RightBound;
 
+		public static IShader TerrainMaskShader { get; private set; }
+		public static IShader TextureBlendShader { get; private set; }
+		public static IShader TerrainShader { get; private set; }
+
+		public static IFrameBuffer MaskFramebuffer { get; private set; }
+		static TerrainMaskVertex[] terrainMaskVertices;
+		static IVertexBuffer<TerrainMaskVertex> maskVertexBuffer;
+
+		public readonly IFrameBuffer BlendFramebuffer;
 		readonly TerrainBlendingVertex[] blendVertices;
-		readonly TerrainFinalVertex[] finalVertices;
 		readonly IVertexBuffer<TerrainBlendingVertex> blendVertexBuffer;
+
+		readonly TerrainFinalVertex[] finalVertices;
 		readonly IVertexBuffer<TerrainFinalVertex> finalVertexBuffer;
 
 		bool needUpdateTexture = true;
+		bool needInit = true;
 
 		public TerrainRenderBlock(Map map, int2 tl, int2 br)
 		{
 			BlendFramebuffer = Game.Renderer.Context.CreateFrameBuffer(new Size(TextureSize, TextureSize), 2);
 
-			if (TextureBakeShader == null)
-				TextureBakeShader = Game.Renderer.Context.CreateUnsharedShader<TerrainBlendingShaderBindings>();
+			if (TextureBlendShader == null)
+				TextureBlendShader = Game.Renderer.Context.CreateUnsharedShader<TerrainBlendingShaderBindings>();
 			if (TerrainShader == null)
 				TerrainShader = Game.Renderer.Context.CreateUnsharedShader<TerrainFinalShaderBindings>();
 
@@ -315,12 +315,71 @@ namespace OpenRA
 			return new float2(x, y);
 		}
 
+		public static void InitMask(Map map)
+		{
+			if (MaskFramebuffer == null)
+			{
+				MaskFramebuffer = Game.Renderer.Context.CreateFrameBuffer(
+					new Size((map.VertexArrayHeight - 1) * MiniCellPix,
+					(map.VertexArrayWidth - 1) * MiniCellPix),
+					2);
+
+				terrainMaskVertices = new TerrainMaskVertex[6];
+
+				float[] quadVertices = {
+							// positions			// texCoords
+								-1, 1,                  0.0f, 1.0f,
+								-1, -1,                 0.0f, 0.0f,
+								1, -1,                  1.0f, 0.0f,
+
+								-1, 1,                  0.0f, 1.0f,
+								1, -1,                  1.0f, 0.0f,
+								1, 1,                       1.0f, 1.0f
+				};
+
+				for (int i = 0; i < 6; i++)
+				{
+					terrainMaskVertices[i] = new TerrainMaskVertex(quadVertices[i * 4], quadVertices[i * 4 + 1], quadVertices[i * 4 + 2], quadVertices[i * 4 + 3]);
+				}
+
+				maskVertexBuffer = Game.Renderer.CreateVertexBuffer<TerrainMaskVertex>(terrainMaskVertices.Length);
+				maskVertexBuffer.SetData(terrainMaskVertices, terrainMaskVertices.Length);
+
+				TerrainMaskShader = Game.Renderer.Context.CreateUnsharedShader<TerrainMaskShaderBindings>();
+
+				// init mask with map's mask texture
+				if (map.Mask1234 != null && map.Mask5678 != null)
+				{
+					MaskFramebuffer.Bind();
+
+					TerrainMaskShader.SetTexture("InitMask1234", map.Mask1234.GetTexture());
+					TerrainMaskShader.SetTexture("InitMask5678", map.Mask5678.GetTexture());
+
+					TerrainMaskShader.SetBool("InitWithTextures", true);
+
+					Game.Renderer.Context.SetBlendMode(BlendMode.None);
+					TerrainMaskShader.PrepareRender();
+
+					Game.Renderer.DrawBatch(TerrainMaskShader, maskVertexBuffer, 0, terrainMaskVertices.Length, PrimitiveType.TriangleList);
+
+					Game.Renderer.Context.SetBlendMode(BlendMode.None);
+
+					MaskFramebuffer.Unbind();
+					Console.WriteLine("Init Mask");
+				}
+			}
+		}
+
 		public void UpdateTexture(int left, int right, World world)
 		{
-			if (TextureBakeShader == null)
+			if (TextureBlendShader == null)
 				return;
 
-			if (LeftBound > right || RightBound < left)
+			if (needInit)
+			{
+				needInit = false;
+			}
+			else if (LeftBound > right || RightBound < left)
 				return;
 
 			if (!needUpdateTexture)
@@ -330,28 +389,27 @@ namespace OpenRA
 
 			BlendFramebuffer.Bind();
 
-			var mask1234 = world.MapTextureCache.Textures["Mask1234"];
-			TextureBakeShader.SetTexture(mask1234.Item1, mask1234.Item2.GetTexture());
+			TextureBlendShader.SetTexture("Mask1234", MaskFramebuffer.Texture);
 
-			TextureBakeShader.SetTexture("Tiles", world.MapTextureCache.TileTextureArray);
+			TextureBlendShader.SetTexture("Mask5678", MaskFramebuffer.Texture1);
 
-			TextureBakeShader.SetVec("Offset",
+			TextureBlendShader.SetTexture("Tiles", world.MapTextureCache.TileTextureArray);
+
+			TextureBlendShader.SetVec("Offset",
 				topLeftOffset.X,
 				topLeftOffset.Y);
-			TextureBakeShader.SetVec("Range",
+			TextureBlendShader.SetVec("Range",
 				bottomRightOffset.X - topLeftOffset.X,
 				bottomRightOffset.Y - topLeftOffset.Y);
 
 			Game.Renderer.Context.SetBlendMode(BlendMode.None);
-			TextureBakeShader.PrepareRender();
+			TextureBlendShader.PrepareRender();
 
-			Game.Renderer.DrawBatch(TextureBakeShader, blendVertexBuffer, 0, blendVertices.Length, PrimitiveType.TriangleList);
+			Game.Renderer.DrawBatch(TextureBlendShader, blendVertexBuffer, 0, blendVertices.Length, PrimitiveType.TriangleList);
 
 			Game.Renderer.Context.SetBlendMode(BlendMode.None);
 
 			BlendFramebuffer.Unbind();
-
-			// SaveAsPng("./MapToPng/");
 		}
 
 		public void RenderBlock(int left, int right)
@@ -399,12 +457,12 @@ namespace OpenRA
 			Game.Renderer.SetLightParams(TerrainShader, w3dr);
 		}
 
-		public void SaveAsPng(string path)
+		public void SaveAsPng(ITexture texture, string path)
 		{
-			var colorData = BlendFramebuffer.Texture1.GetData();
+			var colorData = texture.GetData();
 			Console.WriteLine(colorData.Length);
 
-			new Png(colorData, SpriteFrameType.Bgra32, TextureSize, TextureSize).Save(path + Map.Title + "_" + TopLeft.X + "-"+ TopLeft.Y + ".png");
+			new Png(colorData, SpriteFrameType.Bgra32, texture.Size.Width, texture.Size.Height).Save(path + Map.Title + "_" + TopLeft.X + "-"+ TopLeft.Y + ".png");
 		}
 	}
 
@@ -656,6 +714,8 @@ namespace OpenRA
 
 		public int VertexArrayWidth, VertexArrayHeight;
 
+		public Sheet Mask1234, Mask5678;
+
 		//// all TerrainPatch on map
 		//public readonly TerrainPatch[] MapTerrainPatches;
 
@@ -767,10 +827,27 @@ namespace OpenRA
 			CalculateTileVertexInfo();
 		}
 
+		void GetMaskTextures(IReadOnlyPackage package)
+		{
+			var filename = "Mask1234.png";
+			if (Package.Contains(filename))
+			{
+				Mask1234 = new Sheet(package.GetStream(filename), TextureWrap.Repeat);
+			}
+
+			filename = "Mask5678.png";
+			if (Package.Contains(filename))
+			{
+				Mask5678 = new Sheet(package.GetStream(filename), TextureWrap.Repeat);
+			}
+		}
+
 		public Map(ModData modData, IReadOnlyPackage package)
 		{
 			this.modData = modData;
 			Package = package;
+
+			GetMaskTextures(Package);
 
 			if (!Package.Contains("map.yaml") || !Package.Contains("map.bin"))
 				throw new InvalidDataException($"Not a valid map\n File: {package.Name}");
@@ -1660,6 +1737,8 @@ namespace OpenRA
 
 		public void UpdateTerrainBlockTexture(in World3DRenderer w3dr, bool sunCamera, World world, Viewport vp)
 		{
+			TerrainRenderBlock.InitMask(this);
+
 			TerrainRenderBlock.SetCameraParams(w3dr, sunCamera);
 			TerrainRenderBlock.SetShadowParams(w3dr);
 

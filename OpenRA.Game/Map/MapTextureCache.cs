@@ -65,11 +65,20 @@ namespace OpenRA.Graphics
 				CausticsTextures[i] = new Sheet( fileSystem.Open(filename), TextureWrap.Repeat);
 			}
 
-			TileTextureArray = Game.Renderer.Context.CreateTextureArray(3);
+			var tileSet = "tile-set.yaml";
 
-			AddTileTexture("Test1", "TestTile1.png");
-			AddTileTexture("Test2", "TestTile2.png");
-			AddTileTexture("Test3", "TestTile3.png");
+			if (!fileSystem.Exists(tileSet))
+				throw new Exception("Can't Find " + tileSet + " to define tiles texture");
+			List<MiniYamlNode> nodes = MiniYaml.FromStream(fileSystem.Open(tileSet));
+
+			TileTextureArray = Game.Renderer.Context.CreateTextureArray(nodes.Count);
+
+			foreach (var node in nodes)
+			{
+				Console.WriteLine("AddTileTexture " + node.Key + " " + node.Value.Value);
+				if (!AddTileTexture(node.Key, node.Value.Value))
+					throw new Exception("duplicate " + node.Key + " in " + tileSet);
+			}
 
 		}
 

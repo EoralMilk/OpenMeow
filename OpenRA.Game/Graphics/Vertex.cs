@@ -53,10 +53,7 @@ namespace OpenRA.Graphics
 
 	public readonly struct ScreenVertex
 	{
-		// 3d position
 		public readonly float X, Y;
-
-		// Primary and secondary texture coordinates or RGBA color
 		public readonly float U, V;
 
 		public ScreenVertex(float x, float y, float u, float v)
@@ -258,6 +255,18 @@ namespace OpenRA.Graphics
 			TX = tx; TY = ty; TZ = tz;
 			BX = bx; BY = by; BZ = bz;
 			NX = nx; NY = ny; NZ = nz;
+		}
+	}
+
+	public readonly struct TerrainMaskVertex
+	{
+		public readonly float X, Y;
+		public readonly float U, V;
+
+		public TerrainMaskVertex(float x, float y, float u, float v)
+		{
+			X = x; Y = y;
+			U = u; V = v;
 		}
 	}
 
