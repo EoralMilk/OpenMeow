@@ -35,6 +35,9 @@ namespace OpenRA.Mods.Common.Traits
 		[Desc("Time in ticks to wait after taking damage.")]
 		public readonly int DamageCooldown = 0;
 
+		[Desc("Only activates health change once.")]
+		public readonly bool OneTimeTrigger = false;
+
 		[Desc("Apply the health change when encountering these damage types.")]
 		public readonly BitSet<DamageType> DamageTypes = default(BitSet<DamageType>);
 
@@ -44,6 +47,9 @@ namespace OpenRA.Mods.Common.Traits
 	class ChangesHealth : ConditionalTrait<ChangesHealthInfo>, ITick, INotifyDamage, ISync
 	{
 		readonly IHealth health;
+
+		[Sync]
+		bool triggered = false;
 
 		[Sync]
 		int ticks;
@@ -69,6 +75,15 @@ namespace OpenRA.Mods.Common.Traits
 			if (damageTicks > 0)
 			{
 				--damageTicks;
+				return;
+			}
+
+			if (Info.OneTimeTrigger)
+			{
+				if (triggered)
+					return;
+				triggered = true;
+				self.InflictDamage(self, new Damage((int)-(Info.Step + Info.PercentageStep * (long)health.MaxHP / 100), Info.DamageTypes));
 				return;
 			}
 

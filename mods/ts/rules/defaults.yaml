@@ -858,7 +858,6 @@
 		Weapon: CyborgExplode
 		DamageState: Critical
 		TriggerOnlyOnce: true
-		RequiresCondition: !traped
 	Explodes:
 		Weapon: CyborgExplode
 		EmptyWeapon: CyborgExplode
@@ -896,7 +895,13 @@
 		PauseOnCondition: empdisable || traped
 	Targetable@cyborg:
 		TargetTypes: Cyborg
-
+	ChangesHealth@CrippleHeal: # Gain a one-time 25% health regeneration when severely damaged to crippled
+		PercentageStep: 25
+		Delay: 100
+		StartIfBelow: 50
+		DamageCooldown: 0
+		RequiresCondition: critical
+		OneTimeTrigger: true
 
 ^CivilianInfantry:
 	Inherits@1: ^Infantry
