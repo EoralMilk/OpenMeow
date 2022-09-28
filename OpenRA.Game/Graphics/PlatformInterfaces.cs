@@ -213,7 +213,7 @@ namespace OpenRA
 		void EnableScissor(Rectangle rect);
 		void DisableScissor();
 		ITexture Texture { get; }
-		ITexture Texture1 { get; }
+		ITexture GetTexture(int renderTargets);
 		ITexture DepthTexture { get; }
 	}
 

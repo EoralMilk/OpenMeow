@@ -20,13 +20,16 @@ namespace OpenRA.Graphics
 
 	public class MapTextureCache
 	{
-		readonly IReadOnlyFileSystem fileSystem;
+		public readonly Map Map;
 		public readonly Sheet[] CausticsTextures;
 		public readonly Dictionary<string, (string, Sheet)> Textures = new Dictionary<string, (string, Sheet)>();
 		public readonly HashSet<string> TerrainTexturesSet = new HashSet<string>();
 		public readonly HashSet<string> SmudgeTexturesSet = new HashSet<string>();
+
 		public readonly Dictionary<string, int> TileArrayTextures = new Dictionary<string, int>();
+		public readonly Dictionary<string, MaskBrush> AllBrushes = new Dictionary<string, MaskBrush>();
 		public readonly ITexture TileTextureArray;
+		public readonly ITexture BrushTextureArray;
 
 		public const string TN_GrassNormal	= "Texture4";
 		public const string TN_CliffNormal		= "Texture5";
@@ -37,9 +40,9 @@ namespace OpenRA.Graphics
 		public const string TN_Caustics			= "Texture10";
 		public const string TN_Scroch			= "Texture4";
 
-		public MapTextureCache(IReadOnlyFileSystem fileSystem)
+		public MapTextureCache(Map map)
 		{
-			this.fileSystem = fileSystem;
+			Map = map;
 			AddTexture("WaterNormal", "WaterNormal.png", TN_WaterNormal);
 			AddTexture("GrassNormal", "GrassNormal.png", TN_GrassNormal);
 			AddTexture("Cliff", "Cliff.png", TN_Cliff);
@@ -49,37 +52,56 @@ namespace OpenRA.Graphics
 
 			AddTexture("Scroch", "Scroch.png", TN_Scroch, UsageType.Smudge);
 
-			AddTexture("Mask1234", "Mask1234.png", "Mask1234", UsageType.Mask);
-			AddTexture("Mask5678", "Mask5678.png", "Mask5678", UsageType.Mask);
-
 			CausticsTextures = new Sheet[32];
 
 			for (int i = 0; i < CausticsTextures.Length; i++)
 			{
 				var filename = "caustics_" + (i + 1).ToString().PadLeft(3, '0') + ".png";
-				if (!fileSystem.Exists(filename))
+				if (!map.Exists(filename))
 				{
 					throw new Exception(" Can not find texture " + filename);
 				}
 
-				CausticsTextures[i] = new Sheet( fileSystem.Open(filename), TextureWrap.Repeat);
+				CausticsTextures[i] = new Sheet( map.Open(filename), TextureWrap.Repeat);
 			}
 
+			// mask
+			TerrainRenderBlock.FlushMaskBuffer();
+
+			// tiles
 			var tileSet = "tile-set.yaml";
 
-			if (!fileSystem.Exists(tileSet))
+			if (!map.Exists(tileSet))
 				throw new Exception("Can't Find " + tileSet + " to define tiles texture");
-			List<MiniYamlNode> nodes = MiniYaml.FromStream(fileSystem.Open(tileSet));
+			List<MiniYamlNode> tileNodes = MiniYaml.FromStream(map.Open(tileSet));
 
-			TileTextureArray = Game.Renderer.Context.CreateTextureArray(nodes.Count);
+			TileTextureArray = Game.Renderer.Context.CreateTextureArray(tileNodes.Count);
 
-			foreach (var node in nodes)
+			foreach (var node in tileNodes)
 			{
-				Console.WriteLine("AddTileTexture " + node.Key + " " + node.Value.Value);
 				if (!AddTileTexture(node.Key, node.Value.Value))
 					throw new Exception("duplicate " + node.Key + " in " + tileSet);
 			}
 
+			// brushes
+			var brushesSet = "brush-set.yaml";
+			if (!map.Exists(brushesSet))
+				throw new Exception("Can't Find " + brushesSet + " to define tiles texture");
+
+			List<MiniYamlNode> brushnodes = MiniYaml.FromStream(map.Open(brushesSet));
+
+			BrushTextureArray = Game.Renderer.Context.CreateTextureArray(brushnodes.Count);
+			Console.WriteLine("brushyaml.Count" + brushnodes.Count);
+			foreach (var node in brushnodes)
+			{
+				var info = node.Value.ToDictionary();
+				var size = ReadYamlInfo.LoadField(info, "Size", new WDist(1024));
+				if (!AddBrushTexture(node.Key, node.Value.Value, map, size.Length))
+					throw new Exception("duplicate " + node.Key + " in " + brushesSet);
+				Console.WriteLine(node.Key + ": Size " + size.Length);
+			}
+
+			Map.TextureCache = this;
 		}
 
 		public void RefreshAllTextures()
@@ -119,12 +141,12 @@ namespace OpenRA.Graphics
 				return true;
 			}
 
-			if (!fileSystem.Exists(filename))
+			if (!Map.Exists(filename))
 			{
 				throw new Exception(filename + " Can not find texture " + name);
 			}
 
-			var sheet = new Sheet(fileSystem.Open(filename), TextureWrap.Repeat);
+			var sheet = new Sheet(Map.Open(filename), TextureWrap.Repeat);
 
 			Textures.Add(name, (uniform, sheet));
 			switch (type)
@@ -145,12 +167,12 @@ namespace OpenRA.Graphics
 			if (TileArrayTextures.ContainsKey(name))
 				return false;
 
-			if (!fileSystem.Exists(filename))
+			if (!Map.Exists(filename))
 			{
 				throw new Exception(filename + " Can not find texture " + name);
 			}
 
-			var sheet = new Sheet(fileSystem.Open(filename), TextureWrap.Repeat);
+			var sheet = new Sheet(Map.Open(filename), TextureWrap.Repeat);
 
 			TileTextureArray.SetData(sheet.GetData(), sheet.Size.Width, sheet.Size.Height);
 
@@ -159,5 +181,23 @@ namespace OpenRA.Graphics
 			return true;
 		}
 
+		public bool AddBrushTexture(string name, string filename, Map map, int defaultSize)
+		{
+			if (AllBrushes.ContainsKey(name))
+				return false;
+
+			if (!Map.Exists(filename))
+			{
+				throw new Exception(filename + " Can not find texture " + name);
+			}
+
+			var sheet = new Sheet(Map.Open(filename), TextureWrap.Repeat);
+
+			BrushTextureArray.SetData(sheet.GetData(), sheet.Size.Width, sheet.Size.Height);
+
+			AllBrushes.Add(name, new MaskBrush(name, AllBrushes.Count, defaultSize, map));
+
+			return true;
+		}
 	}
 }

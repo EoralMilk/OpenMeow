@@ -91,7 +91,7 @@ namespace OpenRA.Platforms.Default
 	sealed class FrameBuffer : ThreadAffine, IFrameBuffer
 	{
 		readonly ITexture texture;
-		readonly Texture texture1;
+		readonly ITexture[] textures;
 
 		readonly DepthTexture depthTexture;
 		readonly Size size;
@@ -106,8 +106,8 @@ namespace OpenRA.Platforms.Default
 			this.onlyDepth = onlyDepth;
 			this.size = size;
 			this.clearColor = clearColor;
-			if (!Exts.IsPowerOf2(size.Width) || !Exts.IsPowerOf2(size.Height))
-				throw new InvalidDataException($"Frame buffer size ({size.Width}x{size.Height}) must be a power of two");
+			//if (!Exts.IsPowerOf2(size.Width) || !Exts.IsPowerOf2(size.Height))
+			//	throw new InvalidDataException($"Frame buffer size ({size.Width}x{size.Height}) must be a power of two");
 
 			OpenGL.glGenFramebuffers(1, out framebuffer);
 			OpenGL.CheckGLError();
@@ -135,20 +135,26 @@ namespace OpenRA.Platforms.Default
 
 			if (renderTargets > 1)
 			{
-				texture1 = new Texture(CreateInternalTexture(), size);
-
-				OpenGL.glFramebufferTexture2D(OpenGL.GL_FRAMEBUFFER, OpenGL.GL_COLOR_ATTACHMENT1, OpenGL.GL_TEXTURE_2D, texture1.ID, 0);
-				OpenGL.CheckGLError();
-			}
-
-			// - 告诉OpenGL我们将要使用(帧缓冲的)哪种颜色附件来进行渲染
-			uint[] attachments = new uint[2] { OpenGL.GL_COLOR_ATTACHMENT0, OpenGL.GL_COLOR_ATTACHMENT1 };
-			unsafe
-			{
-				fixed (uint* ptr = &attachments[0])
+				textures = new ITexture[renderTargets];
+				textures[0] = texture;
+				uint[] attachments = new uint[renderTargets];
+				attachments[0] = OpenGL.GL_COLOR_ATTACHMENT0;
+				for (int i = 1; i < renderTargets; i++)
 				{
-					OpenGL.glDrawBuffers(attachments.Length, new IntPtr(ptr));
+					textures[i] = new Texture(CreateInternalTexture(), size);
+					attachments[i] = OpenGL.GL_COLOR_ATTACHMENT0 + (uint)i;
+					OpenGL.glFramebufferTexture2D(OpenGL.GL_FRAMEBUFFER, OpenGL.GL_COLOR_ATTACHMENT0 + i, OpenGL.GL_TEXTURE_2D, (textures[i] as ITextureInternal).ID, 0);
 					OpenGL.CheckGLError();
+				}
+
+				// - 告诉OpenGL我们将要使用(帧缓冲的)哪种颜色附件来进行渲染
+				unsafe
+				{
+					fixed (uint* ptr = &attachments[0])
+					{
+						OpenGL.glDrawBuffers(attachments.Length, new IntPtr(ptr));
+						OpenGL.CheckGLError();
+					}
 				}
 			}
 
@@ -176,7 +182,7 @@ namespace OpenRA.Platforms.Default
 			OpenGL.glTexImage2D(OpenGL.GL_TEXTURE_2D, 0, OpenGL.GL_RGBA, size.Width, size.Height,
 				0, OpenGL.GL_RGBA, OpenGL.GL_UNSIGNED_BYTE, IntPtr.Zero);
 			OpenGL.CheckGLError();
-			OpenGL.glTexParameteri(OpenGL.GL_TEXTURE_2D, OpenGL.GL_TEXTURE_MAG_FILTER, OpenGL.GL_NEAREST);
+			OpenGL.glTexParameteri(OpenGL.GL_TEXTURE_2D, OpenGL.GL_TEXTURE_MAG_FILTER, OpenGL.GL_LINEAR);
 			OpenGL.CheckGLError();
 			OpenGL.glTexParameteri(OpenGL.GL_TEXTURE_2D, OpenGL.GL_TEXTURE_MIN_FILTER, OpenGL.GL_NEAREST);
 			OpenGL.CheckGLError();
@@ -296,14 +302,13 @@ namespace OpenRA.Platforms.Default
 			}
 		}
 
-		public ITexture Texture1
+		public ITexture GetTexture(int renderTargets)
 		{
-			get
-			{
-				VerifyThreadAffinity();
-
-				return texture1;
-			}
+			VerifyThreadAffinity();
+			if (renderTargets < textures.Length)
+				return textures[renderTargets];
+			else
+				return null;
 		}
 
 		public ITexture DepthTexture

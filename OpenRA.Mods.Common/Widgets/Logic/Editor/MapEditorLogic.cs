@@ -48,7 +48,7 @@ namespace OpenRA.Mods.Common.Widgets.Logic
 				{
 					var cell = worldRenderer.Viewport.ViewToWorld(Viewport.LastMousePos);
 					var map = worldRenderer.World.Map;
-					return map.Height.Contains(cell) ? $"{cell},{map.Height[cell]} ({map.Tiles[cell].Type})" : "";
+					return map.HeightStep.Contains(cell) ? $"{cell},{map.HeightStep[cell]} ({map.Tiles[cell].Type})" : "";
 				};
 			}
 

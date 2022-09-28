@@ -155,465 +155,6 @@ namespace OpenRA
 		}
 	}
 
-	public class TerrainRenderBlock
-	{
-		/// <summary>
-		/// Mask texture contains size*szie MiniCells
-		/// </summary>
-		public const int SizeLimit = 32;
-		public const int TextureSize = 512;
-
-		public static int MiniCellPix => TextureSize / SizeLimit;
-
-		public static vec3 ViewOffset;
-
-		public readonly Map Map;
-		public readonly int2 TopLeft;
-		public readonly int2 BottomRight;
-
-		/// <summary>
-		/// 0 - 1, offset of block relative to map
-		/// </summary>
-		readonly float2 topLeftOffset;
-
-		/// <summary>
-		/// 0 - 1, offset of block relative to map
-		/// </summary>
-		readonly float2 bottomRightOffset;
-
-		/// <summary>
-		/// using for render check, as wdist
-		/// </summary>
-		public readonly int LeftBound;
-
-		/// <summary>
-		/// using for render check, as wdist
-		/// </summary>
-		public readonly int RightBound;
-
-		public static IShader TerrainMaskShader { get; private set; }
-		public static IShader TextureBlendShader { get; private set; }
-		public static IShader TerrainShader { get; private set; }
-
-		public static IFrameBuffer MaskFramebuffer { get; private set; }
-		static TerrainMaskVertex[] terrainMaskVertices;
-		static IVertexBuffer<TerrainMaskVertex> maskVertexBuffer;
-
-		public readonly IFrameBuffer BlendFramebuffer;
-		readonly TerrainBlendingVertex[] blendVertices;
-		readonly IVertexBuffer<TerrainBlendingVertex> blendVertexBuffer;
-
-		readonly TerrainFinalVertex[] finalVertices;
-		readonly IVertexBuffer<TerrainFinalVertex> finalVertexBuffer;
-
-		bool needUpdateTexture = true;
-		bool needInit = true;
-
-		public TerrainRenderBlock(Map map, int2 tl, int2 br)
-		{
-			BlendFramebuffer = Game.Renderer.Context.CreateFrameBuffer(new Size(TextureSize, TextureSize), 2);
-
-			if (TextureBlendShader == null)
-				TextureBlendShader = Game.Renderer.Context.CreateUnsharedShader<TerrainBlendingShaderBindings>();
-			if (TerrainShader == null)
-				TerrainShader = Game.Renderer.Context.CreateUnsharedShader<TerrainFinalShaderBindings>();
-
-			Map = map;
-			TopLeft = tl;
-			BottomRight = br;
-			LeftBound = (tl.X - 1) * 724;
-			RightBound = (br.X + 1) * 724;
-			var topLeftOffsetX = (float)TopLeft.X / (Map.VertexArrayWidth - 1);
-			var topLeftOffsetY = (float)TopLeft.Y / (Map.VertexArrayHeight - 1);
-			topLeftOffset = new float2(topLeftOffsetX, topLeftOffsetY);
-			var bottomRightOffsetX = (float)(BottomRight.X + 1) / (Map.VertexArrayWidth - 1);
-			var bottomRightOffsetY = (float)(BottomRight.Y + 1)/ (Map.VertexArrayHeight - 1);
-			bottomRightOffset = new float2(bottomRightOffsetX, bottomRightOffsetY);
-			var sizeX = br.X - tl.X + 1;
-			var sizeY = br.Y - tl.Y + 1;
-			if (sizeX > SizeLimit || sizeY > SizeLimit)
-			{
-				throw new Exception("TerrainBlock size limit as " + SizeLimit + " but giving " + tl + " " + br);
-			}
-
-			var index = 0;
-			blendVertices = new TerrainBlendingVertex[sizeX * sizeY * 6];
-			finalVertices = new TerrainFinalVertex[sizeX * sizeY * 6];
-			for (int y = TopLeft.Y; y <= BottomRight.Y; y++)
-			{
-				for (int x = TopLeft.X; x <= BottomRight.X; x++)
-				{
-					MiniCell cell = Map.MiniCells[y, x];
-					var vertTL = Map.TerrainVertices[cell.TL];
-					var vertTR = Map.TerrainVertices[cell.TR];
-					var vertBL = Map.TerrainVertices[cell.BL];
-					var vertBR = Map.TerrainVertices[cell.BR];
-
-					var maskuvTL = CalMaskUV(new int2(x, y), TopLeft);
-					var maskuvTR = CalMaskUV(new int2(x + 1, y), TopLeft);
-					var maskuvBL = CalMaskUV(new int2(x, y + 1), TopLeft);
-					var maskuvBR = CalMaskUV(new int2(x + 1, y + 1), TopLeft);
-
-					if (cell.Type == MiniCellType.TRBL)
-					{
-						blendVertices[index + 0] = new TerrainBlendingVertex(vertTR.UV, maskuvTR, vertTR.TBN, vertTR.Color, 1.0f, 1);
-						blendVertices[index + 1] = new TerrainBlendingVertex(vertBL.UV, maskuvBL, vertBL.TBN, vertBL.Color, 1.0f, 1);
-						blendVertices[index + 2] = new TerrainBlendingVertex(vertBR.UV, maskuvBR, vertBR.TBN, vertBR.Color, 1.0f, 1);
-
-						blendVertices[index + 3] = new TerrainBlendingVertex(vertTR.UV, maskuvTR, vertTR.TBN, vertTR.Color, 1.0f, 1);
-						blendVertices[index + 4] = new TerrainBlendingVertex(vertTL.UV, maskuvTL, vertTL.TBN, vertTL.Color, 1.0f, 1);
-						blendVertices[index + 5] = new TerrainBlendingVertex(vertBL.UV, maskuvBL, vertBL.TBN, vertBL.Color, 1.0f, 1);
-					}
-					else
-					{
-						blendVertices[index + 0] = new TerrainBlendingVertex(vertTL.UV, maskuvTL, vertTL.TBN, vertTL.Color, 1.0f, 1);
-						blendVertices[index + 1] = new TerrainBlendingVertex(vertBL.UV, maskuvBL, vertBL.TBN, vertBL.Color, 1.0f, 1);
-						blendVertices[index + 2] = new TerrainBlendingVertex(vertBR.UV, maskuvBR, vertBR.TBN, vertBR.Color, 1.0f, 1);
-
-						blendVertices[index + 3] = new TerrainBlendingVertex(vertTR.UV, maskuvTR, vertTR.TBN, vertTR.Color, 1.0f, 1);
-						blendVertices[index + 4] = new TerrainBlendingVertex(vertTL.UV, maskuvTL, vertTL.TBN, vertTL.Color, 1.0f, 1);
-						blendVertices[index + 5] = new TerrainBlendingVertex(vertBR.UV, maskuvBR, vertBR.TBN, vertBR.Color, 1.0f, 1);
-					}
-
-					if (cell.Type == MiniCellType.TRBL)
-					{
-						finalVertices[index + 0] = new TerrainFinalVertex(vertTR.Pos, maskuvTR);
-						finalVertices[index + 1] = new TerrainFinalVertex(vertBL.Pos, maskuvBL);
-						finalVertices[index + 2] = new TerrainFinalVertex(vertBR.Pos, maskuvBR);
-
-						finalVertices[index + 3] = new TerrainFinalVertex(vertTR.Pos, maskuvTR);
-						finalVertices[index + 4] = new TerrainFinalVertex(vertTL.Pos, maskuvTL);
-						finalVertices[index + 5] = new TerrainFinalVertex(vertBL.Pos, maskuvBL);
-					}
-					else
-					{
-						finalVertices[index + 0] = new TerrainFinalVertex(vertTL.Pos, maskuvTL);
-						finalVertices[index + 1] = new TerrainFinalVertex(vertBL.Pos, maskuvBL);
-						finalVertices[index + 2] = new TerrainFinalVertex(vertBR.Pos, maskuvBR);
-
-						finalVertices[index + 3] = new TerrainFinalVertex(vertTR.Pos, maskuvTR);
-						finalVertices[index + 4] = new TerrainFinalVertex(vertTL.Pos, maskuvTL);
-						finalVertices[index + 5] = new TerrainFinalVertex(vertBR.Pos, maskuvBR);
-					}
-
-					index += 6;
-				}
-			}
-
-			blendVertexBuffer = Game.Renderer.CreateVertexBuffer<TerrainBlendingVertex>(blendVertices.Length);
-			blendVertexBuffer.SetData(blendVertices, blendVertices.Length);
-
-			finalVertexBuffer = Game.Renderer.CreateVertexBuffer<TerrainFinalVertex>(finalVertices.Length);
-			finalVertexBuffer.SetData(finalVertices, finalVertices.Length);
-		}
-
-		float2 CalMaskUV(int2 idx, int2 topLeft)
-		{
-			float x = (float)(idx.X - topLeft.X) / SizeLimit;
-			float y = (float)(idx.Y - topLeft.Y) / SizeLimit;
-
-			return new float2(x, y);
-		}
-
-		public static void InitMask(Map map)
-		{
-			if (MaskFramebuffer == null)
-			{
-				MaskFramebuffer = Game.Renderer.Context.CreateFrameBuffer(
-					new Size((map.VertexArrayHeight - 1) * MiniCellPix,
-					(map.VertexArrayWidth - 1) * MiniCellPix),
-					2);
-
-				terrainMaskVertices = new TerrainMaskVertex[6];
-
-				float[] quadVertices = {
-							// positions			// texCoords
-								-1, 1,                  0.0f, 1.0f,
-								-1, -1,                 0.0f, 0.0f,
-								1, -1,                  1.0f, 0.0f,
-
-								-1, 1,                  0.0f, 1.0f,
-								1, -1,                  1.0f, 0.0f,
-								1, 1,                       1.0f, 1.0f
-				};
-
-				for (int i = 0; i < 6; i++)
-				{
-					terrainMaskVertices[i] = new TerrainMaskVertex(quadVertices[i * 4], quadVertices[i * 4 + 1], quadVertices[i * 4 + 2], quadVertices[i * 4 + 3]);
-				}
-
-				maskVertexBuffer = Game.Renderer.CreateVertexBuffer<TerrainMaskVertex>(terrainMaskVertices.Length);
-				maskVertexBuffer.SetData(terrainMaskVertices, terrainMaskVertices.Length);
-
-				TerrainMaskShader = Game.Renderer.Context.CreateUnsharedShader<TerrainMaskShaderBindings>();
-
-				// init mask with map's mask texture
-				if (map.Mask1234 != null && map.Mask5678 != null)
-				{
-					MaskFramebuffer.Bind();
-
-					TerrainMaskShader.SetTexture("InitMask1234", map.Mask1234.GetTexture());
-					TerrainMaskShader.SetTexture("InitMask5678", map.Mask5678.GetTexture());
-
-					TerrainMaskShader.SetBool("InitWithTextures", true);
-
-					Game.Renderer.Context.SetBlendMode(BlendMode.None);
-					TerrainMaskShader.PrepareRender();
-
-					Game.Renderer.DrawBatch(TerrainMaskShader, maskVertexBuffer, 0, terrainMaskVertices.Length, PrimitiveType.TriangleList);
-
-					Game.Renderer.Context.SetBlendMode(BlendMode.None);
-
-					MaskFramebuffer.Unbind();
-					Console.WriteLine("Init Mask");
-				}
-			}
-		}
-
-		public void UpdateTexture(int left, int right, World world)
-		{
-			if (TextureBlendShader == null)
-				return;
-
-			if (needInit)
-			{
-				needInit = false;
-			}
-			else if (LeftBound > right || RightBound < left)
-				return;
-
-			if (!needUpdateTexture)
-				return;
-
-			needUpdateTexture = false;
-
-			BlendFramebuffer.Bind();
-
-			TextureBlendShader.SetTexture("Mask1234", MaskFramebuffer.Texture);
-
-			TextureBlendShader.SetTexture("Mask5678", MaskFramebuffer.Texture1);
-
-			TextureBlendShader.SetTexture("Tiles", world.MapTextureCache.TileTextureArray);
-
-			TextureBlendShader.SetVec("Offset",
-				topLeftOffset.X,
-				topLeftOffset.Y);
-			TextureBlendShader.SetVec("Range",
-				bottomRightOffset.X - topLeftOffset.X,
-				bottomRightOffset.Y - topLeftOffset.Y);
-
-			Game.Renderer.Context.SetBlendMode(BlendMode.None);
-			TextureBlendShader.PrepareRender();
-
-			Game.Renderer.DrawBatch(TextureBlendShader, blendVertexBuffer, 0, blendVertices.Length, PrimitiveType.TriangleList);
-
-			Game.Renderer.Context.SetBlendMode(BlendMode.None);
-
-			BlendFramebuffer.Unbind();
-		}
-
-		public void RenderBlock(int left, int right)
-		{
-			if (TerrainShader == null)
-				return;
-
-			if (LeftBound > right || RightBound < left)
-				return;
-
-			TerrainShader.SetTexture("BakedTerrainTexture", BlendFramebuffer.Texture);
-			TerrainShader.SetTexture("BakedTerrainNormalTexture", BlendFramebuffer.Texture1);
-
-			Game.Renderer.Context.SetBlendMode(BlendMode.None);
-			TerrainShader.PrepareRender();
-
-			Game.Renderer.DrawBatch(TerrainShader, finalVertexBuffer, 0, finalVertices.Length, PrimitiveType.TriangleList);
-
-			Game.Renderer.Context.SetBlendMode(BlendMode.None);
-		}
-
-		public static void SetCameraParams(in World3DRenderer w3dr, bool sunCamera)
-		{
-			if (TerrainShader == null)
-				return;
-			TerrainShader.SetCommonParaments(w3dr, sunCamera);
-			ViewOffset = Game.Renderer.World3DRenderer.InverseCameraFrontMeterPerWDist * (-17);
-
-			TerrainShader.SetVec("ViewOffset",
-				ViewOffset.x,
-				ViewOffset.y,
-				ViewOffset.z);
-			TerrainShader.SetVec("CameraInvFront",
-				Game.Renderer.World3DRenderer.InverseCameraFront.x,
-				Game.Renderer.World3DRenderer.InverseCameraFront.y,
-				Game.Renderer.World3DRenderer.InverseCameraFront.z);
-		}
-
-		public static void SetShadowParams(in World3DRenderer w3dr)
-		{
-			if (TerrainShader == null)
-				return;
-
-			Game.Renderer.SetShadowParams(TerrainShader, w3dr);
-			Game.Renderer.SetLightParams(TerrainShader, w3dr);
-		}
-
-		public void SaveAsPng(ITexture texture, string path)
-		{
-			var colorData = texture.GetData();
-			Console.WriteLine(colorData.Length);
-
-			new Png(colorData, SpriteFrameType.Bgra32, texture.Size.Width, texture.Size.Height).Save(path + Map.Title + "_" + TopLeft.X + "-"+ TopLeft.Y + ".png");
-		}
-	}
-
-	public struct TerrainVertex
-	{
-		public float3 Pos;
-		public WPos LogicPos;
-		public mat3 TBN;
-		public float2 UV;
-		public float3 Color;
-	}
-
-	public struct CellInfo
-	{
-		public const float TU = 0f;
-		public const float TV = 0f;
-
-		public const float LU = 0f;
-		public const float LV = 1f;
-
-		public const float BU = 1f;
-		public const float BV = 1f;
-
-		public const float RU = 1f;
-		public const float RV = 0f;
-
-		public readonly WPos CellCenterPos;
-		public readonly uint Type;
-
-		public readonly int2 MiniCellTL, MiniCellTR, MiniCellBL, MiniCellBR;
-
-		public readonly int M, T, B, L, R;
-
-		public readonly bool Flat;
-
-		public TSVector LogicNmlTL;
-		public TSVector LogicNmlTR;
-		public TSVector LogicNmlBL;
-		public TSVector LogicNmlBR;
-		public TSVector LogicNml;
-
-		public WRot TerrainOrientationTL;
-		public WRot TerrainOrientationTR;
-		public WRot TerrainOrientationBL;
-		public WRot TerrainOrientationBR;
-		public WRot TerrainOrientationM;
-
-		public CellInfo(WPos center, // float3 tlmn, float3 tmrn, float3 mlbn, float3 mbrn,
-			int m, int t, int b, int l, int r, uint type, int2 ctl, int2 ctr, int2 cbl, int2 cbr, bool flat,
-			TSVector tlnml, TSVector trnml, TSVector blnml, TSVector brnml)
-		{
-			CellCenterPos = center;
-
-			M = m;
-			T = t;
-			B = b;
-			L = l;
-			R = r;
-			Type = type;
-
-			MiniCellTL = ctl;
-			MiniCellTR = ctr;
-			MiniCellBL = cbl;
-			MiniCellBR = cbr;
-
-			Flat = flat;
-			LogicNmlTL = tlnml.normalized;
-			LogicNmlTR = trnml.normalized;
-			LogicNmlBL = blnml.normalized;
-			LogicNmlBR = brnml.normalized;
-			LogicNml = (LogicNmlTL + LogicNmlTR + LogicNmlBL + LogicNmlBR) / 4;
-			LogicNml = LogicNml.normalized;
-
-			TerrainOrientationTL = Map.NormalToTerrainOrientation(LogicNmlTL);
-			TerrainOrientationTR = Map.NormalToTerrainOrientation(LogicNmlTR);
-			TerrainOrientationBL = Map.NormalToTerrainOrientation(LogicNmlBL);
-			TerrainOrientationBR = Map.NormalToTerrainOrientation(LogicNmlBR);
-			TerrainOrientationM = Map.NormalToTerrainOrientation(LogicNml);
-		}
-	}
-
-	public enum MiniCellType
-	{
-		/// <summary>
-		/// /
-		/// </summary>
-		TRBL,
-
-		/// <summary>
-		/// \
-		/// </summary>
-		TLBR,
-	}
-
-	public struct MiniCell
-	{
-		public readonly int A1, B1, C1;
-		public readonly int A2, B2, C2;
-
-		/// <summary>
-		/// ©°
-		/// </summary>
-		public readonly int TL;
-
-		/// <summary>
-		/// ©´
-		/// </summary>
-		public readonly int TR;
-
-		/// <summary>
-		/// ©¸
-		/// </summary>
-		public readonly int BL;
-
-		/// <summary>
-		/// ©¼
-		/// </summary>
-		public readonly int BR;
-
-		public readonly MiniCellType Type;
-		public MiniCell(
-			int tl,int tr,
-			int bl, int br,
-			MiniCellType type)
-		{
-			TL = tl;
-			TR = tr;
-			BL = bl;
-			BR = br;
-			Type = type;
-			if (Type == MiniCellType.TRBL)
-			{
-				A1 = TR;
-				B1 = TL;
-				C1 = BL;
-				A2 = TR;
-				B2 = BL;
-				C2 = BR;
-			}
-			else
-			{
-				A1 = TL;
-				B1 = BR;
-				C1 = TR;
-				A2 = TL;
-				B2 = BL;
-				C2 = BR;
-			}
-		}
-	}
-
 	public class Map : IReadOnlyFileSystem
 	{
 		public const int SupportedMapFormat = 11;
@@ -702,7 +243,7 @@ namespace OpenRA
 
 		public CellLayer<TerrainTile> Tiles { get; private set; }
 		public CellLayer<ResourceTile> Resources { get; private set; }
-		public CellLayer<byte> Height { get; private set; }
+		public CellLayer<byte> HeightStep { get; private set; }
 		public CellLayer<byte> Ramp { get; private set; }
 		public CellLayer<byte> CustomTerrain { get; private set; }
 
@@ -711,10 +252,15 @@ namespace OpenRA
 		public TerrainVertex[] TerrainVertices { get; private set; }
 		public MiniCell[,] MiniCells { get; private set; }
 		public TerrainRenderBlock[,] TerrainBlocks { get; private set; }
+		public int BlocksArrayWidth { get; private set; }
+		public int BlocksArrayHeight { get; private set; }
 
-		public int VertexArrayWidth, VertexArrayHeight;
+		public int VertexArrayWidth { get; private set; }
+		public int VertexArrayHeight { get; private set; }
 
-		public Sheet Mask1234, Mask5678;
+		public Sheet Mask123, Mask456, Mask789;
+
+		public MapTextureCache TextureCache;
 
 		//// all TerrainPatch on map
 		//public readonly TerrainPatch[] MapTerrainPatches;
@@ -812,13 +358,13 @@ namespace OpenRA
 
 			Tiles = new CellLayer<TerrainTile>(Grid.Type, size);
 			Resources = new CellLayer<ResourceTile>(Grid.Type, size);
-			Height = new CellLayer<byte>(Grid.Type, size);
+			HeightStep = new CellLayer<byte>(Grid.Type, size);
 			Ramp = new CellLayer<byte>(Grid.Type, size);
 			CellInfos = new CellLayer<CellInfo>(Grid.Type, size);
 			Tiles.Clear(terrainInfo.DefaultTerrainTile);
 			if (Grid.MaximumTerrainHeight > 0)
 			{
-				Height.CellEntryChanged += UpdateProjection;
+				HeightStep.CellEntryChanged += UpdateProjection;
 				Tiles.CellEntryChanged += UpdateProjection;
 				Tiles.CellEntryChanged += UpdateRamp;
 			}
@@ -829,16 +375,22 @@ namespace OpenRA
 
 		void GetMaskTextures(IReadOnlyPackage package)
 		{
-			var filename = "Mask1234.png";
+			var filename = "Mask123.png";
 			if (Package.Contains(filename))
 			{
-				Mask1234 = new Sheet(package.GetStream(filename), TextureWrap.Repeat);
+				Mask123 = new Sheet(package.GetStream(filename), TextureWrap.Repeat);
 			}
 
-			filename = "Mask5678.png";
+			filename = "Mask456.png";
 			if (Package.Contains(filename))
 			{
-				Mask5678 = new Sheet(package.GetStream(filename), TextureWrap.Repeat);
+				Mask456 = new Sheet(package.GetStream(filename), TextureWrap.Repeat);
+			}
+
+			filename = "Mask789.png";
+			if (Package.Contains(filename))
+			{
+				Mask789 = new Sheet(package.GetStream(filename), TextureWrap.Repeat);
 			}
 		}
 
@@ -867,7 +419,7 @@ namespace OpenRA
 			var size = new Size(MapSize.X, MapSize.Y);
 			Tiles = new CellLayer<TerrainTile>(Grid.Type, size);
 			Resources = new CellLayer<ResourceTile>(Grid.Type, size);
-			Height = new CellLayer<byte>(Grid.Type, size);
+			HeightStep = new CellLayer<byte>(Grid.Type, size);
 			Ramp = new CellLayer<byte>(Grid.Type, size);
 			CellInfos = new CellLayer<CellInfo>(Grid.Type, size);
 
@@ -912,7 +464,7 @@ namespace OpenRA
 					s.Position = header.HeightsOffset;
 					for (var i = 0; i < MapSize.X; i++)
 						for (var j = 0; j < MapSize.Y; j++)
-							Height[new MPos(i, j)] = s.ReadUInt8().Clamp((byte)0, Grid.MaximumTerrainHeight);
+							HeightStep[new MPos(i, j)] = s.ReadUInt8().Clamp((byte)0, Grid.MaximumTerrainHeight);
 				}
 			}
 
@@ -920,7 +472,7 @@ namespace OpenRA
 			{
 				Tiles.CellEntryChanged += UpdateRamp;
 				Tiles.CellEntryChanged += UpdateProjection;
-				Height.CellEntryChanged += UpdateProjection;
+				HeightStep.CellEntryChanged += UpdateProjection;
 			}
 
 			PostInit();
@@ -1098,7 +650,7 @@ namespace OpenRA
 					// The original games treat the top of cliffs the same way as the bottom
 					// This information isn't stored in the map data, so query the offset from the tileset
 					var temp = inverse.MaxBy(uv => uv.V);
-					return (byte)(Height[temp] - Rules.TerrainInfo.GetTerrainInfo(Tiles[temp]).Height);
+					return (byte)(HeightStep[temp] - Rules.TerrainInfo.GetTerrainInfo(Tiles[temp]).Height);
 				}
 
 				// Try the next cell down if this is a cliff face
@@ -1110,7 +662,7 @@ namespace OpenRA
 
 		PPos[] ProjectCellInner(MPos uv)
 		{
-			var mapHeight = Height;
+			var mapHeight = HeightStep;
 			if (!mapHeight.Contains(uv))
 				return NoProjectedCells;
 
@@ -1171,7 +723,7 @@ namespace OpenRA
 
 			// Update UID to match the newly saved data
 			Uid = ComputeUID(toPackage, MapFormat);
-			SaveMapAsPng("./MapToPng/");
+			//SaveMapAsPng("./MapToPng/");
 		}
 
 		const int DT_WATER = 22;
@@ -1197,10 +749,10 @@ namespace OpenRA
 				for (var x = 0; x < MapSize.X; x++)
 				{
 					var uv = new MPos(x, y);
-					int heightBase = Height[uv] * MapGrid.MapHeightStep;
-					int heightHalf = (Height[uv] * 2 + 1) * MapGrid.MapHeightStep / 2;
-					int heightUpper = (Height[uv] + 1) * MapGrid.MapHeightStep;
-					int heightUppest = (Height[uv] + 2) * MapGrid.MapHeightStep;
+					int heightBase = HeightStep[uv] * MapGrid.MapHeightStep;
+					int heightHalf = (HeightStep[uv] * 2 + 1) * MapGrid.MapHeightStep / 2;
+					int heightUpper = (HeightStep[uv] + 1) * MapGrid.MapHeightStep;
+					int heightUppest = (HeightStep[uv] + 2) * MapGrid.MapHeightStep;
 					var ramp = Ramp[uv];
 
 					int2 mid;
@@ -1710,7 +1262,7 @@ namespace OpenRA
 			}
 
 			// uv retarget
-			float texScale = 10f;
+			float texScale = 1f;
 			for (int i = 0; i < TerrainVertices.Length; i++)
 			{
 				TerrainVertices[i].UV = new float2(TerrainVertices[i].Pos.X / texScale, TerrainVertices[i].Pos.Y / texScale);
@@ -1723,22 +1275,37 @@ namespace OpenRA
 			var blockY = (VertexArrayHeight - 1) / TerrainRenderBlock.SizeLimit;
 			if ((VertexArrayHeight - 1) % TerrainRenderBlock.SizeLimit != 0)
 				blockY += 1;
+			BlocksArrayWidth = blockX;
+			BlocksArrayHeight = blockY;
 			TerrainBlocks = new TerrainRenderBlock[blockY, blockX];
+
+			// skip the first row and col and last row and col
+			// to avoid the stripe error
 			for (int y = 0; y < blockY; y++)
 				for (int x = 0; x < blockX; x++)
 				{
 					int2 tl = new int2(x * TerrainRenderBlock.SizeLimit, y * TerrainRenderBlock.SizeLimit);
+					//if (tl.X == 0)
+					//	tl = new int2(1, tl.Y);
+					//if (tl.Y == 0)
+					//	tl = new int2(tl.X, 1);
 					int2 br = new int2(
-						Math.Min((x + 1) * TerrainRenderBlock.SizeLimit, VertexArrayWidth - 1) - 1,
-						Math.Min((y + 1) * TerrainRenderBlock.SizeLimit, VertexArrayHeight - 1) - 1);
+						Math.Min((x + 1) * TerrainRenderBlock.SizeLimit, VertexArrayWidth - 2) - 1,
+						Math.Min((y + 1) * TerrainRenderBlock.SizeLimit, VertexArrayHeight - 2) - 1);
 					TerrainBlocks[y, x] = new TerrainRenderBlock(this, tl, br);
 				}
 		}
 
+		void UpdateHeightStep()
+		{
+			foreach (var uv in AllCells.MapCoords)
+			{
+				HeightStep[uv] = (byte)((CellInfos[uv].CellCenterPos.Z + 1) / MapGrid.MapHeightStep);
+			}
+		}
+
 		public void UpdateTerrainBlockTexture(in World3DRenderer w3dr, bool sunCamera, World world, Viewport vp)
 		{
-			TerrainRenderBlock.InitMask(this);
-
 			TerrainRenderBlock.SetCameraParams(w3dr, sunCamera);
 			TerrainRenderBlock.SetShadowParams(w3dr);
 
@@ -1953,7 +1520,7 @@ namespace OpenRA
 				if (heightsOffset != 0)
 					for (var i = 0; i < MapSize.X; i++)
 						for (var j = 0; j < MapSize.Y; j++)
-							writer.Write(Height[new MPos(i, j)]);
+							writer.Write(HeightStep[new MPos(i, j)]);
 
 				// Resource data
 				if (resourcesOffset != 0)
@@ -1982,7 +1549,7 @@ namespace OpenRA
 
 			if (terrainInfo.MinHeightColorBrightness != 1.0f || terrainInfo.MaxHeightColorBrightness != 1.0f)
 			{
-				var scale = float2.Lerp(terrainInfo.MinHeightColorBrightness, terrainInfo.MaxHeightColorBrightness, Height[uv] * 1f / Grid.MaximumTerrainHeight);
+				var scale = float2.Lerp(terrainInfo.MinHeightColorBrightness, terrainInfo.MaxHeightColorBrightness, HeightStep[uv] * 1f / Grid.MaximumTerrainHeight);
 				left = Color.FromArgb((int)(scale * left.R).Clamp(0, 255), (int)(scale * left.G).Clamp(0, 255), (int)(scale * left.B).Clamp(0, 255));
 				right = Color.FromArgb((int)(scale * right.R).Clamp(0, 255), (int)(scale * right.G).Clamp(0, 255), (int)(scale * right.B).Clamp(0, 255));
 			}
@@ -2203,9 +1770,17 @@ namespace OpenRA
 				// (c) u, v coordinates run diagonally to the cell axes, and we define
 				//     1024 as the length projected onto the primary cell axis
 				//  - 512 * sqrt(2) = 724
-				var z = Height.TryGetValue(cell, out var height) ? MapGrid.MapHeightStep * height + Grid.Ramps[Ramp[cell]].CenterHeightOffset : 0;
+				var z = HeightStep.TryGetValue(cell, out var height) ? MapGrid.MapHeightStep * height + Grid.Ramps[Ramp[cell]].CenterHeightOffset : 0;
 				return new WPos(724 * (cell.X - cell.Y + 1), 724 * (cell.X + cell.Y + 1), z);
 			}
+		}
+
+		public WPos CenterOfCell(MPos uv)
+		{
+			if (CellInfos != null && CellInfos.Contains(uv))
+				return CellInfos[uv].CellCenterPos;
+
+			return new WPos(0, 0, 0);
 		}
 
 		public WPos CenterOfSubCell(CPos cell, SubCell subCell)
@@ -2308,7 +1883,15 @@ namespace OpenRA
 			if (CellInfos != null && CellInfos.Contains(cell))
 				return CellInfos[cell].CellCenterPos.Z;
 			else
-				return Height.Contains(cell) ? MapGrid.MapHeightStep * Height[cell] + Grid.Ramps[Ramp[cell]].CenterHeightOffset : 0;
+				return HeightStep.Contains(cell) ? MapGrid.MapHeightStep * HeightStep[cell] + Grid.Ramps[Ramp[cell]].CenterHeightOffset : 0;
+		}
+
+		public int HeightOfCell(MPos uv)
+		{
+			if (CellInfos != null && CellInfos.Contains(uv))
+				return CellInfos[uv].CellCenterPos.Z;
+			else
+				return HeightStep.Contains(uv) ? MapGrid.MapHeightStep * HeightStep[uv] + Grid.Ramps[Ramp[uv]].CenterHeightOffset : 0;
 		}
 
 		public WDist DistanceAboveTerrain(WPos pos)
@@ -2446,13 +2029,13 @@ namespace OpenRA
 		{
 			var oldMapTiles = Tiles;
 			var oldMapResources = Resources;
-			var oldMapHeight = Height;
+			var oldMapHeight = HeightStep;
 			var oldMapRamp = Ramp;
 			var newSize = new Size(width, height);
 
 			Tiles = CellLayer.Resize(oldMapTiles, newSize, oldMapTiles[MPos.Zero]);
 			Resources = CellLayer.Resize(oldMapResources, newSize, oldMapResources[MPos.Zero]);
-			Height = CellLayer.Resize(oldMapHeight, newSize, oldMapHeight[MPos.Zero]);
+			HeightStep = CellLayer.Resize(oldMapHeight, newSize, oldMapHeight[MPos.Zero]);
 			Ramp = CellLayer.Resize(oldMapRamp, newSize, oldMapRamp[MPos.Zero]);
 			MapSize = new int2(newSize);
 

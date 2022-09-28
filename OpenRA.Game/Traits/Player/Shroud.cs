@@ -347,6 +347,10 @@ namespace OpenRA.Traits
 			var maxIndex = touched.Size.Width * touched.Size.Height;
 			for (var index = 0; index < maxIndex; index++)
 			{
+				// keep the cell out side of the bounds invisible
+				if (!map.Contains(touched.IndexToMPos(index)))
+					continue;
+
 				if (!explored[index])
 				{
 					touched[index] = true;

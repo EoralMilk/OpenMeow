@@ -299,11 +299,10 @@ namespace OpenRA.Graphics
 			var cells = Viewport.VisibleCellsInsideBounds;
 			if (shadersNeedTerrainLight == null)
 			{
-				shadersNeedTerrainLight = new IShader[2];
+				shadersNeedTerrainLight = new IShader[3];
 				shadersNeedTerrainLight[0] = Game.Renderer.MapRenderer.Shader;
 				shadersNeedTerrainLight[1] = Game.Renderer.WorldSpriteRenderer.Shader;
-				// shadersNeedTerrainLight[2] = TerrainRenderBlock.TerrainShader;
-
+				shadersNeedTerrainLight[2] = TerrainRenderBlock.TerrainShader;
 			}
 
 			var tlcell = cells.CandidateMapCoords.TopLeft.ToCPos(map);
@@ -320,9 +319,8 @@ namespace OpenRA.Graphics
 
 			// var bounds = Viewport.GetScissorBounds(World.Type != WorldType.Editor);
 			// Game.Renderer.EnableScissor(bounds);
-
-			Game.Renderer.Context.EnableDepthBuffer(DepthFunc.LessEqual);
 			Game.Renderer.EnableDepthWrite(true);
+			Game.Renderer.EnableDepthBuffer();
 
 			UpdateTerrainLightToShader();
 
@@ -375,8 +373,8 @@ namespace OpenRA.Graphics
 					trait.RenderAboveWorld(actor, this);
 			});
 
-			Game.Renderer.EnableDepthWrite(true);
 			Game.Renderer.EnableDepthBuffer();
+			Game.Renderer.EnableDepthWrite(true);
 			if (World.Type != WorldType.Editor)
 			{
 				Game.Renderer.MapRenderer.SetRenderShroud(true);

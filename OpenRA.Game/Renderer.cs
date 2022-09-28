@@ -296,6 +296,7 @@ namespace OpenRA
 		{
 			worldShadowBuffer.Bind();
 			Context.EnableDepthBuffer(DepthFunc.LessEqual);
+			Game.Renderer.EnableDepthWrite(true);
 			Draw3DMeshesInstance(wr, true);
 
 			// MapRenderer.SetCameraParams(World3DRenderer, true);

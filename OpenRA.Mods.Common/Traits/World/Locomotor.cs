@@ -188,7 +188,7 @@ namespace OpenRA.Mods.Common.Traits
 			// Prevent units from jumping over height discontinuities.
 			if (fromCell != null && cell.Layer == 0 && fromCell.Value.Layer == 0 && world.Map.Grid.MaximumTerrainHeight > 0)
 			{
-				var heightLayer = world.Map.Height;
+				var heightLayer = world.Map.HeightStep;
 				if (Math.Abs(heightLayer[cell] - heightLayer[fromCell.Value]) > 1)
 					return PathGraph.MovementCostForUnreachableCell;
 			}

@@ -88,7 +88,7 @@ namespace OpenRA.Mods.Common.Traits
 				UpdateCell(cell);
 
 			map.Tiles.CellEntryChanged += UpdateCell;
-			map.Height.CellEntryChanged += UpdateCell;
+			map.HeightStep.CellEntryChanged += UpdateCell;
 		}
 
 		public void UpdateCell(CPos cell)
@@ -146,7 +146,7 @@ namespace OpenRA.Mods.Common.Traits
 				return;
 
 			map.Tiles.CellEntryChanged -= UpdateCell;
-			map.Height.CellEntryChanged -= UpdateCell;
+			map.HeightStep.CellEntryChanged -= UpdateCell;
 
 			spriteLayer.Dispose();
 

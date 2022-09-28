@@ -54,11 +54,11 @@ namespace OpenRA.Mods.Common.Traits
 							continue;
 
 						neighbourCount++;
-						neighbourHeight += map.Height[neighbour];
+						neighbourHeight += map.HeightOfCell(neighbour);
 					}
 				}
 
-				height[c] = info.HeightOffset.Length + neighbourHeight * 512 / neighbourCount;
+				height[c] = info.HeightOffset.Length + neighbourHeight / neighbourCount;
 			}
 		}
 

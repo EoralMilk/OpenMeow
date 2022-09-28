@@ -232,8 +232,8 @@ namespace OpenRA.Mods.Common.Traits
 			var emptySprite = new Sprite(shroudSprites[0].Sprite.Sheet, Rectangle.Empty, TextureChannel.Alpha, spriteMeshType: SpriteMeshType.Plane);
 			shroudPaletteReference = wr.Palette(info.ShroudPalette);
 			fogPaletteReference = wr.Palette(info.FogPalette);
-			shroudLayer = new TerrainSpriteLayer(w, wr, emptySprite, shroudBlend, true);
-			fogLayer = new TerrainSpriteLayer(w, wr, emptySprite, fogBlend, true);
+			shroudLayer = new TerrainSpriteLayer(w, wr, emptySprite, shroudBlend, false);
+			fogLayer = new TerrainSpriteLayer(w, wr, emptySprite, fogBlend, false);
 
 			WorldOnRenderPlayerChanged(world.RenderPlayer);
 		}

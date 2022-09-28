@@ -365,7 +365,7 @@ namespace OpenRA.Mods.Cnc.UtilityCommands
 						tilenum = subtile = 0;
 
 					map.Tiles[cell] = new TerrainTile(tilenum, subtile);
-					map.Height[cell] = z;
+					map.HeightStep[cell] = z;
 				}
 			}
 		}

@@ -102,6 +102,8 @@ namespace OpenRA.Graphics
 			SunProjection = mat4.Ortho(-halfView, halfView, -halfView, halfView, far / 8, far);
 		}
 
+
+		public static float CameraRotTest = 0;
 		public void PrepareToRender(WorldRenderer wr)
 		{
 			// projection and view
@@ -126,7 +128,9 @@ namespace OpenRA.Graphics
 				Projection = mat4.Ortho(ortho.Item1, ortho.Item2, ortho.Item3, ortho.Item4, far / 8, far);
 
 				var viewPoint = Get3DRenderPositionFromWPos(viewport.CenterPosition);// new vec3((float)viewport.CenterPosition.X / WPosPerMeter, (float)viewport.CenterPosition.Y / WPosPerMeter, 0);
-				CameraPos = new vec3(viewPoint.x, viewPoint.y + TanCameraPitch * heightMeter, heightMeter);
+				CameraPos = new vec3(0, TanCameraPitch * heightMeter, heightMeter);
+				CameraPos = quat.FromAxisAngle(CameraRotTest, WorldUp) * CameraPos + new vec3(viewPoint.x, viewPoint.y, 0);
+
 				View = mat4.LookAt(CameraPos, viewPoint, CameraUp);
 
 				// light params

@@ -41,7 +41,6 @@ namespace OpenRA.Mods.Common.Traits
 			map = self.World.Map;
 			terrainIndex = self.World.Map.Rules.TerrainInfo.GetTerrainIndex(info.TerrainType);
 			height = new CellLayer<int>(map);
-			var cellHeight = self.World.Map.CellHeightStep.Length;
 			foreach (var c in map.AllCells)
 			{
 				var neighbourCount = 0;
@@ -55,11 +54,11 @@ namespace OpenRA.Mods.Common.Traits
 							continue;
 
 						neighbourCount++;
-						neighbourHeight += map.Height[neighbour];
+						neighbourHeight += map.HeightOfCell(neighbour);
 					}
 				}
 
-				height[c] = info.HeightOffset.Length + neighbourHeight * cellHeight / neighbourCount;
+				height[c] = info.HeightOffset.Length + neighbourHeight / neighbourCount;
 			}
 		}
 

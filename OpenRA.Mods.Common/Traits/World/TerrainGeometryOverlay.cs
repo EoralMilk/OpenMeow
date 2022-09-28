@@ -9,11 +9,13 @@
  */
 #endregion
 
+using System.Collections;
 using System.Collections.Generic;
 using OpenRA.Graphics;
 using OpenRA.Mods.Common.Commands;
 using OpenRA.Mods.Common.Graphics;
 using OpenRA.Primitives;
+using OpenRA.Primitives.FixPoint;
 using OpenRA.Traits;
 
 namespace OpenRA.Mods.Common.Traits
@@ -53,31 +55,30 @@ namespace OpenRA.Mods.Common.Traits
 				yield break;
 
 			var map = wr.World.Map;
-			var colors = wr.World.Map.Rules.TerrainInfo.HeightDebugColors;
+			var mapMaxHeight = map.Grid.MaximumTerrainHeight * MapGrid.MapHeightStep;
 			var mouseCell = wr.Viewport.ViewToWorld(Viewport.LastMousePos).ToMPos(wr.World.Map);
 
 			foreach (var uv in wr.Viewport.AllVisibleCells.CandidateMapCoords)
 			{
-				if (!map.Height.Contains(uv) || self.World.ShroudObscures(uv))
+				if (!map.CellInfos.Contains(uv) || self.World.ShroudObscures(uv))
 					continue;
 
-				var height = (int)map.Height[uv];
-				var r = map.Grid.Ramps[map.Ramp[uv]];
-				var pos = map.CenterOfCell(uv.ToCPos(map)) - new WVec(0, 0, r.CenterHeightOffset);
+				var cellinfo = map.CellInfos[uv];
+				var cellCorner = new WPos[5] {
+					map.TerrainVertices[cellinfo.T].LogicPos,
+					map.TerrainVertices[cellinfo.R].LogicPos,
+					map.TerrainVertices[cellinfo.B].LogicPos,
+					map.TerrainVertices[cellinfo.L].LogicPos,
+					map.TerrainVertices[cellinfo.T].LogicPos};
 				var width = uv == mouseCell ? 3 : 1;
 
 				// Colors change between points, so render separately
-				foreach (var p in r.Polygons)
+				for (var i = 0; i < cellCorner.Length - 1; i++)
 				{
-					for (var i = 0; i < p.Length; i++)
-					{
-						var j = (i + 1) % p.Length;
-						var start = pos + p[i];
-						var end = pos + p[j];
-						var startColor = colors[height + p[i].Z / 512];
-						var endColor = colors[height + p[j].Z / 512];
-						yield return new LineAnnotationRenderable(start, end, width, startColor, endColor);
-					}
+					var startColor = Color.FromAhsv((float)cellCorner[i].Z / mapMaxHeight, 1, 1);
+					var endColor = Color.FromAhsv((float)cellCorner[i + 1].Z / mapMaxHeight, 1, 1);
+
+					yield return new LineAnnotationRenderable(cellCorner[i], cellCorner[i + 1], width, startColor, endColor);
 				}
 			}
 

@@ -148,12 +148,13 @@ namespace OpenRA.Graphics
 		public string FragmentShaderName { get; }
 		public string GeometryShaderName => null;
 
-		public int Stride => 4 * sizeof(float);
+		public int Stride => 7 * sizeof(float);
 
 		public IEnumerable<ShaderVertexAttribute> Attributes { get; } = new[]
 		{
 			new ShaderVertexAttribute("aPosition", 0, 2, 0),
 			new ShaderVertexAttribute("aTexCoords", 1, 2, 2 * sizeof(float)),
+			new ShaderVertexAttribute("aBrushType", 2, 3, 4 * sizeof(float), AttributeType.Int32),
 		};
 
 		public bool Instanced => false;
@@ -180,7 +181,7 @@ namespace OpenRA.Graphics
 		public string FragmentShaderName { get; }
 
 		public string GeometryShaderName => null;
-		public int Stride => (18 * sizeof(float));
+		public int Stride => (25 * sizeof(float));
 
 		public IEnumerable<ShaderVertexAttribute> Attributes { get; } = new[]
 		{
@@ -192,8 +193,8 @@ namespace OpenRA.Graphics
 			new ShaderVertexAttribute("aVertexBitangent", 4, 3, 11 * sizeof(float)),
 			new ShaderVertexAttribute("aVertexNormal", 5, 3, 14 * sizeof(float)),
 
-			new ShaderVertexAttribute("aDrawType", 6, 1, 17 * sizeof(float), AttributeType.UInt32),
-
+			new ShaderVertexAttribute("aTileType1234", 6, 4, 17 * sizeof(float), AttributeType.Int32),
+			new ShaderVertexAttribute("aTileType5678", 7, 4, 21 * sizeof(float), AttributeType.Int32),
 		};
 
 		public bool Instanced => false;

@@ -4,9 +4,11 @@ precision mediump float;
 #endif
 
 #define MAX_TERRAIN_LIGHT 64
+// keep the non array uniform set at first
+// When the first uniform variable is an array, it cannot be set to count < 1
+uniform float TerrainLightHeightStep;
 uniform vec3 TerrainLightPos[MAX_TERRAIN_LIGHT];
 uniform vec4 TerrainLightColorRange[MAX_TERRAIN_LIGHT];
-uniform float TerrainLightHeightStep;
 
 uniform sampler2D BakedTerrainTexture;
 uniform sampler2D BakedTerrainNormalTexture;
@@ -69,17 +71,17 @@ vec4 CalcDirLight(DirLight light, vec4 color)
 
 	vec3 tint = vec3(0.0);
 
-	// for (int i = 0; i < MAX_TERRAIN_LIGHT; ++i)
-	// {
-	// 	if (TerrainLightPos[i].xy == vec2(0.0))
-	// 		break;
-	// 	float dist = length(vFragPos.xy - TerrainLightPos[i].xy);
-	// 	if (dist > TerrainLightColorRange[i].a)
-	// 		continue;
-	// 	float falloff = (TerrainLightColorRange[i].a - dist) / TerrainLightColorRange[i].a;
-	// 	tint += falloff * TerrainLightColorRange[i].rgb;
-	// }
-
+	for (int i = 0; i < MAX_TERRAIN_LIGHT; ++i)
+	{
+		if (TerrainLightPos[i].xy == vec2(0.0))
+			break;
+		float dist = length(vFragPos.xy - TerrainLightPos[i].xy);
+		if (dist > TerrainLightColorRange[i].a)
+			continue;
+		float falloff = (TerrainLightColorRange[i].a - dist) / TerrainLightColorRange[i].a;
+		tint += falloff * TerrainLightColorRange[i].rgb;
+	}
+	float heightLight = (1.0 + TerrainLightHeightStep * vFragPos.z);
 
 	vec3 specular = vec3(0.0);
 
@@ -87,8 +89,8 @@ vec4 CalcDirLight(DirLight light, vec4 color)
 	float diff = dot(normal, lightDir);
 
 	// merge
-	vec3 ambient  = light.ambient;
-	vec3 diffuse  = light.diffuse * diff;
+	vec3 ambient  = light.ambient * heightLight;
+	vec3 diffuse  = light.diffuse * diff * heightLight;
 
 	ambient = ambient * color.rgb;
 	diffuse = diffuse * color.rgb;

@@ -594,7 +594,7 @@ namespace OpenRA.Platforms.Default
 	{
 		readonly ThreadedGraphicsContext device;
 		readonly Func<ITexture> getTexture;
-		readonly Func<ITexture> getTexture1;
+		readonly Func<object, ITexture> getTextureFromRenderTarget;
 
 		readonly Func<ITexture> getDepthTexture;
 
@@ -612,8 +612,7 @@ namespace OpenRA.Platforms.Default
 		{
 			this.device = device;
 			getTexture = () => frameBuffer.Texture;
-			getTexture = () => frameBuffer.Texture1;
-
+			getTextureFromRenderTarget = rt => frameBuffer.GetTexture((int)rt);
 			getDepthTexture = () => frameBuffer.DepthTexture;
 			bind = frameBuffer.Bind;
 			bindNotFlush = frameBuffer.BindNotFlush;
@@ -627,8 +626,12 @@ namespace OpenRA.Platforms.Default
 			disableScissor = frameBuffer.DisableScissor;
 		}
 
+		public ITexture GetTexture(int renderTargets)
+		{
+			return device.Send(getTextureFromRenderTarget, renderTargets);
+		}
+
 		public ITexture Texture => device.Send(getTexture);
-		public ITexture Texture1 => device.Send(getTexture1);
 
 		public ITexture DepthTexture => device.Send(getDepthTexture);
 

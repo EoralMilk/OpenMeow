@@ -12,6 +12,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using OpenRA.Graphics;
 using OpenRA.Mods.Common.Commands;
 using OpenRA.Mods.Common.Lint;
 using OpenRA.Mods.Common.Traits;
@@ -143,9 +144,12 @@ namespace OpenRA.Mods.Common.Widgets.Logic
 				var team = teamChat && !disableTeamChat;
 				if (chatText.Text != "")
 				{
-					if (chatText.Text == "mat")
+					if (chatText.Text.StartsWith("cr-"))
 					{
-						AttachedArmament.mat3 = !AttachedArmament.mat3;
+						var ss = chatText.Text;
+						var deg = float.Parse(ss.Substring(3));
+						var rad = deg / 180f * MathF.PI;
+						World3DRenderer.CameraRotTest = rad;
 					}
 
 					if (chatText.Text.StartsWith("-"))

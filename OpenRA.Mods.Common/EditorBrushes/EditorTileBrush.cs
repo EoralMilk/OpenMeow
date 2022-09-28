@@ -181,7 +181,7 @@ namespace OpenRA.Mods.Common.Widgets
 		public void Do()
 		{
 			var mapTiles = map.Tiles;
-			var mapHeight = map.Height;
+			var mapHeight = map.HeightStep;
 			var baseHeight = mapHeight.Contains(cell) ? mapHeight[cell] : (byte)0;
 
 			var i = 0;
@@ -208,7 +208,7 @@ namespace OpenRA.Mods.Common.Widgets
 		public void Undo()
 		{
 			var mapTiles = map.Tiles;
-			var mapHeight = map.Height;
+			var mapHeight = map.HeightStep;
 
 			while (undoTiles.Count > 0)
 			{
@@ -316,7 +316,7 @@ namespace OpenRA.Mods.Common.Widgets
 		public void Undo()
 		{
 			var mapTiles = map.Tiles;
-			var mapHeight = map.Height;
+			var mapHeight = map.HeightStep;
 
 			while (undoTiles.Count > 0)
 			{
@@ -330,7 +330,7 @@ namespace OpenRA.Mods.Common.Widgets
 		void PaintSingleCell(CPos cellToPaint)
 		{
 			var mapTiles = map.Tiles;
-			var mapHeight = map.Height;
+			var mapHeight = map.HeightStep;
 			var baseHeight = mapHeight.Contains(cellToPaint) ? mapHeight[cellToPaint] : (byte)0;
 
 			var i = 0;

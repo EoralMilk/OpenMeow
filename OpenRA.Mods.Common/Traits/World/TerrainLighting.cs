@@ -59,6 +59,7 @@ namespace OpenRA.Mods.Common.Traits
 		readonly Dictionary<int, LightSource> lightSources = new Dictionary<int, LightSource>();
 		readonly SpatiallyPartitioned<LightSource> partitionedLightSources;
 		readonly float3 globalTint;
+		readonly float lightStepPerWDist;
 		int nextLightSourceToken = 1;
 
 		public event Action<MPos> CellChanged = null;
@@ -66,6 +67,7 @@ namespace OpenRA.Mods.Common.Traits
 		public TerrainLighting(World world, TerrainLightingInfo info)
 		{
 			this.info = info;
+			lightStepPerWDist = info.HeightStep / MapGrid.MapHeightStep;
 			map = world.Map;
 			globalTint = new float3(info.RedTint, info.GreenTint, info.BlueTint);
 
@@ -126,10 +128,10 @@ namespace OpenRA.Mods.Common.Traits
 			{
 				var uv = map.CellContaining(pos).ToMPos(map);
 				var tint = globalTint;
-				if (!map.Height.Contains(uv))
+				if (!map.CellInfos.Contains(uv))
 					return tint;
 
-				var intensity = info.Intensity + info.HeightStep * map.Height[uv];
+				var intensity = info.Intensity + lightStepPerWDist * map.HeightOfCell(uv);
 				if (lightSources.Count > 0)
 				{
 					foreach (var source in partitionedLightSources.At(new int2(pos.X, pos.Y)))
@@ -187,9 +189,9 @@ namespace OpenRA.Mods.Common.Traits
 
 			foreach (IShader shader in shaders)
 			{
+				shader.SetFloat("TerrainLightHeightStep", heightStep);
 				shader.SetVecArray("TerrainLightPos", posArray, 3, MaxLightCount);
 				shader.SetVecArray("TerrainLightColorRange", colorRangeArray, 4, MaxLightCount);
-				shader.SetFloat("TerrainLightHeightStep", heightStep);
 			}
 		}
 

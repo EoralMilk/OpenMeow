@@ -111,6 +111,10 @@ namespace OpenRA.Platforms.Default
 		public const int GL_TEXTURE_MIN_FILTER = 0x2801;
 		public const int GL_NEAREST = 0x2600;
 		public const int GL_LINEAR = 0x2601;
+		public const int GL_NEAREST_MIPMAP_NEAREST = 0x2700;
+		public const int GL_LINEAR_MIPMAP_NEAREST = 0x2701;
+		public const int GL_NEAREST_MIPMAP_LINEAR = 0x2702;
+		public const int GL_LINEAR_MIPMAP_LINEAR = 0x2703;
 
 		// Depth buffer
 		public const int GL_DEPTH_COMPONENT = 0x1902;

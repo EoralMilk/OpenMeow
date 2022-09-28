@@ -114,8 +114,8 @@ namespace OpenRA.Platforms.Default
 		public void SetData(byte[] colors, int width, int height, TextureType type = TextureType.BGRA)
 		{
 			VerifyThreadAffinity();
-			if (!Exts.IsPowerOf2(width) || !Exts.IsPowerOf2(height))
-				throw new InvalidDataException($"Non-power-of-two array {width}x{height}");
+			//if (!Exts.IsPowerOf2(width) || !Exts.IsPowerOf2(height))
+			//	throw new InvalidDataException($"Non-power-of-two array {width}x{height}");
 
 			Size = new Size(width, height);
 			unsafe
@@ -134,8 +134,8 @@ namespace OpenRA.Platforms.Default
 		public void SetFloatData(float[] data, int width, int height, TextureType type = TextureType.RGBA)
 		{
 			VerifyThreadAffinity();
-			if (!Exts.IsPowerOf2(width) || !Exts.IsPowerOf2(height))
-				throw new InvalidDataException("Non-power-of-two array {0}x{1}".F(width, height));
+			//if (!Exts.IsPowerOf2(width) || !Exts.IsPowerOf2(height))
+			//	throw new InvalidDataException("Non-power-of-two array {0}x{1}".F(width, height));
 
 			Size = new Size(width, height);
 			unsafe
@@ -226,8 +226,8 @@ namespace OpenRA.Platforms.Default
 		public void SetEmpty(int width, int height)
 		{
 			VerifyThreadAffinity();
-			if (!Exts.IsPowerOf2(width) || !Exts.IsPowerOf2(height))
-				throw new InvalidDataException($"Non-power-of-two array {width}x{height}");
+			//if (!Exts.IsPowerOf2(width) || !Exts.IsPowerOf2(height))
+			//	throw new InvalidDataException($"Non-power-of-two array {width}x{height}");
 
 			Size = new Size(width, height);
 			SetData(IntPtr.Zero, width, height);
@@ -413,11 +413,10 @@ namespace OpenRA.Platforms.Default
 			OpenGL.glBindTexture(OpenGL.GL_TEXTURE_2D_ARRAY, id);
 			OpenGL.CheckGLError();
 
-			var filter = scaleFilter == TextureScaleFilter.Linear ? OpenGL.GL_LINEAR : OpenGL.GL_NEAREST;
 			var wrap = wrapType == TextureWrap.ClampToEdge ? OpenGL.GL_CLAMP_TO_EDGE : OpenGL.GL_REPEAT;
-			OpenGL.glTexParameteri(OpenGL.GL_TEXTURE_2D_ARRAY, OpenGL.GL_TEXTURE_MAG_FILTER, filter);
+			OpenGL.glTexParameteri(OpenGL.GL_TEXTURE_2D_ARRAY, OpenGL.GL_TEXTURE_MAG_FILTER, OpenGL.GL_LINEAR);
 			OpenGL.CheckGLError();
-			OpenGL.glTexParameteri(OpenGL.GL_TEXTURE_2D_ARRAY, OpenGL.GL_TEXTURE_MIN_FILTER, filter);
+			OpenGL.glTexParameteri(OpenGL.GL_TEXTURE_2D_ARRAY, OpenGL.GL_TEXTURE_MIN_FILTER, OpenGL.GL_NEAREST);
 			OpenGL.CheckGLError();
 
 			OpenGL.glTexParameterf(OpenGL.GL_TEXTURE_2D_ARRAY, OpenGL.GL_TEXTURE_WRAP_S, wrap);
@@ -467,8 +466,8 @@ namespace OpenRA.Platforms.Default
 		public void SetData(byte[] colors, int width, int height, TextureType type = TextureType.BGRA)
 		{
 			VerifyThreadAffinity();
-			if (!Exts.IsPowerOf2(width) || !Exts.IsPowerOf2(height))
-				throw new InvalidDataException($"Non-power-of-two array {width}x{height}");
+			//if (!Exts.IsPowerOf2(width) || !Exts.IsPowerOf2(height))
+			//	throw new InvalidDataException($"Non-power-of-two array {width}x{height}");
 
 			Size = new Size(width, height);
 			unsafe
@@ -487,8 +486,8 @@ namespace OpenRA.Platforms.Default
 		public void SetFloatData(float[] data, int width, int height, TextureType type = TextureType.RGBA)
 		{
 			VerifyThreadAffinity();
-			if (!Exts.IsPowerOf2(width) || !Exts.IsPowerOf2(height))
-				throw new InvalidDataException("Non-power-of-two array {0}x{1}".F(width, height));
+			//if (!Exts.IsPowerOf2(width) || !Exts.IsPowerOf2(height))
+			//	throw new InvalidDataException("Non-power-of-two array {0}x{1}".F(width, height));
 
 			Size = new Size(width, height);
 			unsafe
@@ -518,8 +517,8 @@ namespace OpenRA.Platforms.Default
 		public void SetEmpty(int width, int height)
 		{
 			VerifyThreadAffinity();
-			if (!Exts.IsPowerOf2(width) || !Exts.IsPowerOf2(height))
-				throw new InvalidDataException($"Non-power-of-two array {width}x{height}");
+			//if (!Exts.IsPowerOf2(width) || !Exts.IsPowerOf2(height))
+			//	throw new InvalidDataException($"Non-power-of-two array {width}x{height}");
 
 			Size = new Size(width, height);
 			SetData(IntPtr.Zero, width, height);

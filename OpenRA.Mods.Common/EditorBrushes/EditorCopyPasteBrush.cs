@@ -111,7 +111,7 @@ namespace OpenRA.Mods.Common.Widgets
 		{
 			var gridType = worldRenderer.World.Map.Grid.Type;
 			var mapTiles = worldRenderer.World.Map.Tiles;
-			var mapHeight = worldRenderer.World.Map.Height;
+			var mapHeight = worldRenderer.World.Map.HeightStep;
 			var mapResources = worldRenderer.World.Map.Resources;
 
 			var dest = new CellRegion(gridType, source.TopLeft + offset, source.BottomRight + offset);
@@ -202,7 +202,7 @@ namespace OpenRA.Mods.Common.Widgets
 			this.dest = dest;
 
 			mapTiles = map.Tiles;
-			mapHeight = map.Height;
+			mapHeight = map.HeightStep;
 			mapResources = map.Resources;
 
 			Text = $"Copied {tiles.Count} tiles";

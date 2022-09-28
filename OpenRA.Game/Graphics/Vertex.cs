@@ -262,11 +262,17 @@ namespace OpenRA.Graphics
 	{
 		public readonly float X, Y;
 		public readonly float U, V;
+		public readonly int Type;
+		public readonly int Layer;
+		public readonly int Intensity;
 
-		public TerrainMaskVertex(float x, float y, float u, float v)
+		public TerrainMaskVertex(float x, float y, float u, float v, int type = -1, int layer = -1, int intensity = -1)
 		{
 			X = x; Y = y;
 			U = u; V = v;
+			Type = type;
+			Layer = layer;
+			Intensity = intensity;
 		}
 	}
 
@@ -283,14 +289,16 @@ namespace OpenRA.Graphics
 		public readonly float BX, BY, BZ;
 		public readonly float NX, NY, NZ;
 
-		public readonly uint DrawType;
+		public readonly int TileType1, TileType2, TileType3, TileType4;
+		public readonly int TileType5, TileType6, TileType7, TileType8;
 
 		public TerrainBlendingVertex(
 									in float2 uv,
 									in float2 maskuv,
 									in mat3 tbn,
 									in float3 tint, float a,
-									uint type)
+									int t1 = 1, int t2 = 2, int t3 = 3, int t4 = 4,
+									int t5 = 5, int t6 = 6, int t7 = 7, int t8 = 8)
 			: this(
 				  uv.X, uv.Y,
 				  maskuv.X, maskuv.Y,
@@ -298,7 +306,8 @@ namespace OpenRA.Graphics
 				  tbn.Column0.x, tbn.Column0.y, tbn.Column0.z,
 				  tbn.Column1.x, tbn.Column1.y, tbn.Column1.z,
 				  tbn.Column2.x, tbn.Column2.y, tbn.Column2.z,
-				  type)
+				  t1, t2, t3, t4,
+				  t5, t6, t7, t8)
 		{ }
 
 		public TerrainBlendingVertex(float u, float v,
@@ -307,7 +316,8 @@ namespace OpenRA.Graphics
 									float tx, float ty, float tz,
 									float bx, float by, float bz,
 									float nx, float ny, float nz,
-									uint type)
+									int t1, int t2, int t3, int t4,
+									int t5, int t6, int t7, int t8)
 		{
 			U = u; V = v;
 			MaskU = masku; MaskV = maskv;
@@ -315,9 +325,9 @@ namespace OpenRA.Graphics
 			TX = tx; TY = ty; TZ = tz;
 			BX = bx; BY = by; BZ = bz;
 			NX = nx; NY = ny; NZ = nz;
-			DrawType = type;
+			TileType1 = t1; TileType2 = t2; TileType3 = t3; TileType4 = t4;
+			TileType5 = t5; TileType6 = t6; TileType7 = t7; TileType8 = t8;
 		}
-
 	};
 
 	public struct TerrainFinalVertex

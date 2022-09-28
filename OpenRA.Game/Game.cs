@@ -702,6 +702,7 @@ namespace OpenRA
 
 					Renderer.BeginWorld(worldRenderer.Viewport.Rectangle);
 
+					TerrainRenderBlock.UpdateMask(worldRenderer.World.Map);
 					worldRenderer.World.Map.UpdateTerrainBlockTexture(Renderer.World3DRenderer, false, worldRenderer.World, worldRenderer.Viewport);
 
 					Renderer.UpdateShadowBuffer(worldRenderer);
