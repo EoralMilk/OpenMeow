@@ -1296,16 +1296,12 @@ namespace OpenRA
 			BlocksArrayHeight = blockY;
 			TerrainBlocks = new TerrainRenderBlock[blockY, blockX];
 
-			// skip the first row and col and last row and col
+			// skip the last row and last col
 			// to avoid the stripe error
 			for (int y = 0; y < blockY; y++)
 				for (int x = 0; x < blockX; x++)
 				{
 					int2 tl = new int2(x * TerrainRenderBlock.SizeLimit, y * TerrainRenderBlock.SizeLimit);
-					//if (tl.X == 0)
-					//	tl = new int2(1, tl.Y);
-					//if (tl.Y == 0)
-					//	tl = new int2(tl.X, 1);
 					int2 br = new int2(
 						Math.Min((x + 1) * TerrainRenderBlock.SizeLimit, VertexArrayWidth - 2) - 1,
 						Math.Min((y + 1) * TerrainRenderBlock.SizeLimit, VertexArrayHeight - 2) - 1);

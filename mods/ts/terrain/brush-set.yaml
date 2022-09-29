@@ -1,0 +1,11 @@
+
+brushBase: brush02.png
+	Size: 2224
+brushcell: brushcell.png
+	Size: 1588
+brush01: brush01.png
+	Size: 1882
+brush02: brush02.png
+	Size: 1882
+brush03: brush03.png
+	Size: 1882

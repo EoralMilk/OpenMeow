@@ -1,0 +1,22 @@
+base: dirt.png 
+	Scale: 3
+water01: Water01.png    #1 water
+	Scale: 4
+sand01: TileSand1.png   #2 sand
+	Scale: 2
+conc01: TileConc1.png   #3 road
+	Scale: 1.8
+grass01: TileGrass1.png #4 grass
+	Scale: 1.7
+cliff01: TileCliff1.png #5 cliff
+	Scale: 6
+dirt02: TileDirt2.png   #6 dirt road
+	Scale: 2
+dirt01: TileGrass2.png  #7 rough
+	Scale: 1.7
+clear: dirt.png         #8 clear
+	Scale: 3
+base2: dirt.png 
+grass02: TileGrass2.png
+grass03: TileGrass3.png
+

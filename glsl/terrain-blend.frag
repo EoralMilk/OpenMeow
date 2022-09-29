@@ -5,12 +5,15 @@ precision mediump sampler2DArray;
 #endif
 
 #define MAX_TERRAIN_LAYER 8
+#define MAX_TILES 128
 
 uniform sampler2D Mask123;
 uniform sampler2D Mask456;
 uniform sampler2D Mask789;
 
 uniform sampler2DArray Tiles;
+
+uniform float TileScales[MAX_TILES];
 
 in vec2 vUV;
 in vec2 vMaskUV;
@@ -29,8 +32,8 @@ vec4 mask123;
 vec4 mask456;
 vec4 mask789;
 
-float masks[MAX_TERRAIN_LAYER];
-vec3 colors[MAX_TERRAIN_LAYER + 1];
+float masks[MAX_TERRAIN_LAYER + 2];
+vec3 colors[MAX_TERRAIN_LAYER + 2];
 
 layout (location = 0) out vec4 ColorOutPut;
 layout (location = 1) out vec4 NormalOutPut;
@@ -95,8 +98,20 @@ float LayerMask(int layer)
 	return mask;
 }
 
-float ClampMask(float mask){
-	return clamp(mask * 3.0, 0.0, 1.0);
+vec3 GetTileColor(int layer)
+{
+	int tileIndex = GetTileIndex(layer);
+	if (TileScales[tileIndex] != 1.0)
+	{
+		vec2 cuv = vUV / TileScales[tileIndex];
+		cuv = cuv - vec2(floor(cuv.x), floor(cuv.y));
+		return texture(Tiles, vec3(cuv, float(tileIndex))).rgb;
+	}
+	else
+	{
+		return texture(Tiles, vec3(uv, float(tileIndex))).rgb;
+	}
+	
 }
 
 void main()
@@ -113,21 +128,30 @@ void main()
 	while (layer < 9){
 		masks[layer] = LayerMask(layer);
 		if (masks[layer] > 0.993){
-			colors[layer] = texture(Tiles, vec3(uv, float(GetTileIndex(layer)))).rgb;
+			colors[layer] = GetTileColor(layer);
 			break;
 		}
 		layer++;
 	}
 
-	if (layer == 9){
-		colors[8] = texture(Tiles, vec3(uv, 0.0)).rgb;
+	if (layer >= 9){
+		colors[8] = GetTileColor(0);
+		masks[8] = LayerMask(8);
 		layer = 8;
 	}
 
-	while (layer > 0){
+	while (layer > 0)
+	{
 		layer--;
-		vec3 c2 = texture(Tiles, vec3(uv, float(GetTileIndex(layer)))).rgb;
-		colors[layer] = mix(colors[layer + 1], c2, masks[layer]);
+		if (masks[layer] < 0.005)
+		{
+			colors[layer] = colors[layer + 1];
+			continue;
+		}
+
+		// there is a super strange bug???
+		// if put the mix in the else block and it would not work???
+		colors[layer] = mix(colors[layer + 1], GetTileColor(layer), masks[layer]);
 	}
 
 	// if (colors[0] == vec3(0.0))

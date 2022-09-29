@@ -26,7 +26,7 @@ namespace OpenRA.Graphics
 		public readonly HashSet<string> TerrainTexturesSet = new HashSet<string>();
 		public readonly HashSet<string> SmudgeTexturesSet = new HashSet<string>();
 
-		public readonly Dictionary<string, int> TileArrayTextures = new Dictionary<string, int>();
+		public readonly Dictionary<string, (int, float)> TileArrayTextures = new Dictionary<string, (int, float)>();
 		public readonly Dictionary<string, MaskBrush> AllBrushes = new Dictionary<string, MaskBrush>();
 		public readonly ITexture TileTextureArray;
 		public readonly ITexture BrushTextureArray;
@@ -66,7 +66,7 @@ namespace OpenRA.Graphics
 			}
 
 			// tiles
-			var tileSet = "tile-set.yaml";
+			var tileSet = Map.Tileset.ToLowerInvariant() + "-tileset.yaml";
 
 			if (!map.Exists(tileSet))
 				throw new Exception("Can't Find " + tileSet + " to define tiles texture");
@@ -76,9 +76,13 @@ namespace OpenRA.Graphics
 
 			foreach (var node in tileNodes)
 			{
-				if (!AddTileTexture(node.Key, node.Value.Value))
+				var info = node.Value.ToDictionary();
+				var scale = ReadYamlInfo.LoadField(info, "Scale", 1f);
+				if (!AddTileTexture(node.Key, node.Value.Value, scale))
 					throw new Exception("duplicate " + node.Key + " in " + tileSet);
 			}
+
+			Console.WriteLine("TileArrayTextures.Count" + TileArrayTextures.Count);
 
 			// brushes
 			var brushesSet = "brush-set.yaml";
@@ -88,16 +92,16 @@ namespace OpenRA.Graphics
 			List<MiniYamlNode> brushnodes = MiniYaml.FromStream(map.Open(brushesSet));
 
 			BrushTextureArray = Game.Renderer.Context.CreateTextureArray(brushnodes.Count);
-			Console.WriteLine("brushyaml.Count" + brushnodes.Count);
+
 			foreach (var node in brushnodes)
 			{
 				var info = node.Value.ToDictionary();
 				var size = ReadYamlInfo.LoadField(info, "Size", new WDist(1024));
 				if (!AddBrushTexture(node.Key, node.Value.Value, map, size.Length))
 					throw new Exception("duplicate " + node.Key + " in " + brushesSet);
-				Console.WriteLine(node.Key + ": Size " + size.Length);
 			}
 
+			Console.WriteLine("AllBrush.Count" + AllBrushes.Count);
 			Map.TextureCache = this;
 		}
 
@@ -162,7 +166,7 @@ namespace OpenRA.Graphics
 			return true;
 		}
 
-		public bool AddTileTexture(string name, string filename)
+		public bool AddTileTexture(string name, string filename, float scale)
 		{
 			if (TileArrayTextures.ContainsKey(name))
 				return false;
@@ -176,7 +180,7 @@ namespace OpenRA.Graphics
 
 			TileTextureArray.SetData(sheet.GetData(), sheet.Size.Width, sheet.Size.Height);
 
-			TileArrayTextures.Add(name, TileArrayTextures.Count);
+			TileArrayTextures.Add(name, (TileArrayTextures.Count, scale));
 
 			return true;
 		}
