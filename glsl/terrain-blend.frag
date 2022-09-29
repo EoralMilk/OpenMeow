@@ -12,6 +12,7 @@ uniform sampler2D Mask456;
 uniform sampler2D Mask789;
 
 uniform sampler2DArray Tiles;
+uniform sampler2DArray TilesNorm;
 
 uniform float TileScales[MAX_TILES];
 
@@ -34,6 +35,8 @@ vec4 mask789;
 
 float masks[MAX_TERRAIN_LAYER + 2];
 vec3 colors[MAX_TERRAIN_LAYER + 2];
+vec3 norms[MAX_TERRAIN_LAYER + 2];
+
 
 layout (location = 0) out vec4 ColorOutPut;
 layout (location = 1) out vec4 NormalOutPut;
@@ -90,7 +93,7 @@ float LayerMask(int layer)
 		break;
 		case 7: mask = mask789.g;
 		break;
-		case 8: mask = 1.0;
+		case 8: mask = mask789.b;
 		break;
 		default:
 		break;
@@ -111,7 +114,27 @@ vec3 GetTileColor(int layer)
 	{
 		return texture(Tiles, vec3(uv, float(tileIndex))).rgb;
 	}
-	
+}
+
+vec3 GetTileNormal(int layer)
+{
+	int tileIndex = GetTileIndex(layer);
+	vec3 normal;
+	if (TileScales[tileIndex] != 1.0)
+	{
+		vec2 cuv = vUV / TileScales[tileIndex];
+		cuv = cuv - vec2(floor(cuv.x), floor(cuv.y));
+		normal = texture(TilesNorm, vec3(cuv, float(tileIndex))).rgb;
+	}
+	else
+	{
+		normal = texture(TilesNorm, vec3(uv, float(tileIndex))).rgb;
+	}
+
+	if (normal == vec3(0.0))
+		return vec3(0,0,1.0);
+	else
+		return normal;
 }
 
 void main()
@@ -129,13 +152,15 @@ void main()
 		masks[layer] = LayerMask(layer);
 		if (masks[layer] > 0.993){
 			colors[layer] = GetTileColor(layer);
+			norms[layer] = GetTileNormal(layer);
 			break;
 		}
 		layer++;
 	}
 
 	if (layer >= 9){
-		colors[8] = GetTileColor(0);
+		colors[8] = GetTileColor(-1);
+		norms[8] = GetTileNormal(-1);
 		masks[8] = LayerMask(8);
 		layer = 8;
 	}
@@ -146,17 +171,17 @@ void main()
 		if (masks[layer] < 0.005)
 		{
 			colors[layer] = colors[layer + 1];
+			norms[layer] = norms[layer + 1];
 			continue;
 		}
 
 		// there is a super strange bug???
 		// if put the mix in the else block and it would not work???
 		colors[layer] = mix(colors[layer + 1], GetTileColor(layer), masks[layer]);
+		norms[layer] = mix(norms[layer + 1], GetTileNormal(layer), masks[layer]);
 	}
 
-	// if (colors[0] == vec3(0.0))
-	// 	discard;
-
-	ColorOutPut = vec4(colors[0],1.0);
-	NormalOutPut = vec4(vNormal,1.0);
+	vec3 tint = vec3(min(vTint.r * 4.0, 1.3), min(vTint.g * 4.0, 1.3), min(vTint.b * 4.0, 1.3));
+	ColorOutPut = vec4(colors[0] * tint,1.0);
+	NormalOutPut = vec4(ProcessNormal(norms[0]),1.0);
 }

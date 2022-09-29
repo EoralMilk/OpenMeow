@@ -10,6 +10,17 @@ uniform float TerrainLightHeightStep;
 uniform vec3 TerrainLightPos[MAX_TERRAIN_LIGHT];
 uniform vec4 TerrainLightColorRange[MAX_TERRAIN_LIGHT];
 
+
+uniform vec2 Offset;
+uniform vec2 Range;
+// r is water mask
+uniform sampler2D Mask123;
+
+uniform float WaterUVOffset;
+
+uniform sampler2D Caustics;
+uniform sampler2D WaterNormal;
+
 uniform sampler2D BakedTerrainTexture;
 uniform sampler2D BakedTerrainNormalTexture;
 
@@ -64,7 +75,24 @@ float CalShadow(){
 
 vec4 CalcDirLight(DirLight light, vec4 color)
 {
-	vec3 normal = texture(BakedTerrainNormalTexture, vTexCoord).rgb;
+	vec2 vMaskUV = Offset + vTexCoord * Range;
+	vec3 mask = texture(Mask123, vMaskUV).rgb;
+
+	vec3 normal;
+	// water?
+	if (mask.r > 0.003){
+		vec2 waterUV = vFragPos.xy / 2.0 + vec2(-WaterUVOffset, 0);
+		normal = mix(texture(BakedTerrainNormalTexture, vTexCoord).rgb, texture(WaterNormal, waterUV).rgb, mask.r);
+
+		float caustics = texture(Caustics, waterUV).r;
+		caustics *= 2.0;
+
+		color *= mix(1.0, caustics, mask.r);
+	}
+	else{
+		normal = texture(BakedTerrainNormalTexture, vTexCoord).rgb;
+	}
+
 
 	vec3 viewDir = CameraInvFront;
 	vec3 lightDir = -light.direction;

@@ -84,6 +84,11 @@ namespace OpenRA.Graphics
 			World.Map.CreateRenderBlocks();
 			TerrainRenderBlock.UpdateMask(World.Map);
 			World.Map.UpdateTerrainBlockTexture(Game.Renderer.World3DRenderer, false, World, Viewport);
+
+			// run a paint to avoid first time paint delay
+			TerrainRenderBlock.PaintAt(World.Map, World.Map.TextureCache.AllBrushes.First().Value, WPos.Zero, 1024, 9, 255);
+			TerrainRenderBlock.UpdateMask(World.Map);
+			World.Map.UpdateTerrainBlockTexture(Game.Renderer.World3DRenderer, false, World, Viewport);
 		}
 
 		public void RefreshTextures()

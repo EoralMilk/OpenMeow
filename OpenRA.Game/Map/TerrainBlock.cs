@@ -264,13 +264,14 @@ namespace OpenRA
 		{
 			if (MaskFramebuffer == null)
 			{
-				var size = new Size((map.VertexArrayHeight - 1) * MiniCellPix,
-					(map.VertexArrayWidth - 1) * MiniCellPix);
+				var size = new Size((map.VertexArrayWidth - 1) * MiniCellPix,
+					(map.VertexArrayHeight - 1) * MiniCellPix);
 				if (!Exts.IsPowerOf2(size.Width) || !Exts.IsPowerOf2(size.Height))
 					size = size.NextPowerOf2();
 
 				if (map.Mask123 != null && map.Mask456 != null && map.Mask789 != null)
 				{
+					Console.WriteLine("Initialize using existing masks of map");
 					ITexture[] textures = new ITexture[3] { map.Mask123.GetTexture(), map.Mask456.GetTexture(), map.Mask789.GetTexture() };
 					MaskFramebuffer = Game.Renderer.Context.CreateFrameBuffer(
 						size,
@@ -313,31 +314,7 @@ namespace OpenRA
 
 				if (map.Mask123 != null && map.Mask456 != null && map.Mask789 != null)
 				{
-
-					// MaskFramebuffer.Bind();
-
-					// Game.Renderer.SetFaceCull(FaceCullFunc.None);
-
-					// TerrainMaskShader.SetTexture("InitMask123", map.Mask123.GetTexture());
-					// TerrainMaskShader.SetTexture("InitMask456", map.Mask456.GetTexture());
-					// TerrainMaskShader.SetTexture("InitMask789", map.Mask789.GetTexture());
-
-					// TerrainMaskShader.SetBool("InitWithTextures", true);
-
-					// Game.Renderer.Context.SetBlendMode(BlendMode.None);
-					// TerrainMaskShader.PrepareRender();
-
-					// Game.Renderer.DrawBatch(TerrainMaskShader, maskVertexBuffer, 0, terrainMaskVertices.Length, PrimitiveType.TriangleList);
-
-					// MaskFramebuffer.Unbind();
-					// Console.WriteLine("Init Mask with textures");
-
-					// map.Mask123?.Dispose();
-					// map.Mask456?.Dispose();
-					// map.Mask789?.Dispose();
-					// map.Mask123 = null;
-					// map.Mask456 = null;
-					// map.Mask789 = null;
+					Console.WriteLine("Completed");
 				}
 				else
 				{
@@ -358,16 +335,14 @@ namespace OpenRA
 
 					foreach (var uv in map.MapCells)
 					{
+						Console.WriteLine("Painting Spot on mask at each cell");
 						var type = map.Rules.TerrainInfo.GetTerrainInfo(map.Tiles[uv]);
 						var typename = map.Rules.TerrainInfo.TerrainTypes[type.TerrainType].Type;
 						var id = map.Tiles[uv].Type;
-						int layer = 7;
+						int layer = 8;
 
 						switch (typename)
 						{
-							case "Clear":
-								layer = 7;
-								break;
 							case "Rough":
 								layer = 6;
 								break;
@@ -412,6 +387,21 @@ namespace OpenRA
 							// grass
 							layer = 3;
 						}
+						else if (id >= 535 && id <= 551)
+						{
+							// sand
+							layer = 1;
+						}
+						else if (id >= 150 && id <= 166)
+						{
+							// rough
+							layer = 6;
+						}
+						else if (id >= 552 && id <= 561)
+						{
+							// crack ground
+							layer = 7;
+						}
 
 						var brush = map.TextureCache.AllBrushes.First().Value;
 
@@ -427,11 +417,14 @@ namespace OpenRA
 
 					MaskFramebuffer.Unbind();
 
-					Console.WriteLine("Init Mask with brush");
+					Console.WriteLine("Completed");
+					Console.WriteLine("Saving Mask Texture as PNG at ./MapToPng/");
 
 					SaveAsPng(MaskFramebuffer.GetTexture(0), "./MapToPng/", "Mask123");
 					SaveAsPng(MaskFramebuffer.GetTexture(1), "./MapToPng/", "Mask456");
 					SaveAsPng(MaskFramebuffer.GetTexture(2), "./MapToPng/", "Mask789");
+
+					Console.WriteLine("Saved");
 				}
 			}
 		}
@@ -512,10 +505,10 @@ namespace OpenRA
 			in WPos pos, int size, int layer, int intensity)
 		{
 			paintSpots.Add(new PaintSpot(brush, pos, size, layer, intensity));
+			Console.WriteLine("paint at " + pos.X + "," + pos.Y + " with size: " + size + " layer: " + layer);
 
 			var blockx = (pos.X / 724) / SizeLimit;
 			var blocky = (pos.Y / 724) / SizeLimit;
-			Console.WriteLine(blockx + "," + blocky);
 			for (int y = blocky - 1; y <= blocky + 1; y++)
 				for (int x = blockx - 1; x <= blockx + 1; x++)
 				{
@@ -529,8 +522,6 @@ namespace OpenRA
 					map.TerrainBlocks[y, x].needUpdateTexture = true;
 					Console.WriteLine("block " + y + "," + x + " need update");
 				}
-
-			Console.WriteLine("paint at " + pos.X + "," + pos.Y + " with size: " + size + " layer: " + layer);
 		}
 
 		static void PaintMask(Map map, MaskBrush brush, in WPos pos, int size, int layer, int intensity)
@@ -601,7 +592,7 @@ namespace OpenRA
 			if (!needUpdateTexture)
 				return;
 
-			Console.WriteLine("update block " + TopLeft);
+			Console.WriteLine("Updating block texture: " + TopLeft);
 
 			needInit = false;
 			needUpdateTexture = false;
@@ -615,6 +606,7 @@ namespace OpenRA
 			TextureBlendShader.SetTexture("Mask789", MaskFramebuffer.GetTexture(2));
 
 			TextureBlendShader.SetTexture("Tiles", world.MapTextureCache.TileTextureArray);
+			TextureBlendShader.SetTexture("TilesNorm", world.MapTextureCache.TileNormalTextureArray);
 
 			TextureBlendShader.SetVec("Offset",
 				topLeftOffset.X,
@@ -641,6 +633,23 @@ namespace OpenRA
 
 			if (LeftBound > right || RightBound < left)
 				return;
+
+			TerrainShader.SetVec("Offset",
+				topLeftOffset.X,
+				topLeftOffset.Y);
+			TerrainShader.SetVec("Range",
+				bottomRightOffset.X - topLeftOffset.X,
+				bottomRightOffset.Y - topLeftOffset.Y);
+			TerrainShader.SetFloat("WaterUVOffset", (float)(Game.LocalTick % 256) / 256);
+
+			TerrainShader.SetTexture("Mask123", MaskFramebuffer.GetTexture(0));
+
+			TerrainShader.SetTexture("WaterNormal",
+							Map.TextureCache.Textures["WaterNormal"].Item2.GetTexture());
+
+			TerrainShader.SetTexture("Caustics",
+				Map.TextureCache.CausticsTextures[Math.Min((Game.LocalTick % 93) / 3,
+				Map.TextureCache.CausticsTextures.Length - 1)].GetTexture());
 
 			TerrainShader.SetTexture("BakedTerrainTexture", BlendFramebuffer.Texture);
 			TerrainShader.SetTexture("BakedTerrainNormalTexture", BlendFramebuffer.GetTexture(1));

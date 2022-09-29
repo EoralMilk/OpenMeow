@@ -29,6 +29,8 @@ namespace OpenRA.Graphics
 		public readonly Dictionary<string, (int, float)> TileArrayTextures = new Dictionary<string, (int, float)>();
 		public readonly Dictionary<string, MaskBrush> AllBrushes = new Dictionary<string, MaskBrush>();
 		public readonly ITexture TileTextureArray;
+		public readonly ITexture TileNormalTextureArray;
+
 		public readonly ITexture BrushTextureArray;
 
 		public const string TN_GrassNormal	= "Texture4";
@@ -73,7 +75,7 @@ namespace OpenRA.Graphics
 			List<MiniYamlNode> tileNodes = MiniYaml.FromStream(map.Open(tileSet));
 
 			TileTextureArray = Game.Renderer.Context.CreateTextureArray(tileNodes.Count);
-
+			TileNormalTextureArray = Game.Renderer.Context.CreateTextureArray(tileNodes.Count);
 			foreach (var node in tileNodes)
 			{
 				var info = node.Value.ToDictionary();
@@ -125,6 +127,7 @@ namespace OpenRA.Graphics
 			}
 
 			TileTextureArray?.Dispose();
+			TileNormalTextureArray?.Dispose();
 			BrushTextureArray?.Dispose();
 		}
 
@@ -171,14 +174,33 @@ namespace OpenRA.Graphics
 			if (TileArrayTextures.ContainsKey(name))
 				return false;
 
-			if (!Map.Exists(filename))
+			if (!Map.Exists(filename + ".png"))
 			{
 				throw new Exception(filename + " Can not find texture " + name);
 			}
 
-			var sheet = new Sheet(Map.Open(filename), TextureWrap.Repeat);
+			var sheet = new Sheet(Map.Open(filename + ".png"), TextureWrap.Repeat);
 
 			TileTextureArray.SetData(sheet.GetData(), sheet.Size.Width, sheet.Size.Height);
+
+			if (Map.Exists(filename + "_NORM.png"))
+			{
+				sheet = new Sheet(Map.Open(filename + "_NORM.png"), TextureWrap.Repeat);
+				TileNormalTextureArray.SetData(sheet.GetData(), sheet.Size.Width, sheet.Size.Height);
+			}
+			else
+			{
+				var data = new byte[4 * sheet.Size.Width * sheet.Size.Height];
+				for (int i = 0; i < sheet.Size.Width * sheet.Size.Height; i++)
+				{
+					data[i] = 0;
+					data[i + 1] = 0;
+					data[i + 2] = 0;
+					data[i + 3] = 0;
+				}
+
+				TileNormalTextureArray.SetData(data, sheet.Size.Width, sheet.Size.Height);
+			}
 
 			TileArrayTextures.Add(name, (TileArrayTextures.Count, scale));
 

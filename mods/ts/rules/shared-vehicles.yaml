@@ -5,7 +5,7 @@ MCV:
 	Buildable:
 		Queue: Vehicle
 		BuildPaletteOrder: 160
-		Prerequisites: ~factory, sd, ~techlevel.medium
+		Prerequisites: ~factory, tech, ~techlevel.medium
 		Description: Deploys into another Construction Yard.\n  Unarmed
 	Valued:
 		Cost: 2500
