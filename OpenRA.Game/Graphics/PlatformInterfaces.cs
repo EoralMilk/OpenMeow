@@ -106,7 +106,9 @@ namespace OpenRA
 		IFrameBuffer CreateDepthFrameBuffer(Size s);
 		IFrameBuffer CreateFrameBuffer(Size s);
 		IFrameBuffer CreateFrameBuffer(Size s, Color clearColor);
-		IFrameBuffer CreateFrameBuffer(Size s, uint  renderTargets);
+		IFrameBuffer CreateFrameBuffer(Size s, uint renderTargets);
+		IFrameBuffer CreateFrameBuffer(Size s, ITexture[] textures, uint renderTargets);
+
 		IFrameBuffer CreateFrameBuffer(Size s, Color clearColor, uint textureOutput);
 
 		IShader CreateShader<T>() where T : IShaderBindings;
@@ -205,11 +207,11 @@ namespace OpenRA
 	public interface IFrameBuffer : IDisposable
 	{
 		void Bind();
-		void BindNotFlush();
+		void BindNoClear();
 		void SetViewportBack();
 		void SetViewport();
 		void Unbind();
-		void UnbindNotFlush();
+		void UnbindNoFlush();
 		void EnableScissor(Rectangle rect);
 		void DisableScissor();
 		ITexture Texture { get; }

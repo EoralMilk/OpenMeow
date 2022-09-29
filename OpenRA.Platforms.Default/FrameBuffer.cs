@@ -106,8 +106,8 @@ namespace OpenRA.Platforms.Default
 			this.onlyDepth = onlyDepth;
 			this.size = size;
 			this.clearColor = clearColor;
-			//if (!Exts.IsPowerOf2(size.Width) || !Exts.IsPowerOf2(size.Height))
-			//	throw new InvalidDataException($"Frame buffer size ({size.Width}x{size.Height}) must be a power of two");
+			if (!Exts.IsPowerOf2(size.Width) || !Exts.IsPowerOf2(size.Height))
+				throw new InvalidDataException($"Frame buffer size ({size.Width}x{size.Height}) must be a power of two");
 
 			OpenGL.glGenFramebuffers(1, out framebuffer);
 			OpenGL.CheckGLError();
@@ -155,6 +155,52 @@ namespace OpenRA.Platforms.Default
 						OpenGL.glDrawBuffers(attachments.Length, new IntPtr(ptr));
 						OpenGL.CheckGLError();
 					}
+				}
+			}
+
+			// Test for completeness
+			var status = OpenGL.glCheckFramebufferStatus(OpenGL.GL_FRAMEBUFFER);
+			if (status != OpenGL.GL_FRAMEBUFFER_COMPLETE)
+			{
+				var error = $"Error creating framebuffer: {status}\n{new StackTrace()}";
+				OpenGL.WriteGraphicsLog(error);
+				throw new InvalidOperationException("OpenGL Error: See graphics.log for details.");
+			}
+
+			// Restore default buffer
+			OpenGL.glBindFramebuffer(OpenGL.GL_FRAMEBUFFER, 0);
+			OpenGL.CheckGLError();
+		}
+
+		public FrameBuffer(Size size, ITexture[] textures, Color clearColor, uint renderTargets)
+		{
+			onlyDepth = false;
+			this.size = size;
+			this.clearColor = clearColor;
+			if (!Exts.IsPowerOf2(size.Width) || !Exts.IsPowerOf2(size.Height))
+				throw new InvalidDataException($"Frame buffer size ({size.Width}x{size.Height}) must be a power of two");
+
+			OpenGL.glGenFramebuffers(1, out framebuffer);
+			OpenGL.CheckGLError();
+			OpenGL.glBindFramebuffer(OpenGL.GL_FRAMEBUFFER, framebuffer);
+			OpenGL.CheckGLError();
+
+			this.textures = textures;
+			uint[] attachments = new uint[renderTargets];
+			for (int i = 0; i < renderTargets; i++)
+			{
+				attachments[i] = OpenGL.GL_COLOR_ATTACHMENT0 + (uint)i;
+				OpenGL.glFramebufferTexture2D(OpenGL.GL_FRAMEBUFFER, OpenGL.GL_COLOR_ATTACHMENT0 + i, OpenGL.GL_TEXTURE_2D, (textures[i] as ITextureInternal).ID, 0);
+				OpenGL.CheckGLError();
+			}
+
+			// - 告诉OpenGL我们将要使用(帧缓冲的)哪种颜色附件来进行渲染
+			unsafe
+			{
+				fixed (uint* ptr = &attachments[0])
+				{
+					OpenGL.glDrawBuffers(attachments.Length, new IntPtr(ptr));
+					OpenGL.CheckGLError();
 				}
 			}
 
@@ -221,7 +267,7 @@ namespace OpenRA.Platforms.Default
 			OpenGL.CheckGLError();
 		}
 
-		public void BindNotFlush()
+		public void BindNoClear()
 		{
 			VerifyThreadAffinity();
 
@@ -259,7 +305,7 @@ namespace OpenRA.Platforms.Default
 			OpenGL.CheckGLError();
 		}
 
-		public void UnbindNotFlush()
+		public void UnbindNoFlush()
 		{
 			if (scissored)
 				throw new InvalidOperationException("Attempting to unbind FrameBuffer with an active scissor region.");

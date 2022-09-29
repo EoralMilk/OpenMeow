@@ -93,7 +93,7 @@ RUTEST2:
 		Name: Test 2
 
 	Turreted:
-		TurnSpeed: 88
+		TurnSpeed: 44
 		RealignSpeed: 33
 		Turret: primary
 		Offset: 0,0,0

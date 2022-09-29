@@ -197,6 +197,17 @@ namespace OpenRA.Graphics
 
 		public void Dispose()
 		{
+			DisposeAllTextures();
+			foreach (var kv in materials)
+			{
+				kv.Value.Dispose();
+			}
+
+			foreach (var kv in meshDatas)
+			{
+				kv.Value.Dispose();
+			}
+
 			//foreach (var m in meshes)
 			//	m.Value.Dispose();
 		}

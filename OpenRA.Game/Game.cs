@@ -269,7 +269,6 @@ namespace OpenRA
 			else
 				CreateAndStartLocalServer(lobbyInfo.GlobalSettings.Map, orders);
 
-			worldRenderer.RefreshTextures();
 			worldRenderer.RefreshPalette();
 		}
 

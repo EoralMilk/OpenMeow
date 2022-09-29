@@ -87,6 +87,7 @@ namespace OpenRA.Graphics
 	{
 		FaceCullFunc FaceCullFunc { get; }
 		void SetShader(IShader shader, in string matname);
+		void Dispose();
 	}
 
 	public class BlinnPhongMaterial : IMaterial
@@ -138,6 +139,12 @@ namespace OpenRA.Graphics
 				shader.SetTexture(matname + ".specular", SpecularMap.GetTexture());
 			shader.SetFloat(matname + ".shininess", Shininess);
 		}
+
+		public void Dispose()
+		{
+			DiffuseMap?.Dispose();
+			SpecularMap?.Dispose();
+		}
 	}
 
 	public class PBRMaterial : IMaterial
@@ -157,6 +164,15 @@ namespace OpenRA.Graphics
 		public readonly Sheet AOMap;
 		readonly FaceCullFunc faceCullFunc;
 		public FaceCullFunc FaceCullFunc => faceCullFunc;
+
+		public void Dispose()
+		{
+			AlbedoMap?.Dispose();
+			RoughnessMap?.Dispose();
+			MetallicMap?.Dispose();
+			AOMap?.Dispose();
+		}
+
 		public PBRMaterial(string name, bool hasAlbedoMap, float3 albedoTint, Sheet albedoMap,
 			bool hasRoughnessMap, float roughness, Sheet roughnessMap,
 			bool hasMetallicMap, float metallic, Sheet metallicMap,
@@ -222,6 +238,11 @@ namespace OpenRA.Graphics
 			Shader = shader;
 			VertexBuffer = vertexBuffer;
 			BoundingRec = bound;
+		}
+
+		public void Dispose()
+		{
+			VertexBuffer?.Dispose();
 		}
 	}
 

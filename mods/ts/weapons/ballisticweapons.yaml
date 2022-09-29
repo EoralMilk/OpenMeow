@@ -141,6 +141,7 @@ RPGTower:
 		LaunchAngle: 75
 	Warhead@1Dam: SpreadDamage
 		Spread: 255
+		Falloff: 100, 85, 50, 24, 10, 3
 		Versus:
 			None: 100
 			Wood: 85

@@ -65,9 +65,6 @@ namespace OpenRA.Graphics
 				CausticsTextures[i] = new Sheet( map.Open(filename), TextureWrap.Repeat);
 			}
 
-			// mask
-			TerrainRenderBlock.FlushMaskBuffer();
-
 			// tiles
 			var tileSet = "tile-set.yaml";
 
@@ -122,6 +119,9 @@ namespace OpenRA.Graphics
 			{
 				t.Item2?.Dispose();
 			}
+
+			TileTextureArray?.Dispose();
+			BrushTextureArray?.Dispose();
 		}
 
 		public bool AddTexture(string name, string filename, string uniform, UsageType type = UsageType.Terrain)

@@ -298,8 +298,6 @@ namespace OpenRA
 					using (new PerfTimer(iwl.GetType().Name + ".WorldLoaded"))
 						iwl.WorldLoaded(this, wr);
 
-			wr.RefreshTextures();
-
 			gameInfo.StartTimeUtc = DateTime.UtcNow;
 			foreach (var player in Players)
 				gameInfo.AddPlayer(player, OrderManager.LobbyInfo);
@@ -606,6 +604,7 @@ namespace OpenRA
 
 			ModelCache.Dispose();
 			MeshCache.Dispose();
+			MapTextureCache?.DisposeAllTextures();
 
 			// Dispose newer actors first, and the world actor last
 			foreach (var a in actors.Values.Reverse())

@@ -16,6 +16,7 @@ using System.Runtime.ExceptionServices;
 using System.Threading;
 using OpenRA.Graphics;
 using OpenRA.Primitives;
+using static OpenRA.Platforms.Default.OpenGL;
 
 namespace OpenRA.Platforms.Default
 {
@@ -486,6 +487,11 @@ namespace OpenRA.Platforms.Default
 			return Send(getCreateFrameBuffer, (s, clearColor, renderTargets));
 		}
 
+		public IFrameBuffer CreateFrameBuffer(Size s, ITexture[] textures, uint renderTargets)
+		{
+			return Send(getCreateFrameBuffer, (s, textures, renderTargets));
+		}
+
 		public ITexture CreateInfoTexture(Size size)
 		{
 			return Send(getCreateInfoTexture, size);
@@ -615,11 +621,11 @@ namespace OpenRA.Platforms.Default
 			getTextureFromRenderTarget = rt => frameBuffer.GetTexture((int)rt);
 			getDepthTexture = () => frameBuffer.DepthTexture;
 			bind = frameBuffer.Bind;
-			bindNotFlush = frameBuffer.BindNotFlush;
+			bindNotFlush = frameBuffer.BindNoClear;
 			setViewport = frameBuffer.SetViewport;
 			setViewportBack = frameBuffer.SetViewportBack;
 			unbind = frameBuffer.Unbind;
-			unbindnotflush = frameBuffer.UnbindNotFlush;
+			unbindnotflush = frameBuffer.UnbindNoFlush;
 			dispose = frameBuffer.Dispose;
 
 			enableScissor = rect => frameBuffer.EnableScissor((Rectangle)rect);
@@ -645,9 +651,9 @@ namespace OpenRA.Platforms.Default
 			device.Post(setViewport);
 		}
 
-		public void UnbindNotFlush()
+		public void UnbindNoFlush()
 		{
-			device.Post(UnbindNotFlush);
+			device.Post(UnbindNoFlush);
 		}
 
 		public void Bind()
@@ -655,7 +661,7 @@ namespace OpenRA.Platforms.Default
 			device.Post(bind);
 		}
 
-		public void BindNotFlush()
+		public void BindNoClear()
 		{
 			device.Post(bindNotFlush);
 		}

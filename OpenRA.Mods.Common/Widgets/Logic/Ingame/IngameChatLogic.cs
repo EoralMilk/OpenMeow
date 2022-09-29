@@ -144,15 +144,27 @@ namespace OpenRA.Mods.Common.Widgets.Logic
 				var team = teamChat && !disableTeamChat;
 				if (chatText.Text != "")
 				{
-					if (chatText.Text.StartsWith("cr-"))
+					if (chatText.Text.StartsWith("p-"))
+					{
+						var ss = chatText.Text.Split(',');
+						if (ss.Length > 3)
+						{
+							var posx = int.Parse(ss[0].Substring(2));
+							var posy = int.Parse(ss[1]);
+							var size = int.Parse(ss[2]);
+							var layer = int.Parse(ss[3]);
+							TerrainRenderBlock.PaintAt(world.Map, world.MapTextureCache.AllBrushes.First().Value,
+								new WPos(posx, posy, 0), size, layer, 255);
+						}
+					}
+					else if (chatText.Text.StartsWith("cr-"))
 					{
 						var ss = chatText.Text;
 						var deg = float.Parse(ss.Substring(3));
 						var rad = deg / 180f * MathF.PI;
 						World3DRenderer.CameraRotTest = rad;
 					}
-
-					if (chatText.Text.StartsWith("-"))
+					else if (chatText.Text.StartsWith("-"))
 					{
 						var ss = chatText.Text;
 						var ii = int.Parse(ss.Substring(2));

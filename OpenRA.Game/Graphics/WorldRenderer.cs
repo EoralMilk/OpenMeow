@@ -78,14 +78,18 @@ namespace OpenRA.Graphics
 			{
 				preparedBlendRenderables[i] = new List<IFinalizedRenderable>();
 			}
+
+			RefreshTextures();
+			TerrainRenderBlock.DisposeMaskBuffer();
+			World.Map.CreateRenderBlocks();
+			TerrainRenderBlock.UpdateMask(World.Map);
+			World.Map.UpdateTerrainBlockTexture(Game.Renderer.World3DRenderer, false, World, Viewport);
 		}
 
 		public void RefreshTextures()
 		{
 			OrderedSkeleton.BoneAnimTexture?.Dispose();
 			OrderedSkeleton.BoneAnimTexture = Game.Renderer.CreateInfoTexture(new Primitives.Size(SkeletonAsset.AnimTextureWidth, SkeletonAsset.AnimTextureHeight));
-			World.MapTextureCache?.RefreshAllTextures();
-			World.MeshCache?.RefreshAllTextures();
 		}
 
 		public void DisposeTextures()
@@ -537,6 +541,8 @@ namespace OpenRA.Graphics
 			// but the WorldRenderer lifetime matches the disposal
 			// behavior we want for the world, and the root object setup
 			// is so horrible that doing it properly would be a giant mess.
+			TerrainRenderBlock.DisposeMaskBuffer();
+			World.Map.DisposeRenderBlocks();
 			World.Dispose();
 
 			palette.Dispose();

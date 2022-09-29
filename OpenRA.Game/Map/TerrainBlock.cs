@@ -244,7 +244,7 @@ namespace OpenRA
 			return new float2(x, y);
 		}
 
-		public static void FlushMaskBuffer()
+		public static void DisposeMaskBuffer()
 		{
 			MaskFramebuffer?.Dispose();
 			MaskFramebuffer = null;
@@ -254,10 +254,25 @@ namespace OpenRA
 		{
 			if (MaskFramebuffer == null)
 			{
-				MaskFramebuffer = Game.Renderer.Context.CreateFrameBuffer(
-					new Size((map.VertexArrayHeight - 1) * MiniCellPix,
-					(map.VertexArrayWidth - 1) * MiniCellPix),
-					3);
+				var size = new Size((map.VertexArrayHeight - 1) * MiniCellPix,
+					(map.VertexArrayWidth - 1) * MiniCellPix);
+				if (!Exts.IsPowerOf2(size.Width) || !Exts.IsPowerOf2(size.Height))
+					size = size.NextPowerOf2();
+
+				if (map.Mask123 != null && map.Mask456 != null && map.Mask789 != null)
+				{
+					ITexture[] textures = new ITexture[3] { map.Mask123.GetTexture(), map.Mask456.GetTexture(), map.Mask789.GetTexture() };
+					MaskFramebuffer = Game.Renderer.Context.CreateFrameBuffer(
+						size,
+						textures,
+						3);
+				}
+				else
+				{
+					MaskFramebuffer = Game.Renderer.Context.CreateFrameBuffer(
+						size,
+						3);
+				}
 
 				terrainMaskVertices = new TerrainMaskVertex[6];
 
@@ -289,23 +304,30 @@ namespace OpenRA
 				if (map.Mask123 != null && map.Mask456 != null && map.Mask789 != null)
 				{
 
-					MaskFramebuffer.Bind();
+					//MaskFramebuffer.Bind();
 
-					Game.Renderer.SetFaceCull(FaceCullFunc.None);
+					//Game.Renderer.SetFaceCull(FaceCullFunc.None);
 
-					TerrainMaskShader.SetTexture("InitMask123", map.Mask123.GetTexture());
-					TerrainMaskShader.SetTexture("InitMask456", map.Mask456.GetTexture());
-					TerrainMaskShader.SetTexture("InitMask789", map.Mask789.GetTexture());
+					//TerrainMaskShader.SetTexture("InitMask123", map.Mask123.GetTexture());
+					//TerrainMaskShader.SetTexture("InitMask456", map.Mask456.GetTexture());
+					//TerrainMaskShader.SetTexture("InitMask789", map.Mask789.GetTexture());
 
-					TerrainMaskShader.SetBool("InitWithTextures", true);
+					//TerrainMaskShader.SetBool("InitWithTextures", true);
 
-					Game.Renderer.Context.SetBlendMode(BlendMode.None);
-					TerrainMaskShader.PrepareRender();
+					//Game.Renderer.Context.SetBlendMode(BlendMode.None);
+					//TerrainMaskShader.PrepareRender();
 
-					Game.Renderer.DrawBatch(TerrainMaskShader, maskVertexBuffer, 0, terrainMaskVertices.Length, PrimitiveType.TriangleList);
+					//Game.Renderer.DrawBatch(TerrainMaskShader, maskVertexBuffer, 0, terrainMaskVertices.Length, PrimitiveType.TriangleList);
 
-					MaskFramebuffer.Unbind();
-					Console.WriteLine("Init Mask with textures");
+					//MaskFramebuffer.Unbind();
+					//Console.WriteLine("Init Mask with textures");
+
+					//map.Mask123?.Dispose();
+					//map.Mask456?.Dispose();
+					//map.Mask789?.Dispose();
+					//map.Mask123 = null;
+					//map.Mask456 = null;
+					//map.Mask789 = null;
 				}
 				else
 				{
@@ -386,19 +408,6 @@ namespace OpenRA
 						PaintMask(map, brush, map.CenterOfCell(uv), brush.DefaultSize, layer, 255);
 					}
 
-					//var brush = map.TextureCache.AllBrushes.First().Value;
-
-					//PaintMask(map, brush, new WPos(1024 * 16, 1024 * 30, 0), brush.DefaultSize * 3, 0, 255);
-					//PaintMask(map, brush, new WPos(1024 * 16, 1024 * 34, 0), brush.DefaultSize * 3, 1, 255);
-					//PaintMask(map, brush, new WPos(1024 * 16, 1024 * 38, 0), brush.DefaultSize * 3, 2, 255);
-					//PaintMask(map, brush, new WPos(1024 * 16, 1024 * 42, 0), brush.DefaultSize * 3, 3, 255);
-					//PaintMask(map, brush, new WPos(1024 * 16, 1024 * 46, 0), brush.DefaultSize * 3, 4, 255);
-					//PaintMask(map, brush, new WPos(1024 * 16, 1024 * 50, 0), brush.DefaultSize * 3, 5, 255);
-					//PaintMask(map, brush, new WPos(1024 * 16, 1024 * 54, 0), brush.DefaultSize * 3, 6, 255);
-					//PaintMask(map, brush, new WPos(1024 * 16, 1024 * 58, 0), brush.DefaultSize * 3, 7, 255);
-					//PaintMask(map, brush, new WPos(1024 * 16, 1024 * 62, 0), brush.DefaultSize * 3, 8, 255);
-					//PaintMask(map, brush, new WPos(1024 * 16, 1024 * 66, 0), brush.DefaultSize * 3, 0, 255);
-
 					FlushBrush(currentBrushMode);
 
 					Game.Renderer.EnableDepthBuffer();
@@ -417,13 +426,21 @@ namespace OpenRA
 			}
 		}
 
+		public void Dispose()
+		{
+			blendVertexBuffer?.Dispose();
+			BlendFramebuffer?.Dispose();
+			finalVertexBuffer?.Dispose();
+		}
+
 		public static void UpdateMask(Map map)
 		{
 			InitMask(map);
 
 			if (paintSpots.Count > 0)
 			{
-				MaskFramebuffer.Bind();
+				// we don't want to clear the renderer result last bake, just paint on it.
+				MaskFramebuffer.BindNoClear();
 
 				Game.Renderer.SetFaceCull(FaceCullFunc.None);
 				Game.Renderer.EnableDepthWrite(false);
@@ -450,6 +467,7 @@ namespace OpenRA
 				MaskFramebuffer.Unbind();
 
 				paintSpots.Clear();
+				Console.WriteLine("paint update");
 			}
 		}
 
@@ -478,7 +496,7 @@ namespace OpenRA
 
 			var blockx = (pos.X / 724) / SizeLimit;
 			var blocky = (pos.Y / 724) / SizeLimit;
-
+			Console.WriteLine(blockx + "," + blocky);
 			for (int y = blocky - 1; y <= blocky + 1; y++)
 				for (int x = blockx - 1; x <= blockx + 1; x++)
 				{
@@ -486,11 +504,14 @@ namespace OpenRA
 						continue;
 					if (pos.X - size > map.TerrainBlocks[y, x].RightBound ||
 						pos.X + size < map.TerrainBlocks[y, x].LeftBound ||
-						pos.Y - size < map.TerrainBlocks[y, x].BottomBound ||
-						pos.Y + size > map.TerrainBlocks[y, x].UpBound)
+						pos.Y - size > map.TerrainBlocks[y, x].BottomBound ||
+						pos.Y + size < map.TerrainBlocks[y, x].UpBound)
 						continue;
 					map.TerrainBlocks[y, x].needUpdateTexture = true;
+					Console.WriteLine("block " + y + "," + x + " need update");
 				}
+
+			Console.WriteLine("paint at " + pos.X + "," + pos.Y + " with size: " + size + " layer: " + layer);
 		}
 
 		/// <summary>
@@ -562,14 +583,17 @@ namespace OpenRA
 
 			if (needInit)
 			{
-				needInit = false;
+
 			}
 			else if (LeftBound > right || RightBound < left)
 				return;
 
 			if (!needUpdateTexture)
 				return;
+			else if (!needInit)
+				Console.WriteLine("update block " + TopLeft);
 
+			needInit = false;
 			needUpdateTexture = false;
 
 			BlendFramebuffer.Bind();

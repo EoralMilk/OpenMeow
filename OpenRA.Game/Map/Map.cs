@@ -399,8 +399,6 @@ namespace OpenRA
 			this.modData = modData;
 			Package = package;
 
-			GetMaskTextures(Package);
-
 			if (!Package.Contains("map.yaml") || !Package.Contains("map.bin"))
 				throw new InvalidDataException($"Not a valid map\n File: {package.Name}");
 
@@ -1267,6 +1265,25 @@ namespace OpenRA
 			{
 				TerrainVertices[i].UV = new float2(TerrainVertices[i].Pos.X / texScale, TerrainVertices[i].Pos.Y / texScale);
 			}
+
+		}
+
+		public void DisposeRenderBlocks()
+		{
+			foreach (var rb in TerrainBlocks)
+				rb.Dispose();
+			TerrainBlocks = null;
+			Mask123?.Dispose();
+			Mask456?.Dispose();
+			Mask789?.Dispose();
+			Mask123 = null;
+			Mask456 = null;
+			Mask789 = null;
+		}
+
+		public void CreateRenderBlocks()
+		{
+			GetMaskTextures(Package);
 
 			// Create Terrain Render Blocks
 			var blockX = (VertexArrayWidth - 1) / TerrainRenderBlock.SizeLimit;
