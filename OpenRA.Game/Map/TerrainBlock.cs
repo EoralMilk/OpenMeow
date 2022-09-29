@@ -318,7 +318,7 @@ namespace OpenRA
 				}
 				else
 				{
-
+					Console.WriteLine("Painting Spot on mask at each cell");
 					MaskFramebuffer.Bind();
 
 					Game.Renderer.SetFaceCull(FaceCullFunc.None);
@@ -335,7 +335,6 @@ namespace OpenRA
 
 					foreach (var uv in map.MapCells)
 					{
-						Console.WriteLine("Painting Spot on mask at each cell");
 						var type = map.Rules.TerrainInfo.GetTerrainInfo(map.Tiles[uv]);
 						var typename = map.Rules.TerrainInfo.TerrainTypes[type.TerrainType].Type;
 						var id = map.Tiles[uv].Type;
