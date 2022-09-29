@@ -81,7 +81,7 @@ vec4 CalcDirLight(DirLight light, vec4 color)
 	vec3 normal;
 	// water?
 	if (mask.r > 0.003){
-		vec2 waterUV = vFragPos.xy / 2.0 + vec2(-WaterUVOffset, 0);
+		vec2 waterUV = vFragPos.xy / 3.0 + vec2(-WaterUVOffset, 0);
 		normal = mix(texture(BakedTerrainNormalTexture, vTexCoord).rgb, texture(WaterNormal, waterUV).rgb, mask.r);
 
 		float caustics = texture(Caustics, waterUV).r;

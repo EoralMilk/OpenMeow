@@ -1,23 +1,23 @@
 base: Snow03
-	Scale: 2.2
+	Scale: 4.2
 water01: SnowWater01  # 0 water
 	Scale: 5
 shore01: Snow02       # 1 shore
-	Scale: 1.7
+	Scale: 3.7
 conc01: SnowConc01    # 2 conc
-	Scale: 2
+	Scale: 3
 grass01: SnowGrass01  # 3 grass
-	Scale: 2
+	Scale: 3
 cliff01: SnowCliff01  # 4 cliff
-	Scale: 5.5
+	Scale: 6.5
 dirt02: Snow04        # 5 dirt road
-	Scale: 2
+	Scale: 3.5
 dirt01: SnowGrass02   # 6 rough
-	Scale: 3
+	Scale: 4
 crack: SnowCrack01    # 7 crack
-	Scale: 3
+	Scale: 4.5
 clear: Snow01         # 8 clear
-	Scale: 3
+	Scale: 4
 
 
 
