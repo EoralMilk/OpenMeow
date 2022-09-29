@@ -1,4 +1,4 @@
-base: Snow03
+base: Snow01
 	Scale: 4.2
 water01: SnowWater01  # 0 water
 	Scale: 5
@@ -17,7 +17,7 @@ dirt01: SnowGrass02   # 6 rough
 crack: SnowCrack01    # 7 crack
 	Scale: 4.5
 clear: Snow01         # 8 clear
-	Scale: 4
+	Scale: 4.2
 
 
 

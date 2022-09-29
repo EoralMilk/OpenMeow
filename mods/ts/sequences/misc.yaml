@@ -1,9 +1,8 @@
 overlay:
-	Defaults: place
+	Defaults: place2
 		Offset: 0, -12, 0
 		ZOffset: -2
-		ZRamp: 1
-		MeshType: Plane
+		MeshType: Cell
 	build-valid-snow:
 	build-valid-temperate:
 	build-invalid:

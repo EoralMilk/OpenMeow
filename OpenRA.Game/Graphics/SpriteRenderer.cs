@@ -215,6 +215,25 @@ namespace OpenRA.Graphics
 			nv += vv.Length;
 		}
 
+		public void DrawCellSprite(Sprite s, PaletteReference pal, in WPos wPos, in vec3 viewOffset, float scale, in float3 tint, float alpha, Map map, float rotation = 0f)
+		{
+			var cPos = map.CellContaining(wPos);
+			if (!map.Contains(cPos))
+				return;
+
+			var samplers = SetRenderStateForSprite(s);
+			var vv = Util.FastCreateCell(cPos, World3DCoordinate.Vec3toFloat3(viewOffset),
+				s, samplers, ResolveTextureIndex(s, pal),
+				scale, tint, alpha, map);
+
+			if (nv + vv.Length >= vertices.Length)
+				Flush();
+
+			Array.Copy(vv, 0, vertices, nv, vv.Length);
+
+			nv += vv.Length;
+		}
+
 		internal void DrawSprite(Sprite s, float paletteTextureIndex, in float3 a, in float3 b, in float3 c, in float3 d, in float3 tint, float alpha)
 		{
 			var samplers = SetRenderStateForSprite(s);

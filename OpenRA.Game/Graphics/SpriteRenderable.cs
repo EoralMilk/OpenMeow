@@ -161,6 +161,9 @@ namespace OpenRA.Graphics
 				case SpriteMeshType.TileOverlayNoStretch:
 					wsr.DrawTileOverlaySprite(Sprite, palette, Pos, viewOffset, scale, t, a, wr.World.Map);
 					break;
+				case SpriteMeshType.Cell:
+					wsr.DrawCellSprite(Sprite, palette, Pos, viewOffset, scale, t, a, wr.World.Map);
+					break;
 			}
 		}
 

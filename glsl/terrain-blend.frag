@@ -181,7 +181,7 @@ void main()
 		norms[layer] = mix(norms[layer + 1], GetTileNormal(layer), masks[layer]);
 	}
 
-	vec3 tint = vec3(min(vTint.r * 4.0, 1.3), min(vTint.g * 4.0, 1.3), min(vTint.b * 4.0, 1.3));
+	vec3 tint = vec3(min(vTint.r * 4.0, 1.0), min(vTint.g * 4.0, 1.0), min(vTint.b * 4.0, 1.0));
 	ColorOutPut = vec4(colors[0] * tint,1.0);
 	NormalOutPut = vec4(ProcessNormal(norms[0]),1.0);
 }

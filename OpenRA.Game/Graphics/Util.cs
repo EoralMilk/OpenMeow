@@ -537,13 +537,13 @@ namespace OpenRA.Graphics
 				for (int y = TL.Y; y < BR.Y; y++)
 					for (int x = TL.X; x < BR.X; x++)
 					{
-						var iLT = x + y * map.VertexArrayWidth;
-						var iRT = x + 1 + y * map.VertexArrayWidth;
-						var iLB = x + (y + 1) * map.VertexArrayWidth;
-						var iRB = x + 1 + (y + 1) * map.VertexArrayWidth;
+						var iLT = Math.Clamp(x + y * map.VertexArrayWidth, 0, map.TerrainVertices.Length - 1);
+						var iRT = Math.Clamp(x + 1 + y * map.VertexArrayWidth, 0, map.TerrainVertices.Length - 1);
+						var iLB = Math.Clamp(x + (y + 1) * map.VertexArrayWidth, 0, map.TerrainVertices.Length - 1);
+						var iRB = Math.Clamp(x + 1 + (y + 1) * map.VertexArrayWidth, 0, map.TerrainVertices.Length - 1);
 						var index = iRT;
 						float2 uv;
-						if (TL.X % 2 == TL.Y % 2)
+						if (x % 2 == y % 2)
 						{
 							// ------------
 							// |  \          |
@@ -660,13 +660,13 @@ namespace OpenRA.Graphics
 				for (int y = TL.Y; y < BR.Y; y++)
 					for (int x = TL.X; x < BR.X; x++)
 					{
-						var iLT = x + y * map.VertexArrayWidth;
-						var iRT = x + 1 + y * map.VertexArrayWidth;
-						var iLB = x + (y + 1) * map.VertexArrayWidth;
-						var iRB = x + 1 + (y + 1) * map.VertexArrayWidth;
+						var iLT = Math.Clamp(x + y * map.VertexArrayWidth, 0, map.TerrainVertices.Length - 1);
+						var iRT = Math.Clamp(x + 1 + y * map.VertexArrayWidth, 0, map.TerrainVertices.Length - 1);
+						var iLB = Math.Clamp(x + (y + 1) * map.VertexArrayWidth, 0, map.TerrainVertices.Length - 1);
+						var iRB = Math.Clamp(x + 1 + (y + 1) * map.VertexArrayWidth, 0, map.TerrainVertices.Length - 1);
 						var index = iRT;
 						float2 uv;
-						if (TL.X % 2 == TL.Y % 2)
+						if (x % 2 == y % 2)
 						{
 							// ------------
 							// |  \          |
@@ -873,6 +873,85 @@ namespace OpenRA.Graphics
 					vertices[10] = new MapVertex(lpos, map.TerrainVertices[cellinfo.L].TBN, r.Left, r.Bottom, sl, sb, paletteTextureIndex, fAttribC, lColorOffset, alpha, map.TerrainVertices[cellinfo.L].UV, type);
 					vertices[11] = new MapVertex(bpos, map.TerrainVertices[cellinfo.B].TBN, r.Right, r.Bottom, sr, sb, paletteTextureIndex, fAttribC, bColorOffset, alpha, map.TerrainVertices[cellinfo.B].UV, type);
 				}
+			}
+
+			return vertices;
+		}
+
+		public static Vertex[] FastCreateCell(
+			in CPos cell,
+			in float3 viewOffset,
+			Sprite r, int2 samplers, float paletteTextureIndex,
+			float scale, in float3 tint, float alpha,
+			Map map)
+		{
+			CellInfo cellinfo = map.CellInfos[cell];
+
+			var mpos = map.TerrainVertices[cellinfo.M].Pos + viewOffset;
+			var tpos = map.TerrainVertices[cellinfo.T].Pos + viewOffset;
+			var bpos = map.TerrainVertices[cellinfo.B].Pos + viewOffset;
+			var lpos = map.TerrainVertices[cellinfo.L].Pos + viewOffset;
+			var rpos = map.TerrainVertices[cellinfo.R].Pos + viewOffset;
+
+			float sl = 0;
+			float st = 0;
+			float sr = 0;
+			float sb = 0;
+
+			float sbaseTB = 0;
+			float sbaseRL = 0;
+
+			// See combined.vert for documentation on the channel attribute format
+			var attribC = r.Channel == TextureChannel.RGBA ? 0x02 : ((byte)r.Channel) << 1 | 0x01;
+			attribC |= samplers.X << 6;
+			if (r is SpriteWithSecondaryData ss)
+			{
+				sl = ss.SecondaryLeft;
+				st = ss.SecondaryTop;
+				sr = ss.SecondaryRight;
+				sb = ss.SecondaryBottom;
+
+				sbaseTB = st - (st - sb) * 0.5f;
+				sbaseRL = sr - (sr - sl) * 0.5f;
+
+				attribC |= ((byte)ss.SecondaryChannel) << 4 | 0x08;
+				attribC |= samplers.Y << 9;
+			}
+
+			var fAttribC = (float)attribC;
+			float baseY = r.Top - (r.Top - r.Bottom) * 0.5f;
+			float baseX = r.Right - (r.Right - r.Left) * 0.5f;
+			Vertex[] vertices;
+
+			if (cellinfo.Flat)
+			{
+				vertices = new Vertex[6];
+				vertices[0] = new Vertex(tpos, r.Left, r.Top, sl, st, paletteTextureIndex, fAttribC, tint, alpha);
+				vertices[1] = new Vertex(bpos, r.Right, r.Bottom, sr, sb, paletteTextureIndex, fAttribC, tint, alpha);
+				vertices[2] = new Vertex(rpos, r.Right, r.Top, sr, st, paletteTextureIndex, fAttribC, tint, alpha);
+
+				vertices[3] = new Vertex(tpos, r.Left, r.Top, sl, st, paletteTextureIndex, fAttribC, tint, alpha);
+				vertices[4] = new Vertex(lpos, r.Left, r.Bottom, sl, sb, paletteTextureIndex, fAttribC, tint, alpha);
+				vertices[5] = new Vertex(bpos, r.Right, r.Bottom, sr, sb, paletteTextureIndex, fAttribC, tint, alpha);
+			}
+			else
+			{
+				vertices = new Vertex[12];
+				vertices[0] = new Vertex(tpos, r.Left, r.Top, sl, st, paletteTextureIndex, fAttribC, tint, alpha);
+				vertices[1] = new Vertex(mpos, baseX, baseY, sbaseRL, sbaseTB, paletteTextureIndex, fAttribC, tint, alpha);
+				vertices[2] = new Vertex(rpos, r.Right, r.Top, sr, st, paletteTextureIndex, fAttribC, tint, alpha);
+
+				vertices[3] = new Vertex(mpos, baseX, baseY, sbaseRL, sbaseTB, paletteTextureIndex, fAttribC, tint, alpha);
+				vertices[4] = new Vertex(bpos, r.Right, r.Bottom, sr, sb, paletteTextureIndex, fAttribC, tint, alpha);
+				vertices[5] = new Vertex(rpos, r.Right, r.Top, sr, st, paletteTextureIndex, fAttribC, tint, alpha);
+
+				vertices[6] = new Vertex(tpos, r.Left, r.Top, sl, st, paletteTextureIndex, fAttribC, tint, alpha);
+				vertices[7] = new Vertex(lpos, r.Left, r.Bottom, sl, sb, paletteTextureIndex, fAttribC, tint, alpha);
+				vertices[8] = new Vertex(mpos, baseX, baseY, sbaseRL, sbaseTB, paletteTextureIndex, fAttribC, tint, alpha);
+
+				vertices[9] = new Vertex(mpos, baseX, baseY, sbaseRL, sbaseTB, paletteTextureIndex, fAttribC, tint, alpha);
+				vertices[10] = new Vertex(lpos, r.Left, r.Bottom, sl, sb, paletteTextureIndex, fAttribC, tint, alpha);
+				vertices[11] = new Vertex(bpos, r.Right, r.Bottom, sr, sb, paletteTextureIndex, fAttribC, tint, alpha);
 			}
 
 			return vertices;

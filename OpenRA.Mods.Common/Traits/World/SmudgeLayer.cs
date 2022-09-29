@@ -324,13 +324,13 @@ namespace OpenRA.Mods.Common.Traits
 				for (int y = TL.Y; y < BR.Y; y++)
 					for (int x = TL.X; x < BR.X; x++)
 					{
-						var iLT = x + y * map.VertexArrayWidth;
-						var iRT = x + 1 + y * map.VertexArrayWidth;
-						var iLB = x + (y + 1) * map.VertexArrayWidth;
-						var iRB = x + 1 + (y + 1) * map.VertexArrayWidth;
+						var iLT = Math.Clamp(x + y * map.VertexArrayWidth, 0, map.TerrainVertices.Length - 1);
+						var iRT = Math.Clamp(x + 1 + y * map.VertexArrayWidth, 0, map.TerrainVertices.Length - 1);
+						var iLB = Math.Clamp(x + (y + 1) * map.VertexArrayWidth, 0, map.TerrainVertices.Length - 1);
+						var iRB = Math.Clamp(x + 1 + (y + 1) * map.VertexArrayWidth, 0, map.TerrainVertices.Length - 1);
 						var index = iRT;
 						float2 uv;
-						if (TL.X % 2 == TL.Y % 2)
+						if (x % 2 == y % 2)
 						{
 							// ------------
 							// |  \          |

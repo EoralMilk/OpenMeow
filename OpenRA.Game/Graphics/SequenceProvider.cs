@@ -29,6 +29,7 @@ namespace OpenRA.Graphics
 		TileOverlayNoStretch,
 		TileActor,
 		TileActorNoStretch,
+		Cell,
 		UI,
 		NullType,
 	}
