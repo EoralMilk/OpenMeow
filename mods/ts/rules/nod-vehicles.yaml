@@ -358,6 +358,8 @@ REPAIR:
 		AddToArmyValue: true
 	Health:
 		HP: 20000
+	Armor:
+		Type: Light
 	Mobile:
 		Speed: 85
 		TurnSpeed: 20
