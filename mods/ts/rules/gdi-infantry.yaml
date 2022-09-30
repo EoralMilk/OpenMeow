@@ -249,7 +249,11 @@ GHOST:
 	Passenger:
 	RevealsShroud:
 		Range: 7c512
-	Armament:
+	Armament@PulseChainGun:
+		Weapon: GSPulseGun
+		LocalOffset: 120,0,313
+		UseBlindage: true
+	Armament@railgun:
 		Weapon: LtRail
 		LocalOffset: 120,0,313
 		UseBlindage: true

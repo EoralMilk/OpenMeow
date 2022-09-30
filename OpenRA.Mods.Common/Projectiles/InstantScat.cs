@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using OpenRA.GameRules;
 using OpenRA.Graphics;
 using OpenRA.Traits;
@@ -8,26 +9,33 @@ namespace OpenRA.Mods.TA.Projectiles
 	public class InstantScatInfo : IProjectileInfo, IRulesetLoaded<WeaponInfo>
 	{
 		[Desc("sub weapon count.")]
-		public readonly int ScatCount = 0;
+		public readonly int[] ScatCounts = { 0 };
 
 		[WeaponReference]
 		[Desc("Weapon fire when projectile die.")]
-		public readonly string ScatWeapon = null;
+		public readonly string[] ScatWeapons = null;
 
-		public WeaponInfo ScatWeaponInfo { get; private set; }
+		public WeaponInfo[] ScatWeaponInfos { get; private set; }
 
 		public IProjectile Create(ProjectileArgs args) { return new InstantScat(this, args); }
 
 		void IRulesetLoaded<WeaponInfo>.RulesetLoaded(Ruleset rules, WeaponInfo info)
 		{
-			if (ScatWeapon == null)
+			if (ScatWeapons == null)
 				return;
 
-			WeaponInfo weapon;
+			if (ScatCounts.Length != ScatWeapons.Length)
+				throw new Exception("ScatCounts.Length != ScatWeaponInfos.Length");
 
-			if (!rules.Weapons.TryGetValue(ScatWeapon.ToLowerInvariant(), out weapon))
-				throw new YamlException("Weapons Ruleset does not contain an entry '{0}'".F(ScatWeapon.ToLowerInvariant()));
-			ScatWeaponInfo = weapon;
+			ScatWeaponInfos = new WeaponInfo[ScatWeapons.Length];
+			for (int i = 0; i < ScatWeapons.Length; i++)
+			{
+				WeaponInfo weapon;
+
+				if (!rules.Weapons.TryGetValue(ScatWeapons[i].ToLowerInvariant(), out weapon))
+					throw new YamlException("Weapons Ruleset does not contain an entry '{0}'".F(ScatWeapons[i].ToLowerInvariant()));
+				ScatWeaponInfos[i] = weapon;
+			}
 		}
 	}
 
@@ -45,33 +53,36 @@ namespace OpenRA.Mods.TA.Projectiles
 		{
 			world.AddFrameEndTask(w => w.Remove(this));
 
-			if (info.ScatCount > 0 && info.ScatWeaponInfo != null)
+			if (info.ScatCounts[0] > 0 && info.ScatWeaponInfos != null)
 			{
-				var pArgs = new ProjectileArgs
+				for (int i = 0; i < info.ScatWeaponInfos.Length; i++)
 				{
-					Weapon = info.ScatWeaponInfo,
-					Facing = args.Facing,
-					CurrentMuzzleFacing = args.CurrentMuzzleFacing,
-
-					DamageModifiers = args.DamageModifiers,
-
-					InaccuracyModifiers = args.InaccuracyModifiers,
-
-					RangeModifiers = args.RangeModifiers,
-
-					Source = args.Source,
-					CurrentSource = args.CurrentSource,
-					SourceActor = args.SourceActor,
-					PassiveTarget = args.PassiveTarget,
-					GuidedTarget = args.GuidedTarget
-				};
-
-				if (pArgs.Weapon.Projectile != null)
-				{
-					for (var i = 0; i < info.ScatCount; i++)
+					var pArgs = new ProjectileArgs
 					{
-						var projectile = info.ScatWeaponInfo.Projectile.Create(pArgs);
-						world.AddFrameEndTask(w => w.Add(projectile));
+						Weapon = info.ScatWeaponInfos[i],
+						Facing = args.Facing,
+						CurrentMuzzleFacing = args.CurrentMuzzleFacing,
+
+						DamageModifiers = args.DamageModifiers,
+
+						InaccuracyModifiers = args.InaccuracyModifiers,
+
+						RangeModifiers = args.RangeModifiers,
+
+						Source = args.Source,
+						CurrentSource = args.CurrentSource,
+						SourceActor = args.SourceActor,
+						PassiveTarget = args.PassiveTarget,
+						GuidedTarget = args.GuidedTarget
+					};
+
+					if (pArgs.Weapon.Projectile != null)
+					{
+						for (var p = 0; p < info.ScatCounts[i]; p++)
+						{
+							var projectile = info.ScatWeaponInfos[i].Projectile.Create(pArgs);
+							world.AddFrameEndTask(w => w.Add(projectile));
+						}
 					}
 				}
 			}

@@ -74,8 +74,8 @@ SuicideDash:
 	TargetActorCenter: true
 	Report: hunter2.aud
 	Projectile: InstantScat
-		ScatWeapon: HunterDash
-		ScatCount: 1
+		ScatWeapons: HunterDash
+		ScatCounts: 1
 		Inaccuracy: 0
 	ValidTargets: Vehicle, Building, Defense, Infantry
 	Warhead@1Dam: SpreadDamage

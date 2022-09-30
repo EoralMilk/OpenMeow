@@ -53,6 +53,10 @@ namespace OpenRA.Platforms.Default
 		Func<ITexture> getCreateTexture;
 
 		Func<object, IFrameBuffer> getCreateFrameBuffer;
+		Func<object, IFrameBuffer> getCreateFrameBufferMutipleTarget;
+		Func<object, IFrameBuffer> getCreateFrameBufferMutipleTargetWithTextureArray;
+
+
 		Func<object, IFrameBuffer> getCreateDepthFrameBuffer;
 		Func<object, IShader> getCreateShader;
 		Func<object, IShader> getCreateUnsharedShader;
@@ -111,7 +115,20 @@ namespace OpenRA.Platforms.Default
 							return new ThreadedFrameBuffer(this,
 								context.CreateFrameBuffer(t.Item1, (ITextureInternal)CreateTexture(), t.Item2));
 						};
-
+					getCreateFrameBufferMutipleTarget =
+						tuple =>
+						{
+							var t = (ValueTuple<Size, Color, uint>)tuple;
+							return new ThreadedFrameBuffer(this,
+								context.CreateFrameBuffer(t.Item1, t.Item2, t.Item3));
+						};
+					getCreateFrameBufferMutipleTargetWithTextureArray =
+						tuple =>
+						{
+							var t = (ValueTuple<Size, ITexture[], uint>)tuple;
+							return new ThreadedFrameBuffer(this,
+								context.CreateFrameBuffer(t.Item1, t.Item2, t.Item3));
+						};
 					getCreateDepthFrameBuffer =
 						tuple =>
 						{
@@ -479,17 +496,17 @@ namespace OpenRA.Platforms.Default
 
 		public IFrameBuffer CreateFrameBuffer(Size s, uint renderTargets)
 		{
-			return Send(getCreateFrameBuffer, (s, Color.FromArgb(0), renderTargets));
+			return Send(getCreateFrameBufferMutipleTarget, (s, Color.FromArgb(0), renderTargets));
 		}
 
 		public IFrameBuffer CreateFrameBuffer(Size s, Color clearColor, uint renderTargets)
 		{
-			return Send(getCreateFrameBuffer, (s, clearColor, renderTargets));
+			return Send(getCreateFrameBufferMutipleTarget, (s, clearColor, renderTargets));
 		}
 
 		public IFrameBuffer CreateFrameBuffer(Size s, ITexture[] textures, uint renderTargets)
 		{
-			return Send(getCreateFrameBuffer, (s, textures, renderTargets));
+			return Send(getCreateFrameBufferMutipleTargetWithTextureArray, (s, textures, renderTargets));
 		}
 
 		public ITexture CreateInfoTexture(Size size)

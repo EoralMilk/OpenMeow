@@ -28,6 +28,7 @@ namespace OpenRA.Mods.Common.Projectiles
 		[Desc("Damage all units hit by the beam instead of just the target?")]
 		public readonly bool DamageActorsInLine = false;
 
+		[Desc("Damage Line before tick?")]
 		public readonly int StartDamageLineTick = 1;
 
 		[WeaponReference]

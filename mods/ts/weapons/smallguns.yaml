@@ -285,7 +285,10 @@ MechPulseGun:
 	Warhead@2Eff: CreateEffect
 		ExplosionPalette: effectcyan
 
-
+GSPulseGun:
+	Inherits: MechPulseGun
+	Range: 8c0
+	# ValidTargets: Infantry
 
 Sniper:
 	Inherits: ^MG
@@ -422,8 +425,8 @@ OxannaGun:
 ShardShotGun:
 	Inherits: ^ShotGun
 	Projectile: InstantScat
-		ScatWeapon: TinyShard
-		ScatCount: 8
+		ScatWeapons: TinyShard
+		ScatCounts: 8
 
 ^ShotGunScat:
 	Inherits: ^MG

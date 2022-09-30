@@ -197,8 +197,8 @@ Tentacle:
 	Range: 1c384
 	Report: floatk1.aud
 	Projectile: InstantScat #not scat sub weapon but instant explode projectile
-		ScatWeapon: TentacleElectric
-		ScatCount: 1
+		ScatWeapons: TentacleElectric
+		ScatCounts: 1
 	InvalidTargets: Wall, Bridge
 	Warhead@1Dam: SpreadDamage
 		Damage: 10000

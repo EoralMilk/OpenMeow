@@ -135,9 +135,9 @@
 
 		ExplodeUnderThisAltitude: 0
 		UsingScat: false
-		ScatWeapon: Grenade
+		ScatWeapons: Grenade
 		ScatDist: 3c512
-		ScatCount: 3
+		ScatCounts: 3
 		DetectTargetOnCurve: true
 		DetectTargetFromLength: 0.7
 		DetectTargetBeforeDist: 3c0
@@ -175,9 +175,9 @@ VectorBoosterMul:
 	Range: 15c0
 	Projectile: VectorBooster
 		UsingScat: true
-		ScatWeapon: ^VectorBooster
+		ScatWeapons: ^VectorBooster
 		ScatDist: 7c512
-		ScatCount: 3
+		ScatCounts: 3
 
 VectorBazooka:
 	Inherits: ^VectorBooster

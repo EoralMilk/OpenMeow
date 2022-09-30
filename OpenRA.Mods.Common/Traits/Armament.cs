@@ -313,6 +313,10 @@ namespace OpenRA.Mods.Common.Traits
 						if (bullet.Acceleration.Length != 0)
 							projSpeed = (projSpeed + bullet.MaxSpeed.Length) / 2;
 					}
+					else if (Weapon.Projectile is RailgunInfo)
+					{
+						projSpeed = (Weapon.Projectile as RailgunInfo).Speed.Length;
+					}
 
 					if (projSpeed == FP.Zero)
 						return offset;

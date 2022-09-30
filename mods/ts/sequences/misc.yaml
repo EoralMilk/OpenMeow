@@ -428,7 +428,7 @@ proton_projectile:
 		Scale: 1.2
 		IgnoreWorldTint: True
 		MeshType: Plane
-		BlendMode: ScreenAdditive
+		BlendMode: Additive
 
 flameall:
 	idle:
