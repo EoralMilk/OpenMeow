@@ -1773,7 +1773,7 @@ Rules:
 	^BaseWorld:
 		TerrainLighting:
 			Intensity: 0.695
-			HeightStep: 0.1
+			HeightStep: 0.06
 	INGRNLMP:
 		TerrainLightSource:
 			Range: 7c832

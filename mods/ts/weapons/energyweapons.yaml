@@ -4,6 +4,7 @@
 	Report: bigggun1.aud
 	Projectile: Railgun
 		Duration: 15
+		Speed: 1424
 		Blockable: true
 		DamageActorsInLine: true
 		LineWeapon: ^RailgunLineDamage

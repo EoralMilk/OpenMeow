@@ -9,7 +9,10 @@
  */
 #endregion
 
+using System;
 using System.Collections.Generic;
+using Linguini.Syntax.Ast;
+using System.Reflection.Metadata;
 using OpenRA.GameRules;
 using OpenRA.Graphics;
 using OpenRA.Mods.Common.Graphics;
@@ -24,6 +27,8 @@ namespace OpenRA.Mods.Common.Projectiles
 	{
 		[Desc("Damage all units hit by the beam instead of just the target?")]
 		public readonly bool DamageActorsInLine = false;
+
+		public readonly int StartDamageLineTick = 1;
 
 		[WeaponReference]
 		[Desc("Weapon fire to any actor in line.")]
@@ -40,11 +45,16 @@ namespace OpenRA.Mods.Common.Projectiles
 		[Desc("Can this projectile be blocked when hitting actors with an IBlocksProjectiles trait.")]
 		public readonly bool Blockable = false;
 
+		public readonly WDist Speed = new WDist(1024);
+
 		[Desc("Duration of the beam and helix")]
 		public readonly int Duration = 15;
 
 		[Desc("Equivalent to sequence ZOffset. Controls Z sorting.")]
 		public readonly int ZOffset = 0;
+
+		[Desc("The width of the projectile for block detect.")]
+		public readonly WDist Width = new WDist(86);
 
 		[Desc("The width of the main trajectory. (\"beam\").")]
 		public readonly WDist BeamWidth = new WDist(86);
@@ -132,6 +142,15 @@ namespace OpenRA.Mods.Common.Projectiles
 
 		Actor blocker;
 
+		public readonly int Length;
+		public readonly int Duration;
+		bool hitTarget = false;
+
+		[Sync]
+		WPos pos, lastPos;
+		[Sync]
+		public readonly WPos Source;
+
 		int ticks;
 		bool animationComplete;
 
@@ -153,6 +172,9 @@ namespace OpenRA.Mods.Common.Projectiles
 			this.info = info;
 			target = args.PassiveTarget;
 
+			if (info.Duration <= 0)
+				throw new Exception("RailGun's Duration must bigger than 0");
+
 			BeamColor = beamColor;
 			HelixColor = helixColor;
 
@@ -165,16 +187,16 @@ namespace OpenRA.Mods.Common.Projectiles
 			if (!string.IsNullOrEmpty(info.HitAnim))
 				hitanim = new Animation(args.SourceActor.World, info.HitAnim);
 
+			Source = args.Source;
+			lastPos = Source;
+			pos = Source;
+			Length = Math.Max((target - args.Source).Length / info.Speed.Length, 1);
+			Duration = Length + info.Duration;
 			CalculateVectors();
 		}
 
 		void CalculateVectors()
 		{
-			// Check for blocking actors
-			if (info.Blockable && BlocksProjectiles.AnyBlockingActorsBetween(args.SourceActor.World, args.SourceActor.Owner, target, args.Source,
-					info.BeamWidth, out var blockedPos, out blocker, args))
-				target = blockedPos;
-
 			// Note: WAngle.Sin(x) = 1024 * Math.Sin(2pi/1024 * x)
 			AngleStep = new WAngle(1024 / info.QuantizationCount);
 
@@ -213,16 +235,50 @@ namespace OpenRA.Mods.Common.Projectiles
 
 		public void Tick(World world)
 		{
-			if (ticks == 0)
+			ticks++;
+			if (ticks >= Length)
 			{
+				pos = target;
+
 				if (hitanim != null)
 					hitanim.PlayThen(info.HitAnimSequence, () => animationComplete = true);
 				else
 					animationComplete = true;
 
-				if (info.DamageActorsInLine && info.LineWeaponInfo != null)
+				hitanim?.Tick();
+
+				if (!hitTarget)
 				{
-					var actors = world.FindActorsOnLine(args.Source, target, info.BeamWidth);
+					var warheadArgs = new WarheadArgs(args)
+					{
+						ImpactOrientation = new WRot(WAngle.Zero, Util.GetVerticalAngle(args.Source, target), args.Facing),
+						ImpactPosition = target,
+					};
+
+					args.Weapon.Impact(Target.FromPos(target), warheadArgs);
+
+					hitTarget = true;
+				}
+
+				if (ticks > Duration && animationComplete)
+				{
+					world.AddFrameEndTask(w => w.Remove(this));
+				}
+			}
+			else
+			{
+				lastPos = pos;
+
+				pos = WPos.LerpQuadratic(Source, target, WAngle.Zero, ticks, Length);
+
+				if (info.Blockable && BlocksProjectiles.AnyBlockingActorsBetween(world, args.SourceActor.Owner, lastPos, pos, info.Width, out var blockedPos, out blocker, args))
+				{
+					pos = blockedPos;
+				}
+
+				if (info.DamageActorsInLine && info.LineWeaponInfo != null && ticks > info.StartDamageLineTick)
+				{
+					var actors = world.FindActorsOnLine(lastPos, pos, info.Width);
 					foreach (var a in actors)
 					{
 						var lineAgs = new WarheadArgs(args)
@@ -239,20 +295,7 @@ namespace OpenRA.Mods.Common.Projectiles
 						info.LineWeaponInfo.Impact(Target.FromActor(a), lineAgs);
 					}
 				}
-
-				var warheadArgs = new WarheadArgs(args)
-				{
-					ImpactOrientation = new WRot(WAngle.Zero, Util.GetVerticalAngle(args.Source, target), args.Facing),
-					ImpactPosition = target,
-				};
-
-				args.Weapon.Impact(Target.FromPos(target), warheadArgs);
 			}
-
-			hitanim?.Tick();
-
-			if (ticks++ > info.Duration && animationComplete)
-				world.AddFrameEndTask(w => w.Remove(this));
 		}
 
 		public IEnumerable<IRenderable> Render(WorldRenderer wr)
@@ -261,11 +304,12 @@ namespace OpenRA.Mods.Common.Projectiles
 				wr.World.FogObscures(args.Source))
 				yield break;
 
-			if (ticks < info.Duration)
+			if (ticks < Duration && pos != Source)
 			{
 				yield return new RailgunHelixRenderable(args.Source, info.ZOffset, this, info, ticks, info.HelixBlendMode);
-				yield return new BeamRenderable(args.Source, info.ZOffset, SourceToTarget, info.BeamShape, info.BeamWidth,
-					Color.FromArgb(BeamColor.A + info.BeamAlphaDeltaPerTick * ticks, BeamColor), info.BeamBlendMode);
+
+				yield return new BeamRenderable(args.Source, info.ZOffset, pos - Source, info.BeamShape, info.BeamWidth,
+					Color.FromArgb((int)(BeamColor.A * (1.0f - Math.Max((float)(ticks - Length) / info.Duration, 0))), BeamColor), info.BeamBlendMode);
 			}
 
 			if (hitanim != null)

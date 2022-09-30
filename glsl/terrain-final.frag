@@ -111,7 +111,7 @@ vec4 CalcDirLight(DirLight light, vec4 color)
 	vec3 specular = vec3(0.0);
 
 	// diffuse
-	float diff = dot(normal, lightDir);
+	float diff = dot(normal, lightDir) * 1.7 - 0.5;
 
 	// merge
 	vec3 ambient  = light.ambient * heightLight;

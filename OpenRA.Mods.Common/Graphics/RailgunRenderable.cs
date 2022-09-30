@@ -9,6 +9,7 @@
  */
 #endregion
 
+using System;
 using OpenRA.Graphics;
 using OpenRA.Mods.Common.Projectiles;
 using OpenRA.Primitives;
@@ -59,7 +60,16 @@ namespace OpenRA.Mods.Common.Graphics
 
 			// Move forward from self to target to draw helix
 			var centerPos = pos;
-			var points = new float3[railgun.CycleCount * info.QuantizationCount];
+			float3[] points;
+			if (ticks < railgun.Length)
+			{
+				points = new float3[railgun.CycleCount * info.QuantizationCount * ticks / railgun.Length];
+			}
+			else
+			{
+				points = new float3[railgun.CycleCount * info.QuantizationCount];
+			}
+
 			for (var i = points.Length - 1; i >= 0; i--)
 			{
 				// Make it narrower near the end.
@@ -76,7 +86,8 @@ namespace OpenRA.Mods.Common.Graphics
 				angle += railgun.AngleStep;
 			}
 
-			Game.Renderer.WorldRgbaColorRenderer.DrawWorldLine(points, screenWidth, Color.FromArgb(alpha, railgun.HelixColor), blendMode: blendMode);
+			var a = (int)(alpha * (1.0f - Math.Max((float)(ticks - railgun.Length) / info.Duration, 0)));
+			Game.Renderer.WorldRgbaColorRenderer.DrawWorldLine(points, screenWidth, Color.FromArgb(a, railgun.HelixColor), blendMode: blendMode);
 		}
 
 		public void RenderDebugGeometry(WorldRenderer wr) { }

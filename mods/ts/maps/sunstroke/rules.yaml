@@ -22,12 +22,6 @@ World:
 		HeightStep: 0.002
 		AmbientIntensity: 0.12
 
-^VoxelActor:
-	RenderModels:
-		LightScale: 0.3
-		SpecularScale: 0.9
-		AmbientScale: 0.8
-
 GAOLDCC2:
 	CaptureManager:
 	Capturable:
