@@ -11,11 +11,11 @@ namespace OpenRA.Graphics
 		const bool ShowDebugInfo = false;
 		public readonly vec3 WorldUp = new vec3(0, 0, 1);
 		public readonly float CameraPitch = 60.0f;
-		public readonly vec3 CameraUp;
-		public readonly vec3 CameraRight;
+		public vec3 CameraUp { get; private set; }
+		public vec3 CameraRight { get; private set; }
 
-		public readonly vec3 InverseCameraFront;
-		public readonly vec3 InverseCameraFrontMeterPerWDist;
+		public vec3 InverseCameraFront { get; private set; }
+		public vec3 InverseCameraFrontMeterPerWDist { get; private set; }
 
 		public readonly int WDistPerMeter = 256;
 		readonly float height = 256 * 200;
@@ -129,7 +129,23 @@ namespace OpenRA.Graphics
 
 				var viewPoint = Get3DRenderPositionFromWPos(viewport.CenterPosition);// new vec3((float)viewport.CenterPosition.X / WPosPerMeter, (float)viewport.CenterPosition.Y / WPosPerMeter, 0);
 				CameraPos = new vec3(0, TanCameraPitch * heightMeter, heightMeter);
+
 				CameraPos = quat.FromAxisAngle(CameraRotTest, WorldUp) * CameraPos + new vec3(viewPoint.x, viewPoint.y, 0);
+
+				if (CameraRotTest != 0)
+				{
+					InverseCameraFront = (CameraPos - viewPoint).Normalized;
+					CameraRight = vec3.Cross(WorldUp, InverseCameraFront).Normalized;
+					CameraUp = vec3.Cross(InverseCameraFront, CameraRight).Normalized;
+					InverseCameraFrontMeterPerWDist = InverseCameraFront / WDistPerMeter;
+				}
+				else
+				{
+					CameraUp = glm.Normalized(new vec3(0, -1, TanCameraPitch));
+					CameraRight = new vec3(1, 0, 0);
+					InverseCameraFront = glm.Normalized(new vec3(0, 1, 1 / TanCameraPitch));
+					InverseCameraFrontMeterPerWDist = InverseCameraFront / WDistPerMeter;
+				}
 
 				View = mat4.LookAt(CameraPos, viewPoint, CameraUp);
 

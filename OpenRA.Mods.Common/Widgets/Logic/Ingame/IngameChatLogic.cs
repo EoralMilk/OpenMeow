@@ -308,6 +308,8 @@ namespace OpenRA.Mods.Common.Widgets.Logic
 				chatText.TakeKeyboardFocus();
 
 			chatOverlay.Visible = false;
+
+			Game.Renderer?.TurnOnUIRender();
 		}
 
 		public void CloseChat()

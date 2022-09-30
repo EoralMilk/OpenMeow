@@ -1317,17 +1317,30 @@ namespace OpenRA
 			}
 		}
 
-		public void UpdateTerrainBlockTexture(in World3DRenderer w3dr, bool sunCamera, World world, Viewport vp)
+		public void UpdateTerrainBlockMask(Viewport vp)
 		{
-			TerrainRenderBlock.SetCameraParams(w3dr, sunCamera);
-			TerrainRenderBlock.SetShadowParams(w3dr);
-
 			var left = vp.TopLeftPosition.X;
 			var right = vp.BottomRightPosition.X;
 			foreach (var block in TerrainBlocks)
 			{
-				block.UpdateTexture(left, right, world);
+				block.UpdateMask(left, right);
 			}
+		}
+
+		public void UpdateTerrainBlockTexture(Viewport vp)
+		{
+			var left = vp.TopLeftPosition.X;
+			var right = vp.BottomRightPosition.X;
+			foreach (var block in TerrainBlocks)
+			{
+				block.UpdateTexture(left, right);
+			}
+		}
+
+		public void SetTerrainShaderParams(in World3DRenderer w3dr, bool sunCamera)
+		{
+			TerrainRenderBlock.SetCameraParams(w3dr, sunCamera);
+			TerrainRenderBlock.SetShadowParams(w3dr);
 		}
 
 		public void DrawTerrainBlock(Viewport vp)

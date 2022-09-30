@@ -67,6 +67,8 @@ namespace OpenRA.Graphics
 				CausticsTextures[i] = new Sheet( map.Open(filename), TextureWrap.Repeat);
 			}
 
+			AddTexture("MaskCloud", "maskcloud01.png", "MaskCloud", UsageType.Mask);
+
 			// tiles
 			var tileSet = Map.Tileset.ToLowerInvariant() + "-tileset.yaml";
 

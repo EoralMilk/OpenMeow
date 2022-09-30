@@ -24,6 +24,7 @@ uniform bool InitWithTextures;
 void main()
 {
 	vec4 none = vec4(0.0, 0.0, 0.0, 1.0);
+
 	// init
 	if (BrushType.x == -1){
 		if (InitWithTextures)

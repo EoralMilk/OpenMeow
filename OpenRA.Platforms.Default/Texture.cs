@@ -459,7 +459,8 @@ namespace OpenRA.Platforms.Default
 				width, height, 1, // width, height, depth
 				type == TextureType.BGRA ? OpenGL.GL_BGRA : glInternalFormat, OpenGL.GL_UNSIGNED_BYTE, data);
 			OpenGL.CheckGLError();
-
+			OpenGL.glGenerateMipmap(OpenGL.GL_TEXTURE_2D_ARRAY);
+			OpenGL.CheckGLError();
 			count++;
 		}
 

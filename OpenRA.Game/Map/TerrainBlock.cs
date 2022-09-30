@@ -32,16 +32,18 @@ namespace OpenRA
 			MapSize = new int2((map.VertexArrayWidth - 1) * 724, (map.VertexArrayHeight - 1) * 724);
 		}
 
-		public TerrainMaskVertex[] GetVertices(in WPos pos, int size, int layer, int intensity)
+		public TerrainMaskVertex[] GetVertices(float2 blockTL, float2 blockBR,in WPos pos, int size, int layer, int intensity)
 		{
 			// a quad
 			TerrainMaskVertex[] brushVertices = new TerrainMaskVertex[6];
 
+			var range = blockBR - blockTL;
+
 			float2 centerPos = new float2(
-				(float)pos.X / MapSize.X * 2f - 1f,
-				(float)pos.Y / MapSize.Y * 2f - 1f);
-			float renderSizeX = (float)size / MapSize.X;
-			float renderSizeY = (float)size / MapSize.Y;
+				((float)pos.X / MapSize.X - blockTL.X) / range.X * 2f - 1f,
+				((float)pos.Y / MapSize.Y - blockTL.Y) / range.Y * 2f - 1f);
+			float renderSizeX = (float)size / MapSize.X / range.X;
+			float renderSizeY = (float)size / MapSize.Y / range.Y;
 
 			float[] quadVertices = {
 									// positions																// texCoords
@@ -116,15 +118,15 @@ namespace OpenRA
 		public static IShader TextureBlendShader { get; private set; }
 		public static IShader TerrainShader { get; private set; }
 
-		public static IFrameBuffer MaskFramebuffer { get; private set; }
+		public IFrameBuffer MaskFramebuffer { get; private set; }
 		static TerrainMaskVertex[] terrainMaskVertices;
 		static IVertexBuffer<TerrainMaskVertex> maskVertexBuffer;
 
-		static BlendMode currentBrushMode = BlendMode.Additive;
-		static int numMaskVertices;
-		static TerrainMaskVertex[] tempMaskVertices;
-		static IVertexBuffer<TerrainMaskVertex> tempMaskBuffer;
-		static readonly List<PaintSpot> paintSpots = new List<PaintSpot>();
+		BlendMode currentBrushMode = BlendMode.Additive;
+		int numMaskVertices;
+		TerrainMaskVertex[] tempMaskVertices;
+		IVertexBuffer<TerrainMaskVertex> tempMaskBuffer;
+		readonly List<PaintSpot> paintSpots = new List<PaintSpot>();
 
 		public readonly IFrameBuffer BlendFramebuffer;
 		readonly TerrainBlendingVertex[] blendVertices;
@@ -254,40 +256,22 @@ namespace OpenRA
 			return new float2(x, y);
 		}
 
-		public static void DisposeMaskBuffer()
-		{
-			MaskFramebuffer?.Dispose();
-			MaskFramebuffer = null;
-		}
-
-		static void InitMask(Map map)
+		void InitMask()
 		{
 			if (MaskFramebuffer == null)
 			{
-				var size = new Size((map.VertexArrayWidth - 1) * MiniCellPix,
-					(map.VertexArrayHeight - 1) * MiniCellPix);
-				if (!Exts.IsPowerOf2(size.Width) || !Exts.IsPowerOf2(size.Height))
-					size = size.NextPowerOf2();
+				MaskFramebuffer = Game.Renderer.Context.CreateFrameBuffer(new Size(TextureSize, TextureSize), 3);
 
-				if (map.Mask123 != null && map.Mask456 != null && map.Mask789 != null)
+				if (TerrainMaskShader == null)
 				{
-					Console.WriteLine("Initialize using existing masks of map");
-					ITexture[] textures = new ITexture[3] { map.Mask123.GetTexture(), map.Mask456.GetTexture(), map.Mask789.GetTexture() };
-					MaskFramebuffer = Game.Renderer.Context.CreateFrameBuffer(
-						size,
-						textures,
-						3);
-				}
-				else
-				{
-					MaskFramebuffer = Game.Renderer.Context.CreateFrameBuffer(
-						size,
-						3);
+					TerrainMaskShader = Game.Renderer.Context.CreateUnsharedShader<TerrainMaskShaderBindings>();
 				}
 
-				terrainMaskVertices = new TerrainMaskVertex[6];
+				if (terrainMaskVertices == null || maskVertexBuffer == null)
+				{
+					terrainMaskVertices = new TerrainMaskVertex[6];
 
-				float[] quadVertices = {
+					float[] quadVertices = {
 							// positions			// texCoords
 								-1, 1,                  0.0f, 1.0f,
 								-1, -1,                 0.0f, 0.0f,
@@ -298,25 +282,24 @@ namespace OpenRA
 								1, 1,                   1.0f, 1.0f
 				};
 
-				for (int i = 0; i < 6; i++)
-				{
-					terrainMaskVertices[i] = new TerrainMaskVertex(quadVertices[i * 4], quadVertices[i * 4 + 1], quadVertices[i * 4 + 2], quadVertices[i * 4 + 3]);
-				}
+					for (int i = 0; i < 6; i++)
+					{
+						terrainMaskVertices[i] = new TerrainMaskVertex(quadVertices[i * 4], quadVertices[i * 4 + 1], quadVertices[i * 4 + 2], quadVertices[i * 4 + 3]);
+					}
 
-				maskVertexBuffer = Game.Renderer.CreateVertexBuffer<TerrainMaskVertex>(terrainMaskVertices.Length);
-				maskVertexBuffer.SetData(terrainMaskVertices, terrainMaskVertices.Length);
+					maskVertexBuffer = Game.Renderer.CreateVertexBuffer<TerrainMaskVertex>(terrainMaskVertices.Length);
+					maskVertexBuffer.SetData(terrainMaskVertices, terrainMaskVertices.Length);
+				}
 
 				numMaskVertices = 0;
 				tempMaskVertices = new TerrainMaskVertex[Game.Renderer.TempBufferSize];
 				tempMaskBuffer = Game.Renderer.Context.CreateVertexBuffer<TerrainMaskVertex>(Game.Renderer.TempBufferSize);
 
-				TerrainMaskShader = Game.Renderer.Context.CreateUnsharedShader<TerrainMaskShaderBindings>();
-
-				if (map.Mask123 != null && map.Mask456 != null && map.Mask789 != null)
-				{
-					Console.WriteLine("Completed");
-				}
-				else
+				// if (map.Mask123 != null && map.Mask456 != null && map.Mask789 != null)
+				// {
+				// Console.WriteLine("Completed");
+				// }
+				// else
 				{
 					Console.WriteLine("Painting Spot on mask at each cell");
 					MaskFramebuffer.Bind();
@@ -325,7 +308,7 @@ namespace OpenRA
 					Game.Renderer.EnableDepthWrite(false);
 					Game.Renderer.DisableDepthTest();
 
-					TerrainMaskShader.SetTexture("Brushes", map.TextureCache.BrushTextureArray);
+					TerrainMaskShader.SetTexture("Brushes", Map.TextureCache.BrushTextureArray);
 					TerrainMaskShader.SetBool("InitWithTextures", false);
 
 					Game.Renderer.Context.SetBlendMode(BlendMode.None);
@@ -333,11 +316,11 @@ namespace OpenRA
 
 					Game.Renderer.DrawBatch(TerrainMaskShader, maskVertexBuffer, 0, terrainMaskVertices.Length, PrimitiveType.TriangleList);
 
-					foreach (var uv in map.MapCells)
+					foreach (var uv in Map.MapCells)
 					{
-						var type = map.Rules.TerrainInfo.GetTerrainInfo(map.Tiles[uv]);
-						var typename = map.Rules.TerrainInfo.TerrainTypes[type.TerrainType].Type;
-						var id = map.Tiles[uv].Type;
+						var type = Map.Rules.TerrainInfo.GetTerrainInfo(Map.Tiles[uv]);
+						var typename = Map.Rules.TerrainInfo.TerrainTypes[type.TerrainType].Type;
+						var id = Map.Tiles[uv].Type;
 						int layer = 8;
 
 						switch (typename)
@@ -402,9 +385,9 @@ namespace OpenRA
 							layer = 7;
 						}
 
-						var brush = map.TextureCache.AllBrushes.First().Value;
+						var brush = Map.TextureCache.AllBrushes.First().Value;
 
-						PaintMask(map, brush, map.CenterOfCell(uv), brush.DefaultSize, layer, 255);
+						PaintMask(brush, Map.CenterOfCell(uv), brush.DefaultSize, layer, 255);
 					}
 
 					FlushBrush(currentBrushMode);
@@ -417,13 +400,13 @@ namespace OpenRA
 					MaskFramebuffer.Unbind();
 
 					Console.WriteLine("Completed");
-					Console.WriteLine("Saving Mask Texture as PNG at ./MapToPng/");
+					//Console.WriteLine("Saving Mask Texture as PNG at ./MapToPng/");
 
-					SaveAsPng(MaskFramebuffer.GetTexture(0), "./MapToPng/", "Mask123");
-					SaveAsPng(MaskFramebuffer.GetTexture(1), "./MapToPng/", "Mask456");
-					SaveAsPng(MaskFramebuffer.GetTexture(2), "./MapToPng/", "Mask789");
+					//SaveAsPng(MaskFramebuffer.GetTexture(0), "./MapToPng/", "Mask123");
+					//SaveAsPng(MaskFramebuffer.GetTexture(1), "./MapToPng/", "Mask456");
+					//SaveAsPng(MaskFramebuffer.GetTexture(2), "./MapToPng/", "Mask789");
 
-					Console.WriteLine("Saved");
+					//Console.WriteLine("Saved");
 				}
 			}
 		}
@@ -432,12 +415,17 @@ namespace OpenRA
 		{
 			blendVertexBuffer?.Dispose();
 			BlendFramebuffer?.Dispose();
+			MaskFramebuffer?.Dispose();
 			finalVertexBuffer?.Dispose();
+			tempMaskBuffer?.Dispose();
 		}
 
-		public static void UpdateMask(Map map)
+		public void UpdateMask(int left, int right)
 		{
-			InitMask(map);
+			InitMask();
+
+			if (LeftBound > right || RightBound < left)
+				return;
 
 			if (paintSpots.Count > 0)
 			{
@@ -448,7 +436,7 @@ namespace OpenRA
 				Game.Renderer.EnableDepthWrite(false);
 				Game.Renderer.DisableDepthTest();
 
-				TerrainMaskShader.SetTexture("Brushes", map.TextureCache.BrushTextureArray);
+				TerrainMaskShader.SetTexture("Brushes", Map.TextureCache.BrushTextureArray);
 				TerrainMaskShader.SetBool("InitWithTextures", false);
 
 				Game.Renderer.Context.SetBlendMode(BlendMode.None);
@@ -456,7 +444,7 @@ namespace OpenRA
 
 				foreach (var p in paintSpots)
 				{
-					PaintMask(map, p.Brush, p.Pos, p.Size, p.Layer, p.Intensity);
+					PaintMask(p.Brush, p.Pos, p.Size, p.Layer, p.Intensity);
 				}
 
 				FlushBrush(currentBrushMode);
@@ -473,110 +461,7 @@ namespace OpenRA
 			}
 		}
 
-		public struct PaintSpot
-		{
-			public readonly MaskBrush Brush;
-			public readonly WPos Pos;
-			public readonly int Size;
-			public readonly int Layer;
-			public readonly int Intensity;
-
-			public PaintSpot(MaskBrush brush, WPos pos, int size, int layer, int intensity)
-			{
-				Brush = brush;
-				Pos = pos;
-				Size = size;
-				Layer = layer;
-				Intensity = intensity;
-			}
-		}
-
-		/// <summary>
-		/// use a type of 'Brush' to paint or erase mask of a layer
-		/// </summary>
-		/// <param name="map"> map </param>
-		/// <param name="brush"> brush type </param>
-		/// <param name="pos"> brush pos </param>
-		/// <param name="size"> brush size as WDist </param>
-		/// <param name="layer"> brushing layer </param>
-		/// <param name="intensity"> brush intensity , negative is erase </param>
-		public static void PaintAt(Map map, MaskBrush brush,
-			in WPos pos, int size, int layer, int intensity)
-		{
-			paintSpots.Add(new PaintSpot(brush, pos, size, layer, intensity));
-			Console.WriteLine("paint at " + pos.X + "," + pos.Y + " with size: " + size + " layer: " + layer);
-
-			var blockx = (pos.X / 724) / SizeLimit;
-			var blocky = (pos.Y / 724) / SizeLimit;
-			for (int y = blocky - 1; y <= blocky + 1; y++)
-				for (int x = blockx - 1; x <= blockx + 1; x++)
-				{
-					if (y < 0 || y >= map.BlocksArrayHeight || x < 0 || x >= map.BlocksArrayWidth)
-						continue;
-					if (pos.X - size > map.TerrainBlocks[y, x].RightBound ||
-						pos.X + size < map.TerrainBlocks[y, x].LeftBound ||
-						pos.Y - size > map.TerrainBlocks[y, x].BottomBound ||
-						pos.Y + size < map.TerrainBlocks[y, x].UpBound)
-						continue;
-					map.TerrainBlocks[y, x].needUpdateTexture = true;
-					Console.WriteLine("block " + y + "," + x + " need update");
-				}
-		}
-
-		static void PaintMask(Map map, MaskBrush brush, in WPos pos, int size, int layer, int intensity)
-		{
-			if (tempMaskVertices == null)
-			{
-				numMaskVertices = 0;
-				tempMaskVertices = new TerrainMaskVertex[Game.Renderer.TempBufferSize];
-			}
-
-			// erase
-			if (intensity < 0)
-			{
-				// if brush mode not erase, flush
-				if (currentBrushMode != BlendMode.Subtractive)
-				{
-					FlushBrush(currentBrushMode);
-				}
-
-				currentBrushMode = BlendMode.Subtractive;
-			}
-			else
-			{
-				// if brush mode not add, flush
-				if (currentBrushMode != BlendMode.Additive)
-				{
-					FlushBrush(currentBrushMode);
-				}
-
-				currentBrushMode = BlendMode.Additive;
-			}
-
-			var brushVertices = brush.GetVertices(pos, size, layer, Math.Abs(intensity));
-			if (numMaskVertices + brushVertices.Length >= tempMaskVertices.Length)
-				FlushBrush(currentBrushMode);
-			Array.Copy(brushVertices, 0, tempMaskVertices, numMaskVertices, brushVertices.Length);
-			numMaskVertices += brushVertices.Length;
-		}
-
-		static void FlushBrush(BlendMode blendMode)
-		{
-			if (numMaskVertices == 0)
-				return;
-
-			Game.Renderer.Context.SetBlendMode(blendMode);
-
-			tempMaskBuffer.SetData(tempMaskVertices, numMaskVertices);
-
-			TerrainMaskShader.PrepareRender();
-
-			Game.Renderer.DrawBatch(TerrainMaskShader, tempMaskBuffer, 0, numMaskVertices, PrimitiveType.TriangleList);
-
-			numMaskVertices = 0;
-		}
-
-		public void UpdateTexture(int left, int right, World world)
+		public void UpdateTexture(int left, int right)
 		{
 			if (TextureBlendShader == null)
 				return;
@@ -604,8 +489,11 @@ namespace OpenRA
 
 			TextureBlendShader.SetTexture("Mask789", MaskFramebuffer.GetTexture(2));
 
-			TextureBlendShader.SetTexture("Tiles", world.MapTextureCache.TileTextureArray);
-			TextureBlendShader.SetTexture("TilesNorm", world.MapTextureCache.TileNormalTextureArray);
+			var cloud = Map.TextureCache.Textures["MaskCloud"];
+			TextureBlendShader.SetTexture(cloud.Item1, cloud.Item2.GetTexture());
+
+			TextureBlendShader.SetTexture("Tiles", Map.TextureCache.TileTextureArray);
+			TextureBlendShader.SetTexture("TilesNorm", Map.TextureCache.TileNormalTextureArray);
 
 			TextureBlendShader.SetVec("Offset",
 				topLeftOffset.X,
@@ -660,6 +548,110 @@ namespace OpenRA
 
 			Game.Renderer.Context.SetBlendMode(BlendMode.None);
 		}
+
+		public struct PaintSpot
+		{
+			public readonly MaskBrush Brush;
+			public readonly WPos Pos;
+			public readonly int Size;
+			public readonly int Layer;
+			public readonly int Intensity;
+
+			public PaintSpot(MaskBrush brush, WPos pos, int size, int layer, int intensity)
+			{
+				Brush = brush;
+				Pos = pos;
+				Size = size;
+				Layer = layer;
+				Intensity = intensity;
+			}
+		}
+
+		/// <summary>
+		/// use a type of 'Brush' to paint or erase mask of a layer
+		/// </summary>
+		/// <param name="map"> map </param>
+		/// <param name="brush"> brush type </param>
+		/// <param name="pos"> brush pos </param>
+		/// <param name="size"> brush size as WDist </param>
+		/// <param name="layer"> brushing layer </param>
+		/// <param name="intensity"> brush intensity , negative is erase </param>
+		public static void PaintAt(Map map, MaskBrush brush,
+			in WPos pos, int size, int layer, int intensity)
+		{
+			Console.WriteLine("paint at " + pos.X + "," + pos.Y + " with size: " + size + " layer: " + layer);
+
+			var blockx = (pos.X / 724) / SizeLimit;
+			var blocky = (pos.Y / 724) / SizeLimit;
+			for (int y = blocky - 1; y <= blocky + 1; y++)
+				for (int x = blockx - 1; x <= blockx + 1; x++)
+				{
+					if (y < 0 || y >= map.BlocksArrayHeight || x < 0 || x >= map.BlocksArrayWidth)
+						continue;
+					if (pos.X - size > map.TerrainBlocks[y, x].RightBound ||
+						pos.X + size < map.TerrainBlocks[y, x].LeftBound ||
+						pos.Y - size > map.TerrainBlocks[y, x].BottomBound ||
+						pos.Y + size < map.TerrainBlocks[y, x].UpBound)
+						continue;
+					map.TerrainBlocks[y, x].needUpdateTexture = true;
+					map.TerrainBlocks[y, x].paintSpots.Add(new PaintSpot(brush, pos, size, layer, intensity));
+					Console.WriteLine("block " + y + "," + x + " need update");
+				}
+		}
+
+		void PaintMask(MaskBrush brush, in WPos pos, int size, int layer, int intensity)
+		{
+			if (tempMaskVertices == null)
+			{
+				numMaskVertices = 0;
+				tempMaskVertices = new TerrainMaskVertex[Game.Renderer.TempBufferSize];
+			}
+
+			// erase
+			if (intensity < 0)
+			{
+				// if brush mode not erase, flush
+				if (currentBrushMode != BlendMode.Subtractive)
+				{
+					FlushBrush(currentBrushMode);
+				}
+
+				currentBrushMode = BlendMode.Subtractive;
+			}
+			else
+			{
+				// if brush mode not add, flush
+				if (currentBrushMode != BlendMode.Additive)
+				{
+					FlushBrush(currentBrushMode);
+				}
+
+				currentBrushMode = BlendMode.Additive;
+			}
+
+			var brushVertices = brush.GetVertices(topLeftOffset, bottomRightOffset, pos, size, layer, Math.Abs(intensity));
+			if (numMaskVertices + brushVertices.Length >= tempMaskVertices.Length)
+				FlushBrush(currentBrushMode);
+			Array.Copy(brushVertices, 0, tempMaskVertices, numMaskVertices, brushVertices.Length);
+			numMaskVertices += brushVertices.Length;
+		}
+
+		void FlushBrush(BlendMode blendMode)
+		{
+			if (numMaskVertices == 0)
+				return;
+
+			Game.Renderer.Context.SetBlendMode(blendMode);
+
+			tempMaskBuffer.SetData(tempMaskVertices, numMaskVertices);
+
+			TerrainMaskShader.PrepareRender();
+
+			Game.Renderer.DrawBatch(TerrainMaskShader, tempMaskBuffer, 0, numMaskVertices, PrimitiveType.TriangleList);
+
+			numMaskVertices = 0;
+		}
+
 
 		public static void SetCameraParams(in World3DRenderer w3dr, bool sunCamera)
 		{

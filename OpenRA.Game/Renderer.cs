@@ -180,8 +180,6 @@ namespace OpenRA
 		{
 			Context.Clear();
 
-			renderui = toRenderUI;
-
 			var surfaceSize = Window.SurfaceSize;
 			var surfaceBufferSize = surfaceSize.NextPowerOf2();
 
@@ -257,7 +255,7 @@ namespace OpenRA
 			lastMaximumViewportSize = size;
 		}
 
-		public void BeginWorld(Rectangle worldViewport)
+		public void BeginWorld(Rectangle worldViewport, WorldRenderer worldRenderer)
 		{
 			if (renderType != RenderType.None)
 				throw new InvalidOperationException($"BeginWorld called with renderType = {renderType}, expected RenderType.None.");
@@ -278,6 +276,9 @@ namespace OpenRA
 
 				lastWorldViewport = worldViewport;
 			}
+
+			worldRenderer.World.Map.UpdateTerrainBlockMask(worldRenderer.Viewport);
+			worldRenderer.World.Map.UpdateTerrainBlockTexture(worldRenderer.Viewport);
 
 			renderType = RenderType.World;
 		}
@@ -383,8 +384,13 @@ namespace OpenRA
 			renderType = RenderType.World;
 		}
 
-		bool renderui = true;
 		bool toRenderUI = true;
+
+		public void TurnOnUIRender()
+		{
+			toRenderUI = true;
+		}
+
 		public void ToggleUIRender()
 		{
 			toRenderUI = !toRenderUI;
@@ -395,8 +401,7 @@ namespace OpenRA
 			if (renderType == RenderType.World)
 			{
 				// Render the world buffer into the UI buffer
-				if (renderui)
-					screenBuffer.Bind();
+				screenBuffer.Bind();
 
 				SpriteRenderer.SetAntialiasingPixelsPerTexel(0);
 			}
@@ -404,8 +409,7 @@ namespace OpenRA
 			{
 				// World rendering was skipped
 				BeginFrame();
-				if (renderui)
-					screenBuffer.Bind();
+				screenBuffer.Bind();
 			}
 
 			renderType = RenderType.UI;
@@ -433,13 +437,12 @@ namespace OpenRA
 				throw new InvalidOperationException($"EndFrame called with renderType = {renderType}, expected RenderType.UI.");
 
 			Flush();
-			if (renderui)
-				screenBuffer.Unbind();
+			screenBuffer.Unbind();
 
 			// Render the compositor buffers to the screen
 			// HACK / PERF: Fudge the coordinates to cover the actual window while keeping the buffer viewport parameters
 			// This saves us two redundant (and expensive) SetViewportParams each frame
-			if (renderui)
+			if (toRenderUI)
 			{
 				RgbaSpriteRenderer.DrawSprite(screenSprite, new float3(0, lastBufferSize.Height, 0), new float3(lastBufferSize.Width / screenSprite.Size.X, -lastBufferSize.Height / screenSprite.Size.Y, 1f));
 				Flush();

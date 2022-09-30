@@ -7,8 +7,7 @@ precision highp float;
 
 #define DT_NONE -1
 
-uniform vec2 Offset;
-uniform vec2 Range;
+
 
 in vec2 aVertexUV;
 in vec2 aVertexMaskUV;
@@ -35,7 +34,7 @@ void main()
 {
 	gl_Position = vec4(aVertexMaskUV.x * 2.0 - 1.0, aVertexMaskUV.y * 2.0 - 1.0, 0.0, 1.0);
 	vUV = aVertexUV;
-	vMaskUV = Offset + aVertexMaskUV * Range;
+	vMaskUV = aVertexMaskUV;
 	vTint = aVertexTint;
 	vTangent = aVertexTangent;
 	vBitangent = aVertexBitangent;

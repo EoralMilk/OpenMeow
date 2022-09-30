@@ -11,8 +11,6 @@ uniform vec3 TerrainLightPos[MAX_TERRAIN_LIGHT];
 uniform vec4 TerrainLightColorRange[MAX_TERRAIN_LIGHT];
 
 
-uniform vec2 Offset;
-uniform vec2 Range;
 // r is water mask
 uniform sampler2D Mask123;
 
@@ -75,8 +73,7 @@ float CalShadow(){
 
 vec4 CalcDirLight(DirLight light, vec4 color)
 {
-	vec2 vMaskUV = Offset + vTexCoord * Range;
-	vec3 mask = texture(Mask123, vMaskUV).rgb;
+	vec3 mask = texture(Mask123, vTexCoord).rgb;
 
 	vec3 normal;
 	// water?

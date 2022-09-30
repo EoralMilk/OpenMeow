@@ -80,15 +80,15 @@ namespace OpenRA.Graphics
 			}
 
 			RefreshTextures();
-			TerrainRenderBlock.DisposeMaskBuffer();
+
 			World.Map.CreateRenderBlocks();
-			TerrainRenderBlock.UpdateMask(World.Map);
-			World.Map.UpdateTerrainBlockTexture(Game.Renderer.World3DRenderer, false, World, Viewport);
+			World.Map.UpdateTerrainBlockMask(Viewport);
+			World.Map.UpdateTerrainBlockTexture(Viewport);
 
 			// run a paint to avoid first time paint delay
 			TerrainRenderBlock.PaintAt(World.Map, World.Map.TextureCache.AllBrushes.First().Value, WPos.Zero, 1024, 9, 255);
-			TerrainRenderBlock.UpdateMask(World.Map);
-			World.Map.UpdateTerrainBlockTexture(Game.Renderer.World3DRenderer, false, World, Viewport);
+			World.Map.UpdateTerrainBlockMask(Viewport);
+			World.Map.UpdateTerrainBlockTexture(Viewport);
 		}
 
 		public void RefreshTextures()
@@ -331,6 +331,7 @@ namespace OpenRA.Graphics
 			Game.Renderer.EnableDepthWrite(true);
 			Game.Renderer.EnableDepthBuffer();
 
+			World.Map.SetTerrainShaderParams(Game.Renderer.World3DRenderer, false);
 			UpdateTerrainLightToShader();
 
 			Game.Renderer.SetFaceCull(FaceCullFunc.Back);
@@ -546,7 +547,7 @@ namespace OpenRA.Graphics
 			// but the WorldRenderer lifetime matches the disposal
 			// behavior we want for the world, and the root object setup
 			// is so horrible that doing it properly would be a giant mess.
-			TerrainRenderBlock.DisposeMaskBuffer();
+
 			World.Map.DisposeRenderBlocks();
 			World.Dispose();
 
