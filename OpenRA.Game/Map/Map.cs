@@ -1294,6 +1294,13 @@ namespace OpenRA
 				blockY += 1;
 			BlocksArrayWidth = blockX;
 			BlocksArrayHeight = blockY;
+
+			Console.WriteLine("BlocksArray " + BlocksArrayWidth + " " + BlocksArrayHeight);
+
+			Console.WriteLine("VertexArray " + VertexArrayWidth + " " + VertexArrayHeight);
+
+			Console.WriteLine("MapSize " + MapSize);
+
 			TerrainBlocks = new TerrainRenderBlock[blockY, blockX];
 
 			for (int y = 0; y < blockY; y++)
@@ -1439,23 +1446,33 @@ namespace OpenRA
 			}
 		}
 
-		public void UpdateTerrainBlockMask(Viewport vp)
+		public void UpdateTerrainBlockMask(Viewport vp, bool init = false)
 		{
-			var left = vp.TopLeftPosition.X;
-			var right = vp.BottomRightPosition.X;
+			var tl = vp.TopLeftPosition;
+			var br = vp.BottomRightPosition;
+			var left = tl.X;
+			var right = br.X;
+			var top = tl.Y - Grid.MaximumTerrainHeight * MapGrid.MapHeightStep;
+			var bottom = br.Y + Grid.MaximumTerrainHeight * MapGrid.MapHeightStep;
+
 			foreach (var block in TerrainBlocks)
 			{
-				block.UpdateMask(left, right);
+				block.UpdateMask(left, right, top, bottom, init);
 			}
 		}
 
-		public void UpdateTerrainBlockTexture(Viewport vp)
+		public void UpdateTerrainBlockTexture(Viewport vp, bool init = false)
 		{
-			var left = vp.TopLeftPosition.X;
-			var right = vp.BottomRightPosition.X;
+			var tl = vp.TopLeftPosition;
+			var br = vp.BottomRightPosition;
+			var left = tl.X;
+			var right = br.X;
+			var top = tl.Y - Grid.MaximumTerrainHeight * MapGrid.MapHeightStep;
+			var bottom = br.Y + Grid.MaximumTerrainHeight * MapGrid.MapHeightStep;
+
 			foreach (var block in TerrainBlocks)
 			{
-				block.UpdateTexture(left, right);
+				block.UpdateTexture(left, right, top, bottom, init);
 			}
 		}
 
@@ -1467,11 +1484,16 @@ namespace OpenRA
 
 		public void DrawTerrainBlock(Viewport vp)
 		{
-			var left = vp.TopLeftPosition.X;
-			var right = vp.BottomRightPosition.X;
+			var tl = vp.TopLeftPosition;
+			var br = vp.BottomRightPosition;
+			var left = tl.X;
+			var right = br.X;
+			var top = tl.Y - Grid.MaximumTerrainHeight * MapGrid.MapHeightStep;
+			var bottom = br.Y + Grid.MaximumTerrainHeight * MapGrid.MapHeightStep;
+
 			foreach (var block in TerrainBlocks)
 			{
-				block.RenderBlock(left, right);
+				block.RenderBlock(left, right, top, bottom);
 			}
 		}
 

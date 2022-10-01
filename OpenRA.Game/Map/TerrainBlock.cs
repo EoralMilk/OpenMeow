@@ -72,7 +72,7 @@ namespace OpenRA
 		/// <summary>
 		/// Mask texture contains size*szie MiniCells
 		/// </summary>
-		public const int SizeLimit = 32;
+		public const int SizeLimit = 24;
 		public const int TextureSize = 1024;
 
 		public static int MiniCellPix => TextureSize / SizeLimit;
@@ -107,7 +107,7 @@ namespace OpenRA
 		/// <summary>
 		/// using for render check, as wdist
 		/// </summary>
-		public readonly int UpBound;
+		public readonly int TopBound;
 
 		/// <summary>
 		/// using for render check, as wdist
@@ -136,7 +136,6 @@ namespace OpenRA
 		readonly IVertexBuffer<TerrainFinalVertex> finalVertexBuffer;
 
 		bool needUpdateTexture = true;
-		bool needInit = true;
 		readonly float[] tileScales;
 		readonly WorldRenderer worldRenderer;
 
@@ -157,7 +156,7 @@ namespace OpenRA
 			BottomRight = br;
 			LeftBound = (tl.X - 1) * 724;
 			RightBound = (br.X + 1) * 724;
-			UpBound = (tl.Y + 1) * 724;
+			TopBound = (tl.Y + 1) * 724;
 			BottomBound = (br.Y + 1) * 724;
 			var topLeftOffsetX = (double)TopLeft.X / (Map.VertexArrayWidth - 1);
 			var topLeftOffsetY = (double)TopLeft.Y / (Map.VertexArrayHeight - 1);
@@ -178,7 +177,7 @@ namespace OpenRA
 
 			// skip the first , last row and col
 			// to avoid the stripe error
-			for (int y = Math.Max(TopLeft.Y, 1); y <= Math.Min(BottomRight.Y, map.VertexArrayWidth - 3); y++)
+			for (int y = Math.Max(TopLeft.Y, 1); y <= Math.Min(BottomRight.Y, map.VertexArrayHeight - 3); y++)
 			{
 				for (int x = Math.Max(TopLeft.X, 1); x <= Math.Min(BottomRight.X, map.VertexArrayWidth - 3); x++)
 				{
@@ -310,9 +309,15 @@ namespace OpenRA
 			tempMaskBuffer?.Dispose();
 		}
 
-		public void UpdateMask(int left, int right)
+		public void UpdateMask(int left, int right, int top, int bottom, bool init)
 		{
-			if (LeftBound > right || RightBound < left)
+			if (init)
+			{
+
+			}
+			else if (LeftBound > right || RightBound < left)
+				return;
+			else if (BottomBound < top || TopBound > bottom)
 				return;
 
 			if (paintSpots.Count > 0)
@@ -344,21 +349,24 @@ namespace OpenRA
 
 				MaskFramebuffer.Unbind();
 
+				Console.WriteLine(TopLeft + " paint update " + paintSpots.Count);
+				needUpdateTexture = true;
 				paintSpots.Clear();
-				Console.WriteLine("paint update");
 			}
 		}
 
-		public void UpdateTexture(int left, int right)
+		public void UpdateTexture(int left, int right, int top, int bottom, bool init)
 		{
 			if (TextureBlendShader == null)
 				return;
 
-			if (needInit)
+			if (init)
 			{
 
 			}
 			else if (LeftBound > right || RightBound < left)
+				return;
+			else if (BottomBound < top || TopBound > bottom)
 				return;
 
 			if (!needUpdateTexture)
@@ -366,7 +374,6 @@ namespace OpenRA
 
 			Console.WriteLine("Updating block texture: " + TopLeft);
 
-			needInit = false;
 			needUpdateTexture = false;
 
 			BlendFramebuffer.Bind();
@@ -401,12 +408,14 @@ namespace OpenRA
 			BlendFramebuffer.Unbind();
 		}
 
-		public void RenderBlock(int left, int right)
+		public void RenderBlock(int left, int right, int top, int bottom)
 		{
 			if (TerrainShader == null)
 				return;
 
 			if (LeftBound > right || RightBound < left)
+				return;
+			if (BottomBound < top || TopBound > bottom)
 				return;
 
 			TerrainShader.SetVec("Offset",
@@ -415,6 +424,7 @@ namespace OpenRA
 			TerrainShader.SetVec("Range",
 				bottomRightOffset.X - topLeftOffset.X,
 				bottomRightOffset.Y - topLeftOffset.Y);
+
 			TerrainShader.SetFloat("WaterUVOffset", (float)(Game.LocalTick % 256) / 256);
 
 			TerrainShader.SetTexture("Mask123", MaskFramebuffer.GetTexture(0));
@@ -478,11 +488,10 @@ namespace OpenRA
 					if (pos.X - size > map.TerrainBlocks[y, x].RightBound ||
 						pos.X + size < map.TerrainBlocks[y, x].LeftBound ||
 						pos.Y - size > map.TerrainBlocks[y, x].BottomBound ||
-						pos.Y + size < map.TerrainBlocks[y, x].UpBound)
+						pos.Y + size < map.TerrainBlocks[y, x].TopBound)
 						continue;
 					map.TerrainBlocks[y, x].needUpdateTexture = true;
 					map.TerrainBlocks[y, x].paintSpots.Add(new PaintSpot(brush, pos, size, layer, intensity));
-					// Console.WriteLine("block " + y + "," + x + " need update");
 				}
 		}
 

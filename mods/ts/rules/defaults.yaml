@@ -439,6 +439,8 @@
 ^Building:
 	Inherits@1: ^BasicBuilding
 	Inherits@2: ^EmpDisable
+	Armor:
+		Type: Wood
 	GivesBuildableArea:
 		AreaTypes: building
 	CaptureManager:
@@ -1097,6 +1099,9 @@
 	Targetable@AIRBORNE:
 		TargetTypes: Air
 		RequiresCondition: airborne
+	GrantConditionOnDamageState@DAMAGED:
+		Condition: damaged
+		ValidDamageStates: Light, Medium, Heavy, Critical
 	Targetable@REPAIR:
 		RequiresCondition: !airborne && damaged
 		TargetTypes: Repair

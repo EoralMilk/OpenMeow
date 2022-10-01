@@ -273,6 +273,8 @@ namespace OpenRA.Platforms.Default
 
 			// Cache viewport rect to restore when unbinding
 			cv = ViewportRectangle();
+			OpenGL.glFlush();
+			OpenGL.CheckGLError();
 			OpenGL.glBindFramebuffer(OpenGL.GL_FRAMEBUFFER, framebuffer);
 			OpenGL.CheckGLError();
 			OpenGL.glViewport(0, 0, size.Width, size.Height);

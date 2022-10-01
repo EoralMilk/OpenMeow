@@ -253,8 +253,11 @@ HarpyClaw:
 		Speed: 1000
 		OnlyDamageDirectlyHit: false
 	Warhead@1Dam: Spread3DDamage
-		Damage: 1250
+		Damage: 1500
 		Spread: 0c128
+		DamageOne: false
+		OnlyDamageBlockerWhenBlocked: true
+		OnlyDamageDirectlyHit: false
 		DamageTypes:  Prone100Percent, TriggerProne, SmallExplosionDeath
 	Warhead@2Eff: CreateEffect
 		ExplosionPalette: effectgreen
@@ -312,7 +315,7 @@ Sniper:
 			Heavy: 5
 			Concrete: 5
 		DamageTypes: Prone100Percent, TriggerProne, BulletDeath
-
+		TestDrawTerrain: true
 
 
 SilencerSniper:

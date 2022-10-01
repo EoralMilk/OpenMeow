@@ -83,10 +83,10 @@ namespace OpenRA.Graphics
 
 			World.Map.CreateRenderBlocks(this);
 			World.Map.InitTerrainBlockMask();
-			World.Map.UpdateTerrainBlockTexture(Viewport);
+			World.Map.UpdateTerrainBlockTexture(Viewport, true);
 			World.Map.DrawMaskWithTSMapInfo(this);
-			World.Map.UpdateTerrainBlockMask(Viewport);
-			World.Map.UpdateTerrainBlockTexture(Viewport);
+			World.Map.UpdateTerrainBlockMask(Viewport, true);
+			World.Map.UpdateTerrainBlockTexture(Viewport, true);
 		}
 
 		public void RefreshTextures()
