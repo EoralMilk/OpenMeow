@@ -39,7 +39,7 @@ vec4 masknoise2;
 
 
 float masks[MAX_TERRAIN_LAYER + 2];
-vec3 colors[MAX_TERRAIN_LAYER + 2];
+vec4 colors[MAX_TERRAIN_LAYER + 2];
 vec3 norms[MAX_TERRAIN_LAYER + 2];
 
 
@@ -138,23 +138,28 @@ float MaskNoise2(int layer)
 	return mask;
 }
 
-vec3 GetTileColor(int layer)
+vec4 GetTileColor(int layer)
 {
 	int tileIndex = GetTileIndex(layer);
 	float noiseUV = MaskNoise(layer);
 	float noiseC = MaskNoise2(layer) * 0.25 + 0.85;
+	vec4 color;
 	if (TileScales[tileIndex] != 1.0)
 	{
 		vec2 cuv = (vUV + vec2(noiseUV)) / TileScales[tileIndex];
 		cuv = cuv - vec2(floor(cuv.x), floor(cuv.y));
-		return texture(Tiles, vec3(cuv, float(tileIndex))).rgb * noiseC;
+		color = texture(Tiles, vec3(cuv, float(tileIndex))) * noiseC;
 	}
 	else
 	{
 		vec2 cuv = vUV + vec2(noiseUV);
 		cuv = cuv - vec2(floor(cuv.x), floor(cuv.y));
-		return texture(Tiles, vec3(cuv, float(tileIndex))).rgb * noiseC;
+		color = texture(Tiles, vec3(cuv, float(tileIndex))) * noiseC;
 	}
+	if (layer == 0)
+		return vec4(color.rgb, 0.3);
+	else
+		return color;
 }
 
 vec3 GetTileNormal(int layer)
@@ -226,11 +231,12 @@ void main()
 
 		// there is a super strange bug???
 		// if put the mix in the else block and it would not work???
-		colors[layer] = mix(colors[layer + 1], GetTileColor(layer), masks[layer]);
-		norms[layer] = mix(norms[layer + 1], GetTileNormal(layer), masks[layer]);
+		vec4 tilecolor = GetTileColor(layer);
+		colors[layer] = vec4(mix(colors[layer + 1].rgb, tilecolor.rgb, masks[layer] * tilecolor.a), 1.0);
+		norms[layer] = mix(norms[layer + 1].rgb, GetTileNormal(layer), masks[layer] * tilecolor.a);
 	}
 
 	vec3 tint = vec3(min(vTint.r * 4.0, 1.0), min(vTint.g * 4.0, 1.0), min(vTint.b * 4.0, 1.0));
-	ColorOutPut = vec4(colors[0] * tint,1.0);
+	ColorOutPut = vec4(colors[0].rgb * tint,1.0);
 	NormalOutPut = vec4(ProcessNormal(norms[0]),1.0);
 }

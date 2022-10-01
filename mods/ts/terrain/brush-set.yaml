@@ -1,7 +1,9 @@
 
-brushBase: brush02.png
+BaseBrush: brush02.png
 	Size: 2224
-brushcell: brushcell.png
+DefualtWaterBrush: waterbrush.png
+	Size: 2000
+OneCellBrush: brushcell.png
 	Size: 1588
 brush01: brush01.png
 	Size: 1882

@@ -1735,12 +1735,12 @@ Templates:
 		Images: shore01.tem
 		Size: 2, 2
 		Tiles:
-			0: Water
+			0: Rough
 				MinColor: 3D4148
 				MaxColor: 504C48
 				ZOffset: -12
 				ZRamp: 0
-			1: Water
+			1: Rough
 				MinColor: 484948
 				MaxColor: 5D5040
 				ZOffset: -12
@@ -1761,12 +1761,12 @@ Templates:
 		Images: shore02.tem
 		Size: 2, 2
 		Tiles:
-			0: Water
+			0: Rough
 				MinColor: 414447
 				MaxColor: 534D46
 				ZOffset: -12
 				ZRamp: 0
-			1: Water
+			1: Rough
 				MinColor: 3E4347
 				MaxColor: 5E5347
 				ZOffset: -12
@@ -1787,12 +1787,12 @@ Templates:
 		Images: shore03.tem
 		Size: 2, 2
 		Tiles:
-			0: Water
+			0: Rough
 				MinColor: 424448
 				MaxColor: 584D40
 				ZOffset: -12
 				ZRamp: 0
-			1: Water
+			1: Rough
 				MinColor: 2F3947
 				MaxColor: 5C4F40
 				ZOffset: -12
@@ -1813,7 +1813,7 @@ Templates:
 		Images: shore04.tem
 		Size: 1, 2
 		Tiles:
-			0: Water
+			0: Rough
 				MinColor: 504A43
 				MaxColor: 5D4F3F
 				ZOffset: -12
@@ -1829,12 +1829,12 @@ Templates:
 		Images: shore05.tem
 		Size: 2, 3
 		Tiles:
-			0: Water
+			0: Rough
 				MinColor: 4F4942
 				MaxColor: 5E5243
 				ZOffset: -12
 				ZRamp: 0
-			1: Water
+			1: Rough
 				MinColor: 4A4B49
 				MaxColor: 6A563E
 				ZOffset: -12
@@ -1844,7 +1844,7 @@ Templates:
 				MaxColor: 293541
 				ZOffset: -12
 				ZRamp: 0
-			3: Water
+			3: Rough
 				MinColor: 283B55
 				MaxColor: 4C4E50
 				ZOffset: -12
@@ -1865,17 +1865,17 @@ Templates:
 		Images: shore06.tem
 		Size: 2, 3
 		Tiles:
-			0: Water
+			0: Rough
 				MinColor: 44484C
 				MaxColor: 564F46
 				ZOffset: -12
 				ZRamp: 0
-			1: Water
+			1: Rough
 				MinColor: 545757
 				MaxColor: 645440
 				ZOffset: -12
 				ZRamp: 0
-			2: Water
+			2: Rough
 				MinColor: 42464F
 				MaxColor: 383F49
 				ZOffset: -12
@@ -1901,7 +1901,7 @@ Templates:
 		Images: shore07.tem
 		Size: 2, 2
 		Tiles:
-			0: Water
+			0: Rough
 				MinColor: 3C434F
 				MaxColor: 464747
 				ZOffset: -12
@@ -1927,7 +1927,7 @@ Templates:
 		Images: shore08.tem
 		Size: 2, 2
 		Tiles:
-			0: Water
+			0: Rough
 				MinColor: 4F5051
 				MaxColor: 4F4F4D
 				ZOffset: -12
@@ -1953,7 +1953,7 @@ Templates:
 		Images: shore09.tem
 		Size: 2, 2
 		Tiles:
-			0: Water
+			0: Rough
 				MinColor: 544E48
 				MaxColor: 514D48
 				ZOffset: -12
@@ -1963,7 +1963,7 @@ Templates:
 				MaxColor: 1F2F46
 				ZOffset: -12
 				ZRamp: 0
-			2: Water
+			2: Rough
 				MinColor: 5D4E3B
 				MaxColor: 2F3B4D
 				ZOffset: -12
@@ -1979,7 +1979,7 @@ Templates:
 		Images: shore10.tem
 		Size: 2, 2
 		Tiles:
-			0: Water
+			0: Rough
 				MinColor: 4C4F54
 				MaxColor: 544D44
 				ZOffset: -12
@@ -1989,7 +1989,7 @@ Templates:
 				MaxColor: 16283D
 				ZOffset: -12
 				ZRamp: 0
-			2: Water
+			2: Rough
 				MinColor: 574E44
 				MaxColor: 364558
 				ZOffset: -12
@@ -2005,7 +2005,7 @@ Templates:
 		Images: shore11.tem
 		Size: 2, 2
 		Tiles:
-			0: Water
+			0: Rough
 				MinColor: 434850
 				MaxColor: 5A544D
 				ZOffset: -12
@@ -2015,7 +2015,7 @@ Templates:
 				MaxColor: 162A41
 				ZOffset: -12
 				ZRamp: 0
-			2: Clear
+			2: Rough
 				MinColor: 625241
 				MaxColor: 504F4E
 				ZOffset: -12
@@ -2031,7 +2031,7 @@ Templates:
 		Images: shore12.tem
 		Size: 2, 1
 		Tiles:
-			0: Water
+			0: Rough
 				MinColor: 605445
 				MaxColor: 42464D
 				ZOffset: -12
@@ -2052,7 +2052,7 @@ Templates:
 				MaxColor: 645645
 				ZOffset: -12
 				ZRamp: 0
-			1: Water
+			1: Rough
 				MinColor: 3F4958
 				MaxColor: 4B4A4A
 				ZOffset: -12
@@ -2062,7 +2062,7 @@ Templates:
 				MaxColor: 14273D
 				ZOffset: -12
 				ZRamp: 0
-			3: Water
+			3: Rough
 				MinColor: 52504D
 				MaxColor: 3B4759
 				ZOffset: -12
@@ -2083,7 +2083,7 @@ Templates:
 		Images: shore14.tem
 		Size: 3, 2
 		Tiles:
-			0: Water
+			0: Rough
 				MinColor: 554D43
 				MaxColor: 554F48
 				ZOffset: -12
@@ -2103,7 +2103,7 @@ Templates:
 				MaxColor: 494C51
 				ZOffset: -12
 				ZRamp: 0
-			4: Water
+			4: Rough
 				MinColor: 4C4A47
 				MaxColor: 374150
 				ZOffset: -12
@@ -2129,7 +2129,7 @@ Templates:
 				MaxColor: 0E2136
 				ZOffset: -12
 				ZRamp: 0
-			2: Water
+			2: Rough
 				MinColor: 635545
 				MaxColor: 434749
 				ZOffset: -12
@@ -2155,7 +2155,7 @@ Templates:
 				MaxColor: 10243B
 				ZOffset: -12
 				ZRamp: 0
-			2: Water
+			2: Rough
 				MinColor: 55504A
 				MaxColor: 354254
 				ZOffset: -12
@@ -2181,12 +2181,12 @@ Templates:
 				MaxColor: 10243B
 				ZOffset: -12
 				ZRamp: 0
-			2: Water
+			2: Rough
 				MinColor: 5A5247
 				MaxColor: 3D454E
 				ZOffset: -12
 				ZRamp: 0
-			3: Water
+			3: Rough
 				MinColor: 45484D
 				MaxColor: 494A4A
 				ZOffset: -12
@@ -2207,12 +2207,12 @@ Templates:
 				MaxColor: 13273F
 				ZOffset: -12
 				ZRamp: 0
-			2: Water
+			2: Rough
 				MinColor: 55514D
 				MaxColor: 2F3E52
 				ZOffset: -12
 				ZRamp: 0
-			3: Water
+			3: Rough
 				MinColor: 514F4D
 				MaxColor: 484746
 				ZOffset: -12
@@ -2233,12 +2233,12 @@ Templates:
 				MaxColor: 142842
 				ZOffset: -12
 				ZRamp: 0
-			2: Water
+			2: Rough
 				MinColor: 615241
 				MaxColor: 414751
 				ZOffset: -12
 				ZRamp: 0
-			3: Water
+			3: Rough
 				MinColor: 4E4E4E
 				MaxColor: 3C4451
 				ZOffset: -12
@@ -2254,7 +2254,7 @@ Templates:
 				MaxColor: 162A46
 				ZOffset: -12
 				ZRamp: 0
-			1: Water
+			1: Rough
 				MinColor: 5D5142
 				MaxColor: 534C45
 				ZOffset: -12
@@ -2280,17 +2280,17 @@ Templates:
 				MaxColor: 353C44
 				ZOffset: -12
 				ZRamp: 0
-			3: Water
+			3: Rough
 				MinColor: 3A3F46
 				MaxColor: 4E4B48
 				ZOffset: -12
 				ZRamp: 0
-			4: Water
+			4: Rough
 				MinColor: 605242
 				MaxColor: 484847
 				ZOffset: -12
 				ZRamp: 0
-			5: Water
+			5: Rough
 				MinColor: 5B5144
 				MaxColor: 524E4B
 				ZOffset: -12
@@ -2311,7 +2311,7 @@ Templates:
 				MaxColor: 112339
 				ZOffset: -12
 				ZRamp: 0
-			2: Water
+			2: Rough
 				MinColor: 4C4E52
 				MaxColor: 303A47
 				ZOffset: -12
@@ -2321,12 +2321,12 @@ Templates:
 				MaxColor: 20324E
 				ZOffset: -12
 				ZRamp: 0
-			4: Water
+			4: Rough
 				MinColor: 64533E
 				MaxColor: 4E4E4C
 				ZOffset: -12
 				ZRamp: 0
-			5: Water
+			5: Rough
 				MinColor: 5A5145
 				MaxColor: 564D42
 				ZOffset: -12
@@ -2352,7 +2352,7 @@ Templates:
 				MaxColor: 223654
 				ZOffset: -12
 				ZRamp: 0
-			3: Water
+			3: Rough
 				MinColor: 3B4149
 				MaxColor: 454648
 				ZOffset: -12
@@ -2378,7 +2378,7 @@ Templates:
 				MaxColor: 3D434A
 				ZOffset: -12
 				ZRamp: 0
-			3: Water
+			3: Rough
 				MinColor: 5B5043
 				MaxColor: 524E4B
 				ZOffset: -12
@@ -2394,7 +2394,7 @@ Templates:
 				MaxColor: 2A3545
 				ZOffset: -12
 				ZRamp: 0
-			1: Water
+			1: Rough
 				MinColor: 4B4A49
 				MaxColor: 5D5244
 				ZOffset: -12
@@ -2404,7 +2404,7 @@ Templates:
 				MaxColor: 283749
 				ZOffset: -12
 				ZRamp: 0
-			3: Water
+			3: Rough
 				MinColor: 50504D
 				MaxColor: 55524C
 				ZOffset: -12
@@ -2420,7 +2420,7 @@ Templates:
 				MaxColor: 353F48
 				ZOffset: -12
 				ZRamp: 0
-			1: Water
+			1: Rough
 				MinColor: 4A4B49
 				MaxColor: 615546
 				ZOffset: -12
@@ -2430,7 +2430,7 @@ Templates:
 				MaxColor: 373E47
 				ZOffset: -12
 				ZRamp: 0
-			3: Water
+			3: Rough
 				MinColor: 524C45
 				MaxColor: 5D5141
 				ZOffset: -12
@@ -2446,7 +2446,7 @@ Templates:
 				MaxColor: 39424E
 				ZOffset: -12
 				ZRamp: 0
-			1: Water
+			1: Rough
 				MinColor: 47494B
 				MaxColor: 5C5248
 				ZOffset: -12
@@ -2456,7 +2456,7 @@ Templates:
 				MaxColor: 263750
 				ZOffset: -12
 				ZRamp: 0
-			3: Water
+			3: Rough
 				MinColor: 534D44
 				MaxColor: 595044
 				ZOffset: -12
@@ -2472,7 +2472,7 @@ Templates:
 				MaxColor: 363E47
 				ZOffset: -12
 				ZRamp: 0
-			1: Water
+			1: Rough
 				MinColor: 544E47
 				MaxColor: 5F5547
 				ZOffset: -12
@@ -2488,12 +2488,12 @@ Templates:
 				MaxColor: 40444B
 				ZOffset: -12
 				ZRamp: 0
-			1: Water
+			1: Rough
 				MinColor: 494C50
 				MaxColor: 4E4C4B
 				ZOffset: -12
 				ZRamp: 0
-			2: Water
+			2: Rough
 				MinColor: 4E463B
 				MaxColor: 66543E
 				ZOffset: -12
@@ -2508,7 +2508,7 @@ Templates:
 				MaxColor: 3B444E
 				ZOffset: -12
 				ZRamp: 0
-			5: Water
+			5: Rough
 				MinColor: 524E46
 				MaxColor: 585043
 				ZOffset: -12
@@ -2529,7 +2529,7 @@ Templates:
 				MaxColor: 353F4A
 				ZOffset: -12
 				ZRamp: 0
-			2: Water
+			2: Rough
 				MinColor: 565148
 				MaxColor: 61503B
 				ZOffset: -12
@@ -2539,12 +2539,12 @@ Templates:
 				MaxColor: 2E3845
 				ZOffset: -12
 				ZRamp: 0
-			4: Water
+			4: Rough
 				MinColor: 60513D
 				MaxColor: 3B434C
 				ZOffset: -12
 				ZRamp: 0
-			5: Water
+			5: Rough
 				MinColor: 5B5041
 				MaxColor: 5C5143
 				ZOffset: -12
@@ -2560,7 +2560,7 @@ Templates:
 				MaxColor: 393C40
 				ZOffset: -12
 				ZRamp: 0
-			1: Water
+			1: Rough
 				MinColor: 4A4743
 				MaxColor: 62523E
 				ZOffset: -12
@@ -2586,7 +2586,7 @@ Templates:
 				MaxColor: 353C46
 				ZOffset: -12
 				ZRamp: 0
-			1: Water
+			1: Rough
 				MinColor: 57524C
 				MaxColor: 67553F
 				ZOffset: -12
@@ -2612,12 +2612,12 @@ Templates:
 				MaxColor: 5E5446
 				ZOffset: -12
 				ZRamp: 0
-			1: Water
+			1: Rough
 				MinColor: 434B53
 				MaxColor: 5E5243
 				ZOffset: -12
 				ZRamp: 0
-			2: Water
+			2: Rough
 				MinColor: 655541
 				MaxColor: 374250
 				ZOffset: -12
@@ -2638,12 +2638,12 @@ Templates:
 				MaxColor: 645442
 				ZOffset: -12
 				ZRamp: 0
-			1: Water
+			1: Rough
 				MinColor: 4A4948
 				MaxColor: 5B5041
 				ZOffset: -12
 				ZRamp: 0
-			2: Water
+			2: Rough
 				MinColor: 605343
 				MaxColor: 484A4C
 				ZOffset: -12
@@ -2659,7 +2659,7 @@ Templates:
 		Images: shore35.tem
 		Size: 2, 2
 		Tiles:
-			0: Water
+			0: Rough
 				MinColor: 564D43
 				MaxColor: 564E43
 				ZOffset: -12
@@ -2674,7 +2674,7 @@ Templates:
 				MaxColor: 58534E
 				ZOffset: -12
 				ZRamp: 0
-			3: Water
+			3: Rough
 				MinColor: 4A4949
 				MaxColor: 4C4B49
 				ZOffset: -12
@@ -2685,7 +2685,7 @@ Templates:
 		Images: shore36.tem
 		Size: 2, 2
 		Tiles:
-			0: Water
+			0: Rough
 				MinColor: 514E49
 				MaxColor: 534E4A
 				ZOffset: -12
@@ -2700,7 +2700,7 @@ Templates:
 				MaxColor: 5B5041
 				ZOffset: -12
 				ZRamp: 0
-			3: Water
+			3: Rough
 				MinColor: 524F4B
 				MaxColor: 474949
 				ZOffset: -12
@@ -2716,12 +2716,12 @@ Templates:
 				MaxColor: 303C4D
 				ZOffset: -12
 				ZRamp: 0
-			1: Water
+			1: Rough
 				MinColor: 4D4F52
 				MaxColor: 6D583E
 				ZOffset: -12
 				ZRamp: 0
-			2: Water
+			2: Rough
 				MinColor: 554F47
 				MaxColor: 464B4F
 				ZOffset: -12
@@ -2742,17 +2742,17 @@ Templates:
 				MaxColor: 303A47
 				ZOffset: -12
 				ZRamp: 0
-			1: Water
+			1: Rough
 				MinColor: 494D53
 				MaxColor: 655440
 				ZOffset: -12
 				ZRamp: 0
-			2: Water
+			2: Rough
 				MinColor: 5E5244
 				MaxColor: 44474B
 				ZOffset: -12
 				ZRamp: 0
-			3: Water
+			3: Rough
 				MinColor: 5D5245
 				MaxColor: 5D5143
 				ZOffset: -12
@@ -2763,7 +2763,7 @@ Templates:
 		Images: shore39.tem
 		Size: 2, 2
 		Tiles:
-			0: Water
+			0: Rough
 				MinColor: 534F49
 				MaxColor: 5B5248
 				ZOffset: -12
@@ -2778,7 +2778,7 @@ Templates:
 				MaxColor: 37424F
 				ZOffset: -12
 				ZRamp: 0
-			3: Water
+			3: Rough
 				MinColor: 585248
 				MaxColor: 524F4B
 				ZOffset: -12
@@ -2789,12 +2789,12 @@ Templates:
 		Images: shore40.tem
 		Size: 2, 2
 		Tiles:
-			0: Water
+			0: Rough
 				MinColor: 494B4E
 				MaxColor: 5C544A
 				ZOffset: -12
 				ZRamp: 0
-			1: Water
+			1: Rough
 				MinColor: 4C4B4A
 				MaxColor: 625240
 				ZOffset: -12
@@ -2804,7 +2804,7 @@ Templates:
 				MaxColor: 253855
 				ZOffset: -12
 				ZRamp: 0
-			3: Water
+			3: Rough
 				MinColor: 4E4C4A
 				MaxColor: 544F4A
 				ZOffset: -12
@@ -2835,22 +2835,22 @@ Templates:
 				MaxColor: 60513D
 				ZOffset: -12
 				ZRamp: 0
-			7: Water
+			7: Rough
 				MinColor: 48443F
 				MaxColor: 55493B
 				ZOffset: -12
 				ZRamp: 0
-			8: Water
+			8: Rough
 				MinColor: 43413D
 				MaxColor: 45423C
 				ZOffset: -12
 				ZRamp: 0
-			9: Water
+			9: Rough
 				MinColor: 44403B
 				MaxColor: 514739
 				ZOffset: -12
 				ZRamp: 0
-			10: Water
+			10: Rough
 				MinColor: 393D40
 				MaxColor: 534A3F
 				ZOffset: -12
@@ -2860,7 +2860,7 @@ Templates:
 				MaxColor: 1B2839
 				ZOffset: -12
 				ZRamp: 0
-			12: Water
+			12: Rough
 				MinColor: 554D42
 				MaxColor: 4D463C
 				ZOffset: -12

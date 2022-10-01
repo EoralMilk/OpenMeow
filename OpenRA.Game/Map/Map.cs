@@ -1281,7 +1281,7 @@ namespace OpenRA
 			Mask789 = null;
 		}
 
-		public void CreateRenderBlocks()
+		public void CreateRenderBlocks(WorldRenderer worldRenderer)
 		{
 			GetMaskTextures(Package);
 
@@ -1296,8 +1296,6 @@ namespace OpenRA
 			BlocksArrayHeight = blockY;
 			TerrainBlocks = new TerrainRenderBlock[blockY, blockX];
 
-			// skip the last row and last col
-			// to avoid the stripe error
 			for (int y = 0; y < blockY; y++)
 				for (int x = 0; x < blockX; x++)
 				{
@@ -1305,7 +1303,7 @@ namespace OpenRA
 					int2 br = new int2(
 						Math.Min((x + 1) * TerrainRenderBlock.SizeLimit, VertexArrayWidth - 2) - 1,
 						Math.Min((y + 1) * TerrainRenderBlock.SizeLimit, VertexArrayHeight - 2) - 1);
-					TerrainBlocks[y, x] = new TerrainRenderBlock(this, tl, br);
+					TerrainBlocks[y, x] = new TerrainRenderBlock(worldRenderer, this, tl, br);
 				}
 		}
 
@@ -1314,6 +1312,130 @@ namespace OpenRA
 			foreach (var uv in AllCells.MapCoords)
 			{
 				HeightStep[uv] = (byte)((CellInfos[uv].CellCenterPos.Z + 1) / MapGrid.MapHeightStep);
+			}
+		}
+
+		public void DrawMaskWithTSMapInfo(WorldRenderer wr)
+		{
+			Console.WriteLine("Painting Spot on mask at each cell");
+
+			var brush = TextureCache.AllBrushes.First().Value;
+			var waterBrush = TextureCache.AllBrushes["DefualtWaterBrush"];
+			var random = wr.World.SharedRandom;
+
+			foreach (var uv in MapCells)
+			{
+				var type = Rules.TerrainInfo.GetTerrainInfo(Tiles[uv]);
+				var typename = Rules.TerrainInfo.TerrainTypes[type.TerrainType].Type;
+				var id = Tiles[uv].Type;
+				int layer = 8;
+
+				switch (typename)
+				{
+					case "Rough":
+						layer = 6;
+						break;
+					case "DirtRoad":
+						layer = 5;
+						break;
+					case "Cliff":
+						layer = 4;
+						break;
+					case "Impassable":
+						layer = 4;
+						break;
+					case "Rock":
+						layer = 4;
+						break;
+					case "Rail":
+						layer = 2;
+						break;
+					case "Road":
+						layer = 2;
+						break;
+					case "Bridge":
+						layer = 2;
+						break;
+					case "Water":
+						layer = 0;
+						break;
+					default:
+						break;
+				}
+
+				bool isShore = false;
+				if (id >= 108 && id <= 149)
+				{
+					isShore = true;
+
+					// shore
+					if (typename != "Water")
+						layer = 1;
+				}
+				else if (id >= 626 && id <= 642)
+				{
+					// grass
+					layer = 3;
+				}
+				else if (id >= 535 && id <= 551)
+				{
+					// sand
+					layer = 1;
+				}
+				else if (id >= 150 && id <= 166)
+				{
+					// rough
+					layer = 6;
+				}
+				else if (id >= 552 && id <= 561)
+				{
+					// crack ground
+					layer = 7;
+				}
+
+				if (isShore)
+					TerrainRenderBlock.PaintAt(this, brush, CenterOfCell(uv), brush.DefaultSize * random.Next(40, 50) / random.Next(25, 30), layer, 255);
+
+				if (layer == 0)
+				{
+					if (isShore)
+						TerrainRenderBlock.PaintAt(this, waterBrush, CenterOfCell(uv), waterBrush.DefaultSize * random.Next(10, 15) / random.Next(30, 45), layer, random.Next(1, 75));
+					else
+						TerrainRenderBlock.PaintAt(this, waterBrush, CenterOfCell(uv), waterBrush.DefaultSize, layer, 255);
+				}
+				else
+					TerrainRenderBlock.PaintAt(this, brush, CenterOfCell(uv), brush.DefaultSize, layer, 255);
+			}
+
+			foreach (var uv in MapCells)
+			{
+				var type = Rules.TerrainInfo.GetTerrainInfo(Tiles[uv]);
+				var typename = Rules.TerrainInfo.TerrainTypes[type.TerrainType].Type;
+				var id = Tiles[uv].Type;
+
+				if (typename == "Water")
+				{
+					if (TSVector.Dot(CellInfos[uv].LogicNml.normalized, new TSVector(0, 0, 1)) < 0.95f)
+					{
+						TerrainRenderBlock.PaintAt(this, waterBrush, CenterOfCell(uv), waterBrush.DefaultSize, 0, -255);
+						TerrainRenderBlock.PaintAt(this, brush, CenterOfCell(uv), brush.DefaultSize, 0, -128);
+					}
+				}
+				else if (id >= 108 && id <= 149 && typename != "Water")
+				{
+					TerrainRenderBlock.PaintAt(this, waterBrush, CenterOfCell(uv), waterBrush.DefaultSize, 0, -255);
+					TerrainRenderBlock.PaintAt(this, brush, CenterOfCell(uv), brush.DefaultSize, 0, -random.Next(64, 175));
+				}
+			}
+
+			Console.WriteLine("Completed");
+		}
+
+		public void InitTerrainBlockMask()
+		{
+			foreach (var block in TerrainBlocks)
+			{
+				block.InitMask();
 			}
 		}
 

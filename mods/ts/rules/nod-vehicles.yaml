@@ -555,7 +555,7 @@ STNK:
 		Description: Lightly armoured tank equipped with a personal\nstealth generator. Armed with missiles.\nCan be spotted by infantry at close range.\n  Strong vs Vehicles, Aircraft\n  Weak vs Infantry
 	Mobile:
 		TurnSpeed: 20
-		Speed: 85
+		Speed: 100
 	Health:
 		HP: 18000
 	Armor:

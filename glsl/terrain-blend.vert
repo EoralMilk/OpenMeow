@@ -2,7 +2,7 @@
 
 #define MAX_TERRAIN_LIGHT 64
 #ifdef GL_ES
-precision highp float;
+precision mediump float;
 #endif
 
 #define DT_NONE -1

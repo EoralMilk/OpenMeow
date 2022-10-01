@@ -311,12 +311,13 @@ Sniper:
 			Light: 15
 			Heavy: 5
 			Concrete: 5
-		DamageTypes: Prone70Percent, TriggerProne, BulletDeath
+		DamageTypes: Prone100Percent, TriggerProne, BulletDeath
+
 
 
 SilencerSniper:
 	Inherits: Sniper
-	Range: 10c0
+	Range: 11c512
 
 Pistol:
 	Inherits: ^MG

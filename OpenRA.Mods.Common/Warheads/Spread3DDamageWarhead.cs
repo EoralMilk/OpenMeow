@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Drawing;
 using System.Linq;
 using OpenRA.GameRules;
 using OpenRA.Mods.Common;
@@ -47,6 +48,8 @@ namespace OpenRA.Mods.Warheads
 		[Desc("Duration of the condition (in ticks). Set to 0 for a permanent condition.")]
 		public readonly int Duration = 0;
 
+		public readonly bool TestDrawTerrain = false;	
+
 		Actor bestTarget = null;
 		int maxDamage = 0;
 		void IRulesetLoaded<WeaponInfo>.RulesetLoaded(Ruleset rules, WeaponInfo info)
@@ -86,6 +89,10 @@ namespace OpenRA.Mods.Warheads
 
 		protected override void DoImpact(WPos pos, Actor firedBy, WarheadArgs args)
 		{
+			if (TestDrawTerrain)
+				TerrainRenderBlock.PaintAt(firedBy.World.Map, firedBy.World.Map.TextureCache.AllBrushes.First().Value,
+								pos, 1024, 0, 64);
+
 			var debugVis = firedBy.World.WorldActor.TraitOrDefault<DebugVisualizations>();
 			if (debugVis != null && debugVis.CombatGeometry)
 				firedBy.World.WorldActor.Trait<WarheadDebugOverlay>().AddImpact(pos, Range, DebugOverlayColor);

@@ -153,8 +153,11 @@ namespace OpenRA.Mods.Common.Widgets.Logic
 							var posy = int.Parse(ss[1]);
 							var size = int.Parse(ss[2]);
 							var layer = int.Parse(ss[3]);
+							int alpha = 255;
+							if (ss.Length > 4)
+								alpha = int.Parse(ss[4]);
 							TerrainRenderBlock.PaintAt(world.Map, world.MapTextureCache.AllBrushes.First().Value,
-								new WPos(posx, posy, 0), size, layer, 255);
+								new WPos(posx, posy, 0), size, layer, alpha);
 						}
 					}
 					else if (chatText.Text.StartsWith("cr-"))
@@ -163,23 +166,6 @@ namespace OpenRA.Mods.Common.Widgets.Logic
 						var deg = float.Parse(ss.Substring(3));
 						var rad = deg / 180f * MathF.PI;
 						World3DRenderer.CameraRotTest = rad;
-					}
-					else if (chatText.Text.StartsWith("-"))
-					{
-						var ss = chatText.Text;
-						var ii = int.Parse(ss.Substring(2));
-						if (chatText.Text.StartsWith("-r"))
-							WRot.rollAdd = ii;
-						else if (chatText.Text.StartsWith("-p"))
-							WRot.pitchAdd = ii;
-						else if (chatText.Text.StartsWith("-y"))
-							WRot.yawAdd = ii;
-						else if (chatText.Text.StartsWith("-x"))
-							AttachedArmament.FrontX = ii;
-						else if (chatText.Text.StartsWith("-y"))
-							AttachedArmament.FrontY = ii;
-						else if (chatText.Text.StartsWith("-z"))
-							AttachedArmament.FrontZ = ii;
 					}
 
 					if (!chatText.Text.StartsWith("/", StringComparison.Ordinal))
