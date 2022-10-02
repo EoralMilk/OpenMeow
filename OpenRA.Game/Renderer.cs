@@ -238,7 +238,7 @@ namespace OpenRA
 				worldBuffer?.Dispose();
 				worldShadowBuffer?.Dispose();
 
-				worldShadowBuffer = Context.CreateDepthFrameBuffer(new Size(2048, 2048));
+				worldShadowBuffer = Context.CreateDepthFrameBuffer(new Size(Game.Settings.Graphics.ShadowTextureSize, Game.Settings.Graphics.ShadowTextureSize));
 				worldShadowDepthTexture = worldShadowBuffer.DepthTexture;
 
 				// If enableWorldFrameBufferDownscale and the world is more than twice the size of the final output size do we allow it to be downsampled!
@@ -329,7 +329,7 @@ namespace OpenRA
 			shader.SetVec("dirLight.specular", w3dr.SunSpecularColor.X, w3dr.SunSpecularColor.Y, w3dr.SunSpecularColor.Z);
 		}
 
-		public void SetShadowParams(IShader shader, World3DRenderer w3dr)
+		public void SetShadowParams(IShader shader, World3DRenderer w3dr, ShadowSampleType sampleType)
 		{
 			shader.SetTexture("ShadowDepthTexture", worldShadowDepthTexture);
 			var sunVP = w3dr.SunProjection * w3dr.SunView;
@@ -339,6 +339,7 @@ namespace OpenRA
 			shader.SetFloat("ShadowBias", w3dr.FrameShadowBias);
 			shader.SetFloat("AmbientIntencity", w3dr.AmbientIntencity);
 			shader.SetVec("ViewPort", worldBufferSize.Width, worldBufferSize.Height);
+			shader.SetInt("ShadowSampleType", (int)sampleType);
 		}
 
 		public void Draw3DMeshesInstance(WorldRenderer wr, bool sunCamera)
@@ -351,7 +352,7 @@ namespace OpenRA
 				shader.Value.SetVec("DepthPreviewParams", depthPreview3dParams.X, depthPreview3dParams.Y);
 				if (!sunCamera)
 				{
-					SetShadowParams(shader.Value, World3DRenderer);
+					SetShadowParams(shader.Value, World3DRenderer, Game.Settings.Graphics.VoxelShadowType);
 				}
 			}
 
@@ -359,6 +360,15 @@ namespace OpenRA
 			foreach (var orderedMesh in orderedMeshes)
 			{
 				orderedMesh.Value.DrawInstances(sunCamera);
+			}
+
+			// update common shader shadow sample type
+			if (!sunCamera)
+			{
+				foreach (var shader in orderedMeshShaders)
+				{
+						SetShadowParams(shader.Value, World3DRenderer, Game.Settings.Graphics.MeshShadowType);
+				}
 			}
 
 			// mesh

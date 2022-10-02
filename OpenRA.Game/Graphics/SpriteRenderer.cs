@@ -332,7 +332,7 @@ namespace OpenRA.Graphics
 		{
 			if (Game.Renderer.World3DRenderer != null)
 			{
-				Game.Renderer.SetShadowParams(Shader, Game.Renderer.World3DRenderer);
+				Game.Renderer.SetShadowParams(Shader, Game.Renderer.World3DRenderer, Game.Settings.Graphics.CombinedShadowType);
 				Game.Renderer.SetLightParams(Shader, Game.Renderer.World3DRenderer);
 			}
 		}

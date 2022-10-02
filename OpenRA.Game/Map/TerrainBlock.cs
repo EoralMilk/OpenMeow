@@ -571,7 +571,7 @@ namespace OpenRA
 			if (TerrainShader == null)
 				return;
 
-			Game.Renderer.SetShadowParams(TerrainShader, w3dr);
+			Game.Renderer.SetShadowParams(TerrainShader, w3dr, Game.Settings.Graphics.TerrainShadowType);
 			Game.Renderer.SetLightParams(TerrainShader, w3dr);
 		}
 
