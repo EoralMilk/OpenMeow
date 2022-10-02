@@ -76,6 +76,14 @@ Player:
 		ConstructionYardTypes: gacnst
 		AirUnitsTypes: orca, orcab, scrin, apache, jumpjet
 		ProtectionTypes: gapowr, gapowrup, gapile, gaweap, gahpad, gadept, garadr, gatech, gaplug, gagate_a, gagate_b, gactwr, gavulc, garock, gacsam, napowr, naapwr, nahand, naweap, nahpad, naradr, natech, nastlh, natmpl, namisl, nawast, nagate_a, nagate_b, nalasr, naobel, nasam, weed, gacnst, proc, gasilo, napuls, mcv, harv
+		MinimumAttackForceDelay: 2500
+		AssignRolesInterval: 73
+		IdleScanRadius: 15
+		AttackScanRadius: 14
+		ProtectionScanRadius: 15
+		SuggestedGroundLeaderLocomotor: foot, wheeled, heavywheeled, tracked, critter, visceroid, smallvisc
+		SuggestedNavyLeaderLocomotor: Naval
+		GuerrillaTypes: smech, bggy, jumpjet, hvr, bike, subtank, stnk
 	UnitBuilderBotModule@test:
 		RequiresCondition: enable-test-ai
 		UnitQueues: Vehicle, Infantry, Air
