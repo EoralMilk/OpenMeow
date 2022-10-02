@@ -178,7 +178,7 @@ GASILO:
 	Inherits: ^Building
 	Inherits@SHAPE: ^2x2Shape
 	Buildable:
-		Queue: Building
+		Queue: Defense
 		BuildPaletteOrder: 60
 		Prerequisites: proc, ~techlevel.low
 		Description: Stores excess Tiberium.

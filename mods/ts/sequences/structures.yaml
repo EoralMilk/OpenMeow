@@ -1326,6 +1326,10 @@ gactwr:
 		UseTilesetCode: false
 	turret-sam: gtctwr_d
 		Facings: 32
+	plug-powrup: ggpowerup
+		UseTilesetCode: false
+		Length: 12
+		Tick: 120
 	muzzle:
 		Combine:
 			mgun-n:

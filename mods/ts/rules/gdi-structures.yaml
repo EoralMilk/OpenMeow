@@ -7,7 +7,7 @@ GAPOWR:
 		Prerequisites: ~structures.gdi, ~techlevel.low
 		Description: Provides power for other structures.
 	Valued:
-		Cost: 300
+		Cost: 350
 	Tooltip:
 		Name: GDI Power Plant
 	ProvidesPrerequisite:
@@ -87,22 +87,6 @@ GAPOWR.SOCKET:
 	Interactable:
 	Tooltip:
 		Name: GDI Power Plant socket
-
-GAPOWRUP:
-	Inherits: ^BuildingPlug
-	Valued:
-		Cost: 150
-	Tooltip:
-		Name: Power Turbine
-	Buildable:
-		Queue: Building
-		BuildPaletteOrder: 100
-		Prerequisites: gapowr.socket, ~structures.gdi, ~techlevel.medium
-		Description: Provides extra power generation.
-	Plug:
-		Type: powrup
-	Power:
-		Amount: 50
 
 GAPILE:
 	Inherits: ^Building
