@@ -426,6 +426,7 @@ namespace OpenRA
 				bottomRightOffset.Y - topLeftOffset.Y);
 
 			TerrainShader.SetFloat("WaterUVOffset", (float)(Game.LocalTick % 256) / 256);
+			TerrainShader.SetFloat("WaterUVOffset2", (float)(Game.LocalTick % 1784) / 1784);
 
 			TerrainShader.SetTexture("Mask123", MaskFramebuffer.GetTexture(0));
 
@@ -435,6 +436,9 @@ namespace OpenRA
 			TerrainShader.SetTexture("Caustics",
 				Map.TextureCache.CausticsTextures[Math.Min((Game.LocalTick % 93) / 3,
 				Map.TextureCache.CausticsTextures.Length - 1)].GetTexture());
+
+			var cloud = Map.TextureCache.Textures["MaskCloud"];
+			TerrainShader.SetTexture(cloud.Item1, cloud.Item2.GetTexture());
 
 			TerrainShader.SetTexture("BakedTerrainTexture", BlendFramebuffer.Texture);
 			TerrainShader.SetTexture("BakedTerrainNormalTexture", BlendFramebuffer.GetTexture(1));

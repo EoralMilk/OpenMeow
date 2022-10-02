@@ -207,6 +207,8 @@ void main()
 		if (masks[layer] > 0.993){
 			colors[layer] = GetTileColor(layer);
 			norms[layer] = GetTileNormal(layer);
+			colors[layer+1] = GetTileColor(layer+1);
+			norms[layer+1] = GetTileNormal(layer+1);
 			break;
 		}
 		layer++;

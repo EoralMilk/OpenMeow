@@ -63,7 +63,7 @@ hvr:
 	muzzle: gunfire
 		Length: *
 		IgnoreWorldTint: True
-		MeshType: FloatBoard
+		# MeshType: FloatBoard
 	icon: xxicon
 
 lpst.gdi:
@@ -134,7 +134,7 @@ art2:
 		Offset: 0, 0, 24
 		IgnoreWorldTint: True
 		Scale: 2
-		MeshType: FloatBoard
+		# MeshType: FloatBoard
 
 weed:
 	Inherits@defaults: ^VehicleBase
@@ -165,7 +165,7 @@ hmec:
 				Length: 6
 		Facings: 8
 		Length: 6
-		MeshType: FloatBoard
+		# MeshType: FloatBoard
 		IgnoreWorldTint: True
 
 bike:
@@ -198,8 +198,8 @@ bggy:
 				Length: 6
 		Facings: 8
 		Length: 6
-		IgnoreWorldTint: True
-		MeshType: FloatBoard
+		# IgnoreWorldTint: True
+		# MeshType: FloatBoard
 	icon: bggyicon
 		Offset: 0, 0
 
@@ -237,7 +237,7 @@ ttnk:
 		Length: *
 		Offset: 0, 0, 24
 		IgnoreWorldTint: True
-		MeshType: FloatBoard
+		# MeshType: FloatBoard
 	icon: tickicon
 
 stnk:
@@ -267,7 +267,7 @@ mmch:
 		Length: *
 		Offset: 0, 0, 12
 		IgnoreWorldTint: True
-		MeshType: FloatBoard
+		# MeshType: FloatBoard
 	icon: mmchicon
 
 jugg:
@@ -304,7 +304,7 @@ jugg:
 		Offset: 0, 0, 24
 		IgnoreWorldTint: True
 		Scale: 1.6
-		MeshType: FloatBoard
+		# MeshType: FloatBoard
 
 gghunt:
 	Inherits@defaults: ^VehicleBase

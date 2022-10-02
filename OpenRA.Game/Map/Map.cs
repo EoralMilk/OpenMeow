@@ -1401,10 +1401,11 @@ namespace OpenRA
 				}
 
 				if (isShore)
-					TerrainRenderBlock.PaintAt(this, brush, CenterOfCell(uv), brush.DefaultSize * random.Next(40, 50) / random.Next(25, 30), layer, 255);
+					TerrainRenderBlock.PaintAt(this, brush, CenterOfCell(uv), brush.DefaultSize, layer, 255);
 
 				if (layer == 0)
 				{
+					TerrainRenderBlock.PaintAt(this, brush, CenterOfCell(uv), brush.DefaultSize * random.Next(40, 50) / random.Next(25, 30), layer, random.Next(1, 255));
 					if (isShore)
 						TerrainRenderBlock.PaintAt(this, waterBrush, CenterOfCell(uv), waterBrush.DefaultSize * random.Next(10, 15) / random.Next(30, 45), layer, random.Next(1, 75));
 					else
@@ -1430,8 +1431,8 @@ namespace OpenRA
 				}
 				else if (id >= 108 && id <= 149 && typename != "Water")
 				{
-					TerrainRenderBlock.PaintAt(this, waterBrush, CenterOfCell(uv), waterBrush.DefaultSize, 0, -255);
-					TerrainRenderBlock.PaintAt(this, brush, CenterOfCell(uv), brush.DefaultSize, 0, -random.Next(64, 175));
+					// TerrainRenderBlock.PaintAt(this, waterBrush, CenterOfCell(uv), waterBrush.DefaultSize, 0, -200);
+					TerrainRenderBlock.PaintAt(this, brush, CenterOfCell(uv), brush.DefaultSize * random.Next(10, 15) / random.Next(30, 45), 0, -random.Next(64, 175));
 				}
 			}
 
@@ -1452,8 +1453,8 @@ namespace OpenRA
 			var br = vp.BottomRightPosition;
 			var left = tl.X;
 			var right = br.X;
-			var top = tl.Y - Grid.MaximumTerrainHeight * MapGrid.MapHeightStep;
-			var bottom = br.Y + Grid.MaximumTerrainHeight * MapGrid.MapHeightStep;
+			var top = tl.Y - Grid.MaximumTerrainHeight * MapGrid.MapHeightStep * 2;
+			var bottom = br.Y + Grid.MaximumTerrainHeight * MapGrid.MapHeightStep * 2;
 
 			foreach (var block in TerrainBlocks)
 			{
@@ -1467,8 +1468,8 @@ namespace OpenRA
 			var br = vp.BottomRightPosition;
 			var left = tl.X;
 			var right = br.X;
-			var top = tl.Y - Grid.MaximumTerrainHeight * MapGrid.MapHeightStep;
-			var bottom = br.Y + Grid.MaximumTerrainHeight * MapGrid.MapHeightStep;
+			var top = tl.Y - Grid.MaximumTerrainHeight * MapGrid.MapHeightStep * 2;
+			var bottom = br.Y + Grid.MaximumTerrainHeight * MapGrid.MapHeightStep * 2;
 
 			foreach (var block in TerrainBlocks)
 			{
@@ -1488,8 +1489,8 @@ namespace OpenRA
 			var br = vp.BottomRightPosition;
 			var left = tl.X;
 			var right = br.X;
-			var top = tl.Y - Grid.MaximumTerrainHeight * MapGrid.MapHeightStep;
-			var bottom = br.Y + Grid.MaximumTerrainHeight * MapGrid.MapHeightStep;
+			var top = tl.Y - Grid.MaximumTerrainHeight * MapGrid.MapHeightStep * 2;
+			var bottom = br.Y + Grid.MaximumTerrainHeight * MapGrid.MapHeightStep * 2;
 
 			foreach (var block in TerrainBlocks)
 			{

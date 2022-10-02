@@ -139,7 +139,7 @@ explosion:
 		AlphaFade: True
 		IgnoreWorldTint: True
 		BlendMode: ScreenAdditive #Additive
-		MeshType: FloatBoard
+		# MeshType: FloatBoard
 	building: twlt070
 		Offset: 0, 0, 36
 	ionring: ring1
@@ -186,26 +186,33 @@ explosion:
 		IgnoreWorldTint: False
 		AlphaFade: False
 		Alpha: 0.5
+		Tick: 55
 		BlendMode: Alpha
 	large_watersplash: h2o_exp1
 		Offset: 0, 0, 39
 		IgnoreWorldTint: False
 		AlphaFade: False
 		Alpha: 0.5
+		Tick: 55
 		BlendMode: Alpha
 	water_piff: w_piff
 		IgnoreWorldTint: False
 		BlendMode: Alpha
+		Tick: 75
 	water_piffs: w_piffs
 		IgnoreWorldTint: False
 		BlendMode: Alpha
+		Tick: 75
 	piff: piff
 		IgnoreWorldTint: False
+		Tick: 55
 	piffs: piffpiff
 		IgnoreWorldTint: False
+		Tick: 55
 	piff-bright: piff
 		IgnoreWorldTint: True
 		BlendMode: Additive
+		Tick: 55
 	small_explosion: explosml
 	medium_explosion: explomed
 		Offset: 0, 0, 27
@@ -309,7 +316,7 @@ mislflash:
 	Defaults:
 		ZOffset: 768
 		IgnoreWorldTint: True
-		MeshType: FloatBoard
+		# MeshType: FloatBoard
 		BlendMode: Additive
 		Tick: 50
 		Length: *
@@ -402,7 +409,7 @@ litning:
 	Defaults:
 		ZOffset: 512
 		IgnoreWorldTint: True
-		MeshType: FloatBoard
+		# MeshType: FloatBoard
 		BlendMode: Additive
 	bright:
 		Length: 4
