@@ -109,7 +109,6 @@ A10Napalm:
 		Velocity: 72, 0, -90
 		Acceleration: 0, 0, -8
 		Shadow: true
-		Palette: ra
 		Image: zbomb
 		Palette: player
 		IsPlayerPalette: true
@@ -369,3 +368,22 @@ VeinholeTest:
 		Size: 0,0
 		ValidTargets: Ground, Air
 		AirThreshold: 768
+
+ApcReconDummyWeapon:
+	ValidTargets: Ground, Water, Air
+	Range: 20c0
+	ReloadDelay: 19
+	Projectile: InstantHit
+	Warhead@1Dam: TargetDamage
+		Spread: 0
+		ValidTargets: Ground, Water, Air
+
+DroneReconDummyWeapon:
+	ValidTargets: Ground, Air, Water
+	Range: 0c512
+	ReloadDelay: 19000
+	Projectile: InstantHit
+		Blockable: false
+	Warhead@1Dam: TargetDamage
+		Spread: 0
+		ValidTargets: Ground, Water, Air

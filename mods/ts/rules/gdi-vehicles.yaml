@@ -43,6 +43,22 @@ APC:
 		TerrainTypes: Water
 		StationaryInterval: 18
 		MovingInterval: 6
+	DroneSpawnerMaster:
+		Actors: QDRONE
+		SpawnOffset: 0,0,512
+		RespawnTicks: 256
+		FollowAfterAttackDelay: 21 ## bigger than reload time
+	Armament:
+		Weapon: ApcReconDummyWeapon
+		PauseOnCondition: empdisable
+		TargetRelationships: None
+		Cursor: ability
+		OutsideRangeCursor: ability
+	AttackFollow:
+		PauseOnCondition: empdisable
+		Voice: Move
+		TargetLineColor: FFFF00
+	-RevealOnFire:
 
 HVR:
 	Inherits: ^Vehicle

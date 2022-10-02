@@ -9,7 +9,7 @@
 #endregion
 
 using System;
-using System.Linq;
+using OpenRA.Activities;
 using OpenRA.Traits;
 
 namespace OpenRA.Mods.Common.Traits
@@ -17,9 +17,6 @@ namespace OpenRA.Mods.Common.Traits
 	[Desc("This actor can spawn actors.")]
 	public class DroneSpawnerMasterInfo : BaseSpawnerMasterInfo
 	{
-		[Desc("Spawn at a member, not the nexus?")]
-		public readonly bool ExitByBudding = true;
-
 		[Desc("Can the slaves be controlled independently?")]
 		public readonly bool SlavesHaveFreeWill = false;
 
@@ -28,6 +25,9 @@ namespace OpenRA.Mods.Common.Traits
 
 		[Desc("When idle and not moving, master check slaves and gathers them in this many tick. Set it properly can save performance")]
 		public readonly int IdleCheckTick = 103;
+
+		[Desc("After master attack, slaves will stop and follow master in this many tick. Mainly used for long-range attack also use drone")]
+		public readonly int FollowAfterAttackDelay = 0;
 
 		public override void RulesetLoaded(Ruleset rules, ActorInfo ai)
 		{
@@ -58,26 +58,22 @@ namespace OpenRA.Mods.Common.Traits
 		public new DroneSpawnerMasterInfo Info { get; private set; }
 
 		DroneSpawnerSlaveEntry[] slaveEntries;
+		int spawnReplaceTicks;
+		int followTick;
 
-		bool hasSpawnedInitialLoad = false;
-		int spawnReplaceTicks = 0;
-
-		readonly OpenRA.Activities.ActivityType attacktype = OpenRA.Activities.ActivityType.Attack;
-		readonly OpenRA.Activities.ActivityType movetype = OpenRA.Activities.ActivityType.Move;
-		readonly OpenRA.Activities.ActivityType abilitytype = OpenRA.Activities.ActivityType.Ability;
-		readonly OpenRA.Activities.ActivityType othertype = OpenRA.Activities.ActivityType.Undefined;
-
-		OpenRA.Activities.ActivityType preState;
+		ActivityType preState;
 
 		WPos preLoc;
 
 		int remainingIdleCheckTick;
+		bool isAircraft;
 
 		public DroneSpawnerMaster(ActorInitializer init, DroneSpawnerMasterInfo info)
 			: base(init, info)
 		{
 			Info = info;
 			preLoc = WPos.Zero;
+			followTick = 0;
 		}
 
 		protected override void Created(Actor self)
@@ -85,6 +81,7 @@ namespace OpenRA.Mods.Common.Traits
 			base.Created(self);
 
 			remainingIdleCheckTick = Info.IdleCheckTick;
+
 			for (var i = 0; i < Info.GatherCell.Length; i++)
 				slaveEntries[i].GatherOffsetCell = Info.GatherCell[i];
 
@@ -96,8 +93,9 @@ namespace OpenRA.Mods.Common.Traits
 			// The base class creates the slaves but doesn't move them into world.
 			// Let's do it here.
 			SpawnReplenishedSlaves(self);
+			spawnReplaceTicks = -1;
 
-			hasSpawnedInitialLoad = true;
+			isAircraft = self.Info.HasTraitInfo<AircraftInfo>();
 		}
 
 		public override BaseSpawnerSlaveEntry[] CreateSlaveEntries(BaseSpawnerMasterInfo info)
@@ -141,54 +139,39 @@ namespace OpenRA.Mods.Common.Traits
 				return;
 
 			AssignTargetsToSlaves(self, target);
+			followTick = Info.FollowAfterAttackDelay;
 		}
 
 		void ITick.Tick(Actor self)
 		{
-			if (spawnReplaceTicks > 0)
+			// Time to respawn someting.
+			if (spawnReplaceTicks < 0)
 			{
-				spawnReplaceTicks--;
-
-				// Time to respawn someting.
-				if (spawnReplaceTicks <= 0)
-				{
-					Replenish(self, slaveEntries);
-
-					SpawnReplenishedSlaves(self);
-
-					// If there's something left to spawn, restart the timer.
-					if (SelectEntryToSpawn(slaveEntries) != null)
-						spawnReplaceTicks = Util.ApplyPercentageModifiers(Info.RespawnTicks, reloadModifiers.Select(rm => rm.GetReloadModifier()));
-				}
+				// If there's something left to spawn, restart the timer.
+				if (SelectEntryToSpawn(slaveEntries) != null)
+					spawnReplaceTicks = Info.RespawnTicks;
 			}
+			else if (spawnReplaceTicks == 0)
+			{
+				Replenish(self, slaveEntries);
+				SpawnReplenishedSlaves(self);
+				spawnReplaceTicks--;
+			}
+			else
+				spawnReplaceTicks--;
 
 			if (!Info.SlavesHaveFreeWill)
 				AssignSlaveActivity(self);
+
+			if (followTick > 0)
+				followTick--;
 		}
 
 		void SpawnReplenishedSlaves(Actor self)
 		{
-			var centerPosition = WPos.Zero;
-			if (!hasSpawnedInitialLoad || !Info.ExitByBudding)
-			{
-				// Spawning from a solid actor...
-				centerPosition = self.CenterPosition;
-			}
-			else
-			{
-				// Spawning from a virtual nexus: exit by an existing member.
-				var se = slaveEntries.FirstOrDefault(s => s.IsValid && s.Actor.IsInWorld);
-				if (se != null)
-					centerPosition = se.Actor.CenterPosition;
-			}
-
-			// WPos.Zero implies this mob spawner master is dead or something.
-			if (centerPosition == WPos.Zero)
-				return;
-
 			foreach (var se in slaveEntries)
 				if (se.IsValid && !se.Actor.IsInWorld)
-					SpawnIntoWorld(self, se.Actor, centerPosition + se.Offset.Rotate(self.Orientation));
+					SpawnIntoWorld(self, se.Actor, self.CenterPosition + se.Offset.Rotate(self.Orientation));
 		}
 
 		public override void OnSlaveKilled(Actor self, Actor slave)
@@ -203,7 +186,7 @@ namespace OpenRA.Mods.Common.Traits
 			{
 				if (!se.IsValid)
 					continue;
-				if (se.SpawnerSlave.info.AttackCallBackDistance.LengthSquared > (self.CenterPosition - target.CenterPosition).HorizontalLengthSquared)
+				if (se.SpawnerSlave.Info.AttackCallBackDistance.LengthSquared > (self.CenterPosition - target.CenterPosition).HorizontalLengthSquared)
 					se.SpawnerSlave.Attack(se.Actor, target);
 				else if (preLoc != self.CenterPosition)
 				{
@@ -220,7 +203,7 @@ namespace OpenRA.Mods.Common.Traits
 				if (!se.IsValid || !se.Actor.IsInWorld)
 					continue;
 
-				if (!se.SpawnerSlave.IsMoving())
+				if (!se.SpawnerSlave.IsMoving(self.Location + se.GatherOffsetCell))
 				{
 					se.SpawnerSlave.Stop(se.Actor);
 					se.SpawnerSlave.Move(se.Actor, self.Location + se.GatherOffsetCell);
@@ -230,6 +213,9 @@ namespace OpenRA.Mods.Common.Traits
 
 		void AssignSlaveActivity(Actor self)
 		{
+			if (followTick > 0)
+				return;
+
 			var effectiveActivity = self.CurrentActivity;
 			if (!self.IsIdle)
 			{
@@ -238,7 +224,7 @@ namespace OpenRA.Mods.Common.Traits
 			}
 
 			// 1. Drone may get away from master due to auto-targeting.
-			if (effectiveActivity == null || effectiveActivity.ActivityType == abilitytype || effectiveActivity.ActivityType == othertype)
+			if (effectiveActivity == null || effectiveActivity.ActivityType == ActivityType.Ability || effectiveActivity.ActivityType == ActivityType.Undefined)
 			{
 				if (remainingIdleCheckTick < 0)
 				{
@@ -258,9 +244,11 @@ namespace OpenRA.Mods.Common.Traits
 
 			// 2. Stop the drone attacking when move for special case of fire at an ally.
 			// Only move slaves when position change
-			else if (effectiveActivity.ActivityType == movetype)
+			// Note: because aircraft always Fly, so drone may get away from master due to auto-targeting
+			// when actor moves.
+			else if (effectiveActivity.ActivityType == ActivityType.Move)
 			{
-				if (preState == attacktype)
+				if (preState == ActivityType.Attack)
 				{
 					StopSlaves();
 					remainingIdleCheckTick = Info.IdleCheckTick;
@@ -270,27 +258,34 @@ namespace OpenRA.Mods.Common.Traits
 					MoveSlaves(self);
 					remainingIdleCheckTick = Info.IdleCheckTick;
 				}
+				else if (remainingIdleCheckTick < 0 && isAircraft)
+				{
+					MoveSlaves(self);
+					remainingIdleCheckTick = Info.IdleCheckTick;
+				}
+				else if (isAircraft)
+					remainingIdleCheckTick--;
 			}
 
 			// Actually, new code here or old code in MobSpawnerMaster is not working
 			// The only working code is in INotifyAttack. It is due to Activity of attack
 			// do not achieve `GetTargets(actor)`
 			// 3. Stop the slaves move when prepare to attack
-			else if (effectiveActivity.ActivityType == attacktype)
+			else if (effectiveActivity.ActivityType == ActivityType.Attack)
 			{
-				if (preState == movetype)
+				if (preState == ActivityType.Move)
 				{
 					StopSlaves();
 					remainingIdleCheckTick = Info.IdleCheckTick;
 				}
-				else if (preState == othertype || preState == abilitytype)
+				else if (preState == ActivityType.Undefined || preState == ActivityType.Ability)
 				{
 					StopSlaves();
 					remainingIdleCheckTick = Info.IdleCheckTick;
 				}
 			}
 
-			preState = effectiveActivity == null ? othertype : effectiveActivity.ActivityType;
+			preState = effectiveActivity == null ? ActivityType.Undefined : effectiveActivity.ActivityType;
 			preLoc = self.CenterPosition;
 		}
 

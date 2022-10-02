@@ -10,7 +10,10 @@
 
 using System;
 using System.Linq;
-using OpenRA.Traits;
+
+/*
+ * Needs base engine modification. (Because DroneSpawner.cs mods it)
+ */
 
 namespace OpenRA.Mods.Common.Traits
 {
@@ -18,7 +21,7 @@ namespace OpenRA.Mods.Common.Traits
 	public class DroneSpawnerSlaveInfo : BaseSpawnerSlaveInfo
 	{
 		[Desc("Aircraft slaves outside of this range from master while moving will be call back")]
-		public readonly WDist MovingCallBackDistance = WDist.FromCells(2);
+		public readonly int MovingCallBackCellDistance = 2;
 
 		[Desc("Slaves will follow master instead of attack while target outside of this range")]
 		public readonly WDist AttackCallBackDistance = WDist.FromCells(10);
@@ -26,24 +29,22 @@ namespace OpenRA.Mods.Common.Traits
 		public override object Create(ActorInitializer init) { return new DroneSpawnerSlave(this); }
 	}
 
-	public class DroneSpawnerSlave : BaseSpawnerSlave, INotifySelected
+	public class DroneSpawnerSlave : BaseSpawnerSlave
 	{
 		public IMove[] Moves { get; private set; }
 		public IPositionable Positionable { get; private set; }
-		public bool isAircraft;
-		public readonly DroneSpawnerSlaveInfo info;
+		public bool IsAircraft;
+		public readonly DroneSpawnerSlaveInfo Info;
 		Actor currentActor;
 		Actor masterActor;
 		public readonly Predicate<Actor> InvalidActor;
 
-		DroneSpawnerMaster spawnerMaster;
-
-		public bool IsMoving()
+		public bool IsMoving(CPos gatherlocation)
 		{
-			if (isAircraft)
+			if (IsAircraft)
 			{
 				if (!InvalidActor(currentActor) && !InvalidActor(masterActor) &&
-					(currentActor.CenterPosition - masterActor.CenterPosition).HorizontalLengthSquared > info.MovingCallBackDistance.LengthSquared)
+					(currentActor.Location - gatherlocation).LengthSquared > Info.MovingCallBackCellDistance * Info.MovingCallBackCellDistance)
 					return false;
 
 				return true;
@@ -57,7 +58,7 @@ namespace OpenRA.Mods.Common.Traits
 			: base(info)
 		{
 			InvalidActor = a => a == null || a.IsDead || !a.IsInWorld;
-			this.info = info;
+			Info = info;
 		}
 
 		protected override void Created(Actor self)
@@ -74,13 +75,12 @@ namespace OpenRA.Mods.Common.Traits
 
 			Positionable = positionables.First();
 
-			isAircraft = self.Info.HasTraitInfo<AircraftInfo>();
+			IsAircraft = self.Info.HasTraitInfo<AircraftInfo>();
 		}
 
 		public override void LinkMaster(Actor self, Actor master, BaseSpawnerMaster spawnerMaster)
 		{
 			base.LinkMaster(self, master, spawnerMaster);
-			this.spawnerMaster = spawnerMaster as DroneSpawnerMaster;
 			masterActor = master;
 		}
 
@@ -93,24 +93,12 @@ namespace OpenRA.Mods.Common.Traits
 			foreach (var mv in Moves)
 				if (mv.IsTraitEnabled())
 				{
-					if (isAircraft)
+					if (IsAircraft)
 						self.QueueActivity(mv.MoveTo(location, 0));
 					else
 						self.QueueActivity(mv.MoveTo(location, 2));
 					break;
 				}
-		}
-
-		void INotifySelected.Selected(Actor self)
-		{
-			if (spawnerMaster.Info.SlavesHaveFreeWill)
-				return;
-
-			// I'm assuming these guys are selectable, both slave and the nexus.
-			// self.World.Selection.Remove(self.World, self); No need to remove when you don't wee the selection decoration.
-			// -SelectionDecorations: is all you need.
-			// Also use RejectsOrder if necessary.
-			self.World.Selection.Add(Master);
 		}
 	}
 }

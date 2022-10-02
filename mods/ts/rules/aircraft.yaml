@@ -670,3 +670,52 @@ HUNTER:
 	HitShape:
 	MapEditorData:
 		Categories: System
+
+QDRONE:
+	Inherits: ^Aircraft
+	-Selectable:
+	-SelectionDecorations:
+	Interactable:
+	Tooltip:
+		Name: Recon Drone
+	Health:
+		HP: 5000
+	RevealsShroud@airborne:
+		Range: 5c0
+	RevealsShroud:
+		Range: 2c0
+	-RevealOnFire:
+	-Targetable@REPAIR:
+	DroneSpawnerSlave:
+		AttackCallBackDistance: 21c0
+	Targetable@Ignore:
+		TargetTypes: AIgnored
+	Aircraft:
+		MaximumPitch: 90
+		Repulsable: true
+		TurnSpeed: 16
+		Speed: 128
+		IdleTurnSpeed: 10
+		IdleSpeed: 64
+		AltitudeVelocity: 200
+		RepulsionSpeed: 16
+		VTOL: true
+		AirborneCondition: airborne
+		MoveIntoShroud: true
+		TakeUpCellWhenLand: false
+		CruiseAltitude: 2c0
+	AttackAircraft:
+		AttackType: Hover
+	RenderSprites:
+		Image: quaddrone-mini
+	Armament:
+		Weapon: DroneReconDummyWeapon
+	RejectsOrders:
+	-MapEditorData:
+	-SpawnActorOnDeath:
+	-RenderModels:
+	-WithModelBody:
+	-UpdatesPlayerStatistics:
+	-ActorLostNotification:
+	WithSpriteBody:
+	WithShadow:
