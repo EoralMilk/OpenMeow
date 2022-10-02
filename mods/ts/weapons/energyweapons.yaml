@@ -27,7 +27,7 @@
 		DamageTypes: Prone100Percent, TriggerProne, ExplosionDeath
 		ValidTargets: Ground, Water, Air
 	Warhead@2Eff: CreateEffect
-		Explosions: proton_explo
+		Explosions: smallpulse_explosion
 		ExplosionPalette: effectcyan
 		ImpactSounds: expnew12.aud
 		ValidTargets: Ground, Air
