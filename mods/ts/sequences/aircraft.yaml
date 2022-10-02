@@ -67,5 +67,9 @@ quaddrone-mini:
 		Length: *
 		Scale: 0.9
 	die: explosml
+		ZOffset: 511
+		Offset: 0, 0, 24
+		AlphaFade: True
 		Length: *
-		IgnoreWorldTint: true
+		IgnoreWorldTint: True
+		BlendMode: Additive #Additive

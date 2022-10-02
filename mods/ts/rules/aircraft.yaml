@@ -719,3 +719,11 @@ QDRONE:
 	-ActorLostNotification:
 	WithSpriteBody:
 	WithShadow:
+	WithDeathAnimation:
+		FallbackSequence: die
+		DeathSequence: die
+		DeathSequencePalette: effect
+		DeathPaletteIsPlayerPalette: false
+		UseDeathTypeSuffix: false
+		CrushedSequence: die
+		CrushedSequencePalette: effect
