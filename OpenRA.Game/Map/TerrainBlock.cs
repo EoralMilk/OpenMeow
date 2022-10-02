@@ -349,7 +349,7 @@ namespace OpenRA
 
 				MaskFramebuffer.Unbind();
 
-				Console.WriteLine(TopLeft + " paint update " + paintSpots.Count);
+				// Console.WriteLine(TopLeft + " paint update " + paintSpots.Count);
 				needUpdateTexture = true;
 				paintSpots.Clear();
 			}
@@ -372,8 +372,7 @@ namespace OpenRA
 			if (!needUpdateTexture)
 				return;
 
-			Console.WriteLine("Updating block texture: " + TopLeft);
-
+			// Console.WriteLine("Updating block texture: " + TopLeft);
 			needUpdateTexture = false;
 
 			BlendFramebuffer.Bind();

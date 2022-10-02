@@ -46,9 +46,11 @@ vec3 norms[MAX_TERRAIN_LAYER + 2];
 layout (location = 0) out vec4 ColorOutPut;
 layout (location = 1) out vec4 NormalOutPut;
 
+
 vec3 ProcessNormal(vec3 normal){
+	// return normalize(TBN * normal);
 	normal = normalize(normal * 2.0 - 1.0);   
-	return normalize(TBN * normal);
+	return (normalize(TBN * normal) + 1.0) / 2.0;
 }
 
 int GetTileIndex(int layer){

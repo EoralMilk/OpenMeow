@@ -20,7 +20,7 @@
 		Acceleration: 96
 		MinimumLaunchAngle: 128
 		MaximumLaunchAngle: 192
-		VerticalRateOfTurn: 100
+		VerticalRateOfTurn: 62
 		CruiseAltitude: 3c0
 		AllowSnapping: true
 		TerrainHeightAware: true
@@ -33,7 +33,7 @@
 		ContrailWidth: 178
 		ContrailUseInnerOuterColor: true
 
-		ContrailStartColor: DFA833
+		ContrailStartColor: DFA877
 		ContrailStartColorOuter: FFDD44
 		ContrailStartColorAlpha: 233
 		ContrailStartColorAlphaOuter: 0
@@ -45,7 +45,7 @@
 
 		ContrailWidthFadeRate: 1
 		ContrailDelay: 0
-		ContrailBlendMode: Alpha #ScreenAdditive
+		ContrailBlendMode: Additive
 		
 		JetImage: mislflash
 		JetSequence: mislflash1
@@ -119,7 +119,7 @@
 
 		ContrailUseInnerOuterColor: true
 
-		ContrailStartColor: DFA833
+		ContrailStartColor: DFA877
 		ContrailStartColorOuter: FFDD44
 		ContrailStartColorAlpha: 233
 		ContrailStartColorAlphaOuter: 0
@@ -131,7 +131,7 @@
 
 		ContrailWidthFadeRate: 1
 		ContrailDelay: 0
-		ContrailBlendMode: Alpha #ScreenAdditive
+		ContrailBlendMode: Additive
 
 		ExplodeUnderThisAltitude: 0
 		UsingScat: false
@@ -327,11 +327,6 @@ RedEye2:
 	Range: 15c0
 	Report: samshot1.aud
 	ValidTargets: Air
-	# Projectile: Missile
-	# 	Arm: 1
-	# 	VerticalRateOfTurn: 140
-	# 	RangeLimit: 25c0
-	# 	Speed: 288
 	Projectile: VectorBooster
 		HorizonRotationRate: 13
 		VerticalRotationRate: 9

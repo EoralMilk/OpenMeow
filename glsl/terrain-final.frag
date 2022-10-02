@@ -130,13 +130,13 @@ vec4 CalcDirLight(DirLight light, vec4 color)
 	vec3 normal;
 	// water?
 	if (mask.r > 0.001){
-		vec2 waterUV = vFragPos.xy;
-		vec4 cm = texture(MaskCloud, waterUV / 14.0 + vec2(WaterUVOffset2, WaterUVOffset2));
-		vec2 cuv = waterUV / 3.5 + vec2(cm.r * 0.5) + vec2(-WaterUVOffset, 0);
+		vec2 waterUV = vFragPos.xy / 3.5;
+		vec4 cm = texture(MaskCloud, waterUV / 8.0 + vec2(WaterUVOffset2, WaterUVOffset2));
+		vec2 cuv = waterUV + vec2(cm.r * 0.5) + vec2(-WaterUVOffset, 0);
 		cuv = cuv - vec2(floor(cuv.x), floor(cuv.y));
 
 		normal = mix(texture(BakedTerrainNormalTexture, vTexCoord).rgb, 
-					texture(WaterNormal, cuv).rgb, 
+					texture(WaterNormal, waterUV).rgb, 
 					min(mask.r * 2.0, 1.0));
 
 		float causticsBlend = 0.0;
@@ -156,8 +156,6 @@ vec4 CalcDirLight(DirLight light, vec4 color)
 	}
 
 
-	vec3 viewDir = CameraInvFront;
-	vec3 lightDir = -light.direction;
 
 	vec3 tint = vec3(0.0);
 
@@ -165,7 +163,7 @@ vec4 CalcDirLight(DirLight light, vec4 color)
 	{
 		if (TerrainLightPos[i].xy == vec2(0.0))
 			break;
-		float dist = length(vFragPos.xy - TerrainLightPos[i].xy);
+		float dist = length(vFragPos.xyz - TerrainLightPos[i].xyz);
 		if (dist > TerrainLightColorRange[i].a)
 			continue;
 		float falloff = (TerrainLightColorRange[i].a - dist) / TerrainLightColorRange[i].a;
@@ -173,20 +171,26 @@ vec4 CalcDirLight(DirLight light, vec4 color)
 	}
 	float heightLight = (1.0 + TerrainLightHeightStep * vFragPos.z);
 
+	normal = normalize(normal * 2.0 - 1.0);
+	vec3 viewDir = CameraInvFront;
+	vec3 lightDir = -light.direction;
+
 	vec3 specular = vec3(0.0);
 
 	// diffuse
-	float diff = dot(normal, lightDir) * 1.7 - 0.5;
+	float diff = dot(normal, lightDir);
 
 	// merge
 	vec3 ambient  = light.ambient * heightLight;
-	vec3 diffuse  = light.diffuse * diff * heightLight;
+	vec3 diffuse  = light.diffuse * max(diff, 0.0) * heightLight;
 
 	ambient = ambient * color.rgb;
 	diffuse = diffuse * color.rgb;
-	float shadow = 1.0 - max(CalShadow(), 0.0);
 
-	return vec4(ambient + diffuse * shadow  + specular + tint, color.a);
+	// simulate self-cast shadow
+	float shadow = 1.0 - max(CalShadow(), -diff);
+
+	return vec4(ambient + diffuse * shadow + specular + tint, color.a);
 }
 
 void main()
