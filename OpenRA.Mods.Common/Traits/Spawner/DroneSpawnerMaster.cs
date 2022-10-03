@@ -145,20 +145,23 @@ namespace OpenRA.Mods.Common.Traits
 		void ITick.Tick(Actor self)
 		{
 			// Time to respawn someting.
-			if (spawnReplaceTicks < 0)
+			if (!IsTraitPaused)
 			{
-				// If there's something left to spawn, restart the timer.
-				if (SelectEntryToSpawn(slaveEntries) != null)
-					spawnReplaceTicks = Info.RespawnTicks;
+				if (spawnReplaceTicks < 0)
+				{
+					// If there's something left to spawn, restart the timer.
+					if (SelectEntryToSpawn(slaveEntries) != null)
+						spawnReplaceTicks = Info.RespawnTicks;
+				}
+				else if (spawnReplaceTicks == 0)
+				{
+					Replenish(self, slaveEntries);
+					SpawnReplenishedSlaves(self);
+					spawnReplaceTicks--;
+				}
+				else
+					spawnReplaceTicks--;
 			}
-			else if (spawnReplaceTicks == 0)
-			{
-				Replenish(self, slaveEntries);
-				SpawnReplenishedSlaves(self);
-				spawnReplaceTicks--;
-			}
-			else
-				spawnReplaceTicks--;
 
 			if (!Info.SlavesHaveFreeWill)
 				AssignSlaveActivity(self);
