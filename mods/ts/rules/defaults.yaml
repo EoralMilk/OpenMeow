@@ -658,7 +658,7 @@
 		Sequence: place
 		Palette: ra
 		FootprintAlpha: 0.75
-		SequenceAlpha: 0.75
+		SequenceAlpha: 0.85
 	KillsSelf:
 		RemoveInstead: true
 	RenderSprites:

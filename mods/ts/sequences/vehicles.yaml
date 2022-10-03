@@ -298,6 +298,11 @@ titanup.vulcan:
 		UseTilesetCode: false
 	icon: mmch-vulcanicon
 
+titanup.missile:
+	place: mmch-samplace
+		UseTilesetCode: false
+	icon: mmch-samicon
+
 jugg:
 	Inherits@defaults: ^VehicleBase
 	Inherits: ^VehicleOverlays

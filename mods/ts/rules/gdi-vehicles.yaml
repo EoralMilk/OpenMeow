@@ -181,16 +181,12 @@ SMECH:
 MMCH:
 	Inherits: ^Tank
 	Inherits@EXPERIENCE: ^GainsExperience
-	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@renderVoxel: ^RenderVoxel
 	Valued:
 		Cost: 800
 	Tooltip:
 		Name: Titan
-		RequiresCondition: !vulcan
-	Tooltip@withvulcan:
-		Name: Titan (Vulcan Plugged)
-		RequiresCondition: vulcan
 	UpdatesPlayerStatistics:
 		AddToArmyValue: true
 	Buildable:
@@ -220,6 +216,7 @@ MMCH:
 	Turreted:
 		TurnSpeed: 20
 	AttackTurreted:
+		Armaments: primary, secondary, missile
 		Voice: Attack
 		PauseOnCondition: empdisable
 	WithSpriteTurret:
@@ -235,16 +232,33 @@ MMCH:
 		Weapon: TitanVulcan
 		RequiresCondition: vulcan
 		MuzzleSequence: muzzle-vulcan
-	Pluggable:
+	Armament@missile:
+		LocalOffset: 280,-475,545, 280,-475,735
+		Weapon: TitanMissile
+		RequiresCondition: missile
+		Name: missile
+		MuzzleSequence: muzzle-cannon
+		LocalYaw: 110
+	Pluggable@vulcan:
 		Conditions:
-			vulcan: vulcan
+			titan.vulcan: vulcan
 		Requirements:
-			vulcan: !vulcan
+			titan.vulcan: !vulcan
 		EditorOptions:
-			vulcan: Vulcan Upgrade
-	ProvidesPrerequisite@pluggable:
+			titan.vulcan: Vulcan Upgrade
+	Pluggable@missile:
+		Conditions:
+			titan.missile: missile
+		Requirements:
+			titan.missile: !missile
+		EditorOptions:
+			titan.missile: Missile Upgrade
+	ProvidesPrerequisite@pluggablevulcan:
 		RequiresCondition: !vulcan
 		Prerequisite: titan.vulcan
+	ProvidesPrerequisite@pluggablemissile:
+		RequiresCondition: !missile
+		Prerequisite: titan.missile
 	DetectCloaked:
 		Range: 1c768
 		RequiresCondition: rank-elite
@@ -257,6 +271,11 @@ MMCH:
 		Sequence: barrel-vulcan
 		LocalOffset: 345,272,515
 		RequiresCondition: vulcan
+	WithModelBarrel@missile:
+		Sequence: barrel-sam
+		LocalOffset: 0,-260,640
+		RequiresCondition: missile
+		Armament: missile
 	Selectable:
 		Bounds: 905, 2534, 0, -482
 	Carryable:
@@ -265,7 +284,7 @@ MMCH:
 TITANUG.VULCAN:
 	Inherits: ^VehiclePlug
 	Valued:
-		Cost: 150
+		Cost: 200
 	Tooltip:
 		Name: Vulcan Upgrade
 	Buildable:
@@ -274,9 +293,25 @@ TITANUG.VULCAN:
 		Prerequisites: titan.vulcan, ~sd, ~techlevel.low
 		Description: Give Titan an additional vulcan.\n  Strong vs Infantry, Light armor\n  Weak vs Aircraft
 	Plug:
-		Type: vulcan
+		Type: titan.vulcan
 	RenderSprites:
 		Image: titanup.vulcan
+
+TITANUG.MISSILE:
+	Inherits: ^VehiclePlug
+	Valued:
+		Cost: 300
+	Tooltip:
+		Name: Missile Upgrade
+	Buildable:
+		Queue: Defense
+		BuildPaletteOrder: 80
+		Prerequisites: titan.missile, ~sd, ~techlevel.low
+		Description: Give Titan an additional missile.\n  Strong vs Vehicles, Aircraft\n  Weak vs Infantry
+	Plug:
+		Type: titan.missile
+	RenderSprites:
+		Image: titanup.missile
 
 HMEC:
 	Inherits: ^Tank

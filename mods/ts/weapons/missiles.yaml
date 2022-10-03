@@ -197,10 +197,29 @@ HoverMissile:
 	Warhead@1Dam: SpreadDamage
 		Damage: 4500
 
-HoverMissileDual:
-	Inherits: HoverMissile
+TitanMissile:
+	Inherits: ^VectorBooster
 	Burst: 2
-	ReloadDelay: 50
+	ReloadDelay: 75
+	Range: 8c768
+	Report: hovrmis1.aud
+	Projectile: VectorBooster
+		HorizonRotationRate: 12
+		VerticalRotationRate: 9
+		Acceleration: 20
+		Speed: 100
+		Width: 42
+		MeshScale: 2.0
+		ProximityRange: 200
+		LockOnDelay: 4
+		IgnitionDelay: 5
+		ContrailDelay: 0
+		MinSpeed: 64
+		MaxSpeed: 400
+		LifeTime: 70
+		LaunchAngle: 0
+	Warhead@1Dam: Spread3DDamage
+		Damage: 4500
 
 HoverMissileQuad:
 	Inherits: HoverMissile
