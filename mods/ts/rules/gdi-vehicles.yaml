@@ -48,6 +48,7 @@ APC:
 		SpawnOffset: 0,0,512
 		RespawnTicks: 256
 		FollowAfterAttackDelay: 21 ## bigger than reload time
+		PauseOnCondition: inside-tunnel || carried || empdisable
 	Armament:
 		Weapon: ApcReconDummyWeapon
 		PauseOnCondition: empdisable
