@@ -8,6 +8,11 @@ overlay:
 	build-invalid:
 		Start: 1
 	target-select:
+	vplug-valid:
+		Start: 3
+	vplug-invalid:
+		Start: 2
+
 
 editor-overlay:
 	Defaults: place
@@ -191,18 +196,20 @@ explosion:
 	small_watersplash: h2o_exp2
 		IgnoreWorldTint: False
 		AlphaFade: False
-		Alpha: 0.5
+		Alpha: 0.75
 		Tick: 55
 		BlendMode: Alpha
 	large_watersplash: h2o_exp1
 		Offset: 0, 0, 39
 		IgnoreWorldTint: False
 		AlphaFade: False
-		Alpha: 0.5
+		Alpha: 0.75
 		Tick: 55
 		BlendMode: Alpha
 	water_piff: w_piff
 		IgnoreWorldTint: False
+		AlphaFade: False
+		Alpha: 0.75
 		BlendMode: Alpha
 		Tick: 75
 	water_piffs: w_piffs

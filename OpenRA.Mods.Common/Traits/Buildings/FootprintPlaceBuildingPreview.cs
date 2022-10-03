@@ -21,6 +21,12 @@ namespace OpenRA.Mods.Common.Traits
 	[Desc("Creates a building placement preview showing only the building footprint.")]
 	public class FootprintPlaceBuildingPreviewInfo : TraitInfo<FootprintPlaceBuildingPreview>, IPlaceBuildingPreviewGeneratorInfo
 	{
+		[Desc("Specifically specify the sequence it uses.")]
+		public readonly string ValidPlaceSequence = null;
+
+		[Desc("Specifically specify the sequence it uses.")]
+		public readonly string InvalidPlaceSequence = null;
+
 		[PaletteReference]
 		[Desc("Palette to use for rendering the placement sprite.")]
 		public readonly string Palette = TileSet.TerrainPaletteInternalName;
@@ -64,9 +70,16 @@ namespace OpenRA.Mods.Common.Traits
 			var world = wr.World;
 			CenterOffset = ActorInfo.TraitInfo<BuildingInfo>().CenterOffset(world);
 			topLeftScreenOffset = -wr.ScreenPxOffset(CenterOffset);
-
 			var tileset = world.Map.Tileset.ToLowerInvariant();
-			if (world.Map.Rules.Sequences.HasSequence("overlay", $"build-valid-{tileset}"))
+
+			if (info.ValidPlaceSequence != null)
+			{
+				var validSequence = world.Map.Rules.Sequences.GetSequence("overlay", info.ValidPlaceSequence);
+				validTile = validSequence.GetSprite(0);
+				validAlpha = validSequence.GetAlpha(0);
+				validZOffset = validSequence.ZOffset;
+			}
+			else if (world.Map.Rules.Sequences.HasSequence("overlay", $"build-valid-{tileset}"))
 			{
 				var validSequence = world.Map.Rules.Sequences.GetSequence("overlay", $"build-valid-{tileset}");
 				validTile = validSequence.GetSprite(0);
@@ -81,10 +94,20 @@ namespace OpenRA.Mods.Common.Traits
 				validZOffset = validSequence.ZOffset;
 			}
 
-			var blockedSequence = world.Map.Rules.Sequences.GetSequence("overlay", "build-invalid");
-			blockedTile = blockedSequence.GetSprite(0);
-			blockedAlpha = blockedSequence.GetAlpha(0);
-			blockedZOffset = blockedSequence.ZOffset;
+			if (info.InvalidPlaceSequence != null)
+			{
+				var blockedSequence = world.Map.Rules.Sequences.GetSequence("overlay", info.InvalidPlaceSequence);
+				blockedTile = blockedSequence.GetSprite(0);
+				blockedAlpha = blockedSequence.GetAlpha(0);
+				blockedZOffset = blockedSequence.ZOffset;
+			}
+			else
+			{
+				var blockedSequence = world.Map.Rules.Sequences.GetSequence("overlay", "build-invalid");
+				blockedTile = blockedSequence.GetSprite(0);
+				blockedAlpha = blockedSequence.GetAlpha(0);
+				blockedZOffset = blockedSequence.ZOffset;
+			}
 		}
 
 		protected virtual void TickInner() { }

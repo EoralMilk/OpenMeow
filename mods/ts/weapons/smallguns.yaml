@@ -156,7 +156,6 @@ SergeantSMG:
 	Report: tsgun4.aud
 	BurstDelays: 2
 	Burst: 12
-	Range: 6c512
 	ReloadDelay: 25
 	Projectile: Bullet
 		LifeTime: 10
@@ -174,6 +173,15 @@ SergeantSMG:
 # Wolverine vulcan
 AssaultVulcan:
 	Inherits: ^Vulcan
+
+TitanVulcan:
+	Inherits: ^Vulcan
+	Burst: 8
+	BurstDelays: 3
+	Range: 7c256
+	Report: chaingn_a.wav, chaingn_b.wav, chaingn_c.wav, chaingn_d.wav
+	Warhead@1Dam: Spread3DDamage
+		Damage: 1350
 
 # Buggy machine gun
 RaiderMG:

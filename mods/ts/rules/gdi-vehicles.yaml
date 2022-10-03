@@ -222,10 +222,25 @@ MMCH:
 		Recoils: false
 	Armament:
 		Weapon: 120mm
-		MuzzleSequence: muzzle
+		MuzzleSequence: muzzle-cannon
 		Recoil: 128
 		RecoilRecovery: 32
-		LocalOffset: 1024,272,702
+		LocalOffset: 998,272,610
+	Armament@mg:
+		LocalOffset: 415,272,720
+		Weapon: TitanVulcan
+		RequiresCondition: vulcan
+		MuzzleSequence: muzzle-vulcan
+	Pluggable:
+		Conditions:
+			vulcan: vulcan
+		Requirements:
+			vulcan: !vulcan
+		EditorOptions:
+			vulcan: Vulcan Upgrade
+	ProvidesPrerequisite@pluggable:
+		RequiresCondition: !vulcan
+		Prerequisite: titan.vulcan
 	DetectCloaked:
 		Range: 1c768
 		RequiresCondition: rank-elite
@@ -237,6 +252,22 @@ MMCH:
 		Bounds: 905, 2534, 0, -482
 	Carryable:
 		LocalOffset: 0,0,577
+
+TITANUG.VULCAN:
+	Inherits: ^VehiclePlug
+	Valued:
+		Cost: 150
+	Tooltip:
+		Name: Vulcan Upgrade
+	Buildable:
+		Queue: Defense
+		BuildPaletteOrder: 80
+		Prerequisites: titan.vulcan, ~sd, ~techlevel.low
+		Description: Give Titan an additional vulcan.\n  Strong vs Infantry, Light armor\n  Weak vs Aircraft
+	Plug:
+		Type: vulcan
+	RenderSprites:
+		Image: titanup.vulcan
 
 HMEC:
 	Inherits: ^Tank

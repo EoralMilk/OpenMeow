@@ -198,7 +198,7 @@ bggy:
 				Length: 6
 		Facings: 8
 		Length: 6
-		# IgnoreWorldTint: True
+		IgnoreWorldTint: True
 		# MeshType: FloatBoard
 	icon: bggyicon
 		Offset: 0, 0
@@ -263,12 +263,38 @@ mmch:
 		Start: 120
 		Facings: -32
 		Offset: 0, 0, 12
-	muzzle: gunfire
+	muzzle-cannon: gunfire
 		Length: *
 		Offset: 0, 0, 12
 		IgnoreWorldTint: True
 		# MeshType: FloatBoard
+	muzzle-vulcan:
+		Combine:
+			mgun-n:
+				Length: 6
+			mgun-nw:
+				Length: 6
+			mgun-w:
+				Length: 6
+			mgun-sw:
+				Length: 6
+			mgun-s:
+				Length: 6
+			mgun-se:
+				Length: 6
+			mgun-e:
+				Length: 6
+			mgun-ne:
+				Length: 6
+		Facings: 8
+		Length: 6
+		IgnoreWorldTint: True
 	icon: mmchicon
+
+titanup.vulcan:
+	place: mmch-vulcanplace
+		UseTilesetCode: false
+	icon: mmch-vulcanicon
 
 jugg:
 	Inherits@defaults: ^VehicleBase

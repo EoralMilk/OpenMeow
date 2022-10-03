@@ -75,13 +75,14 @@
 120mm:
 	Inherits: ^Cannon
 	ReloadDelay: 75
+	Range: 8c768
 	Projectile: Bullet
 		ContrailWidth: 0c96
 		Blockable: false
 		LaunchAngle: 0
-		Inaccuracy: 340
+		Inaccuracy: 310
 	Warhead@1Dam: SpreadDamage
-		Damage: 9000
+		Damage: 10500
 	Warhead@5Res: DestroyResource
 		ResourceAmount: 2
 
