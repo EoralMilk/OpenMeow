@@ -58,7 +58,7 @@ namespace OpenRA.Graphics
 
 			for (int i = 0; i < CausticsTextures.Length; i++)
 			{
-				var filename = "caustics_" + (i + 1).ToString().PadLeft(3, '0') + ".png";
+				var filename = "caustics_" + (i + 1).ToString().PadLeft(4, '0') + ".png";
 				if (!map.Exists(filename))
 				{
 					throw new Exception(" Can not find texture " + filename);

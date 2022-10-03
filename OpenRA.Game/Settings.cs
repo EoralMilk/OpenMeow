@@ -224,6 +224,11 @@ namespace OpenRA
 		public readonly ShadowSampleType CombinedShadowType = ShadowSampleType.TictactoeBlend;
 		public readonly ShadowSampleType VoxelShadowType = ShadowSampleType.TictactoeBlend;
 		public readonly ShadowSampleType MeshShadowType = ShadowSampleType.TictactoeBlend;
+
+		[Desc("Size of the TerrainRenderBlock buffer, must be power of two.")]
+		public readonly int TerrainBlockTextureSize = 1024;
+		[Desc("Size of the TerrainRenderBlock , x == y.")]
+		public readonly int BlockSizeAsMiniCell = 32;
 	}
 
 	public enum ShadowSampleType

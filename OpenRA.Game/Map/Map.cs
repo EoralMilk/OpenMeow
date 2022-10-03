@@ -1326,6 +1326,17 @@ namespace OpenRA
 		{
 			Console.WriteLine("Painting Spot on mask at each cell");
 
+#pragma warning disable IDE1006 // 命名样式
+			int WATER = 0;
+			int CLIFF = 1;
+			int CONC = 2;
+			int GRASS = 3;
+			int SAND = 4;
+			int DIRT = 5;
+			int GRAVEL = 6;
+			int CRACK = 7;
+#pragma warning restore IDE1006 // 命名样式
+
 			var brush = TextureCache.AllBrushes.First().Value;
 			var waterBrush = TextureCache.AllBrushes["DefualtWaterBrush"];
 			var random = wr.World.SharedRandom;
@@ -1340,31 +1351,31 @@ namespace OpenRA
 				switch (typename)
 				{
 					case "Rough":
-						layer = 6;
+						layer = GRAVEL;
 						break;
 					case "DirtRoad":
-						layer = 5;
+						layer = DIRT;
 						break;
 					case "Cliff":
-						layer = 4;
+						layer = CLIFF;
 						break;
 					case "Impassable":
-						layer = 4;
+						layer = CLIFF;
 						break;
 					case "Rock":
-						layer = 4;
+						layer = CLIFF;
 						break;
 					case "Rail":
-						layer = 2;
+						layer = CONC;
 						break;
 					case "Road":
-						layer = 2;
+						layer = CONC;
 						break;
 					case "Bridge":
-						layer = 2;
+						layer = CONC;
 						break;
 					case "Water":
-						layer = 0;
+						layer = WATER;
 						break;
 					default:
 						break;
@@ -1377,42 +1388,42 @@ namespace OpenRA
 
 					// shore
 					if (typename != "Water")
-						layer = 1;
+						layer = SAND;
 				}
 				else if (id >= 626 && id <= 642)
 				{
 					// grass
-					layer = 3;
+					layer = GRASS;
 				}
 				else if (id >= 535 && id <= 551)
 				{
 					// sand
-					layer = 1;
+					layer = SAND;
 				}
 				else if (id >= 150 && id <= 166)
 				{
 					// rough
-					layer = 6;
+					layer = GRAVEL;
 				}
 				else if (id >= 552 && id <= 561)
 				{
 					// crack ground
-					layer = 7;
+					layer = CRACK;
 				}
 
 				if (isShore)
-					TerrainRenderBlock.PaintAt(this, brush, CenterOfCell(uv), brush.DefaultSize * random.Next(10, 15) / random.Next(20, 50), 1, 255);
+					TerrainRenderBlock.PaintAt(this, brush, CenterOfCell(uv), brush.DefaultSize * random.Next(20, 35) / random.Next(10, 15), SAND, random.Next(75, 255));
 
 				if (layer == 0)
 				{
-					TerrainRenderBlock.PaintAt(this, brush, CenterOfCell(uv), brush.DefaultSize * random.Next(40, 50) / random.Next(25, 30), 1, random.Next(1, 255));
+					TerrainRenderBlock.PaintAt(this, brush, CenterOfCell(uv), brush.DefaultSize * random.Next(40, 50) / random.Next(25, 30), SAND, random.Next(1, 255));
 					if (isShore)
-						TerrainRenderBlock.PaintAt(this, waterBrush, CenterOfCell(uv), waterBrush.DefaultSize * random.Next(25, 35) / random.Next(10, 20), 0, random.Next(1, 75));
+						TerrainRenderBlock.PaintAt(this, waterBrush, CenterOfCell(uv), waterBrush.DefaultSize * random.Next(25, 35) / random.Next(10, 20), WATER, random.Next(1, 75));
 					else
-						TerrainRenderBlock.PaintAt(this, waterBrush, CenterOfCell(uv), waterBrush.DefaultSize, 0, 255);
+						TerrainRenderBlock.PaintAt(this, waterBrush, CenterOfCell(uv), waterBrush.DefaultSize, WATER, 255);
 				}
 				else
-					TerrainRenderBlock.PaintAt(this, brush, CenterOfCell(uv), brush.DefaultSize, layer, 255);
+					TerrainRenderBlock.PaintAt(this, brush, CenterOfCell(uv), brush.DefaultSize * random.Next(22, 28) / random.Next(22, 28), layer, 255);
 			}
 
 			foreach (var uv in MapCells)
@@ -1425,14 +1436,14 @@ namespace OpenRA
 				{
 					if (TSVector.Dot(CellInfos[uv].LogicNml.normalized, new TSVector(0, 0, 1)) < 0.95f)
 					{
-						TerrainRenderBlock.PaintAt(this, waterBrush, CenterOfCell(uv), waterBrush.DefaultSize, 0, -255);
-						TerrainRenderBlock.PaintAt(this, brush, CenterOfCell(uv), brush.DefaultSize, 0, -128);
+						TerrainRenderBlock.PaintAt(this, waterBrush, CenterOfCell(uv), waterBrush.DefaultSize, WATER, -255);
+						TerrainRenderBlock.PaintAt(this, brush, CenterOfCell(uv), brush.DefaultSize, WATER, -128);
 					}
 				}
 				else if (id >= 108 && id <= 149 && typename != "Water")
 				{
-					// TerrainRenderBlock.PaintAt(this, waterBrush, CenterOfCell(uv), waterBrush.DefaultSize, 0, -200);
-					// TerrainRenderBlock.PaintAt(this, brush, CenterOfCell(uv), brush.DefaultSize * random.Next(10, 15) / random.Next(30, 45), 0, -random.Next(64, 175));
+					// TerrainRenderBlock.PaintAt(this, waterBrush, CenterOfCell(uv), waterBrush.DefaultSize, WATER, -200);
+					// TerrainRenderBlock.PaintAt(this, brush, CenterOfCell(uv), brush.DefaultSize * random.Next(10, 15) / random.Next(30, 45), WATER, -random.Next(64, 175));
 				}
 			}
 

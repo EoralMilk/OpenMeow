@@ -72,8 +72,8 @@ namespace OpenRA
 		/// <summary>
 		/// Mask texture contains size*szie MiniCells
 		/// </summary>
-		public const int SizeLimit = 24;
-		public const int TextureSize = 1024;
+		public static int SizeLimit => Game.Settings.Graphics.BlockSizeAsMiniCell;
+		public static int TextureSize => Game.Settings.Graphics.TerrainBlockTextureSize;
 
 		public static int MiniCellPix => TextureSize / SizeLimit;
 		public static float2 Range { get; private set; }
@@ -433,8 +433,7 @@ namespace OpenRA
 							Map.TextureCache.Textures["WaterNormal"].Item2.GetTexture());
 
 			TerrainShader.SetTexture("Caustics",
-				Map.TextureCache.CausticsTextures[Math.Min((Game.LocalTick % 93) / 3,
-				Map.TextureCache.CausticsTextures.Length - 1)].GetTexture());
+				Map.TextureCache.CausticsTextures[(Game.LocalTick % (Map.TextureCache.CausticsTextures.Length * 3)) / 3].GetTexture());
 
 			var cloud = Map.TextureCache.Textures["MaskCloud"];
 			TerrainShader.SetTexture(cloud.Item1, cloud.Item2.GetTexture());

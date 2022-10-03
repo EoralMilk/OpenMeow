@@ -2,14 +2,14 @@ base: dirt
 	Scale: 4.5
 water01: Water01    	#0 water
 	Scale: 5
-sand01: TileSand1   	#1 sand
-	Scale: 3.8
+cliff01: TileCliff1 	#1 cliff
+	Scale: 7
 conc01: TileConc1  		#2 road
 	Scale: 2.5
 grass01: TileGrass1 	#3 grass
 	Scale: 1.7
-cliff01: TileCliff1 	#4 cliff
-	Scale: 7
+sand01: TileSand1   	#4 sand
+	Scale: 3.8
 dirt02: TileDirt2   	#5 dirt road
 	Scale: 3
 rough01: TileGrass2  	#6 rough

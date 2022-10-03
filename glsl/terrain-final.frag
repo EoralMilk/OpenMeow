@@ -19,6 +19,7 @@ uniform float WaterUVOffset2;
 
 
 uniform sampler2D Caustics;
+
 uniform sampler2D WaterNormal;
 uniform sampler2D MaskCloud;
 
@@ -130,26 +131,30 @@ vec4 CalcDirLight(DirLight light, vec4 color)
 	vec3 normal;
 	// water?
 	if (mask.r > 0.001){
-		vec2 waterUV = vFragPos.xy / 3.5;
+		vec2 waterUV = vFragPos.xy;
 		vec4 cm = texture(MaskCloud, waterUV / 8.0 + vec2(WaterUVOffset2, WaterUVOffset2));
-		vec2 cuv = waterUV + vec2(cm.r * 0.5) + vec2(-WaterUVOffset, 0);
+		vec2 wuv = waterUV / 3.5 + vec2(-WaterUVOffset, 0);
+		wuv = wuv - vec2(floor(wuv.x), floor(wuv.y));
+		vec2 cuv = waterUV / 6.3 + vec2(-WaterUVOffset, 0);
 		cuv = cuv - vec2(floor(cuv.x), floor(cuv.y));
 
 		normal = mix(texture(BakedTerrainNormalTexture, vTexCoord).rgb, 
-					texture(WaterNormal, waterUV).rgb, 
+					texture(WaterNormal, wuv).rgb, 
 					min(mask.r * 2.0, 1.0));
 
 		float causticsBlend = 0.0;
 		
-		causticsBlend = mask.r;
+		
 		if (mask.r > 0.66){
-			causticsBlend = max(causticsBlend - (mask.r - 0.66), 0.5);
+			causticsBlend = mix(0.66, 0.5, (mask.r - 0.66) / 0.34);
 		}
+		else
+			causticsBlend = mask.r;
 
-		float caustics = texture(Caustics, cuv).r;
-		caustics *= 2.0;
+		vec4 caustics = texture(Caustics, cuv);
+		float ci = mix(mix(caustics.r,caustics.g,cm.r), mix(caustics.b,caustics.a,cm.g), cm.b);
 
-		color *= mix(1.0, caustics, causticsBlend);
+		color *= mix(1.0, ci * 1.75 + 0.75, causticsBlend);
 	}
 	else{
 		normal = texture(BakedTerrainNormalTexture, vTexCoord).rgb;
