@@ -2,7 +2,7 @@
 BaseBrush: brush02.png
 	Size: 2224
 DefualtWaterBrush: waterbrush.png
-	Size: 2000
+	Size: 2022
 OneCellBrush: brushcell.png
 	Size: 1588
 brush01: brush01.png

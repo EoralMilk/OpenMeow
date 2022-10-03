@@ -12,7 +12,7 @@ sand01: TileSand1   	#4 sand
 	Scale: 3.8
 dirt02: TileDirt2   	#5 dirt road
 	Scale: 3
-rough01: TileGrass2  	#6 rough
+rough01: TileGrass2  	#6 gravel
 	Scale: 6
 crack: crack        	#7 crack
 	Scale: 4.5

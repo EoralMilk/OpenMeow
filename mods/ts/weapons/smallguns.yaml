@@ -315,7 +315,7 @@ Sniper:
 			Heavy: 5
 			Concrete: 5
 		DamageTypes: Prone100Percent, TriggerProne, BulletDeath
-		# TestDrawTerrain: true
+		TestDrawTerrain: true
 
 
 SilencerSniper:

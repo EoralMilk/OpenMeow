@@ -144,43 +144,28 @@ vec4 GetTileColor(int layer)
 {
 	int tileIndex = GetTileIndex(layer);
 	float noiseUV = MaskNoise(layer);
+	float noiseUV2 = MaskNoise(layer+1);
+
 	float noiseC = MaskNoise2(layer) * 0.25 + 0.85;
 	vec4 color;
-	if (TileScales[tileIndex] != 1.0)
-	{
-		vec2 cuv = (vUV + vec2(noiseUV)) / TileScales[tileIndex];
-		cuv = cuv - vec2(floor(cuv.x), floor(cuv.y));
-		color = texture(Tiles, vec3(cuv, float(tileIndex))) * noiseC;
-	}
-	else
-	{
-		vec2 cuv = vUV + vec2(noiseUV);
-		cuv = cuv - vec2(floor(cuv.x), floor(cuv.y));
-		color = texture(Tiles, vec3(cuv, float(tileIndex))) * noiseC;
-	}
-	if (layer == 0)
-		return vec4(color.rgb, 0.3);
-	else
-		return color;
+
+	vec2 cuv = (vUV + vec2(noiseUV, noiseUV2)) / TileScales[tileIndex];
+	// cuv = cuv - vec2(floor(cuv.x), floor(cuv.y));
+	color = texture(Tiles, vec3(cuv, float(tileIndex))) * noiseC;
+
+	return color;
 }
 
 vec3 GetTileNormal(int layer)
 {
 	int tileIndex = GetTileIndex(layer);
 	float noise = MaskNoise(layer);
+	float noiseB = MaskNoise(layer+1);
+
 	vec3 normal;
-	if (TileScales[tileIndex] != 1.0)
-	{
-		vec2 cuv = (vUV + vec2(noise)) / TileScales[tileIndex];
-		cuv = cuv - vec2(floor(cuv.x), floor(cuv.y));
-		normal = texture(TilesNorm, vec3(cuv, float(tileIndex))).rgb;
-	}
-	else
-	{
-		vec2 cuv = vUV + vec2(noise);
-		cuv = cuv - vec2(floor(cuv.x), floor(cuv.y));
-		normal = texture(TilesNorm, vec3(cuv, float(tileIndex))).rgb;
-	}
+	vec2 cuv = (vUV + vec2(noise, noiseB)) / TileScales[tileIndex];
+	// cuv = cuv - vec2(floor(cuv.x), floor(cuv.y));
+	normal = texture(TilesNorm, vec3(cuv, float(tileIndex))).rgb;
 
 	if (normal == vec3(0.0))
 		return vec3(0,0,1.0);
@@ -201,8 +186,8 @@ void main()
 	cuv = cuv - vec2(floor(cuv.x), floor(cuv.y));
 	masknoise2 = texture(MaskCloud, cuv);
 
-
-	int layer = 0;
+	// skip water layer
+	int layer = 1;
 	// get last color
 	while (layer < 9){
 		masks[layer] = LayerMask(layer);
@@ -223,7 +208,8 @@ void main()
 		layer = 8;
 	}
 
-	while (layer > 0)
+	// skip water layer
+	while (layer > 1)
 	{
 		layer--;
 		if (masks[layer] < 0.005)
@@ -241,6 +227,7 @@ void main()
 	}
 
 	vec3 tint = vec3(min(vTint.r * 4.0, 1.0), min(vTint.g * 4.0, 1.0), min(vTint.b * 4.0, 1.0));
-	ColorOutPut = vec4(colors[0].rgb * tint,1.0);
-	NormalOutPut = vec4(ProcessNormal(norms[0]),1.0);
+	// skip water layer
+	ColorOutPut = vec4(colors[1].rgb * tint,1.0);
+	NormalOutPut = vec4(ProcessNormal(norms[1]),1.0);
 }

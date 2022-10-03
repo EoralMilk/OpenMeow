@@ -1210,10 +1210,10 @@ namespace OpenRA
 					MiniCells[mid.Y, mid.X] = new MiniCell(im, ir, ib, ibr, MiniCellType.TRBL); // br
 
 					bool flatCell = false;
-					if (TerrainVertices[im].LogicPos == TerrainVertices[it].LogicPos &&
-						TerrainVertices[im].LogicPos == TerrainVertices[ib].LogicPos &&
-						TerrainVertices[im].LogicPos == TerrainVertices[ir].LogicPos &&
-						TerrainVertices[im].LogicPos == TerrainVertices[il].LogicPos)
+					if (TerrainVertices[im].LogicPos.Z == TerrainVertices[it].LogicPos.Z &&
+						TerrainVertices[im].LogicPos.Z == TerrainVertices[ib].LogicPos.Z &&
+						TerrainVertices[im].LogicPos.Z == TerrainVertices[ir].LogicPos.Z &&
+						TerrainVertices[im].LogicPos.Z == TerrainVertices[il].LogicPos.Z)
 						flatCell = true;
 
 					CellInfo cellInfo = new CellInfo(TerrainVertices[im].LogicPos, im, it, ib, il, ir, typeNum,
@@ -1416,7 +1416,11 @@ namespace OpenRA
 
 				if (layer == 0)
 				{
-					TerrainRenderBlock.PaintAt(this, brush, CenterOfCell(uv), brush.DefaultSize * random.Next(40, 50) / random.Next(25, 30), SAND, random.Next(1, 255));
+					var underwater = random.Next(0, 10);
+					if (underwater < 7)
+						TerrainRenderBlock.PaintAt(this, brush, CenterOfCell(uv), brush.DefaultSize * random.Next(40, 50) / random.Next(25, 30), SAND, random.Next(1, 255));
+					else
+						TerrainRenderBlock.PaintAt(this, brush, CenterOfCell(uv), brush.DefaultSize * random.Next(40, 50) / random.Next(25, 30), DIRT, random.Next(1, 255));
 					if (isShore)
 						TerrainRenderBlock.PaintAt(this, waterBrush, CenterOfCell(uv), waterBrush.DefaultSize * random.Next(25, 35) / random.Next(10, 20), WATER, random.Next(1, 75));
 					else
@@ -1432,19 +1436,17 @@ namespace OpenRA
 				var typename = Rules.TerrainInfo.TerrainTypes[type.TerrainType].Type;
 				var id = Tiles[uv].Type;
 
-				if (typename == "Water")
+				if (!CellInfos[uv].Flat)
 				{
-					if (TSVector.Dot(CellInfos[uv].LogicNml.normalized, new TSVector(0, 0, 1)) < 0.95f)
-					{
-						TerrainRenderBlock.PaintAt(this, waterBrush, CenterOfCell(uv), waterBrush.DefaultSize, WATER, -255);
-						TerrainRenderBlock.PaintAt(this, brush, CenterOfCell(uv), brush.DefaultSize, WATER, -128);
-					}
+					// TerrainRenderBlock.PaintAt(this, waterBrush, CenterOfCell(uv), waterBrush.DefaultSize, WATER, -255);
+					TerrainRenderBlock.PaintAt(this, brush, CenterOfCell(uv), brush.DefaultSize, WATER, -255);
 				}
-				else if (id >= 108 && id <= 149 && typename != "Water")
-				{
-					// TerrainRenderBlock.PaintAt(this, waterBrush, CenterOfCell(uv), waterBrush.DefaultSize, WATER, -200);
-					// TerrainRenderBlock.PaintAt(this, brush, CenterOfCell(uv), brush.DefaultSize * random.Next(10, 15) / random.Next(30, 45), WATER, -random.Next(64, 175));
-				}
+
+				// else if (id >= 108 && id <= 149 && typename != "Water")
+				// {
+				// 	// TerrainRenderBlock.PaintAt(this, waterBrush, CenterOfCell(uv), waterBrush.DefaultSize, WATER, -200);
+				// 	// TerrainRenderBlock.PaintAt(this, brush, CenterOfCell(uv), brush.DefaultSize * random.Next(10, 15) / random.Next(30, 45), WATER, -random.Next(64, 175));
+				// }
 			}
 
 			Console.WriteLine("Completed");

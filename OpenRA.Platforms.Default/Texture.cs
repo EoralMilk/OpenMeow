@@ -365,7 +365,7 @@ namespace OpenRA.Platforms.Default
 		int count = 0;
 		readonly int textureCount = 1;
 		TextureScaleFilter scaleFilter;
-		TextureWrap wrapType;
+		TextureWrap wrapType = TextureWrap.Repeat;
 		public TextureWrap WrapType
 		{
 			get => wrapType;
