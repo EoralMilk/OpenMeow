@@ -187,6 +187,10 @@ MMCH:
 		Cost: 800
 	Tooltip:
 		Name: Titan
+		RequiresCondition: !vulcan
+	Tooltip@withvulcan:
+		Name: Titan (Vulcan Plugged)
+		RequiresCondition: vulcan
 	UpdatesPlayerStatistics:
 		AddToArmyValue: true
 	Buildable:
@@ -227,7 +231,7 @@ MMCH:
 		RecoilRecovery: 32
 		LocalOffset: 998,272,610
 	Armament@mg:
-		LocalOffset: 415,272,720
+		LocalOffset: 415,272,700
 		Weapon: TitanVulcan
 		RequiresCondition: vulcan
 		MuzzleSequence: muzzle-vulcan
@@ -247,7 +251,12 @@ MMCH:
 	RenderDetectionCircle:
 	WithMuzzleOverlay:
 	WithModelBarrel:
-		LocalOffset: 0,51,0
+		LocalOffset: 345,272,515
+		RequiresCondition: !vulcan
+	WithModelBarrel@vulcan:
+		Sequence: barrel-vulcan
+		LocalOffset: 345,272,515
+		RequiresCondition: vulcan
 	Selectable:
 		Bounds: 905, 2534, 0, -482
 	Carryable:

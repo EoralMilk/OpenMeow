@@ -266,6 +266,7 @@ mmch:
 	muzzle-cannon: gunfire
 		Length: *
 		Offset: 0, 0, 12
+		ZOffset: 25
 		IgnoreWorldTint: True
 		# MeshType: FloatBoard
 	muzzle-vulcan:
@@ -288,6 +289,7 @@ mmch:
 				Length: 6
 		Facings: 8
 		Length: 6
+		ZOffset: 25
 		IgnoreWorldTint: True
 	icon: mmchicon
 

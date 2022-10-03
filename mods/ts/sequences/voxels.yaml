@@ -52,6 +52,7 @@ ttnk:
 
 mmch:
 	barrel: mmchbarl
+	barrel-vulcan: mmchbarl-vulcan
 
 hmec:
 	idle:
