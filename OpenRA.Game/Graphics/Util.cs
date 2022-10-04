@@ -542,8 +542,11 @@ namespace OpenRA.Graphics
 						var iLB = Math.Clamp(x + (y + 1) * map.VertexArrayWidth, 0, map.TerrainVertices.Length - 1);
 						var iRB = Math.Clamp(x + 1 + (y + 1) * map.VertexArrayWidth, 0, map.TerrainVertices.Length - 1);
 						var index = iRT;
+
+						MiniCell cell = map.MiniCells[y, x];
+
 						float2 uv;
-						if (x % 2 == y % 2)
+						if (cell.Type == MiniCellType.TLBR)
 						{
 							// ------------
 							// |  \          |
@@ -665,8 +668,11 @@ namespace OpenRA.Graphics
 						var iLB = Math.Clamp(x + (y + 1) * map.VertexArrayWidth, 0, map.TerrainVertices.Length - 1);
 						var iRB = Math.Clamp(x + 1 + (y + 1) * map.VertexArrayWidth, 0, map.TerrainVertices.Length - 1);
 						var index = iRT;
+
+						MiniCell cell = map.MiniCells[y, x];
+
 						float2 uv;
-						if (x % 2 == y % 2)
+						if (cell.Type == MiniCellType.TLBR)
 						{
 							// ------------
 							// |  \          |
@@ -807,21 +813,6 @@ namespace OpenRA.Graphics
 				else
 				{
 					vertices = new MapVertex[12];
-					//vertices[nv] = new MapVertex(tpos, map.VertexTBN[cellinfo.T], baseX, top, sbaseRL, st, paletteTextureIndex, fAttribC, tColorOffset, alpha, 1,0, type);
-					//vertices[nv + 1] = new MapVertex(mpos, map.VertexTBN[cellinfo.M], baseX, baseY, sbaseRL, sbaseTB, paletteTextureIndex, fAttribC, mColorOffset, alpha, 1,1, type);
-					//vertices[nv + 2] = new MapVertex(rpos, map.VertexTBN[cellinfo.R], right, baseY, sr, sbaseTB, paletteTextureIndex, fAttribC, rColorOffset, alpha, 2,1, type);
-
-					//vertices[nv + 3] = new MapVertex(mpos, map.VertexTBN[cellinfo.M], baseX, baseY, sbaseRL, sbaseTB, paletteTextureIndex, fAttribC, mColorOffset, alpha, 1,1, type);
-					//vertices[nv + 4] = new MapVertex(bpos, map.VertexTBN[cellinfo.B], baseX, bottom, sbaseRL, sb, paletteTextureIndex, fAttribC, bColorOffset, alpha, 1,2, type);
-					//vertices[nv + 5] = new MapVertex(rpos, map.VertexTBN[cellinfo.R], right, baseY, sr, sbaseTB, paletteTextureIndex, fAttribC, rColorOffset, alpha, 2,1, type);
-
-					//vertices[nv + 6] = new MapVertex(tpos, map.VertexTBN[cellinfo.T], baseX, top, sbaseRL, st, paletteTextureIndex, fAttribC, tColorOffset, alpha, 1,0, type);
-					//vertices[nv + 7] = new MapVertex(lpos, map.VertexTBN[cellinfo.L], left, baseY, sl, sbaseTB, paletteTextureIndex, fAttribC, lColorOffset, alpha, 0,1, type);
-					//vertices[nv + 8] = new MapVertex(mpos, map.VertexTBN[cellinfo.M], baseX, baseY, sbaseRL, sbaseTB, paletteTextureIndex, fAttribC, mColorOffset, alpha, 1,1, type);
-
-					//vertices[nv + 9] = new MapVertex(mpos, map.VertexTBN[cellinfo.M], baseX, baseY, sbaseRL, sbaseTB, paletteTextureIndex, fAttribC, mColorOffset, alpha, 1,1, type);
-					//vertices[nv + 10] = new MapVertex(lpos, map.VertexTBN[cellinfo.L], left, baseY, sl, sbaseTB, paletteTextureIndex, fAttribC, lColorOffset, alpha, 0,1, type);
-					//vertices[nv + 11] = new MapVertex(bpos, map.VertexTBN[cellinfo.B], baseX, bottom, sbaseRL, sb, paletteTextureIndex, fAttribC, bColorOffset, alpha, 1,2, type);
 
 					vertices[0] = new MapVertex(tpos, map.TerrainVertices[cellinfo.T].TBN, baseX, top, sbaseRL, st, paletteTextureIndex, fAttribC, tColorOffset, alpha, map.TerrainVertices[cellinfo.T].UV, type);
 					vertices[1] = new MapVertex(mpos, map.TerrainVertices[cellinfo.M].TBN, baseX, baseY, sbaseRL, sbaseTB, paletteTextureIndex, fAttribC, mColorOffset, alpha, map.TerrainVertices[cellinfo.M].UV, type);

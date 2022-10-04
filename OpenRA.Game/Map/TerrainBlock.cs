@@ -114,40 +114,406 @@ namespace OpenRA
 		/// </summary>
 		public readonly int BottomBound;
 
+		#region Mask Pass
 		public static IShader TerrainMaskShader { get; private set; }
-		public static IShader TextureBlendShader { get; private set; }
-		public static IShader TerrainShader { get; private set; }
-
 		public IFrameBuffer MaskFramebuffer { get; private set; }
+
+		/// <summary>
+		/// screen plane mesh
+		/// </summary>
 		static TerrainMaskVertex[] terrainMaskVertices;
+
+		/// <summary>
+		/// screen plane vert-buffer
+		/// </summary>
 		static IVertexBuffer<TerrainMaskVertex> maskVertexBuffer;
 
 		BlendMode currentBrushMode = BlendMode.Additive;
+
+		/// <summary>
+		/// temp mask brushes vertices count
+		/// </summary>
 		int numMaskVertices;
+
+		/// <summary>
+		/// temp mask brushes meshes
+		/// </summary>
 		TerrainMaskVertex[] tempMaskVertices;
+
+		/// <summary>
+		/// temp mask brushes vert-buffer
+		/// </summary>
 		IVertexBuffer<TerrainMaskVertex> tempMaskBuffer;
+
+		/// <summary>
+		/// all brushes paint spot on this block
+		/// </summary>
 		readonly List<PaintSpot> paintSpots = new List<PaintSpot>();
 
+		/// <summary>
+		/// a spot to paint
+		/// </summary>
+		public struct PaintSpot
+		{
+			public readonly MaskBrush Brush;
+			public readonly WPos Pos;
+			public readonly int Size;
+			public readonly int Layer;
+			public readonly int Intensity;
+
+			public PaintSpot(MaskBrush brush, WPos pos, int size, int layer, int intensity)
+			{
+				Brush = brush;
+				Pos = pos;
+				Size = size;
+				Layer = layer;
+				Intensity = intensity;
+			}
+		}
+
+		/// <summary>
+		/// use a type of 'Brush' to paint or erase mask of a layer
+		/// </summary>
+		/// <param name="map"> map </param>
+		/// <param name="brush"> brush type </param>
+		/// <param name="pos"> brush pos </param>
+		/// <param name="size"> brush size as WDist </param>
+		/// <param name="layer"> brushing layer </param>
+		/// <param name="intensity"> brush intensity , negative is erase </param>
+		public static void PaintAt(Map map, MaskBrush brush,
+			in WPos pos, int size, int layer, int intensity)
+		{
+			// Console.WriteLine("paint at " + pos.X + "," + pos.Y + " with size: " + size + " layer: " + layer);
+			var blockx = (pos.X / 724) / SizeLimit;
+			var blocky = (pos.Y / 724) / SizeLimit;
+			for (int y = blocky - 1; y <= blocky + 1; y++)
+				for (int x = blockx - 1; x <= blockx + 1; x++)
+				{
+					if (y < 0 || y >= map.BlocksArrayHeight || x < 0 || x >= map.BlocksArrayWidth)
+						continue;
+					if (pos.X - size > map.TerrainBlocks[y, x].RightBound ||
+						pos.X + size < map.TerrainBlocks[y, x].LeftBound ||
+						pos.Y - size > map.TerrainBlocks[y, x].BottomBound ||
+						pos.Y + size < map.TerrainBlocks[y, x].TopBound)
+						continue;
+					map.TerrainBlocks[y, x].needUpdateTexture = true;
+					map.TerrainBlocks[y, x].paintSpots.Add(new PaintSpot(brush, pos, size, layer, intensity));
+				}
+		}
+
+		void PaintMask(MaskBrush brush, in WPos pos, int size, int layer, int intensity)
+		{
+			if (tempMaskVertices == null)
+			{
+				numMaskVertices = 0;
+				tempMaskVertices = new TerrainMaskVertex[Game.Renderer.TempBufferSize];
+			}
+
+			// erase
+			if (intensity < 0)
+			{
+				// if brush mode not erase, flush
+				if (currentBrushMode != BlendMode.Subtractive)
+				{
+					FlushBrush(currentBrushMode);
+				}
+
+				currentBrushMode = BlendMode.Subtractive;
+			}
+			else
+			{
+				// if brush mode not add, flush
+				if (currentBrushMode != BlendMode.Additive)
+				{
+					FlushBrush(currentBrushMode);
+				}
+
+				currentBrushMode = BlendMode.Additive;
+			}
+
+			var brushVertices = brush.GetVertices(topLeftOffset, bottomRightOffset, pos, size, layer, Math.Abs(intensity));
+			if (numMaskVertices + brushVertices.Length >= tempMaskVertices.Length)
+				FlushBrush(currentBrushMode);
+			Array.Copy(brushVertices, 0, tempMaskVertices, numMaskVertices, brushVertices.Length);
+			numMaskVertices += brushVertices.Length;
+		}
+
+		void FlushBrush(BlendMode blendMode)
+		{
+			if (numMaskVertices == 0)
+				return;
+
+			Game.Renderer.Context.SetBlendMode(blendMode);
+
+			tempMaskBuffer.SetData(tempMaskVertices, numMaskVertices);
+
+			TerrainMaskShader.PrepareRender();
+
+			Game.Renderer.DrawBatch(TerrainMaskShader, tempMaskBuffer, 0, numMaskVertices, PrimitiveType.TriangleList);
+
+			numMaskVertices = 0;
+		}
+
+		public void InitMask()
+		{
+			if (MaskFramebuffer == null)
+			{
+				MaskFramebuffer = Game.Renderer.Context.CreateFrameBuffer(new Size(TextureSize, TextureSize), 3);
+
+				if (TerrainMaskShader == null)
+				{
+					TerrainMaskShader = Game.Renderer.Context.CreateUnsharedShader<TerrainMaskShaderBindings>();
+				}
+
+				if (terrainMaskVertices == null || maskVertexBuffer == null)
+				{
+					terrainMaskVertices = new TerrainMaskVertex[6];
+
+					float[] quadVertices = {
+							// positions			// texCoords
+								-1, 1,                  0.0f, 1.0f,
+								-1, -1,                 0.0f, 0.0f,
+								1, -1,                  1.0f, 0.0f,
+
+								-1, 1,                  0.0f, 1.0f,
+								1, -1,                  1.0f, 0.0f,
+								1, 1,                   1.0f, 1.0f
+				};
+
+					for (int i = 0; i < 6; i++)
+					{
+						terrainMaskVertices[i] = new TerrainMaskVertex(quadVertices[i * 4], quadVertices[i * 4 + 1], quadVertices[i * 4 + 2], quadVertices[i * 4 + 3]);
+					}
+
+					maskVertexBuffer = Game.Renderer.CreateVertexBuffer<TerrainMaskVertex>(terrainMaskVertices.Length);
+					maskVertexBuffer.SetData(terrainMaskVertices, terrainMaskVertices.Length);
+				}
+
+				numMaskVertices = 0;
+				tempMaskVertices = new TerrainMaskVertex[Game.Renderer.TempBufferSize];
+				tempMaskBuffer = Game.Renderer.Context.CreateVertexBuffer<TerrainMaskVertex>(Game.Renderer.TempBufferSize);
+			}
+		}
+
+		public void UpdateMask(int left, int right, int top, int bottom, bool init)
+		{
+			if (init)
+			{
+				// skip bound cal
+			}
+			else if (LeftBound > right || RightBound < left)
+				return;
+			else if (BottomBound < top || TopBound > bottom)
+				return;
+
+			if (paintSpots.Count > 0)
+			{
+				// we don't want to clear the renderer result last bake, just paint on it.
+				MaskFramebuffer.BindNoClear();
+
+				Game.Renderer.SetFaceCull(FaceCullFunc.None);
+				Game.Renderer.EnableDepthWrite(false);
+				Game.Renderer.DisableDepthTest();
+
+				TerrainMaskShader.SetTexture("Brushes", Map.TextureCache.BrushTextureArray);
+				TerrainMaskShader.SetBool("InitWithTextures", false);
+
+				Game.Renderer.Context.SetBlendMode(BlendMode.None);
+				TerrainMaskShader.PrepareRender();
+
+				foreach (var p in paintSpots)
+				{
+					PaintMask(p.Brush, p.Pos, p.Size, p.Layer, p.Intensity);
+				}
+
+				FlushBrush(currentBrushMode);
+
+				Game.Renderer.EnableDepthBuffer();
+				Game.Renderer.EnableDepthWrite(true);
+
+				Game.Renderer.Context.SetBlendMode(BlendMode.Alpha);
+
+				MaskFramebuffer.Unbind();
+
+				// Console.WriteLine(TopLeft + " paint update " + paintSpots.Count);
+				needUpdateTexture = true;
+				paintSpots.Clear();
+			}
+		}
+
+		#endregion
+
+		#region Blend Pass
+		public static IShader TerrainBlendShader { get; private set; }
+
 		public readonly IFrameBuffer BlendFramebuffer;
+
+		/// <summary>
+		/// terrain blend mesh
+		/// </summary>
 		readonly TerrainBlendingVertex[] blendVertices;
+
+		/// <summary>
+		/// terrain blend vert-buffer
+		/// </summary>
 		readonly IVertexBuffer<TerrainBlendingVertex> blendVertexBuffer;
 
+		bool needUpdateTexture = true;
+
+		readonly float[] tileScales;
+
+		void ShaderSetTileInfos()
+		{
+			TerrainBlendShader.SetVecArray("TileScales", tileScales, 1, tileScales.Length);
+		}
+
+		public void UpdateTexture(int left, int right, int top, int bottom, bool init)
+		{
+			if (TerrainBlendShader == null)
+				return;
+
+			if (init)
+			{
+				// skip bound cal
+			}
+			else if (LeftBound > right || RightBound < left)
+				return;
+			else if (BottomBound < top || TopBound > bottom)
+				return;
+
+			if (!needUpdateTexture)
+				return;
+
+			// Console.WriteLine("Updating block texture: " + TopLeft);
+			needUpdateTexture = false;
+
+			BlendFramebuffer.Bind();
+
+			TerrainBlendShader.SetTexture("Mask123", MaskFramebuffer.GetTexture(0));
+
+			TerrainBlendShader.SetTexture("Mask456", MaskFramebuffer.GetTexture(1));
+
+			TerrainBlendShader.SetTexture("Mask789", MaskFramebuffer.GetTexture(2));
+
+			var cloud = Map.TextureCache.Textures["MaskCloud"];
+			TerrainBlendShader.SetTexture(cloud.Item1, cloud.Item2.GetTexture());
+
+			TerrainBlendShader.SetTexture("Tiles", Map.TextureCache.TileTextureArray);
+			TerrainBlendShader.SetTexture("TilesNorm", Map.TextureCache.TileNormalTextureArray);
+
+			TerrainBlendShader.SetVec("Offset",
+				topLeftOffset.X,
+				topLeftOffset.Y);
+			TerrainBlendShader.SetVec("Range",
+				bottomRightOffset.X - topLeftOffset.X,
+				bottomRightOffset.Y - topLeftOffset.Y);
+
+			ShaderSetTileInfos();
+
+			Game.Renderer.Context.SetBlendMode(BlendMode.None);
+			TerrainBlendShader.PrepareRender();
+
+			Game.Renderer.DrawBatch(TerrainBlendShader, blendVertexBuffer, 0, blendVertices.Length, PrimitiveType.TriangleList);
+
+			Game.Renderer.Context.SetBlendMode(BlendMode.Alpha);
+			BlendFramebuffer.Unbind();
+		}
+
+		#endregion
+
+		#region Final Pass
+		public static IShader TerrainShader { get; private set; }
+
+		/// <summary>
+		/// terrain mesh
+		/// </summary>
 		readonly TerrainFinalVertex[] finalVertices;
+
+		/// <summary>
+		/// terrain mesh buffer
+		/// </summary>
 		readonly IVertexBuffer<TerrainFinalVertex> finalVertexBuffer;
 
-		bool needUpdateTexture = true;
-		readonly float[] tileScales;
-		readonly WorldRenderer worldRenderer;
+		public void Render(int left, int right, int top, int bottom)
+		{
+			if (TerrainShader == null)
+				return;
+
+			if (LeftBound > right || RightBound < left)
+				return;
+			if (BottomBound < top || TopBound > bottom)
+				return;
+
+			TerrainShader.SetVec("Offset",
+				topLeftOffset.X,
+				topLeftOffset.Y);
+			TerrainShader.SetVec("Range",
+				bottomRightOffset.X - topLeftOffset.X,
+				bottomRightOffset.Y - topLeftOffset.Y);
+
+			TerrainShader.SetFloat("WaterUVOffset", (float)(Game.LocalTick % 256) / 256);
+			TerrainShader.SetFloat("WaterUVOffset2", (float)(Game.LocalTick % 1784) / 1784);
+
+			TerrainShader.SetTexture("Mask123", MaskFramebuffer.GetTexture(0));
+
+			TerrainShader.SetTexture("WaterNormal",
+							Map.TextureCache.Textures["WaterNormal"].Item2.GetTexture());
+
+			TerrainShader.SetTexture("Caustics",
+				Map.TextureCache.CausticsTextures[(Game.LocalTick % (Map.TextureCache.CausticsTextures.Length * 3)) / 3].GetTexture());
+
+			var cloud = Map.TextureCache.Textures["MaskCloud"];
+			TerrainShader.SetTexture(cloud.Item1, cloud.Item2.GetTexture());
+
+			TerrainShader.SetTexture("BakedTerrainTexture", BlendFramebuffer.Texture);
+			TerrainShader.SetTexture("BakedTerrainNormalTexture", BlendFramebuffer.GetTexture(1));
+
+			Game.Renderer.Context.SetBlendMode(BlendMode.None);
+			TerrainShader.PrepareRender();
+
+			Game.Renderer.DrawBatch(TerrainShader, finalVertexBuffer, 0, finalVertices.Length, PrimitiveType.TriangleList);
+
+			Game.Renderer.Context.SetBlendMode(BlendMode.None);
+		}
+
+		public static void SetCameraParams(in World3DRenderer w3dr, bool sunCamera)
+		{
+			if (TerrainShader == null)
+				return;
+			TerrainShader.SetCommonParaments(w3dr, sunCamera);
+			ViewOffset = Game.Renderer.World3DRenderer.InverseCameraFrontMeterPerWDist * (-17);
+
+			TerrainShader.SetVec("ViewOffset",
+				ViewOffset.x,
+				ViewOffset.y,
+				ViewOffset.z);
+			TerrainShader.SetVec("CameraInvFront",
+				Game.Renderer.World3DRenderer.InverseCameraFront.x,
+				Game.Renderer.World3DRenderer.InverseCameraFront.y,
+				Game.Renderer.World3DRenderer.InverseCameraFront.z);
+		}
+
+		public static void SetShadowParams(in World3DRenderer w3dr)
+		{
+			if (TerrainShader == null)
+				return;
+
+			Game.Renderer.SetShadowParams(TerrainShader, w3dr, Game.Settings.Graphics.TerrainShadowType);
+			Game.Renderer.SetLightParams(TerrainShader, w3dr);
+		}
+
+		#endregion
+
+		public static IShader TerrainCoveringShader { get; private set; }
 
 		public TerrainRenderBlock(WorldRenderer worldRenderer, Map map, int2 tl, int2 br)
 		{
 			Range = new float2((float)SizeLimit / (map.VertexArrayWidth - 1), (float)SizeLimit / (map.VertexArrayHeight - 1));
 
-			this.worldRenderer = worldRenderer;
 			BlendFramebuffer = Game.Renderer.Context.CreateFrameBuffer(new Size(TextureSize, TextureSize), 2);
 
-			if (TextureBlendShader == null)
-				TextureBlendShader = Game.Renderer.Context.CreateUnsharedShader<TerrainBlendingShaderBindings>();
+			if (TerrainBlendShader == null)
+				TerrainBlendShader = Game.Renderer.Context.CreateUnsharedShader<TerrainBlendingShaderBindings>();
 			if (TerrainShader == null)
 				TerrainShader = Game.Renderer.Context.CreateUnsharedShader<TerrainFinalShaderBindings>();
 
@@ -259,47 +625,6 @@ namespace OpenRA
 			return new float2(x, y);
 		}
 
-		public void InitMask()
-		{
-			if (MaskFramebuffer == null)
-			{
-				MaskFramebuffer = Game.Renderer.Context.CreateFrameBuffer(new Size(TextureSize, TextureSize), 3);
-
-				if (TerrainMaskShader == null)
-				{
-					TerrainMaskShader = Game.Renderer.Context.CreateUnsharedShader<TerrainMaskShaderBindings>();
-				}
-
-				if (terrainMaskVertices == null || maskVertexBuffer == null)
-				{
-					terrainMaskVertices = new TerrainMaskVertex[6];
-
-					float[] quadVertices = {
-							// positions			// texCoords
-								-1, 1,                  0.0f, 1.0f,
-								-1, -1,                 0.0f, 0.0f,
-								1, -1,                  1.0f, 0.0f,
-
-								-1, 1,                  0.0f, 1.0f,
-								1, -1,                  1.0f, 0.0f,
-								1, 1,                   1.0f, 1.0f
-				};
-
-					for (int i = 0; i < 6; i++)
-					{
-						terrainMaskVertices[i] = new TerrainMaskVertex(quadVertices[i * 4], quadVertices[i * 4 + 1], quadVertices[i * 4 + 2], quadVertices[i * 4 + 3]);
-					}
-
-					maskVertexBuffer = Game.Renderer.CreateVertexBuffer<TerrainMaskVertex>(terrainMaskVertices.Length);
-					maskVertexBuffer.SetData(terrainMaskVertices, terrainMaskVertices.Length);
-				}
-
-				numMaskVertices = 0;
-				tempMaskVertices = new TerrainMaskVertex[Game.Renderer.TempBufferSize];
-				tempMaskBuffer = Game.Renderer.Context.CreateVertexBuffer<TerrainMaskVertex>(Game.Renderer.TempBufferSize);
-			}
-		}
-
 		public void Dispose()
 		{
 			blendVertexBuffer?.Dispose();
@@ -307,274 +632,6 @@ namespace OpenRA
 			MaskFramebuffer?.Dispose();
 			finalVertexBuffer?.Dispose();
 			tempMaskBuffer?.Dispose();
-		}
-
-		public void UpdateMask(int left, int right, int top, int bottom, bool init)
-		{
-			if (init)
-			{
-
-			}
-			else if (LeftBound > right || RightBound < left)
-				return;
-			else if (BottomBound < top || TopBound > bottom)
-				return;
-
-			if (paintSpots.Count > 0)
-			{
-				// we don't want to clear the renderer result last bake, just paint on it.
-				MaskFramebuffer.BindNoClear();
-
-				Game.Renderer.SetFaceCull(FaceCullFunc.None);
-				Game.Renderer.EnableDepthWrite(false);
-				Game.Renderer.DisableDepthTest();
-
-				TerrainMaskShader.SetTexture("Brushes", Map.TextureCache.BrushTextureArray);
-				TerrainMaskShader.SetBool("InitWithTextures", false);
-
-				Game.Renderer.Context.SetBlendMode(BlendMode.None);
-				TerrainMaskShader.PrepareRender();
-
-				foreach (var p in paintSpots)
-				{
-					PaintMask(p.Brush, p.Pos, p.Size, p.Layer, p.Intensity);
-				}
-
-				FlushBrush(currentBrushMode);
-
-				Game.Renderer.EnableDepthBuffer();
-				Game.Renderer.EnableDepthWrite(true);
-
-				Game.Renderer.Context.SetBlendMode(BlendMode.Alpha);
-
-				MaskFramebuffer.Unbind();
-
-				// Console.WriteLine(TopLeft + " paint update " + paintSpots.Count);
-				needUpdateTexture = true;
-				paintSpots.Clear();
-			}
-		}
-
-		public void UpdateTexture(int left, int right, int top, int bottom, bool init)
-		{
-			if (TextureBlendShader == null)
-				return;
-
-			if (init)
-			{
-
-			}
-			else if (LeftBound > right || RightBound < left)
-				return;
-			else if (BottomBound < top || TopBound > bottom)
-				return;
-
-			if (!needUpdateTexture)
-				return;
-
-			// Console.WriteLine("Updating block texture: " + TopLeft);
-			needUpdateTexture = false;
-
-			BlendFramebuffer.Bind();
-
-			TextureBlendShader.SetTexture("Mask123", MaskFramebuffer.GetTexture(0));
-
-			TextureBlendShader.SetTexture("Mask456", MaskFramebuffer.GetTexture(1));
-
-			TextureBlendShader.SetTexture("Mask789", MaskFramebuffer.GetTexture(2));
-
-			var cloud = Map.TextureCache.Textures["MaskCloud"];
-			TextureBlendShader.SetTexture(cloud.Item1, cloud.Item2.GetTexture());
-
-			TextureBlendShader.SetTexture("Tiles", Map.TextureCache.TileTextureArray);
-			TextureBlendShader.SetTexture("TilesNorm", Map.TextureCache.TileNormalTextureArray);
-
-			TextureBlendShader.SetVec("Offset",
-				topLeftOffset.X,
-				topLeftOffset.Y);
-			TextureBlendShader.SetVec("Range",
-				bottomRightOffset.X - topLeftOffset.X,
-				bottomRightOffset.Y - topLeftOffset.Y);
-
-			TextureBlendShader.SetVecArray("TileScales", tileScales, 1, tileScales.Length);
-
-			Game.Renderer.Context.SetBlendMode(BlendMode.None);
-			TextureBlendShader.PrepareRender();
-
-			Game.Renderer.DrawBatch(TextureBlendShader, blendVertexBuffer, 0, blendVertices.Length, PrimitiveType.TriangleList);
-
-			Game.Renderer.Context.SetBlendMode(BlendMode.Alpha);
-			BlendFramebuffer.Unbind();
-		}
-
-		public void RenderBlock(int left, int right, int top, int bottom)
-		{
-			if (TerrainShader == null)
-				return;
-
-			if (LeftBound > right || RightBound < left)
-				return;
-			if (BottomBound < top || TopBound > bottom)
-				return;
-
-			TerrainShader.SetVec("Offset",
-				topLeftOffset.X,
-				topLeftOffset.Y);
-			TerrainShader.SetVec("Range",
-				bottomRightOffset.X - topLeftOffset.X,
-				bottomRightOffset.Y - topLeftOffset.Y);
-
-			TerrainShader.SetFloat("WaterUVOffset", (float)(Game.LocalTick % 256) / 256);
-			TerrainShader.SetFloat("WaterUVOffset2", (float)(Game.LocalTick % 1784) / 1784);
-
-			TerrainShader.SetTexture("Mask123", MaskFramebuffer.GetTexture(0));
-
-			TerrainShader.SetTexture("WaterNormal",
-							Map.TextureCache.Textures["WaterNormal"].Item2.GetTexture());
-
-			TerrainShader.SetTexture("Caustics",
-				Map.TextureCache.CausticsTextures[(Game.LocalTick % (Map.TextureCache.CausticsTextures.Length * 3)) / 3].GetTexture());
-
-			var cloud = Map.TextureCache.Textures["MaskCloud"];
-			TerrainShader.SetTexture(cloud.Item1, cloud.Item2.GetTexture());
-
-			TerrainShader.SetTexture("BakedTerrainTexture", BlendFramebuffer.Texture);
-			TerrainShader.SetTexture("BakedTerrainNormalTexture", BlendFramebuffer.GetTexture(1));
-
-			Game.Renderer.Context.SetBlendMode(BlendMode.None);
-			TerrainShader.PrepareRender();
-
-			Game.Renderer.DrawBatch(TerrainShader, finalVertexBuffer, 0, finalVertices.Length, PrimitiveType.TriangleList);
-
-			Game.Renderer.Context.SetBlendMode(BlendMode.None);
-		}
-
-		public struct PaintSpot
-		{
-			public readonly MaskBrush Brush;
-			public readonly WPos Pos;
-			public readonly int Size;
-			public readonly int Layer;
-			public readonly int Intensity;
-
-			public PaintSpot(MaskBrush brush, WPos pos, int size, int layer, int intensity)
-			{
-				Brush = brush;
-				Pos = pos;
-				Size = size;
-				Layer = layer;
-				Intensity = intensity;
-			}
-		}
-
-		/// <summary>
-		/// use a type of 'Brush' to paint or erase mask of a layer
-		/// </summary>
-		/// <param name="map"> map </param>
-		/// <param name="brush"> brush type </param>
-		/// <param name="pos"> brush pos </param>
-		/// <param name="size"> brush size as WDist </param>
-		/// <param name="layer"> brushing layer </param>
-		/// <param name="intensity"> brush intensity , negative is erase </param>
-		public static void PaintAt(Map map, MaskBrush brush,
-			in WPos pos, int size, int layer, int intensity)
-		{
-			// Console.WriteLine("paint at " + pos.X + "," + pos.Y + " with size: " + size + " layer: " + layer);
-			var blockx = (pos.X / 724) / SizeLimit;
-			var blocky = (pos.Y / 724) / SizeLimit;
-			for (int y = blocky - 1; y <= blocky + 1; y++)
-				for (int x = blockx - 1; x <= blockx + 1; x++)
-				{
-					if (y < 0 || y >= map.BlocksArrayHeight || x < 0 || x >= map.BlocksArrayWidth)
-						continue;
-					if (pos.X - size > map.TerrainBlocks[y, x].RightBound ||
-						pos.X + size < map.TerrainBlocks[y, x].LeftBound ||
-						pos.Y - size > map.TerrainBlocks[y, x].BottomBound ||
-						pos.Y + size < map.TerrainBlocks[y, x].TopBound)
-						continue;
-					map.TerrainBlocks[y, x].needUpdateTexture = true;
-					map.TerrainBlocks[y, x].paintSpots.Add(new PaintSpot(brush, pos, size, layer, intensity));
-				}
-		}
-
-		void PaintMask(MaskBrush brush, in WPos pos, int size, int layer, int intensity)
-		{
-			if (tempMaskVertices == null)
-			{
-				numMaskVertices = 0;
-				tempMaskVertices = new TerrainMaskVertex[Game.Renderer.TempBufferSize];
-			}
-
-			// erase
-			if (intensity < 0)
-			{
-				// if brush mode not erase, flush
-				if (currentBrushMode != BlendMode.Subtractive)
-				{
-					FlushBrush(currentBrushMode);
-				}
-
-				currentBrushMode = BlendMode.Subtractive;
-			}
-			else
-			{
-				// if brush mode not add, flush
-				if (currentBrushMode != BlendMode.Additive)
-				{
-					FlushBrush(currentBrushMode);
-				}
-
-				currentBrushMode = BlendMode.Additive;
-			}
-
-			var brushVertices = brush.GetVertices(topLeftOffset, bottomRightOffset, pos, size, layer, Math.Abs(intensity));
-			if (numMaskVertices + brushVertices.Length >= tempMaskVertices.Length)
-				FlushBrush(currentBrushMode);
-			Array.Copy(brushVertices, 0, tempMaskVertices, numMaskVertices, brushVertices.Length);
-			numMaskVertices += brushVertices.Length;
-		}
-
-		void FlushBrush(BlendMode blendMode)
-		{
-			if (numMaskVertices == 0)
-				return;
-
-			Game.Renderer.Context.SetBlendMode(blendMode);
-
-			tempMaskBuffer.SetData(tempMaskVertices, numMaskVertices);
-
-			TerrainMaskShader.PrepareRender();
-
-			Game.Renderer.DrawBatch(TerrainMaskShader, tempMaskBuffer, 0, numMaskVertices, PrimitiveType.TriangleList);
-
-			numMaskVertices = 0;
-		}
-
-
-		public static void SetCameraParams(in World3DRenderer w3dr, bool sunCamera)
-		{
-			if (TerrainShader == null)
-				return;
-			TerrainShader.SetCommonParaments(w3dr, sunCamera);
-			ViewOffset = Game.Renderer.World3DRenderer.InverseCameraFrontMeterPerWDist * (-17);
-
-			TerrainShader.SetVec("ViewOffset",
-				ViewOffset.x,
-				ViewOffset.y,
-				ViewOffset.z);
-			TerrainShader.SetVec("CameraInvFront",
-				Game.Renderer.World3DRenderer.InverseCameraFront.x,
-				Game.Renderer.World3DRenderer.InverseCameraFront.y,
-				Game.Renderer.World3DRenderer.InverseCameraFront.z);
-		}
-
-		public static void SetShadowParams(in World3DRenderer w3dr)
-		{
-			if (TerrainShader == null)
-				return;
-
-			Game.Renderer.SetShadowParams(TerrainShader, w3dr, Game.Settings.Graphics.TerrainShadowType);
-			Game.Renderer.SetLightParams(TerrainShader, w3dr);
 		}
 
 		public static void SaveAsPng(ITexture texture, string path, string name)

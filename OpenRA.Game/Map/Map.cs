@@ -1507,7 +1507,7 @@ namespace OpenRA
 
 			foreach (var block in TerrainBlocks)
 			{
-				block.RenderBlock(left, right, top, bottom);
+				block.Render(left, right, top, bottom);
 			}
 		}
 
