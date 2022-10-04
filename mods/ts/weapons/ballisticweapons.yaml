@@ -231,6 +231,7 @@ Grenade:
 		Image: DISCUS
 		Palette: effect
 		BounceCount: 2
+		BounceWeapon: GrenadeBounce
 		Width: 256
 		ContrailLength: 5
 		ContrailWidth: 180
@@ -256,3 +257,11 @@ Grenade:
 		ImpactSounds: expnew13.aud
 		ValidTargets: Ground, Trees, Air
 	-Warhead@5Res:
+
+GrenadeBounce:
+	Warhead@1Dam: SpreadDamage
+	Warhead@waterbounce: CreateEffect
+		ValidTargets: Water
+		Image: wake
+		Explosions: idle
+		ExplosionPalette: effect

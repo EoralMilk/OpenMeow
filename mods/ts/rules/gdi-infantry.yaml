@@ -237,13 +237,13 @@ GHOST:
 		BuildPaletteOrder: 90
 		Prerequisites: ~gapile, gatech, ~techlevel.high
 		BuildLimit: 1
-		Description: Elite commando infantry, armed with\na railgun and C4.\n  Strong vs Infantry, Buildings\n  Weak vs Vehicles, Aircraft\n  Special Ability: Destroy Building with C4\nMaximum 1 can be trained.
+		Description: Elite commando infantry, armed with\na railgun, pulse chain gun and C4.\n  Strong vs Ground\n  Weak vs Aircraft\n  Special Ability: Destroy Building with C4\nMaximum 1 can be trained.
 	Voiced:
 		VoiceSet: Ghost
 	Armor:
 		Type: Light
 	Mobile:
-		Speed: 56
+		Speed: 76
 	Health:
 		HP: 20000
 	Passenger:

@@ -538,6 +538,7 @@ NAMISL:
 		MissileWeapon: ClusterMissile
 		MissileImage: ClusterMissile
 		MissileDelay: 18
+		FlightDelay: 100
 		DetonationAltitude: 5c0
 		SpawnOffset: 0, 0c128, 0c512
 		DisplayTimerRelationships: None

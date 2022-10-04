@@ -108,7 +108,7 @@ TTNK:
 		Queue: Vehicle
 		BuildPaletteOrder: 60
 		Prerequisites: ~naweap, ~techlevel.medium
-		Description: Nod's main battle tank.\nCan deploy to gain extra protection.\n  Strong vs Vehicles\n  Weak vs Infantry, Aircraft
+		Description: Nod's main battle tank.\nCan deploy to gain extra protection and range.\n  Strong vs Vehicles\n  Weak vs Infantry, Aircraft
 	Mobile:
 		TurnSpeed: 20
 		Speed: 85
@@ -144,6 +144,12 @@ TTNK:
 		DeploySounds: place2.aud
 		UndeploySounds: clicky1.aud
 		Voice: Move
+	RevealsShroud:
+		RequiresCondition: !inside-tunnel && !deployed
+	RevealsShroud@deploy:
+		RequiresCondition: !inside-tunnel && deployed
+		Range: 8c512
+		MaxHeightDelta: 1100
 	EntersTunnels:
 		RequireForceMoveCondition: !undeployed
 	Repairable:
@@ -209,7 +215,7 @@ TTNK:
 		Range: 1c768
 		RequiresCondition: rank-elite
 	RangeMultiplier@deployed:
-		Modifier: 125
+		Modifier: 120
 		RequiresCondition: deployed
 	RenderDetectionCircle:
 	RevealOnFire:

@@ -22,7 +22,7 @@ Player:
 		VehiclesFactoryTypes: gaweap, naweap
 		ProductionTypes: gapile, nahand, gaweap, naweap, gahpad, nahpad
 		SiloTypes: gasilo
-		DefenseTypes: gavulc,garock,gacsam,gactwr,naobel,nalasr,nasam
+		DefenseTypes: gavulc,garock,gacsam,gactwr,naobel,nalasr,nasam, titanugvulcan,titanugmissile
 		BuildingLimits:
 			proc: 4
 			gasilo: 2
@@ -46,6 +46,8 @@ Player:
 			naobel: 2
 			nalasr: 8
 			nasam: 4
+			titanugvulcan: 14
+			titanugmissile: 8
 		BuildingFractions:
 			proc: 30
 			gapile: 1
@@ -66,6 +68,8 @@ Player:
 			gactwr: 18
 			nasam: 6
 			naobel: 3
+			titanugvulcan: 14
+			titanugmissile: 8
 	BuildingRepairBotModule:
 		RequiresCondition: enable-test-ai
 	SquadManagerBotModule@test:
@@ -75,7 +79,7 @@ Player:
 		IgnoredEnemyTargetTypes: Wall, AIgnored
 		ConstructionYardTypes: gacnst
 		AirUnitsTypes: orca, orcab, scrin, apache, jumpjet
-		ProtectionTypes: gapowr, gapowrup, gapile, gaweap, gahpad, gadept, garadr, gatech, gaplug, gagate_a, gagate_b, gactwr, gavulc, garock, gacsam, napowr, naapwr, nahand, naweap, nahpad, naradr, natech, nastlh, natmpl, namisl, nawast, nagate_a, nagate_b, nalasr, naobel, nasam, weed, gacnst, proc, gasilo, napuls, mcv, harv
+		ProtectionTypes: gapowr, gapowrup, gapile, gaweap, gahpad, gadept, garadr, gatech, gaplug, gagate_a, gagate_b, gactwr, gavulc, garock, gacsam, titanugvulcan, titanugmissile, napowr, naapwr, nahand, naweap, nahpad, naradr, natech, nastlh, natmpl, namisl, nawast, nagate_a, nagate_b, nalasr, naobel, nasam, weed, gacnst, proc, gasilo, napuls, mcv, harv
 		MinimumAttackForceDelay: 2500
 		AssignRolesInterval: 73
 		IdleScanRadius: 15
@@ -89,14 +93,17 @@ Player:
 		UnitQueues: Vehicle, Infantry, Air
 		UnitsToBuild:
 			e1: 80
-			e2: 25
-			e3: 25
-			cyborg: 15
+			e2: 30
+			e3: 30
+			cyborg: 30
 			jumpjet: 15
+			ghost: 4
+			cyc2: 4
 			repair: 2
 			medic: 2
 			harv: 10
 			mmch: 15
+			hmec: 10
 			ttnk: 15
 			smech: 25
 			bggy: 25
@@ -113,6 +120,9 @@ Player:
 			harv: 12
 			medic: 3
 			repair: 3
+			ghost: 1
+			cyc2: 1
+			hmec: 1
 	McvManagerBotModule@test:
 		RequiresCondition: enable-test-ai
 		McvTypes: mcv
