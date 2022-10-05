@@ -103,7 +103,8 @@ namespace OpenRA.Mods.Common.Traits
 			WPos wPos = WPos.Zero;
 			if (sprite != null)
 			{
-				wPos = map.CenterOfCell(cell) - new WVec(0, 0, map.Grid.Ramps[map.Ramp[cell]].CenterHeightOffset);
+				wPos = map.CenterOfCell(cell);
+				wPos = new WPos(wPos.X, wPos.Y, map.MiniHeightOfCell(cell));
 			}
 
 			var uv = cell.ToMPos(map.Grid.Type);

@@ -492,14 +492,20 @@ namespace OpenRA.Mods.Common.Traits
 			subCell = GetValidSubCell(subCell);
 			SetLocation(cell, subCell, cell, subCell);
 
-			var position = cell.Layer == 0 ? self.World.Map.CenterOfCell(cell) :
-				self.World.GetCustomMovementLayers()[cell.Layer].CenterOfCell(cell);
-
-			var subcellOffset = self.World.Map.Grid.OffsetOfSubCell(subCell);
-			var pos = position + subcellOffset;
-			// pos = new WPos(pos.X, pos.Y, self.World.Map.HeightOfTerrain(pos));
-			SetCenterPosition(self, pos);
-			FinishedMoving(self);
+			// keep actor on the ground
+			if (cell.Layer == 0)
+			{
+				SetCenterPosition(self, self.World.Map.CenterOfSubCell(cell, subCell));
+				FinishedMoving(self);
+			}
+			else
+			{
+				var position = self.World.GetCustomMovementLayers()[cell.Layer].CenterOfCell(cell);
+				var subcellOffset = self.World.Map.Grid.OffsetOfSubCell(subCell);
+				var pos = position + subcellOffset;
+				SetCenterPosition(self, pos);
+				FinishedMoving(self);
+			}
 		}
 
 		// Sets the location (fromCell, toCell, FromSubCell, ToSubCell) and CenterPosition

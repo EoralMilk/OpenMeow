@@ -1216,7 +1216,15 @@ namespace OpenRA
 						TerrainVertices[im].LogicPos.Z == TerrainVertices[il].LogicPos.Z)
 						flatCell = true;
 
-					CellInfo cellInfo = new CellInfo(TerrainVertices[im].LogicPos, im, it, ib, il, ir, typeNum,
+					CellInfo cellInfo = new CellInfo(TerrainVertices[im].LogicPos, Math.Min(
+						Math.Min(
+							Math.Min(
+								Math.Min(TerrainVertices[im].LogicPos.Z,
+									TerrainVertices[it].LogicPos.Z),
+								TerrainVertices[ib].LogicPos.Z),
+							TerrainVertices[ir].LogicPos.Z),
+						TerrainVertices[il].LogicPos.Z),
+						im, it, ib, il, ir, typeNum,
 						new int2(mid.Y - 1, mid.X - 1), new int2(mid.Y - 1, mid.X),
 						new int2(mid.Y, mid.X - 1), new int2(mid.Y, mid.X), flatCell,
 						tlNml, trNml, blNml, brNml);
@@ -1938,25 +1946,8 @@ namespace OpenRA
 		{
 			if (CellInfos != null && CellInfos.Contains(cell))
 				return CellInfos[cell].CellCenterPos;
-			else
-			{
-				if (Grid.Type == MapGridType.Rectangular)
-					return new WPos(1024 * cell.X + 512, 1024 * cell.Y + 512, 0);
 
-				// Convert from isometric cell position (x, y) to world position (u, v):
-				// (a) Consider the relationships:
-				//  - Center of origin cell is (512, 512)
-				//  - +x adds (512, 512) to world pos
-				//  - +y adds (-512, 512) to world pos
-				// (b) Therefore:
-				//  - ax + by adds (a - b) * 512 + 512 to u
-				//  - ax + by adds (a + b) * 512 + 512 to v
-				// (c) u, v coordinates run diagonally to the cell axes, and we define
-				//     1024 as the length projected onto the primary cell axis
-				//  - 512 * sqrt(2) = 724
-				var z = HeightStep.TryGetValue(cell, out var height) ? MapGrid.MapHeightStep * height + Grid.Ramps[Ramp[cell]].CenterHeightOffset : 0;
-				return new WPos(724 * (cell.X - cell.Y + 1), 724 * (cell.X + cell.Y + 1), z);
-			}
+			return new WPos(724 * (cell.X - cell.Y + 1), 724 * (cell.X + cell.Y + 1), 0);
 		}
 
 		public WPos CenterOfCell(MPos uv)
@@ -1964,7 +1955,24 @@ namespace OpenRA
 			if (CellInfos != null && CellInfos.Contains(uv))
 				return CellInfos[uv].CellCenterPos;
 
-			return new WPos(0, 0, 0);
+			var cell = uv.ToCPos(this);
+			return new WPos(724 * (cell.X - cell.Y + 1), 724 * (cell.X + cell.Y + 1), 0);
+		}
+
+		public int MiniHeightOfCell(MPos uv)
+		{
+			if (CellInfos != null && CellInfos.Contains(uv))
+				return CellInfos[uv].CellMiniHeight;
+
+			return 0;
+		}
+
+		public int MiniHeightOfCell(CPos cell)
+		{
+			if (CellInfos != null && CellInfos.Contains(cell))
+				return CellInfos[cell].CellMiniHeight;
+
+			return 0;
 		}
 
 		public WPos CenterOfSubCell(CPos cell, SubCell subCell)
@@ -1975,11 +1983,6 @@ namespace OpenRA
 				var center = CenterOfCell(cell);
 				var offset = Grid.SubCellOffsets[index];
 				var result = center + offset;
-				//if (Ramp.TryGetValue(cell, out var ramp) && ramp != 0)
-				//{
-				//	var r = Grid.Ramps[ramp];
-				//	offset += new WVec(0, 0, r.HeightOffset(offset.X, offset.Y) - r.CenterHeightOffset);
-				//}
 				result = new WPos(result.X, result.Y, HeightOfTerrain(result));
 				return result;
 			}
@@ -2067,7 +2070,7 @@ namespace OpenRA
 			if (CellInfos != null && CellInfos.Contains(cell))
 				return CellInfos[cell].CellCenterPos.Z;
 			else
-				return HeightStep.Contains(cell) ? MapGrid.MapHeightStep * HeightStep[cell] + Grid.Ramps[Ramp[cell]].CenterHeightOffset : 0;
+				return 0;
 		}
 
 		public int HeightOfCell(MPos uv)
@@ -2075,7 +2078,7 @@ namespace OpenRA
 			if (CellInfos != null && CellInfos.Contains(uv))
 				return CellInfos[uv].CellCenterPos.Z;
 			else
-				return HeightStep.Contains(uv) ? MapGrid.MapHeightStep * HeightStep[uv] + Grid.Ramps[Ramp[uv]].CenterHeightOffset : 0;
+				return 0;
 		}
 
 		public WDist DistanceAboveTerrain(WPos pos)

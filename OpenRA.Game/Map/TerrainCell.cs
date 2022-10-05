@@ -27,6 +27,8 @@ namespace OpenRA
 		public const float RV = 0f;
 
 		public readonly WPos CellCenterPos;
+		public readonly int CellMiniHeight;
+
 		public readonly uint Type;
 
 		public readonly int2 MiniCellTL, MiniCellTR, MiniCellBL, MiniCellBR;
@@ -47,12 +49,12 @@ namespace OpenRA
 		public WRot TerrainOrientationBR;
 		public WRot TerrainOrientationM;
 
-		public CellInfo(WPos center, // float3 tlmn, float3 tmrn, float3 mlbn, float3 mbrn,
+		public CellInfo(WPos center, int miniHeight,
 			int m, int t, int b, int l, int r, uint type, int2 ctl, int2 ctr, int2 cbl, int2 cbr, bool flat,
 			TSVector tlnml, TSVector trnml, TSVector blnml, TSVector brnml)
 		{
 			CellCenterPos = center;
-
+			CellMiniHeight = miniHeight;
 			M = m;
 			T = t;
 			B = b;
