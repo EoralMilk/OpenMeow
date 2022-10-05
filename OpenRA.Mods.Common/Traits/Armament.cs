@@ -317,6 +317,16 @@ namespace OpenRA.Mods.Common.Traits
 					{
 						projSpeed = (Weapon.Projectile as RailgunInfo).Speed.Length;
 					}
+					else if (Weapon.Projectile is BlastWaveInfo)
+					{
+						var speeds = (Weapon.Projectile as BlastWaveInfo).Speed;
+						if (speeds.Length == 1)
+							projSpeed = speeds[0].Length;
+						else
+						{
+							projSpeed = (speeds[0].Length + speeds[1].Length) / 2;
+						}
+					}
 
 					if (projSpeed == FP.Zero)
 						return offset;

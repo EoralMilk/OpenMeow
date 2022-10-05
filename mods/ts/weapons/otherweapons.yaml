@@ -1,46 +1,39 @@
 FireballLauncher:
 	ValidTargets: Ground, Trees, Water
-	ReloadDelay: 50
+	ReloadDelay: 40
 	Range: 5c128
 	Report: flamtnk1.aud
-	Projectile: Bullet
-		DetectTargetFromLength: 0.8
-		DetectTargetBeforeDist: 2c0
-		Speed: 160
-		Image: FLAMEALL
-		Inaccuracy: 656
-		UseVerticalInaccuracy: false
-		Blockable: true
+	Burst: 14
+	BurstDelays: 1
+	Projectile: BlastWave
+		Inaccuracy: 0c768
+		Image: flameball
+		Sequences: idle1, idle2, idle3
+		Palette: blast-additive
+		Speed: 145, 155
 		LaunchAngle: 10
 		Width: 324
-	Burst: 5
-	BurstDelays: 5
-	# Warhead@1Dam: SpreadDamage
-	# 	Spread: 288
-	# 	Falloff: 100, 50, 25, 12, 6, 3, 0
-	# 	ValidTargets: Ground, Trees
-	# 	Damage: 2500
-	# 	Versus:
-	# 		None: 600
-	# 		Wood: 148
-	# 		Light: 59
-	# 		Heavy: 6
-	# 		Concrete: 2
-	# 	DamageTypes: Prone100Percent, TriggerProne, FireDeath
+		ShockDist: 5c768
+		BlastInterval: 5
+		BlastDelay: 3
+		KeepSourceAltitude: false
+		Blockable: true
 	Warhead@2Smu: LeaveSmudge
 		SmudgeType: SmallScorch
+		Chance: 5
 		InvalidTargets: Vehicle, Building, Wall
 	Warhead@fireDam: Spread3DDamage
-		Damage: 1200
-		Spread: 0c155
+		Spread: 0c200
+		Damage: 120
 		Falloff: 100, 80, 35, 5
+		ValidRelationships: Neutral, Enemy # no friendly damage
 		Versus:
-			None: 600
-			Wood: 148
-			Light: 59
-			Heavy: 6
+			None: 400
+			Wood: 135
+			Light: 60
+			Heavy: 5
 			Concrete: 2
-		DamageTypes: Prone100Percent, TriggerProne, FireDeath
+		DamageTypes: Prone70Percent, TriggerProne, FireDeath
 		ValidTargets: Ground, Water, Air
 		InvalidTargets: Wall, Bridge
 		Condition: burning
@@ -48,9 +41,8 @@ FireballLauncher:
 
 DualFireballLauncher:
 	Inherits: FireballLauncher
-	ReloadDelay: 60
-	Burst: 10
-	BurstDelays: 3
+	ReloadDelay: 50
+	Burst: 28
 
 Bomb:
 	ReloadDelay: 60

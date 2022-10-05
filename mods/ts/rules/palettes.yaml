@@ -296,3 +296,7 @@
 		AllowModifiers: false
 		# Premultiply: true
 
+	PaletteFromFile@TAPal_blast-additive:
+		Name: blast-additive
+		Filename: blast-additive.pal
+		AllowModifiers: false

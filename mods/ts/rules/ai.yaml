@@ -36,6 +36,7 @@ Player:
 			naradr: 1
 			gatech: 1
 			natech: 1
+			natmpl: 1
 			nastlh: 1
 			gahpad: 3
 			nahpad: 3
@@ -58,6 +59,7 @@ Player:
 			naradr: 1
 			gatech: 1
 			natech: 1
+			natmpl: 1
 			nastlh: 1
 			gahpad: 1
 			nahpad: 1
@@ -96,6 +98,7 @@ Player:
 			e2: 30
 			e3: 30
 			cyborg: 30
+			weedguy: 12
 			jumpjet: 15
 			ghost: 4
 			cyc2: 4

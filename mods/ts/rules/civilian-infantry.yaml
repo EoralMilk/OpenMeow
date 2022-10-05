@@ -5,16 +5,16 @@ WEEDGUY:
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Buildable:
 		Queue: Infantry
-		BuildPaletteOrder: 0
-		Prerequisites: ~none
+		BuildPaletteOrder: 75
+		Prerequisites: ~nahand, natech, ~techlevel.high
 	Valued:
-		Cost: 300
+		Cost: 700
 	Tooltip:
-		Name: Chem Spray Infantry
+		Name: Flame Spray Infantry
 	Voiced:
 		VoiceSet: Weed
 	Mobile:
-		Speed: 70
+		Speed: 67
 	Health:
 		HP: 17500
 	Crushable:

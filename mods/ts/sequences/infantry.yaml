@@ -490,6 +490,7 @@ weedguy:
 	Defaults: weed
 		Tick: 80
 		Offset: 0, 0, 16
+		Scale: 1.1
 	stand:
 		Facings: 8
 		ShadowStart: 202
@@ -554,6 +555,8 @@ weedguy:
 		Length: 3
 		ShadowStart: 376
 		Tick: 1000
+	icon: weaticon
+		Scale: 1
 
 flameguy:
 	Inherits@defaults: ^InfantryBase

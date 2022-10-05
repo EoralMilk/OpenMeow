@@ -1,16 +1,23 @@
 MultiCluster:
-	Inherits: ^DefaultMissile
+	Inherits: ^VectorBooster
 	ValidTargets: Ground, Water, Air, Trees
-	Projectile: Missile
-		MaximumLaunchSpeed: 120
+	-Report:
+	Projectile: VectorBooster
+		Speed: 120
+		MinSpeed: 55
+		MaxSpeed: 388
 		Inaccuracy: 1c0
-		Speed: 370
 		Acceleration: 10
-		MinimumLaunchAngle: -255
-		MaximumLaunchAngle: 255
-		RangeLimit: 10c0
+		# MaximumLaunchSpeed: 120
+		# MinimumLaunchAngle: -255
+		# MaximumLaunchAngle: 255
+		# RangeLimit: 10c0
+		# VerticalRateOfTurn: 64
+		LaunchAngle: 0
+		LifeTime: 66
 		AllowSnapping: false
-		VerticalRateOfTurn: 64
+		HorizonRotationRate: 14
+		VerticalRotationRate: 11
 	Warhead@1Dam: SpreadDamage
 		Spread: 458
 		Damage: 22000
@@ -55,7 +62,7 @@ ClusterMissile:
 		Weapon: MultiCluster
 		RandomClusterCount: 13
 		Dimensions: 7,7
-		Footprint: __xxx__ _xxxxx_ xxxxxxx xxxXxxx xxxxxxx _xxxxx_ __xxx__
+		Footprint: __xxx__ _xxXxx_ xxxxxxx xXxXxXx xxxxxxx _xxXxx_ __xxx__
 	Warhead@Shake: ShakeScreen
 		Duration: 20
 		Intensity: 5
