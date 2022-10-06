@@ -15,8 +15,8 @@ namespace OpenRA.Graphics
 		public readonly Func<WPos> PoistionFunc;
 		public readonly Func<WRot> RotationFunc;
 		public readonly Func<bool> IsVisible;
-		public readonly Func<TSMatrix4x4> Matrix;
-		public readonly bool UseMatrix = false;
+		public Func<TSMatrix4x4> Matrix;
+		public bool UseMatrix = false;
 		public readonly string SkeletonBinded = null;
 
 		public int DrawId;

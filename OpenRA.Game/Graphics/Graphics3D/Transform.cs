@@ -1,29 +1,215 @@
-﻿using TrueSync;
+﻿using System;
+using GlmSharp;
+using TrueSync;
 
 namespace OpenRA.Graphics
 {
+
+	public struct DualQuaternion
+	{
+		public quat Real;
+		public quat Dual;
+
+		public DualQuaternion(quat real, quat dual)
+		{
+			Real = real;
+			Dual = dual;
+		}
+
+		public static DualQuaternion CombineDualQuaternions(in DualQuaternion a, in DualQuaternion b)
+		{
+			quat real = a.Real * b.Real;
+			quat dual = (a.Real * b.Dual) + (a.Dual * b.Real);
+			return new DualQuaternion(real, dual);
+		}
+	}
+
+	public struct DQTransform
+	{
+		public DualQuaternion DQ;
+		public vec3 Scale;
+
+		public DQTransform(DualQuaternion dq, vec3 scale)
+		{
+			DQ = dq;
+			Scale = scale;
+		}
+
+		public DQTransform Then(in DQTransform next)
+		{
+			var dq = DualQuaternion.CombineDualQuaternions(next.DQ, this.DQ);
+			var s = next.Scale * Scale;
+			return new DQTransform(dq, s);
+		}
+	}
+
 	/// <summary>
 	/// Transform用于存储变化信息和最重要的变换矩阵
 	/// </summary>
 	public struct Transformation
 	{
-		public TSVector Scale;
-		public TSQuaternion Rotation;
-		public TSVector Position;
+		bool scaleUpdated;
+		bool rotationUpdated;
+		bool positionUpdated;
+		bool matrixUpdated;
+
+		TSVector scale;
+		TSQuaternion rotation;
+		TSVector position;
+		TSMatrix4x4 matrix;
+
+		TSVector UpdateScale()
+		{
+			if (!matrixUpdated)
+				throw new Exception("Can't update scale");
+
+			scale = MatScale(matrix);
+			scaleUpdated = true;
+			return scale;
+		}
+
+		TSVector UpdatePosition()
+		{
+			if (!matrixUpdated)
+				throw new Exception("Can't update position");
+
+			position = MatPosition(matrix);
+			positionUpdated = true;
+			return position;
+		}
+
+		TSQuaternion UpdateRotation()
+		{
+			if (!matrixUpdated)
+				throw new Exception("Can't update rotation");
+
+			if (scaleUpdated)
+				rotation = MatRotation(matrix, scale);
+			else
+				rotation = MatRotation(matrix);
+			rotationUpdated = true;
+			return rotation;
+		}
+
+		TSMatrix4x4 UpdateMatrix()
+		{
+			if (!scaleUpdated || !rotationUpdated || !positionUpdated)
+				throw new Exception("Can't update matrix");
+
+			matrix = TSMatrix4x4.TRS(Position, Rotation, Scale);
+			matrixUpdated = true;
+			return matrix;
+		}
+
+		public TSVector Scale {
+			get
+			{
+				if (scaleUpdated)
+					return scale;
+				else
+					return UpdateScale();
+			}
+			set
+			{
+				scale = value;
+				scaleUpdated = true;
+			}
+		}
+
+		public TSQuaternion Rotation
+		{
+			get
+			{
+				if (rotationUpdated)
+					return rotation;
+				else
+					return UpdateRotation();
+			}
+			set
+			{
+				rotation = value;
+				rotationUpdated = true;
+			}
+		}
+
+		public TSVector Position
+		{
+			get
+			{
+				if (positionUpdated)
+					return position;
+				else
+					return UpdatePosition();
+			}
+			set
+			{
+				position = value;
+				positionUpdated = true;
+			}
+		}
+
+		public TSMatrix4x4 Matrix {
+			get {
+				if (matrixUpdated)
+					return matrix;
+				else
+					return UpdateMatrix();
+			}
+			set {
+				matrix = value;
+				matrixUpdated = true;
+			}
+		}
+
+		public quat DQrot => new quat((float)Rotation.x, (float)Rotation.y, (float)Rotation.z, (float)Rotation.w);
+		public quat DQtrans => new quat((float)Position.x, (float)Position.y, (float)Position.z, 0.0f) * DQrot * 0.5f;
+
+		public DualQuaternion DQ => new DualQuaternion(DQrot, DQtrans);
+
+		public DQTransform DQT => new DQTransform(DQ, new vec3((float)Scale.x, (float)Scale.y, (float)Scale.z));
+
 		public static Transformation Identity { get { return new Transformation(TSVector.one, TSQuaternion.identity, TSVector.zero); } }
-		public TSMatrix4x4 Matrix { get { return TSMatrix4x4.TRS(Position, Rotation, Scale); } }
+
 		public Transformation(TSVector s, TSQuaternion r, TSVector t)
 		{
-			Scale = s;
-			Rotation = r;
-			Position = t;
+			scale = s;
+			scaleUpdated = true;
+			rotation = r;
+			rotationUpdated = true;
+			position = t;
+			positionUpdated = true;
+			matrix = TSMatrix4x4.Identity;
+			matrixUpdated = false;
 		}
 
 		public Transformation(TSMatrix4x4 mat)
 		{
-			Scale = MatScale(mat);
-			Rotation = MatRotation(mat, Scale);
-			Position = MatPosition(mat);
+			scale = TSVector.zero;
+			scaleUpdated = false;
+			rotation = TSQuaternion.identity;
+			rotationUpdated = false;
+			position = TSVector.zero;
+			positionUpdated = false;
+			matrix = mat;
+			matrixUpdated = true;
+		}
+
+		/// <summary>
+		/// for render
+		/// </summary>
+		public Transformation(DQTransform dqt)
+		{
+			scale = new TSVector(dqt.Scale);
+			scaleUpdated = true;
+			rotation = new TSQuaternion(dqt.DQ.Real);
+			rotationUpdated = true;
+
+			var v = (2.0f * dqt.DQ.Dual) * new quat(-dqt.DQ.Real.x, -dqt.DQ.Real.y, -dqt.DQ.Real.z, dqt.DQ.Real.w);
+			position = new TSVector(v.x, v.y, v.z);
+			positionUpdated = true;
+
+			matrix = TSMatrix4x4.Identity;
+			matrixUpdated = false;
 		}
 
 		public static TSMatrix4x4 ExtractRotationMatrix(in TSMatrix4x4 matrix, in TSVector scale)
@@ -98,11 +284,6 @@ namespace OpenRA.Graphics
 			Position += offset;
 		}
 
-		/// <summary>
-		/// 计算量较大，不应该大量使用。
-		/// </summary>
-		/// <param name="then">要应用的变换</param>
-		/// <returns>变换结果</returns>
 		public Transformation Then(in Transformation then)
 		{
 			var m = then.Matrix * Matrix;

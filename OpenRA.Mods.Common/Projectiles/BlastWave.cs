@@ -75,7 +75,8 @@ namespace OpenRA.Mods.Common.Projectiles
 		[Sync]
 		WPos pos, lastPos;
 
-		readonly WPos target, source;
+		WPos target;
+		readonly WPos source;
 
 		readonly int length;
 		Actor blocker;
@@ -171,9 +172,13 @@ namespace OpenRA.Mods.Common.Projectiles
 				return true;
 			}
 
+			var posh = world.Map.DistanceAboveTerrain(pos);
+
 			// Driving into cell with different height level
-			if (world.Map.DistanceAboveTerrain(pos) < info.ExplodeUnderThisAltitude)
-				return true;
+			if (posh < info.ExplodeUnderThisAltitude)
+			{
+				target = new WPos(target.X, target.Y, pos.Z - posh.Length);
+			}
 
 			return false;
 		}

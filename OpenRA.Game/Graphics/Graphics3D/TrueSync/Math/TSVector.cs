@@ -18,6 +18,7 @@
 */
 
 using System;
+using GlmSharp;
 
 namespace TrueSync
 {
@@ -865,6 +866,12 @@ namespace TrueSync
 			return new TSVector4(this.x, this.y, this.z, FP.One);
 		}
 
+		public TSVector(in vec3 vec)
+		{
+			x = vec.x;
+			y = vec.y;
+			z = vec.z;
+		}
 	}
 
 }

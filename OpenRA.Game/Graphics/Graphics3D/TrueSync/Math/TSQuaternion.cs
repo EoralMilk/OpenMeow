@@ -18,6 +18,7 @@
 */
 
 using System;
+using GlmSharp;
 
 namespace TrueSync
 {
@@ -642,6 +643,9 @@ namespace TrueSync
 		{
 			return string.Format("({0:f1}, {1:f1}, {2:f1}, {3:f1})", x.AsFloat(), y.AsFloat(), z.AsFloat(), w.AsFloat());
 		}
+
+		public TSQuaternion(in quat quat)
+			: this(quat.x, quat.y, quat.z, quat.w) { }
 
 	}
 }

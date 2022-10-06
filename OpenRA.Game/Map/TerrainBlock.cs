@@ -506,6 +506,8 @@ namespace OpenRA
 
 		public static IShader TerrainCoveringShader { get; private set; }
 
+		public IFrameBuffer CoveringFrameBuffer { get; private set; }
+
 		public TerrainRenderBlock(WorldRenderer worldRenderer, Map map, int2 tl, int2 br)
 		{
 			Range = new float2((float)SizeLimit / (map.VertexArrayWidth - 1), (float)SizeLimit / (map.VertexArrayHeight - 1));

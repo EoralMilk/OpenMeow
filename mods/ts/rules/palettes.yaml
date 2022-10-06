@@ -300,3 +300,7 @@
 		Name: blast-additive
 		Filename: blast-additive.pal
 		AllowModifiers: false
+	FixedColorPalette@blast-green:
+		Base: blast-additive
+		Name: blast-green
+		Color: 22FF22

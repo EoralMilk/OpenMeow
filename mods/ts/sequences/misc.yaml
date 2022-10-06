@@ -473,6 +473,12 @@ flameball:
 	idle2: flameball2
 	idle3: flameball3
 
+greenflameball:
+	Inherits: flameball
+	Defaults:
+		BlendMode: ScreenAdditive
+
+
 largesmoke:
 	idle: lgrysmk1
 		Length: *

@@ -82,6 +82,8 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 						if (withSkeletons.ContainsKey(mesh.SkeletonBinded))
 						{
 							mesh.DrawId = withSkeletons[mesh.SkeletonBinded].GetDrawId();
+							mesh.Matrix = () => withSkeletons[mesh.SkeletonBinded].Skeleton.Offset;
+							mesh.UseMatrix = true;
 						}
 					}
 				}

@@ -18,6 +18,7 @@ FireballLauncher:
 		BlastDelay: 3
 		KeepSourceAltitude: false
 		Blockable: true
+		ExplodeUnderThisAltitude: -24
 	Warhead@2Smu: LeaveSmudge
 		SmudgeType: SmallScorch
 		Chance: 5
@@ -43,6 +44,16 @@ DualFireballLauncher:
 	Inherits: FireballLauncher
 	ReloadDelay: 50
 	Burst: 28
+
+GreenFireballLauncher:
+	Inherits: FireballLauncher
+	Burst: 7
+	Projectile: BlastWave
+		Inaccuracy: 1c782
+		Palette: blast-green
+		Image: greenflameball
+		Speed: 65, 95
+		Blockable: false
 
 Bomb:
 	ReloadDelay: 60

@@ -3,7 +3,7 @@
 #define MAX_BONE_LENGTH 4
 
 #ifdef GL_ES
-precision highp float;
+precision mediump float;
 #endif
 
 in vec3 aVertexPos;
@@ -224,6 +224,7 @@ mat4 GetSkinMatrix()
 		1);
 }
 
+
 void main()
 {
 	if ((aDrawPart & iDrawMask) == uint(0)|| iDrawId == -2)
@@ -239,17 +240,11 @@ void main()
 
 	mat4 scaleMatrix = mat4(0.0f);
 
-	if (iDrawId != -1 && aBoneId[0] != -1)
+	if (iDrawId != -1 && aBoneId[0] != -1 && aBoneWeights[0] != 0.0f)
 	{
 		animTexoffset = iDrawId;//iDrawId * skinBoneCount * 4;
-		if (aBoneWeights[0] == 0.0f){
-			mMatrix =  mat4(iModelV1, iModelV2, iModelV3, iModelV4);
-			// mMatrix = mMatrix * rotationFix;
-		}
-		else if (useDQB){
+		if (useDQB){
 			// dqbs Skin
-			
-			vec3 scale = vec3(0.0f);
 			m1 = GetMat4ById(aBoneId[0]);
 			m2 = GetMat4ById(aBoneId[1]);
 			m3 = GetMat4ById(aBoneId[2]);
@@ -258,13 +253,14 @@ void main()
 			s2 = vec3(length(m2[0]), length(m2[1]), length(m2[2]));
 			s3 = vec3(length(m3[0]), length(m3[1]), length(m3[2]));
 			s4 = vec3(length(m4[0]), length(m4[1]), length(m4[2]));
-			scale= s1 * aBoneWeights[0] + s2 * aBoneWeights[1] + s3 * aBoneWeights[2] + s4 * aBoneWeights[3];
+
+			vec3 scale = s1 * aBoneWeights[0] + s2 * aBoneWeights[1] + s3 * aBoneWeights[2] + s4 * aBoneWeights[3];
 
 			scaleMatrix[0][0] = scale[0];
 			scaleMatrix[1][1] = scale[1];
 			scaleMatrix[2][2] = scale[2];
 			scaleMatrix[3][3] = 1.0f;
-			mMatrix = GetSkinMatrix() *  scaleMatrix;
+			mMatrix = GetSkinMatrix() * scaleMatrix;
 		}
 		else{
 			// LBS Skin
