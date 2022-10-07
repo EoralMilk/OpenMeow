@@ -89,7 +89,7 @@ Player:
 		ProtectionScanRadius: 15
 		SuggestedGroundLeaderLocomotor: foot, wheeled, heavywheeled, tracked, critter, visceroid, smallvisc
 		SuggestedNavyLeaderLocomotor: Naval
-		GuerrillaTypes: smech, bggy, jumpjet, hvr, bike, subtank, stnk, commonkitten
+		GuerrillaTypes: smech, bggy, jumpjet, hvr, bike, subtank, stnk
 	UnitBuilderBotModule@test:
 		RequiresCondition: enable-test-ai
 		UnitQueues: Vehicle, Infantry, Air
@@ -119,7 +119,6 @@ Player:
 			orcab: 11
 			apache: 15
 			scrin: 14
-			commonkitten: 3
 		UnitLimits:
 			harv: 12
 			medic: 3
@@ -127,7 +126,6 @@ Player:
 			ghost: 1
 			cyc2: 1
 			hmec: 1
-			commonkitten: 1
 	McvManagerBotModule@test:
 		RequiresCondition: enable-test-ai
 		McvTypes: mcv
