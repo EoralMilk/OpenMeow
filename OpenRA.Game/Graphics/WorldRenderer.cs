@@ -384,6 +384,8 @@ namespace OpenRA.Graphics
 					trait.RenderAboveWorld(actor, this);
 			});
 
+			Game.Renderer.Flush();
+
 			Game.Renderer.EnableDepthBuffer();
 			Game.Renderer.EnableDepthWrite(true);
 			if (World.Type != WorldType.Editor)

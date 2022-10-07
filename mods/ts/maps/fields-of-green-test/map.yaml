@@ -1651,5 +1651,49 @@ Actors:
 	Actor515: naapwr
 		Owner: Multi0
 		Location: 26,-1
+	Actor517: gaspot
+		Owner: GDI
+		Location: 85,-2
+	Actor516: gaspot
+		Owner: Nod
+		Location: 47,2
+	Actor518: gaoldcc5
+		Owner: Multi0
+		Location: 58,38
+	Actor519: gaoldcc6
+		Owner: Multi0
+		Location: 44,33
+	Actor520: fona06
+		Owner: Neutral
+		Faction: Random
+		Location: 59,15
+	Actor521: fona08
+		Owner: Neutral
+		Faction: Random
+		Location: 58,12
+	Actor522: fona10
+		Owner: Neutral
+		Faction: Random
+		Location: 58,18
+	Actor523: fona11
+		Owner: Neutral
+		Faction: Random
+		Location: 61,18
+	Actor524: fona12
+		Owner: Neutral
+		Faction: Random
+		Location: 56,13
+	Actor525: fona13
+		Owner: Neutral
+		Faction: Random
+		Location: 61,13
+	Actor526: fona14
+		Owner: Neutral
+		Faction: Random
+		Location: 61,9
+	Actor527: fona07
+		Owner: Neutral
+		Faction: Random
+		Location: 63,14
 
 Rules: rules.yaml

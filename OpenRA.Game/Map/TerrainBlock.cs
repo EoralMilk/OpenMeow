@@ -13,23 +13,35 @@ namespace OpenRA
 	{
 		public string Name;
 
+		public string[] Categories;
+
+		public readonly int Id;
+
+		public readonly Map Map;
+
 		/// <summary>
 		/// brush texture type
 		/// </summary>
-		public int Type;
+		public readonly int TextureIndex;
 
 		public readonly int DefaultSize;
+
+		public readonly int2 TextureSize;
 
 		/// <summary>
 		/// in WDist
 		/// </summary>
 		public readonly int2 MapSize;
 
-		public MaskBrush(string name, int type, int size, Map map)
+		public MaskBrush(string name, string[] categories, int id, int type, int2 textureSize, int size, Map map)
 		{
 			Name = name;
-			Type = type;
+			Categories = categories;
+			Id = id;
+			TextureIndex = type;
 			DefaultSize = size;
+			TextureSize = textureSize;
+			Map = map;
 			MapSize = new int2((map.VertexArrayWidth - 1) * 724, (map.VertexArrayHeight - 1) * 724);
 		}
 
@@ -60,7 +72,7 @@ namespace OpenRA
 				brushVertices[i] = new TerrainMaskVertex(
 					quadVertices[i * 4], quadVertices[i * 4 + 1],
 					quadVertices[i * 4 + 2], quadVertices[i * 4 + 3],
-					Type, layer, intensity);
+					TextureIndex, layer, intensity);
 			}
 
 			return brushVertices;

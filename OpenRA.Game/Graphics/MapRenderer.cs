@@ -38,7 +38,6 @@ namespace OpenRA.Graphics
 			this.renderer = renderer;
 			this.Shader = shader;
 			vertices = new MapVertex[renderer.TempBufferSize];
-
 		}
 
 		public void Flush(BlendMode blendMode = BlendMode.None)

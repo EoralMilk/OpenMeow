@@ -2134,6 +2134,43 @@ namespace OpenRA
 			return new WRot(dir, angle);
 		}
 
+		public TSVector NormalOfTerrain(in WPos pos)
+		{
+			var cell = CellContaining(pos);
+
+			if (!CellInfos.Contains(cell))
+				return new TSVector(0, 0, 1);
+
+			var cellinfos = CellInfos[cell];
+			var center = cellinfos.CellCenterPos;
+			var tl = cellinfos.LogicNmlTL;
+			var tr = cellinfos.LogicNmlTR;
+			var bl = cellinfos.LogicNmlBL;
+			var br = cellinfos.LogicNmlTR;
+
+			if (pos.X < center.X && pos.Y < center.Y)
+			{
+				return tl;
+			}
+			else if (pos.X > center.X && pos.Y < center.Y)
+			{
+				return tr;
+			}
+			else if (pos.X < center.X && pos.Y > center.Y)
+			{
+				return bl;
+			}
+			else if (pos.X > center.X && pos.Y > center.Y)
+			{
+				return br;
+			}
+			else
+			{
+				return cellinfos.LogicNml;
+			}
+
+		}
+
 		public WVec Offset(CVec delta, int dz)
 		{
 			if (Grid.Type == MapGridType.Rectangular)

@@ -35,6 +35,8 @@ namespace OpenRA
 		public RgbaSpriteRenderer RgbaSpriteRenderer { get; private set; }
 		public ScreenRenderer ScreenRenderer { get; private set; }
 
+		public UITextureRenderer UITextureRenderer { get; private set; }
+
 		public bool WindowHasInputFocus => Window.HasInputFocus;
 		public bool WindowIsSuspended => Window.IsSuspended;
 
@@ -111,6 +113,7 @@ namespace OpenRA
 			RgbaSpriteRenderer = new RgbaSpriteRenderer(SpriteRenderer);
 			RgbaColorRenderer = new RgbaColorRenderer(SpriteRenderer);
 			ScreenRenderer = new ScreenRenderer(this, Context.CreateUnsharedShader<ScreenShaderBindings>());
+			UITextureRenderer = new UITextureRenderer(this, Context.CreateUnsharedShader<UITextureArrayShaderBindings>());
 			tempBuffer = Context.CreateVertexBuffer<Vertex>(TempBufferSize);
 			tempMapBuffer = Context.CreateVertexBuffer<MapVertex>(TempBufferSize);
 		}
@@ -213,6 +216,7 @@ namespace OpenRA
 			if (lastBufferSize != bufferSize)
 			{
 				SpriteRenderer.SetViewportParams(bufferSize, 1, 0f, int2.Zero);
+				UITextureRenderer.SetViewportParams(bufferSize, 1, 0f, int2.Zero);
 				lastBufferSize = bufferSize;
 			}
 		}
@@ -447,6 +451,8 @@ namespace OpenRA
 				throw new InvalidOperationException($"EndFrame called with renderType = {renderType}, expected RenderType.UI.");
 
 			Flush();
+			UITextureRenderer.Flush(); // make sure everything has been draw
+
 			screenBuffer.Unbind();
 
 			// Render the compositor buffers to the screen

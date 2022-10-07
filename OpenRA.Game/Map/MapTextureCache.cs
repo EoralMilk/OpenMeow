@@ -100,8 +100,7 @@ namespace OpenRA.Graphics
 			foreach (var node in brushnodes)
 			{
 				var info = node.Value.ToDictionary();
-				var size = ReadYamlInfo.LoadField(info, "Size", new WDist(1024));
-				if (!AddBrushTexture(node.Key, node.Value.Value, map, size.Length))
+				if (!AddBrushTexture(node.Key, node.Value.Value, map, info))
 					throw new Exception("duplicate " + node.Key + " in " + brushesSet);
 			}
 
@@ -209,7 +208,7 @@ namespace OpenRA.Graphics
 			return true;
 		}
 
-		public bool AddBrushTexture(string name, string filename, Map map, int defaultSize)
+		public bool AddBrushTexture(string name, string filename, Map map, Dictionary<string, MiniYaml> info)
 		{
 			if (AllBrushes.ContainsKey(name))
 				return false;
@@ -219,11 +218,14 @@ namespace OpenRA.Graphics
 				throw new Exception(filename + " Can not find texture " + name);
 			}
 
+			var size = ReadYamlInfo.LoadField(info, "Size", new WDist(1024));
+			var categories = ReadYamlInfo.LoadField(info, "Categories", new string[] { "Common" });
+
 			var sheet = new Sheet(Map.Open(filename), TextureWrap.Repeat);
 
 			BrushTextureArray.SetData(sheet.GetData(), sheet.Size.Width, sheet.Size.Height);
 
-			AllBrushes.Add(name, new MaskBrush(name, AllBrushes.Count, defaultSize, map));
+			AllBrushes.Add(name, new MaskBrush(name, categories, AllBrushes.Count, AllBrushes.Count, new int2(sheet.Size.Width, sheet.Size.Height), size.Length, map));
 
 			return true;
 		}

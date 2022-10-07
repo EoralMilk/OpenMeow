@@ -273,12 +273,27 @@ namespace OpenRA.Graphics
 				var s = worldRenderer.ScreenPxPosition(p);
 				if (Math.Abs(s.X - world.X) <= tileSize.Width && Math.Abs(s.Y - world.Y) <= tileSize.Height)
 				{
-					var ramp = map.Grid.Ramps[map.Ramp.Contains(uv) ? map.Ramp[uv] : 0];
-					var pos = map.CenterOfCell(uv);
-					pos = new WPos(pos.X, pos.Y, map.MiniHeightOfCell(uv));
-					var screen = ramp.Corners.Select(c => worldRenderer.ScreenPxPosition(pos + c)).ToArray();
-					if (screen.PolygonContains(world))
-						return uv.ToCPos(map);
+					if (map.CellInfos.Contains(uv))
+					{
+						var cellinfo = map.CellInfos[uv];
+						WPos[] corners = new WPos[4] { map.TerrainVertices[cellinfo.T].LogicPos,
+						map.TerrainVertices[cellinfo.B].LogicPos,
+						map.TerrainVertices[cellinfo.L].LogicPos,
+						map.TerrainVertices[cellinfo.R].LogicPos };
+						var screen = corners.Select(c => worldRenderer.ScreenPxPosition(c)).ToArray();
+						if (screen.PolygonContains(world))
+							return uv.ToCPos(map);
+					}
+					else
+					{
+						var ramp = map.Grid.Ramps[map.Ramp.Contains(uv) ? map.Ramp[uv] : 0];
+						var pos = map.CenterOfCell(uv);
+						pos = new WPos(pos.X, pos.Y, map.MiniHeightOfCell(uv));
+						var screen = ramp.Corners.Select(c => worldRenderer.ScreenPxPosition(pos + c)).ToArray();
+
+						if (screen.PolygonContains(world))
+							return uv.ToCPos(map);
+					}
 				}
 			}
 
@@ -299,6 +314,28 @@ namespace OpenRA.Graphics
 
 			// Something is very wrong, but lets return something that isn't completely bogus and hope the caller can recover
 			return worldRenderer.World.Map.CellContaining(worldRenderer.ProjectedPosition(ViewToWorldPx(view)));
+		}
+
+		/// <summary>
+		/// Local use only
+		/// </summary>
+		public WPos ViewToWorldPos(int2 view, CPos cell)
+		{
+			var dirZero = worldRenderer.ProjectedPosition(ViewToWorldPx(view));
+			var map = worldRenderer.World.Map;
+			var w3dr = Game.Renderer.World3DRenderer;
+			var pos = map.CenterOfCell(cell);
+			var viewOffset = (int)(pos.Z * (w3dr.InverseCameraFront.y / w3dr.InverseCameraFront.z));
+			return new WPos(dirZero.X, dirZero.Y + viewOffset, pos.Z);
+		}
+
+		/// <summary>
+		/// Local use only
+		/// </summary>
+		public WPos ViewToWorldPos(int2 view)
+		{
+			var cell = ViewToWorld(view);
+			return ViewToWorldPos(view, cell);
 		}
 
 		/// <summary> Returns an unfiltered list of all cells that could potentially contain the mouse cursor</summary>

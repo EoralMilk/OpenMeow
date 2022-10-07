@@ -12,12 +12,15 @@
 using System.Collections.Generic;
 using System.Linq;
 using OpenRA.Graphics;
+using OpenRA.Mods.Common.Graphics;
 using OpenRA.Mods.Common.Terrain;
+using OpenRA.Primitives;
+using OpenRA.Primitives.FixPoint;
 using OpenRA.Traits;
 
 namespace OpenRA.Mods.Common.Traits
 {
-	public enum EditorCursorType { None, Actor, TerrainTemplate, Resource }
+	public enum EditorCursorType { None, Actor, TerrainTemplate, Resource, Brush }
 
 	[TraitLocation(SystemActors.EditorWorld)]
 	[Desc("Required for the map editor to work. Attach this to the world actor.")]
@@ -43,6 +46,10 @@ namespace OpenRA.Mods.Common.Traits
 		SubCell actorSubCell;
 		WVec actorCenterOffset;
 		bool actorSharesCell;
+
+		public MaskBrush Brush { get; private set; }
+		IRenderable[] brushRenderables;
+		WPos brushPos;
 
 		public TerrainTemplateInfo TerrainTemplate { get; private set; }
 		public string ResourceType { get; private set; }
@@ -70,7 +77,31 @@ namespace OpenRA.Mods.Common.Traits
 			if (wr.World.Type != WorldType.Editor)
 				return;
 
-			if (Type == EditorCursorType.TerrainTemplate || Type == EditorCursorType.Resource)
+			if (Type == EditorCursorType.Brush)
+			{
+				var cell = wr.Viewport.ViewToWorld(Viewport.LastMousePos);
+				var pos = wr.Viewport.ViewToWorldPos(Viewport.LastMousePos, cell);
+
+				if (terrainOrResourceCell != cell || brushPos != pos)
+				{
+					terrainOrResourceCell = cell;
+					brushPos = pos;
+
+					var normal = World3DCoordinate.TSVec3ToWVec(wr.World.Map.NormalOfTerrain(pos));
+
+					brushRenderables = new IRenderable[] {new DebugLineRenderable(brushPos,
+					15,
+					World3DCoordinate.WPosToFloat3(brushPos),
+					World3DCoordinate.WPosToFloat3(brushPos + normal * 4),
+					new WDist(64), Color.OrangeRed, BlendMode.Alpha
+					),
+				new DebugCircleRenderable(brushPos,
+					10, Brush.DefaultSize / 2,
+					new WDist(64), Color.OrangeRed, BlendMode.Alpha)};
+
+				}
+			}
+			else if (Type == EditorCursorType.TerrainTemplate || Type == EditorCursorType.Resource)
 			{
 				var cell = wr.Viewport.ViewToWorld(Viewport.LastMousePos);
 				if (terrainOrResourceCell != cell || terrainOrResourceDirty)
@@ -125,6 +156,11 @@ namespace OpenRA.Mods.Common.Traits
 		{
 			if (wr.World.Type != WorldType.Editor)
 				return NoRenderables;
+
+			if (Type == EditorCursorType.Brush && brushRenderables != null)
+			{
+				return brushRenderables;
+			}
 
 			if (Type == EditorCursorType.TerrainTemplate || Type == EditorCursorType.Resource)
 				return terrainOrResourcePreview;
@@ -210,6 +246,21 @@ namespace OpenRA.Mods.Common.Traits
 			ResourceType = resourceType;
 			Actor = null;
 			TerrainTemplate = null;
+			terrainOrResourceDirty = true;
+
+			return ++CurrentToken;
+		}
+
+		public int SetTerrainBrush(WorldRenderer wr, MaskBrush brush)
+		{
+			var screenPos = wr.Viewport.WorldToViewPx(Viewport.LastMousePos);
+			terrainOrResourceCell = wr.Viewport.ViewToWorld(screenPos);
+
+			Type = EditorCursorType.Brush;
+			brushPos = wr.Viewport.ViewToWorldPos(screenPos, terrainOrResourceCell);
+			Brush = brush;
+			Actor = null;
+			ResourceType = null;
 			terrainOrResourceDirty = true;
 
 			return ++CurrentToken;

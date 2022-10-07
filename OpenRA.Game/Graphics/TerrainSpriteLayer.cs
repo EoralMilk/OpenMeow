@@ -13,6 +13,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
+using OpenRA.Primitives.FixPoint;
 using OpenRA.Traits;
 
 namespace OpenRA.Graphics
@@ -272,11 +273,34 @@ namespace OpenRA.Graphics
 
 			if (additional)
 			{
-				// var spriteMeshType = sprite.SpriteMeshType;
-				cells[cellIndex].Vertices = Util.FastCreateTilePlane(map.TerrainVertices[cellinfo.M].TBN, pos, viewOffset, sprite, samplers, palette?.TextureIndex ?? 0, scale, float3.Zero, ignoreTint ? -alpha : alpha);
-				cells[cellIndex].Draw = true;
-				cells[cellIndex].IgnoreTint = ignoreTint;
+				 var spriteMeshType = sprite.SpriteMeshType;
 
+				 if (spriteMeshType == SpriteMeshType.Cell)
+				{
+					cells[cellIndex].Vertices = Util.FastCreateTile(
+																	map, cellinfo,
+																	float3.Zero,
+																	float3.Zero,
+																	float3.Zero,
+																	float3.Zero,
+																	float3.Zero,
+																	cellinfo.Type,
+																	sprite, samplers, palette?.TextureIndex ?? 0, viewOffset, ignoreTint ? -alpha : alpha, rotation);
+
+					cells[cellIndex].Draw = true;
+					cells[cellIndex].IgnoreTint = ignoreTint;
+				}
+				else if (spriteMeshType == SpriteMeshType.Plane)
+				{
+					cells[cellIndex].Vertices = Util.FastCreateTilePlane(map.TerrainVertices[cellinfo.M].TBN, pos, viewOffset, sprite, samplers, palette?.TextureIndex ?? 0, scale, float3.Zero, ignoreTint ? -alpha : alpha);
+					cells[cellIndex].Draw = true;
+					cells[cellIndex].IgnoreTint = ignoreTint;
+
+				}
+				else
+				{
+					throw new Exception("TerrainSpriteLayer only support Plane and Cell MeshType Now.");
+				}
 			}
 			else
 			{

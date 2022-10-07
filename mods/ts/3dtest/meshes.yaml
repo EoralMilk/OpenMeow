@@ -67,6 +67,7 @@ rumya-2:
 	Meshes:
 		skirt-split: SportShorts
 			Material: sportshorts
+			UseDQBSkin: true
 		hair: lp-hair_pt2
 			Material: h-pt2
 

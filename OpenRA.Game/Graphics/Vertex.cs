@@ -258,6 +258,25 @@ namespace OpenRA.Graphics
 		}
 	}
 
+	public readonly struct UITexArrayVertex
+	{
+		public readonly float X, Y;
+		public readonly float U, V;
+		public readonly int Type;
+		public readonly int Layer; // reserve
+		public readonly int Intensity; // reserve
+
+		public UITexArrayVertex(float x, float y, float u, float v, int type = -1, int layer = -1, int intensity = -1)
+		{
+			X = x; Y = y;
+			U = u; V = v;
+			Type = type;
+			Layer = layer;
+			Intensity = intensity;
+		}
+	}
+
+
 	public readonly struct TerrainMaskVertex
 	{
 		public readonly float X, Y;

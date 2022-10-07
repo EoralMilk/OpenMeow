@@ -53,6 +53,11 @@ namespace OpenRA.Graphics
 			DrawLine(start, end, width, startColor, endColor, blendMode, true);
 		}
 
+		public void DrawWorldLineWPos(WPos start, WPos end, float width, Color startColor, Color endColor, BlendMode blendMode = BlendMode.Alpha)
+		{
+			DrawLine(Render3DPosition(start), Render3DPosition(end), width, startColor, endColor, blendMode, true);
+		}
+
 		public void DrawWorldPoint(in WPos pos, float width, Color startColor, Color endColor, BlendMode blendMode = BlendMode.Alpha)
 		{
 			var offset = new WVec(0, 0, 1);
@@ -65,6 +70,21 @@ namespace OpenRA.Graphics
 		public void DrawWorldLine(in WPos start, in WPos end, float width, Color startColor, Color endColor, BlendMode blendMode = BlendMode.Alpha)
 		{
 			DrawLine(Render3DPosition(start), Render3DPosition(end), width, startColor, endColor, blendMode, true);
+		}
+
+		public void DrawScreenLine(in float3 start, in float3 end, float width, Color color, BlendMode blendMode = BlendMode.Alpha)
+		{
+			DrawLine(start, end, width, color, color, blendMode, false);
+		}
+
+		public void DrawWorldLine(in float3 start, in float3 end, float width, Color color, BlendMode blendMode = BlendMode.Alpha)
+		{
+			DrawLine(start, end, width, color, color, blendMode, true);
+		}
+
+		public void DrawWorldLine(in WPos start, in WPos end, float width, Color color, BlendMode blendMode = BlendMode.Alpha)
+		{
+			DrawLine(Render3DPosition(start), Render3DPosition(end), width, color, color, blendMode, true);
 		}
 
 		public void DrawWorldLine(in float3 startUp, in float3 startDown, in float3 endUp, in float3 endDown,
@@ -195,16 +215,6 @@ namespace OpenRA.Graphics
 				vertices[5] = new Vertex(start - corner + ScreenOffset, sr, sg, sb, sa, 0, 0);
 				parent.DrawRGBAVertices(vertices, blendMode);
 			}
-		}
-
-		public void DrawScreenLine(in float3 start, in float3 end, float width, Color color, BlendMode blendMode = BlendMode.Alpha)
-		{
-			DrawLine(start, end, width, color, color, blendMode, false);
-		}
-
-		public void DrawWorldLine(in float3 start, in float3 end, float width, Color color, BlendMode blendMode = BlendMode.Alpha)
-		{
-			DrawLine(start, end, width, color, color, blendMode, true);
 		}
 
 		/// <summary>
