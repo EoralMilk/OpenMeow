@@ -102,19 +102,19 @@ namespace OpenRA.Mods.Common.Widgets
 
 			if (mi.Modifiers.HasModifier(Modifiers.Shift))
 			{
-				PaintCell(world.Map.CenterOfCell(cell), isMoving, mi.Modifiers.HasModifier(Modifiers.Ctrl));
+				PaintCell(world.Map.CenterOfCell(cell), isMoving, mi.Modifiers.HasModifier(Modifiers.Ctrl), mi.Modifiers.HasModifier(Modifiers.Alt));
 			}
 			else
-				PaintCell(pos, isMoving, mi.Modifiers.HasModifier(Modifiers.Ctrl));
+				PaintCell(pos, isMoving, mi.Modifiers.HasModifier(Modifiers.Ctrl), mi.Modifiers.HasModifier(Modifiers.Alt));
 
 			return true;
 		}
 
-		void PaintCell(WPos pos, bool isMoving, bool erase)
+		void PaintCell(WPos pos, bool isMoving, bool erase, bool eraseUpper)
 		{
 			if (action == null)
 			{
-				action = new PaintMaskEditorAction(brush, world.Map, pos, getActiveLayers(), erase);
+				action = new PaintMaskEditorAction(brush, world.Map, pos, getActiveLayers(), erase, eraseUpper);
 				editorActionManager.Add(action);
 			}
 
@@ -140,27 +140,43 @@ namespace OpenRA.Mods.Common.Widgets
 		readonly MaskBrush brush;
 		readonly Map map;
 		readonly WPos pos;
-		readonly bool erase;
+		readonly bool eraseUpper;
+		readonly int size;
+		readonly int intensity;
 		readonly int[] activeLayers;
 		readonly int drawKey;
 		readonly List<(WPos, int, int, int)> draws = new List<(WPos, int, int, int)>();
-		public PaintMaskEditorAction(MaskBrush brush, Map map, WPos pos, int[] activeLayers, bool erase)
+		public PaintMaskEditorAction(MaskBrush brush, Map map, WPos pos, int[] activeLayers, bool erase, bool eraseUpper)
 		{
 			this.brush = brush;
 			this.map = map;
 			this.pos = pos;
 			this.activeLayers = activeLayers;
-			this.erase = erase;
+			this.eraseUpper = eraseUpper;
+			size = brush.DefaultSize;
+			intensity = erase ? -255 : 255;
 			Text = $"Paint with {brush.Name} at " + pos;
 			drawKey = EditorDrawOrderKey++;
 		}
 
 		public void UpdatePos(WPos pos)
 		{
+			int top = 9;
 			foreach (var layer in activeLayers)
 			{
-				draws.Add((pos, brush.DefaultSize, layer, erase ? -255 : 255));
-				TerrainRenderBlock.PaintAt(map, brush, pos, brush.DefaultSize, layer, erase ? -255 : 255, drawKey);
+				if (layer < top)
+					top = layer;
+				draws.Add((pos, size, layer, intensity));
+				TerrainRenderBlock.PaintAt(map, brush, pos, size, layer, intensity, drawKey);
+			}
+
+			if (eraseUpper)
+			{
+				for (int i = top - 1; i >= 0; i--)
+				{
+					draws.Add((pos, size, i,  -intensity));
+					TerrainRenderBlock.PaintAt(map, brush, pos, size, i, -intensity, drawKey);
+				}
 			}
 		}
 

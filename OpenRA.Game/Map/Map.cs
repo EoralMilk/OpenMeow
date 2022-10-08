@@ -722,6 +722,13 @@ namespace OpenRA
 			// Update UID to match the newly saved data
 			Uid = ComputeUID(toPackage, MapFormat);
 			//SaveMapAsPng("./MapToPng/");
+
+			foreach (var block in TerrainBlocks)
+			{
+				toPackage.Update(block.TopLeft.ToString() + "_Mask123.png", block.MaskTextureData1());
+				toPackage.Update(block.TopLeft.ToString() + "_Mask456.png", block.MaskTextureData2());
+				toPackage.Update(block.TopLeft.ToString() + "_Mask789.png", block.MaskTextureData3());
+			}
 		}
 
 		const int DT_WATER = 22;
@@ -1330,8 +1337,12 @@ namespace OpenRA
 			}
 		}
 
+		public bool MaskInitByTexFile = false;
 		public void DrawMaskWithTSMapInfo(WorldRenderer wr)
 		{
+			if (MaskInitByTexFile)
+				return;
+
 			Console.WriteLine("Painting Spot on mask at each cell");
 
 #pragma warning disable IDE1006 // ÃüÃûÑùÊ½

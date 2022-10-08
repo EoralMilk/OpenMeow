@@ -4,7 +4,9 @@ using OpenRA.Graphics;
 using OpenRA.Primitives;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Xml.Linq;
 using TrueSync;
 
 namespace OpenRA
@@ -167,8 +169,10 @@ namespace OpenRA
 		/// </summary>
 		public IFrameBuffer EditorCachedMaskFramebuffer { get; private set; }
 		readonly SortedDictionary<int, List<PaintSpot>> editorPaintSpots = new SortedDictionary<int, List<PaintSpot>>();
-		public const int MaxEditorDrawCache = 32;
+		public static int MaxEditorDrawCache => Game.Settings.Graphics.EditorBrushMaxHistoryCache;
 		bool editorMaskBufferNeedUpdate = false;
+
+		int solifiedIndex = -1;
 
 		/// <summary>
 		/// a spot to paint
@@ -217,7 +221,7 @@ namespace OpenRA
 						pos.Y + size < map.TerrainBlocks[y, x].TopBound)
 						continue;
 					map.TerrainBlocks[y, x].needUpdateTexture = true;
-					if (editorDrawOrder > -1)
+					if (editorDrawOrder > map.TerrainBlocks[y, x].solifiedIndex)
 					{
 						map.TerrainBlocks[y, x].editorMaskBufferNeedUpdate = true;
 						if (map.TerrainBlocks[y, x].editorPaintSpots.ContainsKey(editorDrawOrder))
@@ -334,6 +338,45 @@ namespace OpenRA
 				numMaskVertices = 0;
 				tempMaskVertices = new TerrainMaskVertex[Game.Renderer.TempBufferSize];
 				tempMaskBuffer = Game.Renderer.Context.CreateVertexBuffer<TerrainMaskVertex>(Game.Renderer.TempBufferSize);
+
+				Sheet sheet123;
+				if (Map.TextureCache.ReadMapTexture(TopLeft.ToString() + "_Mask123.png", TextureWrap.ClampToEdge, out sheet123))
+				{
+					Map.MaskInitByTexFile = true;
+					Sheet sheet456;
+					Sheet sheet789;
+					Map.TextureCache.ReadMapTexture(TopLeft.ToString() + "_Mask456.png", TextureWrap.ClampToEdge, out sheet456);
+					Map.TextureCache.ReadMapTexture(TopLeft.ToString() + "_Mask789.png", TextureWrap.ClampToEdge, out sheet789);
+
+					{
+						MaskFramebuffer.Bind();
+
+						Game.Renderer.SetFaceCull(FaceCullFunc.None);
+						Game.Renderer.EnableDepthWrite(false);
+						Game.Renderer.DisableDepthTest();
+
+						if (sheet123 != null)
+							TerrainMaskShader.SetTexture("InitMask123", sheet123.GetTexture());
+						if (sheet456 != null)
+							TerrainMaskShader.SetTexture("InitMask456", sheet456.GetTexture());
+						if (sheet789 != null)
+							TerrainMaskShader.SetTexture("InitMask789", sheet789.GetTexture());
+
+						TerrainMaskShader.SetBool("InitWithTextures", true);
+
+						Game.Renderer.Context.SetBlendMode(BlendMode.None);
+						TerrainMaskShader.PrepareRender();
+
+						Game.Renderer.DrawBatch(TerrainMaskShader, maskVertexBuffer, 0, terrainMaskVertices.Length, PrimitiveType.TriangleList);
+
+						Game.Renderer.EnableDepthBuffer();
+						Game.Renderer.EnableDepthWrite(true);
+
+						Game.Renderer.Context.SetBlendMode(BlendMode.Alpha);
+
+						MaskFramebuffer.Unbind();
+					}
+				}
 			}
 		}
 
@@ -350,9 +393,9 @@ namespace OpenRA
 			}
 		}
 
-		public void UpdateMask(int left, int right, int top, int bottom, bool init)
+		public void UpdateMask(int left, int right, int top, int bottom, bool force)
 		{
-			if (init)
+			if (force)
 			{
 				// skip bound cal
 			}
@@ -481,6 +524,7 @@ namespace OpenRA
 
 		public void SolidifyEditorBrush()
 		{
+			solifiedIndex = editorPaintSpots.First().Key;
 			paintSpots.AddRange(editorPaintSpots.First().Value);
 			editorPaintSpots.Remove(editorPaintSpots.First().Key);
 			editorMaskBufferNeedUpdate = true;
@@ -492,6 +536,14 @@ namespace OpenRA
 			editorPaintSpots.Remove(key);
 			editorMaskBufferNeedUpdate = true;
 			needUpdateTexture = true;
+		}
+
+		public void SolidifyAllEditorBrush()
+		{
+			while (editorPaintSpots.Count > 0)
+			{
+				SolidifyEditorBrush();
+			}
 		}
 
 		#endregion
@@ -520,12 +572,12 @@ namespace OpenRA
 			TerrainBlendShader.SetVecArray("TileScales", tileScales, 1, tileScales.Length);
 		}
 
-		public void UpdateTexture(int left, int right, int top, int bottom, bool init)
+		public void UpdateTexture(int left, int right, int top, int bottom, bool force)
 		{
 			if (TerrainBlendShader == null)
 				return;
 
-			if (init)
+			if (force)
 			{
 				// skip bound cal
 			}
@@ -618,7 +670,14 @@ namespace OpenRA
 			TerrainShader.SetFloat("WaterUVOffset", (float)(Game.LocalTick % 256) / 256);
 			TerrainShader.SetFloat("WaterUVOffset2", (float)(Game.LocalTick % 1784) / 1784);
 
-			TerrainShader.SetTexture("Mask123", MaskFramebuffer.GetTexture(0));
+			if (editorPaintSpots.Count == 0)
+			{
+				TerrainShader.SetTexture("Mask123", MaskFramebuffer.GetTexture(0));
+			}
+			else
+			{
+				TerrainShader.SetTexture("Mask123", EditorCachedMaskFramebuffer.GetTexture(0));
+			}
 
 			TerrainShader.SetTexture("WaterNormal",
 							Map.TextureCache.Textures["WaterNormal"].Item2.GetTexture());
@@ -806,6 +865,36 @@ namespace OpenRA
 			var colorData = texture.GetData();
 
 			new Png(colorData, SpriteFrameType.Bgra32, texture.Size.Width, texture.Size.Height).Save(path + name + ".png");
+		}
+
+		public byte[] MaskTextureData1()
+		{
+			ITexture texture;
+			if (editorPaintSpots == null || EditorCachedMaskFramebuffer == null || editorPaintSpots.Count == 0)
+				texture = MaskFramebuffer.GetTexture(0);
+			else
+				texture = EditorCachedMaskFramebuffer.GetTexture(0);
+			return new Png(texture.GetData(), SpriteFrameType.Bgra32, texture.Size.Width, texture.Size.Height).Save();
+		}
+
+		public byte[] MaskTextureData2()
+		{
+			ITexture texture;
+			if (editorPaintSpots == null || EditorCachedMaskFramebuffer == null || editorPaintSpots.Count == 0)
+				texture = MaskFramebuffer.GetTexture(1);
+			else
+				texture = EditorCachedMaskFramebuffer.GetTexture(1);
+			return new Png(texture.GetData(), SpriteFrameType.Bgra32, texture.Size.Width, texture.Size.Height).Save();
+		}
+
+		public byte[] MaskTextureData3()
+		{
+			ITexture texture;
+			if (editorPaintSpots == null || EditorCachedMaskFramebuffer == null || editorPaintSpots.Count == 0)
+				texture = MaskFramebuffer.GetTexture(2);
+			else
+				texture = EditorCachedMaskFramebuffer.GetTexture(2);
+			return new Png(texture.GetData(), SpriteFrameType.Bgra32, texture.Size.Width, texture.Size.Height).Save();
 		}
 	}
 }

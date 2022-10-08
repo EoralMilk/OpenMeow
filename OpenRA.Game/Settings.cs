@@ -229,6 +229,9 @@ namespace OpenRA
 		public readonly int TerrainBlockTextureSize = 1024;
 		[Desc("Size of the TerrainRenderBlock , x == y.")]
 		public readonly int BlockSizeAsMiniCell = 32;
+
+		[Desc("Max Size of the Editor Brush History Cache.")]
+		public readonly int EditorBrushMaxHistoryCache = 32;
 	}
 
 	public enum ShadowSampleType

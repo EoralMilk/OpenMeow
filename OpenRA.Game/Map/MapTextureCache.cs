@@ -229,5 +229,18 @@ namespace OpenRA.Graphics
 
 			return true;
 		}
+
+		public bool ReadMapTexture(string filename, TextureWrap textureWrap, out Sheet sheet)
+		{
+			if (!Map.Exists(filename))
+			{
+				sheet = null;
+				return false;
+			}
+
+			sheet = new Sheet(Map.Open(filename), textureWrap);
+
+			return true;
+		}
 	}
 }
