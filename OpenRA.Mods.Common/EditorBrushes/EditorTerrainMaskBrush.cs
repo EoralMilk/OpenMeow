@@ -33,7 +33,7 @@ namespace OpenRA.Mods.Common.Widgets
 
 		bool painting;
 		WPos lastPaintPos;
-
+		PaintMaskEditorAction action;
 		public EditorTerrainMaskBrush(Func<int[]> getActiveLayers, EditorViewportControllerWidget editorWidget, MaskBrush brush, WorldRenderer wr)
 		{
 			this.getActiveLayers = getActiveLayers;
@@ -61,6 +61,13 @@ namespace OpenRA.Mods.Common.Widgets
 			{
 				if (mi.Event == MouseInputEvent.Up)
 				{
+					if (painting && action != null)
+					{
+						action.Undo();
+						action = null;
+						painting = false;
+					}
+
 					editorWidget.ClearBrush();
 					return true;
 				}
@@ -77,7 +84,10 @@ namespace OpenRA.Mods.Common.Widgets
 			}
 
 			if (!painting)
+			{
+				action = null;
 				return true;
+			}
 
 			if (mi.Event != MouseInputEvent.Down && mi.Event != MouseInputEvent.Move)
 				return true;
@@ -102,10 +112,16 @@ namespace OpenRA.Mods.Common.Widgets
 
 		void PaintCell(WPos pos, bool isMoving, bool erase)
 		{
+			if (action == null)
+			{
+				action = new PaintMaskEditorAction(brush, world.Map, pos, getActiveLayers(), erase);
+				editorActionManager.Add(action);
+			}
+
 			if (lastPaintPos == pos && !isMoving)
 				return;
 			lastPaintPos = pos;
-			editorActionManager.Add(new PaintMaskEditorAction(brush, world.Map, pos, getActiveLayers(), erase));
+			action.UpdatePos(pos);
 		}
 
 		public void Tick() { }
@@ -118,6 +134,7 @@ namespace OpenRA.Mods.Common.Widgets
 
 	class PaintMaskEditorAction : IEditorAction
 	{
+		public static int EditorDrawOrderKey = 0;
 		public string Text { get; }
 
 		readonly MaskBrush brush;
@@ -125,7 +142,8 @@ namespace OpenRA.Mods.Common.Widgets
 		readonly WPos pos;
 		readonly bool erase;
 		readonly int[] activeLayers;
-
+		readonly int drawKey;
+		readonly List<(WPos, int, int, int)> draws = new List<(WPos, int, int, int)>();
 		public PaintMaskEditorAction(MaskBrush brush, Map map, WPos pos, int[] activeLayers, bool erase)
 		{
 			this.brush = brush;
@@ -134,24 +152,38 @@ namespace OpenRA.Mods.Common.Widgets
 			this.activeLayers = activeLayers;
 			this.erase = erase;
 			Text = $"Paint with {brush.Name} at " + pos;
+			drawKey = EditorDrawOrderKey++;
+		}
+
+		public void UpdatePos(WPos pos)
+		{
+			foreach (var layer in activeLayers)
+			{
+				draws.Add((pos, brush.DefaultSize, layer, erase ? -255 : 255));
+				TerrainRenderBlock.PaintAt(map, brush, pos, brush.DefaultSize, layer, erase ? -255 : 255, drawKey);
+			}
 		}
 
 		public void Execute()
 		{
-			Do();
+			//Do();
 		}
 
 		public void Do()
 		{
-			foreach (var layer in activeLayers)
+			foreach (var draw in draws)
 			{
-				TerrainRenderBlock.PaintAt(map, brush, pos, brush.DefaultSize, layer, erase ? -255 : 255);
+				TerrainRenderBlock.PaintAt(map, brush, draw.Item1, draw.Item2, draw.Item3, draw.Item4, drawKey);
 			}
 		}
 
 		public void Undo()
 		{
 			// TerrainRenderBlock.PaintAt(map, brush, pos, brush.DefaultSize, 0, 255);
+			foreach (var block in map.TerrainBlocks)
+			{
+				block.UndoEditorDraw(drawKey);
+			}
 		}
 	}
 

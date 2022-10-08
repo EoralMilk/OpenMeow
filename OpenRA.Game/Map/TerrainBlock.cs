@@ -163,6 +163,14 @@ namespace OpenRA
 		readonly List<PaintSpot> paintSpots = new List<PaintSpot>();
 
 		/// <summary>
+		/// using for map editor redo/undo logic
+		/// </summary>
+		public IFrameBuffer EditorCachedMaskFramebuffer { get; private set; }
+		readonly SortedDictionary<int, List<PaintSpot>> editorPaintSpots = new SortedDictionary<int, List<PaintSpot>>();
+		public const int MaxEditorDrawCache = 32;
+		bool editorMaskBufferNeedUpdate = false;
+
+		/// <summary>
 		/// a spot to paint
 		/// </summary>
 		public struct PaintSpot
@@ -193,7 +201,7 @@ namespace OpenRA
 		/// <param name="layer"> brushing layer </param>
 		/// <param name="intensity"> brush intensity , negative is erase </param>
 		public static void PaintAt(Map map, MaskBrush brush,
-			in WPos pos, int size, int layer, int intensity)
+			in WPos pos, int size, int layer, int intensity, int editorDrawOrder = -1)
 		{
 			// Console.WriteLine("paint at " + pos.X + "," + pos.Y + " with size: " + size + " layer: " + layer);
 			var blockx = (pos.X / 724) / SizeLimit;
@@ -209,7 +217,29 @@ namespace OpenRA
 						pos.Y + size < map.TerrainBlocks[y, x].TopBound)
 						continue;
 					map.TerrainBlocks[y, x].needUpdateTexture = true;
-					map.TerrainBlocks[y, x].paintSpots.Add(new PaintSpot(brush, pos, size, layer, intensity));
+					if (editorDrawOrder > -1)
+					{
+						map.TerrainBlocks[y, x].editorMaskBufferNeedUpdate = true;
+						if (map.TerrainBlocks[y, x].editorPaintSpots.ContainsKey(editorDrawOrder))
+						{
+							map.TerrainBlocks[y, x].editorPaintSpots[editorDrawOrder].Add(new PaintSpot(brush, pos, size, layer, intensity));
+						}
+						else
+						{
+							// draw count is bigger then cache max count, solidify editor brush to common mask buffer
+							if (map.TerrainBlocks[y, x].editorPaintSpots.Count > MaxEditorDrawCache)
+							{
+								map.TerrainBlocks[y, x].SolidifyEditorBrush();
+							}
+
+							map.TerrainBlocks[y, x].editorPaintSpots.Add(editorDrawOrder, new List<PaintSpot>());
+							map.TerrainBlocks[y, x].editorPaintSpots[editorDrawOrder].Add(new PaintSpot(brush, pos, size, layer, intensity));
+						}
+					}
+					else
+					{
+						map.TerrainBlocks[y, x].paintSpots.Add(new PaintSpot(brush, pos, size, layer, intensity));
+					}
 				}
 		}
 
@@ -307,6 +337,19 @@ namespace OpenRA
 			}
 		}
 
+		public void InitEditorMask()
+		{
+			if (EditorCachedMaskFramebuffer == null)
+			{
+				EditorCachedMaskFramebuffer = Game.Renderer.Context.CreateFrameBuffer(new Size(TextureSize, TextureSize), 3);
+
+				if (TerrainMaskShader == null)
+				{
+					TerrainMaskShader = Game.Renderer.Context.CreateUnsharedShader<TerrainMaskShaderBindings>();
+				}
+			}
+		}
+
 		public void UpdateMask(int left, int right, int top, int bottom, bool init)
 		{
 			if (init)
@@ -351,6 +394,104 @@ namespace OpenRA
 				needUpdateTexture = true;
 				paintSpots.Clear();
 			}
+
+			UpdateEditorMask();
+		}
+
+		public void UpdateEditorMask()
+		{
+			if (editorPaintSpots.Count == 0 && EditorCachedMaskFramebuffer != null)
+			{
+				EditorCachedMaskFramebuffer?.Dispose();
+				EditorCachedMaskFramebuffer = null;
+				return;
+			}
+
+			if (!editorMaskBufferNeedUpdate)
+				return;
+
+			editorMaskBufferNeedUpdate = false;
+
+			InitEditorMask();
+
+			// update with maskbuffer out put
+			{
+				EditorCachedMaskFramebuffer.Bind();
+
+				Game.Renderer.SetFaceCull(FaceCullFunc.None);
+				Game.Renderer.EnableDepthWrite(false);
+				Game.Renderer.DisableDepthTest();
+
+				TerrainMaskShader.SetTexture("InitMask123", MaskFramebuffer.GetTexture(0));
+				TerrainMaskShader.SetTexture("InitMask456", MaskFramebuffer.GetTexture(1));
+				TerrainMaskShader.SetTexture("InitMask789", MaskFramebuffer.GetTexture(2));
+
+				TerrainMaskShader.SetBool("InitWithTextures", true);
+
+				Game.Renderer.Context.SetBlendMode(BlendMode.None);
+				TerrainMaskShader.PrepareRender();
+
+				Game.Renderer.DrawBatch(TerrainMaskShader, maskVertexBuffer, 0, terrainMaskVertices.Length, PrimitiveType.TriangleList);
+
+				Game.Renderer.EnableDepthBuffer();
+				Game.Renderer.EnableDepthWrite(true);
+
+				Game.Renderer.Context.SetBlendMode(BlendMode.Alpha);
+
+				EditorCachedMaskFramebuffer.Unbind();
+			}
+
+			// update with brush cache
+			if (editorPaintSpots.Count > 0)
+			{
+				// we don't want to clear the renderer result last bake, just paint on it.
+				EditorCachedMaskFramebuffer.BindNoClear();
+
+				Game.Renderer.SetFaceCull(FaceCullFunc.None);
+				Game.Renderer.EnableDepthWrite(false);
+				Game.Renderer.DisableDepthTest();
+
+				TerrainMaskShader.SetTexture("Brushes", Map.TextureCache.BrushTextureArray);
+				TerrainMaskShader.SetBool("InitWithTextures", false);
+
+				Game.Renderer.Context.SetBlendMode(BlendMode.None);
+				TerrainMaskShader.PrepareRender();
+
+				foreach (var kv in editorPaintSpots)
+				{
+					foreach (var p in kv.Value)
+					{
+						PaintMask(p.Brush, p.Pos, p.Size, p.Layer, p.Intensity);
+					}
+				}
+
+				FlushBrush(currentBrushMode);
+
+				Game.Renderer.EnableDepthBuffer();
+				Game.Renderer.EnableDepthWrite(true);
+
+				Game.Renderer.Context.SetBlendMode(BlendMode.Alpha);
+
+				EditorCachedMaskFramebuffer.Unbind();
+
+				// Console.WriteLine(TopLeft + " paint update " + paintSpots.Count);
+				needUpdateTexture = true;
+			}
+		}
+
+		public void SolidifyEditorBrush()
+		{
+			paintSpots.AddRange(editorPaintSpots.First().Value);
+			editorPaintSpots.Remove(editorPaintSpots.First().Key);
+			editorMaskBufferNeedUpdate = true;
+			needUpdateTexture = true;
+		}
+
+		public void UndoEditorDraw(int key)
+		{
+			editorPaintSpots.Remove(key);
+			editorMaskBufferNeedUpdate = true;
+			needUpdateTexture = true;
 		}
 
 		#endregion
@@ -401,11 +542,22 @@ namespace OpenRA
 
 			BlendFramebuffer.Bind();
 
-			TerrainBlendShader.SetTexture("Mask123", MaskFramebuffer.GetTexture(0));
+			if (editorPaintSpots.Count == 0)
+			{
+				TerrainBlendShader.SetTexture("Mask123", MaskFramebuffer.GetTexture(0));
 
-			TerrainBlendShader.SetTexture("Mask456", MaskFramebuffer.GetTexture(1));
+				TerrainBlendShader.SetTexture("Mask456", MaskFramebuffer.GetTexture(1));
 
-			TerrainBlendShader.SetTexture("Mask789", MaskFramebuffer.GetTexture(2));
+				TerrainBlendShader.SetTexture("Mask789", MaskFramebuffer.GetTexture(2));
+			}
+			else
+			{
+				TerrainBlendShader.SetTexture("Mask123", EditorCachedMaskFramebuffer.GetTexture(0));
+
+				TerrainBlendShader.SetTexture("Mask456", EditorCachedMaskFramebuffer.GetTexture(1));
+
+				TerrainBlendShader.SetTexture("Mask789", EditorCachedMaskFramebuffer.GetTexture(2));
+			}
 
 			var cloud = Map.TextureCache.Textures["MaskCloud"];
 			TerrainBlendShader.SetTexture(cloud.Item1, cloud.Item2.GetTexture());
@@ -646,6 +798,7 @@ namespace OpenRA
 			MaskFramebuffer?.Dispose();
 			finalVertexBuffer?.Dispose();
 			tempMaskBuffer?.Dispose();
+			EditorCachedMaskFramebuffer?.Dispose();
 		}
 
 		public static void SaveAsPng(ITexture texture, string path, string name)
