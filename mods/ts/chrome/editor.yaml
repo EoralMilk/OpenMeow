@@ -393,11 +393,40 @@ Container@EDITOR_WORLD_ROOT:
 							Width: PARENT_RIGHT - 95
 							Height: 25
 							Font: Bold
-						ScrollPanel@TERRAINBRUSH_TEMPLATELIST:
-							X: 10
+						Container@BRUSHSETTING_CONTAINER:
 							Y: 82
-							Width: PARENT_RIGHT - 20
-							Height: PARENT_BOTTOM - 68
+							X: 10
+							Width: 130
+							Height: PARENT_BOTTOM - 90
+							Children:
+								Label@ALPHA_LABEL:
+									Width: PARENT_RIGHT
+									Height: 20
+									Text: Alpha 0 - 1:
+								Slider@ALPHA_SLIDER:
+									Y: 25
+									Width: PARENT_RIGHT
+									Height: 20
+									Ticks: 4
+									Value: 1
+								Label@SIZE_LABEL:
+									Y: 50
+									Width: PARENT_RIGHT
+									Height: 20
+									Text: Size 0.1 - 5:
+								Slider@SIZE_SLIDER:
+									Y: 75
+									Width: PARENT_RIGHT
+									Height: 20
+									Ticks: 4
+									Value: 1
+									MinimumValue: 0.1
+									MaximumValue: 5
+						ScrollPanel@TERRAINBRUSH_TEMPLATELIST:
+							X: 145
+							Y: 82
+							Width: PARENT_RIGHT - 155
+							Height: PARENT_BOTTOM - 90
 							TopBottomSpacing: 4
 							ItemSpacing: 4
 							Children:

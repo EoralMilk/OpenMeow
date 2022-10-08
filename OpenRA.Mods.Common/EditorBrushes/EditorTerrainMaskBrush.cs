@@ -29,14 +29,19 @@ namespace OpenRA.Mods.Common.Widgets
 		readonly EditorActionManager editorActionManager;
 		readonly EditorCursorLayer editorCursor;
 		readonly Func<int[]> getActiveLayers;
+		readonly Func<int> getAlpha;
+		readonly Func<float> getSize;
+
 		readonly int cursorToken;
 
 		bool painting;
 		WPos lastPaintPos;
 		PaintMaskEditorAction action;
-		public EditorTerrainMaskBrush(Func<int[]> getActiveLayers, EditorViewportControllerWidget editorWidget, MaskBrush brush, WorldRenderer wr)
+		public EditorTerrainMaskBrush(Func<int[]> getActiveLayers, Func<int> getAlpha, Func<float> getSize, EditorViewportControllerWidget editorWidget, MaskBrush brush, WorldRenderer wr)
 		{
 			this.getActiveLayers = getActiveLayers;
+			this.getAlpha = getAlpha;
+			this.getSize = getSize;
 			this.brush = brush;
 			this.editorWidget = editorWidget;
 			worldRenderer = wr;
@@ -53,6 +58,11 @@ namespace OpenRA.Mods.Common.Widgets
 
 		public bool HandleMouseInput(MouseInput mi)
 		{
+			if (mi.Modifiers.HasModifier(Modifiers.Shift))
+				editorCursor.DrawBrushCell = true;
+			else
+				editorCursor.DrawBrushCell = false;
+
 			// Exclusively uses left and right mouse buttons, but nothing else
 			if (mi.Button != MouseButton.Left && mi.Button != MouseButton.Right)
 				return false;
@@ -68,6 +78,7 @@ namespace OpenRA.Mods.Common.Widgets
 						painting = false;
 					}
 
+					editorCursor.DrawBrushCell = false;
 					editorWidget.ClearBrush();
 					return true;
 				}
@@ -114,7 +125,12 @@ namespace OpenRA.Mods.Common.Widgets
 		{
 			if (action == null)
 			{
-				action = new PaintMaskEditorAction(brush, world.Map, pos, getActiveLayers(), erase, eraseUpper);
+				action = new PaintMaskEditorAction(brush, world.Map,
+					pos,
+					getActiveLayers(),
+					(int)(getSize() * brush.DefaultSize),
+					getAlpha(),
+					erase, eraseUpper);
 				editorActionManager.Add(action);
 			}
 
@@ -128,6 +144,7 @@ namespace OpenRA.Mods.Common.Widgets
 
 		public void Dispose()
 		{
+			editorCursor.DrawBrushCell = false;
 			editorCursor.Clear(cursorToken);
 		}
 	}
@@ -146,15 +163,15 @@ namespace OpenRA.Mods.Common.Widgets
 		readonly int[] activeLayers;
 		readonly int drawKey;
 		readonly List<(WPos, int, int, int)> draws = new List<(WPos, int, int, int)>();
-		public PaintMaskEditorAction(MaskBrush brush, Map map, WPos pos, int[] activeLayers, bool erase, bool eraseUpper)
+		public PaintMaskEditorAction(MaskBrush brush, Map map, WPos pos, int[] activeLayers, int size, int intensity, bool erase, bool eraseUpper)
 		{
 			this.brush = brush;
 			this.map = map;
 			this.pos = pos;
 			this.activeLayers = activeLayers;
 			this.eraseUpper = eraseUpper;
-			size = brush.DefaultSize;
-			intensity = erase ? -255 : 255;
+			this.size = size;
+			this.intensity = erase ? -intensity : intensity;
 			Text = $"Paint with {brush.Name} at " + pos;
 			drawKey = EditorDrawOrderKey++;
 		}

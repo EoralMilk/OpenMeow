@@ -42,6 +42,11 @@ namespace OpenRA.Mods.Common.Widgets.Logic
 		readonly TerrainBrushSelectorTemplate[] allTemplates;
 		readonly EditorCursorLayer editorCursor;
 
+		readonly SliderWidget alphaSlider;
+		readonly SliderWidget sizeSlider;
+		readonly LabelWidget alphaLabel;
+		readonly LabelWidget sizeLabel;
+
 		protected readonly HashSet<string> SelectedLayers = new HashSet<string>();
 
 		readonly string[] allLayers;
@@ -56,8 +61,19 @@ namespace OpenRA.Mods.Common.Widgets.Logic
 			if (textureCache == null)
 				throw new InvalidDataException("TerrainBrushSelectorLogic requires a MapTextureCache.");
 
+			var settings = widget.Get<ContainerWidget>("BRUSHSETTING_CONTAINER");
+			alphaSlider = settings.Get<SliderWidget>("ALPHA_SLIDER");
+			sizeSlider = settings.Get<SliderWidget>("SIZE_SLIDER");
+			alphaLabel = settings.Get<LabelWidget>("ALPHA_LABEL");
+			sizeLabel = settings.Get<LabelWidget>("SIZE_LABEL");
+			alphaLabel.GetText = () => { return " Alpha : " + GetBrushAlpha().ToString(); };
+			sizeLabel.GetText = () => { return " Size : " + GetBrushSize().ToString(); };
+
 			allTemplates = textureCache.AllBrushes.Values.Select(t => new TerrainBrushSelectorTemplate(t)).ToArray();
 			editorCursor = world.WorldActor.Trait<EditorCursorLayer>();
+
+			editorCursor.GetBrushSize = GetBrushSize;
+			editorCursor.GetBrushAlpha = GetBrushAlpha;
 
 			allCategories = allTemplates.SelectMany(t => t.Categories)
 				.Distinct()
@@ -201,6 +217,16 @@ namespace OpenRA.Mods.Common.Widgets.Logic
 			return layers;
 		}
 
+		int GetBrushAlpha()
+		{
+			return (int)(alphaSlider.GetValue() * 255);
+		}
+
+		float GetBrushSize()
+		{
+			return sizeSlider.GetValue();
+		}
+
 		int CategoryOrder(string category)
 		{
 			// var i = terrainInfo.EditorTemplateOrder.IndexOf(category);
@@ -225,7 +251,7 @@ namespace OpenRA.Mods.Common.Widgets.Logic
 				var brushId = t.Brush.Id;
 				var item = ScrollItemWidget.Setup(ItemTemplate,
 					() => editorCursor.Type == EditorCursorType.Brush && editorCursor.Brush.Id == brushId,
-					() => Editor.SetBrush(new EditorTerrainMaskBrush(GetActiveLayers, Editor, t.Brush, WorldRenderer)));
+					() => Editor.SetBrush(new EditorTerrainMaskBrush(GetActiveLayers, GetBrushAlpha, GetBrushSize, Editor, t.Brush, WorldRenderer)));
 
 				var preview = item.Get<TerrainBrushPreviewWidget>("BRUSH_PREVIEW");
 				var bounds = t.Brush.TextureSize;

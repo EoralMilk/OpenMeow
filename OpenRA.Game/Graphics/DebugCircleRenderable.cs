@@ -9,6 +9,7 @@
  */
 #endregion
 
+using System;
 using OpenRA.Graphics;
 using OpenRA.Primitives;
 
@@ -19,29 +20,34 @@ namespace OpenRA.Mods.Common.Graphics
 		readonly WPos pos;
 		readonly int zOffset;
 		readonly int radius;
-		static readonly int CircleSegments = 32;
-		static readonly WVec[] FacingOffsets = Exts.MakeArray(CircleSegments, i => new WVec(1024, 0, 0).Rotate(WRot.FromFacing(i* 256 / CircleSegments)));
+		readonly int drawSegments;
+		public const int CircleSegments = 256;
+		static readonly WVec[] FacingOffsets = Exts.MakeArray(CircleSegments, i => new WVec(0, -1024, 0).Rotate(WRot.FromFacing(i * 256 / CircleSegments)));
 		readonly WDist width;
 		readonly Color color;
+		readonly Color color2;
+
 		readonly BlendMode blendMode;
 		public BlendMode BlendMode => blendMode;
 
-		public DebugCircleRenderable(WPos pos, int zOffset, int radius, WDist width, Color color, BlendMode blendMode)
+		public DebugCircleRenderable(WPos pos, int zOffset, int radius, WDist width, Color color, Color color2, BlendMode blendMode, int drawSegments = CircleSegments - 1)
 		{
 			this.radius = radius;
 			this.pos = pos;
 			this.zOffset = zOffset;
 			this.width = width;
 			this.color = color;
+			this.color2 = color2;
 			this.blendMode = blendMode;
+			this.drawSegments = Math.Min(drawSegments + 1, CircleSegments);
 		}
 
 		public WPos Pos => pos;
 		public int ZOffset => zOffset;
 		public bool IsDecoration => true;
 
-		public IRenderable WithZOffset(int newOffset) { return new DebugCircleRenderable(pos, zOffset, radius, width, color, blendMode); }
-		public IRenderable OffsetBy(in WVec vec) { return new DebugCircleRenderable(pos + vec, zOffset, radius, width, color, blendMode); }
+		public IRenderable WithZOffset(int newOffset) { return new DebugCircleRenderable(pos, zOffset, radius, width, color, color2, blendMode, drawSegments); }
+		public IRenderable OffsetBy(in WVec vec) { return new DebugCircleRenderable(pos + vec, zOffset, radius, width, color, color2, blendMode, drawSegments); }
 		public IRenderable AsDecoration() { return this; }
 
 		public IFinalizedRenderable PrepareRender(WorldRenderer wr) { return this; }
@@ -54,7 +60,7 @@ namespace OpenRA.Mods.Common.Graphics
 			for (var i = 0; i < CircleSegments; i++)
 			{
 				var b = pos + r * FacingOffsets[i] / 1024;
-				Game.Renderer.WorldRgbaColorRenderer.DrawWorldLine(a, b, screenWidth, color, blendMode: blendMode);
+				Game.Renderer.WorldRgbaColorRenderer.DrawWorldLine(a, b, screenWidth, i < drawSegments ? color : color2, blendMode: blendMode);
 				a = b;
 			}
 		}

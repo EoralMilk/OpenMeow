@@ -376,6 +376,10 @@ namespace OpenRA
 
 						MaskFramebuffer.Unbind();
 					}
+
+					sheet123?.Dispose();
+					sheet456?.Dispose();
+					sheet789?.Dispose();
 				}
 			}
 		}

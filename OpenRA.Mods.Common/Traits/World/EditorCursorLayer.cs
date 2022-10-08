@@ -9,6 +9,7 @@
  */
 #endregion
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using OpenRA.Graphics;
@@ -48,6 +49,10 @@ namespace OpenRA.Mods.Common.Traits
 		bool actorSharesCell;
 
 		public MaskBrush Brush { get; private set; }
+		public Func<float> GetBrushSize;
+		public Func<int> GetBrushAlpha;
+		public bool DrawBrushCell = false;
+
 		IRenderable[] brushRenderables;
 		WPos brushPos;
 
@@ -85,20 +90,24 @@ namespace OpenRA.Mods.Common.Traits
 				if (terrainOrResourceCell != cell || brushPos != pos)
 				{
 					terrainOrResourceCell = cell;
-					brushPos = pos;
+
+					if (DrawBrushCell)
+						brushPos = wr.World.Map.CenterOfCell(cell);
+					else
+						brushPos = pos;
 
 					var normal = World3DCoordinate.TSVec3ToWVec(wr.World.Map.NormalOfTerrain(pos));
 
-					brushRenderables = new IRenderable[] {new DebugLineRenderable(brushPos,
-					15,
-					World3DCoordinate.WPosToFloat3(brushPos),
-					World3DCoordinate.WPosToFloat3(brushPos + normal * 4),
-					new WDist(64), Color.OrangeRed, BlendMode.Alpha
-					),
-				new DebugCircleRenderable(brushPos,
-					10, Brush.DefaultSize / 2,
-					new WDist(64), Color.OrangeRed, BlendMode.Alpha)};
-
+					brushRenderables = new IRenderable[2];
+					brushRenderables[0] = new DebugLineRenderable(brushPos,
+						15,
+						World3DCoordinate.WPosToFloat3(brushPos),
+						World3DCoordinate.WPosToFloat3(brushPos + normal * 4),
+						new WDist(64), Color.OrangeRed, BlendMode.Alpha
+						);
+					brushRenderables[1] = new DebugCircleRenderable(brushPos,
+						10, GetBrushSize == null ? Brush.DefaultSize / 2 : (int)(GetBrushSize() * Brush.DefaultSize / 2),
+						new WDist(64), Color.OrangeRed, Color.Aqua, BlendMode.Alpha, GetBrushAlpha == null ? 255 : GetBrushAlpha());
 				}
 			}
 			else if (Type == EditorCursorType.TerrainTemplate || Type == EditorCursorType.Resource)
@@ -177,6 +186,34 @@ namespace OpenRA.Mods.Common.Traits
 		{
 			if (wr.World.Type != WorldType.Editor)
 				return NoRenderables;
+
+			if (Type == EditorCursorType.Brush && DrawBrushCell)
+			{
+				var map = wr.World.Map;
+				if (!map.CellInfos.Contains(terrainOrResourceCell))
+					return NoRenderables;
+
+				var mapMaxHeight = map.Grid.MaximumTerrainHeight * MapGrid.MapHeightStep;
+				var cellinfo = map.CellInfos[terrainOrResourceCell];
+				var cellCorner = new WPos[5] {
+					map.TerrainVertices[cellinfo.T].LogicPos,
+					map.TerrainVertices[cellinfo.R].LogicPos,
+					map.TerrainVertices[cellinfo.B].LogicPos,
+					map.TerrainVertices[cellinfo.L].LogicPos,
+					map.TerrainVertices[cellinfo.T].LogicPos};
+				IRenderable[] lines = new IRenderable[cellCorner.Length - 1];
+
+				// Colors change between points, so render separately
+				for (var i = 0; i < cellCorner.Length - 1; i++)
+				{
+					var startColor = Color.FromAhsv((float)cellCorner[i].Z / mapMaxHeight, 1, 1);
+					var endColor = Color.FromAhsv((float)cellCorner[i + 1].Z / mapMaxHeight, 1, 1);
+
+					lines[i] = new LineAnnotationRenderable(cellCorner[i], cellCorner[i + 1], 3, startColor, endColor);
+				}
+
+				return lines;
+			}
 
 			return Type == EditorCursorType.Actor ? Actor.RenderAnnotations() : NoRenderables;
 		}
