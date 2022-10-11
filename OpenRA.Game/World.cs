@@ -53,8 +53,8 @@ namespace OpenRA
 		public readonly MeshCache MeshCache;
 		public readonly MapTextureCache MapTextureCache;
 		public readonly SkeletonCache SkeletonCache = new SkeletonCache();
-		public LongBitSet<PlayerBitMask> AllPlayersMask = default(LongBitSet<PlayerBitMask>);
-		public readonly LongBitSet<PlayerBitMask> NoPlayersMask = default(LongBitSet<PlayerBitMask>);
+		public LongBitSet<PlayerBitMask> AllPlayersMask = default;
+		public readonly LongBitSet<PlayerBitMask> NoPlayersMask = default;
 
 		public Player[] Players = Array.Empty<Player>();
 

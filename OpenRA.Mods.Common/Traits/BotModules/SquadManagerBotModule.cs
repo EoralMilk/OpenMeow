@@ -83,7 +83,7 @@ namespace OpenRA.Mods.Common.Traits
 		public readonly int ProtectionScanRadius = 8;
 
 		[Desc("Enemy target types to never target.")]
-		public readonly BitSet<TargetableType> IgnoredEnemyTargetTypes = default(BitSet<TargetableType>);
+		public readonly BitSet<TargetableType> IgnoredEnemyTargetTypes = default;
 
 		[Desc("Locomotor used by pathfinding leader for squads")]
 		public readonly HashSet<string> SuggestedGroundLeaderLocomotor = new HashSet<string>();
