@@ -366,7 +366,7 @@ namespace OpenRA.Graphics
 
 			for (var i = 0; i < preparedRenderables.Count; i++)
 			{
-				if (preparedRenderables[i].BlendMode != BlendMode.None)
+				if (preparedRenderables[i].BlendMode == BlendMode.Alpha)
 				{
 					preparedRenderables[i].Render(this);
 				}
@@ -374,7 +374,18 @@ namespace OpenRA.Graphics
 
 			Game.Renderer.Flush();
 
+			// diable depth write to render other blend mode
 			Game.Renderer.EnableDepthWrite(false);
+
+			for (var i = 0; i < preparedRenderables.Count; i++)
+			{
+				if (preparedRenderables[i].BlendMode != BlendMode.Alpha && preparedRenderables[i].BlendMode != BlendMode.None)
+				{
+					preparedRenderables[i].Render(this);
+				}
+			}
+
+			Game.Renderer.Flush();
 
 			Game.Renderer.DisableDepthTest();
 
