@@ -19,8 +19,14 @@ namespace OpenRA.Mods.Common.Projectiles
 		[Desc("The distance traveled by the shockwave projectile.")]
 		public readonly WDist ShockDist = new WDist(2048);
 
+		[Desc("Inaccuracy value in Vertical space.")]
+		public readonly bool UseVerticalInaccuracy = false;
+
 		[Desc("Maximum offset at the maximum range.")]
 		public readonly WDist Inaccuracy = WDist.Zero;
+
+		[Desc("Controls the way inaccuracy is calculated. Possible values are 'Maximum' - scale from 0 to max with range, 'PerCellIncrement' - scale from 0 with range and 'Absolute' - use set value regardless of range.")]
+		public readonly InaccuracyType InaccuracyType = InaccuracyType.Maximum;
 
 		[Desc("Image to display.")]
 		public readonly string Image = null;
@@ -71,11 +77,12 @@ namespace OpenRA.Mods.Common.Projectiles
 		readonly WAngle facing;
 
 		readonly string palette;
+		readonly WVec offset = WVec.Zero;
 
 		[Sync]
-		WPos pos, lastPos;
+		WPos pos, lastPos, target;
 
-		WPos target;
+		[Sync]
 		readonly WPos source;
 
 		readonly int length;
@@ -92,6 +99,7 @@ namespace OpenRA.Mods.Common.Projectiles
 			this.args = args;
 			pos = args.Source;
 			source = args.Source;
+			lastPos = pos;
 
 			var world = args.SourceActor.World;
 
@@ -107,13 +115,14 @@ namespace OpenRA.Mods.Common.Projectiles
 				speed = info.Speed[0];
 
 			target = args.PassiveTarget;
+
 			if (info.Inaccuracy.Length > 0)
 			{
-				var inaccuracy = Util.ApplyPercentageModifiers(info.Inaccuracy.Length, args.InaccuracyModifiers);
-				var range = Util.ApplyPercentageModifiers(args.Weapon.Range.Length, args.RangeModifiers);
-				var maxOffset = inaccuracy * (target - pos).Length / range;
-				target += WVec.FromPDF(world.SharedRandom, 2) * maxOffset / 1024;
+				var maxInaccuracyOffset = Util.GetProjectileInaccuracy(info.Inaccuracy.Length, info.InaccuracyType, args);
+				offset = WVec.FromPDF(world.SharedRandom, 2, info.UseVerticalInaccuracy) * maxInaccuracyOffset / 1024;
 			}
+
+			target += offset;
 
 			if (info.KeepSourceAltitude)
 				target = new WPos(target.X, target.Y, source.Z); // Keep height
@@ -190,7 +199,6 @@ namespace OpenRA.Mods.Common.Projectiles
 			{
 				if (anim != null)
 				{
-					// var palette = wr.Palette(info.Palette + (info.IsPlayerPalette ? args.SourceActor.Owner.InternalName : ""));
 					foreach (var r in anim.Render(pos, wr.Palette(palette)))
 						yield return r;
 				}
