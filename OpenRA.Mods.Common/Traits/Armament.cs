@@ -294,15 +294,16 @@ namespace OpenRA.Mods.Common.Traits
 		{
 			if (!Info.CalculateTargetMoving)
 				return WVec.Zero;
+
 			var offset = WVec.Zero;
-			var w3dr = Game.Renderer.World3DRenderer;
+
 			// target the lead
 			if (target.Actor != null && target.Actor != self && !target.Actor.IsDead && target.Actor.IsInWorld)
 			{
 				var move = target.Actor.TraitOrDefault<IMove>();
 				if (move != null)
 				{
-					FP projSpeed = FP.Zero;
+					int projSpeed = 0;
 					if (Weapon.Projectile is BulletInfo)
 					{
 						var bullet = Weapon.Projectile as BulletInfo;
@@ -333,52 +334,38 @@ namespace OpenRA.Mods.Common.Traits
 						}
 					}
 
-					if (projSpeed == FP.Zero)
+					if (projSpeed == 0)
 						return offset;
 
-					projSpeed = projSpeed / w3dr.WDistPerMeter;
-					// var tsFIrePos = w3dr.Get3DPositionFromWPos(firePos);
-					var tsDist = w3dr.Get3DPositionFromWVec(firePos - target.Actor.CenterPosition);
-					var tsMove = w3dr.Get3DPositionFromWVec(move.CurrentSpeed);
-					var distq = tsDist.sqrMagnitude;
-					FP distLength = TSMath.Sqrt(distq);
-					var msq = tsMove.sqrMagnitude;
-					FP moveSpeed = TSMath.Sqrt(msq);
-					if (msq == 0)
+					var dist = firePos - target.CenterPosition;
+					var moveLensqr = move.CurrentSpeed.LengthSquared;
+					if (moveLensqr == 0)
 						return offset;
 
-					FP cos = TSVector.Dot(tsDist, tsMove) / (distLength * moveSpeed);
-					FP a = (msq - projSpeed * projSpeed);
-					FP b = -(2 * distLength * cos * moveSpeed);
-					FP c = distq;
+					var distLensqr = dist.LengthSquared;
+					var coss = WVec.Dot(dist, move.CurrentSpeed);
+					var a = moveLensqr - projSpeed * projSpeed;
+					var b = -(2 * coss);
+					var c = distLensqr;
 					var delta = (b * b) - (4 * a * c);
+
 					if (delta >= 0)
 					{
-						var t = (-b + TSMath.Sqrt(delta)) / (2 * a);
-						var t2 = (-b - TSMath.Sqrt(delta)) / (2 * a);
+						var t = (-b + (int)Exts.ISqrt(delta)) / (2 * a);
+						var t2 = (-b - (int)Exts.ISqrt(delta)) / (2 * a);
 						if (t < t2)
 							t = t2;
+
 						if (t > 0)
 						{
 							offset = new WVec((int)(t * move.CurrentSpeed.X), (int)(t * move.CurrentSpeed.Y), (int)(t * move.CurrentSpeed.Z));
 							target.SetOffset(offset);
-							//lineStart = firePos;
-							//lineEnd = target.Actor.CenterPosition + offset;
-							//debugDrawTick = 4;
+
 							return offset;
 						}
-						else
-						{
-							Console.WriteLine("invlid t: " + (float)t + "  cos: " + (float)cos + " b*b: " + (float)b * b + " a:" + (float)a + " c:" + (float)c);
-						}
-					}
-					else
-					{
-						Console.WriteLine("no target locked:  cos: " + (float)cos + " b*b: " + (float)b * b + " a:" + (float)a + " c:" + (float)c);
 					}
 				}
 
-				return offset;
 			}
 
 			return offset;
