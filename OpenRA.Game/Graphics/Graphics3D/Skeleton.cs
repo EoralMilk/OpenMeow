@@ -149,7 +149,7 @@ namespace OpenRA.Graphics
 	{
 		InverseKinematicState IKState { get; }
 		void InitIK(ref TSMatrix4x4 self);
-		void CalculateIK(ref TSMatrix4x4 self);
+		void CalculateIK(ref TSMatrix4x4 self, bool rendercal);
 		void UpdateTarget();
 	}
 
@@ -314,7 +314,7 @@ namespace OpenRA.Graphics
 
 				if (inverseKinematics.TryGetValue(id, out currentIK))
 				{
-					currentIK.CalculateIK(ref Bones[id].CurrentPose);
+					currentIK.CalculateIK(ref Bones[id].CurrentPose, false);
 				}
 
 				updateFlags[id] = true;
@@ -331,7 +331,7 @@ namespace OpenRA.Graphics
 
 				if (inverseKinematics.TryGetValue(id, out currentIK))
 				{
-					currentIK.CalculateIK(ref Bones[id].CurrentPose);
+					currentIK.CalculateIK(ref Bones[id].CurrentPose, false);
 				}
 
 				updateFlags[id] = true;
@@ -373,7 +373,7 @@ namespace OpenRA.Graphics
 				if (inverseKinematics.TryGetValue(id, out currentIK))
 				{
 					var m = TSMatrix4x4.FromMat4(Bones[id].RenderCurrentPose);
-					currentIK.CalculateIK(ref m);
+					currentIK.CalculateIK(ref m, true);
 					Bones[id].RenderCurrentPose = m.ToMat4();
 				}
 
@@ -392,7 +392,7 @@ namespace OpenRA.Graphics
 				if (inverseKinematics.TryGetValue(id, out currentIK))
 				{
 					var m = TSMatrix4x4.FromMat4(Bones[id].RenderCurrentPose);
-					currentIK.CalculateIK(ref m);
+					currentIK.CalculateIK(ref m, true);
 					Bones[id].RenderCurrentPose = m.ToMat4();
 				}
 

@@ -214,7 +214,7 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 				noRotationClamp = true;
 		}
 
-		public void CalculateIK(ref TSMatrix4x4 self)
+		public void CalculateIK(ref TSMatrix4x4 self, bool rendercal)
 		{
 			if (calculated)
 			{
@@ -254,7 +254,8 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 				self = self * TSMatrix4x4.Rotate(forward);
 			}
 
-			calculated = true;
+			if (!rendercal)
+				calculated = true;
 		}
 
 		void CalculateRoataion()
@@ -386,7 +387,7 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 			forward = initFacing;
 		}
 
-		public void CalculateIK(ref TSMatrix4x4 self)
+		public void CalculateIK(ref TSMatrix4x4 self, bool rendercal)
 		{
 			if (calculated)
 			{
@@ -430,7 +431,8 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 				self = self * TSMatrix4x4.Rotate(forward);
 			}
 
-			calculated = true;
+			if (!rendercal)
+				calculated = true;
 		}
 
 		void CalculateRotate()
