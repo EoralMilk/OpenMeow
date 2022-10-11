@@ -104,45 +104,45 @@ RUTEST2:
 		Turrets: primary, turret2
 		# FacingToTarget: true
 
-	# WithSkeleton@turret2:
-	# 	SkeletonDefine: turret-test2
-	# 	Name: turret_skeleton2
-	# 	AxisConvert: false
-	# TurretAttachment@2:
-	# 	Name: turret2
-	# 	SkeletonBinded: body
-	# 	AttachingBone: a-Position
-	# 	AttachmentSkeleton: turret_skeleton2
-	# 	TurretBone: a-s-Base
-	# 	BarrelBone: a-s-Barrel
-	# 	Scale: 5
-	# 	Mesh: turret
-	# 	RotationSpeed: 3
-	# 	BarrelRotationSpeed: 5
-	# 	InitTurretAngle: 0
-	# 	# TurretRotationMin: 0
-	# 	# TurretRoataionMax: 180
-	# 	InitBarrelAngle: 45
-	# 	BarrelMaxDepression: 80
-	# 	BarrelMaxElevation: 80
-	# 	TurretFireAngleLimitation: true
-	# 	BarrelFireAngleLimitation: false
-	# AttachedArmament@2:
-	# 	Weapon: ^VectorBooster
-	# 	SkeletonToUse: turret_skeleton2
-	# 	FromBonePose: firepose
-	# 	FacingTolerance: 512
-	# 	Turret: turret2
-	# AttachedArmament@3:
-	# 	Weapon: HarpyClaw
-	# 	SkeletonToUse: turret_skeleton2
-	# 	FromBonePose: firepose
-	# 	FacingTolerance: 40
-	# 	Turret: turret2
-	Armament:
+	WithSkeleton@turret2:
+		SkeletonDefine: turret-test2
+		Name: turret_skeleton2
+		AxisConvert: false
+	TurretAttachment@2:
+		Name: turret2
+		SkeletonBinded: body
+		AttachingBone: a-s-Rig_Hand.R
+		AttachmentSkeleton: turret_skeleton2
+		TurretBone: a-s-Base
+		BarrelBone: a-s-Barrel
+		Scale: 5
+		Mesh: turret
+		RotationSpeed: 3
+		BarrelRotationSpeed: 5
+		InitTurretAngle: 0
+		# TurretRotationMin: 0
+		# TurretRoataionMax: 180
+		InitBarrelAngle: 45
+		BarrelMaxDepression: 80
+		BarrelMaxElevation: 80
+		TurretFireAngleLimitation: true
+		BarrelFireAngleLimitation: false
+	AttachedArmament@2:
+		Weapon: ^VectorBooster
+		SkeletonToUse: body
+		FromBonePose: a-s-Rig_Head
+		FacingTolerance: 512
+		Turret: turret2
+	AttachedArmament@3:
 		Weapon: HarpyClaw
-		Turret: primary
-		LocalOffset: 1024,0,1024
+		SkeletonToUse: turret_skeleton2
+		FromBonePose: firepose
+		FacingTolerance: 40
+		Turret: turret2
+	# Armament:
+	# 	Weapon: HarpyClaw
+	# 	Turret: primary
+	# 	LocalOffset: 1024,0,1024
 	BlendTreeHandler:
 		DirectionTurret: primary
 	# WithMesh@Arrow:

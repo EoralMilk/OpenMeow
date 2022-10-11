@@ -130,7 +130,7 @@ vec4 CalcDirLight(DirLight light, vec4 color)
 
 	vec3 normal;
 	// water?
-	if (mask.r > 0.001){
+	if (mask.r > 0.0){
 	// if (mask.r < -1.0){
 		vec2 waterUV = vFragPos.xy;
 		vec4 cm = texture(MaskCloud, waterUV / 8.0 + vec2(WaterUVOffset2, WaterUVOffset2));
@@ -143,14 +143,7 @@ vec4 CalcDirLight(DirLight light, vec4 color)
 					texture(WaterNormal, wuv).rgb, 
 					mask.r);
 
-		float causticsBlend = 0.0;
-		
-		
-		if (mask.r > 0.66){
-			causticsBlend = mix(0.66, 0.5, (mask.r - 0.66) / 0.34);
-		}
-		else
-			causticsBlend = mask.r;
+		float causticsBlend = mix(mix(0.66, 0.5, (mask.r - 0.66) / 0.34),mask.r,step(mask.r,0.66));
 
 		vec4 caustics = texture(Caustics, cuv);
 		float ci = mix(mix(caustics.r,caustics.g,cm.r), mix(caustics.b,caustics.a,cm.g), cm.b);
