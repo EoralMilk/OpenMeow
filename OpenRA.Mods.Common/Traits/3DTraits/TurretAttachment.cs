@@ -147,6 +147,13 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 			}
 			else
 			{
+				if (turretIk.CurrentState == AimState.Aim)
+					AttachmentSkeleton.CallForUpdate(TurretBoneId);
+				if (hasBarrel && barrelIk.CurrentState == AimState.Aim)
+				{
+					AttachmentSkeleton.CallForUpdate(BarrelBoneId);
+				}
+
 				realignTick++;
 			}
 		}
@@ -166,6 +173,7 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 		WPos targetPos;
 		public AimState NextState = AimState.Realign;
 		AimState state = AimState.Realign;
+		public AimState CurrentState => state;
 		Func<TSMatrix4x4> getBoneTrans;
 		public void UpdateTarget()
 		{
@@ -348,6 +356,7 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 		WPos targetPos;
 		public AimState NextState = AimState.Realign;
 		AimState state = AimState.Realign;
+		public AimState CurrentState => state;
 		Func<TSMatrix4x4> getBoneTrans;
 		public void UpdateTarget()
 		{
