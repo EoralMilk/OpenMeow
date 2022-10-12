@@ -91,6 +91,8 @@ namespace OpenRA.Mods.Common.Projectiles
 
 		int liveTicks, blastTicks;
 		bool stopped = false;
+
+		bool exploded = false;
 		public Actor SourceActor { get { return args.SourceActor; } }
 
 		public BlastWave(BlastWaveInfo info, ProjectileArgs args)
@@ -146,6 +148,9 @@ namespace OpenRA.Mods.Common.Projectiles
 
 		public void Tick(World world)
 		{
+			if (exploded)
+				return;
+
 			anim?.Tick();
 
 			lastPos = pos;
@@ -168,6 +173,7 @@ namespace OpenRA.Mods.Common.Projectiles
 
 			if (lifetime > 0 && liveTicks > lifetime)
 			{
+				exploded = true;
 				Explode(world);
 			}
 		}

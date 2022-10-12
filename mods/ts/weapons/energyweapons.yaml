@@ -161,7 +161,8 @@ CyCannonProton:
 		Blockable: false
 		HorizontalRateOfTurn: 8
 		Shadow: false
-		Image: proton_projectile
+		Image: plasma_ball
+		Sequences: plasmaball_green
 		MinimumLaunchSpeed: 145
 		Speed: 384
 		RangeLimit: 8c0
@@ -187,7 +188,9 @@ CyCannonProtonFlame:
 		MaximumLaunchSpeed: 125
 		MinimumLaunchSpeed: 120
 		LaunchAngle: 32
-		Palette: effectred
+		# Palette: effectred
+		Image: plasma_ball
+		Sequences: plasmaball_red
 	Warhead@1Dam: Spread3DDamage
 		ValidTargets: Ground, Trees
 		Spread: 0c168
@@ -213,7 +216,9 @@ CyCannonProtonEmp:
 		MaximumLaunchSpeed: 100
 		MinimumLaunchSpeed: 95
 		LaunchAngle: 64
-		Palette: effectcyan
+		# Palette: effectcyan
+		Image: plasma_ball
+		Sequences: plasmaball_blue
 	Warhead@1Dam: Spread3DDamage
 		Damage: 4500
 		Condition: empdisable

@@ -445,10 +445,34 @@ proton_projectile:
 		Length: *
 		ZOffset: 1023
 		Offset: 0, 0, 8
-		Scale: 1.2
+		Scale: 1
 		IgnoreWorldTint: True
 		MeshType: Plane
 		BlendMode: Additive
+
+proton_projectile_small:
+	idle:
+		Length: *
+		ZOffset: 1023
+		Offset: 0, 0, 8
+		Scale: 0.8
+		IgnoreWorldTint: True
+		MeshType: Plane
+		BlendMode: Additive
+
+plasma_ball:
+	Defaults:
+		Length: *
+		ZOffset: 1023
+		Offset: 0, 0, 8
+		Scale: 0.6
+		IgnoreWorldTint: True
+		MeshType: Plane
+		BlendMode: Additive
+	plasmaball_blue: plasmaball_blue
+	plasmaball_red: plasmaball_red
+	plasmaball_green: plasmaball_green
+
 
 flameall:
 	idle:
@@ -464,9 +488,8 @@ flameall:
 flameball:
 	Defaults:
 		Length: *
-		Tick: 23
-		ZOffset: 1025
-		Scale: 0.6
+		ZOffset: 1024
+		Scale: 0.45
 		BlendMode: Additive
 		MeshType: Board
 	idle1: flameball1
