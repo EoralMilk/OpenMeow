@@ -35,7 +35,7 @@ namespace OpenRA.Mods.Common.Graphics
 		readonly float alpha;
 		readonly float3 tint;
 		readonly TintModifiers tintModifiers;
-
+		public BlendMode BlendMode => BlendMode.None;
 		public ModelRenderable(
 			IEnumerable<ModelAnimation> models, WPos pos, int zOffset, in WRot camera, float scale,
 			float[] lightAmbientColor, float[] lightDiffuseColor, float lightScale, float ambientScale, float specularScale,

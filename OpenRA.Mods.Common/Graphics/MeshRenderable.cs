@@ -30,6 +30,8 @@ namespace OpenRA.Mods.Common.Graphics
 		readonly float3 tint;
 		readonly TintModifiers tintModifiers;
 		public readonly RenderMeshes RenderMeshes;
+		public BlendMode BlendMode => BlendMode.None;
+
 		public MeshRenderable(
 			IEnumerable<MeshInstance> meshes, WPos pos, int zOffset, in Color remap, float scale, RenderMeshes renderMeshes)
 			: this(meshes, pos, zOffset, remap, scale, 1f, float3.Ones, TintModifiers.None, renderMeshes)

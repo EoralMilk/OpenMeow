@@ -31,6 +31,7 @@ namespace OpenRA.Mods.Common.Graphics
 		readonly PaletteReference normalsPalette;
 		readonly PaletteReference shadowPalette;
 		readonly float scale;
+		public BlendMode BlendMode => BlendMode.Alpha;
 
 		public UIModelRenderable(
 			IEnumerable<ModelAnimation> models, WPos effectiveWorldPos, int2 screenPos, int zOffset,

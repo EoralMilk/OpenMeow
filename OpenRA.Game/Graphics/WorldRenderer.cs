@@ -39,15 +39,32 @@ namespace OpenRA.Graphics
 		readonly Func<string, PaletteReference> createPaletteReference;
 		readonly bool enableDepthBuffer;
 
+		/// <summary>
+		/// none blendmode renderables
+		/// </summary>
+		readonly List<IFinalizedRenderable> preparedNoneBlendRenderables = new List<IFinalizedRenderable>();
+
+		/// <summary>
+		/// alpha blend, should ordered by distance from camera
+		/// </summary>
 		readonly List<IFinalizedRenderable> preparedRenderables = new List<IFinalizedRenderable>();
+
 		readonly List<IFinalizedRenderable> preparedMapAdditonRenderables = new List<IFinalizedRenderable>();
 
-		readonly List<IFinalizedRenderable>[] preparedBlendRenderables = new List<IFinalizedRenderable>[11];
+		/// <summary>
+		/// other blendmode renderables
+		/// </summary>
+		readonly List<IFinalizedRenderable> preparedBlendRenderables = new List<IFinalizedRenderable>();
 
 		readonly List<IFinalizedRenderable> preparedOverlayRenderables = new List<IFinalizedRenderable>();
 		readonly List<IFinalizedRenderable> preparedAnnotationRenderables = new List<IFinalizedRenderable>();
 
 		readonly List<IRenderable> renderablesBuffer = new List<IRenderable>();
+
+		/// <summary>
+		/// for convert alpha renderable in order
+		/// </summary>
+		readonly List<IRenderable> renderablesTempBuffer = new List<IRenderable>();
 
 		internal WorldRenderer(ModData modData, World world)
 		{
@@ -74,10 +91,6 @@ namespace OpenRA.Graphics
 			TerrainRenderer = world.WorldActor.TraitOrDefault<IRenderTerrain>();
 
 			debugVis = Exts.Lazy(() => world.WorldActor.TraitOrDefault<DebugVisualizations>());
-			for (int i = 0; i < preparedBlendRenderables.Length; i++)
-			{
-				preparedBlendRenderables[i] = new List<IFinalizedRenderable>();
-			}
 
 			RefreshTextures();
 
@@ -191,16 +204,31 @@ namespace OpenRA.Graphics
 				renderablesBuffer.AddRange(e.Render(this));
 
 			// Renderables must be ordered using a stable sorting algorithm to avoid flickering artefacts
-			foreach (var renderable in renderablesBuffer.OrderBy(RenderableZPositionComparisonKey))
+			// don't sort it now, we only need to sort the alpha renderable
+			foreach (var renderable in renderablesBuffer)
 			{
 				if (renderable is SpriteRenderable && (renderable as SpriteRenderable).Sprite.SpriteMeshType == SpriteMeshType.TileActor)
 					preparedMapAdditonRenderables.Add(renderable.PrepareRender(this));
 				else
-					preparedRenderables.Add(renderable.PrepareRender(this));
+				{
+					if (renderable.BlendMode == BlendMode.None)
+						preparedNoneBlendRenderables.Add(renderable.PrepareRender(this));
+					else if (renderable.BlendMode == BlendMode.Alpha)
+						renderablesTempBuffer.Add(renderable); // add alpha renderable to sort
+					else
+						preparedBlendRenderables.Add(renderable.PrepareRender(this));
+				}
+			}
+
+			// sort alpha rendable
+			foreach (var alphaRenderable in renderablesTempBuffer.OrderBy(RenderableZPositionComparisonKey))
+			{
+				preparedRenderables.Add(alphaRenderable.PrepareRender(this));
 			}
 
 			// PERF: Reuse collection to avoid allocations.
 			renderablesBuffer.Clear();
+			renderablesTempBuffer.Clear();
 		}
 
 		// PERF: Avoid LINQ.
@@ -352,10 +380,10 @@ namespace OpenRA.Graphics
 
 			Game.Renderer.Flush();
 
-			for (var i = 0; i < preparedRenderables.Count; i++)
+			// none blend
+			for (var i = 0; i < preparedNoneBlendRenderables.Count; i++)
 			{
-				if (preparedRenderables[i].BlendMode == BlendMode.None)
-					preparedRenderables[i].Render(this);
+				preparedNoneBlendRenderables[i].Render(this);
 			}
 
 			Game.Renderer.WorldSpriteRenderer.Flush(BlendMode.None);
@@ -364,12 +392,10 @@ namespace OpenRA.Graphics
 
 			Game.Renderer.Context.DisableCullFace();
 
+			// alpha blend
 			for (var i = 0; i < preparedRenderables.Count; i++)
 			{
-				if (preparedRenderables[i].BlendMode == BlendMode.Alpha)
-				{
-					preparedRenderables[i].Render(this);
-				}
+				preparedRenderables[i].Render(this);
 			}
 
 			Game.Renderer.Flush();
@@ -377,12 +403,10 @@ namespace OpenRA.Graphics
 			// diable depth write to render other blend mode
 			Game.Renderer.EnableDepthWrite(false);
 
-			for (var i = 0; i < preparedRenderables.Count; i++)
+			// other blend
+			for (var i = 0; i < preparedBlendRenderables.Count; i++)
 			{
-				if (preparedRenderables[i].BlendMode != BlendMode.Alpha && preparedRenderables[i].BlendMode != BlendMode.None)
-				{
-					preparedRenderables[i].Render(this);
-				}
+				preparedBlendRenderables[i].Render(this);
 			}
 
 			Game.Renderer.Flush();
@@ -431,8 +455,12 @@ namespace OpenRA.Graphics
 			// Engine debugging overlays
 			if (debugVis.Value != null && debugVis.Value.RenderGeometry)
 			{
+				for (var i = 0; i < preparedNoneBlendRenderables.Count; i++)
+					preparedNoneBlendRenderables[i].RenderDebugGeometry(this);
 				for (var i = 0; i < preparedRenderables.Count; i++)
 					preparedRenderables[i].RenderDebugGeometry(this);
+				for (var i = 0; i < preparedBlendRenderables.Count; i++)
+					preparedBlendRenderables[i].RenderDebugGeometry(this);
 
 				for (var i = 0; i < preparedOverlayRenderables.Count; i++)
 					preparedOverlayRenderables[i].RenderDebugGeometry(this);
@@ -465,10 +493,10 @@ namespace OpenRA.Graphics
 
 			Game.Renderer.Flush();
 
+			preparedNoneBlendRenderables.Clear();
 			preparedRenderables.Clear();
 			preparedMapAdditonRenderables.Clear();
-			foreach (var l in preparedBlendRenderables)
-				l.Clear();
+			preparedBlendRenderables.Clear();
 
 			preparedOverlayRenderables.Clear();
 			preparedAnnotationRenderables.Clear();

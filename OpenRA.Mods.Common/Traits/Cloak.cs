@@ -82,6 +82,9 @@ namespace OpenRA.Mods.Common.Traits
 		public readonly string EffectPalette = "effect";
 		public readonly bool EffectPaletteIsPlayerPalette = false;
 
+		[Desc("If the renderable is not palette renderables, change the alpha")]
+		public readonly float NonePaletteRenderablesAlpha = 0.6f;
+
 		[Desc("Offset for the effect played when cloaking or uncloaking.")]
 		public readonly WVec EffectOffset = WVec.Zero;
 
@@ -163,7 +166,10 @@ namespace OpenRA.Mods.Common.Traits
 				if (palette == null)
 					return r;
 				else
-					return r.Select(a => !a.IsDecoration && a is IPalettedRenderable ? ((IPalettedRenderable)a).WithPalette(palette) : a);
+					return r.Select(a => !a.IsDecoration &&
+					a is IPalettedRenderable ? ((IPalettedRenderable)a).WithPalette(palette) :
+					a is IModifyableRenderable ? ((IModifyableRenderable)a).WithAlpha(Info.NonePaletteRenderablesAlpha) :
+					a);
 			}
 			else
 				return SpriteRenderable.None;

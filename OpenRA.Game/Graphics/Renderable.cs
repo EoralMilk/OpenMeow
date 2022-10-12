@@ -19,8 +19,9 @@ namespace OpenRA.Graphics
 		WPos Pos { get; }
 		int ZOffset { get; }
 		bool IsDecoration { get; }
+        BlendMode BlendMode { get; }
 
-		IRenderable WithZOffset(int newOffset);
+        IRenderable WithZOffset(int newOffset);
 		IRenderable OffsetBy(in WVec offset);
 		IRenderable AsDecoration();
 
