@@ -57,15 +57,14 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 
 		IEnumerable<IRenderable> IRender.Render(Actor self, WorldRenderer wr)
 		{
-			if (armaments != null && armaments.Length > 0)
-			{
-				foreach (var a in armaments)
-				{
-					yield return a.DebugDraw1();
-					yield return a.DebugDraw2();
-
-				}
-			}
+			// if (armaments != null && armaments.Length > 0)
+			// {
+			// 	foreach (var a in armaments)
+			// 	{
+			// 		yield return a.DebugDraw1();
+			// 		yield return a.DebugDraw2();
+			// 	}
+			// }
 
 			if (initializePalettes)
 			{

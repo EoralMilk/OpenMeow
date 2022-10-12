@@ -129,7 +129,6 @@ namespace OpenRA.Mods.Common.Traits
 			return withSkeleton.GetWRotFromBoneId(b.BoneId);
 		}
 
-		public static bool mat3 = true;
 		public static int FrontX = 0, FrontY = 1, FrontZ = 0;
 		DebugLineRenderable DebugDrawLine(TSMatrix4x4 m, Color color, bool mat)
 		{
