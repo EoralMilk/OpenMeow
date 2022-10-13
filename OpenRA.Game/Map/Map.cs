@@ -330,7 +330,7 @@ namespace OpenRA
 					return FieldLoader.GetValue<int>("MapFormat", search.Groups[1].Value);
 			}
 
-			throw new InvalidDataException($"MapFormat is not defined\n File: {p.Name}");
+			throw new InvalidDataException("MapFormat is not defined");
 		}
 
 		/// <summary>
