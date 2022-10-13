@@ -94,6 +94,7 @@ TTNK:
 	Inherits@VOXELS: ^VoxelActor
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@AImicroManagable: ^AImicroManagable
 	Valued:
 		Cost: 800
 	Tooltip:
@@ -113,7 +114,7 @@ TTNK:
 		TurnSpeed: 20
 		Speed: 85
 		ImmovableCondition: !undeployed
-		RequireForceMoveCondition: !undeployed
+		RequireForceMoveCondition: !AImicroManage && !undeployed
 	Health:
 		HP: 35000
 	Armor:
@@ -220,6 +221,15 @@ TTNK:
 	RenderDetectionCircle:
 	RevealOnFire:
 		ArmamentNames: primary, deployed
+	RejectsOrders@deployment:
+		Reject: AttackMove, AssaultMove
+		RequiresCondition: !AImicroManage && deployed
+	AutoDeployer@AI:
+		RequiresCondition: AImicroManage && undeployed
+		DeployChance: 100
+		DeployTrigger: Attack
+		DeployTicks: 5
+		UndeployTicks: 50
 	
 
 ART2:
@@ -227,6 +237,7 @@ ART2:
 	Inherits@VOXELS: ^VoxelActor
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@AImicroManagable: ^AImicroManagable
 	Valued:
 		Cost: 975
 	Tooltip:
@@ -250,7 +261,7 @@ ART2:
 		Speed: 71
 		TurnSpeed: 8
 		ImmovableCondition: !undeployed
-		RequireForceMoveCondition: !undeployed
+		RequireForceMoveCondition: !AImicroManage && !undeployed
 	RevealsShroud@deploy:
 		RequiresCondition: !inside-tunnel && deployed
 		Range: 9c0
@@ -274,14 +285,15 @@ ART2:
 		UndeploySounds: clicky1.aud
 		Voice: Move
 		# DeployOnAiming: true
-	# AttackFrontal@todeploy:
-	# 	Voice: Attack
-	# 	FacingTolerance: 512
-	# 	RequiresCondition: undeployed
-	# Armament@todeploy:
-	# 	Name: todeploy
-	# 	Weapon: 155mmDeployCheck
-	# 	RequiresCondition: undeployed
+	AttackFrontal@todeploy:
+	 	Voice: Attack
+	 	FacingTolerance: 512
+	 	RequiresCondition: AImicroManage && undeployed
+		Armaments: todeploy
+	Armament@todeploy:
+	 	Name: todeploy
+	 	Weapon: 155mmDeployCheck
+	 	RequiresCondition: AImicroManage && undeployed
 	EntersTunnels:
 		RequireForceMoveCondition: !undeployed
 	Repairable:
@@ -304,16 +316,6 @@ ART2:
 		RequiresCondition: deployed || preparing-undeploy #!undeployed
 		RealignBeforeDeploy: true
 		# DeployOnAiming: true
-	# AttackFrontal@todeploy:
-	# 	Voice: Attack
-	# 	Armaments: todeploy
-	# 	FacingTolerance: 512
-	# 	RequiresCondition: undeployed
-	# Armament@todeploy:
-	# 	Name: todeploy
-	# 	Weapon: 155mmDeployCheck
-	# 	RequiresCondition: undeployed
-	# 	FacingTolerance: 512
 	WithModelBarrel:
 		Armament: deployed
 		LocalOffset: 0,0,0 #203,0,0
@@ -346,6 +348,15 @@ ART2:
 	WithMuzzleOverlay:
 	RevealOnFire:
 		ArmamentNames: deployed
+	RejectsOrders@deployment:
+		Reject: AttackMove, AssaultMove
+		RequiresCondition: !AImicroManage && deployed
+	AutoDeployer@AI:
+		RequiresCondition: AImicroManage && undeployed
+		DeployChance: 100
+		DeployTrigger: Attack
+		DeployTicks: 5
+		UndeployTicks: 50
 
 REPAIR:
 	Inherits: ^Tank

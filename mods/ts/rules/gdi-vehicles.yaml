@@ -425,6 +425,7 @@ JUGG:
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@renderVoxel: ^RenderVoxel
+	Inherits@AImicroManagable: ^AImicroManagable
 	Valued:
 		Cost: 950
 	Tooltip:
@@ -449,7 +450,7 @@ JUGG:
 		TurnSpeed: 20
 		AlwaysTurnInPlace: true
 		ImmovableCondition: !undeployed
-		RequireForceMoveCondition: !undeployed
+		RequireForceMoveCondition: !AImicroManage && !undeployed
 		TerrainOrientationAdjustmentMargin: -1
 	RevealsShroud@deploy:
 		RequiresCondition: !inside-tunnel && deployed
@@ -480,17 +481,17 @@ JUGG:
 		DeploySounds: place2.aud
 		UndeploySounds: clicky1.aud
 		Voice: Move
-	# 	DeployOnAiming: true
-	# AttackFrontal@todeploy:
-	# 	Voice: Attack
-	# 	Armaments: todeploy
-	# 	FacingTolerance: 512
-	# 	RequiresCondition: undeployed
-	# Armament@todeploy:
-	# 	Name: todeploy
-	# 	Weapon: Jugg90mmDeployCheck
-	# 	RequiresCondition: undeployed
-	# 	FacingTolerance: 512
+	#	DeployOnAiming: true
+	AttackFrontal@todeploy:
+	 	Voice: Attack
+	 	Armaments: todeploy
+	 	FacingTolerance: 512
+	 	RequiresCondition: AImicroManage && undeployed
+	Armament@todeploy:
+	 	Name: todeploy
+	 	Weapon: Jugg90mmDeployCheck
+	 	RequiresCondition: AImicroManage && undeployed
+	 	FacingTolerance: 512
 	EntersTunnels:
 		RequireForceMoveCondition: !undeployed
 	Repairable:
@@ -581,7 +582,6 @@ JUGG:
 		MuzzleSequence: muzzle
 		Recoil: 148
 		RecoilRecovery: 12
-
 	WithMuzzleOverlay:
 	RevealOnFire:
 		ArmamentNames: deployed
@@ -592,3 +592,13 @@ JUGG:
 		LightScale: 0.22
 		SpecularScale: 0.33
 		AmbientScale: 0.88
+	RejectsOrders@deployment:
+		Reject: AttackMove, AssaultMove
+		RequiresCondition: !AImicroManage && deployed
+	AutoDeployer@AI:
+		RequiresCondition: AImicroManage && undeployed
+		DeployChance: 100
+		DeployTrigger: Attack
+		DeployTicks: 5
+		UndeployTicks: 50
+

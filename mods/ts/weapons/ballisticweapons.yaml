@@ -155,17 +155,10 @@ RPGTower:
 	Range: 17c768
 	ReloadDelay: 10
 	MinRange: 5c0
+	ValidTargets: Ground, Water
 	Projectile: InstantHit
-	Warhead@1Dam: SpreadDamage
-		Damage: 1
-		Spread: 0
-		Versus:
-			None: 0
-			Wood: 0
-			Light: 0
-			Heavy: 0
-			Concrete: 0
-		ValidTargets: Ground, Water, Air
+	Warhead@1Dam: TargetDamage
+		ValidTargets: Ground, Water
 
 155mm:
 	Inherits: ^ArtilleryWeapon

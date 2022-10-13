@@ -51,18 +51,18 @@ RUTEST:
 	Inherits: ^Vehicle
 	Inherits@meshtest: ^WithMeshTest
 	Inherits@EXPERIENCE: ^GainsExperience
-	# Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Valued:
-		Cost: 500
+		Cost: 1200
 	Tooltip:
-		Name: Test 1
+		Name: Cat Girl MK2
 	GivesExperience:
 	UpdatesPlayerStatistics:
 		AddToArmyValue: false
 	Buildable:
 		Queue: Vehicle
 		BuildPaletteOrder: 0
-		Prerequisites: ~none
+		Prerequisites: gaweap, gatech, ~structures.gdi
 	Mobile:
 		TurnSpeed: 66
 		Speed: 100
@@ -90,8 +90,13 @@ RUTEST2:
 	Inherits: RUTEST
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Tooltip:
-		Name: Test 2
-
+		Name: Cat Girl Avatar
+	Valued:
+		Cost: 1000
+	Buildable:
+		Queue: Vehicle
+		BuildPaletteOrder: 0
+		Prerequisites: naweap, natech, ~structures.nod
 	Turreted:
 		TurnSpeed: 44
 		RealignSpeed: 33
@@ -155,9 +160,13 @@ RUTEST3:
 		ZOffset: 0
 		Scale: 10
 	Tooltip:
-		Name: Test 3
+		Name: Cat Girl Titan 2
 	Health:
 		HP: 300000
+	Buildable:
+		Queue: Vehicle
+		BuildPaletteOrder: 0
+		Prerequisites: naweap, natech, ~structures.nod
 	Mobile:
 		TurnSpeed: 34
 		Speed: 88

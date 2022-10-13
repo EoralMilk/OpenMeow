@@ -1750,3 +1750,8 @@
 		RequiresSelection: true
 		Text: PRIMARY
 		Color: E0D048
+
+^AImicroManagable:
+	GrantConditionOnBotOwner@AImicroManage:
+		Condition: AImicroManage
+		Bots: test

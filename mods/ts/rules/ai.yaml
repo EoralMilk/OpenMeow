@@ -5,10 +5,17 @@ Player:
 	GrantConditionOnBotOwner@test:
 		Condition: enable-test-ai
 		Bots: test
-	HarvesterBotModule:
+	#HarvesterBotModule:
+	#	RequiresCondition: enable-test-ai
+	#	HarvesterTypes: harv
+	#	RefineryTypes: proc
+	CashTrickler@CashCheat: ## enough cash to build early game infantry, always on for megawealth
+		Interval: 300
+		Amount: 1000
+		ShowTicks: false
 		RequiresCondition: enable-test-ai
-		HarvesterTypes: harv
-		RefineryTypes: proc
+	AutoDeployManager@AIall:
+		RequiresCondition: enable-test-ai
 	BaseBuilderBotModule@test:
 		RequiresCondition: enable-test-ai
 		MinimumExcessPower: 30
@@ -17,6 +24,8 @@ Player:
 		ExcessPowerIncreaseThreshold: 4
 		ConstructionYardTypes: gacnst
 		RefineryTypes: proc
+		AdditionalMinimumRefineryCount: 0 ## We don't need this
+		InititalMinimumRefineryCount: 0 ## We don't need this
 		PowerTypes: gapowr, gapowrup, napowr, naapwr
 		BarracksTypes: gapile, nahand
 		VehiclesFactoryTypes: gaweap, naweap
@@ -24,10 +33,10 @@ Player:
 		SiloTypes: gasilo
 		DefenseTypes: gavulc,garock,gacsam,gactwr,naobel,nalasr,nasam, titanugvulcan,titanugmissile
 		BuildingLimits:
-			proc: 4
+			proc: 2
 			gasilo: 2
-			gapowr: 8
-			napowr: 8
+			gapowr: 10
+			napowr: 10
 			gapile: 1
 			nahand: 1
 			gaweap: 1
@@ -50,11 +59,11 @@ Player:
 			titanugvulcan: 14
 			titanugmissile: 8
 		BuildingFractions:
-			proc: 30
-			gapile: 1
-			nahand: 1
-			gaweap: 1
-			naweap: 1
+			proc: 100
+			gapile: 30
+			nahand: 30
+			gaweap: 50
+			naweap: 50
 			garadr: 1
 			naradr: 1
 			gatech: 1
@@ -119,13 +128,19 @@ Player:
 			orcab: 11
 			apache: 15
 			scrin: 14
+			## test
+			rutest2: 40
+			apc: 1
+			jugg: 10
+			art2: 10
 		UnitLimits:
-			harv: 12
-			medic: 3
-			repair: 3
+			harv: 2
+			medic: 14
+			repair: 1
 			ghost: 1
 			cyc2: 1
 			hmec: 1
+			apc: 1
 	McvManagerBotModule@test:
 		RequiresCondition: enable-test-ai
 		McvTypes: mcv
