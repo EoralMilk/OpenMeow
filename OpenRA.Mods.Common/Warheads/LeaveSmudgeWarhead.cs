@@ -13,7 +13,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using OpenRA.GameRules;
-using OpenRA.Graphics;
 using OpenRA.Mods.Common.Traits;
 using OpenRA.Traits;
 
@@ -34,6 +33,9 @@ namespace OpenRA.Mods.Common.Warheads
 		[Desc("Size of the smudge, two value can be use for random size range.")]
 		public readonly int[] SizePerSmudge = { 0 };
 
+		[Sync]
+		int sizeOverride = 0;
+
 		public override void DoImpact(in Target target, WarheadArgs args)
 		{
 			if (target.Type == TargetType.Invalid)
@@ -42,7 +44,7 @@ namespace OpenRA.Mods.Common.Warheads
 			var firedBy = args.SourceActor;
 			var world = firedBy.World;
 
-			if (Chance < world.LocalRandom.Next(100))
+			if (Chance < world.SharedRandom.Next(100))
 				return;
 
 			var pos = target.CenterPosition;
@@ -71,7 +73,6 @@ namespace OpenRA.Mods.Common.Warheads
 				if (!smudgeLayers.TryGetValue(smudgeType, out var smudgeLayer))
 					throw new NotImplementedException($"Unknown smudge type `{smudgeType}`");
 
-				var sizeOverride = 0;
 				if (SizePerSmudge.Length > 1)
 					sizeOverride = world.SharedRandom.Next(SizePerSmudge[0], SizePerSmudge[1]);
 				else
