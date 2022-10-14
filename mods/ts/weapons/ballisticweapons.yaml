@@ -157,8 +157,6 @@ RPGTower:
 	MinRange: 5c0
 	ValidTargets: Ground, Water
 	Projectile: InstantHit
-	Warhead@1Dam: TargetDamage
-		ValidTargets: Ground, Water
 
 155mm:
 	Inherits: ^ArtilleryWeapon
