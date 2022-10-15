@@ -550,6 +550,10 @@ namespace OpenRA.Platforms.Default
 			int width, int height, int depth, int border, int format, int type, IntPtr pixels);
 		public static TexImage3D glTexImage3D { get; private set; }
 
+		public delegate void TexStorage3D(int target, int levels, int internalFormat,
+	int width, int height, int depth);
+		public static TexStorage3D glTexStorage3D { get; private set; }
+
 		public delegate void TexSubImage2D(int target, int level, int xoffset, int yoffset,
 			int width, int height, int format, int type, IntPtr pixels);
 		public static TexSubImage2D glTexSubImage2D { get; private set; }
@@ -742,6 +746,7 @@ namespace OpenRA.Platforms.Default
 				glPixelStorei = Bind<PixelStorei>("glPixelStorei");
 				glTexImage2D = Bind<TexImage2D>("glTexImage2D");
 				glTexImage3D = Bind<TexImage3D>("glTexImage3D");
+				glTexStorage3D = Bind<TexStorage3D>("glTexStorage3D");
 				glTexSubImage2D = Bind<TexSubImage2D>("glTexSubImage2D");
 				glTexSubImage3D = Bind<TexSubImage3D>("glTexSubImage3D");
 				glTexParameteri = Bind<TexParameteri>("glTexParameteri");

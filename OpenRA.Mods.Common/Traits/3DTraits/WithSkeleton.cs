@@ -151,13 +151,13 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 		public WPos GetWPosFromBoneId(int id)
 		{
 			CallForUpdate(id);
-			return Skeleton.BoneWPos(id, w3dr);
+			return Skeleton.BoneWPos(id);
 		}
 
 		public WRot GetWRotFromBoneId(int id)
 		{
 			CallForUpdate(id);
-			return Skeleton.BoneWRot(id, w3dr);
+			return Skeleton.BoneWRot(id);
 		}
 
 		public TSMatrix4x4 GetMatrixFromBoneId(int id)

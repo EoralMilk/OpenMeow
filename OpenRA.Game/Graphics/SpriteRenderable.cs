@@ -33,7 +33,7 @@ namespace OpenRA.Graphics
 		readonly BlendMode blendMode;
 		public BlendMode BlendMode => blendMode;
 
-		public SpriteRenderable(Sprite sprite, WPos pos, WVec offset, int zOffset, PaletteReference palette, float scale, float alpha, float3 tint, TintModifiers tintModifiers, bool isDecoration, WAngle rotation, bool isShadow = false)
+		public SpriteRenderable(Sprite sprite, WPos pos, WVec offset, int zOffset, PaletteReference palette, float scale, float alpha, float3 tint, TintModifiers tintModifiers, bool isDecoration, WAngle rotation, bool alphaBlend = false)
 		{
 			this.Sprite = sprite;
 			this.pos = pos;
@@ -46,7 +46,7 @@ namespace OpenRA.Graphics
 			this.isDecoration = isDecoration;
 			this.tintModifiers = tintModifiers;
 			this.alpha = alpha;
-			if (isShadow || (sprite.BlendMode == BlendMode.None && alpha < 0.9999f))
+			if (alphaBlend || (sprite.BlendMode == BlendMode.None && alpha < 1f))
 			{
 				sprite.ChangeBlendMode(BlendMode.Alpha);
 			}

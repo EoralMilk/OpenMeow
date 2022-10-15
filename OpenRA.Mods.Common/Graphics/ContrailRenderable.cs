@@ -15,7 +15,6 @@ using System.Linq;
 using GlmSharp;
 using OpenRA.Graphics;
 using OpenRA.Primitives;
-using OpenRA.Primitives.FixPoint;
 using TagLib.Riff;
 
 namespace OpenRA.Mods.Common.Graphics

@@ -10,7 +10,6 @@ using OpenRA.Mods.Common.Graphics;
 using OpenRA.Mods.Common.Traits;
 using OpenRA.Mods.Common.Traits.Trait3D;
 using OpenRA.Primitives;
-using OpenRA.Primitives.FixPoint;
 using OpenRA.Traits;
 using TrueSync;
 

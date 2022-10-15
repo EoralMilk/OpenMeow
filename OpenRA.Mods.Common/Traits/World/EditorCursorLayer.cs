@@ -16,7 +16,6 @@ using OpenRA.Graphics;
 using OpenRA.Mods.Common.Graphics;
 using OpenRA.Mods.Common.Terrain;
 using OpenRA.Primitives;
-using OpenRA.Primitives.FixPoint;
 using OpenRA.Traits;
 
 namespace OpenRA.Mods.Common.Traits

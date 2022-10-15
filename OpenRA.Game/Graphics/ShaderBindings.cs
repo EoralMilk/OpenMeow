@@ -299,4 +299,66 @@ namespace OpenRA.Graphics
 		}
 	}
 
+	public class MeshShaderBindings : IShaderBindings
+	{
+		public string VertexShaderName { get; }
+		public string FragmentShaderName { get; }
+		public string GeometryShaderName => null;
+
+		public int Stride => 16 * sizeof(float);
+
+		public IEnumerable<ShaderVertexAttribute> Attributes { get; } = new[]
+		{
+			new ShaderVertexAttribute("aVertexPos", 0, 3, 0),
+			new ShaderVertexAttribute("aNormal", 1, 3, 3 * sizeof(float)),
+			new ShaderVertexAttribute("aTexCoords", 2, 2, 6 * sizeof(float)),
+			new ShaderVertexAttribute("aBoneId", 3, 4, 8 * sizeof(float), AttributeType.Int32),
+			new ShaderVertexAttribute("aBoneWeights", 4, 4, 12 * sizeof(float)),
+		};
+		public bool Instanced => true;
+
+		public int InstanceStrde => 28 * sizeof(float);
+
+		public IEnumerable<ShaderVertexAttribute> InstanceAttributes { get; } = new[]
+		{
+			new ShaderVertexAttribute("iModelV1", 5, 4, 0),
+			new ShaderVertexAttribute("iModelV2", 6, 4, 4 * sizeof(float)),
+			new ShaderVertexAttribute("iModelV3", 7, 4, 8 * sizeof(float)),
+			new ShaderVertexAttribute("iModelV4", 8, 4, 12 * sizeof(float)),
+			new ShaderVertexAttribute("iTint", 9, 4, 16 * sizeof(float)),
+			new ShaderVertexAttribute("iRemap", 10, 3, 20 * sizeof(float)),
+			new ShaderVertexAttribute("iDrawId", 11, 1, 23 * sizeof(float), AttributeType.Int32),
+			new ShaderVertexAttribute("iMaterial", 12, 4, 24 * sizeof(float), AttributeType.Int32),
+		};
+
+		public MeshShaderBindings()
+		{
+			string name = "common";
+			VertexShaderName = name;
+			FragmentShaderName = name;
+		}
+
+		public void SetCommonParaments(IShader shader, World3DRenderer w3dr, bool sunCamera)
+		{
+			shader.SetBool("RenderDepthBuffer", sunCamera);
+			shader.SetMatrix("rotationFix", w3dr.ModelRenderRotationFix.Values1D);
+			if (sunCamera)
+			{
+				shader.SetMatrix("projection", w3dr.SunProjection.Values1D);
+				shader.SetMatrix("view", w3dr.SunView.Values1D);
+				shader.SetVec("viewPos", w3dr.SunPos.x, w3dr.SunPos.y, w3dr.SunPos.z);
+			}
+			else
+			{
+				shader.SetMatrix("projection", w3dr.Projection.Values1D);
+				shader.SetMatrix("view", w3dr.View.Values1D);
+				shader.SetVec("viewPos", w3dr.CameraPos.x, w3dr.CameraPos.y, w3dr.CameraPos.z);
+			}
+
+			shader.SetVec("dirLight.direction", w3dr.SunDir.x, w3dr.SunDir.y, w3dr.SunDir.z);
+			shader.SetVec("dirLight.ambient", w3dr.AmbientColor.X, w3dr.AmbientColor.Y, w3dr.AmbientColor.Z);
+			shader.SetVec("dirLight.diffuse", w3dr.SunColor.X, w3dr.SunColor.Y, w3dr.SunColor.Z);
+			shader.SetVec("dirLight.specular", w3dr.SunSpecularColor.X, w3dr.SunSpecularColor.Y, w3dr.SunSpecularColor.Z);
+		}
+	}
 }

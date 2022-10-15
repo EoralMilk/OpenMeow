@@ -14,7 +14,6 @@ using System.Collections.Generic;
 using System.Xml.Linq;
 using GlmSharp;
 using OpenRA.Primitives;
-using OpenRA.Primitives.FixPoint;
 using static OpenRA.Graphics.TerrainSpriteLayer;
 
 namespace OpenRA.Graphics
@@ -246,8 +245,6 @@ namespace OpenRA.Graphics
 			switch (type)
 			{
 				case UsageType.Terrain:
-					Shader.SetFloat("WaterUVOffset", (float)(Game.LocalTick % 400) / 400);
-					Shader.SetFloat("GrassUVOffset", (MathF.Sin((float)Game.LocalTick / 6) + 1) / 177);
 
 					foreach (var key in world.MapTextureCache.TerrainTexturesSet)
 					{
@@ -255,7 +252,6 @@ namespace OpenRA.Graphics
 							world.MapTextureCache.Textures[key].Item2.GetTexture());
 					}
 
-					Shader.SetTexture(MapTextureCache.TN_Caustics, world.MapTextureCache.CausticsTextures[Math.Min((Game.LocalTick % 93) / 3, world.MapTextureCache.CausticsTextures.Length - 1)].GetTexture());
 					break;
 				case UsageType.Smudge:
 

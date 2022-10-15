@@ -158,7 +158,7 @@ namespace OpenRA.Mods.Common.Traits
 		{
 			if (firstRender)
 			{
-				heightStep = (info.Intensity / info.AmbientIntensity) * info.HeightStep * Game.Renderer.World3DRenderer.WDistPerMeter / MapGrid.MapHeightStep;
+				heightStep = (info.Intensity / info.AmbientIntensity) * info.HeightStep * World3DCoordinate.WDistPerMeter / MapGrid.MapHeightStep;
 			}
 
 			int i = 0;
@@ -179,7 +179,7 @@ namespace OpenRA.Mods.Common.Traits
 				colorRangeArray[n + 1] = source.Tint.Y * source.Intensity;
 				colorRangeArray[n + 2] = source.Tint.Z * source.Intensity;
 
-				colorRangeArray[n + 3] = (float)source.Range.Length / Game.Renderer.World3DRenderer.WDistPerMeter;
+				colorRangeArray[n + 3] = (float)source.Range.Length / World3DCoordinate.WDistPerMeter;
 
 				i += 3;
 				n += 4;

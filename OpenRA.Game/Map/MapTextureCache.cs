@@ -33,26 +33,11 @@ namespace OpenRA.Graphics
 
 		public readonly ITexture BrushTextureArray;
 
-		public const string TN_GrassNormal	= "Texture4";
-		public const string TN_CliffNormal		= "Texture5";
-		public const string TN_Cliff				= "Texture6";
-		public const string TN_SlopeNormal	= "Texture7";
-		public const string TN_Slope				= "Texture8";
-		public const string TN_WaterNormal	= "Texture9";
-		public const string TN_Caustics			= "Texture10";
-		public const string TN_Scroch			= "Texture4";
-
 		public MapTextureCache(Map map)
 		{
 			Map = map;
-			AddTexture("WaterNormal", "WaterNormal.png", TN_WaterNormal);
-			AddTexture("GrassNormal", "GrassNormal.png", TN_GrassNormal);
-			AddTexture("Cliff", "Cliff.png", TN_Cliff);
-			AddTexture("CliffNormal", "CliffNormal.png", TN_CliffNormal);
-			AddTexture("Slope", "Slope.png", TN_Slope);
-			AddTexture("SlopeNormal", "SlopeNormal.png", TN_SlopeNormal);
-
-			AddTexture("Scroch", "Scroch.png", TN_Scroch, UsageType.Smudge);
+			AddTexture("WaterNormal", "WaterNormal.png", "WaterNormal");
+			AddTexture("GrassNormal", "GrassNormal.png", "GrassNormal");
 
 			CausticsTextures = new Sheet[32];
 

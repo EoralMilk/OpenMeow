@@ -369,4 +369,36 @@ namespace OpenRA.Graphics
 			U = u; V = v;
 		}
 	};
+
+	public struct MeshVertex
+	{
+		public readonly float X, Y, Z;
+		public readonly float NX, NY, NZ;
+		public readonly float U, V;
+		public readonly int BoneId1, BoneId2, BoneId3, BoneId4;
+		public readonly float BoneWeight1, BoneWeight2, BoneWeight3, BoneWeight4;
+
+		public MeshVertex(float x, float y, float z, float nx, float ny, float nz, float u, float v,
+			int id1, int id2, int id3, int id4,
+			float bw1, float bw2, float bw3, float bw4)
+		{
+			X = x;
+			Y = y;
+			Z = z;
+			NX = nx;
+			NY = ny;
+			NZ = nz;
+			U = u;
+			V = v;
+			BoneId1 = id1;
+			BoneId2 = id2;
+			BoneId3 = id3;
+			BoneId4 = id4;
+			BoneWeight1 = bw1;
+			BoneWeight2 = bw2;
+			BoneWeight3 = bw3;
+			BoneWeight4 = bw4;
+		}
+	};
+
 }

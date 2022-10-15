@@ -191,7 +191,7 @@ namespace OpenRA.Graphics
 		{
 			offsetScale = FP.FromFloat(scale);
 			scaleMat = TSMatrix4x4.Scale(offsetScale);
-			offsetVec = Game.Renderer.World3DRenderer.Get3DPositionFromWPos(wPos);
+			offsetVec = World3DCoordinate.WPosToTSVec3(wPos);
 			translateMat = TSMatrix4x4.Translate(offsetVec);
 			offsetRot = wRot.ToQuat();
 			rotMat = TSMatrix4x4.Rotate(offsetRot);
@@ -202,7 +202,7 @@ namespace OpenRA.Graphics
 		{
 			offsetScale = FP.FromFloat(scale);
 			scaleMat = TSMatrix4x4.Scale(offsetScale);
-			offsetVec = Game.Renderer.World3DRenderer.Get3DPositionFromWPos(wPos);
+			offsetVec = World3DCoordinate.WPosToTSVec3(wPos);
 			translateMat = TSMatrix4x4.Translate(offsetVec);
 			offsetRot = wRot.ToQuatNoConvert();
 			rotMat = TSMatrix4x4.Rotate(offsetRot);
@@ -235,17 +235,17 @@ namespace OpenRA.Graphics
 		/// <summary>
 		/// don't directly use this if you dom't know about how the skeleton update
 		/// </summary>
-		public WPos BoneWPos(int id, in World3DRenderer w3dr)
+		public WPos BoneWPos(int id)
 		{
-			return w3dr.GetWPosFromMatrix(Bones[id].CurrentPose);
+			return World3DCoordinate.GetWPosFromMatrix(Bones[id].CurrentPose);
 		}
 
 		/// <summary>
 		/// don't directly use this if you dom't know about how the skeleton update
 		/// </summary>
-		public WRot BoneWRot(int id, in World3DRenderer w3dr)
+		public WRot BoneWRot(int id)
 		{
-			return w3dr.GetWRotFromMatrix(Bones[id].CurrentPose);
+			return World3DCoordinate.GetWRotFromMatrix(Bones[id].CurrentPose);
 		}
 
 		public SkeletonInstance(in BoneAsset[] boneAssets, in SkeletonAsset asset, in OrderedSkeleton skeleton)

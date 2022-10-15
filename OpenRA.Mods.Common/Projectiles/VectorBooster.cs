@@ -19,7 +19,6 @@ using OpenRA.Mods.Common.Effects;
 using OpenRA.Mods.Common.Graphics;
 using OpenRA.Mods.Common.Traits;
 using OpenRA.Primitives;
-using OpenRA.Primitives.FixPoint;
 using OpenRA.Support;
 using OpenRA.Traits;
 using TagLib.Matroska;
@@ -268,7 +267,7 @@ namespace OpenRA.Mods.Common.Projectiles
 		DebugLineRenderable DebugDrawLine(WPos pos, TSQuaternion q, Color color)
 		{
 			var start = World3DCoordinate.Float3toVec3(Game.Renderer.WorldRgbaColorRenderer.Render3DPosition(pos));
-			var end = World3DCoordinate.TSVec3ToRVec3(q * (front * 5)) + start;
+			var end = World3DCoordinate.TSVec3ToVec3(q * (front * 5)) + start;
 
 			return new DebugLineRenderable(pos, 0,
 				World3DCoordinate.Vec3toFloat3(start),

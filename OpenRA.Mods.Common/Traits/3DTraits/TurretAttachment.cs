@@ -168,7 +168,6 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 
 	class TurretIK : IBonePoseModifier
 	{
-		readonly World3DRenderer w3dr;
 		public WPos NextTargetPos;
 		WPos targetPos;
 		public AimState NextState = AimState.Realign;
@@ -222,7 +221,6 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 
 		public TurretIK(Func<TSMatrix4x4> getBoneTrans, in World3DRenderer w3dr, in FP speed, in FP initAngle, in FP rotationMin, in FP rotationMax, bool angleLimitation)
 		{
-			this.w3dr = w3dr;
 			this.RotateSpeed = speed;
 			this.rotationMin = rotationMin;
 			this.rotationMax = rotationMax;
@@ -253,7 +251,7 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 				}
 
 				ikState = InverseKinematicState.Resolving;
-				end = w3dr.Get3DPositionFromWPos(targetPos);
+				end = World3DCoordinate.WPosToTSVec3(targetPos);
 
 				offsetedTurBaseRot = Transformation.MatRotation(getBoneTrans());
 				start = Transformation.MatPosition(getBoneTrans());
@@ -351,7 +349,6 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 
 	class BarrelIk : IBonePoseModifier
 	{
-		readonly World3DRenderer w3dr;
 		public WPos NextTargetPos;
 		WPos targetPos;
 		public AimState NextState = AimState.Realign;
@@ -403,7 +400,6 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 
 		public BarrelIk(Func<TSMatrix4x4> getBoneTrans, in World3DRenderer w3dr, in FP speed, in FP initAngle, in FP depression, in FP elevation, bool angleLimitation)
 		{
-			this.w3dr = w3dr;
 			this.RotateSpeed = speed;
 			this.depression = depression;
 			this.elevation = elevation;
@@ -429,7 +425,7 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 				}
 
 				ikState = InverseKinematicState.Resolving;
-				end = w3dr.Get3DPositionFromWPos(targetPos);
+				end = World3DCoordinate.WPosToTSVec3(targetPos);
 
 				offsetedBarrelBaseRot = Transformation.MatRotation(getBoneTrans());
 				start = Transformation.MatPosition(getBoneTrans());

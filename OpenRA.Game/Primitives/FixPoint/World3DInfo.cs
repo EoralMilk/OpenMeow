@@ -1,7 +1,8 @@
 ﻿using GlmSharp;
+using OpenRA.Graphics;
 using TrueSync;
 
-namespace OpenRA.Primitives.FixPoint
+namespace OpenRA.Primitives
 {
 	public class World3DCoordinate
 	{
@@ -37,7 +38,7 @@ namespace OpenRA.Primitives.FixPoint
 										(int)(vec.z * WDistPerMeter));
 		}
 
-		public static vec3 TSVec3ToRVec3(TSVector vec)
+		public static vec3 TSVec3ToVec3(TSVector vec)
 		{
 			return new vec3(vec.x.AsFloat(), vec.y.AsFloat(), vec.z.AsFloat());
 		}
@@ -72,13 +73,35 @@ namespace OpenRA.Primitives.FixPoint
 		}
 
 		/// <summary>
-		/// only use for render
+		/// warning: only use for render
 		/// </summary>
-		public static WPos Float3ToWPos(in float3 f3)
+		public static WPos Float3ToWPosForRender(in float3 f3)
 		{
 			return new WPos(-(int)(f3.X * WDistPerMeter),
 										(int)(f3.Y * WDistPerMeter),
 										(int)(f3.Z * WDistPerMeter));
+		}
+
+		public static WPos GetWPosFromMatrix(in TSMatrix4x4 matrix)
+		{
+			return new WPos(-(int)(matrix.M14 * WDistPerMeter),
+										(int)(matrix.M24 * WDistPerMeter),
+										(int)(matrix.M34 * WDistPerMeter));
+		}
+
+		public static WRot GetWRotFromMatrix(in TSMatrix4x4 matrix)
+		{
+			var q = Transformation.MatRotation(in matrix);
+			var v = q.eulerAngles;
+			return new WRot(
+				new WAngle(0 + (int)(v.y * 512 / 180)),
+				new WAngle(256 + (int)(v.x * 512 / 180)),
+				new WAngle(0 + (int)(v.z * 512 / 180)));
+		}
+
+		public static TSQuaternion Get3DRotationFromWRot(in WRot rot)
+		{
+			return rot.ToQuat();
 		}
 
 		public static mat4 TSMatrix4x4ToMat4(TSMatrix4x4 tSMatrix4X4)

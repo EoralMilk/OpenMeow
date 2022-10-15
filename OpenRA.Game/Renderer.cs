@@ -363,7 +363,7 @@ namespace OpenRA
 			// vxl
 			foreach (var orderedMesh in orderedMeshes)
 			{
-				orderedMesh.Value.DrawInstances(sunCamera);
+				orderedMesh.Value.DrawInstances(wr.World, sunCamera);
 			}
 
 			// update common shader shadow sample type
@@ -376,7 +376,7 @@ namespace OpenRA
 			}
 
 			// mesh
-			wr.World.MeshCache.DrawInstances(sunCamera);
+			wr.World.MeshCache.DrawInstances(wr.World, sunCamera);
 		}
 
 		public void RenderInstance(int start, int numVertices, int numInstance, bool elemented = false)

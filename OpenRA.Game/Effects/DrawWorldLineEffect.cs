@@ -14,7 +14,6 @@ using System.Collections.Generic;
 using OpenRA.Graphics;
 using OpenRA.Mods.Common.Graphics;
 using OpenRA.Primitives;
-using OpenRA.Primitives.FixPoint;
 
 namespace OpenRA.Effects
 {
@@ -46,7 +45,7 @@ namespace OpenRA.Effects
 			this.duration = duration;
 			this.width = width;
 			this.delay = delay;
-			pos = World3DCoordinate.Float3ToWPos(start);
+			pos = World3DCoordinate.Float3ToWPosForRender(start);
 		}
 
 		public DrawWorldLineEffect(World world, WPos pos, float3 start, float3 end, WDist width, Color color, int duration, int delay = 0)

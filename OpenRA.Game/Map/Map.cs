@@ -24,7 +24,6 @@ using OpenRA.FileFormats;
 using OpenRA.FileSystem;
 using OpenRA.Graphics;
 using OpenRA.Primitives;
-using OpenRA.Primitives.FixPoint;
 using OpenRA.Support;
 using OpenRA.Traits;
 using TrueSync;

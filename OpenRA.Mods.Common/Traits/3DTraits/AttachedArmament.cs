@@ -20,7 +20,6 @@ using OpenRA.Mods.Common.Projectiles;
 using OpenRA.Mods.Common.Traits.Render;
 using OpenRA.Mods.Common.Traits.Trait3D;
 using OpenRA.Primitives;
-using OpenRA.Primitives.FixPoint;
 using OpenRA.Traits;
 using TrueSync;
 
@@ -133,7 +132,7 @@ namespace OpenRA.Mods.Common.Traits
 		DebugLineRenderable DebugDrawLine(TSMatrix4x4 m, Color color, bool mat)
 		{
 			var startpos = Transformation.MatPosition(m);
-			var start = World3DCoordinate.TSVec3ToRVec3(startpos);
+			var start = World3DCoordinate.TSVec3ToVec3(startpos);
 			var end = new vec3();
 			if (mat)
 			{

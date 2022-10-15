@@ -24,6 +24,15 @@ namespace OpenRA.Graphics
 		readonly IReadOnlyFileSystem fileSystem;
 		readonly Dictionary<string, IMaterial> materials = new Dictionary<string, IMaterial>();
 		readonly Dictionary<string, Sheet> textures = new Dictionary<string, Sheet>();
+		public readonly Dictionary<Sheet, int> TexturesIndexBySheet = new Dictionary<Sheet, int>();
+		public readonly Dictionary<string, int> TexturesIndexByString = new Dictionary<string, int>();
+
+		public ITexture TextureArray64 { get; private set; }
+		public ITexture TextureArray128 { get; private set; }
+		public ITexture TextureArray256 { get; private set; }
+		public ITexture TextureArray512 { get; private set; }
+		public ITexture TextureArray1024 { get; private set; }
+
 
 		readonly Dictionary<string, MeshVertexData> meshDatas = new Dictionary<string, MeshVertexData>();
 		readonly Dictionary<string, IOrderedMesh> meshes = new Dictionary<string, IOrderedMesh>();
@@ -37,9 +46,116 @@ namespace OpenRA.Graphics
 
 		public void RefreshAllTextures()
 		{
+			TexturesIndexBySheet.Clear();
+			TexturesIndexByString.Clear();
+			TextureArray64?.Dispose();
+			TextureArray128?.Dispose();
+			TextureArray256?.Dispose();
+			TextureArray512?.Dispose();
+			TextureArray1024?.Dispose();
+
+			List<(string, Sheet)> tex64 = new List<(string, Sheet)>();
+			List<(string, Sheet)> tex128 = new List<(string, Sheet)>();
+			List<(string, Sheet)> tex256 = new List<(string, Sheet)>();
+			List<(string, Sheet)> tex512 = new List<(string, Sheet)>();
+			List<(string, Sheet)> tex1024 = new List<(string, Sheet)>();
+
 			foreach (var kv in textures)
 			{
-				kv.Value?.RefreshTexture();
+				switch (kv.Value.Size.Width)
+				{
+					case 64:
+						tex64.Add((kv.Key, kv.Value));
+						break;
+					case 128:
+						tex128.Add((kv.Key, kv.Value));
+						break;
+					case 256:
+						tex256.Add((kv.Key, kv.Value));
+						break;
+					case 512:
+						tex512.Add((kv.Key, kv.Value));
+						break;
+					case 1024:
+						tex1024.Add((kv.Key, kv.Value));
+						break;
+					default: throw new Exception("Invalid Texture size : " + kv.Key + " in " + kv.Value.Size + " , the texture size can be: 64x64, 128x128, 256x256, 512x512, 1024x1024");
+				}
+			}
+
+			if (tex64.Count > 0)
+			{
+				TextureArray64 = Game.Renderer.Context.CreateTextureArray(tex64.Count);
+				int i = 0;
+
+				foreach (var kv in tex64)
+				{
+					TextureArray64.SetData(kv.Item2.GetData(), kv.Item2.Size.Width, kv.Item2.Size.Height);
+					TexturesIndexBySheet.Add(kv.Item2, i);
+					TexturesIndexByString.Add(kv.Item1, i);
+					i++;
+				}
+			}
+
+			if (tex128.Count > 0)
+			{
+				TextureArray128 = Game.Renderer.Context.CreateTextureArray(tex128.Count);
+				int i = 0;
+
+				foreach (var kv in tex128)
+				{
+					TextureArray128.SetData(kv.Item2.GetData(), kv.Item2.Size.Width, kv.Item2.Size.Height);
+					TexturesIndexBySheet.Add(kv.Item2, i);
+					TexturesIndexByString.Add(kv.Item1, i);
+					i++;
+				}
+			}
+
+			if (tex256.Count > 0)
+			{
+				TextureArray256 = Game.Renderer.Context.CreateTextureArray(tex256.Count);
+				int i = 0;
+
+				foreach (var kv in tex256)
+				{
+					TextureArray256.SetData(kv.Item2.GetData(), kv.Item2.Size.Width, kv.Item2.Size.Height);
+					TexturesIndexBySheet.Add(kv.Item2, i);
+					TexturesIndexByString.Add(kv.Item1, i);
+					i++;
+				}
+			}
+
+			if (tex512.Count > 0)
+			{
+				TextureArray512 = Game.Renderer.Context.CreateTextureArray(tex512.Count);
+				int i = 0;
+
+				foreach (var kv in tex512)
+				{
+					TextureArray512.SetData(kv.Item2.GetData(), kv.Item2.Size.Width, kv.Item2.Size.Height);
+					TexturesIndexBySheet.Add(kv.Item2, i);
+					TexturesIndexByString.Add(kv.Item1, i);
+					i++;
+				}
+			}
+
+			if (tex1024.Count > 0)
+			{
+				TextureArray1024 = Game.Renderer.Context.CreateTextureArray(tex1024.Count);
+				int i = 0;
+
+				foreach (var kv in tex1024)
+				{
+					TextureArray1024.SetData(kv.Item2.GetData(), kv.Item2.Size.Width, kv.Item2.Size.Height);
+					TexturesIndexBySheet.Add(kv.Item2, i);
+					TexturesIndexByString.Add(kv.Item1, i);
+					i++;
+				}
+			}
+
+			foreach (var matkv in materials)
+			{
+				matkv.Value.UpdateTextureIndex(this);
 			}
 		}
 
@@ -49,6 +165,15 @@ namespace OpenRA.Graphics
 			{
 				kv.Value?.Dispose();
 			}
+
+			textures.Clear();
+			TexturesIndexBySheet?.Clear();
+			TexturesIndexByString?.Clear();
+			TextureArray64?.Dispose();
+			TextureArray128?.Dispose();
+			TextureArray256?.Dispose();
+			TextureArray512?.Dispose();
+			TextureArray1024?.Dispose();
 		}
 
 		public void CacheMesh(string unit, string sequence, MiniYaml definition, SkeletonAsset skeletonType, OrderedSkeleton skeleton)
@@ -187,11 +312,11 @@ namespace OpenRA.Graphics
 			}
 		}
 
-		public void DrawInstances(bool shadowBuffer = false)
+		public void DrawInstances(World world, bool shadowBuffer = false)
 		{
 			foreach (var orderedMesh in meshes)
 			{
-				orderedMesh.Value.DrawInstances(shadowBuffer);
+				orderedMesh.Value.DrawInstances(world, shadowBuffer);
 			}
 		}
 

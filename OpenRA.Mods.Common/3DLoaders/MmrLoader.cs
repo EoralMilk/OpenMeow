@@ -63,36 +63,6 @@ namespace OpenRA.Mods.Common.Graphics
 				throw new Exception("Mesh " + fields[0].Trim() + " has no Material");
 			}
 
-			IMaterial bodyMaterial;
-			bool isCloth = false;
-			if (info.ContainsKey("BodyMaterial"))
-			{
-				isCloth = true;
-
-				// body material
-				var materialName = info["BodyMaterial"].Value.Trim();
-				if (!cache.HasMaterial(materialName))
-				{
-					var matReader = new MaterialReader(fileSystem, cache, materialName);
-
-					bodyMaterial = matReader.CreateMaterial();
-					cache.AddOrGetMaterial(materialName, bodyMaterial);
-				}
-				else
-				{
-					bodyMaterial = cache.GetMaterial(materialName);
-					if (bodyMaterial == null)
-					{
-						throw new Exception("Can not Get Body Material from MeshCache");
-					}
-				}
-			}
-			else
-			{
-				isCloth = false;
-				bodyMaterial = null;
-			}
-
 			// key should be name + skeletonType because the skin info can be modified by skeletonType
 			var dictKey = name + (skeletonType != null ? skeletonType.Name : "");
 
@@ -117,11 +87,9 @@ namespace OpenRA.Mods.Common.Graphics
 			}
 
 			var useDQB = ReadYamlInfo.LoadField(info, "UseDQBSkin", false);
+			var cullFunc = ReadYamlInfo.LoadField(info, "FaceCullFunc", FaceCullFunc.Back);
 
-			if (isCloth)
-				mesh = new OrderedMesh(name, meshVertex, material, bodyMaterial, useDQB, skeleton: skeleton);
-			else
-				mesh = new OrderedMesh(name, meshVertex, material, useDQB, skeleton);
+			mesh = new OrderedMesh(name, meshVertex, material, cullFunc, useDQB, skeleton);
 
 			return true;
 		}
@@ -140,7 +108,7 @@ namespace OpenRA.Mods.Common.Graphics
 			public Dictionary<int, float> vgs;
 		}
 
-		readonly MesVertex[] vertices;
+		readonly MeshVertex[] vertices;
 		readonly uint[] indices;
 		readonly TSVector min, max;
 		public MmrReader(Stream s, SkeletonAsset skeleton)
@@ -200,13 +168,15 @@ namespace OpenRA.Mods.Common.Graphics
 
 			// faces
 			List<uint> drawIndicesList = new List<uint>();
+
 			// pos, uv, nml, drawmask
-			Dictionary<(int, int, int, uint), uint> vertIdxs = new Dictionary<(int, int, int, uint), uint>();
+			Dictionary<(int, int, int), uint> vertIdxs = new Dictionary<(int, int, int), uint>();
+
 			int faceCount = s.ReadInt32();
 			for (int i = 0; i < faceCount; i++)
 			{
 				int vcount = s.ReadInt32();
-				uint drawType = s.ReadUInt32();
+				// uint drawType = s.ReadUInt32();
 				uint[] vIdxArray = new uint[vcount];
 
 				for (int vi = 0; vi < vcount; vi++)
@@ -214,14 +184,14 @@ namespace OpenRA.Mods.Common.Graphics
 					int posIdx = s.ReadInt32();
 					int uvIdx = s.ReadInt32();
 					int nmIdx = s.ReadInt32();
-					if (vertIdxs.ContainsKey((posIdx, uvIdx, nmIdx, drawType)))
+					if (vertIdxs.ContainsKey((posIdx, uvIdx, nmIdx)))
 					{
-						vIdxArray[vi] = vertIdxs[(posIdx, uvIdx, nmIdx, drawType)];
+						vIdxArray[vi] = vertIdxs[(posIdx, uvIdx, nmIdx)];
 					}
 					else
 					{
 						vIdxArray[vi] = (uint)(vertIdxs.Count);
-						vertIdxs.Add((posIdx, uvIdx, nmIdx, drawType), vIdxArray[vi]);
+						vertIdxs.Add((posIdx, uvIdx, nmIdx), vIdxArray[vi]);
 					}
 				}
 
@@ -235,13 +205,12 @@ namespace OpenRA.Mods.Common.Graphics
 
 			indices = drawIndicesList.ToArray();
 
-			vertices = new MesVertex[vertIdxs.Count];
+			vertices = new MeshVertex[vertIdxs.Count];
 			foreach (var kv in vertIdxs)
 			{
 				float X, Y, Z;
 				float U, V;
 				float NX, NY, NZ;
-				uint RenderMask;
 				int BoneId1, BoneId2, BoneId3, BoneId4;
 				float BoneWeight1, BoneWeight2, BoneWeight3, BoneWeight4;
 
@@ -260,7 +229,6 @@ namespace OpenRA.Mods.Common.Graphics
 
 				U = uv.X; V = uv.Y;
 				NX = nml.X; NY = nml.Y; NZ = nml.Z;
-				RenderMask = kv.Key.Item4;
 
 				// try to limit the bone weights with in 4
 				(int, float)[] boneWeights;
@@ -318,7 +286,7 @@ namespace OpenRA.Mods.Common.Graphics
 				BoneId1 = boneWeights[0].Item1; BoneId2 = boneWeights[1].Item1; BoneId3 = boneWeights[2].Item1; BoneId4 = boneWeights[3].Item1;
 				BoneWeight1 = boneWeights[0].Item2; BoneWeight2 = boneWeights[1].Item2; BoneWeight3 = boneWeights[2].Item2; BoneWeight4 = boneWeights[3].Item2;
 
-				vertices[kv.Value] = new MesVertex(X, Y, Z, NX, NY, NZ, U, V, RenderMask,
+				vertices[kv.Value] = new MeshVertex(X, Y, Z, NX, NY, NZ, U, V,
 					BoneId1, BoneId2, BoneId3, BoneId4,
 					BoneWeight1, BoneWeight2, BoneWeight3, BoneWeight4);
 			}
@@ -334,7 +302,7 @@ namespace OpenRA.Mods.Common.Graphics
 
 		public MeshVertexData CreateMeshData()
 		{
-			IVertexBuffer<MesVertex> vertexBuffer = Game.Renderer.CreateVertexBuffer<MesVertex>(vertices.Length);
+			IVertexBuffer<MeshVertex> vertexBuffer = Game.Renderer.CreateVertexBuffer<MeshVertex>(vertices.Length);
 			vertexBuffer.SetData(vertices, vertices.Length);
 			vertexBuffer.SetElementData(indices, indices.Length);
 			IShader shader = Game.Renderer.GetOrCreateShader<MeshShaderBindings>("MeshShaderBindings");

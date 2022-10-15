@@ -14,7 +14,6 @@ using System.Collections;
 using System.Collections.Generic;
 using GlmSharp;
 using OpenRA.Primitives;
-using OpenRA.Primitives.FixPoint;
 
 namespace OpenRA.Graphics
 {

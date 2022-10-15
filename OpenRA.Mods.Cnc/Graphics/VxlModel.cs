@@ -130,6 +130,7 @@ namespace OpenRA.Mods.Cnc.Graphics
 
 		readonly string name;
 		public string Name => name;
+		public IMaterial DefaultMaterial => null;
 
 		public OrderedSkeleton Skeleton { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
@@ -181,7 +182,7 @@ namespace OpenRA.Mods.Cnc.Graphics
 			palette = pal;
 		}
 
-		public void DrawInstances(bool shadowBuffser = false)
+		public void DrawInstances(World world, bool shadowBuffser = false)
 		{
 			if (instanceCount == 0)
 				return;

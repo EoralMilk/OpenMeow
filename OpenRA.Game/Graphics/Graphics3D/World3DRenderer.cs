@@ -17,8 +17,6 @@ namespace OpenRA.Graphics
 		public vec3 InverseCameraFront { get; private set; }
 		public vec3 InverseCameraFrontMeterPerWDist { get; private set; }
 
-		public readonly int WDistPerMeter = 256;
-		readonly float height = 256 * 200;
 		public readonly float TanCameraPitch;
 		public readonly float CosCameraPitch;
 		public readonly float SinCameraPitch;
@@ -56,9 +54,9 @@ namespace OpenRA.Graphics
 
 		public World3DRenderer(Renderer renderer, MapGrid mapGrid)
 		{
-			PixPerMeter = (float)(mapGrid.TileSize.Width / 1.4142135d) / (1024 / WDistPerMeter);
-			MeterPerPix = (float)((1024 / WDistPerMeter) / (mapGrid.TileSize.Width / 1.4142135d));
-			WDistPerPix = (int)(MeterPerPix * WDistPerMeter);
+			PixPerMeter = (float)(mapGrid.TileSize.Width / 1.4142135d) / (1024 / World3DCoordinate.WDistPerMeter);
+			MeterPerPix = (float)((1024 / World3DCoordinate.WDistPerMeter) / (mapGrid.TileSize.Width / 1.4142135d));
+			WDistPerPix = (int)(MeterPerPix * World3DCoordinate.WDistPerMeter);
 			MeterPerPixHalf = MeterPerPix / 2.0f;
 
 			TanCameraPitch = (float)Math.Tan(glm.Radians(CameraPitch));
@@ -67,9 +65,9 @@ namespace OpenRA.Graphics
 			CameraUp = glm.Normalized(new vec3(0, -1, TanCameraPitch));
 			CameraRight = new vec3(1, 0, 0);
 			InverseCameraFront = glm.Normalized(new vec3(0, 1, 1 / TanCameraPitch));
-			InverseCameraFrontMeterPerWDist = InverseCameraFront / WDistPerMeter;
+			InverseCameraFrontMeterPerWDist = InverseCameraFront / World3DCoordinate.WDistPerMeter;
 
-			MaxTerrainHeight = mapGrid.MaximumTerrainHeight * MapGrid.MapHeightStep * 2f / WDistPerMeter;
+			MaxTerrainHeight = mapGrid.MaximumTerrainHeight * MapGrid.MapHeightStep * 2f / World3DCoordinate.WDistPerMeter;
 
 			UpdateSunPos(SunPosOne, vec3.Zero);
 			var chordPow = (SunPosOne.x * SunPosOne.x + SunPosOne.y * SunPosOne.y) + (SunPosOne.z * SunPosOne.z);
@@ -101,7 +99,6 @@ namespace OpenRA.Graphics
 			var far = radius * SunSin + SunPos.z / SunCos;
 			SunProjection = mat4.Ortho(-halfView, halfView, -halfView, halfView, far / 8, far);
 		}
-
 
 		public static float CameraRotTest = 0;
 		public void PrepareToRender(WorldRenderer wr)
@@ -137,14 +134,14 @@ namespace OpenRA.Graphics
 					InverseCameraFront = (CameraPos - viewPoint).Normalized;
 					CameraRight = vec3.Cross(WorldUp, InverseCameraFront).Normalized;
 					CameraUp = vec3.Cross(InverseCameraFront, CameraRight).Normalized;
-					InverseCameraFrontMeterPerWDist = InverseCameraFront / WDistPerMeter;
+					InverseCameraFrontMeterPerWDist = InverseCameraFront / World3DCoordinate.WDistPerMeter;
 				}
 				else
 				{
 					CameraUp = glm.Normalized(new vec3(0, -1, TanCameraPitch));
 					CameraRight = new vec3(1, 0, 0);
 					InverseCameraFront = glm.Normalized(new vec3(0, 1, 1 / TanCameraPitch));
-					InverseCameraFrontMeterPerWDist = InverseCameraFront / WDistPerMeter;
+					InverseCameraFrontMeterPerWDist = InverseCameraFront / World3DCoordinate.WDistPerMeter;
 				}
 
 				View = mat4.LookAt(CameraPos, viewPoint, CameraUp);
@@ -170,90 +167,28 @@ namespace OpenRA.Graphics
 					Console.WriteLine("~~~~~~~~~~~~~~~~~~~~~~~~~");
 				}
 			}
-
-			// render test box
-			//{
-			//	// draw parent test box
-			//	var parentMat = DrawOneTestBox(TestPos, TestRot, 2);
-
-			//	// draw child test box
-			//	DrawOneTestBox(parentMat, new vec3(0, -4, 0), new vec3(0, 0, 0));
-			//}
-
-			return;
-		}
-
-		public TSVector Get3DPositionFromWPos(WPos pos)
-		{
-			return new TSVector(-FP.FromFloat((float)pos.X / WDistPerMeter),
-												FP.FromFloat((float)pos.Y / WDistPerMeter),
-												FP.FromFloat((float)pos.Z / WDistPerMeter));
-		}
-
-		public TSVector Get3DPositionFromWVec(WVec vec)
-		{
-			return new TSVector(-FP.FromFloat((float)vec.X / WDistPerMeter),
-												FP.FromFloat((float)vec.Y / WDistPerMeter),
-												FP.FromFloat((float)vec.Z / WDistPerMeter));
 		}
 
 		public vec3 Get3DRenderPositionFromWPos(WPos pos)
 		{
-			return new vec3(-(float)pos.X / WDistPerMeter,
-										(float)pos.Y / WDistPerMeter,
-										(float)pos.Z / WDistPerMeter);
+			return new vec3(-(float)pos.X / World3DCoordinate.WDistPerMeter,
+										(float)pos.Y / World3DCoordinate.WDistPerMeter,
+										(float)pos.Z / World3DCoordinate.WDistPerMeter);
 		}
 
 		public vec3 Get3DRenderVecFromWVec(WVec vec)
 		{
-			return new vec3(-(float)vec.X / WDistPerMeter,
-										(float)vec.Y / WDistPerMeter,
-										(float)vec.Z / WDistPerMeter);
-		}
-
-		public WPos GetWPosFromTSVector(in TSVector vec)
-		{
-			return new WPos(-(int)(vec.x * WDistPerMeter),
-										(int)(vec.y * WDistPerMeter),
-										(int)(vec.z * WDistPerMeter));
-		}
-
-		public WPos GetWPosFromMatrix(in TSMatrix4x4 matrix)
-		{
-			return new WPos(-(int)(matrix.M14 * WDistPerMeter),
-										(int)(matrix.M24 * WDistPerMeter),
-										(int)(matrix.M34 * WDistPerMeter));
-		}
-
-		public int rollAdd = 0;
-		public int pitchAdd = 256;
-		public int yawAdd = 0;
-
-		// x yaw;
-		public WRot GetWRotFromMatrix(in TSMatrix4x4 matrix)
-		{
-			var q = Transformation.MatRotation(in matrix);
-			var v = q.eulerAngles;
-			return new WRot(
-				new WAngle(rollAdd + (int)(v.y * 512 / 180)),
-				new WAngle(pitchAdd + (int)(v.x * 512 / 180)),
-				new WAngle(yawAdd + (int)(v.z * 512 / 180)));
-		}
-
-		public TSQuaternion Get3DRotationFromWRot(in WRot rot)
-		{
-			return rot.ToQuat();
+			return new vec3(-(float)vec.X / World3DCoordinate.WDistPerMeter,
+										(float)vec.Y / World3DCoordinate.WDistPerMeter,
+										(float)vec.Z / World3DCoordinate.WDistPerMeter);
 		}
 
 		public quat Get3DRenderRotationFromWRot(in WRot rot)
 		{
-			//return -(new vec3(rot.Pitch.Angle / 512.0f * (float)Math.PI,
-			//							-rot.Roll.Angle / 512.0f * (float)Math.PI,
-			//							rot.Yaw.Angle / 512.0f * (float)Math.PI));
 			return rot.ToRenderQuat();
 		}
 
-		public void AddInstancesToDraw(float zOffset, IEnumerable<MeshInstance> meshes, float scale,
+		public void AddMeshInstancesToDraw(float zOffset, IEnumerable<MeshInstance> meshes, float scale,
 			in float3 tint, in float alpha, in Color remap)
 		{
 			var scaleMat = mat4.Scale(scale);
@@ -270,9 +205,11 @@ namespace OpenRA.Graphics
 																tint.X, tint.Y, tint.Z, alpha,
 																remap.R, remap.G, remap.B,
 					};
-					int[] dataint = new int[2] { m.DrawId, m.DrawMask };
 
-					m.OrderedMesh.AddInstanceData(data, 23, dataint, 2);
+					var mat = m.Material.GetParams();
+					int[] dataint = new int[5] { m.DrawId, mat[0], mat[1], mat[2], mat[3] };
+
+					m.OrderedMesh.AddInstanceData(data, 23, dataint, dataint.Length);
 				}
 				else
 				{
@@ -292,9 +229,11 @@ namespace OpenRA.Graphics
 															tint.X, tint.Y, tint.Z, alpha,
 															remap.R, remap.G, remap.B,
 					};
-					int[] dataint = new int[2] { m.DrawId, m.DrawMask };
 
-					m.OrderedMesh.AddInstanceData(data, 23, dataint, 2);
+					var mat = m.Material.GetParams();
+					int[] dataint = new int[5] { m.DrawId, mat[0], mat[1], mat[2], mat[3] };
+
+					m.OrderedMesh.AddInstanceData(data, 23, dataint, dataint.Length);
 				}
 			}
 		}

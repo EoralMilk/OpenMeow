@@ -23,84 +23,119 @@ rumya:
 			backwardLeftAnim: Rifle_BackLeft
 
 	Meshes:
-		body: body-combine
+		body-head: body-msx_DT_0
 			Material: body
 			UseDQBSkin: true
-		hair: lp-hair_s2 #lp-hair_dpt1
-			Material: h-s2 #h-dpt1
-		cater: lp-CatEar
-			Material: catear
-		skirt-split: SportShorts
-			Material: sportshorts
-			BodyMaterial: body
+		body-torso: body-msx_DT_1
+			Material: body
 			UseDQBSkin: true
-		# skirt-split: SplitSkirt
-		# 	Material: skirt2
+		body-hip: body-msx_DT_2
+			Material: body
+			UseDQBSkin: true
+		body-thigh: body-msx_DT_3
+			Material: body
+			UseDQBSkin: true
+		body-leg: body-msx_DT_4
+			Material: body
+			UseDQBSkin: true
+		body-foot: body-msx_DT_5
+			Material: body
+			UseDQBSkin: true
+		body-upperarm: body-msx_DT_6
+			Material: body
+			UseDQBSkin: true
+		body-lowerarm: body-msx_DT_7
+			Material: body
+			UseDQBSkin: true
+		body-hand: body-msx_DT_8
+			Material: body
+			UseDQBSkin: true
+		# hair: lp-hair_s2 #lp-hair_dpt1
+		# 	Material: h-s2 #h-dpt1
+		hair: mdx-hair
+			Material: mdx_hair
+		cater: mdx-ear
+			Material: mdx_hair
+		gear01: gear01
+			Material: gear01
+			UseDQBSkin: true
+		gear01_body-hip: gear01_body-part_DT_2
+			Material: body
+			UseDQBSkin: true
+		gear01_body-thigh: gear01_body-part_DT_3
+			Material: body
+			UseDQBSkin: true
+		# skirt-split: SportShorts
+		# 	Material: sportshorts
 		# 	BodyMaterial: body
 		# 	UseDQBSkin: true
-		sweater: RedCollarSweater
-			Material: sweater
-			BodyMaterial: body
-			UseDQBSkin: true
-		arrow: Arrow
-			Material: white
+		# # skirt-split: SplitSkirt
+		# # 	Material: skirt2
+		# # 	BodyMaterial: body
+		# # 	UseDQBSkin: true
+		# sweater: RedCollarSweater
+		# 	Material: sweater
+		# 	BodyMaterial: body
+		# 	UseDQBSkin: true
+		# arrow: Arrow
+		# 	Material: white
 
 
-rumya-2:
-	Inherits@defaults: rumya
-	Skeleton: Skeleton_CommonBody
-		# Bones:
-		Anims:
-			stand: catidle_Skeleton_CommonBody
-			walk: catcrawl_Skeleton_CommonBody
-			guard: catidle_Skeleton_CommonBody
+# rumya-2:
+# 	Inherits@defaults: rumya
+# 	Skeleton: Skeleton_CommonBody
+# 		# Bones:
+# 		Anims:
+# 			stand: catidle_Skeleton_CommonBody
+# 			walk: catcrawl_Skeleton_CommonBody
+# 			guard: catidle_Skeleton_CommonBody
 
-			forwardAnim: catcrawl_Skeleton_CommonBody
-			forwardRightAnim: catcrawl_Skeleton_CommonBody
-			forwardLeftAnim: catcrawl_Skeleton_CommonBody
-			strafeRightAnim: catcrawl_Skeleton_CommonBody
-			standAnim: catidle_Skeleton_CommonBody
-			strafeLeftAnim: catcrawl_Skeleton_CommonBody
-			backwardAnim: catcrawl_Skeleton_CommonBody
-			backwardRightAnim: catcrawl_Skeleton_CommonBody
-			backwardLeftAnim: catcrawl_Skeleton_CommonBody
-	Meshes:
-		skirt-split: SportShorts
-			Material: sportshorts
-			UseDQBSkin: true
-		hair: lp-hair_pt2
-			Material: h-pt2
+# 			forwardAnim: catcrawl_Skeleton_CommonBody
+# 			forwardRightAnim: catcrawl_Skeleton_CommonBody
+# 			forwardLeftAnim: catcrawl_Skeleton_CommonBody
+# 			strafeRightAnim: catcrawl_Skeleton_CommonBody
+# 			standAnim: catidle_Skeleton_CommonBody
+# 			strafeLeftAnim: catcrawl_Skeleton_CommonBody
+# 			backwardAnim: catcrawl_Skeleton_CommonBody
+# 			backwardRightAnim: catcrawl_Skeleton_CommonBody
+# 			backwardLeftAnim: catcrawl_Skeleton_CommonBody
+# 	Meshes:
+# 		skirt-split: SportShorts
+# 			Material: sportshorts
+# 			UseDQBSkin: true
+# 		hair: lp-hair_pt2
+# 			Material: h-pt2
 
 
-turret-test:
-	Skeleton: turret_skeleton
-		Anims:
-			test: turret_test
-	Meshes:
-		turret: turret_test
-			Material: turret
+# turret-test:
+# 	Skeleton: turret_skeleton
+# 		Anims:
+# 			test: turret_test
+# 	Meshes:
+# 		turret: turret_test
+# 			Material: turret
 
 mmr-test:
 	Meshes:
-		box: cube
-			Material: cube
-		body: body-combine
-			Material: body
-			UseDQBSkin: true
-		idle: Missile
-			Material: turret
-		arrow: Arrow
-			Material: white
+		# box: cube
+		# 	Material: cube
+		# body: body-combine
+		# 	Material: body
+		# 	UseDQBSkin: true
+		# idle: Missile
+		# 	Material: turret
+		arrow: body-msx_DT_0 #Arrow
+			Material: red
 
-turret-test2:
-	Skeleton: TextTurret
-	Meshes:
-		turret: TurretMesh
-			Material: turret
-		idle: Missile
-			Material: turret
+# turret-test2:
+# 	Skeleton: TextTurret
+# 	Meshes:
+# 		turret: TurretMesh
+# 			Material: turret
+# 		idle: Missile
+# 			Material: turret
 
 missile:
 	Meshes:
-		idle: Missile
-			Material: turret
+		idle: body-msx_DT_0 #Missile
+			Material: red

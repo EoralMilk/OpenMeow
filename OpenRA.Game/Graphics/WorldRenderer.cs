@@ -109,6 +109,7 @@ namespace OpenRA.Graphics
 		{
 			OrderedSkeleton.BoneAnimTexture?.Dispose();
 			OrderedSkeleton.BoneAnimTexture = Game.Renderer.CreateInfoTexture(new Primitives.Size(SkeletonAsset.AnimTextureWidth, SkeletonAsset.AnimTextureHeight));
+			World.MeshCache?.RefreshAllTextures();
 		}
 
 		public void DisposeTextures()
@@ -116,7 +117,6 @@ namespace OpenRA.Graphics
 			OrderedSkeleton.BoneAnimTexture?.Dispose();
 			OrderedSkeleton.BoneAnimTexture = null;
 			World.MapTextureCache?.DisposeAllTextures();
-			World.MeshCache?.DisposeAllTextures();
 		}
 
 		public void UpdatePalettesForPlayer(string internalName, Color color, bool replaceExisting)
@@ -516,7 +516,7 @@ namespace OpenRA.Graphics
 
 		public float3 Render3DPosition(WPos pos)
 		{
-			return new float3(-(float)pos.X / Game.Renderer.World3DRenderer.WDistPerMeter, (float)pos.Y / Game.Renderer.World3DRenderer.WDistPerMeter, (float)pos.Z / Game.Renderer.World3DRenderer.WDistPerMeter);
+			return new float3(-(float)pos.X / World3DCoordinate.WDistPerMeter, (float)pos.Y / World3DCoordinate.WDistPerMeter, (float)pos.Z / World3DCoordinate.WDistPerMeter);
 		}
 
 		public float3 Screen3DPosition(WPos pos)
@@ -563,7 +563,7 @@ namespace OpenRA.Graphics
 
 		public float3 RenderVectorComponents(in WVec vec)
 		{
-			return new float3(-(float)vec.X / Game.Renderer.World3DRenderer.WDistPerMeter, (float)vec.Y / Game.Renderer.World3DRenderer.WDistPerMeter, (float)vec.Z / Game.Renderer.World3DRenderer.WDistPerMeter);
+			return new float3(-(float)vec.X / World3DCoordinate.WDistPerMeter, (float)vec.Y / World3DCoordinate.WDistPerMeter, (float)vec.Z / World3DCoordinate.WDistPerMeter);
 		}
 
 		// For scaling vectors to pixel sizes in the model renderer

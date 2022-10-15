@@ -4,57 +4,19 @@ precision mediump float;
 #endif
 
 #define DT_NONE -1
-
-#define DT_WATER 22
-#define DT_SHORE 23
-#define DT_CLIFF 25
-#define DT_GRASS 30
-#define DT_ROAD 32
 #define DT_SMUDGE 100
-#define DT_ADDON 100
-
-#define GrassNormal Texture4
-#define CliffNormal Texture5
-#define Cliff		Texture6
-#define SlopeNormal Texture7
-#define Slope		Texture8
-#define WaterNormal Texture9
-#define Caustics 	Texture10
-
-#define Scroch		Texture4
 
 uniform sampler2D Texture0;
 uniform sampler2D Texture1;
 uniform sampler2D Texture2;
 uniform sampler2D Texture3;
-uniform sampler2D Texture4;
-uniform sampler2D Texture5;
-uniform sampler2D Texture6;
-uniform sampler2D Texture7;
-uniform sampler2D Texture8;
-uniform sampler2D Texture9;
-uniform sampler2D Texture10;
-
-// uniform sampler2D WaterNormal;
-// uniform sampler2D Caustics;
-
-// uniform sampler2D GrassNormal;
-// uniform sampler2D CliffNormal;
-// uniform sampler2D Cliff;
-// uniform sampler2D SlopeNormal;
-// uniform sampler2D Slope;
-
-// uniform sampler2D Scroch;
-
-uniform float WaterUVOffset;
-uniform float GrassUVOffset;
 
 uniform sampler2D Palette;
 uniform sampler2D ColorShifts;
 
 uniform bool EnableDepthPreview;
 uniform vec2 DepthPreviewParams;
-// uniform float DepthTextureScale;
+
 uniform float AntialiasPixelsPerTexel;
 
 uniform bool RenderShroud;
@@ -119,7 +81,6 @@ float CalShadow(){
 
 	float shadow = 0.0f;
 	float bias = ShadowBias * 0.025f;
-	// float bias = ShadowBias * max(0.02 * (1.0 - dot(vNormal, light.direction)), 0.0005);
 
 	if(projCoords.z <= 1.0f)
 	{
@@ -193,67 +154,6 @@ vec4 CalcDirLight(DirLight light, vec4 color)
 	vec3 lightDir = -tSunDirection;
 
 	vec3 specular = vec3(0.0);
-
-
-	if (mDrawType == DT_SMUDGE){
-		// test smudge
-		// color = texture(Scroch, vTileTexCoord);
-	}
-	else if (mDrawType != DT_ADDON){
-		vec2 uv = vTileTexCoord;
-
-		// slope and cliff
-		if (mDrawType != DT_ROAD && vNormal != vec3(0,0,1))
-		{
-			float nndot = dot(vNormal, vec3(0,0,1));
-
-			{
-				// hack uv scale
-				vec2 uvs = uv / 2.0;
-				float mul = max(min((1.0 - nndot) * 15.0, 1.0), 0.0);
-				normal = normal + (normalize(texture(SlopeNormal, uvs).rgb * 2.0 - 1.0) - normal)*mul;
-				color = vec4(color.rgb + (texture(Slope, uvs).rgb - color.rgb)*min(mul, 0.7), color.a);
-			}
-
-			{
-				float mul = max(min((1.0 - nndot) * 5.0, 1.0), 0.0);
-				normal = normal + (normalize(texture(CliffNormal, uv).rgb * 2.0 - 1.0) - normal)*mul;
-				color = vec4(color.rgb + (texture(Cliff, uv).rgb - color.rgb)*mul, color.a);
-			}
-			
-			vec3 reflectDir = reflect(-lightDir, normal);
-			float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32.0);
-			specular = light.specular * spec;
-		}
-		// water pix
-		else if (mDrawType == DT_WATER && color.b > color.r)
-		{
-			uv = uv + vec2(WaterUVOffset, WaterUVOffset);
-			normal = normalize(texture(WaterNormal, uv).rgb * 2.0 - 1.0);
-
-			vec4 water = texture(Caustics, uv);
-			water *= 2.0;
-
-			color *= (water + (vec4(1.0) - water) * max(color.r/color.b, 0.5));
-
-			vec3 reflectDir = reflect(-lightDir, normal);
-			float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32.0);
-			specular = light.specular * spec;
-		}
-		// grass pix
-		else if ((mDrawType == DT_GRASS && color.g > color.r && color.g > color.b))
-		// else if (mDrawType != 99)
-		{
-			uv = uv + vec2(GrassUVOffset, GrassUVOffset);
-			normal = normalize(texture(GrassNormal, uv).rgb * 2.0 - 1.0);
-
-			vec3 reflectDir = reflect(-lightDir, normal);
-			float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32.0);
-			specular = light.specular * spec;
-		}
-	}
-	
-
 	// diffuse
 	float diff = dot(normal, lightDir);
 
