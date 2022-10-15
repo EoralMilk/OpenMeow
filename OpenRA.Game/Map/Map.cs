@@ -257,8 +257,6 @@ namespace OpenRA
 		public int VertexArrayWidth { get; private set; }
 		public int VertexArrayHeight { get; private set; }
 
-		public Sheet Mask123, Mask456, Mask789;
-
 		public MapTextureCache TextureCache;
 
 		//// all TerrainPatch on map
@@ -370,27 +368,6 @@ namespace OpenRA
 
 			PostInit();
 			CalculateTileVertexInfo();
-		}
-
-		void GetMaskTextures(IReadOnlyPackage package)
-		{
-			var filename = "Mask123.png";
-			if (Package.Contains(filename))
-			{
-				Mask123 = new Sheet(package.GetStream(filename), TextureWrap.Repeat);
-			}
-
-			filename = "Mask456.png";
-			if (Package.Contains(filename))
-			{
-				Mask456 = new Sheet(package.GetStream(filename), TextureWrap.Repeat);
-			}
-
-			filename = "Mask789.png";
-			if (Package.Contains(filename))
-			{
-				Mask789 = new Sheet(package.GetStream(filename), TextureWrap.Repeat);
-			}
 		}
 
 		public Map(ModData modData, IReadOnlyPackage package)
@@ -716,18 +693,26 @@ namespace OpenRA
 			var s = root.WriteToString();
 			toPackage.Update("map.yaml", Encoding.UTF8.GetBytes(s));
 			toPackage.Update("map.bin", SaveBinaryData());
+
+			if (TerrainBlocks != null)
+			{
+				foreach (var block in TerrainBlocks)
+				{
+					toPackage.Update(block.TopLeft.ToString() + "_Mask123.png", block.MaskTextureData1());
+					toPackage.Update(block.TopLeft.ToString() + "_Mask456.png", block.MaskTextureData2());
+					toPackage.Update(block.TopLeft.ToString() + "_Mask789.png", block.MaskTextureData3());
+				}
+			}
+			else
+			{
+				Console.WriteLine("This map is saving without starting the world render that belongs to it. \n" +
+					"No TerrainRenderBlock information will be saved.");
+			}
+
 			Package = toPackage;
 
 			// Update UID to match the newly saved data
 			Uid = ComputeUID(toPackage, MapFormat);
-			//SaveMapAsPng("./MapToPng/");
-
-			foreach (var block in TerrainBlocks)
-			{
-				toPackage.Update(block.TopLeft.ToString() + "_Mask123.png", block.MaskTextureData1());
-				toPackage.Update(block.TopLeft.ToString() + "_Mask456.png", block.MaskTextureData2());
-				toPackage.Update(block.TopLeft.ToString() + "_Mask789.png", block.MaskTextureData3());
-			}
 		}
 
 		const int DT_WATER = 22;
@@ -1287,18 +1272,10 @@ namespace OpenRA
 			foreach (var rb in TerrainBlocks)
 				rb.Dispose();
 			TerrainBlocks = null;
-			Mask123?.Dispose();
-			Mask456?.Dispose();
-			Mask789?.Dispose();
-			Mask123 = null;
-			Mask456 = null;
-			Mask789 = null;
 		}
 
 		public void CreateRenderBlocks(WorldRenderer worldRenderer)
 		{
-			GetMaskTextures(Package);
-
 			// Create Terrain Render Blocks
 			var blockX = (VertexArrayWidth - 1) / TerrainRenderBlock.SizeLimit;
 			if ((VertexArrayWidth - 1) % TerrainRenderBlock.SizeLimit != 0)

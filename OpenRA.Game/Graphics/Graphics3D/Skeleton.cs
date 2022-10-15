@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using GlmSharp;
 using OpenRA.FileSystem;
+using OpenRA.Primitives;
 using TrueSync;
 
 namespace OpenRA.Graphics
