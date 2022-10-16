@@ -49,7 +49,7 @@ MEDIC:
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@EXPHOSPITAL: ^InfantryExperienceHospitalOverrides
 	Valued:
-		Cost: 600
+		Cost: 300
 	Tooltip:
 		Name: Medic
 	UpdatesPlayerStatistics:
@@ -94,7 +94,7 @@ JUMPJET:
 	Inherits@EXPHOSPITAL: ^InfantryExperienceHospitalOverrides
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Valued:
-		Cost: 600
+		Cost: 500
 	Tooltip:
 		Name: Jumpjet Infantry
 	UpdatesPlayerStatistics:

@@ -99,7 +99,7 @@ RUTEST2:
 		Cost: 1000
 	Buildable:
 		Queue: Vehicle
-		BuildPaletteOrder: 0
+		BuildPaletteOrder: 800
 		Prerequisites: naweap, natech, ~structures.nod
 	Turreted:
 		TurnSpeed: 44

@@ -3,7 +3,7 @@ APC:
 	Inherits@VOXELS: ^VoxelActor
 	Inherits@CARGOPIPS: ^CargoPips
 	Valued:
-		Cost: 800
+		Cost: 400
 	Tooltip:
 		Name: Amphibious APC
 	UpdatesPlayerStatistics:
@@ -125,7 +125,7 @@ SMECH:
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Valued:
-		Cost: 500
+		Cost: 400
 	Tooltip:
 		Name: Wolverine
 	UpdatesPlayerStatistics:

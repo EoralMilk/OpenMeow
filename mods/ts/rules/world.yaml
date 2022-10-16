@@ -68,7 +68,7 @@
 		Name: jumpjet
 		Crushes: crate
 		SharesCell: true
-		JumpjetTransitionCost: 100
+		JumpjetTransitionCost: 0
 		TerrainSpeeds:
 			Clear: 90
 			Road: 100
@@ -79,7 +79,7 @@
 			Tiberium: 90
 			BlueTiberium: 90
 			Veins: 50
-			Jumpjet: 110
+			Jumpjet: 150
 	Locomotor@WHEELED:
 		Name: wheeled
 		Crushes: crate
