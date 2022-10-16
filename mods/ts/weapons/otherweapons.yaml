@@ -386,9 +386,6 @@ ApcReconDummyWeapon:
 	Range: 20c0
 	ReloadDelay: 19
 	Projectile: InstantHit
-	Warhead@1Dam: TargetDamage
-		Spread: 0
-		ValidTargets: Ground, Water, Air
 
 DroneReconDummyWeapon:
 	ValidTargets: Ground, Air, Water
@@ -396,6 +393,3 @@ DroneReconDummyWeapon:
 	ReloadDelay: 19000
 	Projectile: InstantHit
 		Blockable: false
-	Warhead@1Dam: TargetDamage
-		Spread: 0
-		ValidTargets: Ground, Water, Air
