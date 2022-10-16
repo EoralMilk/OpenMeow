@@ -401,8 +401,8 @@ SONIC:
 	RevealsShroud:
 		Range: 7c0
 	Armament:
-		Weapon: SonicZap
-		LocalOffset: -71,0,535
+		Weapon: SonicWave
+		LocalOffset: 171,0,535 #-71,0,535
 	AttackTurreted:
 		Voice: Attack
 		PauseOnCondition: empdisable

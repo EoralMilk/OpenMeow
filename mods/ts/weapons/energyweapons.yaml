@@ -120,6 +120,42 @@ SonicZap:
 			Concrete: 60
 		DamageTypes: Prone50Percent, TriggerProne, SmallExplosionDeath
 
+SonicWave:
+	ValidTargets: Ground, Trees, Water
+	ReloadDelay: 75
+	Range: 6c512
+	Report: sonic4.aud
+	Burst: 20
+	BurstDelays: 2
+	Projectile: BlastWave
+		Inaccuracy: 0c768
+		Image: waketest
+		Sequences: idle
+		Palette: effectcyan
+		Speed: 175
+		LaunchAngle: 10
+		Width: 324
+		ShockDist: 7c0
+		BlastInterval: 5
+		BlastDelay: 3
+		KeepSourceAltitude: false
+		Blockable: true
+		ExplodeUnderThisAltitude: -24
+	Warhead@fireDam: Spread3DDamage
+		Spread: 0c220
+		Damage: 1500
+		Falloff: 100, 80, 45, 15
+		ValidRelationships: Neutral, Enemy # no friendly damage
+		Versus:
+			Heavy: 80
+			Concrete: 60
+		DamageTypes: Prone50Percent, TriggerProne, SmallExplosionDeath
+		ValidTargets: Ground, Water, Air
+		InvalidTargets: Wall, Bridge
+		Condition: burning
+		Duration: 50
+
+
 ^EnergyBlast:
 	ReloadDelay: 50
 	Range: 7c0

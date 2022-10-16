@@ -592,6 +592,18 @@ wake:
 		Offset: 0, 0, 1
 		AlphaFade: True
 
+waketest:
+	idle: wake2
+		Length: 5
+		Tick: 80
+		ZOffset: 1
+		MeshType: Plane
+		BlendMode: Additive
+		ZRamp: 1
+		Scale: 0.85
+		Offset: 0, 0, 1
+		AlphaFade: True
+
 resources:
 	Defaults:
 		BlendMode: Alpha
