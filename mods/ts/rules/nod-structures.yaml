@@ -473,7 +473,7 @@ NATMPL:
 		Icon: hunterseeker
 		Actors: hunter
 		Type: HunterSeeker
-		ChargeInterval: 18000
+		ChargeInterval: 8000
 	Production:
 		Produces: HunterSeeker
 		PauseOnCondition: empdisable
@@ -525,7 +525,7 @@ NAMISL:
 		Cursor: nuke
 		Icon: clustermissile
 		OrderName: ClusterMissileAttack
-		ChargeInterval: 13500
+		ChargeInterval: 9500
 		Name: Cluster Missile
 		Description: Launches an explosive cluster warhead\nat a target location.
 		EndChargeSpeechNotification: ClusterMissileReady

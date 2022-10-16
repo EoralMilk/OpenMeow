@@ -537,7 +537,7 @@ GAPLUG:
 		Effect: explosion
 		EffectSequence: ionring
 		WeaponDelay: 0
-		ChargeInterval: 12750
+		ChargeInterval: 8750
 		Name: Ion Cannon
 		Description: Initiate an Ion Cannon strike.\nApplies instant damage to a small area.
 		EndChargeSpeechNotification: IonCannonReady
@@ -556,7 +556,7 @@ GAPLUG:
 		SelectTargetSpeechNotification: SelectTarget
 		SelectTargetTextNotification: Select target.
 		DisplayRadarPing: true
-		ChargeInterval: 10000
+		ChargeInterval: 6000
 		UnitTypes: DPOD2E1, DPOD2E2
 		CameraActor: camera
 		Weapon: VulcanTower
@@ -568,7 +568,7 @@ GAPLUG:
 		Icon: hunterseeker
 		Actors: hunter
 		Type: HunterSeeker
-		ChargeInterval: 18000
+		ChargeInterval: 8000
 	Production:
 		Produces: HunterSeeker
 		PauseOnCondition: empdisable
