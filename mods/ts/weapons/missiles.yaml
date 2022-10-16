@@ -10,7 +10,7 @@
 		Inaccuracy: 128
 		Unit: missile
 		Meshes: idle
-		MeshScale: 4
+		MeshScale: 1.5
 		# Image: DRAGON
 		# Palette: ra
 		HorizontalRateOfTurn: 100
@@ -106,7 +106,7 @@
 		LockOnTargetTypes: Vehicle, Air, Building, Defense, Cyborg
 		Unit: missile
 		Meshes: idle
-		MeshScale: 4
+		MeshScale: 1.5
 		TrailImage: small_smoke_trail
 		TrailInterval: 1
 		TrailCount: 0 #2
@@ -209,7 +209,7 @@ TitanMissile:
 		Acceleration: 20
 		Speed: 100
 		Width: 42
-		MeshScale: 2.0
+		MeshScale: 1.5
 		ProximityRange: 200
 		LockOnDelay: 4
 		IgnitionDelay: 5
@@ -266,7 +266,7 @@ BikeMissile:
 		Acceleration: 18
 		Speed: 120
 		Width: 40
-		MeshScale: 2.7
+		MeshScale: 1
 		ProximityRange: 200
 		LockOnDelay: 4
 		IgnitionDelay: 5
@@ -323,7 +323,7 @@ VectorHellfire:
 		LaunchAngle: 0
 		LifeTime: 46
 		Width: 40
-		MeshScale: 2.4
+		MeshScale: 1.2
 		ProximityRange: 200
 		UseVerticalInaccuracy: true
 		LockOnInaccuracy: 300
@@ -358,7 +358,7 @@ RedEye2:
 		MaxSpeed: 388
 		LifeTime: 75
 		Width: 40
-		MeshScale: 5
+		MeshScale: 4
 		ProximityRange: 289
 	Warhead@1Dam: Spread3DDamage
 		Spread: 128

@@ -117,14 +117,7 @@ rumya:
 
 mmr-test:
 	Meshes:
-		# box: cube
-		# 	Material: cube
-		# body: body-combine
-		# 	Material: body
-		# 	UseDQBSkin: true
-		# idle: Missile
-		# 	Material: turret
-		arrow: body-msx_DT_0 #Arrow
+		arrow: missile01 #Arrow
 			Material: red
 
 # turret-test2:
@@ -137,5 +130,6 @@ mmr-test:
 
 missile:
 	Meshes:
-		idle: body-msx_DT_0 #Missile
-			Material: red
+		idle: missile01 #Missile
+			Material: misc01
+			FaceCullFunc: None

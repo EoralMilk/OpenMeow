@@ -212,7 +212,7 @@ namespace OpenRA.Mods.Common.Projectiles
 			this.info = info;
 			this.args = args;
 			var world = args.SourceActor.World;
-			front = World3DCoordinate.Front;
+			front = TSVector.forward;// World3DCoordinate.Front;
 
 			if (!string.IsNullOrEmpty(info.Unit))
 			{
@@ -220,6 +220,10 @@ namespace OpenRA.Mods.Common.Projectiles
 				{
 					effectMatrix = args.Matrix;
 					matVec = World3DCoordinate.TSVec3ToWPos(Transformation.MatWithOutScale(effectMatrix) * front) - args.Source;
+				}
+				else
+				{
+					matVec = args.PassiveTarget - args.Source;
 				}
 
 				if (args.SourceActor != null)
@@ -278,6 +282,7 @@ namespace OpenRA.Mods.Common.Projectiles
 			return Transformation.MatWithNewScale(effectMatrix, info.MeshScale);
 		}
 
+		bool renderTickStarted = false;
 		protected virtual void RenderTick(World world, in WPos pos)
 		{
 			anim?.Tick();
@@ -307,6 +312,8 @@ namespace OpenRA.Mods.Common.Projectiles
 					trailLastPos = pos;
 				}
 			}
+
+			renderTickStarted = true;
 		}
 
 		protected virtual void UpdatePalette(WorldRenderer wr)
@@ -332,7 +339,7 @@ namespace OpenRA.Mods.Common.Projectiles
 				yield return r;
 			}
 
-			if (meshes.Count > 0)
+			if (renderTickStarted && meshes.Count > 0)
 				yield return new MeshRenderable(meshes, pos, 0, args.SourceActor.Owner.Color, info.MeshScale, null);
 
 			if (!hasInitPal)

@@ -45,7 +45,7 @@
 	RenderMeshes:
 		Image: rumya
 		ZOffset: 15
-		Scale: 15
+		Scale: 4
 	AttachManager:
 	# AttachPoint@first:
 	# 	BoneAttach: a-s-Rig_Hand.R
