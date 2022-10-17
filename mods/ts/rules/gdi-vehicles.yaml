@@ -191,6 +191,7 @@ MMCH:
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@renderVoxel: ^RenderVoxel
 	Inherits@bounty: ^GlobalBounty
+	Inherits@AImicroManagable: ^AImicroManagable
 	Valued:
 		Cost: 900
 	Tooltip:
@@ -275,15 +276,6 @@ MMCH:
 			plug.rpg: !rpg
 		EditorOptions:
 			plug.rpg: RPG Upgrade
-	ProvidesPrerequisite@pluggablevulcan:
-		RequiresCondition: !vulcan
-		Prerequisite: plug.vulcan
-	ProvidesPrerequisite@pluggablemissile:
-		RequiresCondition: !missile
-		Prerequisite: plug.missile
-	ProvidesPrerequisite@pluggableRPG:
-		RequiresCondition: !rpg
-		Prerequisite: plug.rpg
 	DetectCloaked:
 		Range: 1c768
 		RequiresCondition: rank-elite
@@ -305,6 +297,16 @@ MMCH:
 		Bounds: 905, 2534, 0, -482
 	Carryable:
 		LocalOffset: 0,0,577
+	### Help AI to manage
+	ProvidesPrerequisite@pluggablevulcan:
+		RequiresCondition: AImicroManage && !vulcan
+		Prerequisite: plug.vulcan
+	ProvidesPrerequisite@pluggablemissile:
+		RequiresCondition: AImicroManage && !missile
+		Prerequisite: plug.missile
+	ProvidesPrerequisite@pluggableRPG:
+		RequiresCondition: AImicroManage && !rpg
+		Prerequisite: plug.rpg
 
 HMEC:
 	Inherits: ^Tank

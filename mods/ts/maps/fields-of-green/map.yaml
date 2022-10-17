@@ -208,12 +208,12 @@ Actors:
 		Location: 84,-1
 		TurretFacing: 128
 		Facing: 240
-		Plug: tower.vulcan
+		Plug: plug.missile
 	Actor56: gactwr
 		Owner: GDI
 		Location: 80,-3
 		Facing: 240
-		Plug: tower.vulcan
+		Plug: plug.vulcan
 	Actor57: gawall
 		Owner: GDI
 		Location: 79,-3
@@ -245,7 +245,7 @@ Actors:
 		Owner: GDI
 		Location: 84,-4
 		Facing: 240
-		Plug: tower.rocket
+		Plug: plug.rpg
 	Actor67: gawall
 		Owner: GDI
 		Location: 88,-1
@@ -300,7 +300,7 @@ Actors:
 		Owner: GDI
 		Location: 85,-11
 		Facing: 864
-		Plug: tower.vulcan
+		Plug: plug.vulcan
 	Actor90: gasilo
 		Owner: GDI
 		Location: 79,-10

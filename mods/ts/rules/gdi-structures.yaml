@@ -2,6 +2,7 @@ GAPOWR:
 	Inherits: ^Building
 	Inherits@SHAPE: ^2x2Shape
 	Inherits@bounty: ^GlobalBounty
+	Inherits@AImicroManagable: ^AImicroManagable
 	Buildable:
 		Queue: Building
 		BuildPaletteOrder: 10
@@ -78,8 +79,8 @@ GAPOWR:
 		Amount: 50
 	ProvidesPrerequisite@buildingname:
 	ProvidesPrerequisite@pluggable:
-		RequiresCondition: !powrup.a || !powrup.b
-		Prerequisite: gapowr.socket
+		RequiresCondition: AImicroManage && (!powrup.a || !powrup.b)
+		Prerequisite: plug.power
 	IsometricSelectable:
 		Height: 48
 
