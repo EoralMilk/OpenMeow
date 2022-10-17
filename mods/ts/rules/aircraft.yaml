@@ -93,6 +93,7 @@ DPOD2E2:
 DSHP:
 	Inherits: ^Aircraft
 	Inherits@CARGOPIPS: ^CargoPips
+	Inherits@bounty: ^GlobalBounty
 	Valued:
 		Cost: 1000
 	Tooltip:
@@ -131,6 +132,7 @@ A10:
 	Inherits: ^EMPableAircraft
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@bounty: ^GlobalBounty
 	Valued:
 		Cost: 1500
 	Tooltip:
@@ -204,6 +206,7 @@ ORCA:
 	Inherits: ^EMPableAircraft
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@bounty: ^GlobalBounty
 	Valued:
 		Cost: 1000
 	Tooltip:
@@ -269,6 +272,7 @@ ORCAB:
 	Inherits: ^EMPableAircraft
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@bounty: ^GlobalBounty
 	Valued:
 		Cost: 1500
 	Tooltip:
@@ -337,6 +341,7 @@ ORCAB:
 ORCATRAN:
 	Inherits: ^EMPableAircraft
 	Inherits@CARGOPIPS: ^CargoPips
+	Inherits@bounty: ^GlobalBounty
 	Valued:
 		Cost: 1200
 	Tooltip:
@@ -423,6 +428,7 @@ SCRIN:
 	Inherits: ^EMPableAircraft
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@bounty: ^GlobalBounty
 	Valued:
 		Cost: 1700
 	Tooltip:
@@ -537,6 +543,7 @@ APACHE:
 	Inherits: ^EMPableAircraft
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@bounty: ^GlobalBounty
 	Valued:
 		Cost: 1000
 	Tooltip:

@@ -3,6 +3,7 @@ WEEDGUY:
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@EXPHOSPITAL: ^InfantryExperienceHospitalOverrides
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@bounty: ^GlobalBounty
 	Buildable:
 		Queue: Infantry
 		BuildPaletteOrder: 75
@@ -41,6 +42,7 @@ UMAGON:
 	Inherits@EXPHOSPITAL: ^InfantryExperienceHospitalOverrides
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@LeaveTib: ^LeaveTiberiumWhenDeath
+	Inherits@bounty: ^GlobalBounty
 	Buildable:
 		Queue: Infantry
 		BuildPaletteOrder: 0
@@ -79,6 +81,7 @@ UMAGON:
 
 CHAMSPY:
 	Inherits: ^Soldier
+	Inherits@bounty: ^GlobalBounty
 	Buildable:
 		Queue: Infantry
 		BuildPaletteOrder: 0
@@ -120,6 +123,7 @@ MUTANT:
 	Inherits@EXPHOSPITAL: ^InfantryExperienceHospitalOverrides
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@LeaveTib: ^LeaveTiberiumWhenDeath
+	Inherits@bounty: ^GlobalBounty
 	Buildable:
 		Queue: Infantry
 		BuildPaletteOrder: 0
@@ -154,6 +158,7 @@ MWMN:
 	Inherits@EXPHOSPITAL: ^InfantryExperienceHospitalOverrides
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@LeaveTib: ^LeaveTiberiumWhenDeath
+	Inherits@bounty: ^GlobalBounty
 	Buildable:
 		Queue: Infantry
 		BuildPaletteOrder: 0
@@ -187,6 +192,7 @@ MUTANT3:
 	Inherits@EXPHOSPITAL: ^InfantryExperienceHospitalOverrides
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@LeaveTib: ^LeaveTiberiumWhenDeath
+	Inherits@bounty: ^GlobalBounty
 	Buildable:
 		Queue: Infantry
 		BuildPaletteOrder: 0
@@ -223,6 +229,7 @@ TRATOS:
 	Inherits: ^Soldier
 	Inherits@2: ^HealsOnTiberium
 	Inherits@LeaveTib: ^LeaveTiberiumWhenDeath
+	Inherits@bounty: ^GlobalBounty
 	Valued:
 		Cost: 500
 	Tooltip:
@@ -239,6 +246,7 @@ OXANNA:
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@EXPHOSPITAL: ^InfantryExperienceHospitalOverrides
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@bounty: ^GlobalBounty
 	Buildable:
 		Queue: Infantry
 		BuildPaletteOrder: 111

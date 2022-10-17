@@ -2,6 +2,7 @@ NAPULS:
 	Inherits: ^Defense
 	Inherits@IDISABLE: ^DisableOnLowPowerOrPowerDown
 	Inherits@SHAPE: ^2x2Shape
+	Inherits@bounty: ^GlobalBounty
 	Valued:
 		Cost: 1000
 	Tooltip:

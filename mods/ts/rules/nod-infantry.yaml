@@ -3,6 +3,7 @@ E3:
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@EXPHOSPITAL: ^InfantryExperienceHospitalOverrides
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@bounty: ^GlobalBounty
 	Buildable:
 		Queue: Infantry
 		BuildPaletteOrder: 30
@@ -41,6 +42,7 @@ CYBORG:
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@EXPHOSPITAL: ^InfantryExperienceHospitalOverrides
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@bounty: ^GlobalBounty
 	Armor:
 		Type: Light
 	Valued:
@@ -91,6 +93,7 @@ CYC2:
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@EXPHOSPITAL: ^InfantryExperienceHospitalOverrides
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@bounty: ^GlobalBounty
 	Armor:
 		Type: Heavy
 	Valued:
@@ -131,6 +134,7 @@ CYC2:
 MHIJACK:
 	Inherits: ^Soldier
 	Inherits@2: ^HealsOnTiberium
+	Inherits@bounty: ^GlobalBounty
 	Buildable:
 		Queue: Infantry
 		BuildPaletteOrder: 80

@@ -44,6 +44,7 @@ NAGATE_B:
 NAPOST:
 	Inherits: ^Building
 	Inherits@IDISABLED: ^DisableOnLowPowerOrPowerDown
+	Inherits@bounty: ^GlobalBounty
 	Buildable:
 		Queue: Defense
 		BuildPaletteOrder: 150
@@ -172,6 +173,7 @@ NALASR:
 	Inherits@IDISABLE: ^DisableOnPowerDown
 	Inherits@AUTOTARGET: ^AutoTargetGround
 	Inherits@RenderVoxel: ^RenderVoxel
+	Inherits@bounty: ^GlobalBounty
 	Valued:
 		Cost: 300
 	Tooltip:
@@ -215,6 +217,7 @@ NAOBEL:
 	Inherits@IDISABLE: ^DisableOnLowPowerOrPowerDown
 	Inherits@AUTOTARGET: ^AutoTargetGround
 	Inherits@SHAPE: ^2x2Shape
+	Inherits@bounty: ^GlobalBounty
 	Valued:
 		Cost: 1500
 	Tooltip:
@@ -259,6 +262,7 @@ NASAM:
 	Inherits: ^Defense
 	Inherits@IDISABLE: ^DisableOnLowPowerOrPowerDown
 	Inherits@AUTOTARGET: ^AutoTargetAir
+	Inherits@bounty: ^GlobalBounty
 	Valued:
 		Cost: 500
 	Tooltip:

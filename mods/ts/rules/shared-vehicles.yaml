@@ -2,6 +2,7 @@ MCV:
 	Inherits: ^Tank
 	Inherits@selection: ^SelectableSupportUnit
 	Inherits@RenderVoxel: ^RenderVoxel
+	Inherits@bounty: ^GlobalBounty
 	Buildable:
 		Queue: Vehicle
 		BuildPaletteOrder: 160
@@ -62,6 +63,7 @@ HARV:
 	Inherits@VOXELS: ^VoxelActor
 	Inherits@selection: ^SelectableEconomicUnit
 	Inherits@WithRA2VoxRender: ^WithRA2VoxRender
+	Inherits@bounty: ^GlobalBounty
 	Valued:
 		Cost: 1400
 	Tooltip:
@@ -143,6 +145,7 @@ LPST:
 	Inherits: ^Tank
 	Inherits@VOXELS: ^VoxelActor
 	Inherits@selection: ^SelectableSupportUnit
+	Inherits@bounty: ^GlobalBounty
 	-AppearsOnRadar:
 	Buildable:
 		Queue: Vehicle

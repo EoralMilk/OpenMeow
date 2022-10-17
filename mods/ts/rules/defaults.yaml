@@ -206,6 +206,13 @@
 	HandicapDamageMultiplier:
 	HandicapProductionTimeMultiplier:
 
+^GlobalBounty:
+	GrantConditionOnPrerequisite@GLOBALBOUNTY:
+		Condition: global-bounty
+		Prerequisites: global-bounty
+	GivesBounty:
+		RequiresCondition: global-bounty
+
 ^2x1Shape:
 	HitShape:
 		TargetableOffsets: 0,0,418

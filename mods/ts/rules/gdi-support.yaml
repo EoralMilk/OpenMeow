@@ -45,6 +45,7 @@ GACTWR:
 	Inherits: ^Defense
 	Inherits@IDISABLE: ^DisableOnPowerDown
 	Inherits@AUTOTARGET: ^AutoTargetAll
+	Inherits@bounty: ^GlobalBounty
 	IsometricSelectable:
 		Height: 30
 	WithMakeAnimation:

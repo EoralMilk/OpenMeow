@@ -1,6 +1,7 @@
 GAPOWR:
 	Inherits: ^Building
 	Inherits@SHAPE: ^2x2Shape
+	Inherits@bounty: ^GlobalBounty
 	Buildable:
 		Queue: Building
 		BuildPaletteOrder: 10
@@ -92,6 +93,7 @@ GAPILE:
 	Inherits: ^Building
 	Inherits@SHAPE: ^2x2Shape
 	Inherits@PRIMARY: ^PrimaryBuilding
+	Inherits@bounty: ^GlobalBounty
 	Buildable:
 		Queue: Building
 		BuildPaletteOrder: 20
@@ -186,6 +188,7 @@ GAWEAP:
 	Inherits: ^Building
 	Inherits@SHAPE: ^4x3FactoryWithBibShape
 	Inherits@PRIMARY: ^PrimaryBuilding
+	Inherits@bounty: ^GlobalBounty
 	Valued:
 		Cost: 2000
 	Tooltip:
@@ -261,6 +264,7 @@ GAHPAD:
 	Inherits: ^Building
 	Inherits@SHAPE: ^2x2Shape
 	Inherits@PRIMARY: ^PrimaryBuilding
+	Inherits@bounty: ^GlobalBounty
 	Valued:
 		Cost: 500
 	Tooltip:
@@ -323,6 +327,7 @@ GAHPAD:
 GADEPT:
 	Inherits: ^Building
 	Inherits@SHAPE: ^3x3Shape
+	Inherits@bounty: ^GlobalBounty
 	IsometricSelectable:
 		Height: 1
 		DecorationHeight: 24
@@ -413,6 +418,7 @@ GARADR:
 	Inherits: ^Building
 	Inherits@IDISABLED: ^DisableOnLowPowerOrPowerDown
 	Inherits@SHAPE: ^2x2Shape
+	Inherits@bounty: ^GlobalBounty
 	Buildable:
 		Queue: Building
 		BuildPaletteOrder: 40
@@ -459,6 +465,7 @@ GATECH:
 	Inherits: ^Building
 	Inherits@IDISABLED: ^DisableOnLowPower
 	Inherits@SHAPE: ^3x2Shape
+	Inherits@bounty: ^GlobalBounty
 	Buildable:
 		Queue: Building
 		BuildPaletteOrder: 90
@@ -499,6 +506,7 @@ GAPLUG:
 	Inherits: ^Building
 	Inherits@IDISABLE: ^DisableOnLowPowerOrPowerDown
 	Inherits@SHAPE: ^2x3Shape
+	Inherits@bounty: ^GlobalBounty
 	Valued:
 		Cost: 1000
 	Tooltip:

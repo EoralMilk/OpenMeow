@@ -151,3 +151,10 @@ Player:
 	PlayerExperience:
 	GameSaveViewportManager:
 	PlayerRadarTerrain:
+	LobbyPrerequisiteCheckbox@GLOBALBOUNTY:
+		ID: bounty
+		Label: Kill Bounties
+		Description: Players receive cash bonuses when killing enemy units
+		Enabled: True
+		DisplayOrder: 9
+		Prerequisites: global-bounty

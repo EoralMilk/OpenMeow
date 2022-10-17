@@ -3,6 +3,7 @@ E2:
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@EXPHOSPITAL: ^InfantryExperienceHospitalOverrides
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@bounty: ^GlobalBounty
 	Buildable:
 		Queue: Infantry
 		BuildPaletteOrder: 20
@@ -48,6 +49,7 @@ MEDIC:
 	Inherits: ^Soldier
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@EXPHOSPITAL: ^InfantryExperienceHospitalOverrides
+	Inherits@bounty: ^GlobalBounty
 	Valued:
 		Cost: 300
 	Tooltip:
@@ -93,6 +95,7 @@ JUMPJET:
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@EXPHOSPITAL: ^InfantryExperienceHospitalOverrides
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@bounty: ^GlobalBounty
 	Valued:
 		Cost: 500
 	Tooltip:
@@ -226,6 +229,7 @@ GHOST:
 	Inherits@EXPHOSPITAL: ^InfantryExperienceHospitalOverrides
 	Inherits@2: ^HealsOnTiberium
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@bounty: ^GlobalBounty
 	Valued:
 		Cost: 1750
 	Tooltip:

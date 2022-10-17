@@ -1,6 +1,7 @@
 NAPOWR:
 	Inherits: ^Building
 	Inherits@SHAPE: ^2x2Shape
+	Inherits@bounty: ^GlobalBounty
 	Buildable:
 		Queue: Building
 		BuildPaletteOrder: 10
@@ -44,6 +45,7 @@ NAPOWR:
 NAAPWR:
 	Inherits: ^Building
 	Inherits@SHAPE: ^2x3Shape
+	Inherits@bounty: ^GlobalBounty
 	Buildable:
 		Queue: Building
 		BuildPaletteOrder: 70
@@ -89,6 +91,7 @@ NAHAND:
 	Inherits: ^Building
 	Inherits@SHAPE: ^3x2Shape
 	Inherits@PRIMARY: ^PrimaryBuilding
+	Inherits@bounty: ^GlobalBounty
 	Buildable:
 		Queue: Building
 		BuildPaletteOrder: 20
@@ -181,6 +184,7 @@ NAWEAP:
 	Inherits: ^Building
 	Inherits@SHAPE: ^4x3FactoryWithBibShape
 	Inherits@PRIMARY: ^PrimaryBuilding
+	Inherits@bounty: ^GlobalBounty
 	Valued:
 		Cost: 2000
 	Tooltip:
@@ -241,6 +245,7 @@ NAHPAD:
 	Inherits: ^Building
 	Inherits@SHAPE: ^2x2Shape
 	Inherits@PRIMARY: ^PrimaryBuilding
+	Inherits@bounty: ^GlobalBounty
 	Valued:
 		Cost: 500
 	Tooltip:
@@ -306,6 +311,7 @@ NARADR:
 	Inherits: ^Building
 	Inherits@IDISABLED: ^DisableOnLowPowerOrPowerDown
 	Inherits@SHAPE: ^2x2Shape
+	Inherits@bounty: ^GlobalBounty
 	Buildable:
 		Queue: Building
 		BuildPaletteOrder: 40
@@ -349,6 +355,7 @@ NATECH:
 	Inherits: ^Building
 	Inherits@IDISABLED: ^DisableOnLowPower
 	Inherits@SHAPE: ^2x2Shape
+	Inherits@bounty: ^GlobalBounty
 	Buildable:
 		Queue: Building
 		BuildPaletteOrder: 90
@@ -387,6 +394,7 @@ NASTLH:
 	Inherits: ^Building
 	Inherits@IDISABLED: ^DisableOnLowPowerOrPowerDown
 	Inherits@SHAPE: ^3x2Shape
+	Inherits@bounty: ^GlobalBounty
 	HitShape:
 		TargetableOffsets: 250,0,0, 600,-864,0
 		TargetableCellAdditionalOffset: 0,0,418
@@ -429,6 +437,7 @@ NATMPL:
 	Inherits: ^Building
 	Inherits@IDISABLED: ^DisableOnLowPowerOrPowerDown
 	Inherits@SHAPE: ^4x3Shape
+	Inherits@bounty: ^GlobalBounty
 	HitShape:
 		TargetableOffsets: -1280,363,0
 		TargetableCellAdditionalOffset: 0,0,418
@@ -486,6 +495,7 @@ NAMISL:
 	Inherits: ^Building
 	Inherits@IDISABLE: ^DisableOnLowPowerOrPowerDown
 	Inherits@SHAPE: ^2x2Shape
+	Inherits@bounty: ^GlobalBounty
 	Buildable:
 		Queue: Building
 		BuildPaletteOrder: 120
@@ -560,6 +570,7 @@ NAMISL:
 
 NAWAST:
 	Inherits: ^Building
+	Inherits@bounty: ^GlobalBounty
 	HitShape:
 		TargetableCellAdditionalOffset: 0,0,418
 		Type: Rectangle

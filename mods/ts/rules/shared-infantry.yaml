@@ -3,6 +3,7 @@ E1:
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@EXPHOSPITAL: ^InfantryExperienceHospitalOverrides
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@bounty: ^GlobalBounty
 	Buildable:
 		Queue: Infantry
 		BuildPaletteOrder: 10
@@ -55,6 +56,7 @@ E1R3:
 ENGINEER:
 	Inherits: ^Soldier
 	Inherits@selection: ^SelectableSupportUnit
+	Inherits@bounty: ^GlobalBounty
 	Valued:
 		Cost: 500
 	Tooltip:

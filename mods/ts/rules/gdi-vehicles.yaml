@@ -2,6 +2,7 @@ APC:
 	Inherits: ^Tank
 	Inherits@VOXELS: ^VoxelActor
 	Inherits@CARGOPIPS: ^CargoPips
+	Inherits@bounty: ^GlobalBounty
 	Valued:
 		Cost: 400
 	Tooltip:
@@ -68,6 +69,7 @@ HVR:
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@WithRA2VoxRender: ^WithRA2VoxRender
+	Inherits@bounty: ^GlobalBounty
 	Valued:
 		Cost: 1000
 	Tooltip:
@@ -128,6 +130,7 @@ SMECH:
 	Inherits: ^Vehicle
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@bounty: ^GlobalBounty
 	Valued:
 		Cost: 400
 	Tooltip:
@@ -187,6 +190,7 @@ MMCH:
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@renderVoxel: ^RenderVoxel
+	Inherits@bounty: ^GlobalBounty
 	Valued:
 		Cost: 900
 	Tooltip:
@@ -322,6 +326,7 @@ HMEC:
 	Inherits@VOXELS: ^VoxelActor
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@bounty: ^GlobalBounty
 	Valued:
 		Cost: 4000
 	Tooltip:
@@ -382,6 +387,7 @@ SONIC:
 	Inherits@VOXELS: ^VoxelActor
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@bounty: ^GlobalBounty
 	Valued:
 		Cost: 1300
 	Tooltip:
@@ -429,6 +435,7 @@ JUGG:
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@renderVoxel: ^RenderVoxel
+	Inherits@bounty: ^GlobalBounty
 	Inherits@AImicroManagable: ^AImicroManagable
 	Valued:
 		Cost: 950

@@ -3,6 +3,7 @@ BGGY:
 	Inherits@VOXELS: ^VoxelActor
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@bounty: ^GlobalBounty
 	Valued:
 		Cost: 400
 	Tooltip:
@@ -48,6 +49,7 @@ BIKE:
 	Inherits@VOXELS: ^VoxelActor
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@bounty: ^GlobalBounty
 	Valued:
 		Cost: 600
 	Tooltip:
@@ -96,6 +98,7 @@ TTNK:
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@AImicroManagable: ^AImicroManagable
+	Inherits@bounty: ^GlobalBounty
 	Valued:
 		Cost: 800
 	Tooltip:
@@ -239,6 +242,7 @@ ART2:
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@AImicroManagable: ^AImicroManagable
+	Inherits@bounty: ^GlobalBounty
 	Valued:
 		Cost: 975
 	Tooltip:
@@ -363,6 +367,7 @@ REPAIR:
 	Inherits: ^Tank
 	Inherits@VOXELS: ^VoxelActor
 	Inherits@WithRA2VoxRender: ^WithRA2VoxRender
+	Inherits@bounty: ^GlobalBounty
 	Buildable:
 		Queue: Vehicle
 		BuildPaletteOrder: 70
@@ -408,6 +413,7 @@ WEED:
 	Inherits@VOXELS: ^VoxelActor
 	Inherits@WithRA2VoxRender: ^WithRA2VoxRender
 	Inherits@selection: ^SelectableEconomicUnit
+	Inherits@bounty: ^GlobalBounty
 	Valued:
 		Cost: 1400
 	Tooltip:
@@ -457,6 +463,7 @@ SAPC:
 	Inherits: ^Tank
 	Inherits@VOXELS: ^VoxelActor
 	Inherits@CARGOPIPS: ^CargoPips
+	Inherits@bounty: ^GlobalBounty
 	Valued:
 		Cost: 800
 	Tooltip:
@@ -510,6 +517,7 @@ SUBTANK:
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@WithRA2VoxRender: ^WithRA2VoxRender
+	Inherits@bounty: ^GlobalBounty
 	Valued:
 		Cost: 750
 	Tooltip:
@@ -564,6 +572,7 @@ STNK:
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@WithRA2VoxRender: ^WithRA2VoxRender
+	Inherits@bounty: ^GlobalBounty
 	Valued:
 		Cost: 1100
 	Tooltip:
