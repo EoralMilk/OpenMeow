@@ -196,6 +196,12 @@ HoverMissile:
 	Report: hovrmis1.aud
 	Warhead@1Dam: SpreadDamage
 		Damage: 4500
+		Versus:
+			None: 25
+			Wood: 65
+			Light: 100
+			Heavy: 70
+			Concrete: 60
 
 TitanMissile:
 	Inherits: ^VectorBooster
@@ -220,6 +226,12 @@ TitanMissile:
 		LaunchAngle: 0
 	Warhead@1Dam: Spread3DDamage
 		Damage: 4500
+		Versus:
+			None: 25
+			Wood: 65
+			Light: 100
+			Heavy: 70
+			Concrete: 60
 
 HoverMissileQuad:
 	Inherits: HoverMissile
@@ -361,8 +373,16 @@ RedEye2:
 		MeshScale: 3
 		ProximityRange: 289
 	Warhead@1Dam: Spread3DDamage
-		Spread: 128
+		Spread: 0c128
+		Falloff: 100, 50, 25, 12, 6, 3, 0
 		Damage: 8400
+		ValidTargets: Ground, Water, Air, Trees
+		Versus:
+			None: 45
+			Wood: 45
+			Light: 100
+			Heavy: 100
+			Concrete: 60
 		DamageTypes: SmallExplosionDeath
 	Warhead@2Eff: CreateEffect
 		Explosions: large_grey_explosion

@@ -292,7 +292,7 @@ ORCAB:
 	Health:
 		HP: 30000
 	Armor:
-		Type: Light
+		Type: Heavy
 	Armament:
 		Weapon: Bomb
 		PauseOnCondition: !ammo

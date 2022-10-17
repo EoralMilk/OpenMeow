@@ -166,7 +166,7 @@ SergeantSMG:
 		Versus:
 			None: 100
 			Wood: 25
-			Light: 35
+			Light: 30
 			Heavy: 8
 			Concrete: 8
 
@@ -221,6 +221,12 @@ VulcanTower:
 	Warhead@1Dam: Spread3DDamage
 		Damage: 1000
 		Spread: 0c72
+		Versus:
+			None: 100
+			Wood: 30
+			Light: 30
+			Heavy: 6
+			Concrete: 6
 
 # gdi jumpjet infantry gun
 JumpVulcan:
