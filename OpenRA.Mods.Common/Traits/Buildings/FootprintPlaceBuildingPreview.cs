@@ -12,6 +12,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using OpenRA.Graphics;
+using OpenRA.Mods.Common.Activities;
+using OpenRA.Mods.Common.Graphics;
 using OpenRA.Mods.Common.Orders;
 using OpenRA.Primitives;
 using OpenRA.Traits;
@@ -36,6 +38,9 @@ namespace OpenRA.Mods.Common.Traits
 
 		[Desc("Custom opacity to apply to the line-build placement sprite.")]
 		public readonly float LineBuildFootprintAlpha = 1f;
+
+		[Desc("Render terrain geometry when place building.")]
+		public readonly bool RenderTerrainGeometry = true;
 
 		protected virtual IPlaceBuildingPreview CreatePreview(WorldRenderer wr, ActorInfo ai, TypeDictionary init)
 		{
@@ -138,6 +143,37 @@ namespace OpenRA.Mods.Common.Traits
 			foreach (var d in decorations)
 				foreach (var r in d.RenderAnnotations(wr, wr.World, ActorInfo, centerPosition))
 					yield return r;
+
+			if (!info.RenderTerrainGeometry)
+				yield break;
+
+			var map = wr.World.Map;
+			var mapMaxHeight = map.Grid.MaximumTerrainHeight * MapGrid.MapHeightStep;
+			var mouseCell = wr.Viewport.ViewToWorld(Viewport.LastMousePos).ToMPos(wr.World.Map);
+
+			foreach (var uv in wr.Viewport.AllVisibleCells.CandidateMapCoords)
+			{
+				if (!map.CellInfos.Contains(uv) || wr.World.ShroudObscures(uv))
+					continue;
+
+				var cellinfo = map.CellInfos[uv];
+				var cellCorner = new WPos[5] {
+					map.TerrainVertices[cellinfo.T].LogicPos,
+					map.TerrainVertices[cellinfo.R].LogicPos,
+					map.TerrainVertices[cellinfo.B].LogicPos,
+					map.TerrainVertices[cellinfo.L].LogicPos,
+					map.TerrainVertices[cellinfo.T].LogicPos};
+				var width = uv == mouseCell ? 3 : 1;
+
+				// Colors change between points, so render separately
+				for (var i = 0; i < cellCorner.Length - 1; i++)
+				{
+					var startColor = Color.FromAhsv(128, (float)cellCorner[i].Z / mapMaxHeight, 1, 1);
+					var endColor = Color.FromAhsv(128, (float)cellCorner[i + 1].Z / mapMaxHeight, 1, 1);
+
+					yield return new LineAnnotationRenderable(cellCorner[i], cellCorner[i + 1], width, startColor, endColor);
+				}
+			}
 		}
 
 		protected virtual IEnumerable<IRenderable> RenderInner(WorldRenderer wr, CPos topLeft, Dictionary<CPos, PlaceBuildingCellType> footprint)
