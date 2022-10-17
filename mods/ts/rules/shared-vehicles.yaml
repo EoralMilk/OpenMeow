@@ -18,7 +18,8 @@ MCV:
 	Armor:
 		Type: Heavy
 	Mobile:
-		Speed: 42
+		Speed: 50
+		TurnSpeed: 16
 	RevealsShroud:
 		RequiresCondition: !inside-tunnel
 		Range: 7c0
