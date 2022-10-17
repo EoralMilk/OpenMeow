@@ -73,11 +73,13 @@ rumya:
 			Material: none
 		hair: mdx-hair
 			Material: mdx_hair
+			FaceCullFunc: None
 		cater: mdx-ear
 			Material: mdx_hair
 		gear01: gear01
 			Material: gear01
 			UseDQBSkin: false
+			FaceCullFunc: None
 		gear01_body-hip: gear01_body-part_DT_2
 			Shader: CharacterBody
 			BaseMaterial: body
@@ -88,20 +90,6 @@ rumya:
 			BaseMaterial: body
 			UseDQBSkin: false
 			Material: none
-		# skirt-split: SportShorts
-		# 	Material: sportshorts
-		# 	BodyMaterial: body
-		# 	UseDQBSkin: true
-		# # skirt-split: SplitSkirt
-		# # 	Material: skirt2
-		# # 	BodyMaterial: body
-		# # 	UseDQBSkin: true
-		# sweater: RedCollarSweater
-		# 	Material: sweater
-		# 	BodyMaterial: body
-		# 	UseDQBSkin: true
-		# arrow: Arrow
-		# 	Material: white
 
 
 # rumya-2:

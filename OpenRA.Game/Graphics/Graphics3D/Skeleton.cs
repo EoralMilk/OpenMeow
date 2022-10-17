@@ -555,6 +555,7 @@ namespace OpenRA.Graphics
 				{
 					var y = bone.SkinId * 16;
 					mat4 bindPose = bone.BindPose;
+
 					// notice: Adj bone's bindPose can be (RestPose * BindPose),
 					// if the adj Bone is a child of another adj bone, the bindPose should apply the parentBone's restpose, until the parent is not adj bone.
 					if (bone.IsAdjBone && !UseDynamicAdjBonePose)
@@ -709,10 +710,10 @@ namespace OpenRA.Graphics
 				// Attention, the Adj bone is a type of special bone which won't apply any animation, and won't uppdate logic offset;
 				// the "BindPose" of adj bone whilc contains restPose relative to the AdjParent bone and self bindPose
 				// cpu pak the bindPose and AdjParentPose to gpu, gpu while calculate the final bindOffset when process skin
-				//if (bone.Value.Name.Contains("Adj_"))
-				//{
-				//	bone.Value.IsAdjBone = true;
-				//}
+				if (bone.Value.Name.Contains("Adj_"))
+				{
+					bone.Value.IsAdjBone = true;
+				}
 
 				Bones[bone.Value.Id] = bone.Value;
 			}
