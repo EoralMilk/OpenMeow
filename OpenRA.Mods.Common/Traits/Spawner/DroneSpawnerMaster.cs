@@ -29,6 +29,9 @@ namespace OpenRA.Mods.Common.Traits
 		[Desc("After master attack, slaves will stop and follow master in this many tick. Mainly used for long-range attack also use drone")]
 		public readonly int FollowAfterAttackDelay = 0;
 
+		[Desc("Spawn initial load all at once?")]
+		public readonly bool ShouldSpawnInitialLoad = true;
+
 		public override void RulesetLoaded(Ruleset rules, ActorInfo ai)
 		{
 			base.RulesetLoaded(rules, ai);
@@ -67,6 +70,7 @@ namespace OpenRA.Mods.Common.Traits
 
 		int remainingIdleCheckTick;
 		bool isAircraft;
+		bool hasSpawnInitialLoad;
 
 		public DroneSpawnerMaster(ActorInitializer init, DroneSpawnerMasterInfo info)
 			: base(init, info)
@@ -85,17 +89,12 @@ namespace OpenRA.Mods.Common.Traits
 			for (var i = 0; i < Info.GatherCell.Length; i++)
 				slaveEntries[i].GatherOffsetCell = Info.GatherCell[i];
 
-			// Spawn initial load.
-			var burst = Info.InitialActorCount == -1 ? Info.Actors.Length : Info.InitialActorCount;
-			for (var i = 0; i < burst; i++)
-				Replenish(self, SlaveEntries);
-
-			// The base class creates the slaves but doesn't move them into world.
-			// Let's do it here.
-			SpawnReplenishedSlaves(self);
-			spawnReplaceTicks = -1;
-
 			isAircraft = self.Info.HasTraitInfo<AircraftInfo>();
+
+			if (Info.ShouldSpawnInitialLoad)
+				hasSpawnInitialLoad = false;
+			else
+				hasSpawnInitialLoad = true;
 		}
 
 		public override BaseSpawnerSlaveEntry[] CreateSlaveEntries(BaseSpawnerMasterInfo info)
@@ -144,6 +143,19 @@ namespace OpenRA.Mods.Common.Traits
 
 		void ITick.Tick(Actor self)
 		{
+			if (!hasSpawnInitialLoad)
+			{
+				// Spawn initial load.
+				var burst = Info.InitialActorCount == -1 ? Info.Actors.Length : Info.InitialActorCount;
+				for (var i = 0; i < burst; i++)
+					Replenish(self, SlaveEntries);
+
+				// The base class creates the slaves but doesn't move them into world.
+				// Let's do it here.
+				SpawnReplenishedSlaves(self);
+				spawnReplaceTicks = -1;
+			}
+
 			// Time to respawn someting.
 			if (!IsTraitPaused)
 			{

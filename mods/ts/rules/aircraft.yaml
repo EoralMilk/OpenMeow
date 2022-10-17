@@ -756,3 +756,65 @@ QDRONE:
 		UseDeathTypeSuffix: false
 		CrushedSequence: die
 		CrushedSequencePalette: effect
+
+RPGDRONE:
+	Inherits: ^Aircraft
+	Inherits@AUTOTARGET: ^AutoTargetGround
+	-Selectable:
+	-SelectionDecorations:
+	Interactable:
+	Tooltip:
+		Name: PRG Drone
+	Health:
+		HP: 8000
+	-RevealsShroud@airborne:
+	-RevealsShroud:
+	-RevealOnFire:
+	-Targetable@REPAIR:
+	DroneSpawnerSlave:
+		AttackCallBackDistance: 10c0
+	Targetable@Ignore:
+		TargetTypes: AIgnored
+	Aircraft:
+		CanHover: false
+		CanSlide: false
+		Repulsable: true
+		TurnSpeed: 16
+		Speed: 120
+		IdleTurnSpeed: 10
+		IdleSpeed: 64
+		AltitudeVelocity: 200
+		RepulsionSpeed: 16
+		VTOL: true
+		AirborneCondition: airborne
+		MoveIntoShroud: true
+		TakeUpCellWhenLand: false
+		CruiseAltitude: 2c0
+	AttackAircraft:
+		AttackType: Strafe
+		FacingTolerance: 32
+	RenderSprites:
+		Image: rpgdrone
+	Armament:
+		Weapon: RPGdrone
+	RejectsOrders:
+	-MapEditorData:
+	-SpawnActorOnDeath:
+	-RenderModels:
+	-WithModelBody:
+	-UpdatesPlayerStatistics:
+	-ActorLostNotification:
+	AutoTarget:
+		ScanRadius: 8
+	QuantizeFacingsFromSequence:
+	WithFacingSpriteBody:
+	WithShadow:
+	WithDeathAnimation:
+		FallbackSequence: die
+		DeathSequence: die
+		DeathSequencePalette: effect
+		DeathPaletteIsPlayerPalette: false
+		UseDeathTypeSuffix: false
+		CrushedSequence: die
+		CrushedSequencePalette: effect
+

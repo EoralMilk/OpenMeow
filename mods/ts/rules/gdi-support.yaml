@@ -57,7 +57,7 @@ GACTWR:
 		RequiresCondition: !build-incomplete
 		Type: wall
 	Valued:
-		Cost: 200
+		Cost: 300
 	Tooltip:
 		Name: Component Tower
 	Buildable:
@@ -75,26 +75,26 @@ GACTWR:
 	BodyOrientation:
 		QuantizedFacings: 32
 	DetectCloaked:
-		RequiresCondition: !empdisable && !disabled && (tower.vulcan || tower.rocket || tower.sam)
+		RequiresCondition: !empdisable && !disabled && (plug.vulcan || plug.rpg || plug.missile)
 	Turreted:
 		TurnSpeed: 40
 		InitialFacing: 896
 		RealignDelay: -1
 	AttackTurreted:
-		RequiresCondition: !build-incomplete && (tower.vulcan || tower.rocket || tower.sam)
+		RequiresCondition: !build-incomplete && (plug.vulcan || plug.rpg || plug.missile)
 		PauseOnCondition: empdisable || disabled
 	WithSpriteTurret@VULC:
-		RequiresCondition: !build-incomplete && tower.vulcan
+		RequiresCondition: !build-incomplete && plug.vulcan
 		Recoils: false
 		Sequence: turret-vulcan
 		UseBlindage: true
 	WithSpriteTurret@ROCKET:
-		RequiresCondition: !build-incomplete && tower.rocket
+		RequiresCondition: !build-incomplete && plug.rpg
 		Recoils: false
 		Sequence: turret-rocket
 		UseBlindage: true
 	WithSpriteTurret@SAM:
-		RequiresCondition: !build-incomplete && tower.sam
+		RequiresCondition: !build-incomplete && plug.missile
 		Recoils: false
 		Sequence: turret-sam
 	WithIdleOverlay@plugpowerup:
@@ -102,21 +102,21 @@ GACTWR:
 		PauseOnCondition: empdisable
 		Sequence: plug-powrup
 	Armament@VULCPRIMARY:
-		RequiresCondition: tower.vulcan
+		RequiresCondition: plug.vulcan
 		Weapon: VulcanTower
 		BurstsPerFire: 2
 		LocalOffset: 588,120,784, 588,-120,784
 		MuzzleSequence: muzzle
 	Armament@ROCKET:
-		RequiresCondition: tower.rocket
+		RequiresCondition: plug.rpg
 		Weapon: RPGTower
 		LocalOffset: 272,-92,862
 	Armament@SAM:
-		RequiresCondition: tower.sam
+		RequiresCondition: plug.missile
 		Weapon: TitanMissile #RedEye2
 		LocalOffset: 543,60,976, 543,-60,976
 	WithMuzzleOverlay:
-		RequiresCondition: !build-incomplete && tower.vulcan
+		RequiresCondition: !build-incomplete && plug.vulcan
 	WithIdleOverlay@LIGHTS:
 		RequiresCondition: !build-incomplete && !disabled
 		Sequence: idle-lights
@@ -135,36 +135,36 @@ GACTWR:
 		RequiresCondition: !disabled
 		Amount: -10
 	Power@turrets:
-		RequiresCondition: !disabled && (tower.vulcan || tower.rocket || tower.sam)
+		RequiresCondition: !disabled && (plug.vulcan || plug.rpg || plug.missile)
 		Amount: -20
 	Power@samextra:
-		RequiresCondition: !disabled && tower.sam
+		RequiresCondition: !disabled && plug.missile
 		Amount: -10
 	Power@plugpowerup:
 		RequiresCondition: !empdisable && powrup
 		Amount: 100
 	Pluggable:
 		Conditions:
-			tower.vulcan: tower.vulcan
-			tower.rocket: tower.rocket
-			tower.sam: tower.sam
+			plug.vulcan: plug.vulcan
+			plug.rpg: plug.rpg
+			plug.missile: plug.missile
 			powrup: powrup
 		Requirements:
-			tower.vulcan: !build-incomplete && !tower.vulcan && !tower.rocket && !tower.sam && !powrup
-			tower.rocket: !build-incomplete && !tower.rocket && !tower.vulcan && !tower.sam && !powrup
-			tower.sam: !build-incomplete && !tower.vulcan && !tower.rocket && !tower.sam && !powrup
-			powrup: !build-incomplete && !tower.vulcan && !tower.rocket && !tower.sam && !powrup
+			plug.vulcan: !build-incomplete && !plug.vulcan && !plug.rpg && !plug.missile && !powrup
+			plug.rpg: !build-incomplete && !plug.rpg && !plug.vulcan && !plug.missile && !powrup
+			plug.missile: !build-incomplete && !plug.vulcan && !plug.rpg && !plug.missile && !powrup
+			powrup: !build-incomplete && !plug.vulcan && !plug.rpg && !plug.missile && !powrup
 		EditorOptions:
-			tower.vulcan: Vulcan Tower
-			tower.rocket: RPG Upgrade
-			tower.sam: SAM Upgrade
+			plug.vulcan: Vulcan Tower
+			plug.rpg: RPG Upgrade
+			plug.missile: SAM Upgrade
 			powrup: Power Turbine
 	ProvidesPrerequisite@buildingname:
 	ProvidesPrerequisite@pluggable:
-		RequiresCondition: !build-incomplete && !tower.vulcan && !tower.rocket && !tower.sam && !powrup
+		RequiresCondition: !build-incomplete && !plug.vulcan && !plug.rpg && !plug.missile && !powrup
 		Prerequisite: gactwr.socket
 	ProvidesPrerequisite@pluggablepowerup:
-		RequiresCondition: !build-incomplete && !tower.vulcan && !tower.rocket && !tower.sam && !powrup
+		RequiresCondition: !build-incomplete && !plug.vulcan && !plug.rpg && !plug.missile && !powrup
 		Prerequisite: gapowr.socket
 	Replacement:
 		ReplaceableTypes: GDITower
@@ -179,7 +179,7 @@ GACTWR.SOCKET:
 GAVULC:
 	Inherits: ^BuildingPlug
 	Valued:
-		Cost: 250
+		Cost: 150
 	Tooltip:
 		Name: Vulcan Tower
 	Buildable:
@@ -188,14 +188,14 @@ GAVULC:
 		Prerequisites: gactwr.socket, gapile, ~structures.gdi, ~techlevel.low
 		Description: General base defense.\nDoes not require power to operate.\n  Strong vs Infantry, Light armored units\n  Weak vs Heavy armored units
 	Plug:
-		Type: tower.vulcan
+		Type: plug.vulcan
 	Power:
 		Amount: -20
 
 GAROCK:
 	Inherits: ^BuildingPlug
 	Valued:
-		Cost: 500
+		Cost: 400
 	Tooltip:
 		Name: RPG Upgrade
 	Buildable:
@@ -204,14 +204,14 @@ GAROCK:
 		Prerequisites: gactwr.socket, garadr, ~structures.gdi, ~techlevel.high
 		Description: Advanced ground defense.\nDoes not require power to operate.\n  Strong vs Armored ground units\n  Weak vs Aircraft
 	Plug:
-		Type: tower.rocket
+		Type: plug.rpg
 	Power:
 		Amount: -20
 
 GACSAM:
 	Inherits: ^BuildingPlug
 	Valued:
-		Cost: 400
+		Cost: 300
 	Tooltip:
 		Name: Missile Upgrade
 	Buildable:
@@ -220,7 +220,7 @@ GACSAM:
 		Prerequisites: gactwr.socket, gapile, ~structures.gdi, ~techlevel.medium
 		Description: General missile defense.\nDoes not require power to operate.\n  Strong vs Light armored units\n  Weak vs Infantry
 	Plug:
-		Type: tower.sam
+		Type: plug.missile
 	Power:
 		Amount: -30
 

@@ -653,23 +653,6 @@
 		RemoveInstead: true
 	RenderSprites:
 
-^VehiclePlug:
-	Interactable:
-	AlwaysVisible:
-	Building:
-		BuildSounds: place2.aud
-		UndeploySounds: cashturn.aud
-	SequencePlaceBuildingPreview:
-		ValidPlaceSequence: vplug-valid
-		InvalidPlaceSequence: vplug-invalid
-		Sequence: place
-		Palette: ra
-		FootprintAlpha: 0.75
-		SequenceAlpha: 0.85
-	KillsSelf:
-		RemoveInstead: true
-	RenderSprites:
-
 ^LeaveTiberiumWhenDeath:
 	Explodes@LeaveTib:
 		Weapon: TiberiumDeath

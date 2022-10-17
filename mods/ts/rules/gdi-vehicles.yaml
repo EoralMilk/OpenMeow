@@ -247,26 +247,43 @@ MMCH:
 		RequiresCondition: missile
 		Name: missile
 		MuzzleSequence: muzzle-cannon
+	DroneSpawnerMaster:
+		Actors: RPGDRONE
+		SpawnOffset: 0,0,512
+		RespawnTicks: 256
+		FollowAfterAttackDelay: 25
+		PauseOnCondition: inside-tunnel || carried || empdisable || !rpg
+		ShouldSpawnInitialLoad: false
 	Pluggable@vulcan:
 		Conditions:
-			titan.vulcan: vulcan
+			plug.vulcan: vulcan
 		Requirements:
-			titan.vulcan: !vulcan
+			plug.vulcan: !vulcan
 		EditorOptions:
-			titan.vulcan: Vulcan Upgrade
+			plug.vulcan: Vulcan Upgrade
 	Pluggable@missile:
 		Conditions:
-			titan.missile: missile
+			plug.missile: missile
 		Requirements:
-			titan.missile: !missile
+			plug.missile: !missile
 		EditorOptions:
-			titan.missile: Missile Upgrade
+			plug.missile: Missile Upgrade
+	Pluggable@RPG:
+		Conditions:
+			plug.rpg: rpg
+		Requirements:
+			plug.rpg: !rpg
+		EditorOptions:
+			plug.rpg: RPG Upgrade
 	ProvidesPrerequisite@pluggablevulcan:
 		RequiresCondition: !vulcan
-		Prerequisite: titan.vulcan
+		Prerequisite: plug.vulcan
 	ProvidesPrerequisite@pluggablemissile:
 		RequiresCondition: !missile
-		Prerequisite: titan.missile
+		Prerequisite: plug.missile
+	ProvidesPrerequisite@pluggableRPG:
+		RequiresCondition: !rpg
+		Prerequisite: plug.rpg
 	DetectCloaked:
 		Range: 1c768
 		RequiresCondition: rank-elite
@@ -288,38 +305,6 @@ MMCH:
 		Bounds: 905, 2534, 0, -482
 	Carryable:
 		LocalOffset: 0,0,577
-
-TITANUGVULCAN:
-	Inherits: ^VehiclePlug
-	Valued:
-		Cost: 200
-	Tooltip:
-		Name: Vulcan Upgrade
-	Buildable:
-		Queue: Defense
-		BuildPaletteOrder: 80
-		Prerequisites: titan.vulcan, ~gaweap, ~techlevel.medium
-		Description: Give Titan an additional vulcan.\n  Strong vs Infantry, Light armor\n  Weak vs Aircraft
-	Plug:
-		Type: titan.vulcan
-	RenderSprites:
-		Image: titanup.vulcan
-
-TITANUGMISSILE:
-	Inherits: ^VehiclePlug
-	Valued:
-		Cost: 300
-	Tooltip:
-		Name: Missile Upgrade
-	Buildable:
-		Queue: Defense
-		BuildPaletteOrder: 80
-		Prerequisites: titan.missile, ~gaweap, ~techlevel.medium
-		Description: Give Titan an additional missile.\n  Strong vs Vehicles, Aircraft\n  Weak vs Infantry
-	Plug:
-		Type: titan.missile
-	RenderSprites:
-		Image: titanup.missile
 
 HMEC:
 	Inherits: ^Tank

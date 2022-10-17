@@ -131,6 +131,11 @@ RPGTower:
 	Warhead@5Res: DestroyResource
 		ResourceAmount: 3
 
+RPGdrone:
+	Inherits: RPGTower
+	ReloadDelay: 100
+	Range: 3c0
+
 ^ArtilleryWeapon:
 	Inherits: ^Cannon
 	Projectile: Bullet
