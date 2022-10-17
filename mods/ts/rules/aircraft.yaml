@@ -543,6 +543,7 @@ APACHE:
 	Inherits: ^EMPableAircraft
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@CARGOPIPS: ^CargoPips
 	Inherits@bounty: ^GlobalBounty
 	Valued:
 		Cost: 1000
@@ -566,28 +567,35 @@ APACHE:
 		Speed: 180
 		CanSlide: false
 		TakeOffOnResupply: true
+	Cargo:
+		Types: Infantry
+		MaxWeight: 2
+		UnloadVoice: Move
+		EjectOnDeath: true
+		AfterUnloadDelay: 40
+		InitialUnits: oxanna, slav
 	Health:
 		HP: 22500
 	Armor:
 		Type: Light
-	AutoTarget:
-		InitialStance: HoldFire
-		InitialStanceAI: AttackAnything
+	# AutoTarget:
+	# 	InitialStance: HoldFire
+	# 	InitialStanceAI: AttackAnything
 	Armament:
 		LocalOffset: 418,0,40
 		Weapon: HarpyClaw
-		PauseOnCondition: !ammo
+		# PauseOnCondition: !ammo
 	AttackAircraft:
 		FacingTolerance: 80
 		PersistentTargeting: false
 		Voice: Attack
 		PauseOnCondition: empdisable
 		AttackType: Hover
-	AmmoPool:
-		Ammo: 100
-		AmmoCondition: ammo
-		ReloadCount: 8
-		ReloadDelay: 20
+	# AmmoPool:
+	# 	Ammo: 100
+	# 	AmmoCondition: ammo
+	# 	ReloadCount: 8
+	# 	ReloadDelay: 20
 	WithIdleOverlay@ROTORAIR:
 		Offset: 85,0,346
 		Sequence: rotor
@@ -605,24 +613,19 @@ APACHE:
 		RequiresCondition: empdisable && !traped
 	Rearmable:
 		RearmActors: gahpad, nahpad
-	WithAmmoPipsDecoration:
-		Position: BottomLeft
-		RequiresSelection: true
-		Margin: 4, 5
-		PipCount: 5
-		FullSequence: pip-ammo
-		EmptySequence: pip-ammoempty
-		Palette: pips
+	# WithAmmoPipsDecoration:
+	# 	Position: BottomLeft
+	# 	RequiresSelection: true
+	# 	Margin: 4, 5
+	# 	PipCount: 5
+	# 	FullSequence: pip-ammo
+	# 	EmptySequence: pip-ammoempty
+	# 	Palette: pips
 	# WithShadow:
 	WithModelBody:
 	RenderModels:
 		Scale: 1.2
-	# WithMesh@idle:
-	# 	Mesh: idle
-	# RenderMeshes:
-	# 	Image: missile
-	# 	ZOffset: 15
-	# 	Scale: 20
+
 
 HUNTER:
 	Inherits@2: ^ExistsInWorld

@@ -258,7 +258,7 @@ HarpyClaw:
 	BurstDelays: 2
 	MinRange: 0
 	Range: 7c768
-	ReloadDelay: 35
+	ReloadDelay: 40
 	Report: cygun_a.wav, cygun_b.wav #slvkgun_a.wav, slvkgun_b.wav
 	ValidTargets: Ground, Water, Air
 	Projectile: Bullet
@@ -268,11 +268,8 @@ HarpyClaw:
 		Speed: 1000
 		OnlyDamageDirectlyHit: false
 	Warhead@1Dam: Spread3DDamage
-		Damage: 1500
-		Spread: 0c128
-		DamageOne: false
-		OnlyDamageBlockerWhenBlocked: true
-		OnlyDamageDirectlyHit: false
+		Damage: 1200
+		Spread: 0c42
 		DamageTypes:  Prone100Percent, TriggerProne, SmallExplosionDeath
 	Warhead@2Eff: CreateEffect
 		ExplosionPalette: effectgreen
