@@ -10,7 +10,7 @@ WEEDGUY:
 		Prerequisites: ~nahand, natech, ~techlevel.high
 		Description: Heavy infantry armed with a Flamethrower.\n  Strong vs Infantry\n  Weak vs Armored units, Aircraft
 	Valued:
-		Cost: 750
+		Cost: 550
 	Tooltip:
 		Name: Flame Trooper
 	Voiced:

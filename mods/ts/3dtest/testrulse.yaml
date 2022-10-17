@@ -68,10 +68,6 @@ RUTEST:
 	GivesExperience:
 	UpdatesPlayerStatistics:
 		AddToArmyValue: false
-	Buildable:
-		Queue: Vehicle
-		BuildPaletteOrder: 0
-		Prerequisites: ~none
 	Mobile:
 		TurnSpeed: 66
 		Speed: 100
@@ -101,12 +97,12 @@ RUTEST2:
 	Tooltip:
 		Name: Cat Girl Avatar
 	Valued:
-		Cost: 4000
+		Cost: 1400
 	Health:
 		HP: 80000
 	Buildable:
 		Queue: Vehicle
-		BuildPaletteOrder: 800
+		BuildPaletteOrder: 80
 		Prerequisites: naweap, natech, ~structures.nod
 		BuildLimit: 1
 	Turreted:

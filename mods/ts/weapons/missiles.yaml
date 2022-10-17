@@ -10,7 +10,7 @@
 		Inaccuracy: 128
 		Unit: missile
 		Meshes: idle
-		MeshScale: 1.5
+		MeshScale: 1.75
 		# Image: DRAGON
 		# Palette: ra
 		HorizontalRateOfTurn: 100
@@ -106,7 +106,7 @@
 		LockOnTargetTypes: Vehicle, Air, Building, Defense, Cyborg
 		Unit: missile
 		Meshes: idle
-		MeshScale: 1.5
+		MeshScale: 1.75
 		TrailImage: small_smoke_trail
 		TrailInterval: 1
 		TrailCount: 0 #2

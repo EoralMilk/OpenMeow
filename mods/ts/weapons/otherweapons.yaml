@@ -31,7 +31,7 @@ FireballLauncher:
 		Versus:
 			None: 375
 			Wood: 125
-			Light: 75
+			Light: 95
 			Heavy: 5
 			Concrete: 2
 		DamageTypes: Prone70Percent, TriggerProne, FireDeath

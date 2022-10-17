@@ -213,7 +213,7 @@ namespace OpenRA.Mods.Common.Projectiles
 			this.info = info;
 			this.args = args;
 			var world = args.SourceActor.World;
-			Front = World3DCoordinate.Front;
+			Front = TSVector.forward; // World3DCoordinate.Front;
 			RotFix = TSQuaternion.FromToRotation(Front, TSVector.forward);
 
 			if (!string.IsNullOrEmpty(info.Unit))
@@ -278,7 +278,7 @@ namespace OpenRA.Mods.Common.Projectiles
 
 		protected virtual TSMatrix4x4 GetMatrix()
 		{
-			var effectFacing = TSQuaternion.FromToRotation(RotFix * Front, World3DCoordinate.WVecToTSVec3(matVec));
+			var effectFacing = TSQuaternion.FromToRotation(Front, World3DCoordinate.WVecToTSVec3(matVec));
 			effectMatrix = TSMatrix4x4.Rotate(effectFacing);
 			effectMatrix.SetTranslatePart(World3DCoordinate.WPosToTSVec3(pos));
 			return Transformation.MatWithNewScale(effectMatrix, info.MeshScale);

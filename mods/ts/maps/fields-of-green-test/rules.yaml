@@ -11,10 +11,10 @@ World:
 
 
 ^BaseWorld:
-	TerrainLighting:
-		BlueTint: 0.7
-		Intensity: 0.65
-		AmbientIntensity: 0.28
+	# TerrainLighting:
+	# 	BlueTint: 0.7
+	# 	Intensity: 0.65
+	# 	AmbientIntensity: 0.28
 
 INGRNLMP:
 	TerrainLightSource:
