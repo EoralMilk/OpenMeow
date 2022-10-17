@@ -208,7 +208,7 @@ Jugg90mmDeployCheck:
 Grenade:
 	Inherits: ^ArtilleryWeapon
 	ReloadDelay: 60
-	Range: 5c256
+	Range: 5c768
 	-Report:
 	# Burst: 5
 	ValidTargets: Ground, Water, Trees
@@ -235,12 +235,14 @@ Grenade:
 		ContrailEndColorAlpha: 10
 		ContrailEndColorAlphaOuter: 5
 	Warhead@1Dam: SpreadDamage
-		Spread: 215
+		Spread: 235
 		Damage: 5500
 		Versus:
 			None: 100
-			Light: 70
-			Concrete: 28
+			Wood: 100
+			Light: 80
+			Heavy: 35
+			Concrete: 35
 		DamageTypes: Prone70Percent, TriggerProne, ExplosionDeath
 		ValidTargets: Ground, Trees, Air
 	Warhead@2Eff: CreateEffect
@@ -250,7 +252,6 @@ Grenade:
 	-Warhead@5Res:
 
 GrenadeBounce:
-	Warhead@1Dam: SpreadDamage
 	Warhead@waterbounce: CreateEffect
 		ValidTargets: Water
 		Image: wake
