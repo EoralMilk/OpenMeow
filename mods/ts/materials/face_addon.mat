@@ -1,0 +1,5 @@
+Face_addon:
+	DiffuseMap: faceaddon.png
+	Specular: 0.6
+	Shininess: 32
+

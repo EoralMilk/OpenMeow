@@ -23,48 +23,71 @@ rumya:
 			backwardLeftAnim: Rifle_BackLeft
 
 	Meshes:
-		body-head: body-msx_DT_0
-			Material: body
+		face_addon: face_addon_DT_0
+			UseDQBSkin: false
+			Material: face_addon
+		body-head: body_DT_0
+			Shader: CharacterBody
+			BaseMaterial: body
+			UseDQBSkin: false
+			Material: none
+		body-torso: body_DT_1
+			Shader: CharacterBody
+			BaseMaterial: body
+			UseDQBSkin: false
+			Material: none
+		body-hip: body_DT_2
+			Shader: CharacterBody
+			BaseMaterial: body
+			UseDQBSkin: false
+			Material: none
+		body-thigh: body_DT_3
+			Shader: CharacterBody
+			BaseMaterial: body
+			UseDQBSkin: false
+			Material: none
+		body-leg: body_DT_4
+			Shader: CharacterBody
+			BaseMaterial: body
+			UseDQBSkin: false
+			Material: none
+		body-foot: body_DT_5
+			Shader: CharacterBody
+			BaseMaterial: body
+			UseDQBSkin: false
+			Material: none
+		body-upperarm: body_DT_6
+			Shader: CharacterBody
+			BaseMaterial: body
+			UseDQBSkin: false
+			Material: none
+		body-lowerarm: body_DT_7
+			Shader: CharacterBody
+			BaseMaterial: body
+			UseDQBSkin: false
+			Material: none
+		body-hand: body_DT_8
+			Shader: CharacterBody
+			BaseMaterial: body
 			UseDQBSkin: true
-		body-torso: body-msx_DT_1
-			Material: body
-			UseDQBSkin: true
-		body-hip: body-msx_DT_2
-			Material: body
-			UseDQBSkin: true
-		body-thigh: body-msx_DT_3
-			Material: body
-			UseDQBSkin: true
-		body-leg: body-msx_DT_4
-			Material: body
-			UseDQBSkin: true
-		body-foot: body-msx_DT_5
-			Material: body
-			UseDQBSkin: true
-		body-upperarm: body-msx_DT_6
-			Material: body
-			UseDQBSkin: true
-		body-lowerarm: body-msx_DT_7
-			Material: body
-			UseDQBSkin: true
-		body-hand: body-msx_DT_8
-			Material: body
-			UseDQBSkin: true
-		# hair: lp-hair_s2 #lp-hair_dpt1
-		# 	Material: h-s2 #h-dpt1
+			Material: none
 		hair: mdx-hair
 			Material: mdx_hair
 		cater: mdx-ear
 			Material: mdx_hair
 		gear01: gear01
 			Material: gear01
-			UseDQBSkin: true
+			UseDQBSkin: false
 		gear01_body-hip: gear01_body-part_DT_2
-			Material: body
-			UseDQBSkin: true
+			Shader: CharacterBody
+			BaseMaterial: body
+			UseDQBSkin: false
+			Material: none
 		gear01_body-thigh: gear01_body-part_DT_3
-			Material: body
-			UseDQBSkin: true
+			Shader: CharacterBody
+			BaseMaterial: body
+			UseDQBSkin: false
+			Material: none
 		# skirt-split: SportShorts
 		# 	Material: sportshorts
 		# 	BodyMaterial: body
@@ -117,8 +140,8 @@ rumya:
 
 mmr-test:
 	Meshes:
-		arrow: missile01 #Arrow
-			Material: red
+		dummy: dummy
+			Material: none
 
 # turret-test2:
 # 	Skeleton: TextTurret
@@ -133,3 +156,9 @@ missile:
 		idle: missile01 #Missile
 			Material: misc01
 			FaceCullFunc: None
+
+
+^Materails:
+	Meshes:
+		dummy01: empty
+			Material: mdx_underwear

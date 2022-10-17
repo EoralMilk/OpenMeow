@@ -71,6 +71,9 @@ namespace OpenRA.Mods.Common.Graphics
 				combinedMapName = combinedMapName.Trim();
 				PrepareTexture(combinedMapName, out combinedTex);
 			}
+
+			if (diffuseTex != null && combinedTex != null && diffuseTex.Size != combinedTex.Size)
+				throw new Exception("The textures used by a material must have same size");
 		}
 
 		void PrepareTexture(string name, out Sheet texture)

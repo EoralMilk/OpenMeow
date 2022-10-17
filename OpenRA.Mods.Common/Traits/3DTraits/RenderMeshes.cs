@@ -25,13 +25,13 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 	{
 		public readonly RenderMeshesInfo Info;
 		readonly List<MeshInstance> meshes = new List<MeshInstance>();
-		AttachedArmament[] armaments;
 
 		public readonly World3DRenderer W3dr;
 		bool hasSkeleton;
 		readonly Dictionary<string, WithSkeleton> withSkeletons = new Dictionary<string, WithSkeleton>();
 		readonly Actor self;
 		Color remap;
+		bool created = false;
 
 		public RenderMeshes(Actor self, RenderMeshesInfo info)
 		{
@@ -49,29 +49,6 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 
 			hasSkeleton = withSkeletons.Count > 0;
 
-			armaments = self.TraitsImplementing<AttachedArmament>().ToArray();
-		}
-
-		bool initializePalettes = true;
-		public void OnOwnerChanged(Actor self, Player oldOwner, Player newOwner) { initializePalettes = true; }
-
-		IEnumerable<IRenderable> IRender.Render(Actor self, WorldRenderer wr)
-		{
-			// if (armaments != null && armaments.Length > 0)
-			// {
-			// 	foreach (var a in armaments)
-			// 	{
-			// 		yield return a.DebugDraw1();
-			// 		yield return a.DebugDraw2();
-			// 	}
-			// }
-
-			if (initializePalettes)
-			{
-				remap = self.Owner.Color;
-				initializePalettes = false;
-			}
-
 			if (hasSkeleton)
 			{
 				foreach (var mesh in meshes)
@@ -80,7 +57,7 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 					{
 						if (withSkeletons.ContainsKey(mesh.SkeletonBinded))
 						{
-							mesh.DrawId = withSkeletons[mesh.SkeletonBinded].GetDrawId();
+							mesh.DrawId = () => withSkeletons[mesh.SkeletonBinded].GetDrawId();
 							mesh.Matrix = () => withSkeletons[mesh.SkeletonBinded].Skeleton.Offset;
 							mesh.UseMatrix = true;
 						}
@@ -88,7 +65,22 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 				}
 			}
 
-			yield return new MeshRenderable(meshes, self.CenterPosition, Info.ZOffset, remap, Info.Scale, this);
+			created = true;
+		}
+
+		bool initializePalettes = true;
+		public void OnOwnerChanged(Actor self, Player oldOwner, Player newOwner) { initializePalettes = true; }
+
+		IEnumerable<IRenderable> IRender.Render(Actor self, WorldRenderer wr)
+		{
+			if (initializePalettes)
+			{
+				remap = self.Owner.Color;
+				initializePalettes = false;
+			}
+
+			if (created)
+				yield return new MeshRenderable(meshes, self.CenterPosition, Info.ZOffset, remap, Info.Scale, this);
 		}
 
 		IEnumerable<Rectangle> IRender.ScreenBounds(Actor self, WorldRenderer wr)
@@ -104,11 +96,47 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 		public void Add(MeshInstance m)
 		{
 			meshes.Add(m);
+
+			if (hasSkeleton && created)
+			{
+				foreach (var mesh in meshes)
+				{
+					if (mesh.SkeletonBinded != null)
+					{
+						if (withSkeletons.ContainsKey(mesh.SkeletonBinded))
+						{
+							mesh.DrawId = () => withSkeletons[mesh.SkeletonBinded].GetDrawId();
+							mesh.Matrix = () => withSkeletons[mesh.SkeletonBinded].Skeleton.Offset;
+							mesh.UseMatrix = true;
+						}
+					}
+				}
+			}
+
 		}
 
 		public void Remove(MeshInstance m)
 		{
 			meshes.Remove(m);
+
+			if (hasSkeleton && created)
+			{
+				foreach (var mesh in meshes)
+				{
+					if (mesh.SkeletonBinded != null)
+					{
+						if (withSkeletons.ContainsKey(mesh.SkeletonBinded))
+						{
+							mesh.DrawId = () => withSkeletons[mesh.SkeletonBinded].GetDrawId();
+							mesh.Matrix = () => withSkeletons[mesh.SkeletonBinded].Skeleton.Offset;
+							mesh.UseMatrix = true;
+						}
+					}
+				}
+			}
+
 		}
+
+
 	}
 }

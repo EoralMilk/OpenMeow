@@ -195,6 +195,9 @@ namespace OpenRA.Graphics
 			var viewOffset = Game.Renderer.World3DRenderer.InverseCameraFrontMeterPerWDist * zOffset;
 			foreach (var m in meshes)
 			{
+				if (m.DrawId() == -2)
+					continue;
+
 				if (m.UseMatrix)
 				{
 					TSMatrix4x4 t = m.Matrix();
@@ -207,7 +210,7 @@ namespace OpenRA.Graphics
 					};
 
 					var mat = m.Material.GetParams();
-					int[] dataint = new int[5] { m.DrawId, mat[0], mat[1], mat[2], mat[3] };
+					int[] dataint = new int[5] { m.DrawId(), mat[0], mat[1], mat[2], mat[3] };
 
 					m.OrderedMesh.AddInstanceData(data, 23, dataint, dataint.Length);
 				}
@@ -231,7 +234,7 @@ namespace OpenRA.Graphics
 					};
 
 					var mat = m.Material.GetParams();
-					int[] dataint = new int[5] { m.DrawId, mat[0], mat[1], mat[2], mat[3] };
+					int[] dataint = new int[5] { m.DrawId(), mat[0], mat[1], mat[2], mat[3] };
 
 					m.OrderedMesh.AddInstanceData(data, 23, dataint, dataint.Length);
 				}

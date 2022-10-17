@@ -13,6 +13,11 @@
 		SkeletonBinded: body
 		HipMesh: gear01_body-hip
 		ThighMesh: gear01_body-thigh
+		CoveringMaterail: mdx_underwear
+		RequiresCondition: !nocloth
+	GrantConditionOnDamageState@test:
+		Condition: nocloth
+		ValidDamageStates: Heavy, Critical
 	# WithMeshCloth@skirt:
 	# 	Mesh: skirt-split
 	# 	Masks: Hip

@@ -37,7 +37,7 @@ namespace OpenRA.Mods.Common.Graphics
 			var info = definition.ToDictionary();
 			if (info.ContainsKey("Material"))
 			{
-				// material
+				// material file name
 				var materialName = info["Material"].Value.Trim();
 				if (!cache.HasMaterial(materialName))
 				{
@@ -85,8 +85,35 @@ namespace OpenRA.Mods.Common.Graphics
 
 			var useDQB = ReadYamlInfo.LoadField(info, "UseDQBSkin", false);
 			var cullFunc = ReadYamlInfo.LoadField(info, "FaceCullFunc", FaceCullFunc.Back);
+			var shaderType = ReadYamlInfo.LoadField(info, "Shader", MeshShaderType.Common);
 
-			mesh = new OrderedMesh(name, meshVertex, material, cullFunc, useDQB, skeleton);
+			IMaterial baseMaterial;
+			if (info.ContainsKey("BaseMaterial"))
+			{
+				// base material file name
+				var materialName = info["BaseMaterial"].Value.Trim();
+				if (!cache.HasMaterial(materialName))
+				{
+					var matReader = new MaterialReader(fileSystem, cache, materialName);
+
+					baseMaterial = matReader.CreateMaterial();
+					cache.AddOrGetMaterial(materialName, baseMaterial);
+				}
+				else
+				{
+					baseMaterial = cache.GetMaterial(materialName);
+					if (baseMaterial == null)
+					{
+						throw new Exception("Can not GetMaterial from MeshCache");
+					}
+				}
+			}
+			else
+			{
+				baseMaterial = null;
+			}
+
+			mesh = new OrderedMesh(name, meshVertex, material, cullFunc, useDQB, skeleton, baseMaterial, shaderType);
 
 			return true;
 		}
@@ -212,8 +239,7 @@ namespace OpenRA.Mods.Common.Graphics
 			IVertexBuffer<MeshVertex> vertexBuffer = Game.Renderer.CreateVertexBuffer<MeshVertex>(vertexCount);
 			vertexBuffer.SetData(vertices, vertexCount);
 			vertexBuffer.SetElementData(indices, indicesCount);
-			IShader shader = Game.Renderer.GetOrCreateShader<MeshShaderBindings>("MeshShaderBindings");
-			MeshVertexData renderData = new MeshVertexData(0, indicesCount, shader, vertexBuffer, CalculateBoundingBox(Game.Renderer.World3DRenderer));
+			MeshVertexData renderData = new MeshVertexData(0, indicesCount, vertexBuffer, CalculateBoundingBox(Game.Renderer.World3DRenderer));
 			return renderData;
 		}
 	}

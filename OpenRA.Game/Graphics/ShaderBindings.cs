@@ -16,8 +16,11 @@ namespace OpenRA.Graphics
 {
 	public class CombinedShaderBindings : IShaderBindings
 	{
-		public string VertexShaderName { get; }
-		public string FragmentShaderName { get; }
+		protected string vertexShaderName;
+		protected string fragmentShaderName;
+
+		public string VertexShaderName => vertexShaderName;
+		public string FragmentShaderName => fragmentShaderName;
 
 		public string GeometryShaderName => null;
 		public int Stride => 52;
@@ -39,8 +42,8 @@ namespace OpenRA.Graphics
 		public CombinedShaderBindings()
 		{
 			var name = "combined";
-			VertexShaderName = name;
-			FragmentShaderName = name;
+			vertexShaderName = name;
+			fragmentShaderName = name;
 		}
 
 		public void SetCommonParaments(IShader shader, World3DRenderer w3dr, bool sunCamera)
@@ -51,8 +54,11 @@ namespace OpenRA.Graphics
 
 	public class ScreenShaderBindings : IShaderBindings
 	{
-		public string VertexShaderName { get; }
-		public string FragmentShaderName { get; }
+		protected string vertexShaderName;
+		protected string fragmentShaderName;
+
+		public string VertexShaderName => vertexShaderName;
+		public string FragmentShaderName => fragmentShaderName;
 		public string GeometryShaderName => null;
 
 		public int Stride => 4 * sizeof(float);
@@ -72,8 +78,8 @@ namespace OpenRA.Graphics
 		public ScreenShaderBindings()
 		{
 			var name = "screen";
-			VertexShaderName = name;
-			FragmentShaderName = name;
+			vertexShaderName = name;
+			fragmentShaderName = name;
 		}
 
 		public void SetCommonParaments(IShader shader, World3DRenderer w3dr, bool sunCamera)
@@ -83,8 +89,11 @@ namespace OpenRA.Graphics
 
 	public class UITextureArrayShaderBindings : IShaderBindings
 	{
-		public string VertexShaderName { get; }
-		public string FragmentShaderName { get; }
+		protected string vertexShaderName;
+		protected string fragmentShaderName;
+
+		public string VertexShaderName => vertexShaderName;
+		public string FragmentShaderName => fragmentShaderName;
 		public string GeometryShaderName => null;
 
 		public int Stride => 7 * sizeof(float);
@@ -105,8 +114,8 @@ namespace OpenRA.Graphics
 		public UITextureArrayShaderBindings()
 		{
 			var name = "ui_texturearray";
-			VertexShaderName = name;
-			FragmentShaderName = name;
+			vertexShaderName = name;
+			fragmentShaderName = name;
 		}
 
 		public void SetCommonParaments(IShader shader, World3DRenderer w3dr, bool sunCamera)
@@ -116,8 +125,11 @@ namespace OpenRA.Graphics
 
 	public class MapShaderBindings : IShaderBindings
 	{
-		public string VertexShaderName { get; }
-		public string FragmentShaderName { get; }
+		protected string vertexShaderName;
+		protected string fragmentShaderName;
+
+		public string VertexShaderName => vertexShaderName;
+		public string FragmentShaderName => fragmentShaderName;
 
 		public string GeometryShaderName => null;
 		public int Stride => (25 * sizeof(float));
@@ -147,8 +159,8 @@ namespace OpenRA.Graphics
 		public MapShaderBindings()
 		{
 			var name = "map";
-			VertexShaderName = name;
-			FragmentShaderName = name;
+			vertexShaderName = name;
+			fragmentShaderName = name;
 		}
 
 		public void SetCommonParaments(IShader shader, World3DRenderer w3dr, bool sunCamera)
@@ -177,8 +189,11 @@ namespace OpenRA.Graphics
 
 	public class TerrainMaskShaderBindings : IShaderBindings
 	{
-		public string VertexShaderName { get; }
-		public string FragmentShaderName { get; }
+		protected string vertexShaderName;
+		protected string fragmentShaderName;
+
+		public string VertexShaderName => vertexShaderName;
+		public string FragmentShaderName => fragmentShaderName;
 		public string GeometryShaderName => null;
 
 		public int Stride => 7 * sizeof(float);
@@ -199,8 +214,8 @@ namespace OpenRA.Graphics
 		public TerrainMaskShaderBindings()
 		{
 			var name = "terrain-mask";
-			VertexShaderName = name;
-			FragmentShaderName = name;
+			vertexShaderName = name;
+			fragmentShaderName = name;
 		}
 
 		public void SetCommonParaments(IShader shader, World3DRenderer w3dr, bool sunCamera)
@@ -210,8 +225,11 @@ namespace OpenRA.Graphics
 
 	public class TerrainBlendingShaderBindings : IShaderBindings
 	{
-		public string VertexShaderName { get; }
-		public string FragmentShaderName { get; }
+		protected string vertexShaderName;
+		protected string fragmentShaderName;
+
+		public string VertexShaderName => vertexShaderName;
+		public string FragmentShaderName => fragmentShaderName;
 
 		public string GeometryShaderName => null;
 		public int Stride => (25 * sizeof(float));
@@ -239,8 +257,8 @@ namespace OpenRA.Graphics
 		public TerrainBlendingShaderBindings()
 		{
 			var name = "terrain-blend";
-			VertexShaderName = name;
-			FragmentShaderName = name;
+			vertexShaderName = name;
+			fragmentShaderName = name;
 		}
 
 		public void SetCommonParaments(IShader shader, World3DRenderer w3dr, bool sunCamera)
@@ -250,8 +268,11 @@ namespace OpenRA.Graphics
 
 	public class TerrainFinalShaderBindings : IShaderBindings
 	{
-		public string VertexShaderName { get; }
-		public string FragmentShaderName { get; }
+		protected string vertexShaderName;
+		protected string fragmentShaderName;
+
+		public string VertexShaderName => vertexShaderName;
+		public string FragmentShaderName => fragmentShaderName;
 
 		public string GeometryShaderName => null;
 		public int Stride => (5 * sizeof(float));
@@ -271,8 +292,8 @@ namespace OpenRA.Graphics
 		public TerrainFinalShaderBindings()
 		{
 			var name = "terrain-final";
-			VertexShaderName = name;
-			FragmentShaderName = name;
+			vertexShaderName = name;
+			fragmentShaderName = name;
 		}
 
 		public void SetCommonParaments(IShader shader, World3DRenderer w3dr, bool sunCamera)
@@ -301,8 +322,11 @@ namespace OpenRA.Graphics
 
 	public class MeshShaderBindings : IShaderBindings
 	{
-		public string VertexShaderName { get; }
-		public string FragmentShaderName { get; }
+		protected string vertexShaderName;
+		protected string fragmentShaderName;
+
+		public string VertexShaderName => vertexShaderName;
+		public string FragmentShaderName => fragmentShaderName;
 		public string GeometryShaderName => null;
 
 		public int Stride => 16 * sizeof(float);
@@ -334,8 +358,8 @@ namespace OpenRA.Graphics
 		public MeshShaderBindings()
 		{
 			string name = "common";
-			VertexShaderName = name;
-			FragmentShaderName = name;
+			vertexShaderName = name;
+			fragmentShaderName = name;
 		}
 
 		public void SetCommonParaments(IShader shader, World3DRenderer w3dr, bool sunCamera)
@@ -359,6 +383,15 @@ namespace OpenRA.Graphics
 			shader.SetVec("dirLight.ambient", w3dr.AmbientColor.X, w3dr.AmbientColor.Y, w3dr.AmbientColor.Z);
 			shader.SetVec("dirLight.diffuse", w3dr.SunColor.X, w3dr.SunColor.Y, w3dr.SunColor.Z);
 			shader.SetVec("dirLight.specular", w3dr.SunSpecularColor.X, w3dr.SunSpecularColor.Y, w3dr.SunSpecularColor.Z);
+		}
+	}
+
+	public class CharacterBodyMeshShaderBindings : MeshShaderBindings
+	{
+		public CharacterBodyMeshShaderBindings()
+		{
+			vertexShaderName = "common";
+			fragmentShaderName = "characterbody";
 		}
 	}
 }

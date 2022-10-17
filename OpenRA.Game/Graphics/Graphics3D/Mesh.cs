@@ -19,7 +19,7 @@ namespace OpenRA.Graphics
 		public bool UseMatrix = false;
 		public readonly string SkeletonBinded = null;
 
-		public int DrawId;
+		public Func<int> DrawId;
 		public IMaterial Material;
 		public MeshInstance(IOrderedMesh mesh, Func<WPos> offset, Func<WRot> rotation, Func<bool> isVisible, string skeleton = null)
 		{
@@ -27,7 +27,7 @@ namespace OpenRA.Graphics
 			PoistionFunc = offset;
 			RotationFunc = rotation;
 			IsVisible = isVisible;
-			DrawId = -1;
+			DrawId = () => -1;
 			SkeletonBinded = skeleton;
 			Material = OrderedMesh.DefaultMaterial;
 		}
@@ -38,7 +38,7 @@ namespace OpenRA.Graphics
 			UseMatrix = true;
 			Matrix = matrix;
 			IsVisible = isVisible;
-			DrawId = -1;
+			DrawId = () => -1;
 			SkeletonBinded = skeleton;
 			Material = OrderedMesh.DefaultMaterial;
 		}
@@ -88,6 +88,7 @@ namespace OpenRA.Graphics
 	{
 		void UpdateTextureIndex(MeshCache meshCache);
 		int[] GetParams();
+		void SetShaderAsBaseMaterial(IShader shader);
 		void Dispose();
 	}
 
@@ -146,6 +147,31 @@ namespace OpenRA.Graphics
 				texSize };
 		}
 
+		public void SetShaderAsBaseMaterial(IShader shader)
+		{
+			if (DiffuseMap != null)
+			{
+				shader.SetBool("BaseColorHasTexture", true);
+				shader.SetTexture("BaseColorTexture", DiffuseMap.GetTexture());
+			}
+			else
+			{
+				shader.SetBool("BaseColorHasTexture", false);
+				shader.SetVec("BaseDiffuseColor", DiffuseTint.X, DiffuseTint.Y, DiffuseTint.Z);
+			}
+
+			if (CombinedMap != null)
+			{
+				shader.SetBool("BaseCombinedHasTexture", true);
+				shader.SetTexture("BaseCombinedTexture", CombinedMap.GetTexture());
+			}
+			else
+			{
+				shader.SetBool("BaseCombinedHasTexture", false);
+				shader.SetFloat("BaseSpecular", SpecularTint);
+			}
+		}
+
 		public void Dispose()
 		{
 			DiffuseMap?.Dispose();
@@ -158,14 +184,12 @@ namespace OpenRA.Graphics
 	{
 		public readonly int Start;
 		public readonly int Count;
-		public readonly IShader Shader;
 		public readonly IVertexBuffer VertexBuffer;
 		public readonly Rectangle BoundingRec;
-		public MeshVertexData(int start, int count, IShader shader, IVertexBuffer vertexBuffer, Rectangle bound)
+		public MeshVertexData(int start, int count, IVertexBuffer vertexBuffer, Rectangle bound)
 		{
 			Start = start;
 			Count = count;
-			Shader = shader;
 			VertexBuffer = vertexBuffer;
 			BoundingRec = bound;
 		}
@@ -229,13 +253,28 @@ namespace OpenRA.Graphics
 		}
 	}
 
+	public enum MeshShaderType
+	{
+		Common,
+		CharacterBody,
+	}
+
 	public class OrderedMesh : IOrderedMesh
 	{
 		public static readonly int MaxInstanceCount = 4096;
 		public OrderedSkeleton Skeleton { get; set; }
 		readonly bool useDQB = false;
 		readonly MeshVertexData renderData;
+
 		public readonly FaceCullFunc FaceCull;
+
+		public readonly IShader Shader;
+
+		/// <summary>
+		/// base material, it should be use for some special shader
+		/// </summary>
+		public readonly IMaterial BaseMaterial;
+
 		readonly IMaterial defaultMaterial;
 		public IMaterial DefaultMaterial => defaultMaterial;
 
@@ -247,7 +286,10 @@ namespace OpenRA.Graphics
 		public IVertexBuffer<MeshInstanceData> InstanceArrayBuffer;
 		public Rectangle BoundingRec => renderData.BoundingRec;
 
-		public OrderedMesh(string name, MeshVertexData data, IMaterial defaultMaterial, FaceCullFunc faceCull, bool useDQB, OrderedSkeleton skeleton)
+		public OrderedMesh(string name, MeshVertexData data,
+			IMaterial defaultMaterial, FaceCullFunc faceCull,
+			bool useDQB, OrderedSkeleton skeleton,
+			IMaterial baseMaterial, MeshShaderType shader)
 		{
 			this.name = name;
 			this.useDQB = useDQB;
@@ -258,6 +300,16 @@ namespace OpenRA.Graphics
 			instanceCount = 0;
 			FaceCull = faceCull;
 			this.defaultMaterial = defaultMaterial;
+
+			this.BaseMaterial = baseMaterial;
+			if (shader == MeshShaderType.Common)
+				Shader = Game.Renderer.GetOrCreateShader<MeshShaderBindings>("MeshShaderBindings");
+			else if (shader == MeshShaderType.CharacterBody)
+			{
+				Shader = Game.Renderer.GetOrCreateShader<CharacterBodyMeshShaderBindings>("CharacterBodyMeshShaderBindings");
+				if (baseMaterial == null)
+					throw new Exception("CharacterBody Mesh must have base material");
+			}
 		}
 
 		public void AddInstanceData(in float[] data, int dataCount, in int[] dataInt, int dataIntCount)
@@ -292,35 +344,37 @@ namespace OpenRA.Graphics
 				Game.Renderer.SetFaceCull(FaceCull);
 			if (Skeleton != null)
 			{
-				renderData.Shader.SetBool("useDQB", useDQB);
-				renderData.Shader.SetInt("skinBoneCount", Skeleton.SkeletonAsset.SkinBonesIndices.Length);
-				renderData.Shader.SetInt("skinBoneTexWidth", SkeletonAsset.AnimTextureWidth);
+				Shader.SetBool("useDQB", useDQB);
+				Shader.SetInt("skinBoneCount", Skeleton.SkeletonAsset.SkinBonesIndices.Length);
+				Shader.SetInt("skinBoneTexWidth", SkeletonAsset.AnimTextureWidth);
 
-				renderData.Shader.SetTexture("boneAnimTexture", OrderedSkeleton.BoneAnimTexture);
-				renderData.Shader.SetMatrix("BindTransformData", Skeleton.BindTransformData, 128);
+				Shader.SetTexture("boneAnimTexture", OrderedSkeleton.BoneAnimTexture);
+				Shader.SetMatrix("BindTransformData", Skeleton.BindTransformData, 128);
 			}
 
-			if (world.MeshCache.TextureArray64 != null)
-				renderData.Shader.SetTexture("Textures64", world.MeshCache.TextureArray64);
-			if (world.MeshCache.TextureArray128 != null)
-				renderData.Shader.SetTexture("Textures128", world.MeshCache.TextureArray128);
-			if (world.MeshCache.TextureArray256 != null)
-				renderData.Shader.SetTexture("Textures256", world.MeshCache.TextureArray256);
-			if (world.MeshCache.TextureArray512 != null)
-				renderData.Shader.SetTexture("Textures512", world.MeshCache.TextureArray512);
-			if (world.MeshCache.TextureArray1024 != null)
-				renderData.Shader.SetTexture("Textures1024", world.MeshCache.TextureArray1024);
+			BaseMaterial?.SetShaderAsBaseMaterial(Shader);
 
-			renderData.Shader.PrepareRender();
+			if (world.MeshCache.TextureArray64 != null)
+				Shader.SetTexture("Textures64", world.MeshCache.TextureArray64);
+			if (world.MeshCache.TextureArray128 != null)
+				Shader.SetTexture("Textures128", world.MeshCache.TextureArray128);
+			if (world.MeshCache.TextureArray256 != null)
+				Shader.SetTexture("Textures256", world.MeshCache.TextureArray256);
+			if (world.MeshCache.TextureArray512 != null)
+				Shader.SetTexture("Textures512", world.MeshCache.TextureArray512);
+			if (world.MeshCache.TextureArray1024 != null)
+				Shader.SetTexture("Textures1024", world.MeshCache.TextureArray1024);
+
+			Shader.PrepareRender();
 
 			InstanceArrayBuffer.SetData(instancesToDraw, instanceCount);
 			InstanceArrayBuffer.Bind();
-			renderData.Shader.LayoutInstanceArray();
+			Shader.LayoutInstanceArray();
 
 			// bind after the Instance Array Buffer because we should use elemented render
 			// ebo is in vertexBuffer
 			renderData.VertexBuffer.Bind();
-			renderData.Shader.LayoutAttributes();
+			Shader.LayoutAttributes();
 
 			Game.Renderer.SetBlendMode(BlendMode.Alpha);
 

@@ -253,8 +253,8 @@
 		Name: Veins
 		Palette: player
 		VeinholeActors: veinhole
-	WithMesh@arrow:
-		Mesh: arrow
+	WithMesh@dummy:
+		Mesh: dummy
 	RenderMeshes:
 		Image: mmr-test
 		ZOffset: 15

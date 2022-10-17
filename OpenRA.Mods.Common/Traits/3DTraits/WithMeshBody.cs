@@ -24,6 +24,8 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 		public readonly string SkeletonBinded = null;
 		public readonly string Image = null;
 
+		public readonly string FaceAddonMesh = "face_addon";
+
 		public readonly string HeadMesh = "body-head";
 		public readonly string TorsoMesh = "body-torso";
 		public readonly string HipMesh = "body-hip";
@@ -41,21 +43,13 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 	{
 		/// <summary>
 		/// The first 9 bit are 1
-		/// </summary>
-		int partMask = 0x1FF;
 
 		public readonly string SkeletonBinded;
 		protected readonly RenderMeshes RenderMeshes;
 
-		protected MeshInstance head;
-		protected MeshInstance torso;
-		protected MeshInstance hip;
-		protected MeshInstance thigh;
-		protected MeshInstance leg;
-		protected MeshInstance foot;
-		protected MeshInstance upperArm;
-		protected MeshInstance lowerArm;
-		protected MeshInstance hand;
+		protected MeshInstance faceAddon;
+		protected string[] meshSequences;
+		protected MeshInstance[] meshInstances;
 
 		readonly bool[] drawFlags = new bool[9];
 
@@ -83,88 +77,54 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 			for (int i = 0; i < drawFlags.Length; i++)
 				drawFlags[i] = true;
 
-			#region body part init
+			meshInstances = new MeshInstance[9];
+			meshSequences = new string[9];
+
+			meshSequences[(int)BodyMask.Head] = info.HeadMesh;
+			meshSequences[(int)BodyMask.Torso] = info.TorsoMesh;
+			meshSequences[(int)BodyMask.Hip] = info.HipMesh;
+			meshSequences[(int)BodyMask.Thigh] = info.ThighMesh;
+			meshSequences[(int)BodyMask.Leg] = info.LegMesh;
+			meshSequences[(int)BodyMask.Foot] = info.FootMesh;
+			meshSequences[(int)BodyMask.UpperArm] = info.UpperArmMesh;
+			meshSequences[(int)BodyMask.LowerArm] = info.LowerArmMesh;
+			meshSequences[(int)BodyMask.Hand] = info.HandMesh;
+
+			for (int i = 0; i < meshInstances.Length; i++)
 			{
-				var headMesh = self.World.MeshCache.GetMeshSequence(image, info.HeadMesh);
-				head = new MeshInstance(headMesh, () => self.CenterPosition,
+				int mask = i;
+				if (meshSequences[i] == null)
+					continue;
+				var mesh = self.World.MeshCache.GetMeshSequence(image, meshSequences[i]);
+				meshInstances[i] = new MeshInstance(mesh,
+					() => self.CenterPosition,
+					() => facing == null ? body?.QuantizeOrientation(self.Orientation) ?? self.Orientation : facing.Orientation,
+					() => !IsTraitDisabled && drawFlags[mask],
+					info.SkeletonBinded);
+				RenderMeshes.Add(meshInstances[i]);
+			}
+
+			{
+				var faceAddonMesh = self.World.MeshCache.GetMeshSequence(image, info.FaceAddonMesh);
+				faceAddon = new MeshInstance(faceAddonMesh,
+					() => self.CenterPosition,
 					() => facing == null ? body?.QuantizeOrientation(self.Orientation) ?? self.Orientation : facing.Orientation,
 					() => !IsTraitDisabled && drawFlags[(int)BodyMask.Head],
 					info.SkeletonBinded);
-				RenderMeshes.Add(head);
+				RenderMeshes.Add(faceAddon);
 			}
+		}
 
-			{
-				var torsoMesh = self.World.MeshCache.GetMeshSequence(image, info.TorsoMesh);
-				torso = new MeshInstance(torsoMesh, () => self.CenterPosition,
-					() => facing == null ? body?.QuantizeOrientation(self.Orientation) ?? self.Orientation : facing.Orientation,
-					() => !IsTraitDisabled && drawFlags[(int)BodyMask.Torso],
-					info.SkeletonBinded);
-				RenderMeshes.Add(torso);
-			}
+		public void ChangeBodyPartMaterail(IMaterial material, BodyMask bodyMask)
+		{
+			if (meshInstances[(int)bodyMask] != null)
+				meshInstances[(int)bodyMask].Material = material;
+		}
 
-			{
-				var hipMesh = self.World.MeshCache.GetMeshSequence(image, info.HipMesh);
-				hip = new MeshInstance(hipMesh, () => self.CenterPosition,
-					() => facing == null ? body?.QuantizeOrientation(self.Orientation) ?? self.Orientation : facing.Orientation,
-					() => !IsTraitDisabled && drawFlags[(int)BodyMask.Hip],
-					info.SkeletonBinded);
-				RenderMeshes.Add(hip);
-			}
-
-			{
-				var thighMesh = self.World.MeshCache.GetMeshSequence(image, info.ThighMesh);
-				thigh = new MeshInstance(thighMesh, () => self.CenterPosition,
-					() => facing == null ? body?.QuantizeOrientation(self.Orientation) ?? self.Orientation : facing.Orientation,
-					() => !IsTraitDisabled && drawFlags[(int)BodyMask.Thigh],
-					info.SkeletonBinded);
-				RenderMeshes.Add(thigh);
-			}
-
-			{
-				var legMesh = self.World.MeshCache.GetMeshSequence(image, info.LegMesh);
-				leg = new MeshInstance(legMesh, () => self.CenterPosition,
-					() => facing == null ? body?.QuantizeOrientation(self.Orientation) ?? self.Orientation : facing.Orientation,
-					() => !IsTraitDisabled && drawFlags[(int)BodyMask.Leg],
-					info.SkeletonBinded);
-				RenderMeshes.Add(leg);
-			}
-
-			{
-				var footMesh = self.World.MeshCache.GetMeshSequence(image, info.FootMesh);
-				foot = new MeshInstance(footMesh, () => self.CenterPosition,
-					() => facing == null ? body?.QuantizeOrientation(self.Orientation) ?? self.Orientation : facing.Orientation,
-					() => !IsTraitDisabled && drawFlags[(int)BodyMask.Foot],
-					info.SkeletonBinded);
-				RenderMeshes.Add(foot);
-			}
-
-			{
-				var upperArmMesh = self.World.MeshCache.GetMeshSequence(image, info.UpperArmMesh);
-				upperArm = new MeshInstance(upperArmMesh, () => self.CenterPosition,
-					() => facing == null ? body?.QuantizeOrientation(self.Orientation) ?? self.Orientation : facing.Orientation,
-					() => !IsTraitDisabled && drawFlags[(int)BodyMask.UpperArm],
-					info.SkeletonBinded);
-				RenderMeshes.Add(upperArm);
-			}
-
-			{
-				var lowerArmMesh = self.World.MeshCache.GetMeshSequence(image, info.LowerArmMesh);
-				lowerArm = new MeshInstance(lowerArmMesh, () => self.CenterPosition,
-					() => facing == null ? body?.QuantizeOrientation(self.Orientation) ?? self.Orientation : facing.Orientation,
-					() => !IsTraitDisabled && drawFlags[(int)BodyMask.LowerArm],
-					info.SkeletonBinded);
-				RenderMeshes.Add(lowerArm);
-			}
-
-			{
-				var handMesh = self.World.MeshCache.GetMeshSequence(image, info.HandMesh);
-				hand = new MeshInstance(handMesh, () => self.CenterPosition,
-					() => facing == null ? body?.QuantizeOrientation(self.Orientation) ?? self.Orientation : facing.Orientation,
-					() => !IsTraitDisabled && drawFlags[(int)BodyMask.Hand],
-					info.SkeletonBinded);
-				RenderMeshes.Add(hand);
-			}
-			#endregion
+		public void ResetBodyPartMaterail(BodyMask bodyMask)
+		{
+			if (meshInstances[(int)bodyMask] != null)
+				meshInstances[(int)bodyMask].Material = meshInstances[(int)bodyMask].OrderedMesh.DefaultMaterial;
 		}
 	}
 }

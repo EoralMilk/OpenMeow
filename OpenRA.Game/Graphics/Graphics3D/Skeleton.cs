@@ -618,8 +618,6 @@ namespace OpenRA.Graphics
 
 		public void UpdateAnimTextureData()
 		{
-			if (instanceCount == 0 || skeletonInstances.Count == 0)
-				return;
 			instanceCount = 0;
 			skeletonInstances.Clear();
 		}

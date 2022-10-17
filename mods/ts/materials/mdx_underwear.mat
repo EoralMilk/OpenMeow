@@ -1,0 +1,4 @@
+Underwear_mdx:
+	DiffuseMap: mdx_underwear.png
+	Specular: 0.6
+	Shininess: 32

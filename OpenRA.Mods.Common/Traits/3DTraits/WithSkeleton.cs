@@ -37,7 +37,7 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 		public override object Create(ActorInitializer init) { return new WithSkeleton(init.Self, this); }
 	}
 
-	public class WithSkeleton : ConditionalTrait<WithSkeletonInfo>, ITick, IWithSkeleton
+	public class WithSkeleton : ConditionalTrait<WithSkeletonInfo>, IWithSkeleton
 	{
 		public readonly OrderedSkeleton OrderedSkeleton;
 		public readonly SkeletonInstance Skeleton;
@@ -51,11 +51,8 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 			Skeleton.AddInverseKinematic(id, ik);
 		}
 
-		readonly World3DRenderer w3dr;
 		readonly RenderMeshes rm;
 		public bool Draw;
-		int tick = 0;
-		int lastDrawtick = -1;
 
 		public float Scale = 1;
 		readonly Actor self;
@@ -79,8 +76,6 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 				throw new Exception("orderedSkeleton is null");
 
 			Skeleton = OrderedSkeleton.CreateInstance();
-
-			w3dr = Game.Renderer.World3DRenderer;
 		}
 
 		protected override void Created(Actor self)
@@ -89,6 +84,7 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 
 			// init the current pose by rest pose and offset
 			UpdateWholeSkeleton(false);
+			RenderUpdateWholeSkeleton(false);
 		}
 
 		void UpdateWholeSkeleton(bool callbyParent)
@@ -105,11 +101,6 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 
 			foreach (var child in children)
 				child.RenderUpdateWholeSkeleton(true);
-		}
-
-		void ITick.Tick(Actor self)
-		{
-			tick++;
 		}
 
 		WPos lastSelfPos;
