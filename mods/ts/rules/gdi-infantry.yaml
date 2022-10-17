@@ -249,10 +249,10 @@ GHOST:
 	Passenger:
 	RevealsShroud:
 		Range: 7c512
-	Armament@PulseChainGun:
-		Weapon: GSPulseGun
-		LocalOffset: 120,0,313
-		UseBlindage: true
+	#Armament@PulseChainGun:
+	#	Weapon: GSPulseGun
+	#	LocalOffset: 120,0,313
+	#	UseBlindage: true
 	Armament@railgun:
 		Weapon: LtRail
 		LocalOffset: 120,0,313
@@ -271,3 +271,17 @@ GHOST:
 		DefaultAttackSequence: attack
 	ProducibleWithLevel:
 		Prerequisites: barracks.upgraded
+	Cloak@EXTERNALCLOAK:
+		CloakedCondition: bettercloak
+	Cloak@personalskill:
+		RequiresCondition: !bettercloak
+		InitialDelay: 40
+		CloakDelay: 40
+		IsPlayerPalette: true
+		UncloakOn: Attack, Unload, Infiltrate, Demolish, Damage, Move
+		EffectImage: explosion
+		EffectPalette: effect
+		CloakEffectSequence: smokebomb
+		EffectOffset: 0, 0, 280
+		EffectTracksActor: false
+

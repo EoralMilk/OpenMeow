@@ -15,8 +15,9 @@ BGGY:
 		Prerequisites: ~naweap, ~techlevel.low
 		Description: Fast scout and anti-infantry vehicle.\n  Strong vs Infantry, Light armor\n  Weak vs Vehicles, Aircraft
 	Mobile:
-		TurnSpeed: 32
+		TurnSpeed: 40
 		Speed: 142
+		CanMoveBackward: true
 	Health:
 		HP: 22000
 	Armor:
@@ -59,7 +60,7 @@ BIKE:
 		Prerequisites: ~naweap, ~techlevel.low
 		Description: Fast scout vehicle, armed with\nrockets.\n  Strong vs Vehicles\n  Weak vs Infantry, Aircraft
 	Mobile:
-		TurnSpeed: 32
+		TurnSpeed: 40
 		Speed: 170
 	Health:
 		HP: 15000
@@ -71,7 +72,7 @@ BIKE:
 		Weapon: BikeMissile
 		RequiresCondition: !rank-elite
 		LocalOffset: -153,-204,334, -153,204,334
-		LocalYaw: 76, -76
+		LocalYaw: 100, -100
 	Armament@ELITE:
 		Weapon: BikeMissileDual
 		RequiresCondition: rank-elite
@@ -111,7 +112,7 @@ TTNK:
 		Prerequisites: ~naweap, ~techlevel.medium
 		Description: Nod's main battle tank.\nCan deploy to gain extra protection and range.\n  Strong vs Vehicles\n  Weak vs Infantry, Aircraft
 	Mobile:
-		TurnSpeed: 20
+		TurnSpeed: 32
 		Speed: 85
 		ImmovableCondition: !undeployed
 		RequireForceMoveCondition: !AImicroManage && !undeployed
@@ -388,6 +389,10 @@ REPAIR:
 		OutsideRangeCursor: repair
 		TargetRelationships: Ally
 		ForceTargetRelationships: None
+		MuzzleSequence: muzzle
+		MuzzlePalette: player
+		LocalOffset: 600,0,350 #203,0,0
+	WithMuzzleOverlay:
 	AttackFrontal:
 		Voice: Attack
 		PauseOnCondition: empdisable
@@ -573,6 +578,7 @@ STNK:
 	Mobile:
 		TurnSpeed: 40
 		Speed: 145
+		CanMoveBackward: true
 	Health:
 		HP: 18000
 	Armor:
@@ -595,7 +601,7 @@ STNK:
 		Weapon: Dragon
 		BurstsPerFire: 2
 		LocalOffset: 301,-61,243, 301,61,243
-		LocalYaw: 76, -76
+		LocalYaw: 100, -100
 	AttackFrontal:
 		Voice: Attack
 		PauseOnCondition: empdisable

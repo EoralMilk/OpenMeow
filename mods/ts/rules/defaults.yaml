@@ -728,7 +728,7 @@
 		Terrain: Tiberium, BlueTiberium
 		Damage: 200
 		DamageInterval: 16
-		DamageTypes: ExplosionDeath, TriggerVisceroid
+		DamageTypes: TiberiumDeath
 		RequiresCondition: !inside-tunnel
 	Guard:
 		Voice: Move
@@ -796,6 +796,12 @@
 		DeathTypes:
 			BulletDeath: twirling
 			SmallExplosionDeath: flying
+	WithDeathAnimation@tiberium:
+		DeathSequence: die-
+		DeathTypes:
+			TiberiumDeath: twirling
+		DeathSequencePalette: blast-green
+		DeathPaletteIsPlayerPalette: false
 	WithDeathAnimation@explosion:
 		DeathSequence: die-
 		DeathSequencePalette: effect
@@ -819,7 +825,7 @@
 		CrushedSequencePalette: player
 		CrushedPaletteIsPlayerPalette: true
 	DeathSounds@NORMAL:
-		DeathTypes: BulletDeath, SmallExplosionDeath, ExplosionDeath
+		DeathTypes: BulletDeath, SmallExplosionDeath, ExplosionDeath, TiberiumDeath
 	DeathSounds@EXPLOSION:
 		Voice: Explode
 		DeathTypes: ExplosionDeath
@@ -839,7 +845,7 @@
 		Probability: 10
 		OwnerType: InternalName
 		InternalOwner: Creeps
-		DeathType: TriggerVisceroid
+		DeathType: TiberiumDeath
 		RequiresLobbyCreeps: true
 	SpawnActorOnDeath@FLAMEGUY:
 		Actor: FLAMEGUY

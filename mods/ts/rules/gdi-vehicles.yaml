@@ -14,10 +14,11 @@ APC:
 		Prerequisites: ~gaweap, gapile, ~techlevel.medium
 		Description: Armored infantry transport.\nCan move on water.\n  Unarmed
 	Mobile:
-		TurnSpeed: 20
-		Speed: 113
+		Speed: 120
 		PauseOnCondition: empdisable || loading || being-captured || carried || traped
 		Locomotor: amphibious
+		CanMoveBackward: true
+		TurnSpeed: 40
 	Health:
 		HP: 20000
 	Armor:
@@ -82,6 +83,8 @@ HVR:
 		Speed: 99
 		Locomotor: hover
 		TerrainOrientationAdjustmentMargin: -1
+		CanMoveBackward: true
+		TurnSpeed: 40
 	Selectable:
 		Bounds: 1206, 1448, 0, -603
 	Health:
@@ -95,6 +98,7 @@ HVR:
 		Turret: primary
 		#LocalOffset: 122,172,666, 122,-172,666, 122,211,666, 122,-211,666
 		LocalOffset: 122,172,666, 122,-172,666, 122,211,606, 122,-211,606
+		LocalYaw: -82, 82, -100, 100
 	Turreted:
 		TurnSpeed: 28
 		Turret: primary
@@ -137,8 +141,8 @@ SMECH:
 		Prerequisites: ~gaweap, ~techlevel.low
 		Description: Anti-personnel walker.\n  Strong vs Infantry, Light armor\n  Weak vs Vehicles, Aircraft
 	Mobile:
-		TurnSpeed: 65
-		Speed: 101
+		TurnSpeed: 128
+		Speed: 148
 		Locomotor: foot
 		AlwaysTurnInPlace: true
 		TerrainOrientationAdjustmentMargin: -1
@@ -196,7 +200,7 @@ MMCH:
 		Description: General purpose mechanized walker.\n  Strong vs Vehicles\n  Weak vs Infantry, Aircraft
 	Mobile:
 		TurnSpeed: 20
-		Speed: 56
+		Speed: 70
 		AlwaysTurnInPlace: true
 		TerrainOrientationAdjustmentMargin: -1
 	Health:
@@ -234,11 +238,11 @@ MMCH:
 		MuzzleSequence: muzzle-vulcan
 	Armament@missile:
 		LocalOffset: 280,-445,545, 280,-445,735
+		LocalYaw: 82
 		Weapon: TitanMissile
 		RequiresCondition: missile
 		Name: missile
 		MuzzleSequence: muzzle-cannon
-		LocalYaw: 110
 	Pluggable@vulcan:
 		Conditions:
 			titan.vulcan: vulcan

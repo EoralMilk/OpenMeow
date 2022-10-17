@@ -8,15 +8,28 @@
 	Warhead@1Dam: TargetDamage
 		DebugOverlayColor: 00FF00
 		Damage: -5000
+		Spread: 0c20
 		ValidTargets: Heal
 
 Heal:
 	Inherits: ^HealWeapon
+	Projectile: LaserZap
+		Duration: 1
+		Width: 0
+		HitAnim: explosion
+		HitAnimSequence: heal
+		HitAnimPalette: player
 
 Repair:
 	Inherits: ^HealWeapon
 	Range: 1c819
 	Report: repair11.aud
+	Projectile: LaserZap
+		Duration: 1
+		Width: 0
+		HitAnim: explosion
+		HitAnimSequence: repairsparks
+		HitAnimPalette: player
 	ValidTargets: Repair
 	Warhead@1Dam: TargetDamage
 		ValidTargets: Repair

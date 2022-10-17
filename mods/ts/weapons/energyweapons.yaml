@@ -197,7 +197,7 @@ CyCannonProton:
 		Blockable: false
 		HorizontalRateOfTurn: 8
 		Shadow: false
-		Image: plasma_ball
+		Image: plasma_ball_small
 		Sequences: plasmaball_green
 		MinimumLaunchSpeed: 145
 		Speed: 384
@@ -225,7 +225,7 @@ CyCannonProtonFlame:
 		MinimumLaunchSpeed: 120
 		LaunchAngle: 32
 		# Palette: effectred
-		Image: plasma_ball
+		# Image: plasma_ball
 		Sequences: plasmaball_red
 	Warhead@1Dam: Spread3DDamage
 		ValidTargets: Ground, Trees
@@ -253,7 +253,7 @@ CyCannonProtonEmp:
 		MinimumLaunchSpeed: 95
 		LaunchAngle: 64
 		# Palette: effectcyan
-		Image: plasma_ball
+		# Image: plasma_ball
 		Sequences: plasmaball_blue
 	Warhead@1Dam: Spread3DDamage
 		Damage: 4500
@@ -484,9 +484,10 @@ ProtonBomb:
 		# InstantDropToGround: true
 		Speed: 226
 		Blockable: false
-		# Image: TORPEDO
-		Image: proton_projectile
+		#Image: proton_projectile
 		Palette: effect
+		Image: plasma_ball
+		Sequences: plasmaball_green
 		Shadow: false
 		LaunchAngle: 60
 		Inaccuracy: 200
@@ -511,7 +512,8 @@ ProtonBomb:
 		DamageTypes: Prone100Percent, TriggerProne,  EnergyDeath
 		ValidTargets: Ground, Water, Air, Trees
 	Warhead@2Eff: CreateEffect
-		Explosions: proton_explobig
+		Explosions: plasmaclsnlarge
+		ExplosionPalette: blast-green
 		ImpactSounds: expnew09.aud
 		ValidTargets: Ground, Water, Trees, Air
 	Warhead@4Smu: LeaveSmudge

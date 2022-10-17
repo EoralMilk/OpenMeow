@@ -101,11 +101,14 @@ RUTEST2:
 	Tooltip:
 		Name: Cat Girl Avatar
 	Valued:
-		Cost: 1000
+		Cost: 4000
+	Health:
+		HP: 80000
 	Buildable:
 		Queue: Vehicle
 		BuildPaletteOrder: 800
 		Prerequisites: naweap, natech, ~structures.nod
+		BuildLimit: 1
 	Turreted:
 		TurnSpeed: 44
 		RealignSpeed: 33

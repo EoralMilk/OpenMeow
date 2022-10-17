@@ -88,6 +88,8 @@ HARV:
 		EmptyCondition: no-tiberium
 	Mobile:
 		Speed: 71
+		CanMoveBackward: true
+		TurnSpeed: 20
 	Health:
 		HP: 100000
 	ChangesHealth:

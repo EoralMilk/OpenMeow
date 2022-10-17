@@ -106,6 +106,11 @@ lpst.nod:
 repair:
 	Inherits@defaults: ^VehicleBase
 	Inherits: ^VehicleOverlays
+	muzzle: repairsparks
+		IgnoreWorldTint: True
+		ZOffset: 511
+		Offset: 0, 0, 24
+		Length: *
 	icon: rboticon
 
 art2:

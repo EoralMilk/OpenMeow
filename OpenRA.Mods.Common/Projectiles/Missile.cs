@@ -58,6 +58,12 @@ namespace OpenRA.Mods.Common.Projectiles
 		[Desc("Horizontal rate of turn.")]
 		public readonly WAngle HorizontalRateOfTurn = new WAngle(20);
 
+		[Desc("Reach horizontal rate of turn as speed reach the maxSpeed.")]
+		public readonly WAngle HorizontalRateOfTurnAcceleration = new WAngle(4);
+
+		[Desc("Reach horizontal rate of turn as speed reach the maxSpeed.")]
+		public readonly WAngle HorizontalRateOfTurnStart = new WAngle(8);
+
 		[Desc("Vertical rate of turn.")]
 		public readonly WAngle VerticalRateOfTurn = new WAngle(24);
 
@@ -147,6 +153,7 @@ namespace OpenRA.Mods.Common.Projectiles
 		readonly WDist rangeLimit;
 
 		WAngle renderFacing;
+		WAngle currentHorizontalRateOfTurn;
 
 		[Sync]
 		int hFacing;
@@ -171,6 +178,8 @@ namespace OpenRA.Mods.Common.Projectiles
 			maxSpeed = info.MaxSpeed.Length;
 			minLaunchAngle = info.MinimumLaunchAngle;
 			maxLaunchAngle = info.MaximumLaunchAngle;
+
+			currentHorizontalRateOfTurn = info.HorizontalRateOfTurnStart;
 
 			var world = args.SourceActor.World;
 
@@ -714,8 +723,10 @@ namespace OpenRA.Mods.Common.Projectiles
 				desiredHFacing = hFacing;
 
 			// Compute new direction the projectile will be facing
-			hFacing = Util.TickFacing(hFacing, desiredHFacing, info.HorizontalRateOfTurn.Facing);
+			hFacing = Util.TickFacing(hFacing, desiredHFacing, currentHorizontalRateOfTurn.Facing);
 			vFacing = Util.TickFacing(vFacing, desiredVFacing, info.VerticalRateOfTurn.Facing);
+
+			currentHorizontalRateOfTurn = (currentHorizontalRateOfTurn + info.HorizontalRateOfTurnAcceleration).Angle > info.HorizontalRateOfTurn.Angle ? info.HorizontalRateOfTurn : currentHorizontalRateOfTurn + info.HorizontalRateOfTurnAcceleration;
 
 			// Compute the projectile's guided displacement
 			return new WVec(0, -1024 * speed, 0)

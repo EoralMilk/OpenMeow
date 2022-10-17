@@ -218,7 +218,7 @@ ORCA:
 	Selectable:
 		Bounds: 905, 1448
 	Aircraft:
-		TurnSpeed: 20
+		TurnSpeed: 32
 		Speed: 206
 		TakeoffSounds: orcaup1.aud
 		LandingSounds: orcadwn1.aud
@@ -229,10 +229,13 @@ ORCA:
 		HP: 20000
 	Armor:
 		Type: Light
+	AutoTarget:
+		InitialStance: HoldFire
+		InitialStanceAI: AttackAnything
 	Armament:
-		Weapon: VectorHellfire #Hellfire
-		# BurstsPerFire: 2
+		Weapon: VectorHellfire
 		LocalOffset: 300,195,70, 300,-195,70
+		LocalYaw: -110, 110
 		PauseOnCondition: !ammo
 	AttackAircraft:
 		FacingTolerance: 80
@@ -260,6 +263,7 @@ ORCA:
 		FullSequence: pip-ammo
 		EmptySequence: pip-ammoempty
 		Palette: pips
+		PipCount: 5
 
 ORCAB:
 	Inherits: ^EMPableAircraft
@@ -280,7 +284,7 @@ ORCAB:
 		Bounds: 905, 1448
 	Aircraft:
 		# CruiseAltitude: 5c512
-		TurnSpeed: 12
+		TurnSpeed: 20
 		IdleTurnSpeed: 4
 		Speed: 144
 		IdleSpeed: 72
@@ -293,6 +297,10 @@ ORCAB:
 		HP: 30000
 	Armor:
 		Type: Heavy
+	AutoTarget:
+		ScanRadius: 6
+		InitialStance: HoldFire
+		InitialStanceAI: AttackAnything
 	Armament:
 		Weapon: Bomb
 		PauseOnCondition: !ammo
@@ -431,7 +439,7 @@ SCRIN:
 	Voiced:
 		VoiceSet: Scrin
 	Aircraft:
-		TurnSpeed: 15
+		TurnSpeed: 20
 		Speed: 275
 		IdleTurnSpeed: 6
 		IdleSpeed: 140
@@ -445,6 +453,9 @@ SCRIN:
 		Type: Light
 	RevealsShroud@airborne:
 		Range: 12c0
+	AutoTarget:
+		InitialStance: HoldFire
+		InitialStanceAI: AttackAnything
 	Armament@PulseGun:
 		Weapon: ProtonPulse
 		LocalOffset: 555,155,120, 555,-155,120
@@ -454,8 +465,8 @@ SCRIN:
 	Armament@Bomb:
 		Weapon: ProtonBomb
 		LocalOffset: 111,0,80
-		PauseOnCondition: !ammo
-		AmmoUsage: 6
+		PauseOnCondition: ammo < 8
+		AmmoUsage: 8
 	AttackAircraft:
 		Voice: Attack
 		PersistentTargeting: false
@@ -465,8 +476,8 @@ SCRIN:
 		# StrafeRunLength: 17c0
 		FacingFullOnTarget: true
 	AmmoPool:
-		Ammo: 60
-		ReloadCount: 6
+		Ammo: 48
+		ReloadCount: 8
 		ReloadDelay: 20
 		AmmoCondition: ammo
 	RenderSprites:
@@ -483,7 +494,7 @@ SCRIN:
 		Position: BottomLeft
 		RequiresSelection: true
 		Margin: 4, 5
-		PipCount: 10
+		PipCount: 6
 		FullSequence: pip-ammo
 		EmptySequence: pip-ammoempty
 		Palette: pips
@@ -491,7 +502,7 @@ SCRIN:
 		Offset: -395,145,45
 		ZOffset: 88
 		TrailLength: 4
-		TrailWidth: 142
+		TrailWidth: 174
 		BlendMode: Additive
 		StartColorUsePlayerColor: false
 		EndColorUsePlayerColor: false
@@ -503,11 +514,12 @@ SCRIN:
 		EndColorAlphaOuter: 0
 		StartColorOuter: 80FF80CF
 		EndColorOuter: 80FF80CF
+		WidthFadeRate: 1
 	Contrail@b:
 		Offset: -395,-145,45
 		ZOffset: 88
 		TrailLength: 4
-		TrailWidth: 142
+		TrailWidth: 174
 		BlendMode: Additive
 		StartColorUsePlayerColor: false
 		EndColorUsePlayerColor: false
@@ -519,6 +531,7 @@ SCRIN:
 		EndColorAlphaOuter: 0
 		StartColorOuter: 80FF80CF
 		EndColorOuter: 80FF80CF
+		WidthFadeRate: 1
 
 APACHE:
 	Inherits: ^EMPableAircraft
@@ -542,14 +555,17 @@ APACHE:
 		PitchSpeed: 8
 		Roll: 16
 		RollSpeed: 8
-		TurnSpeed: 20
-		Speed: 130
+		TurnSpeed: 32
+		Speed: 180
 		CanSlide: false
 		TakeOffOnResupply: true
 	Health:
 		HP: 22500
 	Armor:
 		Type: Light
+	AutoTarget:
+		InitialStance: HoldFire
+		InitialStanceAI: AttackAnything
 	Armament:
 		LocalOffset: 418,0,40
 		Weapon: HarpyClaw

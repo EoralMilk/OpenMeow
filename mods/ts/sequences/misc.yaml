@@ -295,11 +295,6 @@ explosion:
 		BlendMode: Alpha
 		AlphaFade: False
 		MeshType: Plane
-	proton_explobig: proton_explo
-		Scale: 2
-		AlphaFade: False
-		Tick: 50
-		MeshType: Plane
 	laserburning: laserburn
 		ZOffset: 32
 		Tick: 80
@@ -324,6 +319,18 @@ explosion:
 		Scale: 0.6
 		BlendMode: Additive
 		MeshType: TileOverlay
+	repairsparks: repairsparks
+		AlphaFade: false
+	heal: heal
+		AlphaFade: false
+	smokebomb: smokebomb
+		BlendMode: Alpha
+	plasmaclsnlarge: plasmaclsnlarge
+		AlphaFade: False
+		Tick: 35
+		MeshType: Plane
+		BlendMode: Additive
+		Offset: 0, -12, 12
 
 mislflash:
 	Defaults:
@@ -465,7 +472,7 @@ plasma_ball:
 		Length: *
 		ZOffset: 1023
 		Offset: 0, 0, 8
-		Scale: 0.6
+		Scale: 0.8
 		IgnoreWorldTint: True
 		MeshType: Plane
 		BlendMode: Additive
@@ -473,6 +480,10 @@ plasma_ball:
 	plasmaball_red: plasmaball_red
 	plasmaball_green: plasmaball_green
 
+plasma_ball_small:
+	Inherits: plasma_ball
+	Defaults:
+		Scale: 0.5
 
 flameall:
 	idle:
