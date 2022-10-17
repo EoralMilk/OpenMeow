@@ -308,6 +308,9 @@ ORCAB:
 	Armament:
 		Weapon: Bomb
 		PauseOnCondition: !ammo
+		ExhaustAllBurst: True
+		NotCheckFacingToExhaustAllBurst: True
+		NotCheckRangeToExhaustAllBurst: True
 	AttackAircraft:
 		Voice: Attack
 		FacingTolerance: 80
