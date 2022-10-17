@@ -229,7 +229,7 @@ namespace OpenRA.Mods.Common.Projectiles
 			}
 			else
 			{
-				var dir = World3DCoordinate.TSVec3ToWPos(Transformation.MatWithOutScale(args.Matrix) * (front.normalized)) - args.Source;
+				var dir = World3DCoordinate.TSVec3ToWPos(Transformation.MatWithOutScale(args.Matrix) * (Front.normalized)) - args.Source;
 				hFacing = dir.Yaw.Facing;
 				var hLength = new WVec(dir.X, dir.Y, 0).Length;
 				vFacing = new WVec(-dir.Z, -hLength, 0).Yaw.Facing;
@@ -267,7 +267,7 @@ namespace OpenRA.Mods.Common.Projectiles
 		DebugLineRenderable DebugDrawLine(WPos pos, TSQuaternion q, Color color)
 		{
 			var start = World3DCoordinate.Float3toVec3(Game.Renderer.WorldRgbaColorRenderer.Render3DPosition(pos));
-			var end = World3DCoordinate.TSVec3ToVec3(q * (front * 5)) + start;
+			var end = World3DCoordinate.TSVec3ToVec3(q * (Front * 5)) + start;
 
 			return new DebugLineRenderable(pos, 0,
 				World3DCoordinate.Vec3toFloat3(start),

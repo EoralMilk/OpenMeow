@@ -353,7 +353,7 @@ ObeliskLaserFire:
 TurretLaserFire:
 	Inherits: ^Laser
 	ReloadDelay: 30
-	Range: 6c512
+	Range: 7c512
 	Report: lastur1.aud
 	Projectile: LaserZap
 		Width: 36
@@ -367,6 +367,9 @@ TurretLaserFire:
 	Warhead@3Smu: LeaveSmudge
 		SizePerSmudge: 723, 822
 
+TurretLaserFireHyper:
+	Inherits: TurretLaserFire
+	ReloadDelay: 15
 
 LaserFence:
 	TargetActorCenter: true

@@ -7,16 +7,17 @@ WEEDGUY:
 		Queue: Infantry
 		BuildPaletteOrder: 75
 		Prerequisites: ~nahand, natech, ~techlevel.high
+		Description: Heavy infantry armed with a Flamethrower.\n  Strong vs Infantry\n  Weak vs Armored units, Aircraft
 	Valued:
-		Cost: 700
+		Cost: 750
 	Tooltip:
-		Name: Flame Spray Infantry
+		Name: Flame Trooper
 	Voiced:
 		VoiceSet: Weed
 	Mobile:
 		Speed: 67
 	Health:
-		HP: 17500
+		HP: 20000
 	Crushable:
 		CrushSound: squishy2.aud
 	Armament:

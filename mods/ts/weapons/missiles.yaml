@@ -355,14 +355,14 @@ RedEye2:
 		IgnitionDelay: 0
 		LaunchAngle: 64
 		MinSpeed: 88
-		MaxSpeed: 388
+		MaxSpeed: 422
 		LifeTime: 75
 		Width: 40
-		MeshScale: 4
+		MeshScale: 3
 		ProximityRange: 289
 	Warhead@1Dam: Spread3DDamage
 		Spread: 128
-		Damage: 7800
+		Damage: 8400
 		DamageTypes: SmallExplosionDeath
 	Warhead@2Eff: CreateEffect
 		Explosions: large_grey_explosion

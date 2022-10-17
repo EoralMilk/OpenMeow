@@ -180,10 +180,11 @@ namespace OpenRA.Mods.Common.Projectiles
 		readonly CorporealProjectileInfo info;
 		readonly ProjectileArgs args;
 
-		protected	readonly TSVector front;
+		protected	readonly TSVector Front;
+		protected readonly TSQuaternion RotFix;
 
 		Color remapColor = Color.White;
-		List<MeshInstance> meshes = new List<MeshInstance>();
+		readonly List<MeshInstance> meshes = new List<MeshInstance>();
 
 		bool hasInitPal = false;
 		readonly Animation anim;
@@ -212,14 +213,15 @@ namespace OpenRA.Mods.Common.Projectiles
 			this.info = info;
 			this.args = args;
 			var world = args.SourceActor.World;
-			front = TSVector.forward;// World3DCoordinate.Front;
+			Front = World3DCoordinate.Front;
+			RotFix = TSQuaternion.FromToRotation(Front, TSVector.forward);
 
 			if (!string.IsNullOrEmpty(info.Unit))
 			{
 				if (args.Matrix != TSMatrix4x4.Identity)
 				{
 					effectMatrix = args.Matrix;
-					matVec = World3DCoordinate.TSVec3ToWPos(Transformation.MatWithOutScale(effectMatrix) * front) - args.Source;
+					matVec = World3DCoordinate.TSVec3ToWPos(Transformation.MatWithOutScale(effectMatrix) * Front) - args.Source;
 				}
 				else
 				{
@@ -276,7 +278,7 @@ namespace OpenRA.Mods.Common.Projectiles
 
 		protected virtual TSMatrix4x4 GetMatrix()
 		{
-			var effectFacing = TSQuaternion.FromToRotation(front, World3DCoordinate.WVecToTSVec3(matVec));
+			var effectFacing = TSQuaternion.FromToRotation(RotFix * Front, World3DCoordinate.WVecToTSVec3(matVec));
 			effectMatrix = TSMatrix4x4.Rotate(effectFacing);
 			effectMatrix.SetTranslatePart(World3DCoordinate.WPosToTSVec3(pos));
 			return Transformation.MatWithNewScale(effectMatrix, info.MeshScale);

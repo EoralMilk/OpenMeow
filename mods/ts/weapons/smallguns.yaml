@@ -209,8 +209,9 @@ CyborgVulcan:
 # gdi vulcan tower
 VulcanTower:
 	Inherits: ^Vulcan
+	ValidTargets: Ground, Water, Air
 	Report: chaingn_a.wav, chaingn_b.wav, chaingn_c.wav, chaingn_d.wav
-	Range: 7c0
+	Range: 7c512
 	ReloadDelay: 45
 	Burst: 16
 	BurstDelays: 2

@@ -92,7 +92,7 @@ JUMPJET:
 	Inherits: ^Soldier
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@EXPHOSPITAL: ^InfantryExperienceHospitalOverrides
-	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Valued:
 		Cost: 500
 	Tooltip:

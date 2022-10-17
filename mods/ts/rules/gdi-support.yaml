@@ -112,8 +112,8 @@ GACTWR:
 		LocalOffset: 272,-92,862
 	Armament@SAM:
 		RequiresCondition: tower.sam
-		Weapon: RedEye2
-		LocalOffset: 543,0,976
+		Weapon: TitanMissile #RedEye2
+		LocalOffset: 543,60,976, 543,-60,976
 	WithMuzzleOverlay:
 		RequiresCondition: !build-incomplete && tower.vulcan
 	WithIdleOverlay@LIGHTS:
@@ -178,14 +178,14 @@ GACTWR.SOCKET:
 GAVULC:
 	Inherits: ^BuildingPlug
 	Valued:
-		Cost: 150
+		Cost: 250
 	Tooltip:
 		Name: Vulcan Tower
 	Buildable:
 		Queue: Defense
 		BuildPaletteOrder: 80
 		Prerequisites: gactwr.socket, gapile, ~structures.gdi, ~techlevel.low
-		Description: Basic base defense.\nDoes not require power to operate.\n  Strong vs Infantry, Light armor\n  Weak vs Aircraft
+		Description: General base defense.\nDoes not require power to operate.\n  Strong vs Infantry, Light armored units\n  Weak vs Heavy armored units
 	Plug:
 		Type: tower.vulcan
 	Power:
@@ -194,14 +194,14 @@ GAVULC:
 GAROCK:
 	Inherits: ^BuildingPlug
 	Valued:
-		Cost: 600
+		Cost: 500
 	Tooltip:
 		Name: RPG Upgrade
 	Buildable:
 		Queue: Defense
 		BuildPaletteOrder: 90
-		Prerequisites: gactwr.socket, gapile, ~structures.gdi, ~techlevel.high
-		Description: GDI Advanced base defense.\nDoes not require power to operate.\n  Strong vs Armored ground units\n  Weak vs Aircraft
+		Prerequisites: gactwr.socket, garadr, ~structures.gdi, ~techlevel.high
+		Description: Advanced ground defense.\nDoes not require power to operate.\n  Strong vs Armored ground units\n  Weak vs Aircraft
 	Plug:
 		Type: tower.rocket
 	Power:
@@ -210,14 +210,14 @@ GAROCK:
 GACSAM:
 	Inherits: ^BuildingPlug
 	Valued:
-		Cost: 300
+		Cost: 400
 	Tooltip:
-		Name: SAM Upgrade
+		Name: Missile Upgrade
 	Buildable:
 		Queue: Defense
 		BuildPaletteOrder: 100
-		Prerequisites: gactwr.socket, garadr, ~structures.gdi, ~techlevel.medium
-		Description: GDI Anti-Air base defense.\nDoes not require power to operate.\n  Strong vs Aircraft\n  Weak vs Ground units
+		Prerequisites: gactwr.socket, gapile, ~structures.gdi, ~techlevel.medium
+		Description: General missile defense.\nDoes not require power to operate.\n  Strong vs Light armored units\n  Weak vs Infantry
 	Plug:
 		Type: tower.sam
 	Power:

@@ -118,7 +118,7 @@ RPGTower:
 		ContrailBlendMode: Alpha
 	Warhead@1Dam: SpreadDamage
 		Damage: 15500
-		Spread: 300
+		Spread: 320
 		Versus:
 			None: 30
 			Wood: 75
