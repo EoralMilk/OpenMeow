@@ -234,11 +234,14 @@ EMPulseCannon:
 	Range: 40c0
 	Report: plsecan2.aud
 	Projectile: Bullet
-		Speed: 425
+		Speed: 300
 		Blockable: false
-		Shadow: true
+		Shadow: false
 		LaunchAngle: 96
-		Image: pulsball
+		Image: plasma_ball_large
+		Sequences: plasmaball_blue
+		TrailImage: explosion
+		TrailSequences: emp_fx01
 	Warhead@1Eff: CreateEffect
 		Explosions: pulse_explosion
 		ImpactActors: false

@@ -331,6 +331,10 @@ explosion:
 		MeshType: Plane
 		BlendMode: Additive
 		Offset: 0, -12, 12
+	emp_fx01: emp_fx01
+		Length: *
+		Offset: 0, 0, 37
+		AlphaFade: False
 
 mislflash:
 	Defaults:
@@ -484,6 +488,11 @@ plasma_ball_small:
 	Inherits: plasma_ball
 	Defaults:
 		Scale: 0.5
+
+plasma_ball_large:
+	Inherits: plasma_ball
+	Defaults:
+		Scale: 1
 
 flameall:
 	idle:
