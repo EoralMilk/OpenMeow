@@ -39,7 +39,7 @@ rumya:
 		body-hip: body_DT_2
 			Shader: CharacterBody
 			BaseMaterial: body
-			UseDQBSkin: false
+			UseDQBSkin: true
 			Material: none
 		body-thigh: body_DT_3
 			Shader: CharacterBody

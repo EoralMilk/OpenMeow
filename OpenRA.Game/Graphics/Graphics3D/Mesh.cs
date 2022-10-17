@@ -292,7 +292,7 @@ namespace OpenRA.Graphics
 			IMaterial baseMaterial, MeshShaderType shader)
 		{
 			this.name = name;
-			this.useDQB = useDQB;
+			this.useDQB = useDQB && !Game.Settings.Graphics.ForceLinerBlendSkin;
 			Skeleton = skeleton;
 			renderData = data;
 			InstanceArrayBuffer = Game.Renderer.CreateVertexBuffer<MeshInstanceData>(MaxInstanceCount);

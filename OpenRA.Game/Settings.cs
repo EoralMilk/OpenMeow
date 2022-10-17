@@ -217,6 +217,9 @@ namespace OpenRA
 		public int BatchSize = 8192;
 		public int SheetSize = 2048;
 
+		[Desc("Force DQB Skin to LinerBlendSkin.")]
+		public readonly bool ForceLinerBlendSkin = false;
+
 		[Desc("Size of the shadow buffer, must be power of two.")]
 		public readonly int ShadowTextureSize = 1024;
 

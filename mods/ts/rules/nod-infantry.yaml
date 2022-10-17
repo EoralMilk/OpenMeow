@@ -73,13 +73,13 @@ CYBORG:
 	Armament@PRIMARY:
 		LocalOffset: 290,120, 610
 		Weapon: CyborgVulcan
-		RequiresCondition: !rank-elite && !empdisable
+		RequiresCondition: !empdisable
 		UseBlindage: true
-	Armament@ELITE:
-		LocalOffset: 290,120, 610
-		Weapon: LaserChainGun
-		RequiresCondition: rank-elite && !empdisable
-		UseBlindage: true
+	# Armament@ELITE:
+	# 	LocalOffset: 290,120, 610
+	# 	Weapon: LaserChainGun
+	# 	RequiresCondition: rank-elite && !empdisable
+	# 	UseBlindage: true
 	AttackFrontal:
 		Voice: Attack
 		FacingTolerance: 0
