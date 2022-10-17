@@ -55,7 +55,7 @@ APC:
 		PauseOnCondition: empdisable
 		TargetRelationships: None
 		Cursor: ability
-		OutsideRangeCursor: ability
+		OutsideRangeCursor: move
 	AttackFollow:
 		PauseOnCondition: empdisable
 		Voice: Move

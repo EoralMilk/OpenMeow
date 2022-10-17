@@ -108,6 +108,7 @@ Player:
 		CheckboxDisplayOrder: 8
 	Shroud:
 		FogCheckboxDisplayOrder: 3
+		ExploredMapCheckboxEnabled: true
 	LobbyPrerequisiteCheckbox@GLOBALFACTUNDEPLOY:
 		ID: factundeploy
 		Label: Redeployable MCVs
