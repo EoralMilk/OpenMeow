@@ -231,6 +231,7 @@ ChromeLayout:
 	common|chrome/confirmation-dialogs.yaml
 	ts|chrome/editor.yaml
 	common|chrome/text-notifications.yaml
+	ts|chrome/tooltips.yaml
 
 Translations:
 	common|languages/en.ftl

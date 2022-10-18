@@ -76,6 +76,11 @@ namespace OpenRA.Mods.Common.Widgets
 			Game.Renderer.SpriteRenderer.DrawSprite(s, p, pos - 0.5f * scale * s.Size, scale);
 		}
 
+		public static void DrawSprite(Sprite s, PaletteReference p, float2 pos, float scale = 1f, float alpha = 1f)
+		{
+			Game.Renderer.SpriteRenderer.DrawSprite(s, p, pos, scale, alpha: alpha);
+		}
+
 		public static void DrawPanel(string collection, Rectangle bounds)
 		{
 			var sprites = ChromeProvider.GetPanelImages(collection);

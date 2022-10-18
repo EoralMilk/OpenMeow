@@ -32,6 +32,8 @@ namespace OpenRA.Mods.Common.Widgets.Logic
 				iw.ImageCollection += suffix;
 			else if (widget is BackgroundWidget bgw)
 				bgw.Background += suffix;
+			else if (widget is ActorInfoWidget aiw)
+				aiw.Background += suffix;
 			else if (widget is TextFieldWidget tfw)
 				tfw.Background += suffix;
 			else if (widget is ScrollPanelWidget spw)
@@ -47,7 +49,7 @@ namespace OpenRA.Mods.Common.Widgets.Logic
 				ptw.Background += suffix;
 			}
 			else
-				throw new InvalidOperationException("AddFactionSuffixLogic only supports ButtonWidget, ImageWidget, BackgroundWidget, TextFieldWidget, ScrollPanelWidget and ProductionTabsWidget");
+				throw new InvalidOperationException("AddFactionSuffixLogic only supports ButtonWidget, ImageWidget, BackgroundWidget, ActorInfoWidget, TextFieldWidget, ScrollPanelWidget and ProductionTabsWidget");
 		}
 	}
 }

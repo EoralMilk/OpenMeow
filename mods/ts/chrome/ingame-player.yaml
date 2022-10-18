@@ -19,6 +19,27 @@ Container@PLAYER_WIDGETS:
 			CombineWithGroupKeyPrefix: ControlGroupCombineWith
 			JumpToGroupKeyPrefix: ControlGroupJumpTo
 		LogicTicker@SIDEBAR_TICKER:
+		ActorInfo@UNIT_INFO:
+			Logic: AddFactionSuffixLogic
+			Background: unitinfo
+			X: WINDOW_RIGHT - WIDTH - 5
+			Y: WINDOW_BOTTOM - HEIGHT - 5
+			Width: 200
+			Height: 150
+			ClickThrough: true
+			Children:
+				ActorInfoIcon@UNIT_ICON:
+					TooltipContainer: TOOLTIP_CONTAINER
+					TooltipTemplate: UNIT_INFO_TOOLTIP
+					ActorInfoTemplate: UNIT_INFO
+					Background: dialog3
+					X: 12
+					Y: 12
+					Width: 72
+					Height: 56
+					DefaultIconImage: icon
+					DefaultIconSequence: none
+					IconOffset: 4,4
 		Container@SUPPORT_POWERS:
 			Logic: SupportPowerBinLogic
 			X: 10

@@ -784,6 +784,7 @@ icon:
 	hunterseeker: detnicon
 	emp: pulsicon
 	droppods: podsicon
+	none: xxicon
 
 clustermissile:
 	up: mltimisl-placeholder # TODO: use voxel
