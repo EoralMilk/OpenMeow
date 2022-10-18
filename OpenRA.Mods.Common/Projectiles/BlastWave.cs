@@ -63,6 +63,15 @@ namespace OpenRA.Mods.Common.Projectiles
 		[Desc("Keep flying height as source height?")]
 		public readonly bool KeepSourceAltitude = true;
 
+		[Desc("Mess it up when it blocked by something.")]
+		public readonly bool Chaos = false;
+
+		[Desc("Mess it up at horizontal.")]
+		public readonly WDist ChaosInaccuracy = WDist.Zero;
+
+		[Desc("Mess it up at height，necessary for avoiding depth conflict.")]
+		public readonly WDist ChaosHeightInaccuracy = new WDist(128);
+
 		public IProjectile Create(ProjectileArgs args) { return new BlastWave(this, args); }
 	}
 
@@ -80,16 +89,14 @@ namespace OpenRA.Mods.Common.Projectiles
 		readonly WVec offset = WVec.Zero;
 
 		[Sync]
-		WPos pos, lastPos, target;
+		WPos pos, lastPos, target, source;
 
-		[Sync]
-		readonly WPos source;
-
-		readonly int length;
+		int length;
+		readonly int chaosheightadd;
 		Actor blocker;
 		readonly int lifetime, blastInterval;
 
-		int liveTicks, blastTicks;
+		int liveTicks, blastTicks, moveTicks;
 		bool stopped = false;
 
 		bool exploded = false;
@@ -102,6 +109,9 @@ namespace OpenRA.Mods.Common.Projectiles
 			pos = args.Source;
 			source = args.Source;
 			lastPos = pos;
+
+			if (info.Chaos && args.SourceActor != null)
+				chaosheightadd = args.SourceActor.World.SharedRandom.Next(0, info.ChaosHeightInaccuracy.Length);
 
 			var world = args.SourceActor.World;
 
@@ -134,6 +144,7 @@ namespace OpenRA.Mods.Common.Projectiles
 
 			lifetime = info.ShockDist.Length / speed.Length; // cal life time
 			liveTicks = 0;
+			moveTicks = 0;
 
 			blastInterval = info.BlastInterval;
 			blastTicks = info.BlastInterval - info.BlastDelay;
@@ -156,7 +167,7 @@ namespace OpenRA.Mods.Common.Projectiles
 			lastPos = pos;
 
 			if (!stopped)
-				pos = WPos.LerpQuadratic(source, target, angle, liveTicks, length);
+				pos = WPos.LerpQuadratic(source, target, angle, moveTicks, length);
 
 			if (!stopped && ShouldStopFly(world))
 			{
@@ -165,6 +176,7 @@ namespace OpenRA.Mods.Common.Projectiles
 
 			liveTicks++;
 			blastTicks++;
+			moveTicks++;
 			if (blastTicks >= blastInterval && blastInterval > 0)
 			{
 				Blast();
@@ -184,15 +196,47 @@ namespace OpenRA.Mods.Common.Projectiles
 				out var blockedPos, out blocker, args))
 			{
 				pos = blockedPos;
-				return true;
+				if (info.Chaos)
+				{
+					source = pos;
+
+					if (info.ChaosInaccuracy.Length > 0)
+					{
+						var maxInaccuracyOffset = Util.GetProjectileInaccuracy(info.ChaosInaccuracy.Length, info.InaccuracyType, args);
+						target = new WPos(target.X, target.Y, source.Z) + WVec.FromPDF(world.SharedRandom, 2, info.UseVerticalInaccuracy) * maxInaccuracyOffset / 1024;
+					}
+
+					length = Math.Max((target - pos).Length / speed.Length * 2, 1);
+					moveTicks = 0;
+				}
+				else
+					return true;
 			}
 
-			var posh = world.Map.DistanceAboveTerrain(pos);
+			var posh = world.Map.HeightOfTerrain(pos);
 
 			// Driving into cell with different height level
-			if (posh < info.ExplodeUnderThisAltitude)
+			if (pos.Z - posh < info.ExplodeUnderThisAltitude.Length - 1)
 			{
-				target = new WPos(target.X, target.Y, pos.Z - posh.Length);
+				if (info.Chaos)
+				{
+					posh += chaosheightadd;
+					source = new WPos(pos.X, pos.Y, posh + info.ExplodeUnderThisAltitude.Length);
+					pos = source;
+					if (info.ChaosInaccuracy.Length > 0)
+					{
+						var maxInaccuracyOffset = Util.GetProjectileInaccuracy(info.ChaosInaccuracy.Length, info.InaccuracyType, args);
+						target = new WPos(target.X, target.Y, source.Z) + WVec.FromPDF(world.SharedRandom, 2, info.UseVerticalInaccuracy) * maxInaccuracyOffset / 1024;
+					}
+
+					length = Math.Max((target - source).Length / speed.Length * 2, 1);
+					moveTicks = 0;
+				}
+				else
+				{
+					pos = new WPos(pos.X, pos.Y, posh + info.ExplodeUnderThisAltitude.Length);
+				}
+
 			}
 
 			return false;

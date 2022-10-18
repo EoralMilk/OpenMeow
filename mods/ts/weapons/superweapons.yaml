@@ -71,10 +71,10 @@ ClusterMissile:
 ChemicalMissile:
 	Inherits: ClusterMissile
 	Warhead@Cluster: FireCluster
-		Weapon: GreenFireballLauncher2
+		Weapon: ChemicalCloudLauncher2
 		Dimensions: 5,5
 		RandomClusterCount: 120
-		Footprint: __x__ _xxx_ xxXxx _xxx_ __x__
+		Footprint: _xxx_ xxXxx xXXXx xxXxx _xxx_
 
 SuicideDash:
 	Range: 7c0

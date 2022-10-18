@@ -45,7 +45,7 @@ DualFireballLauncher:
 	ReloadDelay: 50
 	Burst: 28
 
-GreenFireballLauncher:
+ChemicalCloudLauncher:
 	Inherits: FireballLauncher
 	Burst: 7
 	-Report:
@@ -55,8 +55,11 @@ GreenFireballLauncher:
 		Palette: effect_alpha #blast-green
 		Image: cloud #greenflameball
 		Sequences: cloud1, cloud2
-		Speed: 30, 50
-		Blockable: false
+		Speed: 30, 40
+		Blockable: true
+		ExplodeUnderThisAltitude: 512
+		Chaos: true
+		ChaosInaccuracy: 0c512
 	Warhead@fireDam: Spread3DDamage
 		Spread: 0c330
 		Damage: 200
@@ -69,12 +72,12 @@ GreenFireballLauncher:
 		DamageTypes: Prone100Percent, TriggerProne, TiberiumDeath
 	-Warhead@2Smu:
 
-GreenFireballLauncher2:
-	Inherits: GreenFireballLauncher
+ChemicalCloudLauncher2:
+	Inherits: ChemicalCloudLauncher
 	Projectile: BlastWave
 		Inaccuracy: 1c0
-		ShockDist: 4c0
-		Speed: 50, 70
+		ShockDist: 7c0
+		Speed: 40, 56
 	Warhead@fireDam: Spread3DDamage
 		Spread: 0c330
 		Damage: 200
