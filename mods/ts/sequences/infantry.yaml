@@ -496,6 +496,24 @@ jumpjet:
 		Length: *
 	icon: jjeticon
 
+
+jumpjetair:
+	Inherits@1: ^InfantryBase
+	Defaults: jumpjet
+	stand:
+		Start: 340
+		Length: 6
+		Facings: 8
+	run:
+		Start: 292
+		Length: 6
+		Facings: 8
+	shoot:
+		Start: 388
+		Length: 6
+		Facings: 8
+	icon: jjeticon
+
 weedguy:
 	Inherits@defaults: ^InfantryBase
 	Defaults: weed

@@ -99,6 +99,52 @@ JUMPJET:
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@EXPHOSPITAL: ^InfantryExperienceHospitalOverrides
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@AImicroManagable: ^AImicroManagable
+	Inherits@bounty: ^GlobalBounty
+	Valued:
+		Cost: 500
+	Tooltip:
+		Name: Jumpjet Infantry
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	-TakeCover:
+	Voiced:
+		VoiceSet: Jumpjet
+	Mobile:
+		Speed: 60
+	Health:
+		HP: 12000
+	Transforms:
+		IntoActor: jumpjetair
+		RequiresCondition: !inside-tunnel
+		#PauseOnCondition: WebDisable
+		Voice: Move
+	Armament:
+		LocalOffset: 360,0,433
+		Weapon: JumpVulcanGround
+		UseBlindage: true
+	Passenger:
+		CustomPipType: blue
+	AttackFrontal:
+		Voice: Attack
+		FacingTolerance: 2
+	WithSplitAttackPaletteInfantryBody:
+		DefaultAttackSequence: attack
+	AutoTarget:
+		ScanRadius: 6 #PREF: save trait looks up and scan armaments
+	AutoDeployer@AI:
+		RequiresCondition: AImicroManage
+		DeployTrigger: Damage
+		DeployTicks: 5
+		UndeployTicks: 500
+		DeployChance: 100
+	UnitDisplayInfo:
+		Description: Airborne soldier.\n  Strong vs Infantry, Aircraft\n  Weak vs Vehicles \n- Will land when ordered to deploy
+
+JUMPJETAIR:
+	Inherits: ^Aircraft
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@bounty: ^GlobalBounty
 	Valued:
 		Cost: 500
@@ -110,92 +156,90 @@ JUMPJET:
 		Queue: Infantry
 		BuildPaletteOrder: 70
 		Prerequisites: ~gapile, garadr, ~techlevel.medium
-		Description: Airborne soldier.\n  Strong vs Infantry, Aircraft\n  Weak vs Vehicles
+		Description: Airborne soldier.\n  Strong vs Infantry, Aircraft\n  Weak vs Vehicles \n- Will land when ordered to deploy
+		BuildDuration: 250
+		BuildDurationModifier: 100
 	Voiced:
-		VoiceSet: JumpJet
-	Mobile:
-		Speed: 71
-		Locomotor: jumpjet
+		VoiceSet: Jumpjet
+		Volume: 8
+	Selectable:
+		Bounds: 664,1809,0,-603
+	HitShape:
+		UseTargetableCellsOffsets: true
+		Type: Rectangle
+			TopLeft: -250, -250
+			BottomRight: 250, 250
 	Health:
-		HP: 12000
+		HP: 15000
+	Armament@1:
+		Weapon: JumpVulcan
+		LocalOffset: 360,0,433
+	Transforms:
+		IntoActor: jumpjet
+		Voice: Move
 	Armor:
 		Type: Light
-	Passenger:
-		CustomPipType: green
-	RevealsShroud:
-		RequiresCondition: !airborne && !inside-tunnel
-	RevealsShroud@airborne:
-		RequiresCondition: airborne
-		Range: 9c0
-		MaxHeightDelta: 1100
-	Armament:
-		LocalOffset: 360,0,433
-		Weapon: JumpVulcan
-		UseBlindage: true
-	-Crushable:
-	AttackFrontal:
-		Voice: Attack
-		FacingTolerance: 0
-	WithSplitAttackPaletteInfantryBody:
+	WithFacingSpriteBody:
+		RequiresCondition: !JJBuff
+		Sequence: run
+	WithFacingSpriteBody@attack:
+		Name: Body1
+		Sequence: shoot
+		RequiresCondition: JJBuff
+	-Repairable:
+	-Targetable@REPAIR:
+	WithShadow:
+	Hovers@CRUISING:
+		RequiresCondition: cruising
+	Aircraft:
+		TurnSpeed: 40
+		Speed: 150
+		AirborneCondition: airborne
+		CruisingCondition: cruising
+		CruiseAltitude: 3c1021
+		IdealSeparation: 1c0
+		LandableTerrainTypes: Clear, Road, Rail, DirtRoad, Rough, Tiberium, BlueTiberium, Veins
+		CanHover: true
+		Repulsable: true
+		MoveIntoShroud: true
+		TakeOffOnResupply: true
+		VTOL: true
+		CanSlide: true
+	Targetable@GROUND:
+		TargetTypes: Infantry, Ground
 		RequiresCondition: !airborne
-		DefaultAttackSequence: attack
-	WithInfantryBody@flying:
-		RequiresCondition: airborne
-		DefaultAttackSequence: flying-attack
-		StandSequences: flying
-		MoveSequence: flying
-		Palette: player-nomuzzle
-		IsPlayerPalette: true
-	WithInfantryBody@flying-muzzle:
-		RequiresCondition: airborne
-		DefaultAttackSequence: flying-attack-muzzle
-		StandSequences: flying-muzzle
-		MoveSequence: flying-muzzle
-		Palette: muzzle
-	-TakeCover:
-	Hovers:
-		RequiresCondition: airborne
-	DamagedByTerrain:
-		RequiresCondition: !inside-tunnel && !airborne
-	ProducibleWithLevel:
-		Prerequisites: barracks.upgraded
-	Targetable:
-		RequiresCondition: !airborne && !inside-tunnel
 	Targetable@AIRBORNE:
-		TargetTypes: Air
-		RequiresCondition: airborne && !traped
-	SpawnActorOnDeath@airborne:
-		Actor: JUMPJET.Husk
-		RequiresCondition: airborne && !traped
-	DeathSounds@airborne:
-		RequiresCondition: airborne && !traped
-	WithDeathAnimation@normal:
-		RequiresCondition: !airborne
-	WithDeathAnimation@explosion:
-		RequiresCondition: !airborne
-	WithDeathAnimation@energy:
-		RequiresCondition: !airborne
-	WithDeathAnimation:
-		RequiresCondition: !airborne
+		TargetTypes: Air, NoRepair
+		RequiresCondition: airborne
+	AttackAircraft:
+		FacingTolerance: 20
+		Voice: Attack
+		AttackType: Hover
+	AutoTarget:
+		ScanRadius: 6 #PREF: save trait looks up and scan armaments
+	GrantConditionOnAttack:
+		Condition: JJBuff
+		RevokeDelay: 8
 	DeathSounds@NORMAL:
-		RequiresCondition: !airborne
-	DeathSounds@EXPLOSION:
-		RequiresCondition: !airborne
+		DeathTypes: BulletDeath, ExplosionDeath, CabalDeath, CabalDeathUpg, TiberiumDeath
 	DeathSounds@BURNED:
-		RequiresCondition: !airborne
+		Voice: Burned
+		DeathTypes: FireDeath
 	DeathSounds@ZAPPED:
-		RequiresCondition: !airborne
+		Voice: Zapped
+		DeathTypes: EnergyDeath
+	QuantizeFacingsFromSequence:
+		Sequence: stand
 	SpawnActorOnDeath:
-		RequiresCondition: airborne && !traped
-	SpawnActorOnDeath@FLAMEGUY:
-		RequiresCondition: !airborne && !traped
-	WithShadow@airborne:
-		RequiresCondition: airborne && !traped
-	GrantConditionOnJumpjetLayer:
-		Condition: airborne
+		Actor: JUMPJET.Husk
+		RequiresCondition: airborne
+	UnitDisplayInfo:
+		Description: Airborne soldier.\n  Strong vs Infantry, Aircraft\n  Weak vs Vehicles \n- Will land when ordered to deploy
+	RenderSprites:
+	-RenderModels:
+	-WithModelBody:
 
 JUMPJET.Husk:
-	RenderSprites:
 	BodyOrientation:
 		QuantizedFacings: 1
 	HiddenUnderFog:

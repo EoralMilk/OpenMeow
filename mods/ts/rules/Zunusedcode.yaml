@@ -47,3 +47,104 @@ TITANUGMISSILE:
 		Type: titan.missile
 	RenderSprites:
 		Image: titanup.missile
+
+
+JUMPJET:
+	Inherits: ^Soldier
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@EXPHOSPITAL: ^InfantryExperienceHospitalOverrides
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@bounty: ^GlobalBounty
+	Valued:
+		Cost: 500
+	Tooltip:
+		Name: Jumpjet Infantry
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		Queue: Infantry
+		BuildPaletteOrder: 70
+		Prerequisites: ~gapile, garadr, ~techlevel.medium
+		Description: Airborne soldier.\n  Strong vs Infantry, Aircraft\n  Weak vs Vehicles
+	Voiced:
+		VoiceSet: JumpJet
+	Mobile:
+		Speed: 71
+		Locomotor: jumpjet
+	Health:
+		HP: 12000
+	Armor:
+		Type: Light
+	Passenger:
+		CustomPipType: green
+	RevealsShroud:
+		RequiresCondition: !airborne && !inside-tunnel
+	RevealsShroud@airborne:
+		RequiresCondition: airborne
+		Range: 9c0
+		MaxHeightDelta: 1100
+	Armament:
+		LocalOffset: 360,0,433
+		Weapon: JumpVulcan
+		UseBlindage: true
+	-Crushable:
+	AttackFrontal:
+		Voice: Attack
+		FacingTolerance: 0
+	WithSplitAttackPaletteInfantryBody:
+		RequiresCondition: !airborne
+		DefaultAttackSequence: attack
+	WithInfantryBody@flying:
+		RequiresCondition: airborne
+		DefaultAttackSequence: flying-attack
+		StandSequences: flying
+		MoveSequence: flying
+		Palette: player-nomuzzle
+		IsPlayerPalette: true
+	WithInfantryBody@flying-muzzle:
+		RequiresCondition: airborne
+		DefaultAttackSequence: flying-attack-muzzle
+		StandSequences: flying-muzzle
+		MoveSequence: flying-muzzle
+		Palette: muzzle
+	-TakeCover:
+	Hovers:
+		RequiresCondition: airborne
+	DamagedByTerrain:
+		RequiresCondition: !inside-tunnel && !airborne
+	ProducibleWithLevel:
+		Prerequisites: barracks.upgraded
+	Targetable:
+		RequiresCondition: !airborne && !inside-tunnel
+	Targetable@AIRBORNE:
+		TargetTypes: Air
+		RequiresCondition: airborne && !traped
+	SpawnActorOnDeath@airborne:
+		Actor: JUMPJET.Husk
+		RequiresCondition: airborne && !traped
+	DeathSounds@airborne:
+		RequiresCondition: airborne && !traped
+	WithDeathAnimation@normal:
+		RequiresCondition: !airborne
+	WithDeathAnimation@explosion:
+		RequiresCondition: !airborne
+	WithDeathAnimation@energy:
+		RequiresCondition: !airborne
+	WithDeathAnimation:
+		RequiresCondition: !airborne
+	DeathSounds@NORMAL:
+		RequiresCondition: !airborne
+	DeathSounds@EXPLOSION:
+		RequiresCondition: !airborne
+	DeathSounds@BURNED:
+		RequiresCondition: !airborne
+	DeathSounds@ZAPPED:
+		RequiresCondition: !airborne
+	SpawnActorOnDeath:
+		RequiresCondition: airborne && !traped
+	SpawnActorOnDeath@FLAMEGUY:
+		RequiresCondition: !airborne && !traped
+	WithShadow@airborne:
+		RequiresCondition: airborne && !traped
+	GrantConditionOnJumpjetLayer:
+		Condition: airborne
