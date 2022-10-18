@@ -46,6 +46,7 @@ GACTWR:
 	Inherits@IDISABLE: ^DisableOnPowerDown
 	Inherits@AUTOTARGET: ^AutoTargetAll
 	Inherits@bounty: ^GlobalBounty
+	Inherits@AImicroManagable: ^AImicroManagable
 	IsometricSelectable:
 		Height: 30
 	WithMakeAnimation:
@@ -159,16 +160,20 @@ GACTWR:
 			plug.rpg: RPG Upgrade
 			plug.missile: SAM Upgrade
 			powrup: Power Turbine
-	ProvidesPrerequisite@buildingname:
-	ProvidesPrerequisite@pluggable:
-		RequiresCondition: !build-incomplete && !plug.vulcan && !plug.rpg && !plug.missile && !powrup
-		Prerequisite: gactwr.socket
-	ProvidesPrerequisite@pluggablepowerup:
-		RequiresCondition: !build-incomplete && !plug.vulcan && !plug.rpg && !plug.missile && !powrup
-		Prerequisite: gapowr.socket
 	Replacement:
 		ReplaceableTypes: GDITower
-
+	ProvidesPrerequisite@pluggablevulcan:
+		RequiresCondition: AImicroManage && !build-incomplete && !plug.vulcan && !plug.rpg && !plug.missile && !powrup
+		Prerequisite: plug.vulcan
+	ProvidesPrerequisite@pluggablemissile:
+		RequiresCondition: AImicroManage && !build-incomplete && !plug.vulcan && !plug.rpg && !plug.missile && !powrup
+		Prerequisite: plug.missile
+	ProvidesPrerequisite@pluggableRPG:
+		RequiresCondition: AImicroManage && !build-incomplete && !plug.vulcan && !plug.rpg && !plug.missile && !powrup
+		Prerequisite: plug.rpg
+	ProvidesPrerequisite@powertube:
+		RequiresCondition: AImicroManage && !build-incomplete && !plug.vulcan && !plug.rpg && !plug.missile && !powrup
+		Prerequisite: plug.power
 
 GACTWR.SOCKET:
 	AlwaysVisible:
@@ -185,7 +190,7 @@ GAVULC:
 	Buildable:
 		Queue: Defense
 		BuildPaletteOrder: 80
-		Prerequisites: gactwr.socket, gapile, ~structures.gdi, ~techlevel.low
+		Prerequisites: plug.vulcan, gapile, ~structures.gdi, ~techlevel.low
 		Description: General base defense.\nDoes not require power to operate.\n  Strong vs Infantry, Light armored units\n  Weak vs Heavy armored units
 	Plug:
 		Type: plug.vulcan
@@ -200,8 +205,8 @@ GAROCK:
 		Name: RPG Upgrade
 	Buildable:
 		Queue: Defense
-		BuildPaletteOrder: 90
-		Prerequisites: gactwr.socket, garadr, ~structures.gdi, ~techlevel.high
+		BuildPaletteOrder: 100
+		Prerequisites: plug.rpg, gapile, garadr, ~structures.gdi, ~techlevel.high
 		Description: Advanced ground defense.\nDoes not require power to operate.\n  Strong vs Armored ground units\n  Weak vs Aircraft
 	Plug:
 		Type: plug.rpg
@@ -216,8 +221,8 @@ GACSAM:
 		Name: Missile Upgrade
 	Buildable:
 		Queue: Defense
-		BuildPaletteOrder: 100
-		Prerequisites: gactwr.socket, gapile, ~structures.gdi, ~techlevel.medium
+		BuildPaletteOrder: 90
+		Prerequisites: plug.missile, gapile, ~structures.gdi, ~techlevel.medium
 		Description: General missile defense.\nDoes not require power to operate.\n  Strong vs Light armored units\n  Weak vs Infantry
 	Plug:
 		Type: plug.missile
@@ -234,7 +239,7 @@ GAPOWRUP:
 	Buildable:
 		Queue: Defense
 		BuildPaletteOrder: 100
-		Prerequisites: gapowr.socket, ~structures.gdi, ~techlevel.medium
+		Prerequisites: plug.power, ~structures.gdi, ~techlevel.medium
 		Description: Provides extra power generation.
 	Plug:
 		Type: powrup

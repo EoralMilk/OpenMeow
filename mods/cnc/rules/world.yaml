@@ -105,6 +105,7 @@
 			River: 100
 	Locomotor@CRITTER:
 		Name: critter
+		Crushes: crate
 		TerrainSpeeds:
 			Clear: 100
 			Rough: 89
@@ -115,7 +116,6 @@
 			Beach: 89
 	Locomotor@VISC:
 		Name: visc
-		Crushes: crate
 		TerrainSpeeds:
 			Clear: 100
 			Rough: 89

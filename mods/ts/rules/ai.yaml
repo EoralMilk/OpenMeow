@@ -9,6 +9,21 @@ Player:
 	#	RequiresCondition: enable-test-ai
 	#	HarvesterTypes: harv
 	#	RefineryTypes: proc
+
+	## Help AI on better plug
+	ProvidesPrerequisite@pluggablevulcan:
+		RequiresCondition: !enable-test-ai
+		Prerequisite: plug.vulcan
+	ProvidesPrerequisite@pluggablemissile:
+		RequiresCondition:  !enable-test-ai
+		Prerequisite: plug.missile
+	ProvidesPrerequisite@pluggableRPG:
+		RequiresCondition:  !enable-test-ai
+		Prerequisite: plug.rpg
+	ProvidesPrerequisite@powertube:
+		RequiresCondition:  !enable-test-ai
+		Prerequisite: plug.power
+
 	CashTrickler@CashCheat: ## enough cash to build early game infantry, always on for megawealth
 		Interval: 300
 		Amount: 1000
@@ -56,8 +71,8 @@ Player:
 			naobel: 2
 			nalasr: 8
 			nasam: 4
-			titanugvulcan: 14
-			titanugmissile: 8
+			#titanugvulcan: 14
+			#titanugmissile: 8
 		BuildingFractions:
 			proc: 100
 			gapile: 30
@@ -79,6 +94,7 @@ Player:
 			gactwr: 18
 			nasam: 6
 			naobel: 3
+			gapowrup: 2
 			titanugvulcan: 14
 			titanugmissile: 8
 	BuildingRepairBotModule:
