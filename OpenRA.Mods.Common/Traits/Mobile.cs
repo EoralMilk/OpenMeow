@@ -71,6 +71,9 @@ namespace OpenRA.Mods.Common.Traits
 		[Desc("After how many ticks the actor will turn forward during backoff")]
 		public readonly int BackwardDuration = 40;
 
+		[Desc("After how many ticks the actor will turn forward during backoff")]
+		public readonly WAngle BackwardFacingTolerance = new WAngle(256);
+
 		[ConsumedConditionReference]
 		[Desc("Boolean expression defining the condition under which the regular (non-force) move cursor is disabled.")]
 		public readonly BooleanExpression RequireForceMoveCondition = null;
@@ -102,6 +105,9 @@ namespace OpenRA.Mods.Common.Traits
 				throw new YamlException($"A locomotor named '{Locomotor}' doesn't exist.");
 			else if (locomotorInfos.Count(li => li.Name == Locomotor) > 1)
 				throw new YamlException($"There is more than one locomotor named '{Locomotor}'.");
+
+			if (BackwardFacingTolerance.Angle < 256 || BackwardFacingTolerance.Angle > 512)
+				throw new YamlException($"BackwardFacingTolerance should be in [256, 512].");
 
 			// We need to reset the reference to the locomotor between each worlds, otherwise we are reference the previous state.
 			locomotor = null;

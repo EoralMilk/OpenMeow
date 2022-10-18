@@ -87,6 +87,8 @@
 		HP: 20000
 	Mobile:
 		Speed: 56
+		CanMoveBackward: true
+		BackwardFacingTolerance: 384
 
 TRUCKA:
 	Inherits: ^TRUCK
@@ -131,6 +133,8 @@ BUS:
 		TurnSpeed: 20
 		Speed: 113
 		PauseOnCondition: empdisable || loading || being-captured || carried || traped
+		CanMoveBackward: true
+		BackwardFacingTolerance: 384
 	Health:
 		HP: 10000
 	Cargo:
@@ -151,6 +155,8 @@ PICK:
 		TurnSpeed: 20
 		Speed: 113
 		PauseOnCondition: empdisable || loading || being-captured || carried || traped
+		CanMoveBackward: true
+		BackwardFacingTolerance: 384
 	Health:
 		HP: 10000
 	Cargo:
@@ -171,6 +177,8 @@ CAR:
 		TurnSpeed: 20
 		Speed: 113
 		PauseOnCondition: empdisable || loading || being-captured || carried || traped
+		CanMoveBackward: true
+		BackwardFacingTolerance: 384
 	Health:
 		HP: 10000
 	Cargo:
@@ -191,6 +199,8 @@ WINI:
 		TurnSpeed: 20
 		Speed: 113
 		PauseOnCondition: empdisable || loading || being-captured || carried || traped
+		CanMoveBackward: true
+		BackwardFacingTolerance: 384
 	Health:
 		HP: 20000
 	Cargo:

@@ -92,6 +92,7 @@ HARV:
 	Mobile:
 		Speed: 71
 		CanMoveBackward: true
+		BackwardFacingTolerance: 384
 		TurnSpeed: 20
 	Health:
 		HP: 100000

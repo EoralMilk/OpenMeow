@@ -165,7 +165,7 @@ namespace OpenRA.Mods.Common.Activities
 
 			var firstFacing = self.World.Map.FacingBetween(mobile.FromCell, nextCell.Value.Cell, mobile.Facing);
 
-			if (mobile.Info.CanMoveBackward && self.World.WorldTick - startTicks < mobile.Info.BackwardDuration && Math.Abs(firstFacing.Angle - mobile.Facing.Angle) > 256)
+			if (mobile.Info.CanMoveBackward && self.World.WorldTick - startTicks < mobile.Info.BackwardDuration && Math.Abs(firstFacing.Angle - mobile.Facing.Angle) > mobile.Info.BackwardFacingTolerance.Angle)
 				firstFacing = new WAngle(firstFacing.Angle + 512);
 
 			if (firstFacing != mobile.Facing)

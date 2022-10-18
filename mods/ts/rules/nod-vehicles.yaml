@@ -19,6 +19,7 @@ BGGY:
 		TurnSpeed: 40
 		Speed: 142
 		CanMoveBackward: true
+		BackwardFacingTolerance: 384
 	Health:
 		HP: 22000
 	Armor:
@@ -588,6 +589,7 @@ STNK:
 		TurnSpeed: 40
 		Speed: 145
 		CanMoveBackward: true
+		BackwardFacingTolerance: 320
 	Health:
 		HP: 18000
 	Armor:
