@@ -335,15 +335,6 @@ namespace OpenRA.Mods.Common.Projectiles
 
 		public virtual IEnumerable<IRenderable> Render(WorldRenderer wr)
 		{
-			var rs = RenderSelf(wr);
-			foreach (var r in rs)
-			{
-				yield return r;
-			}
-
-			if (renderTickStarted && meshes.Count > 0)
-				yield return new MeshRenderable(meshes, pos, 0, args.SourceActor.Owner.Color, info.MeshScale, null);
-
 			if (!hasInitPal)
 			{
 				UpdatePalette(wr);
@@ -359,6 +350,15 @@ namespace OpenRA.Mods.Common.Projectiles
 			var world = args.SourceActor.World;
 			if (!world.FogObscures(pos))
 			{
+				var rs = RenderSelf(wr);
+				foreach (var r in rs)
+				{
+					yield return r;
+				}
+
+				if (renderTickStarted && meshes.Count > 0)
+					yield return new MeshRenderable(meshes, pos, 0, args.SourceActor.Owner.Color, info.MeshScale, null);
+
 				if (anim != null)
 				{
 					if (info.Shadow)
