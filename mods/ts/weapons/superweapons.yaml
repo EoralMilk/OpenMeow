@@ -71,9 +71,9 @@ ClusterMissile:
 ChemicalMissile:
 	Inherits: ClusterMissile
 	Warhead@Cluster: FireCluster
-		Weapon: VeinholeTest
+		Weapon: GreenFireballLauncher2
 		Dimensions: 5,5
-		RandomClusterCount: 22
+		RandomClusterCount: 88
 		Footprint: __x__ _xxx_ xxXxx _xxx_ __x__
 
 SuicideDash:

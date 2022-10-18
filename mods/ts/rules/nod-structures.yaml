@@ -635,7 +635,7 @@ NAWAST:
 		Icon: chemicalmissile
 		ChargeInterval: 25
 		SpecialResourcesUsing:
-			Chemicals: 10
+			Chemicals: 50
 		Name: Chemical Missile
 		Description: Launches an explosive Chemical missile\nat a target location.
 		EndChargeSpeechNotification: ChemicalMissileReady
@@ -649,7 +649,7 @@ NAWAST:
 		MissileImage: ClusterMissile
 		MissileDelay: 1
 		FlightDelay: 50
-		DetonationAltitude: 5c0
+		DetonationAltitude: 2c0
 		SpawnOffset: 0c128, -0c128, 1c0
 		DisplayTimerRelationships: None
 		DisplayBeacon: False

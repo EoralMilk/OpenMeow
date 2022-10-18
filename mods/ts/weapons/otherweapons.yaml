@@ -66,6 +66,13 @@ GreenFireballLauncher:
 			Heavy: 25
 			Concrete: 25
 
+GreenFireballLauncher2:
+	Inherits: GreenFireballLauncher
+	Projectile: BlastWave
+		Inaccuracy: 1c0
+		ShockDist: 3c512
+		Speed: 50, 70
+
 Bomb:
 	ReloadDelay: 60
 	Burst: 5
