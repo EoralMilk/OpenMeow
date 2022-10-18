@@ -259,6 +259,14 @@ namespace OpenRA.Mods.Common.Widgets
 			if (mi.Event == MouseInputEvent.Move)
 				TooltipIcon = icon;
 
+			if (mi.Event == MouseInputEvent.Scroll)
+			{
+				if (mi.Delta.Y < 0)
+					ScrollDown();
+				else if (mi.Delta.Y > 0)
+					ScrollUp();
+			}
+
 			if (icon == null)
 				return false;
 
