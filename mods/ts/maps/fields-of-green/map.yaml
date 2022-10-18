@@ -317,7 +317,7 @@ Actors:
 		Owner: GDI
 		Location: 81,-11
 		Facing: 864
-		Plug: tower.vulcan
+		Plug: plug.vulcan
 	Actor89: gagate_a
 		Owner: GDI
 		Location: 82,-11
