@@ -76,8 +76,8 @@ DPOD2:
 	FallsToEarth:
 		Explosion: DropPodExplode
 		Moves: true
-		Velocity: 768
-		MaxVelocity: 768
+		Velocity: 556
+		MaxVelocity: 556
 		MaximumSpinSpeed: 0
 
 DPOD2E1:

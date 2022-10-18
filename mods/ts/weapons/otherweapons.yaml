@@ -395,3 +395,5 @@ DroneReconDummyWeapon:
 	ReloadDelay: 19000
 	Projectile: InstantHit
 		Blockable: false
+
+DummyWeapon:

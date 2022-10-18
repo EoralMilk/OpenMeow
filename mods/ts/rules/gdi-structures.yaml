@@ -568,7 +568,7 @@ GAPLUG:
 		ChargeInterval: 6000
 		UnitTypes: DPOD2E1, DPOD2E2
 		CameraActor: camera
-		Weapon: VulcanTower
+		Weapon: DummyWeapon
 	ProduceActorPower:
 		PauseOnCondition: disabled || empdisable
 		RequiresCondition: plug.hunterseekera || plug.hunterseekerb
