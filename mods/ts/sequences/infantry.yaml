@@ -108,7 +108,7 @@ altnode1:
 gdie1:
 	Inherits@1: ^BasicInfantry
 	Inherits@attack: ^BasicInfantryAttack
-	Defaults: e1
+	Defaults: gdie1
 	icon: sidebar-gdi|e1icon
 
 e2:
