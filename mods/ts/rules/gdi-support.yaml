@@ -98,10 +98,6 @@ GACTWR:
 		RequiresCondition: !build-incomplete && plug.missile
 		Recoils: false
 		Sequence: turret-sam
-	WithIdleOverlay@plugpowerup:
-		RequiresCondition: !build-incomplete && powrup
-		PauseOnCondition: empdisable
-		Sequence: plug-powrup
 	Armament@VULCPRIMARY:
 		RequiresCondition: plug.vulcan
 		Weapon: VulcanTower
@@ -135,48 +131,36 @@ GACTWR:
 		Palette: bright
 	LineBuildNode:
 		Types: turret
-	Power@base:
-		RequiresCondition: !disabled
-		Amount: -10
-	Power@turrets:
-		RequiresCondition: !disabled && (plug.vulcan || plug.rpg || plug.missile)
-		Amount: -20
+	Power@vulcan:
+		RequiresCondition: !disabled && plug.vulcan
+		Amount: -30
 	Power@samextra:
-		RequiresCondition: !disabled && plug.missile
-		Amount: -10
-	Power@plugpowerup:
-		RequiresCondition: !empdisable && powrup
-		Amount: 100
+		RequiresCondition: !disabled && (plug.missile || plug.rpg)
+		Amount: -50
 	Pluggable:
 		Conditions:
 			plug.vulcan: plug.vulcan
 			plug.rpg: plug.rpg
 			plug.missile: plug.missile
-			powrup: powrup
 		Requirements:
-			plug.vulcan: !build-incomplete && !plug.vulcan && !plug.rpg && !plug.missile && !powrup
-			plug.rpg: !build-incomplete && !plug.rpg && !plug.vulcan && !plug.missile && !powrup
-			plug.missile: !build-incomplete && !plug.vulcan && !plug.rpg && !plug.missile && !powrup
-			powrup: !build-incomplete && !plug.vulcan && !plug.rpg && !plug.missile && !powrup
+			plug.vulcan: !build-incomplete && !plug.vulcan && !plug.rpg && !plug.missile
+			plug.rpg: !build-incomplete && !plug.rpg && !plug.vulcan && !plug.missile
+			plug.missile: !build-incomplete && !plug.vulcan && !plug.rpg && !plug.missile
 		EditorOptions:
 			plug.vulcan: Vulcan Tower
 			plug.rpg: RPG Upgrade
 			plug.missile: SAM Upgrade
-			powrup: Power Turbine
 	Replacement:
 		ReplaceableTypes: GDITower
 	ProvidesPrerequisite@pluggablevulcan:
-		RequiresCondition: AImicroManage && !build-incomplete && !plug.vulcan && !plug.rpg && !plug.missile && !powrup
+		RequiresCondition: AImicroManage && !build-incomplete && !plug.vulcan && !plug.rpg && !plug.missile
 		Prerequisite: plug.vulcan
 	ProvidesPrerequisite@pluggablemissile:
-		RequiresCondition: AImicroManage && !build-incomplete && !plug.vulcan && !plug.rpg && !plug.missile && !powrup
+		RequiresCondition: AImicroManage && !build-incomplete && !plug.vulcan && !plug.rpg && !plug.missile
 		Prerequisite: plug.missile
 	ProvidesPrerequisite@pluggableRPG:
-		RequiresCondition: AImicroManage && !build-incomplete && !plug.vulcan && !plug.rpg && !plug.missile && !powrup
+		RequiresCondition: AImicroManage && !build-incomplete && !plug.vulcan && !plug.rpg && !plug.missile
 		Prerequisite: plug.rpg
-	ProvidesPrerequisite@powertube:
-		RequiresCondition: AImicroManage && !build-incomplete && !plug.vulcan && !plug.rpg && !plug.missile && !powrup
-		Prerequisite: plug.power
 
 GACTWR.SOCKET:
 	AlwaysVisible:
@@ -193,7 +177,7 @@ GAVULC:
 	Buildable:
 		Queue: Defense
 		BuildPaletteOrder: 80
-		Prerequisites: plug.vulcan, gapile, ~structures.gdi, ~techlevel.low
+		Prerequisites: ~plug.vulcan, gapile, ~structures.gdi, ~techlevel.low
 		Description: General base defense.\nDoes not require power to operate.\n  Strong vs Infantry, Light armored units\n  Weak vs Heavy armored units
 	Plug:
 		Type: plug.vulcan
@@ -209,7 +193,7 @@ GAROCK:
 	Buildable:
 		Queue: Defense
 		BuildPaletteOrder: 100
-		Prerequisites: plug.rpg, gapile, garadr, ~structures.gdi, ~techlevel.high
+		Prerequisites: ~plug.rpg, garadr, ~structures.gdi, ~techlevel.high
 		Description: Advanced ground defense.\nDoes not require power to operate.\n  Strong vs Armored ground units\n  Weak vs Aircraft
 	Plug:
 		Type: plug.rpg
@@ -225,7 +209,7 @@ GACSAM:
 	Buildable:
 		Queue: Defense
 		BuildPaletteOrder: 90
-		Prerequisites: plug.missile, gapile, ~structures.gdi, ~techlevel.medium
+		Prerequisites: ~plug.missile, gaweap, ~structures.gdi, ~techlevel.medium
 		Description: General missile defense.\nDoes not require power to operate.\n  Strong vs Light armored units\n  Weak vs Infantry
 	Plug:
 		Type: plug.missile
@@ -242,7 +226,7 @@ GAPOWRUP:
 	Buildable:
 		Queue: Defense
 		BuildPaletteOrder: 100
-		Prerequisites: plug.power, ~structures.gdi, ~techlevel.medium
+		Prerequisites: ~plug.power, ~structures.gdi, ~techlevel.medium
 		Description: Provides extra power generation.
 	Plug:
 		Type: powrup

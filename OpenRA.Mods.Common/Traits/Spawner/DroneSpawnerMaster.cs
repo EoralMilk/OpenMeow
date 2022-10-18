@@ -154,6 +154,7 @@ namespace OpenRA.Mods.Common.Traits
 				// Let's do it here.
 				SpawnReplenishedSlaves(self);
 				spawnReplaceTicks = -1;
+				hasSpawnInitialLoad = true;
 			}
 
 			// Time to respawn someting.

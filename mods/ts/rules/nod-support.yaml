@@ -201,6 +201,7 @@ NALASR:
 	Armament:
 		Weapon: TurretLaserFire
 		LocalOffset: 543,0,411
+		PauseOnCondition: empdisable || disabled || build-incomplete
 	RevealsShroud:
 		Range: 7c0
 	RenderModels:
@@ -240,6 +241,7 @@ NAOBEL:
 	Armament:
 		Weapon: ObeliskLaserFire
 		LocalOffset: 1980,297,653
+		PauseOnCondition: empdisable || disabled || build-incomplete
 	AttackCharges:
 		PauseOnCondition: empdisable || disabled || build-incomplete
 		ChargeLevel: 65
@@ -269,7 +271,7 @@ NASAM:
 		Name: S.A.M. Site
 	Buildable:
 		Queue: Defense
-		Prerequisites: naradr, ~structures.nod, ~techlevel.medium
+		Prerequisites: naweap, ~structures.nod, ~techlevel.medium
 		BuildPaletteOrder: 100
 		Description: Nod Anti-Air base defense.\nRequires power to operate.\n  Strong vs Aircraft\n  Weak vs Ground units
 	Health:
