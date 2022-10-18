@@ -89,7 +89,7 @@ HVR:
 		CanMoveBackward: true
 		TurnSpeed: 40
 	Selectable:
-		Bounds: 1206, 1448, 0, -603
+		Bounds: 1206, 1600, 0, -900
 	Health:
 		HP: 23000
 	Armor:

@@ -394,6 +394,9 @@ ProtonFlameMissile:
 	ReloadDelay: 50
 	Range: 9c0
 	Report: hovrmis1.aud
+	Projectile: Missile
+		ContrailStartColor: 00FF00
+		ContrailStartColorOuter: AAAA00
 	Warhead@1Dam: SpreadDamage
 		Damage: 6000
 		Versus:

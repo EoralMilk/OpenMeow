@@ -158,6 +158,10 @@ RUTEST2:
 		LocalOffset: 668,0,1024
 	BlendTreeHandler:
 		DirectionTurret: primary
+	Selectable:
+		Bounds: 905, 3000, 0, -1300
+	Voiced:
+		VoiceSet: Oxanna
 
 RUTEST3:
 	Inherits: RUTEST
