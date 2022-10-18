@@ -407,6 +407,6 @@ ProtonFlameMissile:
 			Concrete: 60
 	Warhead@Cluster: FireCluster
 		Weapon: GreenFireballLauncher
-		RandomClusterCount: 45
+		RandomClusterCount: 35
 		Dimensions: 7,7
 		Footprint: __xxx__ _xxXxx_ xxxxxxx xXx_xXx xxxxxxx _xxXxx_ __xxx__

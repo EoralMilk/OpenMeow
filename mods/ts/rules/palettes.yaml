@@ -93,6 +93,10 @@
 	PaletteFromFile@effect:
 		Name: effect
 		Filename: anim.pal
+	PaletteFromPaletteWithAlpha@effectAlpha80:
+		Name: effect_alpha
+		Alpha: 0.8
+		BasePalette: effect
 	FixedColorPalette@effectcyan:
 		Base: effect
 		Name: effectcyan

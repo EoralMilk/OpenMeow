@@ -73,7 +73,7 @@ ChemicalMissile:
 	Warhead@Cluster: FireCluster
 		Weapon: GreenFireballLauncher2
 		Dimensions: 5,5
-		RandomClusterCount: 88
+		RandomClusterCount: 120
 		Footprint: __x__ _xxx_ xxXxx _xxx_ __x__
 
 SuicideDash:

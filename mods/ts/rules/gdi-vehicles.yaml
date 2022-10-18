@@ -225,10 +225,22 @@ MMCH:
 		ValidMovementTypes: Horizontal, Turn
 	Turreted:
 		TurnSpeed: 20
+	Turreted@droneCheck:
+		Turret: check
+		TurnSpeed: 512
+		RealignDelay: -1
+		Floating: true
+	Armament:
+		Weapon: 120mm
+		MuzzleSequence: muzzle-cannon
+		Recoil: 128
+		RecoilRecovery: 32
+		LocalOffset: 998,272,610
 	AttackTurreted:
-		Armaments: primary, secondary, missile
+		Armaments: primary, secondary, missile, check
 		Voice: Attack
 		PauseOnCondition: empdisable
+		Turrets: primary, check
 	WithSpriteTurret:
 		Recoils: false
 	Armament:
@@ -249,8 +261,13 @@ MMCH:
 		RequiresCondition: missile
 		Name: missile
 		MuzzleSequence: muzzle-cannon
+	Armament@droneCheck:
+		Weapon: RPGDroneCheck
+		Turret: check
+		Name: check
 	DroneSpawnerMaster:
 		Actors: RPGDRONE
+		Armament: check
 		SpawnOffset: 0,0,512
 		RespawnTicks: 256
 		FollowAfterAttackDelay: 25

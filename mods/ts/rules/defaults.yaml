@@ -837,6 +837,13 @@
 		InternalOwner: Creeps
 		DeathType: TiberiumDeath
 		RequiresLobbyCreeps: true
+	SpawnActorOnDeath@Visceroid2:
+		Actor: visc_sml
+		Probability: 75
+		OwnerType: InternalName
+		InternalOwner: Creeps
+		DeathType: TriggerVisceroid
+		RequiresLobbyCreeps: true
 	SpawnActorOnDeath@FLAMEGUY:
 		Actor: FLAMEGUY
 		DeathType: FireDeath

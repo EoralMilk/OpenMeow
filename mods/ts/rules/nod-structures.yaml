@@ -552,14 +552,14 @@ NAMISL:
 		DetonationAltitude: 5c0
 		SpawnOffset: 0, 0c128, 0c512
 		DisplayTimerRelationships: None
-		DisplayBeacon: False
 		DisplayRadarPing: True
-		BeaconPoster:
 		CameraRange: 10c0
+		CameraRemoveDelay: 75
 		FlightVelocity: 1c0
 		TrailImage: small_smoke_trail
 		TrailInterval: 0
 		TrailSequences: idle
+		DisplayBeacon: true
 	WithSupportPowerActivationOverlay:
 		Palette: player-nobright
 		IsPlayerPalette: True
@@ -567,6 +567,43 @@ NAMISL:
 		RequiresCondition: !build-incomplete && !disabled
 		Sequence: idle-lights-bright
 		Palette: bright
+	GrantConditionOnPrerequisite@nawast:
+		Condition: chemical-misl
+		Prerequisites: nawast
+	NukePower@ChemicalMissile:
+		RequiresCondition: chemical-misl
+		PauseOnCondition: empdisable || disabled
+		Cursor: nuke
+		OrderName: ChemicalMissileAttack
+		Icon: chemicalmissile
+		ChargeInterval: 25
+		SpecialResourcesUsing:
+			Chemicals: 28
+		Name: Chemical Missile
+		Description: Launches an explosive Chemical missile\nat a target location.
+		EndChargeSpeechNotification: ChemicalMissileReady
+		SelectTargetSpeechNotification: SelectTarget
+		IncomingSpeechNotification: MissileLaunchDetected
+		EndChargeTextNotification: Chemical missile ready.
+		SelectTargetTextNotification: Select target.
+		IncomingTextNotification: Missile launch detected.
+		LaunchSound: icbm1.aud
+		MissileWeapon: ChemicalMissile
+		MissileImage: ClusterMissile
+		FlightDelay: 50
+		DetonationAltitude: 2c0
+		MissileDelay: 18
+		SpawnOffset: 0, 0c128, 0c512
+		DisplayTimerRelationships: None
+		DisplayRadarPing: True
+		CameraRange: 8c0
+		CameraRemoveDelay: 100
+		FlightVelocity: 1c0
+		TrailImage: small_smoke_trail
+		TrailInterval: 0
+		TrailSequences: idle
+		DisplayBeacon: true
+
 
 NAWAST:
 	Inherits: ^Building
@@ -628,35 +665,3 @@ NAWAST:
 		PipStride: 4, 2
 		PipCount: 15
 		Palette: pips
-	NukePower@ChemicalMissile:
-		PauseOnCondition: empdisable || disabled
-		Cursor: nuke
-		OrderName: ChemicalMissileAttack
-		Icon: chemicalmissile
-		ChargeInterval: 25
-		SpecialResourcesUsing:
-			Chemicals: 50
-		Name: Chemical Missile
-		Description: Launches an explosive Chemical missile\nat a target location.
-		EndChargeSpeechNotification: ChemicalMissileReady
-		SelectTargetSpeechNotification: SelectTarget
-		IncomingSpeechNotification: MissileLaunchDetected
-		EndChargeTextNotification: Chemical missile ready.
-		SelectTargetTextNotification: Select target.
-		IncomingTextNotification: Missile launch detected.
-		LaunchSound: icbm1.aud
-		MissileWeapon: ChemicalMissile
-		MissileImage: ClusterMissile
-		MissileDelay: 1
-		FlightDelay: 50
-		DetonationAltitude: 2c0
-		SpawnOffset: 0c128, -0c128, 1c0
-		DisplayTimerRelationships: None
-		DisplayBeacon: False
-		DisplayRadarPing: True
-		BeaconPoster:
-		CameraRange: 10c0
-		FlightVelocity: 1c0
-		TrailImage: small_smoke_trail
-		TrailInterval: 0
-		TrailSequences: idle

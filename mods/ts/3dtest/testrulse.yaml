@@ -70,7 +70,7 @@ RUTEST:
 		AddToArmyValue: false
 	Mobile:
 		TurnSpeed: 66
-		Speed: 100
+		Speed: 90
 		Locomotor: tracked
 		# AlwaysTurnInPlace: true
 		# CanMoveBackward: true
@@ -80,7 +80,7 @@ RUTEST:
 		Type: Heavy
 	RevealsShroud:
 		RequiresCondition: !inside-tunnel
-		Range: 15c0
+		Range: 10c0
 		MaxHeightDelta: 3000
 	DamagedByTerrain@VEINS:
 		RequiresCondition: !inside-tunnel && !rank-elite
@@ -89,7 +89,7 @@ RUTEST:
 	BodyOrientation:
 		QuantizedFacings: 0
 	RenderSprites:
-		Image: bike
+		Image: vehicle
 
 RUTEST2:
 	Inherits: RUTEST

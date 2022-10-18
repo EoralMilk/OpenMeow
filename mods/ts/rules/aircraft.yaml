@@ -775,6 +775,8 @@ RPGDRONE:
 		AttackCallBackDistance: 10c0
 	Targetable@Ignore:
 		TargetTypes: AIgnored
+	RevealsShroud:
+		Range: 3c0
 	Aircraft:
 		CanHover: false
 		CanSlide: false

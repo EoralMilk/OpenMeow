@@ -17,6 +17,10 @@
 		BlendMode: Additive
 		IgnoreWorldTint: True
 
+vehicle:
+	Inherits@defaults: ^VehicleBase
+	Inherits: ^VehicleOverlays
+
 mcv.gdi:
 	Inherits@defaults: ^VehicleBase
 	Inherits: ^VehicleOverlays

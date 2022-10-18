@@ -9,6 +9,7 @@
 #endregion
 
 using System;
+using System.Linq;
 using OpenRA.Activities;
 using OpenRA.Traits;
 
@@ -31,6 +32,9 @@ namespace OpenRA.Mods.Common.Traits
 
 		[Desc("Spawn initial load all at once?")]
 		public readonly bool ShouldSpawnInitialLoad = true;
+
+		[Desc("Armament using for target check. null to use all armament.")]
+		public readonly string Armament = null;
 
 		public override void RulesetLoaded(Ruleset rules, ActorInfo ai)
 		{
@@ -135,6 +139,9 @@ namespace OpenRA.Mods.Common.Traits
 		void INotifyAttack.Attacking(Actor self, in Target target, Armament a, Barrel barrel)
 		{
 			if (Info.SlavesHaveFreeWill || target.Type == TargetType.Invalid)
+				return;
+
+			if (Info.Armament != null && a.Info.Name != Info.Armament)
 				return;
 
 			AssignTargetsToSlaves(self, target);

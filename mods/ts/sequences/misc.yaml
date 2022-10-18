@@ -519,7 +519,22 @@ flameball:
 greenflameball:
 	Inherits: flameball
 	Defaults:
-		BlendMode: Additive
+		BlendMode: ScreenAdditive
+
+
+cloud:
+	Defaults:
+		Length: *
+		ZOffset: 1024
+		# Scale: 0.45
+		BlendMode: Alpha
+		AlphaFade: True
+		MeshType: Plane
+	cloud1: cloud1
+	cloud1d: cloud1d
+	cloud2: cloud2
+	cloud2d: cloud2d
+
 
 
 largesmoke:

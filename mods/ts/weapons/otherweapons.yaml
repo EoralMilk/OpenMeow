@@ -52,8 +52,9 @@ GreenFireballLauncher:
 	Projectile: BlastWave
 		Inaccuracy: 1c782
 		ShockDist: 2c512
-		Palette: blast-green
-		Image: greenflameball
+		Palette: effect_alpha #blast-green
+		Image: cloud #greenflameball
+		Sequences: cloud1, cloud2
 		Speed: 30, 50
 		Blockable: false
 	Warhead@fireDam: Spread3DDamage
@@ -65,13 +66,25 @@ GreenFireballLauncher:
 			Light: 100
 			Heavy: 25
 			Concrete: 25
+		DamageTypes: Prone100Percent, TriggerProne, TiberiumDeath
+	-Warhead@2Smu:
 
 GreenFireballLauncher2:
 	Inherits: GreenFireballLauncher
 	Projectile: BlastWave
 		Inaccuracy: 1c0
-		ShockDist: 3c512
+		ShockDist: 4c0
 		Speed: 50, 70
+	Warhead@fireDam: Spread3DDamage
+		Spread: 0c330
+		Damage: 200
+		Versus:
+			None: 300
+			Wood: 70
+			Light: 100
+			Heavy: 25
+			Concrete: 25
+		DamageTypes: Prone100Percent, TriggerProne, TiberiumDeath, TriggerVisceroid
 
 Bomb:
 	ReloadDelay: 60
@@ -404,3 +417,9 @@ DroneReconDummyWeapon:
 		Blockable: false
 
 DummyWeapon:
+
+RPGDroneCheck:
+	Range: 9c512
+	ReloadDelay: 10
+	Projectile: InstantHit
+		Blockable: false

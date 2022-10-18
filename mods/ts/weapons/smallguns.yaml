@@ -479,7 +479,7 @@ TinyShard:
 			Light: 55
 			Heavy: 33
 			Concrete: 10
-		DamageTypes:  Prone100Percent, TriggerProne, SmallExplosionDeath, TriggerVisceroid
+		DamageTypes:  Prone100Percent, TriggerProne, SmallExplosionDeath
 	Warhead@2Eff: CreateEffect
 		ExplosionPalette: effectdarkgreen
 
