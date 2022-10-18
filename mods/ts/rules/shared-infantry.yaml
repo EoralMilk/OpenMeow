@@ -39,8 +39,8 @@ E1:
 	RenderSprites:
 		Image: e1.gdi
 		FactionImages:
-			gdi: e1.gdi
-			nod: e1.nod
+			gdi: gdie1
+			nod: altnode1
 	RevealsShroud:
 		Range: 6c0
 

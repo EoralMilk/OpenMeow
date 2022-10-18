@@ -100,6 +100,17 @@ e1.nod:
 	Defaults: e1
 	icon: sidebar-nod|e1icon
 
+altnode1:
+	Inherits: ^BasicInfantry
+	Inherits@attack: ^BasicInfantryAttack
+	icon: sidebar-nod|e1icon
+
+gdie1:
+	Inherits@1: ^BasicInfantry
+	Inherits@attack: ^BasicInfantryAttack
+	Defaults: e1
+	icon: sidebar-gdi|e1icon
+
 e2:
 	Inherits: ^BasicInfantry
 	Inherits@attack: ^BasicInfantryAttack
@@ -119,7 +130,7 @@ engineer.gdi:
 
 engineer.nod:
 	Inherits: ^BasicInfantry
-	Defaults: engineer
+	Defaults: nodengineer
 	icon: sidebar-nod|engnicon
 
 umagon:

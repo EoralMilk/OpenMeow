@@ -351,6 +351,7 @@ GADEPT:
 		MaxHeightDelta: 1100
 	Reservable:
 	RepairsUnits:
+		ValuePercentage: 0
 		HpPerStep: 1000
 		PauseOnCondition: empdisable
 		PlayerExperience: 15
