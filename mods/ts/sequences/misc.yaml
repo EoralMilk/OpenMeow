@@ -519,7 +519,7 @@ flameball:
 greenflameball:
 	Inherits: flameball
 	Defaults:
-		BlendMode: ScreenAdditive
+		BlendMode: Additive
 
 
 largesmoke:

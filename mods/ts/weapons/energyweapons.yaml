@@ -382,7 +382,7 @@ LaserFence:
 LaserChainGun:
 	Inherits: ^Laser
 	ReloadDelay: 3
-	Range: 6c768
+	Range: 8c768
 	Report: lastur1.aud
 	Projectile: LaserZap
 		Inaccuracy: 555
@@ -390,7 +390,12 @@ LaserChainGun:
 		Duration: 5
 		Blockable: true
 		SecondaryBeamWidth: 100
-		SecondaryBeamColor: FF000050
+		Color: 55FF5599
+		SecondaryBeamColor: 33FF3350
+		SecondaryBeam: true
+		LaunchEffectImage: flash
+		LaunchEffectSequence: laserstart
+		LaunchEffectPalette: lightgreen
 	Warhead@1Dam: SpreadDamage
 		Damage: 1400
 	Warhead@2Eff: CreateEffect
@@ -398,7 +403,8 @@ LaserChainGun:
 	Warhead@3Smu: LeaveSmudge
 		SizePerSmudge: 723, 822
 	Warhead@flash: CreateEffect
-		Explosions: laserend
+		ExplosionPalette: lightgreen
+
 
 # banshee proton pulse cannon
 ProtonPulse:

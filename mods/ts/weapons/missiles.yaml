@@ -388,3 +388,22 @@ RedEye2:
 		Explosions: large_grey_explosion
 		ImpactSounds: expnew13.aud
 		ImpactActors: false
+
+ProtonFlameMissile:
+	Inherits: ^DefaultMissile
+	ReloadDelay: 50
+	Range: 9c0
+	Report: hovrmis1.aud
+	Warhead@1Dam: SpreadDamage
+		Damage: 6000
+		Versus:
+			None: 25
+			Wood: 65
+			Light: 100
+			Heavy: 75
+			Concrete: 60
+	Warhead@Cluster: FireCluster
+		Weapon: GreenFireballLauncher
+		RandomClusterCount: 45
+		Dimensions: 7,7
+		Footprint: __xxx__ _xxXxx_ xxxxxxx xXx_xXx xxxxxxx _xxXxx_ __xxx__

@@ -248,6 +248,10 @@
 		AllowModifiers: false
 		# Premultiply: true
 
+	FixedColorPalette@lightgreen:
+		Base: gray
+		Name: lightgreen
+		Color: 00FF00
 
 	PaletteFromFile@Red:
 		Name: red
@@ -303,4 +307,4 @@
 	FixedColorPalette@blast-green:
 		Base: blast-additive
 		Name: blast-green
-		Color: 22FF22
+		Color: 00BB00

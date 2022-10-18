@@ -48,21 +48,23 @@ DualFireballLauncher:
 GreenFireballLauncher:
 	Inherits: FireballLauncher
 	Burst: 7
+	-Report:
 	Projectile: BlastWave
 		Inaccuracy: 1c782
+		ShockDist: 2c512
 		Palette: blast-green
 		Image: greenflameball
-		Speed: 65, 95
+		Speed: 30, 50
 		Blockable: false
 	Warhead@fireDam: Spread3DDamage
 		Spread: 0c330
-		Damage: 900
+		Damage: 200
 		Versus:
-			None: 300
-			Wood: 100
+			None: 200
+			Wood: 70
 			Light: 100
-			Heavy: 55
-			Concrete: 35
+			Heavy: 25
+			Concrete: 25
 
 Bomb:
 	ReloadDelay: 60

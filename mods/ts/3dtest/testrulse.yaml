@@ -97,7 +97,7 @@ RUTEST2:
 	Tooltip:
 		Name: Cat Girl Avatar
 	Valued:
-		Cost: 1400
+		Cost: 4000
 	Health:
 		HP: 80000
 	Buildable:
@@ -141,11 +141,11 @@ RUTEST2:
 	# 	TurretFireAngleLimitation: true
 	# 	BarrelFireAngleLimitation: false
 	AttachedArmament@2:
-		Weapon: HoverMissile
+		Weapon: ProtonFlameMissile
 		SkeletonToUse: body
 		FromBonePose: a-s-Rig_Head
 		FacingTolerance: 512
-		Turret: turret2
+		# Turret: turret2
 	# AttachedArmament@3:
 	# 	Weapon: HarpyClaw
 	# 	SkeletonToUse: turret_skeleton2
@@ -153,9 +153,9 @@ RUTEST2:
 	# 	FacingTolerance: 40
 	# 	Turret: turret2
 	Armament:
-		Weapon: HarpyClaw
+		Weapon: LaserChainGun
 		Turret: primary
-		LocalOffset: 1024,0,1024
+		LocalOffset: 668,0,1024
 	BlendTreeHandler:
 		DirectionTurret: primary
 
