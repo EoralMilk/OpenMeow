@@ -79,7 +79,7 @@ namespace OpenRA.Graphics
 
 		public bool UpdateMeshInfo()
 		{
-			if (Game.Renderer.World3DRenderer != null)
+			if (Game.Renderer != null && Game.Renderer.World3DRenderer != null)
 			{
 				HasMeshCreateInfo = true;
 

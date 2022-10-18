@@ -108,14 +108,17 @@ GACTWR:
 		BurstsPerFire: 2
 		LocalOffset: 588,120,784, 588,-120,784
 		MuzzleSequence: muzzle
+		PauseOnCondition: empdisable || disabled
 	Armament@ROCKET:
 		RequiresCondition: plug.rpg
 		Weapon: RPGTower
 		LocalOffset: 272,-92,862
+		PauseOnCondition: empdisable || disabled
 	Armament@SAM:
 		RequiresCondition: plug.missile
 		Weapon: TitanMissile #RedEye2
 		LocalOffset: 543,60,976, 543,-60,976
+		PauseOnCondition: empdisable || disabled
 	WithMuzzleOverlay:
 		RequiresCondition: !build-incomplete && plug.vulcan
 	WithIdleOverlay@LIGHTS:
