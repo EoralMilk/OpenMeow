@@ -14,17 +14,17 @@
 
 		ContrailUseInnerOuterColor: true
 
-		ContrailStartColor: CEAE66
-		ContrailStartColorOuter: BEAE66
+		ContrailStartColor: BBBB00
+		ContrailStartColorOuter: 330000
 		ContrailStartColorAlpha: 255
 		ContrailStartColorAlphaOuter: 32
 
-		ContrailEndColor: BBBBBB
-		ContrailEndColorOuter: BBBBBB
+		ContrailEndColor: BB2200
+		ContrailEndColorOuter: 000000
 		ContrailEndColorAlpha: 10
 		ContrailEndColorAlphaOuter: 0
 
-		ContrailBlendMode: Alpha
+		ContrailBlendMode: Additive
 		ContrailWidthFadeRate: 1
 		ContrailZOffset: 3000
 		TrailImage: cannonsmokecircle
@@ -69,6 +69,12 @@
 	Inherits: ^Cannon
 	Warhead@2Eff: CreateEffect
 		Explosions: small_clsn
+	Projectile: Bullet
+		ContrailWidth: 0c172
+		ContrailLength: 4
+		ContrailEndColorAlpha: 64
+		ContrailWidthFadeRate: 1
+		Inaccuracy: 310
 	Warhead@4Smu: LeaveSmudge
 		SmudgeType: SmallCrater
 
@@ -77,7 +83,10 @@
 	ReloadDelay: 75
 	Range: 8c768
 	Projectile: Bullet
-		ContrailWidth: 0c96
+		ContrailWidth: 0c190
+		ContrailLength: 4
+		ContrailEndColorAlpha: 64
+		ContrailWidthFadeRate: 1
 		Blockable: false
 		LaunchAngle: 0
 		Inaccuracy: 310

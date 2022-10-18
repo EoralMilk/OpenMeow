@@ -1039,11 +1039,13 @@ cannonsmokecircle:
 		Length: *
 		ZOffset: 512
 		IgnoreWorldTint: true
+		BlendMode: Additive
 	idle2:
 		Length: *
 		ZOffset: 512
 		Scale: 0.75
 		IgnoreWorldTint: true
+		BlendMode: Additive
 
 caryland:
 	idle: podring
