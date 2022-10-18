@@ -46,12 +46,16 @@ E1:
 
 E1R3:
 	Inherits: E1
+	Tooltip:
+		Name: Elite Light Infantry
 	RenderSprites:
 		Image: e1.gdi
 	ProducibleWithLevel:
 		Prerequisites: techlevel.low
 		InitialLevels: 3
 	-Buildable:
+	UnitDisplayInfo:
+		Description: General-purpose infantry.\n  Strong vs Infantry\n  Weak vs Vehicles, Aircraft
 
 ENGINEER:
 	Inherits: ^Soldier
