@@ -132,7 +132,7 @@ BUS:
 	Mobile:
 		TurnSpeed: 20
 		Speed: 113
-		PauseOnCondition: empdisable || loading || being-captured || carried || traped
+		PauseOnCondition: empdisable || loading || being-captured || carried
 		CanMoveBackward: true
 		BackwardFacingTolerance: 384
 	Health:
@@ -154,7 +154,7 @@ PICK:
 	Mobile:
 		TurnSpeed: 20
 		Speed: 113
-		PauseOnCondition: empdisable || loading || being-captured || carried || traped
+		PauseOnCondition: empdisable || loading || being-captured || carried
 		CanMoveBackward: true
 		BackwardFacingTolerance: 384
 	Health:
@@ -176,7 +176,7 @@ CAR:
 	Mobile:
 		TurnSpeed: 20
 		Speed: 113
-		PauseOnCondition: empdisable || loading || being-captured || carried || traped
+		PauseOnCondition: empdisable || loading || being-captured || carried
 		CanMoveBackward: true
 		BackwardFacingTolerance: 384
 	Health:
@@ -198,7 +198,7 @@ WINI:
 	Mobile:
 		TurnSpeed: 20
 		Speed: 113
-		PauseOnCondition: empdisable || loading || being-captured || carried || traped
+		PauseOnCondition: empdisable || loading || being-captured || carried
 		CanMoveBackward: true
 		BackwardFacingTolerance: 384
 	Health:

@@ -3,6 +3,10 @@
 		Offset: 0, 0, 16
 		ShadowZOffset: 10
 		ZOffset: 14
+	webguy: webguySP
+		Length: 6
+		ShadowStart: 6
+		Facings: 1
 	icon: xxicon
 		Facings: 1
 		Length: 1

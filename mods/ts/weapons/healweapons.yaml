@@ -1,4 +1,5 @@
 ^HealWeapon:
+	ValidRelationships: Ally
 	ReloadDelay: 80
 	Range: 2c849
 	Report: healer1.aud
@@ -10,6 +11,7 @@
 		Damage: -5000
 		Spread: 0c20
 		ValidTargets: Heal
+		ValidRelationships: Ally
 
 Heal:
 	Inherits: ^HealWeapon
@@ -35,3 +37,35 @@ Repair:
 	Warhead@1Dam: TargetDamage
 		ValidTargets: Repair
 		InvalidTargets: NoRepair
+
+RepairDrone:
+	ValidRelationships: Ally
+	ReloadDelay: 70
+	Range: 4c0
+	TargetActorCenter: true
+	InvalidTargets: NoRepair
+	ValidTargets: Repair
+	Report: repair11.aud
+	Projectile: LaserZap
+		ZOffset: 4000
+		Color: FFFF70
+		Width: 24
+		Duration: 6
+		HitAnim: explosion
+		HitAnimSequence: repairsparks
+		HitAnimPalette: player
+	Warhead@1Dam: TargetDamage
+		DebugOverlayColor: 00FF00
+		Damage: -2500
+		Spread: 0c20
+		InvalidTargets: NoRepair
+		ValidTargets: Repair
+		ValidRelationships: Ally
+
+ServiceDepotDroneSpawn:
+	ValidRelationships: Ally
+	ReloadDelay: 25
+	Range: 5c0
+	Projectile: InstantHit
+	InvalidTargets: NoRepair
+	ValidTargets: Repair

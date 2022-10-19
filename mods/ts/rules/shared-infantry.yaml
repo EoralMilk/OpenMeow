@@ -21,17 +21,13 @@ E1:
 		Speed: 71
 	Armament@PRIMARY:
 		LocalOffset: 137,0,444
-		Weapon: AR #Minigun
-		RequiresCondition: !rank-elite
+		Weapon: AR
 		UseBlindage: true
-	Armament@ELITE:
-		LocalOffset: 137,0,444
-		Weapon: AR-Enhanced
-		RequiresCondition: rank-elite
-		UseBlindage: true
+		RequiresCondition: !WebDisable && !inside-tunnel
 	AttackFrontal:
 		Voice: Attack
 		FacingTolerance: 0
+		RequiresCondition: !WebDisable && !inside-tunnel
 	WithSplitAttackPaletteInfantryBody:
 		DefaultAttackSequence: attack
 	ProducibleWithLevel:

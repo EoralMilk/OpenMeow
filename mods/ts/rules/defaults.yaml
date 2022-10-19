@@ -6,19 +6,6 @@
 		PlayerExperienceModifier: 1
 	ScriptTriggers:
 	RenderDebugState:
-	Targetable@avoidByAi:
-		TargetTypes: AIgnored, Traped
-		RequiresCondition: traped
-	ExternalCondition@avoidtarget:
-		Condition: avoidtarget
-	ExternalCondition@traped:
-		Condition: traped
-	Targetable@avoidBySpecialActor:
-		TargetTypes: Ignored, AIgnored
-		RequiresCondition: avoidtarget
-	DamageMultiplier@avoidtarget:
-		RequiresCondition: avoidtarget
-		Modifier: 0
 
 ^SpriteActor:
 	BodyOrientation:
@@ -138,6 +125,23 @@
 	ExternalCondition@EMPDISABLE:
 		Condition: empdisable
 
+^WebDisable:
+	TimedConditionBar@WebDisable:
+		Condition: WebDisable
+		Color: FFFFFF
+	Mobile:
+		PauseOnCondition: WebDisable
+	SpeedMultiplier@InstantStop:
+		RequiresCondition: WebDisable
+		Modifier: 0
+	WithIdleOverlay@web:
+		Sequence: webguy
+		Palette: player
+		IsPlayerPalette: true
+		RequiresCondition: WebDisable
+	ExternalCondition@WebDisable:
+		Condition: WebDisable
+
 ^Cloakable:
 	Cloak@EXTERNALCLOAK:
 		RequiresCondition: cloakgenerator || crate-cloak
@@ -155,6 +159,8 @@
 
 ^AutoTargetGround:
 	AutoTarget:
+		MinimumScanTimeInterval: 23
+		MaximumScanTimeInterval: 23
 		AttackAnythingCondition: stance-attackanything
 	AutoTargetPriority@DEFAULT:
 		RequiresCondition: !stance-attackanything
@@ -176,12 +182,16 @@
 
 ^AutoTargetAir:
 	AutoTarget:
+		MinimumScanTimeInterval: 23
+		MaximumScanTimeInterval: 23
 	AutoTargetPriority@DEFAULT:
 		ValidTargets: Air
 		InvalidTargets: NoAutoTarget
 
 ^AutoTargetAll:
 	AutoTarget:
+		MinimumScanTimeInterval: 23
+		MaximumScanTimeInterval: 23
 		AttackAnythingCondition: stance-attackanything
 	AutoTargetPriority@DEFAULT:
 		RequiresCondition: !stance-attackanything
@@ -200,6 +210,25 @@
 		RequiresCondition: stance-attackanything || assault-move
 	AttackMove:
 		AssaultMoveCondition: assault-move
+
+^AutoTargetRepair:
+	AutoTarget:
+		MinimumScanTimeInterval: 23
+		MaximumScanTimeInterval: 23
+		ScanRadius: 4
+		InitialStance: AttackAnything
+	AutoTargetPriority@DEFAULT:
+		ValidTargets: Repair
+		InvalidTargets: NoRepair
+
+^AutoTargetHeal:
+	AutoTarget:
+		MinimumScanTimeInterval: 23
+		MaximumScanTimeInterval: 23
+		ScanRadius: 4
+		InitialStance: AttackAnything
+	AutoTargetPriority@DEFAULT:
+		ValidTargets: Heal
 
 ^PlayerHandicaps:
 	HandicapFirepowerMultiplier:
@@ -662,6 +691,7 @@
 	Inherits@2: ^ExistsInWorld
 	Inherits@3: ^SpriteActor
 	Inherits@4: ^Cloakable
+	Inherits@5: ^WebDisable
 	Inherits@CRATESTATS: ^CrateStatModifiers
 	Inherits@selection: ^SelectableCombatUnit
 	Inherits@handicaps: ^PlayerHandicaps
@@ -685,9 +715,6 @@
 		Speed: 71
 		AlwaysTurnInPlace: true
 		Locomotor: foot
-		PauseOnCondition: traped
-	ExternalCondition@traped:
-		Condition: traped
 	TurnOnIdle:
 	Selectable:
 		DecorationBounds: 452, 1387, 0, -543
@@ -706,6 +733,7 @@
 	QuantizeFacingsFromSequence:
 		Sequence: stand
 	WithSplitAttackPaletteInfantryBody:
+		RequiresCondition: !WebDisable && !inside-tunnel
 	AttackMove:
 		Voice: Move
 	Passenger:
@@ -752,7 +780,7 @@
 		Voice: Move
 	HitShape@prone:
 		TargetableOffsets: 0,0,32
-		RequiresCondition: takecover || critical
+		RequiresCondition: takecover || critical || WebDisable
 		Type: Circle
 			Radius: 168
 			VerticalTopOffset: 64
@@ -855,6 +883,7 @@
 		Range: 6c512
 	MustBeDestroyed:
 	TakeCover:
+		PauseOnCondition: WebDisable
 		DamageModifiers:
 			Prone50Percent: 50
 			Prone60Percent: 60
@@ -883,7 +912,6 @@
 	Explodes:
 		Weapon: CyborgExplode
 		EmptyWeapon: CyborgExplode
-		RequiresCondition: !traped
 	DeathSounds:
 	RevealsShroud:
 		Range: 7c0
@@ -893,6 +921,7 @@
 	MustBeDestroyed:
 	TakeCover:
 		RequiresCondition: critical
+		PauseOnCondition: WebDisable
 		Duration: -1
 		DamageModifiers:
 			Prone50Percent: 50
@@ -914,7 +943,7 @@
 		ValidDamageStates: Critical
 		GrantPermanently: true
 	Mobile:
-		PauseOnCondition: empdisable || traped
+		PauseOnCondition: empdisable || WebDisable
 	Targetable@cyborg:
 		TargetTypes: Cyborg
 	ChangesHealth@CrippleHeal: # Gain a one-time 25% health regeneration when severely damaged to crippled
@@ -958,13 +987,11 @@
 		Modifier: 50
 		RequiresCondition: empdisable
 	Mobile:
-		PauseOnCondition: empdisable || being-captured || carried || traped
+		PauseOnCondition: empdisable || being-captured || carried
 		Locomotor: wheeled
 		TurnSpeed: 20
 		Voice: Move
 		TerrainOrientationAdjustmentMargin: 256
-	ExternalCondition@traped:
-		Condition: traped
 	Selectable:
 		Bounds: 1206, 1448
 	Voiced:
@@ -1002,14 +1029,12 @@
 	Explodes:
 		Weapon: UnitExplodeSmall
 		EmptyWeapon: UnitExplodeSmall
-		RequiresCondition: !traped
 	MustBeDestroyed:
 	RenderSprites:
 	ThrowsShrapnel:
 		Weapons: SmallDebris
 		Pieces: 3, 7
 		Range: 2c0, 5c0
-		RequiresCondition: !traped
 	GrantConditionOnDamageState@DAMAGEDSPEED:
 		Condition: damagedspeed
 		ValidDamageStates: Heavy
@@ -1049,7 +1074,6 @@
 		Actor: ctech
 		SpawnAfterDefeat: false
 		Probability: 20
-		RequiresCondition: !traped
 
 ^Tank:
 	Inherits: ^Vehicle
@@ -1186,21 +1210,19 @@
 	MapEditorData:
 		Categories: Aircraft
 	SpawnActorOnDeath:
-		RequiresCondition: airborne && !traped
+		RequiresCondition: airborne
 	Hovers@CRUISING:
 		RequiresCondition: cruising
 		BobDistance: -64
 		InitialHeight: 64
-	ExternalCondition@traped:
-		Condition: traped
 
 ^EMPableAircraft:
 	Inherits: ^Aircraft
 	Inherits@EMP: ^EmpDisable
 	Aircraft:
-		PauseOnCondition: empdisable || traped
+		PauseOnCondition: empdisable
 	KillsSelf:
-		RequiresCondition: airborne && empdisable && !traped
+		RequiresCondition: airborne && empdisable
 
 ^AircraftHusk:
 	Inherits@renderVoxel: ^VoxelActor
@@ -1261,9 +1283,6 @@
 		Speed: 113
 		TurnSpeed: 64
 		Locomotor: visceroid
-		PauseOnCondition: traped
-	ExternalCondition@traped:
-		Condition: traped
 	Selectable:
 		Bounds: 784, 1568, 0, -181
 	Targetable:
@@ -1287,7 +1306,6 @@
 	Explodes:
 		Weapon: VisceroidExplode
 		EmptyWeapon: VisceroidExplode
-		RequiresCondition: !traped
 
 ^BlossomTree:
 	Inherits@1: ^SpriteActor
@@ -1475,10 +1493,8 @@
 		TurnSpeed: 20
 		Voice: Move
 		Speed: 113
-		PauseOnCondition: empdisable || traped
+		PauseOnCondition: empdisable
 		Locomotor: train
-	ExternalCondition@traped:
-		Condition: traped
 	Cargo:
 		Types: Infantry
 		UnloadVoice: Unload
@@ -1506,7 +1522,6 @@
 	Explodes:
 		Weapon: UnitExplodeSmall
 		EmptyWeapon: UnitExplodeSmall
-		RequiresCondition: !traped
 	ThrowsShrapnel:
 		Weapons: SmallDebris
 		Pieces: 3, 7

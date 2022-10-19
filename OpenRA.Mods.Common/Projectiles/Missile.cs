@@ -9,14 +9,9 @@
  */
 #endregion
 
-using System.Collections.Generic;
 using System.Linq;
 using OpenRA.GameRules;
-using OpenRA.Graphics;
-using OpenRA.Mods.Common.Effects;
-using OpenRA.Mods.Common.Graphics;
 using OpenRA.Mods.Common.Traits;
-using OpenRA.Primitives;
 using OpenRA.Traits;
 using TrueSync;
 
@@ -569,12 +564,14 @@ namespace OpenRA.Mods.Common.Projectiles
 					// Only activate this part if target too close to cliff
 					allowPassBy = true;
 
+					/*
 					// Vector from missile's current position pointing to the loop's center
 					var radius = new WVec(loopRadius, 0, 0)
 						.Rotate(new WRot(WAngle.Zero, WAngle.Zero, WAngle.FromFacing(64 - vFacing)));
 
 					// Vector from loop's center to incline top hardcoded in height buffer zone
 					var edgeVector = new WVec(lastHtChg, lastHt - pos.Z, 0) - radius;
+					*/
 
 					if (!targetPassedBy)
 					{
@@ -599,6 +596,9 @@ namespace OpenRA.Mods.Common.Projectiles
 
 							// TODO: deceleration checks!!!
 						}
+
+						/* TODO: I don't konw if we need this "Avoid the cliff edge" here, due to it makes missile behave stange on slope and cliff
+						 * while affecting gameplay severely.
 						else
 						{
 							// Avoid the cliff edge
@@ -628,9 +628,18 @@ namespace OpenRA.Mods.Common.Projectiles
 									desiredVFacing = 0;
 							}
 						}
+						*/
+						else
+						{
+							// Aim for the target
+							var vDist = new WVec(-relTarHgt, -relTarHorDist, 0);
+							desiredVFacing = (sbyte)vDist.HorizontalLengthSquared != 0 ? vDist.Yaw.Facing : vFacing;
+							if (desiredVFacing < 0 && info.VerticalRateOfTurn.Facing < (sbyte)vFacing)
+								desiredVFacing = 0;
+						}
 					}
 					else
-					{
+						{
 						// Aim for the target
 						var vDist = new WVec(-relTarHgt, relTarHorDist, 0);
 						desiredVFacing = (sbyte)vDist.HorizontalLengthSquared != 0 ? vDist.Yaw.Facing : vFacing;
@@ -833,6 +842,5 @@ namespace OpenRA.Mods.Common.Projectiles
 
 			args.Weapon.Impact(Target.FromPos(pos), warheadArgs);
 		}
-
 	}
 }

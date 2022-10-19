@@ -106,7 +106,7 @@
 RPGTower:
 	Inherits: ^Cannon
 	ReloadDelay: 80
-	Range: 9c0
+	Range: 8c768
 	Report: glnch4.aud
 	Projectile: Bullet
 		Speed: 76
@@ -126,24 +126,24 @@ RPGTower:
 		ContrailDelay: 0
 		ContrailBlendMode: Alpha
 	Warhead@1Dam: SpreadDamage
-		Damage: 15500
-		Spread: 320
+		Damage: 15000
+		Spread: 256
 		Versus:
 			None: 30
 			Wood: 75
 			Light: 90
 			Heavy: 100
 			Concrete: 70
-		DamageTypes: Prone100Percent, TriggerProne, SmallExplosionDeath
+		DamageTypes: Prone50Percent, TriggerProne, SmallExplosionDeath
 	Warhead@2Eff: CreateEffect
 		Explosions: large_clsn
 	Warhead@5Res: DestroyResource
 		ResourceAmount: 3
 
-RPGdrone:
+TitanRPG:
 	Inherits: RPGTower
-	ReloadDelay: 100
-	Range: 3c0
+	ReloadDelay: 120
+	Range: 8c768
 
 ^ArtilleryWeapon:
 	Inherits: ^Cannon

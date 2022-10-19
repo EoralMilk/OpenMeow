@@ -1012,11 +1012,14 @@ tuntop04:
 		ZOffset: 4096
 
 dig:
-	idle:
+	Defaults: dig
 		Length: *
 		ZOffset: 1
 		Offset: 0, 0, 24
 		MeshType: Plane
+	idle:
+	idle2:
+		Scale: 0.5
 
 typeglyphs:
 	infantry:
@@ -1085,3 +1088,11 @@ dropland:
 		Offset: 0, 0, 1
 		BlendMode: Translucent
 		MeshType: Plane
+
+web2:
+	idle:
+		Length: *
+		ZOffset: 1023
+		IgnoreWorldTint: true
+		MeshType: Plane
+

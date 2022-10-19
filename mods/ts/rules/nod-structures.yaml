@@ -254,7 +254,7 @@ NAHPAD:
 		BuildPaletteOrder: 80
 		Queue: Building
 		Prerequisites: naradr, ~structures.nod, ~techlevel.medium
-		Description: Produces, rearms and\nrepairs helicopters.
+		Description: Produces and rearms aircraft.
 	Building:
 		Footprint: xx xx
 		Dimensions: 2,2
@@ -276,14 +276,6 @@ NAHPAD:
 		Produces: Air
 		PauseOnCondition: empdisable
 	Reservable:
-	RepairsUnits:
-		HpPerStep: 1000
-		PauseOnCondition: empdisable
-		PlayerExperience: 15
-		StartRepairingNotification: Repairing
-		StartRepairingTextNotification: Repairing.
-		FinishRepairingNotification: UnitRepaired
-		FinishRepairingTextNotification: Unit repaired.
 	ProductionBar:
 		ProductionType: Air
 	WithIdleOverlay@PLATFORM:

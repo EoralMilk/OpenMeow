@@ -40,7 +40,7 @@
 
 		ContrailEndColor: A8A8A8
 		ContrailEndColorOuter: A8A8A8
-		ContrailEndColorAlpha: 64
+		ContrailEndColorAlpha: 32
 		ContrailEndColorAlphaOuter: 0
 
 		ContrailWidthFadeRate: 1
@@ -205,9 +205,9 @@ HoverMissile:
 
 TitanMissile:
 	Inherits: ^VectorBooster
-	Burst: 2
-	ReloadDelay: 75
-	Range: 8c768
+	ReloadDelay: 40
+	ValidTargets: Air
+	Range: 6c0
 	Report: hovrmis1.aud
 	Projectile: VectorBooster
 		HorizonRotationRate: 12
@@ -233,10 +233,68 @@ TitanMissile:
 			Heavy: 70
 			Concrete: 60
 
+LimpetMissile: ##todo
+	Inherits: BikeMissile
+	Range: 7c0
+	ReloadDelay: 90
+	ValidTargets: Ground, Water, Air, Trees
+	Projectile: VectorBooster
+		LaunchAngle: 253
+		LockOnDelay: 3
+		IgnitionDelay: 17
+		RangeLimit: 30c0
+		Speed: 200
+		ContrailLength: 10
+	Warhead@1Dam: Spread3DDamage
+		Damage: 8000
+
+LurkerAimDummyWeapon:
+	Range: 7c0
+	ReloadDelay: 20
+	ValidTargets: Ground, Water, Air
+	Projectile: InstantHit
+
 HoverMissileQuad:
 	Inherits: HoverMissile
 	Burst: 4
 	ReloadDelay: 100
+
+ReaperScythe: ##todo
+	Inherits: ^VectorBooster
+	ValidTargets: Ground, Water, Air
+	Report: samshot1.aud
+	ReloadDelay: 180
+	Burst: 4
+	Range: 9c0
+	MinRange: 1c0
+	Projectile: VectorBooster
+	    UsingScat: true
+		ScatCount: 2
+		ScatWeapon: ReaperScytheScat
+		LaunchAngle: 220
+		ScatDist: 5c0
+
+ReaperScytheScat:
+	Inherits: ^VectorBooster
+	ReloadDelay: 90
+	Range: 3c0
+	Projectile: VectorBooster
+		LockOnInaccuracy: 0c512
+		InaccuracyType: Absolute
+		ContrailWidth: 89
+		LaunchAngle: 220
+	Warhead@1Dam: SpreadDamage
+		Spread: 108
+		Falloff: 100, 50, 25, 12, 6, 3, 0
+		Damage: 2250
+		ValidTargets: Ground, Water, Air, Trees
+		Versus:
+			None: 25
+			Wood: 65
+			Light: 75
+			Heavy: 100
+			Concrete: 60
+		DamageTypes: Prone50Percent, TriggerProne, SmallExplosionDeath
 
 MammothTusk:
 	Inherits: ^DefaultMissile
@@ -297,9 +355,8 @@ BikeMissileDual:
 
 Dragon:
 	Inherits: ^DefaultMissile
-	ReloadDelay: 70
-	Burst: 4
-	BurstDelays: 8
+	ReloadDelay: 33
+	Burst: 2
 	Report: misl1.aud
 	Warhead@1Dam: SpreadDamage
 		Damage: 4500

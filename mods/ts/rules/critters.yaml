@@ -32,14 +32,17 @@ DOGGIE:
 		Weapon: FiendShard
 		LocalOffset: 0,0,313
 		# FiringAngle: 512
+		RequiresCondition: !WebDisable && !inside-tunnel
 	AttackFrontal:
 		Voice: Attack
 		FacingTolerance: 0
 		# FiringAngle: 512
+		RequiresCondition: !WebDisable && !inside-tunnel
 	AttackWander:
 		WanderMoveRadius: 2
 		MinMoveDelay: 200
 		MaxMoveDelay: 600
+		RequiresCondition: !WebDisable && !inside-tunnel
 	-SpawnActorOnDeath@FLAMEGUY:
 	WithDeathAnimation@fire:
 		DeathSequence: die-
