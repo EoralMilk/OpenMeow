@@ -970,7 +970,7 @@
 	Voiced:
 		VoiceSet: Vehicle
 	Targetable:
-		RequiresCondition: !inside-tunnel && !carring
+		RequiresCondition: !inside-tunnel
 		TargetTypes: Ground, Vehicle
 	Targetable@REPAIR:
 		RequiresCondition: !inside-tunnel && damaged

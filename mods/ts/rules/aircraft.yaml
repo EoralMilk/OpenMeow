@@ -401,9 +401,8 @@ TRNSPORT:
 	Aircraft:
 		TurnSpeed: 20
 		Speed: 149
-		# Pitch: 0
-		# Roll: 0
-		Roll: 16
+		Pitch: 0
+		Roll: 0
 		TakeoffSounds: dropup1.aud
 		LandingSounds: dropdwn1.aud
 	Carryall:
