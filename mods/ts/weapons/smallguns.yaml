@@ -433,8 +433,8 @@ OxannaGun:
 	Burst: 1
 	Report: gun18.aud
 	Projectile: InstantScat
-		ScatWeapon: ^ShotGunScat
-		ScatCount: 10
+		ScatWeapons: ^ShotGunScat
+		ScatCounts: 10
 		Inaccuracy: 200
 	Warhead@1Dam: SpreadDamage
 

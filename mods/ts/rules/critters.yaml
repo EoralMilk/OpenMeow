@@ -171,3 +171,8 @@ JFISH:
 			VerticalTopOffset: 768
 	Targetable@floater:
 		TargetTypes: Floater
+	ExplodeWeapon@FloaterSpray:
+		Weapon: FloaterSpray
+		Chance: 70
+		Interval: 100
+

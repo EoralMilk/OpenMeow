@@ -397,7 +397,7 @@ LaserChainGun:
 		LaunchEffectSequence: laserstart
 		LaunchEffectPalette: lightgreen
 	Warhead@1Dam: SpreadDamage
-		Damage: 1400
+		Damage: 1900
 	Warhead@2Eff: CreateEffect
 		Explosions: laserburningmini
 	Warhead@3Smu: LeaveSmudge

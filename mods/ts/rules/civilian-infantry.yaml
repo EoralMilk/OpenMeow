@@ -8,11 +8,11 @@ WEEDGUY:
 		Queue: Infantry
 		BuildPaletteOrder: 75
 		Prerequisites: ~nahand, natech, ~techlevel.high
-		Description: Heavy infantry armed with a Flamethrower.\n  Strong vs Infantry\n  Weak vs Armored units, Aircraft
+		Description: Heavy infantry armed with a Toxin Sprayer.\n  Strong vs Infantry\n  Weak vs Armored units, Aircraft
 	Valued:
-		Cost: 550
+		Cost: 750
 	Tooltip:
-		Name: Flame Trooper
+		Name: Toxin Trooper
 	Voiced:
 		VoiceSet: Weed
 	Mobile:
@@ -22,7 +22,7 @@ WEEDGUY:
 	Crushable:
 		CrushSound: squishy2.aud
 	Armament:
-		Weapon: FireballLauncher
+		Weapon: ChemicalSprayer #FireballLauncher
 		LocalOffset: 317,0,262
 	TakeCover:
 		ProneOffset: 128,0,0 #-320

@@ -109,6 +109,7 @@ TREE25:
 VEINHOLE:
 	Inherits: ^ExistsInWorld
 	Inherits@1: ^BlossomTree
+	Inherits@heal: ^HealsOnTiberium
 	Inherits@AUTOTARGET: ^AutoTargetGround
 	Tooltip:
 		Name: Veinhole
@@ -126,11 +127,11 @@ VEINHOLE:
 		InitialStance: AttackAnything
 	AttackOmni:
 		FacingTolerance: 512
-	# RevealsShroud:
-	# 	Range: 1c0
-	# 	Type: CenterPosition
-	# 	ValidRelationships: Neutral, Ally
-	# 	MaxHeightDelta: 3000
+	RevealsShroud:
+		Range: 1c0
+		Type: CenterPosition
+		ValidRelationships: Neutral, Ally
+		MaxHeightDelta: 3000
 	Armament:
 		Weapon: VeinholeTest
 		LocalOffset: 0,0,0
@@ -158,6 +159,11 @@ VEINHOLE:
 		RedTint: 0.65
 		GreenTint: 0.01
 		BlueTint: 0.01
+	ChangesHealth@selfheal:
+		Step: 200
+		Delay: 100
+		StartIfBelow: 100
+		DamageCooldown: 0
 
 ^TibFlora:
 	Inherits: ^Tree

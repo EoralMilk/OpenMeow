@@ -1623,6 +1623,8 @@
 		DamageInterval: 16
 		Terrain: Tiberium, BlueTiberium
 		RequiresCondition: !inside-tunnel
+	Targetable@TiberiumCreature:
+		TargetTypes: TiberiumCreature
 
 ^DamagedByVeins:
 	DamagedByTerrain@VEINS:

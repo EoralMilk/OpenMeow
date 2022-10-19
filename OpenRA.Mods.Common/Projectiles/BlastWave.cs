@@ -72,6 +72,9 @@ namespace OpenRA.Mods.Common.Projectiles
 		[Desc("Mess it up at height，necessary for avoiding depth conflict.")]
 		public readonly WDist ChaosHeightInaccuracy = new WDist(128);
 
+		public readonly float StartScale = 1f;
+		public readonly float EndScale = 1f;
+
 		public IProjectile Create(ProjectileArgs args) { return new BlastWave(this, args); }
 	}
 
@@ -249,7 +252,7 @@ namespace OpenRA.Mods.Common.Projectiles
 			{
 				if (anim != null)
 				{
-					foreach (var r in anim.Render(pos, wr.Palette(palette)))
+					foreach (var r in anim.Render(pos, wr.Palette(palette), float2.Lerp(info.StartScale, info.EndScale, (float)liveTicks / (lifetime + 1))))
 						yield return r;
 				}
 			}

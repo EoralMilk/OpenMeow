@@ -45,6 +45,30 @@ DualFireballLauncher:
 	ReloadDelay: 50
 	Burst: 28
 
+GreenFireballLauncher:
+	Inherits: FireballLauncher
+	-Report:
+	Projectile: BlastWave
+		Inaccuracy: 0c768
+		# Image: flameball
+		# Sequences: idle1, idle2, idle3
+		# Palette: blast-green
+		Palette: effect_alpha #blast-green
+		Image: cloudadditive #greenflameball
+		Sequences: cloud1, cloud2
+		Speed: 40, 55
+		LaunchAngle: 10
+		Width: 324
+		ShockDist: 3c768
+		Chaos: true
+		ChaosInaccuracy: 0c512
+		ExplodeUnderThisAltitude: 0
+		StartScale: 0.45
+		EndScale: 2
+	Warhead@fireDam: Spread3DDamage
+		Spread: 0c220
+		Damage: 220
+
 ChemicalCloudLauncher:
 	Inherits: FireballLauncher
 	Burst: 7
@@ -60,16 +84,31 @@ ChemicalCloudLauncher:
 		ExplodeUnderThisAltitude: 512
 		Chaos: true
 		ChaosInaccuracy: 0c512
+		StartScale: 0.45
+		EndScale: 2
 	Warhead@fireDam: Spread3DDamage
 		Spread: 0c330
 		Damage: 200
+		InvalidTargets: TiberiumCreature
 		Versus:
 			None: 200
 			Wood: 70
 			Light: 100
 			Heavy: 25
 			Concrete: 25
-		DamageTypes: Prone100Percent, TriggerProne, TiberiumDeath
+		DamageTypes: Prone100Percent, TiberiumDeath
+	Warhead@healtib: Spread3DDamage
+		Spread: 0c330
+		Damage: -100
+		AffectsParent: true
+		ValidTargets: TiberiumCreature
+		Versus:
+			None: 100
+			Wood: 50
+			Light: 100
+			Heavy: 50
+			Concrete: 25
+		DamageTypes: Prone100Percent
 	-Warhead@2Smu:
 
 ChemicalCloudLauncher2:
@@ -87,7 +126,31 @@ ChemicalCloudLauncher2:
 			Light: 100
 			Heavy: 25
 			Concrete: 25
-		DamageTypes: Prone100Percent, TriggerProne, TiberiumDeath, TriggerVisceroid
+		DamageTypes: Prone100Percent, TiberiumDeath, TriggerVisceroid
+
+ChemicalSprayer:
+	Inherits: ChemicalCloudLauncher
+	Range: 5c128
+	Report: flamtnk1.aud
+	Burst: 18
+	BurstDelays: 2
+	Projectile: BlastWave
+		Inaccuracy: 2c512
+		ShockDist: 6c0
+		Speed: 70, 86
+		Chaos: false
+		UseVerticalInaccuracy: true
+		ExplodeUnderThisAltitude: 0
+	Warhead@fireDam: Spread3DDamage
+		Spread: 0c330
+		Damage: 250
+		Versus:
+			None: 300
+			Wood: 65
+			Light: 70
+			Heavy: 25
+			Concrete: 25
+		DamageTypes: Prone100Percent, TiberiumDeath, TriggerVisceroid
 
 Bomb:
 	ReloadDelay: 60
@@ -389,22 +452,25 @@ TiberiumDebris:
 		ValidTargets: Ground, Air
 		Density: 1, 2
 
-
 VeinholeTest:
-	Inherits: 155mm
+	ReloadDelay: 80
+	Range: 5c535
+	Report: flamtnk1.aud
 	ValidTargets: Ground, Water
 	InvalidTargets: Building, Wall, Veinhole
-	Range: 15c0
-	MinRange: 1c0
-	ReloadDelay: 50
-	TargetActorCenter: false
-	Projectile: Bullet
-		LaunchAngle: 200
-	Warhead@4Res: CreateResource
-		AddsResourceType: Veins
-		Size: 0,0
-		ValidTargets: Ground, Air
-		AirThreshold: 768
+	Projectile: InstantScat
+		ScatWeapons: ChemicalSprayer
+		ScatCounts: 35
+		Inaccuracy: 1c0
+	Warhead@1Dam: SpreadDamage
+
+
+FloaterSpray:
+	Warhead@Cluster: FireCluster
+		Weapon: ChemicalCloudLauncher
+		Dimensions: 5,5
+		RandomClusterCount: 15
+		Footprint: _xxx_ xxXxx xX_Xx xxXxx _xxx_
 
 ApcReconDummyWeapon:
 	ValidTargets: Ground, Water, Air

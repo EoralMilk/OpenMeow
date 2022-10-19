@@ -104,9 +104,9 @@ namespace OpenRA.Graphics
 				xy.Y + (int)(cb.Bottom * scale));
 		}
 
-		public IRenderable[] Render(WPos pos, PaletteReference palette)
+		public IRenderable[] Render(WPos pos, PaletteReference palette, float scaleMul = 1f)
 		{
-			return Render(pos, WVec.Zero, 0, palette);
+			return Render(pos, WVec.Zero, 0, palette, scaleMul);
 		}
 
 		public void Play(string sequenceName)
