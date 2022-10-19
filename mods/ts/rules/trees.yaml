@@ -19,7 +19,7 @@ BIGBLUE:
 		Terrain: BlueTiberium
 	SeedsResource:
 		ResourceType: BlueTiberium
-		Interval: 1000
+		Interval: 110
 	TerrainLightSource:
 		Range: 7c640
 		Intensity: 0.36
@@ -122,24 +122,43 @@ VEINHOLE:
 		Terrain: Veins
 	FrozenUnderFog:
 	-WithIdleAnimation:
+	WithSpriteBody:
+		Name: body
+		StartSequence: reverse
+		RequiresCondition: !damage-cool
+	WithSpriteBody@damage-cool:
+		Name: diebody
+		StartSequence: todie
+		Sequence: die
+		RequiresCondition: damage-cool
 	RevealOnFire:
 	AutoTarget:
 		InitialStance: AttackAnything
 	AttackOmni:
 		FacingTolerance: 512
+		RequiresCondition: !damage-cool
 	RevealsShroud:
+		RequiresCondition: !damage-cool
 		Range: 1c0
 		Type: CenterPosition
 		ValidRelationships: Neutral, Ally
 		MaxHeightDelta: 3000
 	Armament:
+		RequiresCondition: !damage-cool
 		Weapon: VeinholeTest
 		LocalOffset: 0,0,0
 		FireDelay: 19
 	WithAttackAnimation:
 		Sequence: attack
 	Health:
-		HP: 100000
+		HP: 110000
+	GrantConditionOnDamageState@untargetable:
+		Condition: untargetable
+		ValidDamageStates: Critical
+	GrantConditionOnTime:
+		RequiresCondition: untargetable
+		Condition: damage-cool
+		Tick: 50
 	Armor:
 		Type: Heavy
 	HitShape:
@@ -148,22 +167,34 @@ VEINHOLE:
 			Radius: 512
 			VerticalTopOffset: 1
 	Targetable:
+		RequiresCondition: !damage-cool
 		TargetTypes: Ground, Veinhole, NoAutoTarget, AIgnored
 	-BlocksProjectiles:
 	SeedsResource:
 		ResourceType: Veins
-		Interval: 125
+		Interval: 80
+		RequiresCondition: !damage-cool
 	TerrainLightSource:
 		Range: 7c128
 		Intensity: 0.36
 		RedTint: 0.65
 		GreenTint: 0.01
 		BlueTint: 0.01
+	ChangesHealth@critical:
+		Step: 20000
+		Delay: 1
+		StartIfBelow: 100
+		DamageCooldown: 0
+		RequiresCondition: damage-cool
 	ChangesHealth@selfheal:
 		Step: 200
 		Delay: 100
 		StartIfBelow: 100
 		DamageCooldown: 0
+	Explodes:
+		Weapon: ChemicalCluster
+		EmptyWeapon: ChemicalCluster
+		Type: CenterPosition
 
 ^TibFlora:
 	Inherits: ^Tree

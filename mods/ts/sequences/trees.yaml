@@ -197,7 +197,13 @@ veinhole:
 		Facings: 1
 		MeshType: TileActor # use MapRenderer
 	idle:
-		Frames: 1
+		Frames: 0
+	todie:
+		Frames: 0, 1, 2
+	die:
+		Frames: 3
+	reverse:
+		Frames: 4, 5, 6, 2, 1
 	attack:
 		Tick: 80
 		Frames: 1,2,3,4,5,6,7,8,9,10,11,7,6,1
