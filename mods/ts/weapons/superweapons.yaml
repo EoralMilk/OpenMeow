@@ -71,10 +71,50 @@ ClusterMissile:
 ChemicalMissile:
 	Inherits: ClusterMissile
 	Warhead@Cluster: FireCluster
-		Weapon: ChemicalCloudLauncher2
+		Weapon: ChemicalCluster
 		Dimensions: 5,5
-		RandomClusterCount: 120
-		Footprint: _xxx_ xxXxx xXXXx xxXxx _xxx_
+		RandomClusterCount: 0
+		Footprint: __X__ _xxx_ xx_xx _xxx_ X_x_X
+
+ChemicalCluster:
+	Inherits: ^VectorBooster
+	ValidTargets: Ground, Water, Air, Trees
+	-Report:
+	Projectile: VectorBooster
+		Speed: 120
+		MinSpeed: 55
+		MaxSpeed: 388
+		Inaccuracy: 1c512
+		Acceleration: 10
+		ContrailStartColor: 00FF00
+		ContrailStartColorOuter: AAAA00
+		AirburstAltitude: 1c256
+		LaunchAngle: 0
+		LifeTime: 66
+		AllowSnapping: false
+		HorizonRotationRate: 33
+		VerticalRotationRate: 22
+	Warhead@1Dam: SpreadDamage
+		Spread: 458
+		Damage: 6000
+		ValidTargets: Ground, Water, Air, Trees
+		Versus:
+			None: 100
+			Wood: 85
+			Light: 100
+			Heavy: 75
+			Concrete: 55
+		DamageTypes: Prone50Percent, TriggerProne, ExplosionDeath
+	Warhead@2Eff: CreateEffect
+		ImpactActors: false
+		Explosions: large_twlt
+		ImpactSounds: expnew09.aud
+	Warhead@Cluster: FireCluster
+		Weapon: ChemicalCloudLauncher2
+		RandomClusterCount: 33
+		Dimensions: 7,7
+		Footprint: __xxx__ _xxXxx_ xxxxxxx xXx_xXx xxxxxxx _xxXxx_ __xxx__
+
 
 SuicideDash:
 	Range: 7c0

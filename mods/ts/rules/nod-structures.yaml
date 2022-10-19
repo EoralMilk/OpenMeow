@@ -591,7 +591,7 @@ NAMISL:
 		MissileWeapon: ChemicalMissile
 		MissileImage: ClusterMissile
 		FlightDelay: 50
-		DetonationAltitude: 2c0
+		DetonationAltitude: 4c0
 		MissileDelay: 18
 		SpawnOffset: 0, 0c128, 0c512
 		DisplayTimerRelationships: None
