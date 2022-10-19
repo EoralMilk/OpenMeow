@@ -970,7 +970,7 @@
 	Voiced:
 		VoiceSet: Vehicle
 	Targetable:
-		RequiresCondition: !inside-tunnel
+		RequiresCondition: !inside-tunnel && !carring
 		TargetTypes: Ground, Vehicle
 	Targetable@REPAIR:
 		RequiresCondition: !inside-tunnel && damaged
@@ -1025,6 +1025,7 @@
 	Carryable:
 		RequiresCondition: !inside-tunnel
 		LockedCondition: carried
+		CarriedCondition: carring
 	RevealOnFire:
 	EntersTunnels:
 		Voice: Move

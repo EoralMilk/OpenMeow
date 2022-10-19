@@ -67,25 +67,6 @@ namespace OpenRA.Mods.Common.Projectiles
 		[Desc("Probability of locking onto and following target.")]
 		public readonly int LockOnProbability = 100;
 
-		[Desc("Up to how many times does this VectorBooster bounce when touching ground without hitting a target.",
-			"0 implies exploding on contact with the originally targeted position.")]
-		public readonly int BounceCount = 0;
-
-		[Desc("Modify distance of each bounce by this percentage of previous distance.")]
-		public readonly int BounceRangeModifier = 60;
-
-		[Desc("Sound to play when the projectile hits the ground, but not the target.")]
-		public readonly string BounceSound = null;
-
-		[Desc("Terrain where the projectile explodes instead of bouncing.")]
-		public readonly HashSet<string> InvalidBounceTerrain = new HashSet<string>();
-
-		[Desc("Trigger the explosion if the projectile touches an actor thats owner has these player relationships.")]
-		public readonly PlayerRelationship ValidBounceBlockerRelationships = PlayerRelationship.Enemy | PlayerRelationship.Neutral;
-
-		[Desc("A projectile will not bounce when it is below the terrain by this depth.")]
-		public readonly WDist BounceMaxDepth = new WDist(-336);
-
 		[Desc("Altitude above terrain below which to explode. Zero effectively deactivates airburst.")]
 		public readonly WDist AirburstAltitude = WDist.Zero;
 
@@ -97,6 +78,13 @@ namespace OpenRA.Mods.Common.Projectiles
 
 		[Desc("sub weapon count.")]
 		public readonly int ScatCount = 5;
+
+		[Desc("Scat Size of the cluster footprint")]
+		public readonly CVec ScatDimensions = CVec.Zero;
+
+		[Desc("Scat footprint. Cells marked as X will be attacked.",
+	"Cells marked as x will be attacked randomly until RandomClusterCount is reached.")]
+		public readonly string ScatFootprint = string.Empty;
 
 		[WeaponReference]
 		[Desc("Weapon fire when projectile die.")]
@@ -192,12 +180,14 @@ namespace OpenRA.Mods.Common.Projectiles
 					lockOn = true;
 			}
 
+			offset = new WVec(WDist.Zero, WDist.Zero, info.AirburstAltitude);
+
 			if (lockOn)
 			{
 				if (info.LockOnInaccuracy.Length > 0)
 				{
 					var maxInaccuracyOffset = Util.GetProjectileInaccuracy(info.LockOnInaccuracy.Length, info.InaccuracyType, args);
-					offset = WVec.FromPDF(world.SharedRandom, 2, info.UseLockOnVerticalInaccuracy) * maxInaccuracyOffset / 1024;
+					offset += WVec.FromPDF(world.SharedRandom, 2, info.UseLockOnVerticalInaccuracy) * maxInaccuracyOffset / 1024;
 				}
 
 				target = args.Weapon.TargetActorCenter ? args.GuidedTarget.CenterPosition + offset : args.GuidedTarget.Positions.PositionClosestTo(args.Source) + offset;
@@ -207,14 +197,11 @@ namespace OpenRA.Mods.Common.Projectiles
 				if (info.Inaccuracy.Length > 0)
 				{
 					var maxInaccuracyOffset = Util.GetProjectileInaccuracy(info.Inaccuracy.Length, info.InaccuracyType, args);
-					offset = WVec.FromPDF(world.SharedRandom, 2, info.UseVerticalInaccuracy) * maxInaccuracyOffset / 1024;
+					offset += WVec.FromPDF(world.SharedRandom, 2, info.UseVerticalInaccuracy) * maxInaccuracyOffset / 1024;
 				}
 
 				target = args.PassiveTarget + offset;
 			}
-
-			if (info.AirburstAltitude > WDist.Zero)
-				target += new WVec(WDist.Zero, WDist.Zero, info.AirburstAltitude);
 
 			facing = (target - pos).Yaw;
 
@@ -410,6 +397,14 @@ namespace OpenRA.Mods.Common.Projectiles
 			return false;
 		}
 
+		TSMatrix4x4 GetDirMatrix()
+		{
+			var facing = TSQuaternion.FromToRotation(TSVector.forward, World3DCoordinate.WVecToTSVec3(matVec));
+			var matrix = TSMatrix4x4.Rotate(facing);
+			matrix.SetTranslatePart(World3DCoordinate.WPosToTSVec3(pos));
+			return Transformation.MatWithNewScale(matrix, info.MeshScale);
+		}
+
 		protected virtual void Explode(World world)
 		{
 			RenderExplode(world, pos);
@@ -428,7 +423,7 @@ namespace OpenRA.Mods.Common.Projectiles
 				var pArgs = new ProjectileArgs
 				{
 					Weapon = scatWeapon,
-					Matrix = GetMatrix(),
+					Matrix = GetDirMatrix(),
 					Facing = (target - pos).Yaw,
 					CurrentMuzzleFacing = () => (target - pos).Yaw,
 
@@ -441,15 +436,19 @@ namespace OpenRA.Mods.Common.Projectiles
 					Source = pos,
 					CurrentSource = () => pos,
 					SourceActor = SourceActor,
-					PassiveTarget = target,
+					PassiveTarget = target - new WVec(WDist.Zero, WDist.Zero, info.AirburstAltitude),
 					GuidedTarget = args.GuidedTarget
 				};
 
+				var randomTargetOffset = CellPosMatching(pArgs.PassiveTarget, true, info.ScatFootprint, info.ScatDimensions);
+
 				if (pArgs.Weapon.Projectile != null)
 				{
-					for (var i = -1; i < info.ScatCount; i++)
+					for (var i = 0; i < info.ScatCount; i++)
 					{
-						var projectile = scatWeapon.Projectile.Create(pArgs);
+						var pargs = pArgs;
+						pargs.PassiveTarget = randomTargetOffset.Random(args.SourceActor.World.SharedRandom);
+						var projectile = scatWeapon.Projectile.Create(pargs);
 						world.AddFrameEndTask(w => w.Add(projectile));
 					}
 				}
@@ -463,9 +462,6 @@ namespace OpenRA.Mods.Common.Projectiles
 			foreach (var victim in world.FindActorsOnCircle(pos, radius))
 			{
 				if (checkTargetType && !Target.FromActor(victim).IsValidFor(firedBy))
-					continue;
-
-				if (!(args.GuidedTarget.Actor != null && args.GuidedTarget.Actor == victim) && !info.ValidBounceBlockerRelationships.HasRelationship(firedBy.Owner.RelationshipWith(victim.Owner)))
 					continue;
 
 				// If the impact position is within any actor's HitShape, we have a direct hit

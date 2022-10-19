@@ -22,6 +22,7 @@ rumya:
 			backwardRightAnim: Rifle_BackRight
 			backwardLeftAnim: Rifle_BackLeft
 
+			catidle: catidle_Skeleton_CommonBody
 	Meshes:
 		face_addon: face_addon_DT_0
 			UseDQBSkin: false
@@ -129,7 +130,7 @@ rumya:
 mmr-test:
 	Meshes:
 		dummy: dummy
-			Material: none
+			Material: black
 
 # turret-test2:
 # 	Skeleton: TextTurret

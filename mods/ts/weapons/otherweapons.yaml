@@ -59,7 +59,7 @@ GreenFireballLauncher:
 		Speed: 40, 55
 		LaunchAngle: 10
 		Width: 324
-		ShockDist: 3c768
+		ShockDist: 3c0
 		Chaos: true
 		ChaosInaccuracy: 0c512
 		ExplodeUnderThisAltitude: 0
@@ -82,6 +82,7 @@ ChemicalCloudLauncher:
 		Speed: 30, 40
 		Blockable: true
 		ExplodeUnderThisAltitude: 512
+		UseVerticalInaccuracy: true
 		Chaos: true
 		ChaosInaccuracy: 0c512
 		StartScale: 0.45
@@ -127,6 +128,11 @@ ChemicalCloudLauncher2:
 			Heavy: 25
 			Concrete: 25
 		DamageTypes: Prone100Percent, TiberiumDeath, TriggerVisceroid
+
+ChemicalCloudLauncher3:
+	Inherits: ChemicalCloudLauncher
+	Projectile: BlastWave
+		ExplodeUnderThisAltitude: 0
 
 ChemicalSprayer:
 	Inherits: ChemicalCloudLauncher
@@ -467,7 +473,7 @@ VeinholeTest:
 
 FloaterSpray:
 	Warhead@Cluster: FireCluster
-		Weapon: ChemicalCloudLauncher
+		Weapon: ChemicalCloudLauncher3
 		Dimensions: 5,5
 		RandomClusterCount: 15
 		Footprint: _xxx_ xxXxx xX_Xx xxXxx _xxx_

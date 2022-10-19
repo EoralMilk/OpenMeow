@@ -258,7 +258,7 @@
 	RenderMeshes:
 		Image: mmr-test
 		ZOffset: 15
-		Scale: 5
+		Scale: 10
 
 
 World:

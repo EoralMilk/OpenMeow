@@ -34,6 +34,8 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 		public readonly int Stand2WalkTick = 10;
 		public readonly int GuardBlendTick = 80;
 
+		public readonly string Carrying = null;
+
 		public override object Create(ActorInitializer init) { return new BlendTreeHandler(init.Self, this); }
 	}
 
@@ -69,9 +71,12 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 		readonly AnimationNode backwardAnim;
 		readonly AnimationNode backwardRightAnim;
 		readonly AnimationNode backwardLeftAnim;
+		readonly AnimationNode overide;
 
 		readonly Blend9Pos locomotion;
 		readonly Blend2 guardBlend2;
+
+		readonly Switch OverideSwitch;
 
 		// temp test
 		readonly SkeletalAnim walk;
@@ -91,6 +96,9 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 
 		readonly SkeletalAnim guard;
 
+		readonly SkeletalAnim carrying;
+
+		Carryable carryable;
 		Turreted turret;
 		public BlendTreeHandler(Actor self, BlendTreeHandlerInfo info)
 		{
@@ -117,6 +125,8 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 			backward = withSkeleton.OrderedSkeleton.SkeletonAsset.GetSkeletalAnim(withSkeleton.Image, info.Backward);
 			backwardLeft = withSkeleton.OrderedSkeleton.SkeletonAsset.GetSkeletalAnim(withSkeleton.Image, info.BackwardLeft);
 			backwardRight = withSkeleton.OrderedSkeleton.SkeletonAsset.GetSkeletalAnim(withSkeleton.Image, info.BackwardRight);
+
+			carrying = withSkeleton.OrderedSkeleton.SkeletonAsset.GetSkeletalAnim(withSkeleton.Image, info.Carrying);
 
 			if (withSkeleton.OrderedSkeleton.SkeletonAsset.Animations.Count == 0)
 			{
@@ -149,6 +159,8 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 			backwardAnim = new AnimationNode("B", 18, blendTree, allvalidmask, backward);
 			backwardRightAnim = new AnimationNode("BR", 19, blendTree, allvalidmask, backwardRight);
 
+			overide = new AnimationNode("Carrying", 55, blendTree, allvalidmask, carrying);
+
 			guardSwitch = new Switch("idle2guard", 22, blendTree, allvalidmask, idleAnim, guardAnim, info.GuardBlendTick);
 			var locomotionInput = new BlendTreeNode[9]
 			{
@@ -161,7 +173,9 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 
 			// moveSwitch = new Switch("Stand2Walk", 20, blendTree, allvalidmask, standAnim, locomotion, info.Stand2WalkTick);
 			guardBlend2 = new Blend2("GuardBlend", 21, blendTree, allvalidmask, locomotion, guardUpperSwitch);
-			blendTree.InitTree(guardBlend2);
+			OverideSwitch = new Switch("OverideSwitch", 24, blendTree, allvalidmask, guardBlend2, overide, 30);
+
+			blendTree.InitTree(OverideSwitch);
 			guardBlend2.BlendValue = FP.FromFloat(0.8f);
 			withSkeleton.BlendTreeHandler = this;
 			guardBlendSpeed = FP.One / info.GuardBlendTick;
@@ -173,6 +187,8 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 			{
 				turret = self.TraitsImplementing<Turreted>().FirstOrDefault(t => t.Name == info.DirectionTurret);
 			}
+
+			carryable = self.TraitOrDefault<Carryable>();
 		}
 
 		public BlendTreeNodeOutPut GetResult()
@@ -196,6 +212,9 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 		readonly int guardTime = 50;
 		public bool PrepareForAttack(in Target target)
 		{
+			if (carryable != null && carryable.Reserved)
+				return false;
+
 			guardSwitch.SetFlag(true);
 			guardUpperSwitch.SetFlag(true);
 			guardTick = 0;
@@ -214,6 +233,15 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 		int lastangle;
 		public void Tick(Actor self)
 		{
+			if (carryable != null && carryable.Reserved)
+			{
+				OverideSwitch.SetFlag(true);
+			}
+			else
+			{
+				OverideSwitch.SetFlag(false);
+			}
+
 			if (guardTick == guardTime)
 			{
 				guardSwitch.SetFlag(false);

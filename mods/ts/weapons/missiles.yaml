@@ -135,9 +135,9 @@
 
 		ExplodeUnderThisAltitude: 0
 		UsingScat: false
-		ScatWeapons: Grenade
+		ScatWeapon: Grenade
 		ScatDist: 3c512
-		ScatCounts: 3
+		ScatCount: 3
 		DetectTargetOnCurve: true
 		DetectTargetFromLength: 0.7
 		DetectTargetBeforeDist: 3c0
@@ -175,9 +175,9 @@ VectorBoosterMul:
 	Range: 15c0
 	Projectile: VectorBooster
 		UsingScat: true
-		ScatWeapons: ^VectorBooster
+		ScatWeapon: ^VectorBooster
 		ScatDist: 7c512
-		ScatCounts: 3
+		ScatCount: 3
 
 VectorBazooka:
 	Inherits: ^VectorBooster
@@ -390,16 +390,55 @@ RedEye2:
 		ImpactActors: false
 
 ProtonFlameMissile:
-	Inherits: ^DefaultMissile
+	Inherits: ^VectorBooster
 	ReloadDelay: 50
 	Range: 9c0
 	Report: hovrmis1.aud
-	Projectile: Missile
+	Projectile: VectorBooster
+		ContrailStartColor: 00FF00
+		ContrailStartColorOuter: AAAA00
+		AirburstAltitude: 5c0
+		UsingScat: true
+		ScatWeapon: ProtonFlameMissileCluster
+		ScatDist: 3c0
+		ScatCount: 3
+		ScatDimensions: 5,5
+		ScatFootprint: __x__ _xxx_ xx_xx _xxx_ __x__
+	Warhead@1Dam: SpreadDamage
+		Damage: 3000
+		Versus:
+			None: 25
+			Wood: 65
+			Light: 100
+			Heavy: 75
+			Concrete: 60
+	# Warhead@Cluster: FireCluster
+	# 	Weapon: ProtonFlameMissileCluster
+	# 	RandomClusterCount: 3
+	# 	Dimensions: 5,5
+	# 	Footprint: __x__ _xxx_ xx_xx _xxx_ __x__
+
+
+ProtonFlameMissileCluster:
+	Inherits: ^VectorBooster
+	ReloadDelay: 50
+	Range: 9c0
+	Report: hovrmis1.aud
+	Projectile: VectorBooster
 		ContrailStartColor: 00FF00
 		ContrailStartColorOuter: AAAA00
 		AirburstAltitude: 1c0
+		ProximityRange: 128
+		ProximitySnapping: true
+		Inaccuracy: 1c512
+		UseLockOnVerticalInaccuracy: true
+		LockOnInaccuracy: 3c768
+		LockOnTargetTypes: Air
+		HorizonRotationRate: 13
+		VerticalRotationRate: 32
+		LifeTime: 35
 	Warhead@1Dam: SpreadDamage
-		Damage: 6000
+		Damage: 3000
 		Versus:
 			None: 25
 			Wood: 65
@@ -408,6 +447,6 @@ ProtonFlameMissile:
 			Concrete: 60
 	Warhead@Cluster: FireCluster
 		Weapon: GreenFireballLauncher
-		RandomClusterCount: 35
+		RandomClusterCount: 12
 		Dimensions: 7,7
 		Footprint: __xxx__ _xxXxx_ xxxxxxx xXx_xXx xxxxxxx _xxXxx_ __xxx__

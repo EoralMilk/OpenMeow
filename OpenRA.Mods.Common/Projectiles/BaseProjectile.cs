@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using BeaconLib;
 using OpenRA.GameRules;
 using OpenRA.Graphics;
 using OpenRA.Mods.Common.Activities;
@@ -452,5 +453,54 @@ namespace OpenRA.Mods.Common.Projectiles
 				return false;
 			}
 		}
+
+		protected virtual void FireProjectileAtCell(Map map, Actor firedBy, Target target, CPos targetCell, WarheadArgs args,WeaponInfo weapon)
+		{
+			var tc = Target.FromCell(firedBy.World, targetCell);
+
+			if (!weapon.IsValidAgainst(tc, firedBy.World, firedBy))
+				return;
+
+			var projectileArgs = new ProjectileArgs
+			{
+				Weapon = weapon,
+				Facing = (map.CenterOfCell(targetCell) - target.CenterPosition).Yaw,
+				CurrentMuzzleFacing = () => (map.CenterOfCell(targetCell) - target.CenterPosition).Yaw,
+
+				DamageModifiers = args.DamageModifiers,
+				InaccuracyModifiers = Array.Empty<int>(),
+				RangeModifiers = Array.Empty<int>(),
+
+				Source = target.CenterPosition,
+				CurrentSource = () => target.CenterPosition,
+				SourceActor = firedBy,
+				PassiveTarget = map.CenterOfCell(targetCell),
+				GuidedTarget = tc
+			};
+
+			if (projectileArgs.Weapon.Projectile != null)
+			{
+				var projectile = projectileArgs.Weapon.Projectile.Create(projectileArgs);
+				if (projectile != null)
+					firedBy.World.AddFrameEndTask(w => w.Add(projectile));
+
+				if (projectileArgs.Weapon.Report != null && projectileArgs.Weapon.Report.Length > 0)
+					Game.Sound.Play(SoundType.World, projectileArgs.Weapon.Report, firedBy.World, target.CenterPosition);
+			}
+		}
+
+		protected virtual IEnumerable<WPos> CellPosMatching(WPos pos, bool random, string footprintstr, CVec dimensions)
+		{
+			var cellType = !random ? 'X' : 'x';
+			var index = 0;
+			var footprint = footprintstr.Where(c => !char.IsWhiteSpace(c)).ToArray();
+			var x = pos.X - (dimensions.X - 1) / 2 * 1024;
+			var y = pos.Y - (dimensions.Y - 1) / 2 * 1024;
+			for (var j = 0; j < dimensions.Y; j++)
+				for (var i = 0; i < dimensions.X; i++)
+					if (footprint[index++] == cellType)
+						yield return new WPos(x + i * 1024, y + j * 1024, pos.Z);
+		}
+
 	}
 }

@@ -41,6 +41,8 @@
 		BackwardLeft: backwardLeftAnim
 		BackwardRight: backwardRightAnim
 
+		Carrying: catidle
+
 		Guard: guard
 		GuardBlendTick: 10
 		UpperMask: upper
@@ -50,7 +52,7 @@
 	RenderMeshes:
 		Image: rumya
 		ZOffset: 15
-		Scale: 4
+		Scale: 5
 	AttachManager:
 	# AttachPoint@first:
 	# 	BoneAttach: a-s-Rig_Hand.R
@@ -111,9 +113,11 @@ RUTEST2:
 		Turret: primary
 		Offset: 0,0,0
 		Floating: true
+		RequiresCondition: !carring
+		RealignWhenDisable: true
 	AttackTurreted:
 		Voice: Attack
-		PauseOnCondition: empdisable
+		PauseOnCondition: empdisable || carring
 		Turrets: primary, turret2
 		# FacingToTarget: true
 
@@ -155,7 +159,7 @@ RUTEST2:
 	Armament:
 		Weapon: LaserChainGun
 		Turret: primary
-		LocalOffset: 668,0,1024
+		LocalOffset: 768,0,1324
 	BlendTreeHandler:
 		DirectionTurret: primary
 	Selectable:
