@@ -24,12 +24,14 @@ Repair:
 	Inherits: ^HealWeapon
 	Range: 1c819
 	Report: repair11.aud
+	ValidTargets: Repair
+	InvalidTargets: NoRepair
 	Projectile: LaserZap
 		Duration: 1
 		Width: 0
 		HitAnim: explosion
 		HitAnimSequence: repairsparks
 		HitAnimPalette: player
-	ValidTargets: Repair
 	Warhead@1Dam: TargetDamage
 		ValidTargets: Repair
+		InvalidTargets: NoRepair

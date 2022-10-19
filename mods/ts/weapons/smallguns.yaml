@@ -251,6 +251,10 @@ JumpVulcan:
 			Concrete: 10
 		DamageTypes: Prone70Percent, TriggerProne, BulletDeath
 
+JumpVulcanGround:
+	Inherits: JumpVulcan
+	ValidTargets: Ground, Water
+
 # harpy machine gun
 HarpyClaw:
 	Inherits: ^Vulcan
