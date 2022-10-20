@@ -208,6 +208,11 @@ namespace OpenRA.Mods.Common.Traits
 			}
 		}
 
+		public virtual bool IsValidForArmamentChoose(in Target target, World world)
+		{
+			return true;
+		}
+
 		public virtual WDist MaxRange()
 		{
 			return new WDist(Util.ApplyPercentageModifiers(Weapon.Range.Length, rangeModifiers.ToArray()));
