@@ -235,7 +235,7 @@ TitanMissile:
 
 LimpetMissile: ##todo
 	Inherits: BikeMissile
-	Range: 7c0
+	Range: 6c0
 	ReloadDelay: 90
 	ValidTargets: Ground, Water, Air, Trees
 	Projectile: VectorBooster

@@ -692,7 +692,7 @@ LIMPED:
 		ScanRadius: 7 #PREF: save trait looks up and scan armaments
 	ReloadArmamentsBar:
 	WithRangeCircle:
-		Range: 5c0
+		Range: 6c0
 		Color: FFFF00CC
 		BorderColor: 000000CC
 		BorderWidth: 0
@@ -722,16 +722,16 @@ LIMPED:
 		RequiresCondition: !undeployed
 	UnitDisplayInfo:
 	-SpawnActorOnDeath@ctech:
-	### AI Control: make limped drone wander randomly and deploy when find enemy
+	### AI Control
 	Armament@AIAimOnly:
 		RequiresCondition: AImicroManage && !deployed
 		Weapon: LurkerAimDummyWeapon
 		PauseOnCondition: empdisable
-	AttackWander@AI:
-		RequiresCondition: AImicroManage && !deployed
-		WanderMoveRadius: 15
-		MinMoveDelay: 300
-		MaxMoveDelay: 300
+	#AttackWander@AI: ### AI Control: make limped drone wander randomly and deploy when find enemy
+	#	RequiresCondition: AImicroManage && !deployed
+	#	WanderMoveRadius: 15
+	#	MinMoveDelay: 300
+	#	MaxMoveDelay: 300
 	AutoDeployer@AI:
 		RequiresCondition: AImicroManage && !deployed
 		DeployTrigger: Attack

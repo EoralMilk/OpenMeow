@@ -1019,7 +1019,7 @@ dig:
 		MeshType: Plane
 	idle:
 	idle2:
-		Scale: 0.5
+		Scale: 0.4
 
 typeglyphs:
 	infantry:
@@ -1062,12 +1062,14 @@ cannonsmokecircle:
 		ZOffset: 512
 		IgnoreWorldTint: true
 		BlendMode: Additive
+		AlphaFade: True
 	idle2:
 		Length: *
 		ZOffset: 512
 		Scale: 0.75
 		IgnoreWorldTint: true
 		BlendMode: Additive
+		AlphaFade: True
 
 caryland:
 	idle: podring
