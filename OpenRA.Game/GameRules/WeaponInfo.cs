@@ -104,7 +104,7 @@ namespace OpenRA.GameRules
 		[Desc("Number of shots in a single ammo magazine.")]
 		public readonly int Burst = 1;
 
-		[Desc("Can this weapon target attacker itself.")]
+		[Desc("Can this weapon target the attacker itself?")]
 		public readonly bool CanTargetSelf = false;
 
 		[Desc("What player relationships are affected.")]
@@ -225,10 +225,8 @@ namespace OpenRA.GameRules
 				return false;
 
 			var targetTypes = victim.GetEnabledTargetTypes();
-			if (!IsValidTarget(targetTypes))
-				return false;
 
-			return true;
+			return IsValidTarget(targetTypes);
 		}
 
 		/// <summary>Checks if the weapon is valid against (can target) the frozen actor.</summary>
@@ -241,10 +239,7 @@ namespace OpenRA.GameRules
 			if (!ValidRelationships.HasRelationship(relationship))
 				return false;
 
-			if (!IsValidTarget(victim.TargetTypes))
-				return false;
-
-			return true;
+			return IsValidTarget(victim.TargetTypes);
 		}
 
 		/// <summary>Applies all the weapon's warheads to the target.</summary>
