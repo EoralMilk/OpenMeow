@@ -13,8 +13,4 @@
 	 </ProjectReference>
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Mechanics\Global\" />
-  </ItemGroup>
-
 </Project>

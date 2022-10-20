@@ -1,13 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.28803.352
+# Visual Studio Version 17
+VisualStudioVersion = 17.3.32804.467
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenRA.Game", "OpenRA.Game\OpenRA.Game.csproj", "{0DFB103F-2962-400F-8C6D-E2C28CCBA633}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenRA.Meow.RPG", "OpenRA.Meow.RPG\OpenRA.Meow.RPG.csproj", "{2881135D-4D62-493E-8F83-5EEE92CCC6BE}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenRA.Mods.Cnc", "OpenRA.Mods.Cnc\OpenRA.Mods.Cnc.csproj", "{2881135D-4D62-493E-8F83-5EEE92CCC6BE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenRA.Mods.Cnc", "OpenRA.Mods.Cnc\OpenRA.Mods.Cnc.csproj", "{3A2AD0E8-4512-4EEF-979E-E8CDB5E76D2B}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenRA.Utility", "OpenRA.Utility\OpenRA.Utility.csproj", "{F33337BE-CB69-4B24-850F-07D23E408DDF}"
 EndProject
@@ -27,7 +27,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenRA.WindowsLauncher", "O
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ThirdParty.StbImageClone", "ThirdParty.StbImageClone\ThirdParty.StbImageClone.csproj", "{4BDC7C82-6DB2-4230-8B3D-3609A5756A06}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ThirdParty.GlmSharpClone", "ThirdParty.GlmSharpClone\ThirdParty.GlmSharpClone.csproj", "{F04E065E-35F5-4893-A6FE-D6A6D3633B4C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ThirdParty.GlmSharpClone", "ThirdParty.GlmSharpClone\ThirdParty.GlmSharpClone.csproj", "{F04E065E-35F5-4893-A6FE-D6A6D3633B4C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -43,6 +43,10 @@ Global
 		{2881135D-4D62-493E-8F83-5EEE92CCC6BE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2881135D-4D62-493E-8F83-5EEE92CCC6BE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2881135D-4D62-493E-8F83-5EEE92CCC6BE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3A2AD0E8-4512-4EEF-979E-E8CDB5E76D2B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3A2AD0E8-4512-4EEF-979E-E8CDB5E76D2B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3A2AD0E8-4512-4EEF-979E-E8CDB5E76D2B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3A2AD0E8-4512-4EEF-979E-E8CDB5E76D2B}.Release|Any CPU.Build.0 = Release|Any CPU
 		{F33337BE-CB69-4B24-850F-07D23E408DDF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{F33337BE-CB69-4B24-850F-07D23E408DDF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F33337BE-CB69-4B24-850F-07D23E408DDF}.Release|Any CPU.ActiveCfg = Release|Any CPU

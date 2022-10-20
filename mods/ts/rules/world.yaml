@@ -90,8 +90,8 @@
 			Tiberium: 75
 			BlueTiberium: 75
 			Veins: 50
-	Locomotor@HeaveyWalker:
-		Name: heaveywalker
+	Locomotor@heavywalker:
+		Name: heavywalker
 		Crushes: wall, crate, infantry
 		TerrainSpeeds:
 			Clear: 90

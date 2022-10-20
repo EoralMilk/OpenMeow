@@ -219,7 +219,7 @@ MMCH:
 		TurnSpeed: 20
 		Speed: 65
 		AlwaysTurnInPlace: true
-		Locomotor: heaveywalker
+		Locomotor: heavywalker
 		TerrainOrientationAdjustmentMargin: -1
 	Health:
 		HP: 40000
@@ -361,7 +361,7 @@ HMEC:
 	Mobile:
 		TurnSpeed: 12
 		Speed: 42
-		Locomotor: heaveywalker
+		Locomotor: heavywalker
 	Health:
 		HP: 100000
 	ChangesHealth:
@@ -480,7 +480,7 @@ JUGG:
 		Speed: 71
 		TurnSpeed: 20
 		AlwaysTurnInPlace: true
-		Locomotor: heaveywalker
+		Locomotor: heavywalker
 		ImmovableCondition: !undeployed
 		TerrainOrientationAdjustmentMargin: -1
 	RevealsShroud@deploy:
