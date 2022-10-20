@@ -16,7 +16,7 @@ APC:
 		Description: Armored infantry transport.\nCan move on water.\n  Unarmed
 	Mobile:
 		Speed: 120
-		PauseOnCondition: empdisable || loading || being-captured || carried || traped
+		PauseOnCondition: empdisable || loading || being-captured || carried
 		Locomotor: amphibious
 		CanMoveBackward: true
 		BackwardFacingTolerance: 384
@@ -112,8 +112,8 @@ HVR:
 	WithModelTurret:
 	Hovers:
 		RequiresCondition: !empdisable
-		BobDistance: -64
-		InitialHeight: 384
+		BobDistance: -32
+		InitialHeight: 192
 	Carryable:
 		CarriedCondition: carried
 	LeavesTrails:
@@ -141,13 +141,12 @@ SMECH:
 	Buildable:
 		Queue: Vehicle
 		BuildPaletteOrder: 20
-		Locomotor: foot
 		Prerequisites: ~gaweap, ~techlevel.low
 		Description: Anti-personnel walker.\n  Strong vs Infantry, Light armor\n  Weak vs Vehicles, Aircraft
 	Mobile:
 		TurnSpeed: 128
-		Speed: 148
-		Locomotor: foot
+		Speed: 130
+		Locomotor: walker
 		AlwaysTurnInPlace: true
 		TerrainOrientationAdjustmentMargin: -1
 	Health:
@@ -183,6 +182,11 @@ SMECH:
 		ValidMovementTypes: Horizontal, Turn
 	Selectable:
 		Bounds: 603, 1930, 0, -482
+	Passenger:
+		CargoType: Infantry
+		Voice: Move
+		Weight: 2
+		# CargoCondition: ascargo
 	-DamagedByTerrain@VEINS:
 	-LeavesTrails@VEINS:
 
@@ -206,8 +210,9 @@ MMCH:
 		Description: General purpose mechanized walker.\n  Strong vs Vehicles\n  Weak vs Infantry, Aircraft
 	Mobile:
 		TurnSpeed: 20
-		Speed: 70
+		Speed: 65
 		AlwaysTurnInPlace: true
+		Locomotor: heaveywalker
 		TerrainOrientationAdjustmentMargin: -1
 	Health:
 		HP: 40000
@@ -237,10 +242,12 @@ MMCH:
 		RecoilRecovery: 32
 		LocalOffset: 998,272,610
 	AttackTurreted:
-		Armaments: primary, secondary, missile, check
+		Armaments: primary, secondary, rpg, check
 		Voice: Attack
 		PauseOnCondition: empdisable
 		Turrets: primary, check
+	AutoTarget:
+		ScanRadius: 9 #PREF: save trait looks up and scan armaments
 	WithSpriteTurret:
 		Recoils: false
 	Armament:
@@ -257,12 +264,12 @@ MMCH:
 	Armament@missile:
 		LocalOffset: 280,-445,545, 280,-445,735
 		LocalYaw: 82
-		Weapon: TitanMissile
-		RequiresCondition: missile
-		Name: missile
+		Weapon: TitanRPG
+		RequiresCondition: rpg
+		Name: rpg
 		MuzzleSequence: muzzle-cannon
 	Armament@droneCheck:
-		Weapon: RPGDroneCheck
+		Weapon: TitianDroneCheck
 		Turret: check
 		Name: check
 	DroneSpawnerMaster:
@@ -271,7 +278,7 @@ MMCH:
 		SpawnOffset: 0,0,512
 		RespawnTicks: 256
 		FollowAfterAttackDelay: 25
-		PauseOnCondition: inside-tunnel || carried || empdisable || !rpg
+		PauseOnCondition: inside-tunnel || carried || empdisable || !missile
 		ShouldSpawnInitialLoad: false
 	Pluggable@vulcan:
 		Conditions:
@@ -286,7 +293,7 @@ MMCH:
 		Requirements:
 			plug.missile: !missile
 		EditorOptions:
-			plug.missile: Missile Upgrade
+			plug.missile: SAM Upgrade
 	Pluggable@RPG:
 		Conditions:
 			plug.rpg: rpg
@@ -307,10 +314,10 @@ MMCH:
 		LocalOffset: 345,272,515
 		RequiresCondition: vulcan
 	WithModelBarrel@missile:
-		Sequence: barrel-sam
+		Sequence: barrel-rpg
 		LocalOffset: 0,-230,640
-		RequiresCondition: missile
-		Armament: missile
+		RequiresCondition: rpg
+		Armament: rpg
 	Selectable:
 		Bounds: 905, 2534, 0, -482
 	Carryable:
@@ -347,6 +354,7 @@ HMEC:
 	Mobile:
 		TurnSpeed: 12
 		Speed: 42
+		Locomotor: heaveywalker
 	Health:
 		HP: 100000
 	ChangesHealth:
@@ -427,9 +435,9 @@ SONIC:
 		Offset: -388,0,0 #-208,0,0
 	WithModelTurret:
 	Explodes:
-		RequiresCondition: !rank-elite && !traped
+		RequiresCondition: !rank-elite
 	Explodes@ELITE:
-		RequiresCondition: rank-elite && !traped
+		RequiresCondition: rank-elite
 		Weapon: UnitExplode
 	RenderModels:
 		Scale: 1.2
@@ -465,6 +473,7 @@ JUGG:
 		Speed: 71
 		TurnSpeed: 20
 		AlwaysTurnInPlace: true
+		Locomotor: heaveywalker
 		ImmovableCondition: !undeployed
 		RequireForceMoveCondition: !AImicroManage && !undeployed
 		TerrainOrientationAdjustmentMargin: -1
@@ -615,6 +624,118 @@ JUGG:
 		RequiresCondition: AImicroManage && undeployed
 		DeployChance: 100
 		DeployTrigger: Attack
+		DeployTicks: 5
+		UndeployTicks: 50
+
+LIMPED:
+	Inherits: ^Vehicle
+	Inherits@AUTOTARGET: ^AutoTargetAll
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@bounty: ^GlobalBounty
+	Inherits@AImicroManagable: ^AImicroManagable
+	Valued:
+		Cost: 500
+	Tooltip:
+		Name: Limpet Drone
+	Buildable:
+		Queue: Vehicle
+		BuildPaletteOrder: 21
+		Description: Small drone armed with explosives.\n\nGood vs: Vehicles, Aircraft\n\nSpecial:\n- Needs to be deployed to be armed\n- Invisible when deployed\n- Launches explosives towards a target after small delay
+		Prerequisites: ~gaweap, ~techlevel.low
+	Health:
+		HP: 10000
+	Armor:
+		Type: Light
+	Mobile:
+		Speed: 148
+		TurnSpeed: 1023
+		Locomotor: hover
+		RequireForceMoveCondition: !AImicroManage && !undeployed
+	Passenger:
+		CargoType: Infantry
+		RequireForceMoveCondition: !undeployed
+		Voice: Move
+		Weight: 2
+		# CargoCondition: ascargo
+	Carryable:
+		RequiresCondition: undeployed
+	Voiced:
+		VoiceSet: Limpet
+	Selectable:
+		Bounds: 483, 2111, 0, -448
+	QuantizeFacingsFromSequence:
+	Hovers:
+		RequiresCondition: undeployed
+	GrantConditionOnDeploy:
+		DeployedCondition: deployed
+		UndeployedCondition: undeployed
+		Facing: 640
+		AllowedTerrainTypes: Clear, Road, DirtRoad, Rough, Tiberium, BlueTiberium
+		DeploySounds: clicky1.aud
+		UndeploySounds: clicky1.aud
+		SmartDeploy: true
+		UndeployOnMove: true
+		CanDeployOnRamps: true
+		RequiresCondition: !inside-tunnel && !empdisable
+	RejectsOrders@deployment:
+		Reject: AttackMove, AssaultMove
+		RequiresCondition: deployed
+	Armament@1:
+		Weapon: LimpetMissile
+		ReloadingCondition: reload-ground
+		PauseOnCondition: empdisable || !deployed
+	AttackFrontal:
+		FacingTolerance: 512
+		RequiresCondition: AImicroManage || deployed
+		PauseOnCondition: empdisable
+	AutoTarget:
+		ScanRadius: 7 #PREF: save trait looks up and scan armaments
+	ReloadArmamentsBar:
+	WithRangeCircle:
+		Range: 5c0
+		Color: FFFF00CC
+		BorderColor: 000000CC
+		BorderWidth: 0
+		Width: 2
+		RequiresCondition: deployed
+	Cloak@bury-self:
+		RequiresCondition: deployed && !empdisable
+		InitialDelay: 0
+		CloakDelay: 30
+		Palette: cloak
+		IsPlayerPalette: true
+		UncloakOn: Attack, Unload, Infiltrate, Demolish
+		CloakedCondition: cloaking-self
+		EffectOffset: 0, 0, 0
+		EffectImage: dig
+		EffectPalette: effect
+		CloakEffectSequence: idle2
+		EffectTracksActor: false
+	WithSpriteBody@UndeloyedBody:
+		Sequence: idle
+		RequiresCondition: undeployed && !inside-tunnel
+	WithMakeAnimation:
+		BodyNames: deployed
+	WithSpriteBody@DeloyedBody:
+		Name: deployed
+		Sequence: deployed
+		RequiresCondition: !undeployed
+	UnitDisplayInfo:
+	-SpawnActorOnDeath@ctech:
+	### AI Control: make limped drone wander randomly and deploy when find enemy
+	Armament@AIAimOnly:
+		RequiresCondition: AImicroManage && !deployed
+		Weapon: LurkerAimDummyWeapon
+		PauseOnCondition: empdisable
+	AttackWander@AI:
+		RequiresCondition: AImicroManage && !deployed
+		WanderMoveRadius: 15
+		MinMoveDelay: 300
+		MaxMoveDelay: 300
+	AutoDeployer@AI:
+		RequiresCondition: AImicroManage && !deployed
+		DeployTrigger: Attack
+		DeployChance: 100
 		DeployTicks: 5
 		UndeployTicks: 50
 

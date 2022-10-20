@@ -118,12 +118,12 @@ JUMPJET:
 		RequiresCondition: !airborne && !inside-tunnel
 	Targetable@AIRBORNE:
 		TargetTypes: Air
-		RequiresCondition: airborne && !traped
+		RequiresCondition: airborne
 	SpawnActorOnDeath@airborne:
 		Actor: JUMPJET.Husk
-		RequiresCondition: airborne && !traped
+		RequiresCondition: airborne
 	DeathSounds@airborne:
-		RequiresCondition: airborne && !traped
+		RequiresCondition: airborne
 	WithDeathAnimation@normal:
 		RequiresCondition: !airborne
 	WithDeathAnimation@explosion:
@@ -141,10 +141,24 @@ JUMPJET:
 	DeathSounds@ZAPPED:
 		RequiresCondition: !airborne
 	SpawnActorOnDeath:
-		RequiresCondition: airborne && !traped
+		RequiresCondition: airborne
 	SpawnActorOnDeath@FLAMEGUY:
-		RequiresCondition: !airborne && !traped
+		RequiresCondition: !airborne
 	WithShadow@airborne:
-		RequiresCondition: airborne && !traped
+		RequiresCondition: airborne
 	GrantConditionOnJumpjetLayer:
 		Condition: airborne
+
+	Targetable@avoidByAi:
+		TargetTypes: AIgnored, Traped
+		RequiresCondition: traped
+	ExternalCondition@avoidtarget:
+		Condition: avoidtarget
+	ExternalCondition@traped:
+		Condition: traped
+	Targetable@avoidBySpecialActor:
+		TargetTypes: Ignored, AIgnored
+		RequiresCondition: avoidtarget
+	DamageMultiplier@avoidtarget:
+		RequiresCondition: avoidtarget
+		Modifier: 0

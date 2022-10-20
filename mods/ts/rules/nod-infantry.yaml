@@ -25,11 +25,13 @@ E3:
 		Weapon: VectorBazooka #Bazooka
 		LocalOffset: 356,0,558
 		UseBlindage: true
+		RequiresCondition: !WebDisable && !inside-tunnel
 	TakeCover:
 		ProneOffset: 52,64,0
 	AttackFrontal:
 		Voice: Attack
 		FacingTolerance: 0
+		RequiresCondition: !WebDisable && !inside-tunnel
 	WithSplitAttackPaletteInfantryBody:
 		DefaultAttackSequence: attack
 	RevealsShroud:
@@ -75,16 +77,12 @@ CYBORG:
 	Armament@PRIMARY:
 		LocalOffset: 290,120, 610
 		Weapon: CyborgVulcan
-		RequiresCondition: !empdisable
+		RequiresCondition: !WebDisable && !inside-tunnel && !empdisable
 		UseBlindage: true
-	# Armament@ELITE:
-	# 	LocalOffset: 290,120, 610
-	# 	Weapon: LaserChainGun
-	# 	RequiresCondition: rank-elite && !empdisable
-	# 	UseBlindage: true
 	AttackFrontal:
 		Voice: Attack
 		FacingTolerance: 0
+		RequiresCondition: !WebDisable && !inside-tunnel && !empdisable
 	ProducibleWithLevel:
 		Prerequisites: barracks.upgraded
 
@@ -122,12 +120,13 @@ CYC2:
 		Range: 8c0
 	Armament:
 		Weapon: CyCannon
-		RequiresCondition: !empdisable
 		LocalOffset: 240,120,558
 		UseBlindage: true
+		RequiresCondition: !WebDisable && !inside-tunnel && !empdisable
 	AttackFrontal:
 		Voice: Attack
 		FacingTolerance: 0
+		RequiresCondition: !WebDisable && !inside-tunnel && !empdisable
 	ProducibleWithLevel:
 		Prerequisites: barracks.upgraded
 

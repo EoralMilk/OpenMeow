@@ -110,7 +110,7 @@ HARV:
 	-WithModelBody:
 	WithModelUnloadBody:
 	Explodes@TiberiumExplosion:
-		RequiresCondition: !no-tiberium && !traped
+		RequiresCondition: !no-tiberium
 		Weapon: TiberiumExplosion
 	BodyOrientation:
 		UseClassicPerspectiveFudge: False

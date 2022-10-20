@@ -112,7 +112,7 @@ GACTWR:
 		PauseOnCondition: empdisable || disabled
 	Armament@SAM:
 		RequiresCondition: plug.missile
-		Weapon: TitanMissile #RedEye2
+		Weapon: RedEye2
 		LocalOffset: 543,60,976, 543,-60,976
 		PauseOnCondition: empdisable || disabled
 	WithMuzzleOverlay:
@@ -187,13 +187,13 @@ GAVULC:
 GAROCK:
 	Inherits: ^BuildingPlug
 	Valued:
-		Cost: 400
+		Cost: 300
 	Tooltip:
 		Name: RPG Upgrade
 	Buildable:
 		Queue: Defense
-		BuildPaletteOrder: 100
-		Prerequisites: ~plug.rpg, garadr, ~structures.gdi, ~techlevel.high
+		BuildPaletteOrder: 90
+		Prerequisites: ~plug.rpg, gaweap, ~structures.gdi, ~techlevel.high
 		Description: Advanced ground defense.\nDoes not require power to operate.\n  Strong vs Armored ground units\n  Weak vs Aircraft
 	Plug:
 		Type: plug.rpg
@@ -203,13 +203,13 @@ GAROCK:
 GACSAM:
 	Inherits: ^BuildingPlug
 	Valued:
-		Cost: 300
+		Cost: 400
 	Tooltip:
 		Name: Missile Upgrade
 	Buildable:
 		Queue: Defense
-		BuildPaletteOrder: 90
-		Prerequisites: ~plug.missile, gaweap, ~structures.gdi, ~techlevel.medium
+		BuildPaletteOrder: 100
+		Prerequisites: ~plug.missile, ~structures.gdi, garadr,~techlevel.medium
 		Description: General missile defense.\nDoes not require power to operate.\n  Strong vs Light armored units\n  Weak vs Infantry
 	Plug:
 		Type: plug.missile

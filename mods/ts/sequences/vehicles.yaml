@@ -385,6 +385,50 @@ smech:
 		IgnoreWorldTint: True
 	icon: smchicon
 
+limped:
+	Inherits@defaults: ^VehicleBase
+	Inherits: ^VehicleOverlays
+	stand:
+		Facings: 1
+		ShadowStart: 10
+	run:
+		Length: 10
+		Facings: 1
+		ShadowStart: 10
+	idle:
+		Facings: 1
+		ShadowStart: 10
+	make: dlimpmk
+		Length: 41
+		ShadowStart: 42
+		Tick: 20
+		Offset: 0, -12
+	deployed: dlimpet
+		Facings: 1
+		ShadowStart: 3
+		Offset: 0, -12
+	icon: limpicon
+
+reaper:
+	Inherits@defaults: ^VehicleBase
+	Inherits: ^VehicleOverlays
+	Defaults:
+		Tick: 80
+	stand:
+		Facings: -8
+		ShadowStart: 117
+	run:
+		Start: 8
+		Tick: 60
+		Length: 12
+		Facings: -8
+		ShadowStart: 125
+	die1:
+		Start: 104
+		Length: 13
+		ShadowStart: 221
+	icon: reapicon
+
 trucka:
 	Inherits@defaults: ^VehicleBase
 	Inherits: ^VehicleOverlays

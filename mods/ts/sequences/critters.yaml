@@ -27,6 +27,10 @@ doggie:
 		Start: 91
 		Length: 8
 		ShadowStart: 210
+	webguy: webguySP
+		Length: 6
+		ShadowStart: 6
+		Facings: 1
 	die-twirling:
 		Start: 99
 		Length: 10

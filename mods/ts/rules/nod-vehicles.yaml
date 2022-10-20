@@ -368,6 +368,7 @@ REPAIR:
 	Inherits: ^Tank
 	Inherits@VOXELS: ^VoxelActor
 	Inherits@WithRA2VoxRender: ^WithRA2VoxRender
+	Inherits@AUTOTARGET: ^AutoTargetRepair
 	Inherits@bounty: ^GlobalBounty
 	Buildable:
 		Queue: Vehicle
@@ -405,9 +406,6 @@ REPAIR:
 		FacingTolerance: 0
 	AutoTarget:
 		ScanRadius: 8
-		InitialStance: AttackAnything
-	AutoTargetPriority@DEFAULT:
-		ValidTargets: Vehicle
 
 WEED:
 	Inherits: ^Tank
@@ -622,7 +620,76 @@ STNK:
 		InitialStanceAI: ReturnFire
 	-MustBeDestroyed:
 	Explodes:
-		RequiresCondition: !rank-elite && !traped
+		RequiresCondition: !rank-elite
 	Explodes@ELITE:
-		RequiresCondition: rank-elite && !traped
+		RequiresCondition: rank-elite
 		Weapon: UnitExplode
+
+REAPER:
+	Inherits: ^Vehicle
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@bounty: ^GlobalBounty
+	Inherits@3: ^HealsOnTiberium
+	Inherits@LeaveTib: ^LeaveTiberiumWhenDeath
+	Valued:
+		Cost: 1100
+	Tooltip:
+		Name: Cyborg Reaper
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		Queue: Vehicle
+		BuildPaletteOrder: 151
+		Description: Raiding walker armed with cluster missiles, and web launchers.\n\nGood vs: Ground\n\nSpecial:\n- Can attack enemies ahead while moving\n- Can target air\n- Can ensnare infantry with webs\n- Can shoot over walls
+		Prerequisites: ~naweap, natech, ~techlevel.high
+	Selectable:
+		Bounds: 1206,2412,0,-603
+	Mobile:
+		TurnSpeed: 56
+		Speed: 105
+		Locomotor: walker
+	Health:
+		HP: 25000
+	Armor:
+		Type: Light
+	Voiced:
+		VoiceSet: CyborgReap
+	Armament@primary:
+		Weapon: ReaperScythe
+		LocalOffset: 300,-400,550, 300,400,550
+		LocalYaw: 168, -168
+		PauseOnCondition: empdisable
+	Armament@secondary:
+		Name: secondary
+		Weapon: ReaperWeb
+		LocalOffset: 0,0,200
+	QuantizeFacingsFromSequence:
+		Sequence: stand
+	ReloadArmamentsBar:
+		Armaments: secondary
+	WithDeathAnimation@die:
+		DeathSequence: die1
+		DeathSequencePalette: player
+		DeathPaletteIsPlayerPalette: true
+		UseDeathTypeSuffix: false
+	AttackFrontal:
+		Voice: Attack
+		PauseOnCondition: empdisable
+		FacingTolerance: 2
+	#AttackFollowFrontal:
+	#	Voice: Attack
+	#	PauseOnCondition: empdisable
+	#	FacingTolerance: 64
+	#	MustFaceTarget: true
+	AutoTarget:
+		ScanRadius: 9 #PREF: save trait looks up and scan armaments
+	WithInfantryBody:
+		-DefaultAttackSequence:
+	BodyOrientation:
+		QuantizedFacings: 8
+	DeathSounds:
+	UnitDisplayInfo:
+	-SpawnActorOnDeath@ctech:
+

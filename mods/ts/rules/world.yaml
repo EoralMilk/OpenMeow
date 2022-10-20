@@ -36,21 +36,6 @@
 			Tiberium: 90
 			BlueTiberium: 90
 			Veins: 50
-	Locomotor@Test:
-		Name: test
-		Crushes: crate
-		SharesCell: true
-		TerrainSpeeds:
-			Clear: 100
-			Road: 100
-			Bridge: 100
-			Rail: 100
-			DirtRoad: 100
-			Rough: 100
-			Tiberium: 100
-			BlueTiberium: 100
-			Veins: 100
-			Water: 80
 	Locomotor@FLAMEGUY:
 		Name: flameguy
 		SharesCell: true
@@ -64,22 +49,6 @@
 			Tiberium: 90
 			BlueTiberium: 90
 			Veins: 50
-	JumpjetLocomotor@JUMPJET:
-		Name: jumpjet
-		Crushes: crate
-		SharesCell: true
-		JumpjetTransitionCost: 0
-		TerrainSpeeds:
-			Clear: 90
-			Road: 100
-			Bridge: 100
-			Rail: 90
-			DirtRoad: 100
-			Rough: 80
-			Tiberium: 90
-			BlueTiberium: 90
-			Veins: 50
-			Jumpjet: 150
 	Locomotor@WHEELED:
 		Name: wheeled
 		Crushes: crate
@@ -108,6 +77,32 @@
 			BlueTiberium: 50
 			Veins: 50
 				PathingCost: 90
+	Locomotor@Walker:
+		Name: walker
+		Crushes: crate
+		TerrainSpeeds:
+			Clear: 90
+			Road: 100
+			Bridge: 90
+			Rail: 90
+			DirtRoad: 90
+			Rough: 90
+			Tiberium: 75
+			BlueTiberium: 75
+			Veins: 50
+	Locomotor@HeaveyWalker:
+		Name: heaveywalker
+		Crushes: wall, crate, infantry
+		TerrainSpeeds:
+			Clear: 90
+			Road: 100
+			Bridge: 90
+			Rail: 90
+			DirtRoad: 90
+			Rough: 90
+			Tiberium: 75
+			BlueTiberium: 75
+			Veins: 50
 	Locomotor@TRACKED:
 		Name: tracked
 		Crushes: wall, crate, infantry
@@ -153,7 +148,7 @@
 		SubterraneanTransitionCost: 120
 	Locomotor@HOVER:
 		Name: hover
-		Crushes: wall, crate, infantry
+		Crushes: crate
 		TerrainSpeeds:
 			Clear: 100
 			Road: 100

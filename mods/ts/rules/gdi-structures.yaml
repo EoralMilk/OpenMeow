@@ -274,7 +274,7 @@ GAHPAD:
 		BuildPaletteOrder: 80
 		Queue: Building
 		Prerequisites: garadr, ~structures.gdi, ~techlevel.medium
-		Description: Produces, rearms and\nrepairs helicopters.
+		Description: Produces and rearms aircraft.
 	Building:
 		Footprint: xx xx
 		Dimensions: 2,2
@@ -296,14 +296,6 @@ GAHPAD:
 		Produces: Air
 		PauseOnCondition: empdisable
 	Reservable:
-	RepairsUnits:
-		HpPerStep: 1000
-		PauseOnCondition: empdisable
-		PlayerExperience: 15
-		StartRepairingNotification: Repairing
-		StartRepairingTextNotification: Repairing.
-		FinishRepairingNotification: UnitRepaired
-		FinishRepairingTextNotification: Unit repaired.
 	ProductionBar:
 		ProductionType: Air
 	WithIdleOverlay@PLATFORM:
@@ -329,6 +321,7 @@ GADEPT:
 	Inherits: ^Building
 	Inherits@SHAPE: ^3x3Shape
 	Inherits@bounty: ^GlobalBounty
+	Inherits@AUTOTARGET: ^AutoTargetRepair
 	IsometricSelectable:
 		Height: 1
 		DecorationHeight: 24
@@ -351,14 +344,30 @@ GADEPT:
 		MaxHeightDelta: 1100
 	Reservable:
 	RepairsUnits:
+		HpPerStep: 2000
 		ValuePercentage: 0
-		HpPerStep: 1000
+		Interval: 48
 		PauseOnCondition: empdisable
 		PlayerExperience: 15
 		StartRepairingNotification: Repairing
 		StartRepairingTextNotification: Repairing.
 		FinishRepairingNotification: UnitRepaired
 		FinishRepairingTextNotification: Unit repaired.
+	AutoTarget:
+		ScanRadius: 5
+	AttackOmni:
+		PauseOnCondition: empdisable
+	Armament:
+		Weapon: ServiceDepotDroneSpawn
+		Cursor: repair
+		OutsideRangeCursor: repair
+		TargetRelationships: Ally
+		ForceTargetRelationships: Ally
+		PauseOnCondition: Building-Buildup
+	DroneSpawnerMaster:
+		Actors: REPAIRDRONE, REPAIRDRONE, REPAIRDRONE
+		SpawnOffset: -1024, 1024, 0, 0,0,0, 1024, 1024, 0
+		GatherCell: 1, 2, 1,1, 2,1
 	RallyPoint:
 		Palette: mouse
 		IsPlayerPalette: false

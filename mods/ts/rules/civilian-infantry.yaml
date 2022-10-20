@@ -24,11 +24,13 @@ WEEDGUY:
 	Armament:
 		Weapon: ChemicalSprayer #FireballLauncher
 		LocalOffset: 317,0,262
+		RequiresCondition: !WebDisable && !inside-tunnel
 	TakeCover:
 		ProneOffset: 128,0,0 #-320
 	AttackFrontal:
 		Voice: Attack
 		FacingTolerance: 0
+		RequiresCondition: !WebDisable && !inside-tunnel
 	-SpawnActorOnDeath@FLAMEGUY:
 	WithDeathAnimation@fire:
 		DeathSequence: die-
@@ -71,8 +73,10 @@ UMAGON:
 		LocalOffset: 126,0,438
 		Weapon: SilencerSniper
 		UseBlindage: true
+		RequiresCondition: !WebDisable && !inside-tunnel
 	AttackFrontal:
 		Voice: Attack
+		RequiresCondition: !WebDisable && !inside-tunnel
 		FacingTolerance: 0
 	WithSplitAttackPaletteInfantryBody:
 		DefaultAttackSequence: attack
@@ -143,9 +147,11 @@ MUTANT:
 		BurstsPerFire: 2
 		Weapon: SMG
 		UseBlindage: true
+		RequiresCondition: !WebDisable && !inside-tunnel
 	AttackFrontal:
 		Voice: Attack
 		FacingTolerance: 0
+		RequiresCondition: !WebDisable && !inside-tunnel
 	WithSplitAttackPaletteInfantryBody:
 		DefaultAttackSequence: attack
 	ProducibleWithLevel:
@@ -177,9 +183,11 @@ MWMN:
 		LocalOffset: 276,0,470
 		Weapon: ShardShotGun
 		UseBlindage: true
+		RequiresCondition: !WebDisable && !inside-tunnel
 	AttackFrontal:
 		Voice: Attack
 		FacingTolerance: 0
+		RequiresCondition: !WebDisable && !inside-tunnel
 	WithSplitAttackPaletteInfantryBody:
 		DefaultAttackSequence: attack
 	ProducibleWithLevel:
@@ -214,9 +222,11 @@ MUTANT3:
 		BurstsPerFire: 2
 		Weapon: SergeantSMG
 		UseBlindage: true
+		RequiresCondition: !WebDisable && !inside-tunnel
 	AttackFrontal:
 		Voice: Attack
 		FacingTolerance: 0
+		RequiresCondition: !WebDisable && !inside-tunnel
 	WithSplitAttackPaletteInfantryBody:
 		DefaultAttackSequence: attack
 		Palette: player-nobright
@@ -268,10 +278,12 @@ OXANNA:
 	AttackFrontal:
 		Voice: Attack
 		FacingTolerance: 0
+		RequiresCondition: !WebDisable && !inside-tunnel
 	Armament:
 		LocalOffset: 312,0,502
 		Weapon: OxannaGun
 		UseBlindage: true
+		RequiresCondition: !WebDisable && !inside-tunnel
 
 SLAV:
 	Inherits: ^Soldier
@@ -299,10 +311,12 @@ SLAV:
 	AttackFrontal:
 		Voice: Attack
 		FacingTolerance: 0
+		RequiresCondition: !WebDisable && !inside-tunnel
 	Armament:
 		LocalOffset: 320,0,422
 		Weapon: SlavickGun
 		UseBlindage: true
+		RequiresCondition: !WebDisable && !inside-tunnel
 
 CIV1:
 	Inherits: ^CivilianInfantry
@@ -320,9 +334,11 @@ CIV1:
 		LocalOffset: 294,-10,468
 		Weapon: Pistol
 		UseBlindage: true
+		RequiresCondition: !WebDisable && !inside-tunnel
 	AttackFrontal:
 		Voice: Attack
 		FacingTolerance: 0
+		RequiresCondition: !WebDisable && !inside-tunnel
 	Voiced:
 		VoiceSet: Civilian1
 	Tooltip:

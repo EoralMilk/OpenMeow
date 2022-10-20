@@ -126,7 +126,7 @@ DSHP:
 		EjectOnDeath: true
 	SpawnActorOnDeath:
 		Actor: DSHP.Husk
-		RequiresCondition: airborne && !traped
+		RequiresCondition: airborne
 
 A10:
 	Inherits: ^EMPableAircraft
@@ -193,10 +193,10 @@ A10:
 	DeathSounds:
 	SpawnActorOnDeath:
 		Actor: A10.Husk
-		RequiresCondition: !empdisable && !traped
+		RequiresCondition: !empdisable
 	SpawnActorOnDeath@EMP:
 		Actor: A10.Husk.EMP
-		RequiresCondition: empdisable && !traped
+		RequiresCondition: empdisable
 	Rearmable:
 		RearmActors: gahpad, nahpad
 	RenderModels:
@@ -253,10 +253,10 @@ ORCA:
 	RenderSprites:
 	SpawnActorOnDeath:
 		Actor: ORCA.Husk
-		RequiresCondition: !empdisable && !traped
+		RequiresCondition: !empdisable
 	SpawnActorOnDeath@EMP:
 		Actor: ORCA.Husk.EMP
-		RequiresCondition: empdisable && !traped
+		RequiresCondition: empdisable
 	Rearmable:
 		RearmActors: gahpad, nahpad
 	WithAmmoPipsDecoration:
@@ -326,10 +326,10 @@ ORCAB:
 		RequiresCondition: cruising
 	SpawnActorOnDeath:
 		Actor: ORCAB.Husk
-		RequiresCondition: !empdisable && !traped
+		RequiresCondition: !empdisable
 	SpawnActorOnDeath@EMP:
 		Actor: ORCAB.Husk.EMP
-		RequiresCondition: empdisable && !traped
+		RequiresCondition: empdisable
 	Rearmable:
 		RearmActors: gahpad, nahpad
 	WithAmmoPipsDecoration:
@@ -376,10 +376,10 @@ ORCATRAN:
 		AfterUnloadDelay: 40
 	SpawnActorOnDeath:
 		Actor: ORCATRAN.Husk
-		RequiresCondition: !empdisable && !traped
+		RequiresCondition: !empdisable
 	SpawnActorOnDeath@EMP:
 		Actor: ORCATRAN.Husk.EMP
-		RequiresCondition: empdisable && !traped
+		RequiresCondition: empdisable
 	Selectable:
 		Bounds: 1327, 1930, 0, -482
 	WithAircraftLandingEffect:
@@ -420,10 +420,10 @@ TRNSPORT:
 		Bounds: 1327, 1930, 0, -482
 	SpawnActorOnDeath:
 		Actor: TRNSPORT.Husk
-		RequiresCondition: !empdisable && !traped
+		RequiresCondition: !empdisable
 	SpawnActorOnDeath@EMP:
 		Actor: TRNSPORT.Husk.EMP
-		RequiresCondition: empdisable && !traped
+		RequiresCondition: empdisable
 	WithAircraftLandingEffect:
 		Image: caryland
 
@@ -493,10 +493,10 @@ SCRIN:
 	DeathSounds:
 	SpawnActorOnDeath:
 		Actor: SCRIN.Husk
-		RequiresCondition: !empdisable && !traped
+		RequiresCondition: !empdisable
 	SpawnActorOnDeath@EMP:
 		Actor: SCRIN.Husk.EMP
-		RequiresCondition: empdisable && !traped
+		RequiresCondition: empdisable
 	Rearmable:
 		RearmActors: gahpad, nahpad
 	WithAmmoPipsDecoration:
@@ -602,18 +602,18 @@ APACHE:
 	WithIdleOverlay@ROTORAIR:
 		Offset: 85,0,346
 		Sequence: rotor
-		RequiresCondition: airborne && !traped
+		RequiresCondition: airborne
 	WithIdleOverlay@ROTORGROUND:
 		Offset: 85,0,346
 		Sequence: slow-rotor
-		RequiresCondition: !airborne && !traped
+		RequiresCondition: !airborne
 	RenderSprites:
 	SpawnActorOnDeath:
 		Actor: APACHE.Husk
-		RequiresCondition: !empdisable && !traped
+		RequiresCondition: !empdisable
 	SpawnActorOnDeath@EMP:
 		Actor: APACHE.Husk.EMP
-		RequiresCondition: empdisable && !traped
+		RequiresCondition: empdisable
 	# Rearmable:
 	# 	RearmActors: gahpad, nahpad
 	# WithAmmoPipsDecoration:
@@ -726,7 +726,7 @@ QDRONE:
 		Speed: 128
 		IdleTurnSpeed: 10
 		IdleSpeed: 64
-		AltitudeVelocity: 200
+		AltitudeVelocity: 128
 		RepulsionSpeed: 16
 		VTOL: true
 		AirborneCondition: airborne
@@ -759,24 +759,24 @@ QDRONE:
 
 RPGDRONE:
 	Inherits: ^Aircraft
-	Inherits@AUTOTARGET: ^AutoTargetGround
+	Inherits@AUTOTARGET: ^AutoTargetAir
 	-Selectable:
 	-SelectionDecorations:
 	Interactable:
 	Tooltip:
-		Name: PRG Drone
+		Name: SAM Drone
 	Health:
 		HP: 8000
-	-RevealsShroud@airborne:
-	-RevealsShroud:
+	RevealsShroud@airborne:
+		Range: 4c0
+	RevealsShroud:
+		Range: 1c0
 	-RevealOnFire:
 	-Targetable@REPAIR:
 	DroneSpawnerSlave:
-		AttackCallBackDistance: 10c0
+		AttackCallBackDistance: 12c0
 	Targetable@Ignore:
 		TargetTypes: AIgnored
-	RevealsShroud:
-		Range: 3c0
 	Aircraft:
 		CanHover: false
 		CanSlide: false
@@ -785,20 +785,20 @@ RPGDRONE:
 		Speed: 120
 		IdleTurnSpeed: 10
 		IdleSpeed: 64
-		AltitudeVelocity: 200
+		AltitudeVelocity: 128
 		RepulsionSpeed: 16
 		VTOL: true
 		AirborneCondition: airborne
 		MoveIntoShroud: true
 		TakeUpCellWhenLand: false
-		CruiseAltitude: 2c0
+		CruiseAltitude: 3c0
 	AttackAircraft:
 		AttackType: Strafe
 		FacingTolerance: 32
 	RenderSprites:
 		Image: rpgdrone
 	Armament:
-		Weapon: RPGdrone
+		Weapon: TitanMissile
 	RejectsOrders:
 	-MapEditorData:
 	-SpawnActorOnDeath:
@@ -820,3 +820,63 @@ RPGDRONE:
 		CrushedSequence: die
 		CrushedSequencePalette: effect
 
+REPAIRDRONE:
+	Inherits: ^Aircraft
+	Inherits@AUTOTARGET: ^AutoTargetRepair
+	-Selectable:
+	-SelectionDecorations:
+	Interactable:
+	Tooltip:
+		Name: Repair Drone
+	Health:
+		HP: 5000
+	-RevealsShroud@airborne:
+	-RevealsShroud:
+	-RevealOnFire:
+	-Targetable@REPAIR:
+	DroneSpawnerSlave:
+		AttackCallBackDistance: 8c0
+	Targetable@Ignore:
+		TargetTypes: AIgnored
+	Aircraft:
+		CanHover: true
+		CanSlide: false
+		MaximumPitch: 90
+		Repulsable: true
+		TurnSpeed: 16
+		Speed: 128
+		IdleTurnSpeed: 10
+		IdleSpeed: 64
+		AltitudeVelocity: 72
+		RepulsionSpeed: 16
+		VTOL: true
+		AirborneCondition: airborne
+		MoveIntoShroud: true
+		TakeUpCellWhenLand: false
+		CruiseAltitude: 2c0
+	AttackAircraft:
+		AttackType: Hover
+	RenderSprites:
+		Image: repairdrone-mini
+	Armament:
+		Weapon: RepairDrone
+		TargetRelationships: Ally
+		ForceTargetRelationships: Ally
+	RejectsOrders:
+	-MapEditorData:
+	-SpawnActorOnDeath:
+	-RenderModels:
+	-WithModelBody:
+	-UpdatesPlayerStatistics:
+	-ActorLostNotification:
+	QuantizeFacingsFromSequence:
+	WithFacingSpriteBody:
+	WithShadow:
+	WithDeathAnimation:
+		FallbackSequence: die
+		DeathSequence: die
+		DeathSequencePalette: effect
+		DeathPaletteIsPlayerPalette: false
+		UseDeathTypeSuffix: false
+		CrushedSequence: die
+		CrushedSequencePalette: effect

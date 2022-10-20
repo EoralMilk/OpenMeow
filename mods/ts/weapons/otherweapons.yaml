@@ -479,6 +479,23 @@ FloaterSpray:
 		ForceTargetGround: true
 
 
+ReaperWeb:
+	ReloadDelay: 250
+	Range: 7c0
+	Report: fireweb1.aud
+	ValidTargets: Infantry
+	Projectile: Bullet
+		Speed: 300
+		Image: web2
+		Shadow: true
+		LaunchAngle: 130
+		Palette: effect
+	Warhead@emp: GrantExternalCondition
+		Range: 1c512
+		Duration: 250
+		ValidTargets: Infantry
+		Condition: WebDisable
+
 ApcReconDummyWeapon:
 	ValidTargets: Ground, Water, Air
 	Range: 20c0
@@ -492,10 +509,11 @@ DroneReconDummyWeapon:
 	Projectile: InstantHit
 		Blockable: false
 
-DummyWeapon:
-
-RPGDroneCheck:
+TitianDroneCheck:
 	Range: 9c512
-	ReloadDelay: 10
+	ReloadDelay: 20
+	ValidTargets: Air
 	Projectile: InstantHit
 		Blockable: false
+
+DummyWeapon:

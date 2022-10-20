@@ -24,11 +24,13 @@ E2:
 		LocalOffset: 0,0,454
 		FireDelay: 5
 		UseBlindage: true
+		RequiresCondition: !WebDisable && !inside-tunnel
 	TakeCover:
 		ProneOffset: 160,128,0 #-555
 	AttackFrontal:
 		Voice: Attack
 		FacingTolerance: 0
+		RequiresCondition: !WebDisable && !inside-tunnel
 	WithSplitAttackPaletteInfantryBody:
 		DefaultAttackSequence: attack
 	RevealsShroud:
@@ -54,6 +56,7 @@ MEDIC:
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@EXPHOSPITAL: ^InfantryExperienceHospitalOverrides
 	Inherits@bounty: ^GlobalBounty
+	Inherits@AUTOTARGET: ^AutoTargetHeal
 	Valued:
 		Cost: 300
 	Tooltip:
@@ -81,11 +84,10 @@ MEDIC:
 		ForceTargetRelationships: None
 		Cursor: heal
 		OutsideRangeCursor: heal
-	AutoTarget:
-	AutoTargetPriority@DEFAULT:
-		ValidTargets: Infantry
+		RequiresCondition: !WebDisable && !inside-tunnel
 	AttackFrontal:
 		FacingTolerance: 0
+		RequiresCondition: !WebDisable && !inside-tunnel
 	WithSplitAttackPaletteInfantryBody:
 		DefaultAttackSequence: heal
 	ChangesHealth:
@@ -117,17 +119,19 @@ JUMPJET:
 	Transforms:
 		IntoActor: jumpjetair
 		RequiresCondition: !inside-tunnel
-		#PauseOnCondition: WebDisable
+		PauseOnCondition: WebDisable
 		Voice: Move
 	Armament:
 		LocalOffset: 360,0,433
 		Weapon: JumpVulcanGround
 		UseBlindage: true
+		RequiresCondition: !WebDisable && !inside-tunnel
 	Passenger:
 		CustomPipType: blue
 	AttackFrontal:
 		Voice: Attack
 		FacingTolerance: 2
+		RequiresCondition: !WebDisable && !inside-tunnel
 	WithSplitAttackPaletteInfantryBody:
 		DefaultAttackSequence: attack
 	AutoTarget:
@@ -139,7 +143,7 @@ JUMPJET:
 		UndeployTicks: 500
 		DeployChance: 100
 	UnitDisplayInfo:
-		Description: Airborne soldier.\n  Strong vs Infantry, Aircraft\n  Weak vs Vehicles \n- Will land when ordered to deploy
+		Description: Airborne soldier now lands.\n  Strong vs Infantry \n  Weak vs Vehicles, Aircraft \n- Will fly when ordered to deploy
 
 JUMPJETAIR:
 	Inherits: ^Aircraft
@@ -206,7 +210,7 @@ JUMPJETAIR:
 		VTOL: true
 		CanSlide: true
 	Targetable@GROUND:
-		TargetTypes: Infantry, Ground
+		TargetTypes: Infantry, Ground, NoRepair
 		RequiresCondition: !airborne
 	Targetable@AIRBORNE:
 		TargetTypes: Air, NoRepair
@@ -234,7 +238,6 @@ JUMPJETAIR:
 		Actor: JUMPJET.Husk
 		RequiresCondition: airborne
 	UnitDisplayInfo:
-		Description: Airborne soldier.\n  Strong vs Infantry, Aircraft\n  Weak vs Vehicles \n- Will land when ordered to deploy
 	RenderSprites:
 	-RenderModels:
 	-WithModelBody:
@@ -309,6 +312,7 @@ GHOST:
 		Weapon: LtRail
 		LocalOffset: 120,0,313
 		UseBlindage: true
+		RequiresCondition: !WebDisable && !inside-tunnel
 	TakeCover:
 		ProneOffset: 256,32,0 #-384
 	Crushable:
@@ -316,6 +320,7 @@ GHOST:
 	AttackFrontal:
 		Voice: Attack
 		FacingTolerance: 0
+		RequiresCondition: !WebDisable && !inside-tunnel
 	Demolition:
 		DetonationDelay: 45
 		Voice: Attack
