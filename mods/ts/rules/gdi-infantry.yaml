@@ -241,6 +241,9 @@ JUMPJETAIR:
 	RenderSprites:
 	-RenderModels:
 	-WithModelBody:
+	-WithIdleOverlay@DAMAGED1:
+	-WithIdleOverlay@DAMAGED2:
+	-WithIdleOverlay@DAMAGED3:
 
 JUMPJET.Husk:
 	BodyOrientation:

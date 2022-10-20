@@ -1035,17 +1035,38 @@
 		Weapons: SmallDebris
 		Pieces: 3, 7
 		Range: 2c0, 5c0
-	GrantConditionOnDamageState@DAMAGEDSPEED:
-		Condition: damagedspeed
+	GrantConditionOnDamageState@damaged-state:
+		Condition: damaged-state
 		ValidDamageStates: Heavy
-	GrantConditionOnDamageState@CRITICALSPEED:
-		Condition: criticalspeed
+	GrantConditionOnDamageState@critical-state:
+		Condition: critical-state
 		ValidDamageStates: Critical
+	WithIdleOverlay@DAMAGED1:
+		RequiresCondition: !inside-tunnel && (damaged-state || critical-state)
+		Image: damagespark
+		Sequence: idle1
+		Palette: effect
+		IsDecoration: true
+		Offset: 0, 0, 512
+	WithIdleOverlay@DAMAGED2:
+		RequiresCondition: !inside-tunnel && (damaged-state || critical-state)
+		Image: damagespark
+		Sequence: idle2
+		Palette: effect
+		IsDecoration: true
+		Offset: 280, -120, 386
+	WithIdleOverlay@DAMAGED3:
+		RequiresCondition: !inside-tunnel && (damaged-state || critical-state)
+		Image: damagespark
+		Sequence: idle3
+		Palette: effect
+		IsDecoration: true
+		Offset: -220, 140, 320
 	SpeedMultiplier@DAMAGED:
-		RequiresCondition: damagedspeed
+		RequiresCondition: damaged-state
 		Modifier: 80
 	SpeedMultiplier@CRITICAL:
-		RequiresCondition: criticalspeed
+		RequiresCondition: critical-state
 		Modifier: 60
 	Carryable:
 		RequiresCondition: !inside-tunnel
@@ -1215,6 +1236,33 @@
 		RequiresCondition: cruising
 		BobDistance: -64
 		InitialHeight: 64
+	GrantConditionOnDamageState@damaged-state:
+		Condition: damaged-state
+		ValidDamageStates: Heavy
+	GrantConditionOnDamageState@critical-state:
+		Condition: critical-state
+		ValidDamageStates: Critical
+	WithIdleOverlay@DAMAGED1:
+		RequiresCondition: !inside-tunnel && (damaged-state || critical-state)
+		Image: damagespark
+		Sequence: idle1
+		Palette: effect
+		IsDecoration: true
+		Offset: 0, 0, 512
+	WithIdleOverlay@DAMAGED2:
+		RequiresCondition: !inside-tunnel && (damaged-state || critical-state)
+		Image: damagespark
+		Sequence: idle2
+		Palette: effect
+		IsDecoration: true
+		Offset: 280, -120, 386
+	WithIdleOverlay@DAMAGED3:
+		RequiresCondition: !inside-tunnel && (damaged-state || critical-state)
+		Image: damagespark
+		Sequence: idle3
+		Palette: effect
+		IsDecoration: true
+		Offset: -220, 140, 320
 
 ^EMPableAircraft:
 	Inherits: ^Aircraft
@@ -1267,6 +1315,24 @@
 		MovingInterval: 3
 		SpawnAtLastPosition: False
 		Type: CenterPosition
+	WithIdleOverlay@DAMAGED1:
+		Image: damagespark
+		Sequence: idle1
+		Palette: effect
+		IsDecoration: true
+		Offset: 0, 0, 512
+	WithIdleOverlay@DAMAGED2:
+		Image: damagespark
+		Sequence: idle2
+		Palette: effect
+		IsDecoration: true
+		Offset: 280, -120, 386
+	WithIdleOverlay@DAMAGED3:
+		Image: damagespark
+		Sequence: idle3
+		Palette: effect
+		IsDecoration: true
+		Offset: -220, 140, 320
 
 ^Visceroid:
 	Inherits@1: ^ExistsInWorld

@@ -514,11 +514,13 @@ SUBTANK:
 		Weapon: DualFireballLauncher
 		BurstsPerFire: 2
 		LocalOffset: 392,-377,217, 392,377,217
+		RequiresCondition: !submerged
 	AttackFrontal:
 		Voice: Attack
 		PauseOnCondition: empdisable
 		FacingTolerance: 23
 		FacingFullOnTarget: true
+		RequiresCondition: !submerged
 	WithModelBody:
 		RequiresCondition: !submerged
 	Targetable:
@@ -535,6 +537,12 @@ SUBTANK:
 		RequiresCondition: !submerged
 	WithDecoration@UNDERGROUND:
 		RequiresCondition: inside-tunnel || submerged
+	WithIdleOverlay@DAMAGED1:
+		RequiresCondition: !inside-tunnel && !submerged && (damaged-state || critical-state)
+	WithIdleOverlay@DAMAGED2:
+		RequiresCondition: !inside-tunnel && !submerged && (damaged-state || critical-state)
+	WithIdleOverlay@DAMAGED3:
+		RequiresCondition: !inside-tunnel && !submerged && (damaged-state || critical-state)
 
 STNK:
 	Inherits: ^Tank

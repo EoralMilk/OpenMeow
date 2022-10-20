@@ -731,6 +731,12 @@ LIMPED:
 		Name: deployed
 		Sequence: deployed
 		RequiresCondition: !undeployed
+	-WithIdleOverlay@DAMAGED3:
+	WithIdleOverlay@DAMAGED1:
+		RequiresCondition: !inside-tunnel && undeployed && (damaged-state || critical-state)
+	WithIdleOverlay@DAMAGED2:
+		Offset: 0, 0, 0
+		RequiresCondition: !inside-tunnel && deployed && (damaged-state || critical-state)
 	UnitDisplayInfo:
 	-SpawnActorOnDeath@ctech:
 

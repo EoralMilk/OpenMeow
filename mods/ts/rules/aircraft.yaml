@@ -756,6 +756,9 @@ QDRONE:
 		UseDeathTypeSuffix: false
 		CrushedSequence: die
 		CrushedSequencePalette: effect
+	-WithIdleOverlay@DAMAGED1:
+	-WithIdleOverlay@DAMAGED2:
+	-WithIdleOverlay@DAMAGED3:
 
 RPGDRONE:
 	Inherits: ^Aircraft
@@ -818,6 +821,9 @@ RPGDRONE:
 		UseDeathTypeSuffix: false
 		CrushedSequence: die
 		CrushedSequencePalette: effect
+	-WithIdleOverlay@DAMAGED1:
+	-WithIdleOverlay@DAMAGED2:
+	-WithIdleOverlay@DAMAGED3:
 
 REPAIRDRONE:
 	Inherits: ^Aircraft
@@ -879,3 +885,6 @@ REPAIRDRONE:
 		UseDeathTypeSuffix: false
 		CrushedSequence: die
 		CrushedSequencePalette: effect
+	-WithIdleOverlay@DAMAGED1:
+	-WithIdleOverlay@DAMAGED2:
+	-WithIdleOverlay@DAMAGED3:
