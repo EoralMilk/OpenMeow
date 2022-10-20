@@ -1,0 +1,13 @@
+inventroy:
+	Defaults:
+		UseTilesetExtension: false
+	none: xxicon
+
+items:
+	none: xxicon
+	clustermissile: mltiicon
+	chemicalmissile: chemicon
+	ioncannon: ioncicon
+	hunterseeker: detnicon
+	emp: pulsicon
+	droppods: podsicon

@@ -116,6 +116,8 @@ namespace OpenRA.Mods.Common.Widgets
 
 			getUpArrowImage = WidgetUtils.GetCachedStatefulImage(Decorations, DecorationScrollUp);
 			getDownArrowImage = WidgetUtils.GetCachedStatefulImage(Decorations, DecorationScrollDown);
+
+			Layout.AdjustChildren();
 		}
 
 		public override void RemoveChildren()

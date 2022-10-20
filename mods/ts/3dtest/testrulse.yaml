@@ -170,6 +170,9 @@ RUTEST2:
 		Bounds: 905, 3000, 0, -1300
 	Voiced:
 		VoiceSet: Oxanna
+	Inventory:
+		Name: test
+		InitItems: item1, item2, item3, item4, item5, item6
 
 RUTEST3:
 	Inherits: RUTEST

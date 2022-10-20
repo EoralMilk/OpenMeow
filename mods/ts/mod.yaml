@@ -113,6 +113,8 @@ Rules:
 	ts|rules/trees.yaml
 	ts|rules/bridges.yaml
 
+	ts|rpgtest/items.yaml
+
 	ts|3dtest/testrulse.yaml
 
 	# ts|tstest/localtestrulse.yaml
@@ -139,6 +141,8 @@ Sequences:
 	ts|sequences/trees.yaml
 	ts|sequences/bridges.yaml
 	ts|sequences/critters.yaml
+
+	ts|rpgtest/rpgmisc.yaml
 
 	# ts|tstest/localtestseq.yaml
 
@@ -276,6 +280,10 @@ ChromeMetrics:
 	ts|metrics.yaml
 
 Fonts:
+	Ethnocentric.8:
+		Font: ts|fonts/ethnocentric.ttf
+		Size: 8
+		Ascender: 8
 	Tiny:
 		Font: common|FreeSans.ttf
 		Size: 10

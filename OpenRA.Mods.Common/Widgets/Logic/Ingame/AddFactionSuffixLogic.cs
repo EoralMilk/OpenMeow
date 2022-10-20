@@ -14,6 +14,11 @@ using OpenRA.Widgets;
 
 namespace OpenRA.Mods.Common.Widgets.Logic
 {
+	public interface IAddFactionSuffixWidget
+	{
+		void AddFactionSuffix(string suffix);
+	}
+
 	public class AddFactionSuffixLogic : ChromeLogic
 	{
 		[ObjectCreator.UseCtor]
@@ -26,14 +31,14 @@ namespace OpenRA.Mods.Common.Widgets.Logic
 				faction = world.LocalPlayer.Faction.InternalName;
 			var suffix = "-" + faction;
 
-			if (widget is ButtonWidget bw)
+			if (widget is IAddFactionSuffixWidget aw)
+				aw.AddFactionSuffix(suffix);
+			else if (widget is ButtonWidget bw)
 				bw.Background += suffix;
 			else if (widget is ImageWidget iw)
 				iw.ImageCollection += suffix;
 			else if (widget is BackgroundWidget bgw)
 				bgw.Background += suffix;
-			else if (widget is ActorInfoWidget aiw)
-				aiw.Background += suffix;
 			else if (widget is TextFieldWidget tfw)
 				tfw.Background += suffix;
 			else if (widget is ScrollPanelWidget spw)
@@ -49,7 +54,7 @@ namespace OpenRA.Mods.Common.Widgets.Logic
 				ptw.Background += suffix;
 			}
 			else
-				throw new InvalidOperationException("AddFactionSuffixLogic only supports ButtonWidget, ImageWidget, BackgroundWidget, ActorInfoWidget, TextFieldWidget, ScrollPanelWidget and ProductionTabsWidget");
+				throw new InvalidOperationException("AddFactionSuffixLogic only supports ButtonWidget, ImageWidget, BackgroundWidget, TextFieldWidget, ScrollPanelWidget and ProductionTabsWidget");
 		}
 	}
 }

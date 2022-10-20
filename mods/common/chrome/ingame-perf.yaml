@@ -2,10 +2,10 @@ Container@PERF_WIDGETS:
 	Logic: PerfDebugLogic
 	Children:
 		Label@PERF_TEXT:
-			X: WINDOW_RIGHT - 400
-			Y: WINDOW_BOTTOM - 70
-			Width: 170
-			Height: 40
+			X: 85
+			Y: 5
+			Width: 200
+			Height: 200
 			Contrast: true
 		Background@GRAPH_BG:
 			ClickThrough: true

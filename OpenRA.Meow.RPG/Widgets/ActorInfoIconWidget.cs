@@ -1,9 +1,10 @@
 ﻿using System;
 using OpenRA.Graphics;
+using OpenRA.Mods.Common.Widgets;
 using OpenRA.Traits;
 using OpenRA.Widgets;
 
-namespace OpenRA.Mods.Common.Widgets
+namespace OpenRA.Meow.RPG.Widgets
 {
 	public class ActorInfoIconWidget : Widget
 	{

@@ -1,9 +1,8 @@
 ﻿using System;
-using OpenRA.Mods.Common.Traits;
 using OpenRA.Mods.Common.Widgets;
 using OpenRA.Widgets;
 
-namespace OpenRA.Mods.TA.Widgets.Logic
+namespace OpenRA.Meow.RPG.Widgets.Logic
 {
 	public class ActorInfoTooltipLogic : ChromeLogic
 	{
