@@ -1,5 +1,6 @@
 Container@PERF_WIDGETS:
 	Logic: PerfDebugLogic
+	ClickThrough: true
 	Children:
 		Label@PERF_TEXT:
 			X: 85
