@@ -3,6 +3,7 @@
 	Range: 7c512
 	MinRange: 0c512
 	ValidTargets: Ground, Water, Air, Trees
+	TargetActorCenter: true
 	Projectile: Missile
 		MaximumLaunchSpeed: 96
 		Blockable: false
@@ -83,6 +84,7 @@
 	ReloadDelay: 60
 	MinRange: 1c0
 	ValidTargets: Ground, Water, Air, Trees
+	TargetActorCenter: true
 	Projectile: VectorBooster
 		HorizonRotationRate: 15
 		VerticalRotationRate: 5
@@ -205,27 +207,29 @@ HoverMissile:
 
 TitanMissile:
 	Inherits: ^VectorBooster
-	ReloadDelay: 40
+	ReloadDelay: 30
 	ValidTargets: Air
 	Range: 6c0
-	Report: hovrmis1.aud
+	Report: orcamis1.aud
 	Projectile: VectorBooster
 		HorizonRotationRate: 12
 		VerticalRotationRate: 9
-		Acceleration: 20
-		Speed: 100
+		Acceleration: 40
+		Speed: 200
 		Width: 42
-		MeshScale: 1.5
 		ProximityRange: 200
-		LockOnDelay: 4
-		IgnitionDelay: 5
-		ContrailDelay: 0
+		LockOnDelay: 2
+		IgnitionDelay: 3
 		MinSpeed: 64
 		MaxSpeed: 400
 		LifeTime: 70
-		LaunchAngle: 0
+		LaunchAngle: 128
+		ContrailLength: 6
+		ContrailWidth: 44
+		MeshScale: 1
+		JetSequence: mislflash1small
 	Warhead@1Dam: Spread3DDamage
-		Damage: 4500
+		Damage: 2250
 		Versus:
 			None: 25
 			Wood: 65
@@ -249,7 +253,7 @@ LimpetMissile: ##todo
 		Damage: 8000
 
 LurkerAimDummyWeapon:
-	Range: 7c0
+	Range: 6c0
 	ReloadDelay: 20
 	ValidTargets: Ground, Water, Air
 	Projectile: InstantHit
@@ -272,16 +276,23 @@ ReaperScythe: ##todo
 		ScatCount: 2
 		ScatWeapon: ReaperScytheScat
 		LaunchAngle: 220
-		ScatDist: 5c0
+		LifeTime: 13
+		ScatDist: 0c512
 
 ReaperScytheScat:
 	Inherits: ^VectorBooster
 	ReloadDelay: 90
 	Range: 3c0
 	Projectile: VectorBooster
+		Inaccuracy: 0c512
 		LockOnInaccuracy: 0c512
+		LockOnDelay: 3
+		IgnitionDelay: 10
+		ContrailLength: 6
+		ContrailWidth: 44
+		MeshScale: 1
+		JetSequence: mislflash1small
 		InaccuracyType: Absolute
-		ContrailWidth: 89
 		LaunchAngle: 220
 	Warhead@1Dam: SpreadDamage
 		Spread: 108
@@ -385,8 +396,8 @@ VectorHellfire:
 	Projectile: VectorBooster
 		HorizonRotationRate: 14
 		VerticalRotationRate: 12
-		Acceleration: 25
-		Speed: 72
+		Acceleration: 40
+		Speed: 150
 		LockOnDelay: 5
 		IgnitionDelay: 0
 		LaunchAngle: 0
@@ -395,7 +406,7 @@ VectorHellfire:
 		MeshScale: 1.2
 		ProximityRange: 200
 		UseVerticalInaccuracy: true
-		LockOnInaccuracy: 300
+		LockOnInaccuracy: 128
 		UseLockOnVerticalInaccuracy: false
 	Warhead@1Dam: Spread3DDamage
 		Spread: 128

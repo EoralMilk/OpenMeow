@@ -355,8 +355,14 @@ mislflash:
 		Scale: 1.5
 	mislflash2big: mislflash2
 		Scale: 1.5
-	mislflash3big: mislflash
+	mislflash3big: mislflash3
 		Scale: 1.5
+	mislflash1small: mislflash
+		Scale: 0.5
+	mislflash2small: mislflash2
+		Scale: 0.5
+	mislflash3small: mislflash3
+		Scale: 0.5
 
 flash:
 	Defaults:

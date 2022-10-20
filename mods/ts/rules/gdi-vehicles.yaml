@@ -3,6 +3,7 @@ APC:
 	Inherits@VOXELS: ^VoxelActor
 	Inherits@CARGOPIPS: ^CargoPips
 	Inherits@bounty: ^GlobalBounty
+	Inherits@AImicroManagable: ^AImicroManagable
 	Valued:
 		Cost: 400
 	Tooltip:
@@ -56,6 +57,12 @@ APC:
 		Weapon: ApcReconDummyWeapon
 		PauseOnCondition: empdisable
 		TargetRelationships: None
+		Cursor: ability
+		OutsideRangeCursor: move
+	Armament@AI:
+		Weapon: ApcReconDummyWeapon
+		RequiresCondition: AImicroManage
+		PauseOnCondition: empdisable
 		Cursor: ability
 		OutsideRangeCursor: move
 	AttackFollow:
@@ -475,7 +482,6 @@ JUGG:
 		AlwaysTurnInPlace: true
 		Locomotor: heaveywalker
 		ImmovableCondition: !undeployed
-		RequireForceMoveCondition: !AImicroManage && !undeployed
 		TerrainOrientationAdjustmentMargin: -1
 	RevealsShroud@deploy:
 		RequiresCondition: !inside-tunnel && deployed
@@ -506,17 +512,20 @@ JUGG:
 		DeploySounds: place2.aud
 		UndeploySounds: clicky1.aud
 		Voice: Move
-	#	DeployOnAiming: true
+		DeployOnAttack: true
+		DeployArmament: todeploy
 	AttackFrontal@todeploy:
 	 	Voice: Attack
 	 	Armaments: todeploy
 	 	FacingTolerance: 512
-	 	RequiresCondition: AImicroManage && undeployed
+	 	RequiresCondition: undeployed
 	Armament@todeploy:
 	 	Name: todeploy
 	 	Weapon: Jugg90mmDeployCheck
-	 	RequiresCondition: AImicroManage && undeployed
+	 	RequiresCondition: undeployed
 	 	FacingTolerance: 512
+	AutoTarget:
+		ScanRadius: 14 #PREF: save trait looks up and scan armaments
 	EntersTunnels:
 		RequireForceMoveCondition: !undeployed
 	Repairable:
@@ -617,9 +626,6 @@ JUGG:
 		LightScale: 0.22
 		SpecularScale: 0.33
 		AmbientScale: 0.88
-	RejectsOrders@deployment:
-		Reject: AttackMove, AssaultMove
-		RequiresCondition: !AImicroManage && deployed
 	AutoDeployer@AI:
 		RequiresCondition: AImicroManage && undeployed
 		DeployChance: 100
@@ -629,10 +635,9 @@ JUGG:
 
 LIMPED:
 	Inherits: ^Vehicle
-	Inherits@AUTOTARGET: ^AutoTargetAll
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@bounty: ^GlobalBounty
-	Inherits@AImicroManagable: ^AImicroManagable
 	Valued:
 		Cost: 500
 	Tooltip:
@@ -650,7 +655,7 @@ LIMPED:
 		Speed: 148
 		TurnSpeed: 1023
 		Locomotor: hover
-		RequireForceMoveCondition: !AImicroManage && !undeployed
+		ImmovableCondition: !undeployed
 	Passenger:
 		CargoType: Infantry
 		RequireForceMoveCondition: !undeployed
@@ -677,20 +682,26 @@ LIMPED:
 		UndeployOnMove: true
 		CanDeployOnRamps: true
 		RequiresCondition: !inside-tunnel && !empdisable
-	RejectsOrders@deployment:
-		Reject: AttackMove, AssaultMove
-		RequiresCondition: deployed
-	Armament@1:
-		Weapon: LimpetMissile
-		ReloadingCondition: reload-ground
-		PauseOnCondition: empdisable || !deployed
+		DeployOnAttack: true
+		DeployArmament: todeploy
 	AttackFrontal:
+		Armaments: deployed, todeploy
 		FacingTolerance: 512
-		RequiresCondition: AImicroManage || deployed
 		PauseOnCondition: empdisable
 	AutoTarget:
 		ScanRadius: 7 #PREF: save trait looks up and scan armaments
-	ReloadArmamentsBar:
+	Armament@1:
+		Name: deployed
+		Weapon: LimpetMissile
+		RequiresCondition: deployed
+		PauseOnCondition: empdisable
+	Armament@todeploy:
+		Name: todeploy
+		Weapon: LurkerAimDummyWeapon
+		RequiresCondition: undeployed
+		PauseOnCondition: empdisable
+	RevealOnFire:
+		ArmamentNames: deployed
 	WithRangeCircle:
 		Range: 6c0
 		Color: FFFF00CC
@@ -722,20 +733,4 @@ LIMPED:
 		RequiresCondition: !undeployed
 	UnitDisplayInfo:
 	-SpawnActorOnDeath@ctech:
-	### AI Control
-	Armament@AIAimOnly:
-		RequiresCondition: AImicroManage && !deployed
-		Weapon: LurkerAimDummyWeapon
-		PauseOnCondition: empdisable
-	#AttackWander@AI: ### AI Control: make limped drone wander randomly and deploy when find enemy
-	#	RequiresCondition: AImicroManage && !deployed
-	#	WanderMoveRadius: 15
-	#	MinMoveDelay: 300
-	#	MaxMoveDelay: 300
-	AutoDeployer@AI:
-		RequiresCondition: AImicroManage && !deployed
-		DeployTrigger: Attack
-		DeployChance: 100
-		DeployTicks: 5
-		UndeployTicks: 50
 
