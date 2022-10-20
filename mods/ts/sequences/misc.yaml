@@ -335,6 +335,10 @@ explosion:
 		Length: *
 		Offset: 0, 0, 37
 		AlphaFade: False
+	ioncannonsparks: ioncannonsparks
+		Offset: 0,-15,0
+		BlendMode: Additive
+		AlphaFade: False
 
 mislflash:
 	Defaults:
