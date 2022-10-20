@@ -23,6 +23,7 @@ namespace OpenRA
 
 		public CVec(int x, int y) { X = x; Y = y; }
 		public static readonly CVec Zero = new CVec(0, 0);
+		public static readonly CVec Ones = new CVec(1, 1);
 
 		public static CVec operator +(CVec a, CVec b) { return new CVec(a.X + b.X, a.Y + b.Y); }
 		public static CVec operator -(CVec a, CVec b) { return new CVec(a.X - b.X, a.Y - b.Y); }

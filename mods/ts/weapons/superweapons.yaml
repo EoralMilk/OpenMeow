@@ -70,11 +70,12 @@ ClusterMissile:
 
 ChemicalMissile:
 	Inherits: ClusterMissile
-	Warhead@Cluster: FireCluster
+	Warhead@Cluster: FireRadius
 		Weapon: ChemicalCluster
-		Dimensions: 5,5
-		RandomClusterCount: 0
-		Footprint: __X__ _xxx_ xx_xx _xxx_ X_x_X
+		StartOffset: 0,-2222,0
+		FireCount: 3
+		ForceTargetGround: true
+
 
 ChemicalCluster:
 	Inherits: ^VectorBooster
@@ -109,11 +110,11 @@ ChemicalCluster:
 		ImpactActors: false
 		Explosions: large_twlt
 		ImpactSounds: expnew09.aud
-	Warhead@Cluster: FireCluster
+	Warhead@Cluster: FireRadius
 		Weapon: ChemicalCloudLauncher2
-		RandomClusterCount: 33
-		Dimensions: 7,7
-		Footprint: __xxx__ _xxXxx_ xxxxxxx xXx_xXx xxxxxxx _xxXxx_ __xxx__
+		StartOffset: 0,-1024,0
+		FireCount: 33
+		ForceTargetGround: true
 
 
 SuicideDash:

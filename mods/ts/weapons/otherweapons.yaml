@@ -472,11 +472,12 @@ VeinholeTest:
 
 
 FloaterSpray:
-	Warhead@Cluster: FireCluster
+	Warhead@Spray: FireRadius
 		Weapon: ChemicalCloudLauncher3
-		Dimensions: 5,5
-		RandomClusterCount: 15
-		Footprint: _xxx_ xxXxx xX_Xx xxXxx _xxx_
+		StartOffset: 0,-1024,0
+		FireCount: 12
+		ForceTargetGround: true
+
 
 ApcReconDummyWeapon:
 	ValidTargets: Ground, Water, Air

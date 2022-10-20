@@ -412,12 +412,6 @@ ProtonFlameMissile:
 			Light: 100
 			Heavy: 75
 			Concrete: 60
-	# Warhead@Cluster: FireCluster
-	# 	Weapon: ProtonFlameMissileCluster
-	# 	RandomClusterCount: 3
-	# 	Dimensions: 5,5
-	# 	Footprint: __x__ _xxx_ xx_xx _xxx_ __x__
-
 
 ProtonFlameMissileCluster:
 	Inherits: ^VectorBooster
@@ -445,8 +439,8 @@ ProtonFlameMissileCluster:
 			Light: 100
 			Heavy: 75
 			Concrete: 60
-	Warhead@Cluster: FireCluster
+	Warhead@Cluster: FireRadius
 		Weapon: GreenFireballLauncher
-		RandomClusterCount: 12
-		Dimensions: 7,7
-		Footprint: __xxx__ _xxXxx_ xxxxxxx xXx_xXx xxxxxxx _xxXxx_ __xxx__
+		StartOffset: 0,-1024,0
+		FireCount: 12
+		ForceTargetGround: true

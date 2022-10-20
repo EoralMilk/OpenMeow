@@ -28,6 +28,8 @@ namespace OpenRA.Mods.Common.Traits
 		[Desc("Should the explosion only be triggered once?")]
 		public readonly bool TriggerOnlyOnce = false;
 
+		public readonly WVec Offset = WVec.Zero;
+
 		public WeaponInfo WeaponInfo { get; private set; }
 
 		public override object Create(ActorInitializer init) { return new ExplosionOnDamageTransition(this); }
@@ -71,7 +73,7 @@ namespace OpenRA.Mods.Common.Traits
 					triggered = true;
 
 				// Use .FromPos since the actor might have been killed, don't use Target.FromActor
-				Info.WeaponInfo.Impact(Target.FromPos(self.CenterPosition), e.Attacker);
+				Info.WeaponInfo.Impact(Target.FromPos(self.CenterPosition + Info.Offset), e.Attacker);
 			}
 		}
 	}

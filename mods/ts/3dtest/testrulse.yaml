@@ -18,6 +18,10 @@
 	GrantConditionOnDamageState@test:
 		Condition: nocloth
 		ValidDamageStates: Heavy, Critical
+	ExplosionOnDamageTransition:
+		Weapon: ProtonFlameMissileCluster
+		DamageState: Heavy
+		Offset: 0,0,1024
 	# WithMeshCloth@skirt:
 	# 	Mesh: skirt-split
 	# 	Masks: Hip

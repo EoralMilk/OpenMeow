@@ -440,18 +440,37 @@ namespace OpenRA.Mods.Common.Projectiles
 					GuidedTarget = args.GuidedTarget
 				};
 
-				var randomTargetOffset = CellPosMatching(pArgs.PassiveTarget, true, info.ScatFootprint, info.ScatDimensions);
-
 				if (pArgs.Weapon.Projectile != null)
 				{
-					for (var i = 0; i < info.ScatCount; i++)
+					if (info.ScatDimensions != CVec.Zero && info.ScatFootprint != string.Empty)
 					{
-						var pargs = pArgs;
-						pargs.PassiveTarget = randomTargetOffset.Random(args.SourceActor.World.SharedRandom);
-						var projectile = scatWeapon.Projectile.Create(pargs);
-						world.AddFrameEndTask(w => w.Add(projectile));
+						var targetOffset = CellPosMatching(pArgs.PassiveTarget, false, info.ScatFootprint, info.ScatDimensions);
+						var randomTargetOffset = CellPosMatching(pArgs.PassiveTarget, true, info.ScatFootprint, info.ScatDimensions);
+
+						foreach (var c in targetOffset)
+						{
+							var projectile = scatWeapon.Projectile.Create(pArgs);
+							world.AddFrameEndTask(w => w.Add(projectile));
+						}
+
+						for (var i = 0; i < info.ScatCount; i++)
+						{
+							var pargs = pArgs;
+							pargs.PassiveTarget = randomTargetOffset.Random(args.SourceActor.World.SharedRandom);
+							var projectile = scatWeapon.Projectile.Create(pargs);
+							world.AddFrameEndTask(w => w.Add(projectile));
+						}
+					}
+					else
+					{
+						for (var i = 0; i < info.ScatCount; i++)
+						{
+							var projectile = scatWeapon.Projectile.Create(pArgs);
+							world.AddFrameEndTask(w => w.Add(projectile));
+						}
 					}
 				}
+
 			}
 
 			args.Weapon.Impact(Target.FromPos(pos), warheadArgs);

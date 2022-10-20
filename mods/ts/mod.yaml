@@ -176,6 +176,7 @@ Chrome:
 Assemblies:
 	^BinDir|OpenRA.Mods.Common.dll
 	^BinDir|OpenRA.Mods.Cnc.dll
+	^BinDir|OpenRA.Meow.RPG.dll
 
 ChromeLayout:
 	common|chrome/ingame.yaml
