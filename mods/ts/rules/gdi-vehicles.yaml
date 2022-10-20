@@ -739,4 +739,5 @@ LIMPED:
 		RequiresCondition: !inside-tunnel && deployed && (damaged-state || critical-state)
 	UnitDisplayInfo:
 	-SpawnActorOnDeath@ctech:
-
+	-DamagedByTerrain@VEINS:
+	-LeavesTrails@VEINS:
