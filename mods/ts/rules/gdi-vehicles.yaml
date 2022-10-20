@@ -508,7 +508,7 @@ JUGG:
 		UndeployOnMove: true
 		UndeployOnPickup: true
 		Facing: 384
-		AllowedTerrainTypes: Clear, Road, DirtRoad, Rough
+		AllowedTerrainTypes: Clear, Road, DirtRoad, Rough, Tiberium, BlueTiberium
 		DeploySounds: place2.aud
 		UndeploySounds: clicky1.aud
 		Voice: Move

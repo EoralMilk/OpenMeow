@@ -139,7 +139,7 @@ TTNK:
 		UndeployOnMove: true
 		UndeployOnPickup: true
 		Facing: 640
-		AllowedTerrainTypes: Clear, Road, DirtRoad, Rough
+		AllowedTerrainTypes: Clear, Road, DirtRoad, Rough, Tiberium, BlueTiberium
 		DeploySounds: place2.aud
 		UndeploySounds: clicky1.aud
 		Voice: Move
@@ -264,7 +264,7 @@ ART2:
 		UndeployOnMove: true
 		UndeployOnPickup: true
 		Facing: -128
-		AllowedTerrainTypes: Clear, Road, DirtRoad, Rough
+		AllowedTerrainTypes: Clear, Road, DirtRoad, Rough, Tiberium, BlueTiberium
 		DeploySounds: place2.aud
 		UndeploySounds: clicky1.aud
 		Voice: Move
