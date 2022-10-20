@@ -246,6 +246,9 @@ IonCannon:
 	Warhead@9Effect: CreateEffect
 		Explosions: ionbeam6
 		ImpactActors: false
+	Warhead@10Effect: CreateEffect
+		Explosions: ioncannonsparks
+		ImpactActors: false
 	Warhead@Shake: ShakeScreen
 		Duration: 18
 		Intensity: 5

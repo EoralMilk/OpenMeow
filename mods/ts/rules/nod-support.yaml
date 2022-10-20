@@ -271,7 +271,7 @@ NASAM:
 		Name: S.A.M. Site
 	Buildable:
 		Queue: Defense
-		Prerequisites: naweap, ~structures.nod, ~techlevel.medium
+		Prerequisites: naradr, ~structures.nod, ~techlevel.medium
 		BuildPaletteOrder: 100
 		Description: Nod Anti-Air base defense.\nRequires power to operate.\n  Strong vs Aircraft\n  Weak vs Ground units
 	Health:

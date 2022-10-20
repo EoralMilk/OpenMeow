@@ -119,7 +119,6 @@ TTNK:
 		TurnSpeed: 32
 		Speed: 85
 		ImmovableCondition: !undeployed
-		RequireForceMoveCondition: !AImicroManage && !undeployed
 	Health:
 		HP: 35000
 	Armor:
@@ -127,13 +126,7 @@ TTNK:
 		RequiresCondition: undeployed
 	Armament@PRIMARY:
 		Weapon: 90mm
-		LocalOffset: 892,-178,476 #407,0,209
-		RequiresCondition: !rank-elite
-		MuzzleSequence: muzzle
-	Armament@ELITE:
-		Weapon: 120mmx
 		LocalOffset: 892,-178,476
-		RequiresCondition: rank-elite
 		MuzzleSequence: muzzle
 	WithMuzzleOverlay:
 	RenderSprites:
@@ -146,7 +139,7 @@ TTNK:
 		UndeployOnMove: true
 		UndeployOnPickup: true
 		Facing: 640
-		AllowedTerrainTypes: Clear, Road, DirtRoad, Rough
+		AllowedTerrainTypes: Clear, Road, DirtRoad, Rough, Tiberium, BlueTiberium
 		DeploySounds: place2.aud
 		UndeploySounds: clicky1.aud
 		Voice: Move
@@ -199,18 +192,8 @@ TTNK:
 	Armament@deployed:
 		Name: deployed
 		Turret: deployed
-		Weapon: 90mm
-		LocalOffset: 892,-178,476 #543,0,209
-		RequiresCondition: !rank-elite
-		MuzzleSequence: muzzle
-		Recoil: 76
-		RecoilRecovery: 32
-	Armament@deployedElite:
-		Name: deployed
-		Turret: deployed
-		Weapon: 120mmx
+		Weapon: 90mmx
 		LocalOffset: 892,-178,476
-		RequiresCondition: rank-elite
 		MuzzleSequence: muzzle
 		Recoil: 76
 		RecoilRecovery: 32
@@ -226,9 +209,6 @@ TTNK:
 	RenderDetectionCircle:
 	RevealOnFire:
 		ArmamentNames: primary, deployed
-	RejectsOrders@deployment:
-		Reject: AttackMove, AssaultMove
-		RequiresCondition: !AImicroManage && deployed
 	AutoDeployer@AI:
 		RequiresCondition: AImicroManage && undeployed
 		DeployChance: 100
@@ -242,7 +222,6 @@ ART2:
 	Inherits@VOXELS: ^VoxelActor
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
-	Inherits@AImicroManagable: ^AImicroManagable
 	Inherits@bounty: ^GlobalBounty
 	Valued:
 		Cost: 975
@@ -267,7 +246,6 @@ ART2:
 		Speed: 71
 		TurnSpeed: 8
 		ImmovableCondition: !undeployed
-		RequireForceMoveCondition: !AImicroManage && !undeployed
 	RevealsShroud@deploy:
 		RequiresCondition: !inside-tunnel && deployed
 		Range: 9c0
@@ -286,20 +264,21 @@ ART2:
 		UndeployOnMove: true
 		UndeployOnPickup: true
 		Facing: -128
-		AllowedTerrainTypes: Clear, Road, DirtRoad, Rough
+		AllowedTerrainTypes: Clear, Road, DirtRoad, Rough, Tiberium, BlueTiberium
 		DeploySounds: place2.aud
 		UndeploySounds: clicky1.aud
 		Voice: Move
-		# DeployOnAiming: true
+		DeployOnAttack: true
+		DeployArmament: todeploy
 	AttackFrontal@todeploy:
 	 	Voice: Attack
 	 	FacingTolerance: 512
-	 	RequiresCondition: AImicroManage && undeployed
+	 	RequiresCondition: undeployed
 		Armaments: todeploy
 	Armament@todeploy:
 	 	Name: todeploy
 	 	Weapon: 155mmDeployCheck
-	 	RequiresCondition: AImicroManage && undeployed
+	 	RequiresCondition: undeployed
 	EntersTunnels:
 		RequireForceMoveCondition: !undeployed
 	Repairable:
@@ -321,7 +300,6 @@ ART2:
 		RealignWhenDisable: true
 		RequiresCondition: deployed || preparing-undeploy #!undeployed
 		RealignBeforeDeploy: true
-		# DeployOnAiming: true
 	WithModelBarrel:
 		Armament: deployed
 		LocalOffset: 0,0,0 #203,0,0
@@ -351,18 +329,11 @@ ART2:
 		MuzzleSequence: muzzle
 		Recoil: 178
 		RecoilRecovery: 15
+	AutoTarget:
+		ScanRadius: 14 #PREF: save trait looks up and scan armaments
 	WithMuzzleOverlay:
 	RevealOnFire:
 		ArmamentNames: deployed
-	RejectsOrders@deployment:
-		Reject: AttackMove, AssaultMove
-		RequiresCondition: !AImicroManage && deployed
-	AutoDeployer@AI:
-		RequiresCondition: AImicroManage && undeployed
-		DeployChance: 100
-		DeployTrigger: Attack
-		DeployTicks: 5
-		UndeployTicks: 50
 
 REPAIR:
 	Inherits: ^Tank
@@ -543,11 +514,13 @@ SUBTANK:
 		Weapon: DualFireballLauncher
 		BurstsPerFire: 2
 		LocalOffset: 392,-377,217, 392,377,217
+		RequiresCondition: !submerged
 	AttackFrontal:
 		Voice: Attack
 		PauseOnCondition: empdisable
 		FacingTolerance: 23
 		FacingFullOnTarget: true
+		RequiresCondition: !submerged
 	WithModelBody:
 		RequiresCondition: !submerged
 	Targetable:
@@ -564,6 +537,12 @@ SUBTANK:
 		RequiresCondition: !submerged
 	WithDecoration@UNDERGROUND:
 		RequiresCondition: inside-tunnel || submerged
+	WithIdleOverlay@DAMAGED1:
+		RequiresCondition: !inside-tunnel && !submerged && (damaged-state || critical-state)
+	WithIdleOverlay@DAMAGED2:
+		RequiresCondition: !inside-tunnel && !submerged && (damaged-state || critical-state)
+	WithIdleOverlay@DAMAGED3:
+		RequiresCondition: !inside-tunnel && !submerged && (damaged-state || critical-state)
 
 STNK:
 	Inherits: ^Tank

@@ -335,6 +335,10 @@ explosion:
 		Length: *
 		Offset: 0, 0, 37
 		AlphaFade: False
+	ioncannonsparks: ioncannonsparks
+		Offset: 0,-15,0
+		BlendMode: Additive
+		AlphaFade: False
 
 mislflash:
 	Defaults:
@@ -355,8 +359,14 @@ mislflash:
 		Scale: 1.5
 	mislflash2big: mislflash2
 		Scale: 1.5
-	mislflash3big: mislflash
+	mislflash3big: mislflash3
 		Scale: 1.5
+	mislflash1small: mislflash
+		Scale: 0.5
+	mislflash2small: mislflash2
+		Scale: 0.5
+	mislflash3small: mislflash3
+		Scale: 0.5
 
 flash:
 	Defaults:
@@ -1019,7 +1029,7 @@ dig:
 		MeshType: Plane
 	idle:
 	idle2:
-		Scale: 0.5
+		Scale: 0.4
 
 typeglyphs:
 	infantry:
@@ -1062,12 +1072,14 @@ cannonsmokecircle:
 		ZOffset: 512
 		IgnoreWorldTint: true
 		BlendMode: Additive
+		AlphaFade: True
 	idle2:
 		Length: *
 		ZOffset: 512
 		Scale: 0.75
 		IgnoreWorldTint: true
 		BlendMode: Additive
+		AlphaFade: True
 
 caryland:
 	idle: podring
@@ -1095,4 +1107,18 @@ web2:
 		ZOffset: 1023
 		IgnoreWorldTint: true
 		MeshType: Plane
+
+damagespark:
+	Defaults: smallspark
+		Length: *
+		ZOffset: 2048
+		IgnoreWorldTint: true
+		MeshType: Plane
+	idle1:
+		Frames: 1, 2, 3, 4, 5, 6, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+	idle2:
+		Frames: 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 4, 5, 6, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+	idle3:
+		Frames: 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 4, 5, 6, 7, 0, 0, 0, 0, 0, 0, 0, 0, 
+		
 

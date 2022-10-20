@@ -75,8 +75,13 @@
 		ContrailEndColorAlpha: 64
 		ContrailWidthFadeRate: 1
 		Inaccuracy: 310
+		TrailSequences: idle2
 	Warhead@4Smu: LeaveSmudge
 		SmudgeType: SmallCrater
+
+90mmx:
+	Inherits: 90mm
+	Range: 8c768
 
 120mm:
 	Inherits: ^Cannon
@@ -90,6 +95,7 @@
 		Blockable: false
 		LaunchAngle: 0
 		Inaccuracy: 310
+		TrailSequences: idle2
 	Warhead@1Dam: SpreadDamage
 		Damage: 10500
 	Warhead@5Res: DestroyResource
@@ -167,7 +173,7 @@ TitanRPG:
 
 ^ArtilleryDeployCheck:
 	Range: 17c768
-	ReloadDelay: 10
+	ReloadDelay: 20
 	MinRange: 5c0
 	ValidTargets: Ground, Water
 	Projectile: InstantHit
@@ -209,6 +215,10 @@ Jugg90mm:
 		Speed: 384
 		LaunchAngle: 150
 		Inaccuracy: 2c0
+		ContrailStartColor: 996600
+		ContrailEndColor: 330000
+		ContrailWidth: 87
+		TrailSequences: idle2
 	Warhead@1Dam: SpreadDamage
 		Spread: 188
 		Damage: 7500

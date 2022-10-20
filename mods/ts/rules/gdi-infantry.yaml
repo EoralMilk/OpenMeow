@@ -100,7 +100,7 @@ JUMPJET:
 	Inherits: ^Soldier
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@EXPHOSPITAL: ^InfantryExperienceHospitalOverrides
-	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@AImicroManagable: ^AImicroManagable
 	Inherits@bounty: ^GlobalBounty
 	Valued:
@@ -147,7 +147,7 @@ JUMPJET:
 
 JUMPJETAIR:
 	Inherits: ^Aircraft
-	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@bounty: ^GlobalBounty
 	Valued:
@@ -241,6 +241,9 @@ JUMPJETAIR:
 	RenderSprites:
 	-RenderModels:
 	-WithModelBody:
+	-WithIdleOverlay@DAMAGED1:
+	-WithIdleOverlay@DAMAGED2:
+	-WithIdleOverlay@DAMAGED3:
 
 JUMPJET.Husk:
 	BodyOrientation:

@@ -756,6 +756,9 @@ QDRONE:
 		UseDeathTypeSuffix: false
 		CrushedSequence: die
 		CrushedSequencePalette: effect
+	-WithIdleOverlay@DAMAGED1:
+	-WithIdleOverlay@DAMAGED2:
+	-WithIdleOverlay@DAMAGED3:
 
 RPGDRONE:
 	Inherits: ^Aircraft
@@ -781,8 +784,8 @@ RPGDRONE:
 		CanHover: false
 		CanSlide: false
 		Repulsable: true
-		TurnSpeed: 16
-		Speed: 120
+		TurnSpeed: 32
+		Speed: 140
 		IdleTurnSpeed: 10
 		IdleSpeed: 64
 		AltitudeVelocity: 128
@@ -793,8 +796,7 @@ RPGDRONE:
 		TakeUpCellWhenLand: false
 		CruiseAltitude: 3c0
 	AttackAircraft:
-		AttackType: Strafe
-		FacingTolerance: 32
+		FacingTolerance: 128
 	RenderSprites:
 		Image: rpgdrone
 	Armament:
@@ -819,6 +821,9 @@ RPGDRONE:
 		UseDeathTypeSuffix: false
 		CrushedSequence: die
 		CrushedSequencePalette: effect
+	-WithIdleOverlay@DAMAGED1:
+	-WithIdleOverlay@DAMAGED2:
+	-WithIdleOverlay@DAMAGED3:
 
 REPAIRDRONE:
 	Inherits: ^Aircraft
@@ -880,3 +885,6 @@ REPAIRDRONE:
 		UseDeathTypeSuffix: false
 		CrushedSequence: die
 		CrushedSequencePalette: effect
+	-WithIdleOverlay@DAMAGED1:
+	-WithIdleOverlay@DAMAGED2:
+	-WithIdleOverlay@DAMAGED3:

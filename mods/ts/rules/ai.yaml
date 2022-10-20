@@ -64,6 +64,7 @@ Player:
 			nastlh: 1
 			gahpad: 3
 			nahpad: 3
+			gadept: 2
 			gavulc: 8
 			garock: 2
 			gacsam: 4
@@ -114,7 +115,7 @@ Player:
 		ProtectionScanRadius: 15
 		SuggestedGroundLeaderLocomotor: foot, wheeled, heavywheeled, tracked, critter, visceroid, smallvisc
 		SuggestedNavyLeaderLocomotor: Naval
-		GuerrillaTypes: smech, bggy, jumpjetair, hvr, bike, subtank, stnk
+		GuerrillaTypes: smech, bggy, jumpjetair, hvr, bike, subtank, stnk, limped
 	UnitBuilderBotModule@test:
 		RequiresCondition: enable-test-ai
 		UnitQueues: Vehicle, Infantry, Air
@@ -149,6 +150,8 @@ Player:
 			apc: 1
 			jugg: 10
 			art2: 10
+			limped: 10
+			reaper: 5
 		UnitLimits:
 			harv: 2
 			medic: 14
