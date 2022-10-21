@@ -424,7 +424,7 @@ namespace OpenRA.Mods.Common.Traits
 			deployState = DeployState.Undeployed;
 		}
 
-		public void Attacking(Actor self, in Target target, Armament a, Barrel barrel)
+		void INotifyAttack.Attacking(Actor self, in Target target, Armament a, Barrel barrel)
 		{
 			if (IsTraitDisabled || IsTraitPaused || deployState == DeployState.Deploying || deployState == DeployState.Undeploying)
 				return;
@@ -433,7 +433,7 @@ namespace OpenRA.Mods.Common.Traits
 				self.QueueActivity(false, new DeployForGrantedCondition(self, this));
 		}
 
-		public void PreparingAttack(Actor self, in Target target, Armament a, Barrel barrel) { }
+		void INotifyAttack.PreparingAttack(Actor self, in Target target, Armament a, Barrel barrel) { }
 	}
 
 	public class DeployStateInit : ValueActorInit<DeployState>, ISingleInstanceInit
