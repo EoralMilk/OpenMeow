@@ -127,7 +127,7 @@ ChemicalCloudLauncher2:
 			Light: 100
 			Heavy: 25
 			Concrete: 25
-		DamageTypes: Prone100Percent, TiberiumDeath, TriggerVisceroid
+		DamageTypes: Prone100Percent, TiberiumDeath
 
 ChemicalCloudLauncher3:
 	Inherits: ChemicalCloudLauncher
@@ -156,7 +156,7 @@ ChemicalSprayer:
 			Light: 70
 			Heavy: 25
 			Concrete: 25
-		DamageTypes: Prone100Percent, TiberiumDeath, TriggerVisceroid
+		DamageTypes: Prone100Percent, TiberiumDeath
 
 Bomb:
 	ReloadDelay: 60
