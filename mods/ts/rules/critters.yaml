@@ -92,6 +92,10 @@ VISC_SML:
 	TransformCrusherOnCrush:
 		IntoActor: visc_lrg
 		CrushClasses: visceroid-fusing
+	Explodes:
+		DeathTypes: TiberiumDeath, BulletDeath, SmallExplosionDeath, ExplosionDeath, EnergyDeath, FireDeath
+	Explodes@LeaveTib:
+		DeathTypes: TiberiumDeath, BulletDeath, SmallExplosionDeath, ExplosionDeath, EnergyDeath, FireDeath
 
 VISC_LRG:
 	Inherits: ^Visceroid
@@ -123,6 +127,16 @@ VISC_LRG:
 		Sequence: attack
 	RenderSprites:
 		Image: vislrg
+	GrantConditionOnTime@FullHealthWhenCreate:
+		Condition: created
+		Tick: 2
+	ChangesHealth@FullHealthWhenCreate:
+		RequiresCondition: !created
+		PercentageStep: 100
+		Delay: 0
+		DamageCooldown: 0
+		StartIfBelow: 100
+		OneTimeTrigger: True
 
 JFISH:
 	Inherits: ^Visceroid
