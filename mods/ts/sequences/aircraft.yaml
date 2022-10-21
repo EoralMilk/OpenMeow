@@ -57,12 +57,15 @@ quaddrone-mini:
 	idle:
 		Facings: 1
 		Length: *
+		Scale: 0.95
 	stand:
 		Facings: 1
 		Length: *
+		Scale: 0.95
 	run:
 		Facings: 1
 		Length: *
+		Scale: 0.95
 	die: explosml
 		ZOffset: 511
 		Offset: 0, 0, 24

@@ -76,7 +76,6 @@ ChemicalMissile:
 		FireCount: 3
 		ForceTargetGround: true
 
-
 ChemicalCluster:
 	Inherits: ^VectorBooster
 	ValidTargets: Ground, Water, Air, Trees
@@ -106,10 +105,19 @@ ChemicalCluster:
 			Heavy: 75
 			Concrete: 55
 		DamageTypes: Prone50Percent, TriggerProne, ExplosionDeath
-	Warhead@2Eff: CreateEffect
+	Warhead@SoundEffect: CreateEffect
+		Image: chemmissilesmoke
+		Explosions: idle,idlefx,idlefy,idlefxy
+		ImpactSounds: expnew19.aud
 		ImpactActors: false
-		Explosions: large_twlt
-		ImpactSounds: expnew09.aud
+		ValidTargets: Ground, Water, Air
+	Warhead@Effect2: CreateEffect
+		Image: chemmissilesmoke
+		Explosions: idle,idlefx,idlefy,idlefxy
+		ImpactActors: false
+		ValidTargets: Ground, Water, Air
+		ForceDisplayAtGroundLevel: true
+		Delay: 20
 	Warhead@Cluster: FireRadius
 		Weapon: ChemicalCloudLauncher2
 		StartOffset: 0,-1024,0

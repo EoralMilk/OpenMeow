@@ -546,6 +546,23 @@ cloud:
 	cloud2: cloud2
 	cloud2d: cloud2d
 
+chemmissilesmoke:
+	Defaults:
+		Length: *
+		ZOffset: 1024
+		Tick: 38
+		BlendMode: Alpha
+		AlphaFade: True
+		MeshType: Plane
+	idle: chemmissilesmoke
+	idlefx: chemmissilesmoke
+		FlipX: true
+	idlefy: chemmissilesmoke
+		FlipY: true
+	idlefxy: chemmissilesmoke
+		FlipY: true
+		FlipX: true
+
 cloudadditive:
 	Inherits: cloud
 	Defaults:
