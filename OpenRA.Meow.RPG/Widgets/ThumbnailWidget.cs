@@ -23,12 +23,11 @@ namespace OpenRA.Meow.RPG.Widgets
 
 			thumbnail = new Animation(worldRenderer.World, item.Info.ThumbnailImage);
 			thumbnail.Play(item.Info.ThumbnailSequence);
+			Render = true;
 		}
 
 		public override void Draw()
 		{
-			base.Draw();
-
 			// Icons
 			Game.Renderer.EnableAntialiasingFilter();
 
@@ -40,6 +39,7 @@ namespace OpenRA.Meow.RPG.Widgets
 			}
 
 			Game.Renderer.DisableAntialiasingFilter();
+			base.Draw();
 		}
 	}
 }

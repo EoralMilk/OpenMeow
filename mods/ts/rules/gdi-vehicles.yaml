@@ -59,12 +59,14 @@ APC:
 		TargetRelationships: None
 		Cursor: ability
 		OutsideRangeCursor: move
+		ShowInActorInfo: false
 	Armament@AI:
 		Weapon: ApcReconDummyWeapon
 		RequiresCondition: AImicroManage
 		PauseOnCondition: empdisable
 		Cursor: ability
 		OutsideRangeCursor: move
+		ShowInActorInfo: false
 	AttackFollow:
 		PauseOnCondition: empdisable
 		Voice: Move
@@ -279,6 +281,7 @@ MMCH:
 		Weapon: TitianDroneCheck
 		Turret: check
 		Name: check
+		ShowInActorInfo: false
 	DroneSpawnerMaster:
 		Actors: RPGDRONE
 		Armament: check
@@ -700,6 +703,7 @@ LIMPED:
 		Weapon: LurkerAimDummyWeapon
 		RequiresCondition: undeployed
 		PauseOnCondition: empdisable
+		ShowInActorInfo: false
 	RevealOnFire:
 		ArmamentNames: deployed
 	WithRangeCircle:

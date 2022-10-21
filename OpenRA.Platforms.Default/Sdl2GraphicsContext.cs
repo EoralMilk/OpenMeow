@@ -323,6 +323,7 @@ namespace OpenRA.Platforms.Default
 					OpenGL.glDisable(OpenGL.GL_BLEND);
 					break;
 				case BlendMode.Alpha:
+				case BlendMode.EffectAlpha:
 					OpenGL.glEnable(OpenGL.GL_BLEND);
 					OpenGL.CheckGLError();
 					OpenGL.glBlendFunc(OpenGL.GL_ONE, OpenGL.GL_ONE_MINUS_SRC_ALPHA);

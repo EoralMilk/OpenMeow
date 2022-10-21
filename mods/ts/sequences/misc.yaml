@@ -538,7 +538,7 @@ cloud:
 		Length: *
 		ZOffset: 1024
 		# Scale: 0.45
-		BlendMode: Alpha
+		BlendMode: EffectAlpha #Screen #LowAdditive #Alpha
 		AlphaFade: True
 		MeshType: Plane
 	cloud1: cloud1
@@ -551,7 +551,7 @@ chemmissilesmoke:
 		Length: *
 		ZOffset: 1024
 		Tick: 38
-		BlendMode: Alpha
+		BlendMode: EffectAlpha #Screen #LowAdditive #Alpha
 		AlphaFade: True
 		MeshType: Plane
 	idle: chemmissilesmoke

@@ -739,6 +739,7 @@ QDRONE:
 		Image: quaddrone-mini
 	Armament:
 		Weapon: DroneReconDummyWeapon
+		ShowInActorInfo: false
 	RejectsOrders:
 	-MapEditorData:
 	-SpawnActorOnDeath:

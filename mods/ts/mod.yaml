@@ -280,10 +280,22 @@ ChromeMetrics:
 	ts|metrics.yaml
 
 Fonts:
+	Ethnocentric.12:
+		Font: ts|fonts/ethnocentric.ttf
+		Size: 12
+		Ascender: 8
+	Ethnocentric.10:
+		Font: ts|fonts/ethnocentric.ttf
+		Size: 10
+		Ascender: 8
 	Ethnocentric.8:
 		Font: ts|fonts/ethnocentric.ttf
 		Size: 8
-		Ascender: 8
+		Ascender: 7
+	Ethnocentric.6:
+		Font: ts|fonts/ethnocentric.ttf
+		Size: 6
+		Ascender: 6
 	Tiny:
 		Font: common|FreeSans.ttf
 		Size: 10

@@ -47,6 +47,7 @@ namespace OpenRA
 		Screen,
 		Translucent,
 		ScreenAdditive,
+		EffectAlpha,
 	}
 
 	public enum DepthFunc : byte

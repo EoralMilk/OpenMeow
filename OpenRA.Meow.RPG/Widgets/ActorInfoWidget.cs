@@ -26,6 +26,14 @@ namespace OpenRA.Meow.RPG.Widgets
 		public string Description;
 		public int Count { get; set; }
 
+		public Actor GetValidActor()
+		{
+			if (Actor == null || Actor.IsDead || !Actor.IsInWorld)
+				return null;
+			else
+				return Actor;
+		}
+
 		public BasicUnitInfo(Actor actor)
 		{
 			Actor = actor;
@@ -123,10 +131,167 @@ namespace OpenRA.Meow.RPG.Widgets
 			this.worldRenderer = worldRenderer;
 			player = world.LocalPlayer;
 			GetTooltipUnit = () => TooltipUnit;
+			currentInventory = new InventoryWidget(world, worldRenderer);
+		}
 
-			AddChild(currentInventory = new InventoryWidget(world, worldRenderer) {
-				Bounds = CalculateInventoryBounds()
-			});
+		public override void Initialize(WidgetArgs args)
+		{
+			base.Initialize(args);
+
+			currentInventory.Bounds = CalculateInventoryBounds();
+			AddChild(currentInventory);
+
+			var fontsmall = new string[] { Skin.InGameUiFontSmall, Skin.InGameUiFontLittle, Skin.InGameUiFontTiny };
+
+			var y = Skin.SpacingSmall + 62;
+			var x = 14;
+			var valueX = x + 50;
+
+			var width = Bounds.Width - 28;
+			var valueWidth = width - 50;
+
+			AddChild(
+				new LabelWidget
+				{
+					Text = "HP",
+					IsVisible = () => TooltipUnit != null,
+					Bounds = new Rectangle(x, y, width, Skin.CharacterLabelHeight),
+					Font = Skin.InGameUiFont,
+				}
+			);
+
+			AddChild(
+				new LabelWidget
+				{
+					GetText = () =>
+					{
+						var health = TooltipUnit.GetValidActor()?.TraitOrDefault<Health>();
+
+						return health == null ? "-" : $"{health.DisplayHP} / {health.MaxHP}";
+					},
+					IsVisible = () => TooltipUnit != null,
+					Bounds = new Rectangle(valueX, y, valueWidth, Skin.CharacterLabelHeight),
+					Font = Skin.InGameUiFont,
+					Align = TextAlign.Right,
+					FontsForScale = fontsmall,
+				}
+			);
+
+			y += Skin.CharacterLabelHeight;
+
+			AddChild(
+				new LabelWidget
+				{
+					Text = "AMR",
+					IsVisible = () => TooltipUnit != null,
+					Bounds = new Rectangle(x, y, width, Skin.CharacterLabelHeight),
+					Font = Skin.InGameUiFont
+				}
+			);
+
+			AddChild(
+				new LabelWidget
+				{
+					GetText = () =>
+					{
+						var armors = TooltipUnit.GetValidActor()?.TraitsImplementing<Armor>().Where(armor => armor.IsTraitEnabled()).ToArray();
+
+						return armors == null || armors.Length == 0 ? "-" : armors.First().ArmorType;
+					},
+					IsVisible = () => TooltipUnit != null,
+					Bounds = new Rectangle(valueX, y, valueWidth, Skin.CharacterLabelHeight),
+					Font = Skin.InGameUiFont,
+					Align = TextAlign.Right,
+					FontsForScale = fontsmall,
+				}
+			);
+
+			y += Skin.CharacterLabelHeight;
+
+			AddChild(
+				new LabelWidget
+				{
+					Text = "WPN",
+					IsVisible = () => TooltipUnit != null,
+					Bounds = new Rectangle(x, y, width, Skin.CharacterLabelHeight),
+					Font = Skin.InGameUiFont
+				}
+			);
+
+			AddChild(
+				new LabelWidget
+				{
+					GetText = () =>
+					{
+						var weapons = TooltipUnit.GetValidActor()?.TraitsImplementing<Armament>().Where(arm => arm.IsTraitEnabled() && arm.Info.ShowInActorInfo).ToArray();
+
+						return weapons == null || weapons.Length == 0 ? "-" : weapons.Length == 1 ? weapons.First().Info.Weapon : "-Multiple-";
+					},
+					IsVisible = () => TooltipUnit != null,
+					Bounds = new Rectangle(valueX, y, valueWidth, Skin.CharacterLabelHeight),
+					Font = Skin.InGameUiFont,
+					Align = TextAlign.Right,
+					FontsForScale = fontsmall,
+				}
+			);
+
+			y += Skin.CharacterLabelHeight;
+
+			AddChild(
+				new LabelWidget
+				{
+					Text = "LVL",
+					IsVisible = () => TooltipUnit != null,
+					Bounds = new Rectangle(x, y, width, Skin.CharacterLabelHeight),
+					Font = Skin.InGameUiFont
+				}
+			);
+
+			AddChild(
+				new LabelWidget
+				{
+					GetText = () =>
+					{
+						var gainsExperiences = TooltipUnit.GetValidActor()?.TraitsImplementing<GainsExperience>().Where(g => g.IsTraitEnabled()).ToArray();
+
+						return gainsExperiences == null || gainsExperiences.Length == 0 ? "-" : $"{gainsExperiences.First().Level}";
+					},
+					IsVisible = () => TooltipUnit != null,
+					Bounds = new Rectangle(valueX, y, valueWidth, Skin.CharacterLabelHeight),
+					Font = Skin.InGameUiFont,
+					Align = TextAlign.Right,
+					FontsForScale = fontsmall,
+				}
+			);
+
+			y += Skin.CharacterLabelHeight;
+
+			AddChild(
+				new LabelWidget
+				{
+					Text = "XP",
+					IsVisible = () => TooltipUnit != null,
+					Bounds = new Rectangle(x, y, width, Skin.CharacterLabelHeight),
+					Font = Skin.InGameUiFont
+				}
+			);
+
+			AddChild(
+				new LabelWidget
+				{
+					GetText = () =>
+					{
+						var gainsExperiences = TooltipUnit.GetValidActor()?.TraitsImplementing<GainsExperience>().Where(g => g.IsTraitEnabled()).ToArray();
+
+						return gainsExperiences == null || gainsExperiences.Length == 0 ? "-" : $"{gainsExperiences.First().Experience}";
+					},
+					IsVisible = () => TooltipUnit != null,
+					Bounds = new Rectangle(valueX, y, valueWidth, Skin.CharacterLabelHeight),
+					Font = Skin.InGameUiFont,
+					Align = TextAlign.Right,
+					FontsForScale = fontsmall,
+				}
+			);
 		}
 
 		public override string GetCursor(int2 pos) { return null; }

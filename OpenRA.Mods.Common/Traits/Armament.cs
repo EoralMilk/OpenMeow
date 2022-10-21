@@ -33,6 +33,9 @@ namespace OpenRA.Mods.Common.Traits
 	{
 		public readonly string Name = "primary";
 
+		[Desc("If this armament will show in actor info panel.")]
+		public readonly bool ShowInActorInfo = true;
+
 		public readonly int CalProjSpeed = 500;
 
 		[WeaponReference]

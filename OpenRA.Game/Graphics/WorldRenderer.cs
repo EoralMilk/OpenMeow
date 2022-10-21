@@ -61,11 +61,6 @@ namespace OpenRA.Graphics
 
 		readonly List<IRenderable> renderablesBuffer = new List<IRenderable>();
 
-		/// <summary>
-		/// for convert alpha renderable in order
-		/// </summary>
-		readonly List<IRenderable> renderablesTempBuffer = new List<IRenderable>();
-
 		internal WorldRenderer(ModData modData, World world)
 		{
 			World = world;
@@ -205,7 +200,7 @@ namespace OpenRA.Graphics
 
 			// Renderables must be ordered using a stable sorting algorithm to avoid flickering artefacts
 			// don't sort it now, we only need to sort the alpha renderable
-			foreach (var renderable in renderablesBuffer)
+			foreach (var renderable in renderablesBuffer.OrderBy(RenderableZPositionComparisonKey))
 			{
 				if (renderable is SpriteRenderable && (renderable as SpriteRenderable).Sprite.SpriteMeshType == SpriteMeshType.TileActor)
 					preparedMapAdditonRenderables.Add(renderable.PrepareRender(this));
@@ -214,21 +209,14 @@ namespace OpenRA.Graphics
 					if (renderable.BlendMode == BlendMode.None)
 						preparedNoneBlendRenderables.Add(renderable.PrepareRender(this));
 					else if (renderable.BlendMode == BlendMode.Alpha)
-						renderablesTempBuffer.Add(renderable); // add alpha renderable to sort
+						preparedRenderables.Add(renderable.PrepareRender(this)); // add alpha renderable to sort
 					else
 						preparedBlendRenderables.Add(renderable.PrepareRender(this));
 				}
 			}
 
-			// sort alpha rendable
-			foreach (var alphaRenderable in renderablesTempBuffer.OrderBy(RenderableZPositionComparisonKey))
-			{
-				preparedRenderables.Add(alphaRenderable.PrepareRender(this));
-			}
-
 			// PERF: Reuse collection to avoid allocations.
 			renderablesBuffer.Clear();
-			renderablesTempBuffer.Clear();
 		}
 
 		// PERF: Avoid LINQ.

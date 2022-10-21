@@ -25,6 +25,7 @@ namespace OpenRA.Mods.Common.Widgets
 		public TextAlign Align = TextAlign.Left;
 		public TextVAlign VAlign = TextVAlign.Middle;
 		public string Font = ChromeMetrics.Get<string>("TextFont");
+		public string[] FontsForScale = null;
 		public Color TextColor = ChromeMetrics.Get<Color>("TextColor");
 		public bool Contrast = ChromeMetrics.Get<bool>("TextContrast");
 		public bool Shadow = ChromeMetrics.Get<bool>("TextShadow");
@@ -52,6 +53,7 @@ namespace OpenRA.Mods.Common.Widgets
 			Align = other.Align;
 			VAlign = other.VAlign;
 			Font = other.Font;
+			FontsForScale = other.FontsForScale;
 			TextColor = other.TextColor;
 			Contrast = other.Contrast;
 			ContrastColorDark = other.ContrastColorDark;
@@ -75,6 +77,31 @@ namespace OpenRA.Mods.Common.Widgets
 				return;
 
 			var textSize = font.Measure(text);
+
+			if (textSize.X > Bounds.Width && FontsForScale != null && FontsForScale.Length > 0)
+			{
+				bool hasSuitableFont = false;
+				for (int i = 0; i < FontsForScale.Length; i++)
+				{
+					if (!Game.Renderer.Fonts.TryGetValue(FontsForScale[i], out var cfont))
+						throw new ArgumentException($"Requested font '{FontsForScale[i]}' was not found.");
+					var cSize = cfont.Measure(text);
+					if (Bounds.Width >= cSize.X)
+					{
+						textSize = cSize;
+						font = cfont;
+						hasSuitableFont = true;
+						break;
+					}
+				}
+
+				if (!hasSuitableFont)
+				{
+					font = Game.Renderer.Fonts[FontsForScale[FontsForScale.Length - 1]];
+					textSize = font.Measure(text);
+				}
+			}
+
 			var position = RenderOrigin;
 			var offset = font.TopOffset;
 

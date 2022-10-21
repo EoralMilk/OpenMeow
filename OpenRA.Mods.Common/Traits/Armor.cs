@@ -24,6 +24,8 @@ namespace OpenRA.Mods.Common.Traits
 
 	public class Armor : ConditionalTrait<ArmorInfo>
 	{
+		public string ArmorType => Info.Type;
+
 		public Armor(ArmorInfo info)
 			: base(info) { }
 	}

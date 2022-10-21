@@ -27,7 +27,8 @@ namespace OpenRA.Meow.RPG.Widgets
 			Bounds = new Rectangle(Skin.SpacingSmall, 0, ItemWidget.RowWidth, Skin.InventoryThumbnailSizeY);
 
 			AddChild(
-				new ThumbnailWidget(item, worldRenderer) { Bounds = new Rectangle(0, 0, Skin.InventoryThumbnailSizeX, Skin.InventoryThumbnailSizeY) }
+				new ThumbnailWidget(item, worldRenderer) {
+					Bounds = new Rectangle(0, 0, Skin.InventoryThumbnailSizeX, Skin.InventoryThumbnailSizeY) }
 			);
 
 			AddChild(
