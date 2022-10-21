@@ -113,6 +113,7 @@ namespace OpenRA.Meow.RPG.Widgets
 
 		readonly Player player;
 		readonly World world;
+		readonly ModData modData;
 
 		/// <summary>
 		/// Align the bottom, place it on the left and space it by padding
@@ -127,6 +128,7 @@ namespace OpenRA.Meow.RPG.Widgets
 		[ObjectCreator.UseCtor]
 		public ActorInfoWidget(ModData modData, World world, WorldRenderer worldRenderer)
 		{
+			this.modData = modData;
 			this.world = world;
 			this.worldRenderer = worldRenderer;
 			player = world.LocalPlayer;
@@ -141,21 +143,53 @@ namespace OpenRA.Meow.RPG.Widgets
 			currentInventory.Bounds = CalculateInventoryBounds();
 			AddChild(currentInventory);
 
+			var iconWidth = Bounds.Width * 5 / 10;
+			var iconHeight = 100;
+			var iconY = Skin.ActorNameHeight + 14;
+			var iconX = Bounds.Width - iconWidth;
+
+			AddChild(
+				new ActorInfoIconWidget(modData, world, worldRenderer)
+				{
+					Background = Background,
+					Logic = new string[] { "AddFactionSuffixLogic" },
+					IsVisible = () => TooltipUnit != null,
+					Bounds = new Rectangle(iconX, iconY, iconWidth, iconHeight),
+				}
+			);
+
 			var fontsmall = new string[] { Skin.InGameUiFontSmall, Skin.InGameUiFontLittle, Skin.InGameUiFontTiny };
 
-			var y = Skin.SpacingSmall + 62;
+			var y = 14;
 			var x = 14;
 			var valueX = x + 50;
 
-			var width = Bounds.Width - 28;
-			var valueWidth = width - 50;
+			var labelwidth = iconX - 12 - Skin.SpacingSmall;
+			var valueWidth = labelwidth - 50;
+
+			AddChild(
+				new LabelWidget
+				{
+					GetText = () =>
+					{
+						var name = TooltipUnit?.TooltipInfo.Name;
+
+						return name == null ? "-" : name;
+					},
+					IsVisible = () => TooltipUnit != null,
+					Bounds = new Rectangle(x, y, labelwidth, Skin.CharacterLabelHeight),
+					Font = Skin.InGameUiFont,
+				}
+			);
+
+			y += Skin.ActorNameHeight;
 
 			AddChild(
 				new LabelWidget
 				{
 					Text = "HP",
 					IsVisible = () => TooltipUnit != null,
-					Bounds = new Rectangle(x, y, width, Skin.CharacterLabelHeight),
+					Bounds = new Rectangle(x, y, labelwidth, Skin.CharacterLabelHeight),
 					Font = Skin.InGameUiFont,
 				}
 			);
@@ -167,7 +201,7 @@ namespace OpenRA.Meow.RPG.Widgets
 					{
 						var health = TooltipUnit.GetValidActor()?.TraitOrDefault<Health>();
 
-						return health == null ? "-" : $"{health.DisplayHP} / {health.MaxHP}";
+						return health == null ? "-" : $"{health.DisplayHP / Skin.ActorHealthDiv} / {health.MaxHP / Skin.ActorHealthDiv}";
 					},
 					IsVisible = () => TooltipUnit != null,
 					Bounds = new Rectangle(valueX, y, valueWidth, Skin.CharacterLabelHeight),
@@ -184,7 +218,7 @@ namespace OpenRA.Meow.RPG.Widgets
 				{
 					Text = "AMR",
 					IsVisible = () => TooltipUnit != null,
-					Bounds = new Rectangle(x, y, width, Skin.CharacterLabelHeight),
+					Bounds = new Rectangle(x, y, labelwidth, Skin.CharacterLabelHeight),
 					Font = Skin.InGameUiFont
 				}
 			);
@@ -211,9 +245,9 @@ namespace OpenRA.Meow.RPG.Widgets
 			AddChild(
 				new LabelWidget
 				{
-					Text = "WPN",
+					Text = "SPD",
 					IsVisible = () => TooltipUnit != null,
-					Bounds = new Rectangle(x, y, width, Skin.CharacterLabelHeight),
+					Bounds = new Rectangle(x, y, labelwidth, Skin.CharacterLabelHeight),
 					Font = Skin.InGameUiFont
 				}
 			);
@@ -223,9 +257,12 @@ namespace OpenRA.Meow.RPG.Widgets
 				{
 					GetText = () =>
 					{
-						var weapons = TooltipUnit.GetValidActor()?.TraitsImplementing<Armament>().Where(arm => arm.IsTraitEnabled() && arm.Info.ShowInActorInfo).ToArray();
+						var mbspeed = TooltipUnit.GetValidActor()?.TraitsImplementing<Mobile>().Where(mb => mb.IsTraitEnabled()).ToArray();
+						var airspeed = TooltipUnit.GetValidActor()?.TraitsImplementing<Aircraft>().Where(mb => mb.IsTraitEnabled()).ToArray();
 
-						return weapons == null || weapons.Length == 0 ? "-" : weapons.Length == 1 ? weapons.First().Info.Weapon : "-Multiple-";
+						return ((mbspeed == null || mbspeed.Length == 0) && (airspeed == null || airspeed.Length == 0)) ? "-" :
+									mbspeed != null && mbspeed.Length == 1 ? $"{mbspeed.First().Info.Speed}" :
+									airspeed != null && airspeed.Length == 1 ? $"{airspeed.First().Info.Speed}" : "-";
 					},
 					IsVisible = () => TooltipUnit != null,
 					Bounds = new Rectangle(valueX, y, valueWidth, Skin.CharacterLabelHeight),
@@ -242,7 +279,7 @@ namespace OpenRA.Meow.RPG.Widgets
 				{
 					Text = "LVL",
 					IsVisible = () => TooltipUnit != null,
-					Bounds = new Rectangle(x, y, width, Skin.CharacterLabelHeight),
+					Bounds = new Rectangle(x, y, labelwidth, Skin.CharacterLabelHeight),
 					Font = Skin.InGameUiFont
 				}
 			);
@@ -271,7 +308,7 @@ namespace OpenRA.Meow.RPG.Widgets
 				{
 					Text = "XP",
 					IsVisible = () => TooltipUnit != null,
-					Bounds = new Rectangle(x, y, width, Skin.CharacterLabelHeight),
+					Bounds = new Rectangle(x, y, labelwidth, Skin.CharacterLabelHeight),
 					Font = Skin.InGameUiFont
 				}
 			);

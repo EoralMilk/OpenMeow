@@ -32,9 +32,9 @@ namespace OpenRA.Meow.RPG.Widgets
 		public const int InGameUiWidth = 1280;
 		public const int InGameUiHeight = 200;
 		public const string InGameUiFont = "Ethnocentric.12";
-		public const string InGameUiFontSmall = "Ethnocentric.10";
-		public const string InGameUiFontLittle = "Ethnocentric.8";
-		public const string InGameUiFontTiny = "Ethnocentric.6";
+		public const string InGameUiFontSmall = "Ethnocentric.11";
+		public const string InGameUiFontLittle = "Ethnocentric.10";
+		public const string InGameUiFontTiny = "Ethnocentric.8";
 
 		public const int ScrollbarWidth = 10;
 		public const int ScrollbarBorderWidth = 1;
@@ -43,6 +43,7 @@ namespace OpenRA.Meow.RPG.Widgets
 
 		public const int ActorIconHeight = 48;
 		public const int ActorIconWidth = 64;
+		public const int ActorHealthDiv = 100;
 
 		public const int MinimapWidth = 180;
 
@@ -56,6 +57,8 @@ namespace OpenRA.Meow.RPG.Widgets
 		public const int CharacterWidth = 100;
 		public const int CharacterPreviewHeight = 110;
 		public const int CharacterLabelHeight = 14;
+
+		public const int ActorNameHeight = 20;
 
 		public const int ActionsWidth = 180;
 		public const int ActionsButtonSize = 50;

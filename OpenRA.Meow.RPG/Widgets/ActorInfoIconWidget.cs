@@ -20,11 +20,11 @@ namespace OpenRA.Meow.RPG.Widgets
 
 		readonly PaletteReference palette;
 
-		public int2 IconOffset = int2.Zero;
+		public int2 IconOffset = new int2(4,4);
 
-		public string Background = "dialog";
+		public string Background = "unitinfo";
 
-		public readonly string TooltipContainer;
+		public readonly string TooltipContainer = "TOOLTIP_CONTAINER";
 		public readonly string TooltipTemplate = "UNIT_INFO_TOOLTIP";
 
 		public readonly string ActorInfoTemplate = "UNIT_INFO";
@@ -85,9 +85,9 @@ namespace OpenRA.Meow.RPG.Widgets
 
 			if (icon != null && icon.Image != null)
 			{
-				WidgetUtils.DrawSprite(icon.Image,
+				WidgetUtils.DrawSpriteCentered(icon.Image,
 					actorInfoMainContainer.Value.TooltipUnit.Palette == null ? palette : actorInfoMainContainer.Value.TooltipUnit.Palette,
-					IconOffset + RenderBounds.Location);
+					RenderBounds.Location + new int2(RenderBounds.Width / 2, RenderBounds.Height / 2), 2f);
 			}
 
 			Game.Renderer.DisableAntialiasingFilter();
