@@ -1,15 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using OpenRA.GameRules;
 using OpenRA.Graphics;
 using OpenRA.Mods.Common.Graphics;
+using OpenRA.Mods.Common.Pathfinder;
 using OpenRA.Primitives;
 using OpenRA.Traits;
 using TrueSync;
 
 namespace OpenRA.Mods.Common.Traits.Trait3D
 {
-	public class BlendTreeHandlerInfo : TraitInfo, Requires<WithSkeletonInfo>
+	public class BlendTreeHandlerInfo : TraitInfo, Requires<WithSkeletonInfo>, IRulesetLoaded
 	{
 		public readonly string DirectionTurret = null;
 
@@ -35,6 +37,27 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 		public readonly int GuardBlendTick = 80;
 
 		public readonly string Carrying = null;
+		public readonly string LeftFootBone = "a-s-Rig_Foot.L";
+		public readonly string RightFootBone = "a-s-Rig_Foot.R";
+		public readonly int FootDownFrameLeft = 10;
+		public readonly int FootDownFrameRight = 22;
+
+		[WeaponReference]
+		[FieldLoader.Require]
+		[Desc("Has to be defined in weapons.yaml as well.")]
+		public readonly string WalkWeapon = null;
+		public WeaponInfo WalkWeaponInfo { get; private set; }
+		public void RulesetLoaded(Ruleset rules, ActorInfo ai)
+		{
+			if (WalkWeapon != null)
+			{
+				WeaponInfo weapon;
+
+				if (!rules.Weapons.TryGetValue(WalkWeapon.ToLowerInvariant(), out weapon))
+					throw new YamlException("Weapons Ruleset does not contain an entry '{0}'".F(WalkWeapon.ToLowerInvariant()));
+				WalkWeaponInfo = weapon;
+			}
+		}
 
 		public override object Create(ActorInitializer init) { return new BlendTreeHandler(init.Self, this); }
 	}
@@ -100,6 +123,18 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 
 		Carryable carryable;
 		Turreted turret;
+
+		IEnumerable<int> damageModifiers;
+
+		readonly int footLId, footRId;
+		int GetBoneId(string name)
+		{
+			var boneid = withSkeleton.GetBoneId(name);
+			if (boneid == -1)
+				throw new Exception("can't find bone " + name + " in skeleton.");
+			return boneid;
+		}
+
 		public BlendTreeHandler(Actor self, BlendTreeHandlerInfo info)
 		{
 			this.info = info;
@@ -112,6 +147,9 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 				throw new YamlException("BlendTreeHandler must define a SkeletonToUse for get animations");
 			withSkeleton = self.TraitsImplementing<WithSkeleton>().Single(w => w.Info.Name == info.SkeletonToUse);
 
+			footLId = GetBoneId(info.LeftFootBone);
+			footRId = GetBoneId(info.RightFootBone);
+
 			walk = withSkeleton.OrderedSkeleton.SkeletonAsset.GetSkeletalAnim(withSkeleton.Image, info.Walk);
 			guard = withSkeleton.OrderedSkeleton.SkeletonAsset.GetSkeletalAnim(withSkeleton.Image, info.Guard);
 			walkBack = withSkeleton.OrderedSkeleton.SkeletonAsset.GetSkeletalAnim(withSkeleton.Image, info.WalkBack);
@@ -120,11 +158,15 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 			forwardLeft = withSkeleton.OrderedSkeleton.SkeletonAsset.GetSkeletalAnim(withSkeleton.Image, info.ForwardLeft);
 			forwardRight = withSkeleton.OrderedSkeleton.SkeletonAsset.GetSkeletalAnim(withSkeleton.Image, info.ForwardRight);
 			strafeLeft = withSkeleton.OrderedSkeleton.SkeletonAsset.GetSkeletalAnim(withSkeleton.Image, info.StrafeLeft);
+
 			stand = withSkeleton.OrderedSkeleton.SkeletonAsset.GetSkeletalAnim(withSkeleton.Image, info.Stand);
+
 			strafeRight = withSkeleton.OrderedSkeleton.SkeletonAsset.GetSkeletalAnim(withSkeleton.Image, info.StrafeRight);
 			backward = withSkeleton.OrderedSkeleton.SkeletonAsset.GetSkeletalAnim(withSkeleton.Image, info.Backward);
 			backwardLeft = withSkeleton.OrderedSkeleton.SkeletonAsset.GetSkeletalAnim(withSkeleton.Image, info.BackwardLeft);
 			backwardRight = withSkeleton.OrderedSkeleton.SkeletonAsset.GetSkeletalAnim(withSkeleton.Image, info.BackwardRight);
+
+
 
 			carrying = withSkeleton.OrderedSkeleton.SkeletonAsset.GetSkeletalAnim(withSkeleton.Image, info.Carrying);
 
@@ -150,14 +192,38 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 			idleUpperAnim = new AnimationNode("idle", 15, blendTree, uppermask, stand);
 
 			forwardLeftAnim = new AnimationNode("FL", 11, blendTree, allvalidmask, forwardLeft);
+			forwardLeftAnim.AddFrameAction(7, FootDownImpactLeft);
+			forwardLeftAnim.AddFrameAction(20, FootDownImpactRight);
+
 			forwardAnim = new AnimationNode("F", 12, blendTree, allvalidmask, forward);
+			//forwardAnim.AddFrameAction(info.FootDownFrameLeft, FootDownImpactLeft);
+			//forwardAnim.AddFrameAction(info.FootDownFrameRight, FootDownImpactRight);
+
 			forwardRightAnim = new AnimationNode("FR", 13, blendTree, allvalidmask, forwardRight);
+			//forwardRightAnim.AddFrameAction(info.FootDownFrameLeft, FootDownImpactLeft);
+			//forwardRightAnim.AddFrameAction(info.FootDownFrameRight, FootDownImpactRight);
+
 			strafeLeftAnim = new AnimationNode("L", 14, blendTree, allvalidmask, strafeLeft);
+			//strafeLeftAnim.AddFrameAction(9, FootDownImpactLeft);
+			//strafeLeftAnim.AddFrameAction(21, FootDownImpactRight);
+
 			standAnim = new AnimationNode("M", 15, blendTree, allvalidmask, stand);
+
 			strafeRightAnim = new AnimationNode("R", 16, blendTree, allvalidmask, strafeRight);
+			//strafeRightAnim.AddFrameAction(6, FootDownImpactLeft);
+			//strafeRightAnim.AddFrameAction(20, FootDownImpactRight);
+
 			backwardLeftAnim = new AnimationNode("BL", 17, blendTree, allvalidmask, backwardLeft);
+			//backwardLeftAnim.AddFrameAction(6, FootDownImpactLeft);
+			//backwardLeftAnim.AddFrameAction(19, FootDownImpactRight);
+
 			backwardAnim = new AnimationNode("B", 18, blendTree, allvalidmask, backward);
+			//backwardAnim.AddFrameAction(6, FootDownImpactLeft);
+			//backwardAnim.AddFrameAction(19, FootDownImpactRight);
+
 			backwardRightAnim = new AnimationNode("BR", 19, blendTree, allvalidmask, backwardRight);
+			//backwardRightAnim.AddFrameAction(6, FootDownImpactLeft);
+			//backwardRightAnim.AddFrameAction(19, FootDownImpactRight);
 
 			overide = new AnimationNode("Carrying", 55, blendTree, allvalidmask, carrying);
 
@@ -188,6 +254,7 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 				turret = self.TraitsImplementing<Turreted>().FirstOrDefault(t => t.Name == info.DirectionTurret);
 			}
 
+			damageModifiers = self.TraitsImplementing<IFirepowerModifier>().ToArray().Select(m => m.GetFirepowerModifier());
 			carryable = self.TraitOrDefault<Carryable>();
 		}
 
@@ -205,6 +272,46 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 		{
 			//Console.WriteLine(turret?.WorldOrientation ?? myFacing.Orientation);
 			return turret?.WorldOrientation ?? myFacing.Orientation;
+		}
+
+		public void FootDownImpactLeft()
+		{
+			if (locomotion.BlendPos.LengthSquared() <= FP.Zero)
+				return;
+			WalkImpactAtBone(footLId);
+		}
+
+		public void FootDownImpactRight()
+		{
+			if (locomotion.BlendPos.LengthSquared() <= FP.Zero)
+				return;
+			WalkImpactAtBone(footRId);
+		}
+
+		public void WalkImpactAtBone(int boneId)
+		{
+			var pos = withSkeleton.GetWPosFromBoneId(boneId);
+			var h = self.World.Map.HeightOfTerrain(pos);
+			if (pos.Z > h + 256)
+			{
+				return;
+			}
+
+			pos = new WPos(pos.X, pos.Y, h);
+
+			if (info.WalkWeaponInfo != null)
+			{
+				var warheadArgs = new WarheadArgs()
+				{
+					Weapon = info.WalkWeaponInfo,
+					DamageModifiers = damageModifiers.ToArray(),
+					ImpactPosition = pos,
+					Source = self.CenterPosition,
+					SourceActor = self,
+					WeaponTarget = Target.FromPos(pos)
+				};
+				info.WalkWeaponInfo.Impact(warheadArgs.WeaponTarget, warheadArgs);
+			}
 		}
 
 		FP guardBlendSpeed;

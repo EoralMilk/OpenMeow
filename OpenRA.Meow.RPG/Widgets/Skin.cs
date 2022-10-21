@@ -44,6 +44,8 @@ namespace OpenRA.Meow.RPG.Widgets
 		public const int ActorIconHeight = 48;
 		public const int ActorIconWidth = 64;
 		public const int ActorHealthDiv = 100;
+		public const int ActorExpDiv = 100;
+
 
 		public const int MinimapWidth = 180;
 

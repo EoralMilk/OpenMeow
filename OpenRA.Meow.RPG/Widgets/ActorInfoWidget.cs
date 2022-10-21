@@ -177,8 +177,9 @@ namespace OpenRA.Meow.RPG.Widgets
 						return name == null ? "-" : name;
 					},
 					IsVisible = () => TooltipUnit != null,
-					Bounds = new Rectangle(x, y, labelwidth, Skin.CharacterLabelHeight),
+					Bounds = new Rectangle(x, y, labelwidth + iconWidth, Skin.CharacterLabelHeight),
 					Font = Skin.InGameUiFont,
+					FontsForScale = fontsmall,
 				}
 			);
 
@@ -277,6 +278,43 @@ namespace OpenRA.Meow.RPG.Widgets
 			AddChild(
 				new LabelWidget
 				{
+					Text = "FOV",
+					IsVisible = () => TooltipUnit != null,
+					Bounds = new Rectangle(x, y, labelwidth, Skin.CharacterLabelHeight),
+					Font = Skin.InGameUiFont
+				}
+			);
+
+			AddChild(
+				new LabelWidget
+				{
+					GetText = () =>
+					{
+						var range = 0;
+						var sights = TooltipUnit.GetValidActor()?.TraitsImplementing<RevealsShroud>().Where(s => s.IsTraitEnabled()).ToArray();
+
+						if (sights != null && sights.Length > 0)
+							foreach (var s in sights)
+							{
+								if (range < s.Range.Length)
+									range = s.Range.Length;
+							}
+
+						return range == 0 ? "-" : $"{(float)range / 1024}";
+					},
+					IsVisible = () => TooltipUnit != null,
+					Bounds = new Rectangle(valueX, y, valueWidth, Skin.CharacterLabelHeight),
+					Font = Skin.InGameUiFont,
+					Align = TextAlign.Right,
+					FontsForScale = fontsmall,
+				}
+			);
+
+			y += Skin.CharacterLabelHeight;
+
+			AddChild(
+				new LabelWidget
+				{
 					Text = "LVL",
 					IsVisible = () => TooltipUnit != null,
 					Bounds = new Rectangle(x, y, labelwidth, Skin.CharacterLabelHeight),
@@ -320,7 +358,7 @@ namespace OpenRA.Meow.RPG.Widgets
 					{
 						var gainsExperiences = TooltipUnit.GetValidActor()?.TraitsImplementing<GainsExperience>().Where(g => g.IsTraitEnabled()).ToArray();
 
-						return gainsExperiences == null || gainsExperiences.Length == 0 ? "-" : $"{gainsExperiences.First().Experience}";
+						return gainsExperiences == null || gainsExperiences.Length == 0 ? "-" : $"{gainsExperiences.First().Experience / Skin.ActorExpDiv}";
 					},
 					IsVisible = () => TooltipUnit != null,
 					Bounds = new Rectangle(valueX, y, valueWidth, Skin.CharacterLabelHeight),

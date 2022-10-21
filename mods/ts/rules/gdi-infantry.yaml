@@ -334,7 +334,7 @@ GHOST:
 	Cloak@EXTERNALCLOAK:
 		CloakedCondition: bettercloak
 	Cloak@personalskill:
-		RequiresCondition: !bettercloak
+		RequiresCondition: !WebDisable && !bettercloak
 		InitialDelay: 40
 		CloakDelay: 40
 		IsPlayerPalette: true

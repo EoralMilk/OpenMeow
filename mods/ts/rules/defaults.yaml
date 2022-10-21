@@ -144,7 +144,7 @@
 
 ^Cloakable:
 	Cloak@EXTERNALCLOAK:
-		RequiresCondition: cloakgenerator || crate-cloak
+		RequiresCondition: cloakgenerator || crate-cloak && !WebDisable
 		InitialDelay: 0
 		CloakDelay: 90
 		IsPlayerPalette: true
