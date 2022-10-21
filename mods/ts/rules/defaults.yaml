@@ -166,10 +166,12 @@
 		RequiresCondition: !stance-attackanything
 		ValidTargets: Infantry, Vehicle, Creep, Water, Defense
 		InvalidTargets: NoAutoTarget
+		ValidRelationships: Enemy
 	AutoTargetPriority@ATTACKANYTHING:
 		RequiresCondition: stance-attackanything
 		ValidTargets: Infantry, Vehicle, Creep, Water, Building, Defense
 		InvalidTargets: NoAutoTarget
+		ValidRelationships: Enemy
 
 ^AutoTargetGroundAssaultMove:
 	Inherits: ^AutoTargetGround
@@ -187,6 +189,7 @@
 	AutoTargetPriority@DEFAULT:
 		ValidTargets: Air
 		InvalidTargets: NoAutoTarget
+		ValidRelationships: Enemy
 
 ^AutoTargetAll:
 	AutoTarget:
@@ -197,10 +200,12 @@
 		RequiresCondition: !stance-attackanything
 		ValidTargets: Infantry, Vehicle, Creep, Water, Air, Defense
 		InvalidTargets: NoAutoTarget
+		ValidRelationships: Enemy
 	AutoTargetPriority@ATTACKANYTHING:
 		RequiresCondition: stance-attackanything
 		ValidTargets: Infantry, Vehicle, Creep, Water, Air, Building, Defense
 		InvalidTargets: NoAutoTarget
+		ValidRelationships: Enemy
 
 ^AutoTargetAllAssaultMove:
 	Inherits: ^AutoTargetAll
@@ -220,6 +225,7 @@
 	AutoTargetPriority@DEFAULT:
 		ValidTargets: Repair
 		InvalidTargets: NoRepair
+		ValidRelationships: Ally
 
 ^AutoTargetHeal:
 	AutoTarget:
@@ -229,6 +235,7 @@
 		InitialStance: AttackAnything
 	AutoTargetPriority@DEFAULT:
 		ValidTargets: Heal
+		ValidRelationships: Ally
 
 ^PlayerHandicaps:
 	HandicapFirepowerMultiplier:
