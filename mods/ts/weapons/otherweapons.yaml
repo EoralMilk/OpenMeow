@@ -198,10 +198,6 @@ Bomb:
 	Warhead@4Smu: LeaveSmudge
 		SmudgeType: MediumCrater
 		InvalidTargets: Vehicle, Building, Wall
-	Warhead@5Res: DestroyResource
-		Size: 1
-		ResourceAmount: 4
-		ResourceTypes: Tiberium, BlueTiberium
 
 
 A10Napalm:

@@ -61,9 +61,6 @@
 	Warhead@4Smu: LeaveSmudge
 		SmudgeType: MediumCrater
 		InvalidTargets: Vehicle, Building, Wall
-	Warhead@5Res: DestroyResource
-		ResourceAmount: 1
-		ResourceTypes: Tiberium, BlueTiberium
 
 90mm:
 	Inherits: ^Cannon
@@ -98,8 +95,6 @@
 		TrailSequences: idle2
 	Warhead@1Dam: SpreadDamage
 		Damage: 10500
-	Warhead@5Res: DestroyResource
-		ResourceAmount: 2
 
 120mmx:
 	Inherits: ^Cannon
@@ -143,8 +138,6 @@ RPGTower:
 		DamageTypes: Prone50Percent, TriggerProne, SmallExplosionDeath
 	Warhead@2Eff: CreateEffect
 		Explosions: large_clsn
-	Warhead@5Res: DestroyResource
-		ResourceAmount: 3
 
 TitanRPG:
 	Inherits: RPGTower
@@ -195,9 +188,6 @@ TitanRPG:
 		ImpactSounds: expnew06.aud
 	Warhead@4Smu: LeaveSmudge
 		SmudgeType: LargeCrater
-	Warhead@5Res: DestroyResource
-		Size: 1
-		ResourceAmount: 3
 
 155mmDeployCheck:
 	Inherits: ^ArtilleryDeployCheck
@@ -273,7 +263,6 @@ Grenade:
 		Explosions: small_grey_explosion
 		ImpactSounds: expnew13.aud
 		ValidTargets: Ground, Trees, Air
-	-Warhead@5Res:
 
 GrenadeBounce:
 	Warhead@waterbounce: CreateEffect
