@@ -70,7 +70,10 @@ namespace OpenRA.Meow.RPG.Widgets
 			if (OtherInventoryActor == null)
 				return;
 
-			world.IssueOrder(new Order("TryAddItem", OtherInventoryActor, Target.FromActor(item.ItemActor), false));
+			world.IssueOrder(new Order("TryAddItem", OtherInventoryActor, false)
+			{
+				ExtraData = item.ItemActor.ActorID,
+			});
 		}
 
 		public void TryEquip(Item item)

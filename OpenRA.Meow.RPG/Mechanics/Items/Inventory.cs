@@ -72,6 +72,7 @@ namespace OpenRA.Meow.RPG.Mechanics
 				foreach (var name in Info.InitItems)
 				{
 					var a = self.World.CreateActor(false, name, new TypeDictionary());
+					ItemCache.GameItemActors.Add(a.ActorID, a);
 					var item = a.TraitOrDefault<Item>();
 					if (item != null)
 						TryAdd(self, item);
@@ -139,11 +140,12 @@ namespace OpenRA.Meow.RPG.Mechanics
 		{
 			if (order.OrderString == "TryAddItem")
 			{
-				if (order.Target.Actor == null || order.Target.Actor.IsDead)
-					return;
-				var item = order.Target.Actor.TraitOrDefault<Item>();
+				var itemactor = ItemCache.GameItemActors[order.ExtraData];// self.World.GetActorById(order.ExtraData);
+				if (itemactor == null)
+					throw new Exception(order.ExtraData + " is null item actor");
+				var item = itemactor.TraitOrDefault<Item>();
 				if (item == null)
-					throw new Exception(order.Target.Actor.Info + " is not an Item Actor");
+					throw new Exception(itemactor.Info.Name + " is not an Item Actor");
 
 				TryAdd(self, item);
 			}
