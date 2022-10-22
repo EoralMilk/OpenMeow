@@ -766,6 +766,12 @@ namespace OpenRA.Mods.Common.Traits
 		None,
 
 		/// <summary>
+		/// Actors on the map are ignored, as if they were not present.
+		/// An actor can only be blocked by impassable terrain and buildings.
+		/// </summary>
+		Static,
+
+		/// <summary>
 		/// Actors on the map that are moving, or moveable &amp; allied are ignored.
 		/// An actor is Immovable is any of the following applies:
 		/// <list type="bullet">

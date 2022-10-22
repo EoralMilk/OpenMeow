@@ -30,6 +30,8 @@ namespace OpenRA.Mods.Common.Traits
 		[Desc("Which Locomotor does this trait use. Must be defined on the World actor.")]
 		public readonly string Locomotor = null;
 
+		public readonly BlockedByActor BlockedBy = BlockedByActor.All;
+
 		public readonly WAngle InitialFacing = WAngle.Zero;
 
 		[Desc("Speed at which the actor turns.")]
@@ -133,7 +135,7 @@ namespace OpenRA.Mods.Common.Traits
 			if (locomotor.MovementCostForCell(cell) == PathGraph.MovementCostForUnreachableCell)
 				return false;
 
-			return locomotor.CanMoveFreelyInto(self, cell, subCell, check, ignoreActor);
+			return locomotor.CanMoveFreelyInto(self, cell, subCell, check > BlockedBy ? BlockedBy : check, ignoreActor);
 		}
 
 		public bool CanStayInCell(World world, CPos cell)
@@ -563,7 +565,7 @@ namespace OpenRA.Mods.Common.Traits
 
 		public SubCell GetAvailableSubCell(CPos a, SubCell preferredSubCell = SubCell.Any, Actor ignoreActor = null, BlockedByActor check = BlockedByActor.All)
 		{
-			return Locomotor.GetAvailableSubCell(self, a, check, preferredSubCell, ignoreActor);
+			return Locomotor.GetAvailableSubCell(self, a, check > Info.BlockedBy ? Info.BlockedBy : check, preferredSubCell, ignoreActor);
 		}
 
 		public bool CanExistInCell(CPos cell)
@@ -573,7 +575,7 @@ namespace OpenRA.Mods.Common.Traits
 
 		public bool CanEnterCell(CPos cell, Actor ignoreActor = null, BlockedByActor check = BlockedByActor.All)
 		{
-			return Info.CanEnterCell(self.World, self, cell, ToSubCell, ignoreActor, check);
+			return Info.CanEnterCell(self.World, self, cell, ToSubCell, ignoreActor, check > Info.BlockedBy ? Info.BlockedBy : check);
 		}
 
 		public bool CanStayInCell(CPos cell)

@@ -368,7 +368,7 @@ HMEC:
 	Mobile:
 		TurnSpeed: 12
 		Speed: 42
-		Locomotor: superwalker
+		Locomotor: heavywalker
 	Health:
 		HP: 100000
 	ChangesHealth:

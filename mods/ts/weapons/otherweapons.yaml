@@ -529,14 +529,14 @@ WalkImpact:
 		DamageTypes: TriggerProne, CrushedDeath
 		ValidTargets: Infantry, Crushable
 	Warhead@1Dam: Spread3DDamage
-		Damage: 1000
+		Damage: 10000
 		Spread: 0c330
 		Versus:
-			None: 100
-			Wood: 35
+			None: 10
+			Wood: 5
 			Light: 100
 			Heavy: 75
-			Concrete: 5
+			Concrete: 2
 		DamageTypes: TriggerProne, CrushedDeath
 		ValidTargets: Ground, Water, Air, Trees
 	Warhead@2Eff: CreateEffect

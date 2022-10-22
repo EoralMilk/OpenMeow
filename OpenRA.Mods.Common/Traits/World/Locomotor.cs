@@ -319,6 +319,9 @@ namespace OpenRA.Mods.Common.Traits
 			if (otherActor == ignoreActor)
 				return false;
 
+			if (check <= BlockedByActor.Static)
+				return false;
+
 			// If the check allows: We are not blocked by units that we can force to move out of the way.
 			if (check <= BlockedByActor.Immovable && cellFlag.HasCellFlag(CellFlag.HasMovableActor) &&
 				actor.Owner.RelationshipWith(otherActor.Owner) == PlayerRelationship.Ally)

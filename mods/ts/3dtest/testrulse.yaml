@@ -83,7 +83,8 @@ RUTEST:
 	Mobile:
 		TurnSpeed: 66
 		Speed: 100
-		Locomotor: superwalker
+		Locomotor: walker
+		BlockedBy: Static
 		# AlwaysTurnInPlace: true
 		# CanMoveBackward: true
 	AutoCrusher:
