@@ -6,6 +6,8 @@ namespace OpenRA.Mods.Common.Traits
 {
 	class AutoCrusherInfo : PausableConditionalTraitInfo
 	{
+		public readonly PlayerRelationship TargetRelationships = PlayerRelationship.Enemy;
+
 		[Desc("Maximum scan range for AutoCrusher.")]
 		public readonly WDist ScanRadius = WDist.FromCells(5);
 
@@ -50,10 +52,13 @@ namespace OpenRA.Mods.Common.Traits
 
 			foreach (var a in actors)
 			{
-				if (a.TraitsImplementing<ICrushable>().Any(c => c.CrushableBy(a, self, crushes)))
+				if (Info.TargetRelationships.HasRelationship(self.Owner.RelationshipWith(a.Owner)))
 				{
-					move.ResolveOrder(self, new Order("Move", self, Target.FromCell(self.World, a.Location), false));
-					break;
+					if (a.TraitsImplementing<ICrushable>().Any(c => c.CrushableBy(a, self, crushes)))
+					{
+						move.ResolveOrder(self, new Order("Move", self, Target.FromCell(self.World, a.Location), false));
+						break;
+					}
 				}
 			}
 

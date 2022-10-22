@@ -61,6 +61,8 @@ doggie:
 		Length: 1
 		Start: 0
 		ShadowStart: 0
+	testdisplay:
+		Start: 3
 
 vissml:
 	idle:

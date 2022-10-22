@@ -156,6 +156,10 @@ MUTANT:
 		DefaultAttackSequence: attack
 	ProducibleWithLevel:
 		Prerequisites: barracks.upgraded
+	UnitDisplayInfo:
+		IconSequence: testdisplay
+		IconPalette: player
+		IconPaletteIsPlayerPalette: true
 
 MWMN:
 	Inherits: ^Soldier
@@ -192,6 +196,10 @@ MWMN:
 		DefaultAttackSequence: attack
 	ProducibleWithLevel:
 		Prerequisites: barracks.upgraded
+	UnitDisplayInfo:
+		IconSequence: testdisplay
+		IconPalette: player
+		IconPaletteIsPlayerPalette: true
 
 MUTANT3:
 	Inherits: ^Soldier
@@ -234,6 +242,10 @@ MUTANT3:
 		SplitAttackPalette: bright
 	ProducibleWithLevel:
 		Prerequisites: barracks.upgraded
+	UnitDisplayInfo:
+		IconSequence: testdisplay
+		IconPalette: player
+		IconPaletteIsPlayerPalette: true
 
 TRATOS:
 	Inherits: ^Soldier
@@ -250,6 +262,10 @@ TRATOS:
 		HP: 20000
 	Mobile:
 		Speed: 71
+	UnitDisplayInfo:
+		IconSequence: testdisplay
+		IconPalette: player
+		IconPaletteIsPlayerPalette: true
 
 OXANNA:
 	Inherits: ^Soldier
@@ -284,6 +300,10 @@ OXANNA:
 		Weapon: OxannaGun
 		UseBlindage: true
 		RequiresCondition: !WebDisable && !inside-tunnel
+	UnitDisplayInfo:
+		IconSequence: testdisplay
+		IconPalette: player
+		IconPaletteIsPlayerPalette: true
 
 SLAV:
 	Inherits: ^Soldier
@@ -317,6 +337,10 @@ SLAV:
 		Weapon: SlavickGun
 		UseBlindage: true
 		RequiresCondition: !WebDisable && !inside-tunnel
+	UnitDisplayInfo:
+		IconSequence: testdisplay
+		IconPalette: player
+		IconPaletteIsPlayerPalette: true
 
 CIV1:
 	Inherits: ^CivilianInfantry

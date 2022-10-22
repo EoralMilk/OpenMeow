@@ -67,6 +67,14 @@ DOGGIE:
 		Sequence: hide
 	WithInfantryBody:
 		RequiresCondition: !hidingplace
+	UnitDisplayInfo:
+		IconSequence: testdisplay
+		IconPalette: player
+		IconPaletteIsPlayerPalette: true
+	Crushable:
+		CrushClasses: bigguy
+	Targetable@Crushable:
+		TargetTypes: Crushable
 
 VISC_SML:
 	Inherits: ^Visceroid
@@ -85,10 +93,11 @@ VISC_SML:
 	Mobile:
 		Locomotor: smallvisc
 	Crushable:
-		CrushClasses: visceroid-fusing
+		CrushClasses: visceroid-fusing, infantry
 		WarnProbability: 0
 		CrushedByFriendlies: True
 	AutoCrusher:
+		TargetRelationships: Enemy, Neutral, Ally
 	TransformCrusherOnCrush:
 		IntoActor: visc_lrg
 		CrushClasses: visceroid-fusing
@@ -96,6 +105,12 @@ VISC_SML:
 		DeathTypes: TiberiumDeath, BulletDeath, SmallExplosionDeath, ExplosionDeath, EnergyDeath, FireDeath
 	Explodes@LeaveTib:
 		DeathTypes: TiberiumDeath, BulletDeath, SmallExplosionDeath, ExplosionDeath, EnergyDeath, FireDeath
+	UnitDisplayInfo:
+		IconSequence: idle
+		IconPalette: player
+		IconPaletteIsPlayerPalette: true
+	Targetable@Crushable:
+		TargetTypes: Crushable
 
 VISC_LRG:
 	Inherits: ^Visceroid
@@ -137,6 +152,12 @@ VISC_LRG:
 		DamageCooldown: 0
 		StartIfBelow: 100
 		OneTimeTrigger: True
+	UnitDisplayInfo:
+		IconSequence: idle
+		IconPalette: player
+		IconPaletteIsPlayerPalette: true
+	Targetable@Crushable:
+		TargetTypes: Crushable
 
 JFISH:
 	Inherits: ^Visceroid
@@ -193,4 +214,9 @@ JFISH:
 		Weapon: FloaterSpray
 		Chance: 70
 		Interval: 100
+	UnitDisplayInfo:
+		IconSequence: idle
+		IconPalette: player
+		IconPaletteIsPlayerPalette: true
+	-Crushable:
 

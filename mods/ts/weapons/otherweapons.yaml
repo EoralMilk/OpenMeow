@@ -518,15 +518,16 @@ WalkImpact:
 	ValidTargets: Ground, Water, Air, Trees
 	Warhead@inf: Spread3DDamage
 		Damage: 10000
-		Spread: 0c330
+		Spread: 0c240
+		Falloff: 100, 100, 1
 		Versus:
 			None: 1000
 			Wood: 35
-			Light: 500
+			Light: 800
 			Heavy: 75
 			Concrete: 5
 		DamageTypes: TriggerProne, CrushedDeath
-		ValidTargets: Infantry
+		ValidTargets: Infantry, Crushable
 	Warhead@1Dam: Spread3DDamage
 		Damage: 1000
 		Spread: 0c330
@@ -541,5 +542,6 @@ WalkImpact:
 	Warhead@2Eff: CreateEffect
 		Image: cloud
 		Explosions: cloud1, cloud2
+		ExplosionPalette: effectdust
 		ImpactSounds: expnew13.aud
 		ImpactActors: false

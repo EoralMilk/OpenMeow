@@ -46,6 +46,7 @@ E1R3:
 		Name: Elite Light Infantry
 	RenderSprites:
 		Image: e1.gdi
+		-FactionImages:
 	ProducibleWithLevel:
 		Prerequisites: techlevel.low
 		InitialLevels: 3

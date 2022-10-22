@@ -20,6 +20,10 @@ BGGY:
 		Speed: 142
 		CanMoveBackward: true
 		BackwardFacingTolerance: 384
+	Crushable:
+		CrushClasses: bigguy
+	Targetable@Crushable:
+		TargetTypes: Crushable
 	Health:
 		HP: 22000
 	Armor:
@@ -65,6 +69,10 @@ BIKE:
 	Mobile:
 		TurnSpeed: 40
 		Speed: 170
+	Crushable:
+		CrushClasses: bigguy
+	Targetable@Crushable:
+		TargetTypes: Crushable
 	Health:
 		HP: 15000
 	Armor:

@@ -61,7 +61,7 @@
 	RenderMeshes:
 		Image: rumya
 		ZOffset: 15
-		Scale: 5
+		Scale: 7
 	AttachManager:
 	# AttachPoint@first:
 	# 	BoneAttach: a-s-Rig_Hand.R
@@ -83,9 +83,11 @@ RUTEST:
 	Mobile:
 		TurnSpeed: 66
 		Speed: 100
-		Locomotor: heavywalker
+		Locomotor: superwalker
 		# AlwaysTurnInPlace: true
 		# CanMoveBackward: true
+	AutoCrusher:
+		TargetRelationships: Enemy
 	Health:
 		HP: 120000
 	Armor:
@@ -102,6 +104,8 @@ RUTEST:
 		QuantizedFacings: 0
 	RenderSprites:
 		Image: vehicle
+	-SpeedMultiplier@DAMAGED:
+	-SpeedMultiplier@CRITICAL:
 
 RUTEST2:
 	Inherits: RUTEST
@@ -166,9 +170,11 @@ RUTEST2:
 	# 	FromBonePose: firepose
 	# 	FacingTolerance: 40
 	# 	Turret: turret2
-	Armament:
+	AttachedArmament@laser:
 		Weapon: LaserChainGun
 		Turret: primary
+		SkeletonToUse: body
+		FromBonePose: a-s-Rig_Hand.L
 		LocalOffset: 768,0,1324
 	BlendTreeHandler:
 		DirectionTurret: primary

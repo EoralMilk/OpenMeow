@@ -158,6 +158,10 @@ SMECH:
 		Locomotor: walker
 		AlwaysTurnInPlace: true
 		TerrainOrientationAdjustmentMargin: -1
+	Crushable:
+		CrushClasses: bigguy
+	Targetable@Crushable:
+		TargetTypes: Crushable
 	Health:
 		HP: 17500
 	Armor:
@@ -364,7 +368,7 @@ HMEC:
 	Mobile:
 		TurnSpeed: 12
 		Speed: 42
-		Locomotor: heavywalker
+		Locomotor: superwalker
 	Health:
 		HP: 100000
 	ChangesHealth:

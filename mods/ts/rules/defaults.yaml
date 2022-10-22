@@ -875,6 +875,8 @@
 	SpawnActorOnDeath@FLAMEGUY:
 		Actor: FLAMEGUY
 		DeathType: FireDeath
+	Targetable@Crushable:
+		TargetTypes: Crushable
 
 ^Soldier:
 	Inherits@1: ^Infantry
@@ -909,6 +911,10 @@
 		Weapon: CyborgExplode
 		DamageState: Critical
 		TriggerOnlyOnce: true
+	Crushable:
+		CrushClasses: bigguy
+	Targetable@Crushable:
+		TargetTypes: Crushable
 	Explodes:
 		Weapon: CyborgExplode
 		EmptyWeapon: CyborgExplode
@@ -967,6 +973,10 @@
 		MaxMoveDelay: 750
 	MapEditorData:
 		Categories: Civilian infantry
+	UnitDisplayInfo:
+		IconSequence: testdisplay
+		IconPalette: player
+		IconPaletteIsPlayerPalette: true
 
 ^Vehicle:
 	Inherits@2: ^ExistsInWorld
@@ -1064,10 +1074,10 @@
 		Offset: -220, 140, 320
 	SpeedMultiplier@DAMAGED:
 		RequiresCondition: damaged-state
-		Modifier: 80
+		Modifier: 90
 	SpeedMultiplier@CRITICAL:
 		RequiresCondition: critical-state
-		Modifier: 60
+		Modifier: 80
 	Carryable:
 		RequiresCondition: !inside-tunnel
 		LockedCondition: carried
@@ -1142,11 +1152,17 @@
 		MaxHeightDelta: 1100
 	Armor:
 		Type: Light
+	Crushable:
+		CrushClasses: bigguy
+	Targetable@Crushable:
+		TargetTypes: Crushable
 
 ^CivilianVoxelCrusher:
 	Inherits: ^CivilianVoxelVehicle
 	Mobile:
 		Locomotor: heavywheeled
+	-Crushable:
+	-Targetable@Crushable:
 
 ^Aircraft:
 	Inherits@2: ^ExistsInWorld
@@ -1372,6 +1388,8 @@
 	Explodes:
 		Weapon: VisceroidExplode
 		EmptyWeapon: VisceroidExplode
+	Crushable:
+		CrushClasses: bigguy
 
 ^BlossomTree:
 	Inherits@1: ^SpriteActor
@@ -1466,6 +1484,10 @@
 		StartIfBelow: 101
 		Step: -50
 		RequiresCondition: small-fire || large-fire || burning
+	Crushable:
+		CrushClasses: bigguy
+	Targetable@Crushable:
+		TargetTypes: Crushable
 
 ^Rock:
 	Inherits@1: ^SpriteActor

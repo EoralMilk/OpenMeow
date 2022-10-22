@@ -37,6 +37,7 @@ namespace OpenRA.Meow.RPG.Widgets
 
 		readonly Player player;
 		readonly World world;
+		BasicUnitInfo tooltipUnit;
 
 		[ObjectCreator.UseCtor]
 		public ActorInfoIconWidget(ModData modData, World world, WorldRenderer worldRenderer)
@@ -63,14 +64,19 @@ namespace OpenRA.Meow.RPG.Widgets
 		{
 			if (actorInfoMainContainer.Value.TooltipUnit == null)
 				icon = null;
-			else
-				icon = actorInfoMainContainer.Value.TooltipUnit.GetDisplayIcon(worldRenderer);
+			else if (icon == null || actorInfoMainContainer.Value.TooltipUnit != tooltipUnit)
+			{
+				tooltipUnit = actorInfoMainContainer.Value.TooltipUnit;
+				icon = tooltipUnit.GetDisplayIcon(worldRenderer);
+			}
 
 			if (icon == null)
 			{
 				icon = new Animation(worldRenderer.World, DefaultIconImage);
-				icon.Play(DefaultIconSequence);
+				icon.PlayRepeating(DefaultIconSequence);
 			}
+
+			icon.Tick();
 		}
 
 		public override void Draw()
@@ -85,9 +91,10 @@ namespace OpenRA.Meow.RPG.Widgets
 
 			if (icon != null && icon.Image != null)
 			{
+				var maxScale = Math.Min((float)RenderBounds.Width / icon.Image.Bounds.Width, (float)RenderBounds.Height / icon.Image.Bounds.Height);
 				WidgetUtils.DrawSpriteCentered(icon.Image,
 					actorInfoMainContainer.Value.TooltipUnit.Palette == null ? palette : actorInfoMainContainer.Value.TooltipUnit.Palette,
-					RenderBounds.Location + new int2(RenderBounds.Width / 2, RenderBounds.Height / 2), 2f);
+					RenderBounds.Location + new int2(RenderBounds.Width / 2, RenderBounds.Height / 2) - int2.FromFloat3(maxScale * icon.Image.Offset), maxScale);
 			}
 
 			Game.Renderer.DisableAntialiasingFilter();

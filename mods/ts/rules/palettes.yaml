@@ -117,6 +117,10 @@
 		Base: effect
 		Name: effectred
 		Color: FF0000
+	FixedColorPalette@effectdust:
+		Base: effect
+		Name: effectdust
+		Color: 554411
 	PaletteFromFile@sidebar:
 		Name: sidebar
 		Filename: sidebar-nod|sidebar.pal

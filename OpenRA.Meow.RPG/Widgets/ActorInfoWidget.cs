@@ -146,7 +146,7 @@ namespace OpenRA.Meow.RPG.Widgets
 			var iconWidth = Bounds.Width * 5 / 10;
 			var iconHeight = 100;
 			var iconY = Skin.ActorNameHeight + 14;
-			var iconX = Bounds.Width - iconWidth;
+			var iconX = Bounds.Width - iconWidth - Skin.SpacingSmall;
 
 			AddChild(
 				new ActorInfoIconWidget(modData, world, worldRenderer)

@@ -61,6 +61,10 @@ namespace OpenRA
 
 		public static readonly int2 Zero = new int2(0, 0);
 		public float2 ToFloat2() { return new float2(X, Y); }
+		public float3 ToFloat3() { return new float3(X, Y, 0); }
+
+		public static int2 FromFloat2(float2 float2) { return new int2((int)float2.X, (int)float2.Y); }
+		public static int2 FromFloat3(float3 float3) { return new int2((int)float3.X, (int)float3.Y); }
 
 		// Change endianness of a uint32
 		public static uint Swap(uint orig)
