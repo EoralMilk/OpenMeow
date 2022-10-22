@@ -8,6 +8,8 @@ namespace OpenRA.Meow.RPG.Mechanics.Display
 	public class UnitDisplayInfoInfo : ConditionalTraitInfo
 	{
 
+		public readonly float IconScale = 1;
+
 		[SequenceReference]
 		public readonly string IconSequence = "icon";
 

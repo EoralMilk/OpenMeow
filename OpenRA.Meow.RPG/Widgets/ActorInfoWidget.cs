@@ -22,6 +22,7 @@ namespace OpenRA.Meow.RPG.Widgets
 		public readonly BuildableInfo BuildableInfo;
 		readonly string palette;
 		public PaletteReference Palette;
+		public readonly float Scale = 1;
 
 		public string Description;
 		public int Count { get; set; }
@@ -43,6 +44,7 @@ namespace OpenRA.Meow.RPG.Widgets
 
 			if (ActorDisplaying != null)
 			{
+				Scale = ActorDisplaying.Info.IconScale;
 				palette = ActorDisplaying.Info.IconPaletteIsPlayerPalette ? ActorDisplaying.Info.IconPalette + actor.Owner.InternalName : ActorDisplaying.Info.IconPalette;
 			}
 			else if (BuildableInfo != null)
