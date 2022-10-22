@@ -158,7 +158,7 @@ VEINHOLE:
 	GrantConditionOnTime:
 		RequiresCondition: untargetable
 		Condition: damage-cool
-		Tick: 50
+		Tick: 500
 	Armor:
 		Type: Heavy
 	HitShape:

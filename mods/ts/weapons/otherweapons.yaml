@@ -547,3 +547,8 @@ WalkImpact:
 		ExplosionPalette: effectdust
 		ImpactSounds: expnew13.aud
 		ImpactActors: false
+	Warhead@shakeScreen: ShakeScreen
+		Duration: 1
+		Intensity: 1
+		Multiplier: 0,1
+		ValidTargets: Ground, Trees

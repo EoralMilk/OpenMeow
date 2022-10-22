@@ -27,8 +27,6 @@ namespace OpenRA.Meow.RPG.Widgets
 
 	public static class Skin
 	{
-		public static Color Background = Color.FromArgb(0xff, 0x00, 0x33, 0x44);
-
 		public const int InGameUiWidth = 1280;
 		public const int InGameUiHeight = 200;
 		public const string InGameUiFont = "Ethnocentric.12";
@@ -38,14 +36,11 @@ namespace OpenRA.Meow.RPG.Widgets
 
 		public const int ScrollbarWidth = 10;
 		public const int ScrollbarBorderWidth = 1;
-		public static readonly Color ScrollbarBorderColor = Color.FromArgb(0xff, 0xbb, 0xee, 0xff);
-		public static readonly Color ScrollbarThumbColor = Color.FromArgb(0x88, 0x00, 0xaa, 0xdd);
 
 		public const int ActorIconHeight = 48;
 		public const int ActorIconWidth = 64;
 		public const int ActorHealthDiv = 100;
 		public const int ActorExpDiv = 100;
-
 
 		public const int MinimapWidth = 180;
 
@@ -65,13 +60,17 @@ namespace OpenRA.Meow.RPG.Widgets
 		public const int ActionsWidth = 180;
 		public const int ActionsButtonSize = 50;
 
-		public const int InventoryWidth = 200;
+		public const int InventoryWidth = 150;
 		public const int InventoryThumbnailSizeX = 64;
 		public const int InventoryThumbnailSizeY = 48;
 		public const int InventoryLabelHeight = 16;
 
 		public const int SpacingLarge = 10;
 		public const int SpacingSmall = 5;
+
+		public static Color Background = Color.FromArgb(0xff, 0x00, 0x33, 0x44);
+		public static readonly Color ScrollbarBorderColor = Color.FromArgb(0xff, 0xbb, 0xee, 0xff);
+		public static readonly Color ScrollbarThumbColor = Color.FromArgb(0x88, 0x00, 0xaa, 0xdd);
 
 		public static readonly ShadowSkin BrightShadowSkin = new ShadowSkin
 		(

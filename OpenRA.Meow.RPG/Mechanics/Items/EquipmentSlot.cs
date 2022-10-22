@@ -46,17 +46,16 @@ namespace OpenRA.Meow.RPG.Mechanics
 		[FieldLoader.Require]
 		public readonly string Name = null;
 
-		[FieldLoader.Require]
 		[Desc("The items type name of this equipment slot can equip.")]
 		public readonly string SlotType = "Item";
 
 		public override object Create(ActorInitializer init)
 		{
-			return new EquipmentSlot(this, init.GetOrDefault<EquipmentSlotsInit>());
+			return new EquipmentSlot(this, init.GetOrDefault<EquipmentSlotsInit>(), init.Self);
 		}
 	}
 
-	public class EquipmentSlot : INotifyCreated, INotifyInventory, IDeathActorInitModifier
+	public class EquipmentSlot : INotifyCreated, INotifyInventory, IDeathActorInitModifier, IResolveOrder
 	{
 		readonly EquipmentSlotInfo info;
 
@@ -69,10 +68,13 @@ namespace OpenRA.Meow.RPG.Mechanics
 		public string SlotType => info.SlotType;
 		public string Name => info.Name;
 
-		public EquipmentSlot(EquipmentSlotInfo info, EquipmentSlotsInit equipmentSlotsInit)
+		readonly Actor slotAtor;
+		public Actor SlotOwnerActor => slotAtor;
+
+		public EquipmentSlot(EquipmentSlotInfo info, EquipmentSlotsInit equipmentSlotsInit, Actor self)
 		{
 			this.info = info;
-
+			slotAtor = self;
 			equipmentSlotsInit?.Items.TryGetValue(this.info.SlotType, out autoEquip);
 		}
 
@@ -80,6 +82,9 @@ namespace OpenRA.Meow.RPG.Mechanics
 		{
 			inventory = self.TraitOrDefault<Inventory>();
 			equipNotifiers = self.TraitsImplementing<INotifyEquip>().ToArray();
+
+			if (self.TraitsImplementing<EquipmentSlot>().Where(slot => slot.Name == Name).ToArray().Length > 1)
+				throw new Exception("The Name of EquipmentSlot should be unique in one actor");
 
 			if (autoEquip == null)
 				return;
@@ -93,7 +98,7 @@ namespace OpenRA.Meow.RPG.Mechanics
 			autoEquip = null;
 		}
 
-		bool INotifyInventory.CanAdd(Actor self, Item item)
+		bool INotifyInventory.TryAdd(Actor self, Item item)
 		{
 			return true;
 		}
@@ -102,7 +107,7 @@ namespace OpenRA.Meow.RPG.Mechanics
 		{
 		}
 
-		bool INotifyInventory.CanRemove(Actor self, Item item)
+		bool INotifyInventory.TryRemove(Actor self, Item item)
 		{
 			// no same item in slot, ok and skip
 			// same item in slot, but can unequip, ok
@@ -124,10 +129,13 @@ namespace OpenRA.Meow.RPG.Mechanics
 			init.GetOrDefault<EquipmentSlotsInit>()?.AddItem(info.SlotType, Item);
 		}
 
-		public bool TryEquip(Actor self, Item item, bool canFromSlot = true)
+		public bool CanEquip(Actor self, Item item, bool canFromSlot = true, bool canReplace = false)
 		{
 			if (Item == item)
 				return true;
+
+			if (Item != null && !canReplace)
+				return false;
 
 			if (item.Type != info.SlotType || (item.EquipmentSlot != null && !canFromSlot))
 				return false;
@@ -138,11 +146,37 @@ namespace OpenRA.Meow.RPG.Mechanics
 			if (equipNotifiers.Any(notifyEquip => !notifyEquip.CanEquip(self, item)))
 				return false;
 
+			if (Item != null && !CanUnequip(self))
+				return false;
+
+			return true;
+		}
+
+		public bool CanUnequip(Actor self)
+		{
+			if (Item == null)
+				return true;
+
+			if (equipNotifiers.Any(notifyEquip => !notifyEquip.CanUnequip(self, Item)))
+				return false;
+
+			return true;
+		}
+
+		public bool TryEquip(Actor self, Item item, bool canFromSlot = true)
+		{
+			if (!CanEquip(self, item, canFromSlot))
+				return false;
+
+			if (Item == item)
+				return true;
+
 			if (Item != null && !TryUnequip(self))
 				return false;
 
 			Item = item;
 			Item.EquipmentSlot = this;
+			Item.EquipingEffect();
 
 			foreach (var notifyEquip in equipNotifiers)
 				notifyEquip.Equipped(self, item);
@@ -152,13 +186,14 @@ namespace OpenRA.Meow.RPG.Mechanics
 
 		public bool TryUnequip(Actor self)
 		{
+			if (!CanUnequip(self))
+				return false;
+
 			if (Item == null)
 				return true;
 
-			if (equipNotifiers.Any(notifyEquip => !notifyEquip.CanUnequip(self,Item)))
-				return false;
-
 			var item = Item;
+			Item.UnequipingEffect();
 			Item.EquipmentSlot = null;
 			Item = null;
 
@@ -166,6 +201,24 @@ namespace OpenRA.Meow.RPG.Mechanics
 				notifyEquip.Unequipped(self, item);
 
 			return true;
+		}
+
+		public void ResolveOrder(Actor self, Order order)
+		{
+			if (order.OrderString == "TryEquip" && order.TargetString == Name)
+			{
+				if (order.Target.Actor == null || order.Target.Actor.IsDead)
+					return;
+				var item = order.Target.Actor.TraitOrDefault<Item>();
+				if (item == null)
+					throw new Exception(order.Target.Actor.Info + " is not an Item Actor");
+
+				TryEquip(self, item, false);
+			}
+			else if (order.OrderString == "TryUnequip" && order.TargetString == Name)
+			{
+				TryUnequip(self);
+			}
 		}
 	}
 }

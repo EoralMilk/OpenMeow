@@ -11,9 +11,9 @@ namespace OpenRA.Meow.RPG.Mechanics
 {
 	public interface INotifyInventory
 	{
-		bool CanAdd(Actor self, Item item);
+		bool TryAdd(Actor self, Item item);
 		void Added(Actor self, Item item);
-		bool CanRemove(Actor self, Item item);
+		bool TryRemove(Actor self, Item item);
 		void Removed(Actor self, Item item);
 	}
 
@@ -51,7 +51,7 @@ namespace OpenRA.Meow.RPG.Mechanics
 		}
 	}
 
-	public class Inventory : INotifyCreated, IDeathActorInitModifier
+	public class Inventory : INotifyCreated, IDeathActorInitModifier, IResolveOrder
 	{
 		public readonly InventoryInfo Info;
 		readonly Actor inventoryActor;
@@ -103,7 +103,7 @@ namespace OpenRA.Meow.RPG.Mechanics
 			if (items.Contains(item))
 				return true;
 
-			if (inventoryNotifiers.Any(notifyInventory => !notifyInventory.CanAdd(self, item)))
+			if (inventoryNotifiers.Any(notifyInventory => !notifyInventory.TryAdd(self, item)))
 				return false;
 
 			if (item.Inventory != null && !item.Inventory.TryRemove(item.Inventory.inventoryActor, item))
@@ -123,7 +123,7 @@ namespace OpenRA.Meow.RPG.Mechanics
 			if (!items.Contains(item))
 				return false;
 
-			if (inventoryNotifiers.Any(notifyInventory => !notifyInventory.CanRemove(self, item)))
+			if (inventoryNotifiers.Any(notifyInventory => !notifyInventory.TryRemove(self, item)))
 				return false;
 
 			items.Remove(item);
@@ -133,6 +133,20 @@ namespace OpenRA.Meow.RPG.Mechanics
 				notifyInventory.Removed(self, item);
 
 			return true;
+		}
+
+		public void ResolveOrder(Actor self, Order order)
+		{
+			if (order.OrderString == "TryAddItem")
+			{
+				if (order.Target.Actor == null || order.Target.Actor.IsDead)
+					return;
+				var item = order.Target.Actor.TraitOrDefault<Item>();
+				if (item == null)
+					throw new Exception(order.Target.Actor.Info + " is not an Item Actor");
+
+				TryAdd(self, item);
+			}
 		}
 	}
 }

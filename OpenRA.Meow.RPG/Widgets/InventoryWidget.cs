@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using OpenRA.Graphics;
 using OpenRA.Meow.RPG.Mechanics;
+using OpenRA.Mods.Common.Activities;
+using OpenRA.Traits;
 using OpenRA.Widgets;
 
 namespace OpenRA.Meow.RPG.Widgets
@@ -27,6 +29,8 @@ namespace OpenRA.Meow.RPG.Widgets
 
 		public override void Tick()
 		{
+			Render = InventoryActor != null && Inventory != null;
+
 			foreach (var (item, itemWidget) in itemWidgets.ToArray())
 			{
 				if (Inventory != null && Inventory.Items.Contains(item) && Render)
@@ -66,7 +70,7 @@ namespace OpenRA.Meow.RPG.Widgets
 			if (OtherInventoryActor == null)
 				return;
 
-			OtherInventory?.TryAdd(OtherInventoryActor, item);
+			world.IssueOrder(new Order("TryAddItem", OtherInventoryActor, Target.FromActor(item.ItemActor), false));
 		}
 
 		public void TryEquip(Item item)
@@ -76,9 +80,23 @@ namespace OpenRA.Meow.RPG.Widgets
 
 			foreach (var equipmentSlot in InventoryActor.TraitsImplementing<EquipmentSlot>())
 			{
-				if (equipmentSlot.TryEquip(InventoryActor, item))
+				if (equipmentSlot.CanEquip(InventoryActor, item, false))
+				{
+					var order = new Order("TryEquip", InventoryActor, Target.FromActor(item.ItemActor), false)
+					{
+						TargetString = equipmentSlot.Name
+					};
+					world.IssueOrder(order);
 					break;
+				}
 			}
+		}
+
+		public override bool HandleMouseInput(MouseInput mouseInput)
+		{
+			if (!Render)
+				return false;
+			return base.HandleMouseInput(mouseInput);
 		}
 	}
 }

@@ -1,3 +1,9 @@
+conditionitem1:
+	ConditionItem:
+		Name: cloth
+		ThumbnailSequence: clustermissile
+		Condition: hascloth
+
 item1:
 	Item:
 		Name: test01

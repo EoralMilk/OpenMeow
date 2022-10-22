@@ -35,7 +35,7 @@ rumya:
 		body-torso: body_DT_1
 			Shader: CharacterBody
 			BaseMaterial: body
-			UseDQBSkin: false
+			UseDQBSkin: true
 			Material: none
 		body-hip: body_DT_2
 			Shader: CharacterBody
@@ -45,12 +45,12 @@ rumya:
 		body-thigh: body_DT_3
 			Shader: CharacterBody
 			BaseMaterial: body
-			UseDQBSkin: false
+			UseDQBSkin: true
 			Material: none
 		body-leg: body_DT_4
 			Shader: CharacterBody
 			BaseMaterial: body
-			UseDQBSkin: false
+			UseDQBSkin: true
 			Material: none
 		body-foot: body_DT_5
 			Shader: CharacterBody
@@ -65,7 +65,7 @@ rumya:
 		body-lowerarm: body_DT_7
 			Shader: CharacterBody
 			BaseMaterial: body
-			UseDQBSkin: false
+			UseDQBSkin: true
 			Material: none
 		body-hand: body_DT_8
 			Shader: CharacterBody
@@ -79,17 +79,17 @@ rumya:
 			Material: mdx_hair
 		gear01: gear01
 			Material: gear01
-			UseDQBSkin: false
+			UseDQBSkin: true
 			FaceCullFunc: None
 		gear01_body-hip: gear01_body-part_DT_2
 			Shader: CharacterBody
 			BaseMaterial: body
-			UseDQBSkin: false
+			UseDQBSkin: true
 			Material: none
 		gear01_body-thigh: gear01_body-part_DT_3
 			Shader: CharacterBody
 			BaseMaterial: body
-			UseDQBSkin: false
+			UseDQBSkin: true
 			Material: none
 
 

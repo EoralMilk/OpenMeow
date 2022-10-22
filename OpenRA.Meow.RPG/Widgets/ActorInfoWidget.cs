@@ -94,7 +94,9 @@ namespace OpenRA.Meow.RPG.Widgets
 
 	public class ActorInfoWidget : Widget, IAddFactionSuffixWidget
 	{
-		public int2 MaxInventorySize = new int2(300, 200);
+		public int2 MaxInventorySize = new int2(Skin.InventoryWidth, 200);
+		public int2 MaxSlotsSize = new int2(Skin.InventoryWidth, 200);
+
 		public int InventoryPadding = 5;
 
 		public bool ClickThrough = true;
@@ -112,6 +114,7 @@ namespace OpenRA.Meow.RPG.Widgets
 
 		readonly InventoryWidget currentInventory;
 		InventoryWidget lootInventory;
+		readonly EquipmentSlotsWidget slotsWidget;
 
 		readonly Player player;
 		readonly World world;
@@ -127,6 +130,13 @@ namespace OpenRA.Meow.RPG.Widgets
 				MaxInventorySize.X, MaxInventorySize.Y);
 		}
 
+		Rectangle CalculateEquipmentSlotsBounds()
+		{
+			return new Rectangle(-MaxSlotsSize.X - MaxInventorySize.X - InventoryPadding,
+					Bounds.Height - MaxSlotsSize.Y,
+					MaxSlotsSize.X, MaxSlotsSize.Y);
+		}
+
 		[ObjectCreator.UseCtor]
 		public ActorInfoWidget(ModData modData, World world, WorldRenderer worldRenderer)
 		{
@@ -136,6 +146,7 @@ namespace OpenRA.Meow.RPG.Widgets
 			player = world.LocalPlayer;
 			GetTooltipUnit = () => TooltipUnit;
 			currentInventory = new InventoryWidget(world, worldRenderer);
+			slotsWidget = new EquipmentSlotsWidget(world, worldRenderer);
 		}
 
 		public override void Initialize(WidgetArgs args)
@@ -143,7 +154,9 @@ namespace OpenRA.Meow.RPG.Widgets
 			base.Initialize(args);
 
 			currentInventory.Bounds = CalculateInventoryBounds();
+			slotsWidget.Bounds = CalculateEquipmentSlotsBounds();
 			AddChild(currentInventory);
+			AddChild(slotsWidget);
 
 			var iconWidth = Bounds.Width * 5 / 10;
 			var iconHeight = 100;
@@ -377,13 +390,19 @@ namespace OpenRA.Meow.RPG.Widgets
 
 		public override bool HandleKeyPress(KeyInput e) { return OnKeyPress(e); }
 
+		void UpdateTooltipActor(Actor actor)
+		{
+			TooltipUnit = actor == null ? null : new BasicUnitInfo(actor);
+			currentInventory.InventoryActor = actor;
+			currentInventory.Inventory = actor == null ? null : actor?.TraitOrDefault<Inventory>();
+			slotsWidget?.UpdateActor(actor);
+		}
+
 		public void RefreshActorDisplaying()
 		{
 			if (world == null || world.Selection == null || world.Selection.Actors == null)
 			{
-				TooltipUnit = null;
-				currentInventory.InventoryActor = null;
-				currentInventory.Inventory = null;
+				UpdateTooltipActor(null);
 				return;
 			}
 
@@ -399,15 +418,11 @@ namespace OpenRA.Meow.RPG.Widgets
 
 			if (iconA == null || !iconA.IsInWorld || iconA.IsDead || iconA.Disposed)
 			{
-				TooltipUnit = null;
-				currentInventory.InventoryActor = null;
-				currentInventory.Inventory = null;
+				UpdateTooltipActor(null);
 				return;
 			}
 
-			TooltipUnit = new BasicUnitInfo(iconA);
-			currentInventory.InventoryActor = iconA;
-			currentInventory.Inventory = iconA?.TraitOrDefault<Inventory>();
+			UpdateTooltipActor(iconA);
 		}
 
 		public override void Draw()
@@ -422,12 +437,15 @@ namespace OpenRA.Meow.RPG.Widgets
 
 		public override void Tick()
 		{
-			currentInventory.Render = currentInventory.InventoryActor != null && currentInventory.Inventory != null;
+			//if (currentInventory.Render)
+			//	currentInventory.Bounds = CalculateInventoryBounds();
+			//else
+			//	currentInventory.Bounds = Rectangle.Empty;
 
-			if (currentInventory.Render)
-				currentInventory.Bounds = CalculateInventoryBounds();
-			else
-				currentInventory.Bounds = new Rectangle(0, 0, 0, 0);
+			//if (slotsWidget.Render)
+			//	slotsWidget.Bounds = CalculateEquipmentSlotsBounds();
+			//else
+			//	slotsWidget.Bounds = Rectangle.Empty;
 
 			if (selectionHash == world.Selection.Hash)
 				return;

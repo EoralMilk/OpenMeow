@@ -64,8 +64,15 @@ namespace OpenRA.Mods.Common.Traits
 			if (nextScanTime-- > 0)
 				return;
 
+			// can't crush the actor which in the same cell with me
+			var cell = self.World.Map.CellContaining(self.CenterPosition);
+
 			var crushableActor = self.World.FindActorsInCircle(self.CenterPosition, Info.ScanRadius)
-				.Where(a => a != self && !a.IsDead && a.IsInWorld && Info.TargetRelationships.HasRelationship(self.Owner.RelationshipWith(a.Owner)) && a.IsAtGroundLevel() && a.TraitsImplementing<ICrushable>().Any(c => c.CrushableBy(a, self, crushes)))
+				.Where(a => a != self && !a.IsDead && a.IsInWorld &&
+				cell != self.World.Map.CellContaining(a.CenterPosition) &&
+				Info.TargetRelationships.HasRelationship(self.Owner.RelationshipWith(a.Owner)) &&
+				a.IsAtGroundLevel() &&
+				a.TraitsImplementing<ICrushable>().Any(c => c.CrushableBy(a, self, crushes)))
 				.ClosestTo(self); // TODO: Make it use shortest pathfinding distance instead
 
 			if (crushableActor == null)
