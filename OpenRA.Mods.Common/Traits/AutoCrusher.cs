@@ -15,18 +15,18 @@ using OpenRA.Traits;
 
 namespace OpenRA.Mods.Common.Traits
 {
-	class AutoCrusherInfo : PausableConditionalTraitInfo
+	class AutoCrusherInfo : PausableConditionalTraitInfo, Requires<IMoveInfo>
 	{
-		[Desc("Maximum scan range for AutoCrusher.")]
+		[Desc("Maximum range to scan for targets.")]
 		public readonly WDist ScanRadius = WDist.FromCells(5);
 
-		[Desc("Ticks to wait until next AutoCrusher: attempt.")]
+		[Desc("Ticks to wait until scan for targets.")]
 		public readonly int MinimumScanTimeInterval = 10;
 
-		[Desc("Ticks to wait until next AutoCrusher: attempt.")]
+		[Desc("Ticks to wait until scan for targets.")]
 		public readonly int MaximumScanTimeInterval = 15;
 
-		[Desc("Relationships between actor's and target's owner needed for AutoCrusher.")]
+		[Desc("Player relationships the owner of the actor needs to get targeted")]
 		public readonly PlayerRelationship TargetRelationships = PlayerRelationship.Ally | PlayerRelationship.Neutral | PlayerRelationship.Enemy;
 
 		public override object Create(ActorInitializer init) { return new AutoCrusher(this); }
@@ -44,12 +44,17 @@ namespace OpenRA.Mods.Common.Traits
 
 		protected override void Created(Actor self)
 		{
-			if (self.Info.HasTraitInfo<MobileInfo>())
-				crushes = self.Info.TraitInfos<MobileInfo>().First().LocomotorInfo.Crushes;
-			else if (self.Info.HasTraitInfo<AircraftInfo>())
+			var mobile = self.TraitOrDefault<Mobile>();
+			if (mobile != null)
+				crushes = mobile.Info.LocomotorInfo.Crushes;
+			else
 			{
-				crushes = self.Info.TraitInfos<AircraftInfo>().First().Crushes;
-				isAircraft = true;
+				var aircraft = self.TraitOrDefault<Aircraft>();
+				if (aircraft != null)
+				{
+					crushes = aircraft.Info.Crushes;
+					isAircraft = true;
+				}
 			}
 
 			nextScanTime = self.World.SharedRandom.Next(Info.MinimumScanTimeInterval, Info.MaximumScanTimeInterval);
@@ -64,14 +69,10 @@ namespace OpenRA.Mods.Common.Traits
 			if (nextScanTime-- > 0)
 				return;
 
-			// can't crush the actor which in the same cell with me
-			var cell = self.World.Map.CellContaining(self.CenterPosition);
-
 			var crushableActor = self.World.FindActorsInCircle(self.CenterPosition, Info.ScanRadius)
 				.Where(a => a != self && !a.IsDead && a.IsInWorld &&
-				cell != self.World.Map.CellContaining(a.CenterPosition) &&
+				self.Location != a.Location && a.IsAtGroundLevel() &&
 				Info.TargetRelationships.HasRelationship(self.Owner.RelationshipWith(a.Owner)) &&
-				a.IsAtGroundLevel() &&
 				a.TraitsImplementing<ICrushable>().Any(c => c.CrushableBy(a, self, crushes)))
 				.ClosestTo(self); // TODO: Make it use shortest pathfinding distance instead
 

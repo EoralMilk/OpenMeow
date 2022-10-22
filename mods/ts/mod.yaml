@@ -42,8 +42,8 @@ Packages:
 	~scores01.mix
 	~expand01.mix
 	~sounds01.mix
-	~e01sc01.mix
-	~e01sc02.mix
+	~e01sc01.mix: sidebar-gdif
+	~e01sc02.mix: sidebar-nodf
 	~e01vox01.mix
 	~e01vox02.mix
 	~ecache01.mix
