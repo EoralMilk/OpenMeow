@@ -25,6 +25,11 @@
 		Weapon: ProtonFlameMissileCluster
 		DamageState: Heavy
 		Offset: 0,0,1024
+	ExplodeWeapon@nocloth:
+		Weapon: ProtonFlameMissileClusterSmall
+		Interval: 50
+		Offset: 0,0,1024
+		RequiresCondition: nocloth
 	# WithMeshCloth@skirt:
 	# 	Mesh: skirt-split
 	# 	Masks: Hip
@@ -86,6 +91,7 @@ RUTEST:
 		Locomotor: heavywalker
 		BlockedBy: Static
 		CanCrushActor: false
+		PauseOnCondition: being-captured || carried
 		# AlwaysTurnInPlace: true
 		# CanMoveBackward: true
 	AutoCrusher:
@@ -110,6 +116,7 @@ RUTEST:
 		Image: vehicle
 	-SpeedMultiplier@DAMAGED:
 	-SpeedMultiplier@CRITICAL:
+	-WithColoredOverlay@EMPDISABLE:
 
 RUTEST2:
 	Inherits: RUTEST

@@ -512,3 +512,13 @@ ProtonFlameMissileCluster:
 		StartOffset: 0,-1024,0
 		FireCount: 12
 		ForceTargetGround: true
+
+ProtonFlameMissileClusterSmall:
+	Inherits: ProtonFlameMissileCluster
+	Warhead@Cluster: FireRadius
+		Weapon: GreenFireballLauncher
+		StartOffset: 0,-1024,0
+		FireCount: 3
+		ForceTargetGround: true
+	-Warhead@2Eff: CreateEffect
+	-Warhead@3EffWater:
