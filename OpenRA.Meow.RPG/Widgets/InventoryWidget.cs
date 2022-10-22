@@ -82,9 +82,10 @@ namespace OpenRA.Meow.RPG.Widgets
 			{
 				if (equipmentSlot.CanEquip(InventoryActor, item, false))
 				{
-					var order = new Order("TryEquip", InventoryActor, Target.FromActor(item.ItemActor), false)
+					var order = new Order("TryEquip", InventoryActor, false)
 					{
-						TargetString = equipmentSlot.Name
+						TargetString = equipmentSlot.Name,
+						ExtraData = item.ItemActor.ActorID,
 					};
 					world.IssueOrder(order);
 					break;

@@ -228,11 +228,12 @@ namespace OpenRA.Meow.RPG.Mechanics
 		{
 			if (order.OrderString == "TryEquip" && order.TargetString == Name)
 			{
-				if (order.Target.Actor == null || order.Target.Actor.IsDead)
+				var itemactor = self.World.GetActorById(order.ExtraData);
+				if (itemactor == null)
 					return;
-				var item = order.Target.Actor.TraitOrDefault<Item>();
+				var item = itemactor.TraitOrDefault<Item>();
 				if (item == null)
-					throw new Exception(order.Target.Actor.Info + " is not an Item Actor");
+					throw new Exception(itemactor.Info.Name + " is not an Item Actor");
 
 				TryEquip(self, item, false);
 			}
