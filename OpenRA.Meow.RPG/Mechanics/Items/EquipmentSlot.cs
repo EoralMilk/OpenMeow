@@ -228,14 +228,7 @@ namespace OpenRA.Meow.RPG.Mechanics
 		{
 			if (order.OrderString == "TryEquip" && order.TargetString == Name)
 			{
-				var itemactor = ItemCache.GameItemActors[order.ExtraData];// self.World.GetActorById(order.ExtraData);
-				if (itemactor == null)
-					throw new Exception(order.ExtraData + " is null item actor");
-				var item = itemactor.TraitOrDefault<Item>();
-				if (item == null)
-					throw new Exception(itemactor.Info.Name + " is not an Item Actor");
-
-				TryEquip(self, item, false);
+				TryEquip(self, ItemCache.GetItem(order.ExtraData), false);
 			}
 			else if (order.OrderString == "TryUnequip" && order.TargetString == Name)
 			{

@@ -71,13 +71,7 @@ namespace OpenRA.Meow.RPG.Mechanics
 			if (Info.InitItems != null)
 				foreach (var name in Info.InitItems)
 				{
-					var a = self.World.CreateActor(false, name, new TypeDictionary());
-					ItemCache.GameItemActors.Add(a.ActorID, a);
-					var item = a.TraitOrDefault<Item>();
-					if (item != null)
-						TryAdd(self, item);
-					else
-						throw new Exception("The actor: " + name + " does not have Item trait");
+					TryAdd(self, ItemCache.AddItem(self.World, name));
 				}
 		}
 
@@ -140,14 +134,7 @@ namespace OpenRA.Meow.RPG.Mechanics
 		{
 			if (order.OrderString == "TryAddItem")
 			{
-				var itemactor = ItemCache.GameItemActors[order.ExtraData];// self.World.GetActorById(order.ExtraData);
-				if (itemactor == null)
-					throw new Exception(order.ExtraData + " is null item actor");
-				var item = itemactor.TraitOrDefault<Item>();
-				if (item == null)
-					throw new Exception(itemactor.Info.Name + " is not an Item Actor");
-
-				TryAdd(self, item);
+				TryAdd(self, ItemCache.GetItem(order.ExtraData));
 			}
 		}
 	}
