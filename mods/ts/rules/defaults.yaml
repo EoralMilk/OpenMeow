@@ -1865,3 +1865,15 @@
 	GrantConditionOnBotOwner@AImicroManage:
 		Condition: AImicroManage
 		Bots: test
+
+^NonBuildingStaticActor:
+	Inherits@2: ^ExistsInWorld
+	Immobile:
+		OccupiesSpace: true
+	BodyOrientation:
+		QuantizedFacings: 1
+	Interactable:
+	HiddenUnderFog:
+	OwnerLostAction:
+		Action: Kill
+	WithSpriteBody:

@@ -223,3 +223,39 @@ JFISH:
 		IconPaletteIsPlayerPalette: true
 	-Crushable:
 
+MINIVEIN:
+	Inherits: ^NonBuildingStaticActor
+	Inherits@2: ^SpriteActor
+	RadarColorFromTerrain:
+		Terrain: Veins
+	Tooltip:
+		Name: Baby Veinhole
+	-Interactable:
+	Selectable:
+		Bounds: 1206,1809
+	SelectionDecorations:
+	WithDeathAnimation:
+		DeathSequence: dead
+		UseDeathTypeSuffix: false
+	HitShape:
+		TargetableOffsets: 0,0,310
+		Type: Circle
+			Radius: 368
+			VerticalTopOffset: 620
+	Health:
+		HP: 50000
+	Armor:
+		Type: Light
+	Targetable:
+		TargetTypes: Ground
+	WithMakeAnimation:
+		Condition: growing
+	SeedsResource:
+		RequiresCondition: !growing
+		ResourceType: Veins
+		Interval: 160
+	ChangesHealth:
+		PercentageStep: 2
+		StartIfBelow: 200
+		DamageCooldown: 50
+		Delay: 25

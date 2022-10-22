@@ -889,3 +889,88 @@ REPAIRDRONE:
 	-WithIdleOverlay@DAMAGED1:
 	-WithIdleOverlay@DAMAGED2:
 	-WithIdleOverlay@DAMAGED3:
+
+SCRINVEIN:
+	Inherits: ^EMPableAircraft
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@bounty: ^GlobalBounty
+	Valued:
+		Cost: 1700
+	Tooltip:
+		Name: "Banshee" Fighter
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	-Selectable:
+	-SelectionDecorations:
+	RejectsOrders:
+	Interactable:
+	Aircraft:
+		TurnSpeed: 20
+		Speed: 275
+		IdleTurnSpeed: 6
+		IdleSpeed: 140
+		TakeoffSounds: dropup1.aud
+		LandingSounds: dropdwn1.aud
+		CanHover: false
+		CanSlide: false
+	Health:
+		HP: 28000
+	Armor:
+		Type: Light
+	Armament@veinbomb:
+		Weapon: VeinBomb
+		LocalOffset: 111,0,80
+		FacingTolerance: 80
+	AmmoPool:
+		Ammo: 1
+	AttackBomber:
+		PersistentTargeting: false
+		PauseOnCondition: empdisable
+		FacingTolerance: 512
+		# AttackType: Strafe
+		# StrafeRunLength: 17c0
+		FacingFullOnTarget: true
+	SpawnActorOnDeath:
+		Actor: SCRIN.Husk
+		RequiresCondition: !empdisable
+	SpawnActorOnDeath@EMP:
+		Actor: SCRIN.Husk.EMP
+		RequiresCondition: empdisable
+	Contrail@a:
+		Offset: -395,145,45
+		ZOffset: 88
+		TrailLength: 4
+		TrailWidth: 174
+		BlendMode: Additive
+		StartColorUsePlayerColor: false
+		EndColorUsePlayerColor: false
+		StartColorAlpha: 255
+		EndColorAlpha: 12
+		StartColor: 80FF80CF
+		EndColor: 80FF80CF
+		StartColorAlphaOuter: 64
+		EndColorAlphaOuter: 0
+		StartColorOuter: 80FF80CF
+		EndColorOuter: 80FF80CF
+		WidthFadeRate: 1
+	Contrail@b:
+		Offset: -395,-145,45
+		ZOffset: 88
+		TrailLength: 4
+		TrailWidth: 174
+		BlendMode: Additive
+		StartColorUsePlayerColor: false
+		EndColorUsePlayerColor: false
+		StartColorAlpha: 255
+		EndColorAlpha: 12
+		StartColor: 80FF80CF
+		EndColor: 80FF80CF
+		StartColorAlphaOuter: 64
+		EndColorAlphaOuter: 0
+		StartColorOuter: 80FF80CF
+		EndColorOuter: 80FF80CF
+		WidthFadeRate: 1
+	RenderSprites:
+		Image: scrin
+	RenderModels:
+		Image: scrin

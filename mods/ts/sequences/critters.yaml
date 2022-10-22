@@ -127,3 +127,20 @@ floater:
 		Length: 1
 		Start: 0
 		ShadowStart: 0
+
+minivein:
+	Defaults:
+		UseTilesetExtension: false
+		Offset: 0,0
+	idle:
+		Length: 39
+	dead: minivein_dead
+		Length: *
+		Tick: 35
+	stand:
+		Length: 39
+	make: minivein_make
+		Length: *
+		Tick: 35
+	shoot:
+		Length: 39

@@ -657,3 +657,26 @@ NAWAST:
 		PipStride: 4, 2
 		PipCount: 15
 		Palette: pips
+	AirstrikePower@veinbomb:
+		OrderName: VeinBomb
+		Prerequisites: nawast
+		Icon: miniveinsw
+		ChargeInterval: 7500
+		Name: VeinBomb
+		Description: A Banshee drop Veinhole bomb on your target.
+		SelectTargetSpeechNotification: SelectTarget
+		SelectTargetTextNotification: Select target.
+		CameraActor: camera
+		CameraRemoveDelay: 150
+		UnitType: scrinvein
+		QuantizedFacings: 8
+		#DisplayBeacon: true
+		#BeaconPoster: pbmbicon
+		SquadSize: 1
+		SquadOffset: 1792,1792,0
+		#ArrowSequence: arrow
+		#ClockSequence: clock
+		#CircleSequence: circles
+		#UseDirectionalTarget: True
+		#DirectionArrowAnimation: paradirection
+		SupportPowerPaletteOrder: 40
