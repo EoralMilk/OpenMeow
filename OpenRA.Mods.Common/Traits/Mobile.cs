@@ -32,6 +32,8 @@ namespace OpenRA.Mods.Common.Traits
 
 		public readonly BlockedByActor BlockedBy = BlockedByActor.All;
 
+		public readonly bool CanCrushActor = true;
+
 		public readonly WAngle InitialFacing = WAngle.Zero;
 
 		[Desc("Speed at which the actor turns.")]
@@ -618,7 +620,8 @@ namespace OpenRA.Mods.Common.Traits
 			if (!self.IsAtGroundLevel())
 				return;
 
-			CrushAction(self, (notifyCrushed) => notifyCrushed.OnCrush);
+			if (Info.CanCrushActor)
+				CrushAction(self, (notifyCrushed) => notifyCrushed.OnCrush);
 		}
 
 		void CrushAction(Actor self, Func<INotifyCrushed, Action<Actor, Actor, BitSet<CrushClass>>> action)

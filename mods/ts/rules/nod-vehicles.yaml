@@ -677,7 +677,6 @@ REAPER:
 	BodyOrientation:
 		QuantizedFacings: 8
 	DeathSounds:
-	UnitDisplayInfo:
 	-SpawnActorOnDeath@ctech:
 	-DamagedByTerrain@VEINS:
 	-LeavesTrails@VEINS:

@@ -977,6 +977,7 @@
 		IconSequence: testdisplay
 		IconPalette: player
 		IconPaletteIsPlayerPalette: true
+		IconScale: 0.85
 
 ^Vehicle:
 	Inherits@2: ^ExistsInWorld

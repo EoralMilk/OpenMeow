@@ -745,7 +745,6 @@ LIMPED:
 	WithIdleOverlay@DAMAGED2:
 		Offset: 0, 0, 0
 		RequiresCondition: !inside-tunnel && deployed && (damaged-state || critical-state)
-	UnitDisplayInfo:
 	-SpawnActorOnDeath@ctech:
 	-DamagedByTerrain@VEINS:
 	-LeavesTrails@VEINS:

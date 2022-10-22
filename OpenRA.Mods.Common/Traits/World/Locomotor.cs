@@ -254,7 +254,7 @@ namespace OpenRA.Mods.Common.Traits
 
 			// Cache doesn't account for ignored actors, subcells, temporary blockers or transit only actors.
 			// These must use the slow path.
-			if (ignoreActor == null && subCell == SubCell.FullCell &&
+			if (check > BlockedByActor.Static && ignoreActor == null && subCell == SubCell.FullCell &&
 				!cellFlag.HasCellFlag(CellFlag.HasTemporaryBlocker) && !cellFlag.HasCellFlag(CellFlag.HasTransitOnlyActor))
 			{
 				// We already know there are uncrushable actors in the cell so we are always blocked.

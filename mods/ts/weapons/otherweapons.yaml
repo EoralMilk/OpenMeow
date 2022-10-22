@@ -517,28 +517,30 @@ DummyWeapon:
 WalkImpact:
 	ValidTargets: Ground, Water, Air, Trees
 	Warhead@inf: Spread3DDamage
-		Damage: 10000
-		Spread: 0c240
+		Damage: 100000
+		Spread: 0c200
 		Falloff: 100, 100, 1
 		Versus:
-			None: 1000
-			Wood: 35
-			Light: 800
-			Heavy: 75
-			Concrete: 5
+			None: 100
+			Wood: 100
+			Light: 80
+			Heavy: 80
+			Concrete: 80
 		DamageTypes: TriggerProne, CrushedDeath
 		ValidTargets: Infantry, Crushable
 	Warhead@1Dam: Spread3DDamage
 		Damage: 10000
-		Spread: 0c330
+		Spread: 0c200
+		Falloff: 100, 100, 1
 		Versus:
-			None: 10
-			Wood: 5
+			None: 100
+			Wood: 100
 			Light: 100
-			Heavy: 75
-			Concrete: 2
+			Heavy: 85
+			Concrete: 75
 		DamageTypes: TriggerProne, CrushedDeath
 		ValidTargets: Ground, Water, Air, Trees
+		InvalidTargets: Building, Wall
 	Warhead@2Eff: CreateEffect
 		Image: cloud
 		Explosions: cloud1, cloud2

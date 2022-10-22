@@ -160,6 +160,7 @@ MUTANT:
 		IconSequence: testdisplay
 		IconPalette: player
 		IconPaletteIsPlayerPalette: true
+		IconScale: 0.85
 
 MWMN:
 	Inherits: ^Soldier
@@ -200,6 +201,7 @@ MWMN:
 		IconSequence: testdisplay
 		IconPalette: player
 		IconPaletteIsPlayerPalette: true
+		IconScale: 0.85
 
 MUTANT3:
 	Inherits: ^Soldier
@@ -246,6 +248,7 @@ MUTANT3:
 		IconSequence: testdisplay
 		IconPalette: player
 		IconPaletteIsPlayerPalette: true
+		IconScale: 0.85
 
 TRATOS:
 	Inherits: ^Soldier
@@ -266,6 +269,7 @@ TRATOS:
 		IconSequence: testdisplay
 		IconPalette: player
 		IconPaletteIsPlayerPalette: true
+		IconScale: 0.85
 
 OXANNA:
 	Inherits: ^Soldier
@@ -304,6 +308,7 @@ OXANNA:
 		IconSequence: testdisplay
 		IconPalette: player
 		IconPaletteIsPlayerPalette: true
+		IconScale: 0.85
 
 SLAV:
 	Inherits: ^Soldier
@@ -341,6 +346,7 @@ SLAV:
 		IconSequence: testdisplay
 		IconPalette: player
 		IconPaletteIsPlayerPalette: true
+		IconScale: 0.85
 
 CIV1:
 	Inherits: ^CivilianInfantry

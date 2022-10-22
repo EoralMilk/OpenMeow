@@ -83,12 +83,15 @@ RUTEST:
 	Mobile:
 		TurnSpeed: 66
 		Speed: 100
-		Locomotor: walker
+		Locomotor: heavywalker
 		BlockedBy: Static
+		CanCrushActor: false
 		# AlwaysTurnInPlace: true
 		# CanMoveBackward: true
 	AutoCrusher:
 		TargetRelationships: Enemy
+		MinimumScanTimeInterval: 2
+		MaximumScanTimeInterval: 5
 	Health:
 		HP: 120000
 	Armor:
