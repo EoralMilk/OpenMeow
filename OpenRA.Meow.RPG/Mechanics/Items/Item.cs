@@ -50,8 +50,8 @@ namespace OpenRA.Meow.RPG.Mechanics
 			this.ItemActor = self;
 		}
 
-		public virtual void EquipingEffect() { }
-		public virtual void UnequipingEffect() { }
+		public virtual void EquipingEffect(Actor actor) { }
+		public virtual void UnequipingEffect(Actor actor) { }
 
 	}
 }

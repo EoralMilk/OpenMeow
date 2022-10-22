@@ -27,15 +27,15 @@ namespace OpenRA.Meow.RPG.Mechanics
 			Condition = info.Condition;
 		}
 
-		public override void EquipingEffect()
+		public override void EquipingEffect(Actor actor)
 		{
-			if (conditionToken == Actor.InvalidConditionToken)
-				conditionToken = EquipmentSlot.SlotOwnerActor.GrantCondition(Condition);
+			if (actor != null && conditionToken == Actor.InvalidConditionToken)
+				conditionToken = actor.GrantCondition(Condition);
 		}
 
-		public override void UnequipingEffect() {
-			if (conditionToken != Actor.InvalidConditionToken)
-				conditionToken = EquipmentSlot.SlotOwnerActor.RevokeCondition(conditionToken);
+		public override void UnequipingEffect(Actor actor) {
+			if (actor != null && conditionToken != Actor.InvalidConditionToken)
+				conditionToken = actor.RevokeCondition(conditionToken);
 		}
 	}
 }

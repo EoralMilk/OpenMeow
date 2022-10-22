@@ -70,13 +70,13 @@ namespace OpenRA.Meow.RPG.Mechanics
 		public string SlotType => info.SlotType;
 		public string Name => info.Name;
 
-		readonly Actor slotAtor;
-		public Actor SlotOwnerActor => slotAtor;
+		readonly Actor slotActor;
+		public Actor SlotOwnerActor => slotActor;
 
 		public EquipmentSlot(EquipmentSlotInfo info, EquipmentSlotsInit equipmentSlotsInit, Actor self)
 		{
 			this.info = info;
-			slotAtor = self;
+			slotActor = self;
 			equipmentSlotsInit?.Items.TryGetValue(this.info.SlotType, out autoEquip);
 		}
 
@@ -188,7 +188,11 @@ namespace OpenRA.Meow.RPG.Mechanics
 
 			Item = item;
 			Item.EquipmentSlot = this;
-			Item.EquipingEffect();
+
+			SlotOwnerActor.World.AddFrameEndTask(w =>
+			{
+				Item.EquipingEffect(slotActor);
+			});
 
 			foreach (var notifyEquip in equipNotifiers)
 				notifyEquip.Equipped(self, item);
@@ -205,7 +209,12 @@ namespace OpenRA.Meow.RPG.Mechanics
 				return true;
 
 			var item = Item;
-			Item.UnequipingEffect();
+
+			SlotOwnerActor.World.AddFrameEndTask(w =>
+			{
+				item.UnequipingEffect(slotActor);
+			});
+
 			Item.EquipmentSlot = null;
 			Item = null;
 
