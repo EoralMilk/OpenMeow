@@ -18,10 +18,11 @@ namespace OpenRA.Meow.RPG.Widgets
 		readonly Actor actor;
 		Item item;
 		readonly WorldRenderer worldRenderer;
+		ThumbnailWidget thumbnailWidget;
+		LabelWidget labelWidget;
 		public SlotItemWidget(Actor actor, Item item, WorldRenderer worldRenderer)
 		{
 			this.actor = actor;
-			this.item = item;
 			this.worldRenderer = worldRenderer;
 			Bounds = new Rectangle(Skin.SpacingSmall, 0, RowWidth, Skin.InventoryThumbnailSizeY);
 			Render = true;
@@ -41,21 +42,21 @@ namespace OpenRA.Meow.RPG.Widgets
 			if (item == null)
 				return;
 
-			AddChild(
-					new ThumbnailWidget(item, worldRenderer)
-					{
-						Bounds = new Rectangle(0, 0, Skin.InventoryThumbnailSizeX, Skin.InventoryThumbnailSizeY)
-					}
-				);
+			thumbnailWidget = new ThumbnailWidget(item, worldRenderer)
+			{
+				Bounds = new Rectangle(0, 0, Skin.InventoryThumbnailSizeX, Skin.InventoryThumbnailSizeY)
+			};
 
-			AddChild(
-				new LabelWidget
-				{
-					Text = item.Name,
-					Bounds = new Rectangle(TextX, Skin.SpacingLarge, TextWidth, Skin.InventoryLabelHeight),
-					Font = Skin.InGameUiFontSmall
-				}
-			);
+			labelWidget = new LabelWidget
+			{
+				Text = item.Name,
+				Bounds = new Rectangle(TextX, Skin.SpacingLarge, TextWidth, Skin.InventoryLabelHeight),
+				Font = Skin.InGameUiFontSmall
+			};
+
+			AddChild(thumbnailWidget);
+
+			AddChild(labelWidget);
 		}
 
 		public override bool HandleMouseInput(MouseInput mouseInput)

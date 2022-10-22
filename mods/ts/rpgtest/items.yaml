@@ -1,8 +1,21 @@
-conditionitem1:
+clothitem:
 	ConditionItem:
 		Name: cloth
-		ThumbnailSequence: clustermissile
+		ThumbnailSequence: hunterseeker
 		Condition: hascloth
+
+rutestmissile:
+	ConditionItem:
+		Name: missile
+		ThumbnailSequence: clustermissile
+		Condition: userutestmissile
+
+chemicalitem:
+	ConditionItem:
+		Name: chemicalspray
+		ThumbnailSequence: chemicalmissile
+		Condition: usechemicalitem
+
 
 item1:
 	Item:

@@ -49,6 +49,8 @@ namespace OpenRA.Meow.RPG.Mechanics
 		[Desc("The items type name of this equipment slot can equip.")]
 		public readonly string SlotType = "Item";
 
+		public readonly string InitEquipment = null;
+
 		public override object Create(ActorInitializer init)
 		{
 			return new EquipmentSlot(this, init.GetOrDefault<EquipmentSlotsInit>(), init.Self);
@@ -81,6 +83,16 @@ namespace OpenRA.Meow.RPG.Mechanics
 		void INotifyCreated.Created(Actor self)
 		{
 			inventory = self.TraitOrDefault<Inventory>();
+
+			if (info.InitEquipment != null && inventory.Info.InitItems.Contains(info.InitEquipment))
+			{
+				TryEquip(self, inventory.Items.Where(i => i.ItemActor.Info.Name == info.InitEquipment).First(), false);
+			}
+			else
+			{
+				throw new Exception("inventory has no InitEquipment: " + info.InitEquipment + " , the InitEquipment should be Item Actor Name not Item Name");
+			}
+
 			equipNotifiers = self.TraitsImplementing<INotifyEquip>().ToArray();
 
 			if (self.TraitsImplementing<EquipmentSlot>().Where(slot => slot.Name == Name).ToArray().Length > 1)

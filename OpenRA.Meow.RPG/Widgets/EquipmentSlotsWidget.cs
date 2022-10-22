@@ -66,7 +66,7 @@ namespace OpenRA.Meow.RPG.Widgets
 			if (thisActor == null)
 				return;
 
-			foreach (var (slot, itemWidget) in slotWidgets.ToArray())
+			foreach (var (slot, itemWidget) in slotWidgets)
 			{
 				itemWidget.SetItem(slot.Item);
 			}

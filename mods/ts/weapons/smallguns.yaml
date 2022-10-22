@@ -278,6 +278,14 @@ HarpyClaw:
 	Warhead@2Eff: CreateEffect
 		ExplosionPalette: effectgreen
 
+KittenClaw:
+	Inherits: HarpyClaw
+	Burst: 1
+	ReloadDelay: 3
+	Range: 8c768
+	Warhead@1Dam: Spread3DDamage
+		Damage: 1400
+
 # Mammoth Mk. II machine gun with EMPulse ammo
 MechPulseGun:
 	Inherits: ^Vulcan

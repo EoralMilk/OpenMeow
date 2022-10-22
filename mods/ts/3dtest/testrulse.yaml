@@ -177,19 +177,21 @@ RUTEST2:
 		SkeletonToUse: body
 		FromBonePose: a-s-Rig_Head
 		FacingTolerance: 512
-		# Turret: turret2
-	# AttachedArmament@3:
-	# 	Weapon: HarpyClaw
-	# 	SkeletonToUse: turret_skeleton2
-	# 	FromBonePose: firepose
-	# 	FacingTolerance: 40
-	# 	Turret: turret2
+		RequiresCondition: userutestmissile
+	AttachedArmament@mg:
+		Weapon: KittenClaw
+		Turret: primary
+		SkeletonToUse: body
+		FromBonePose: a-s-Rig_Hand.L
+		LocalOffset: 768,0,1324
+		RequiresCondition: !usechemicalitem
 	AttachedArmament@laser:
 		Weapon: LaserChainGun
 		Turret: primary
 		SkeletonToUse: body
 		FromBonePose: a-s-Rig_Hand.L
 		LocalOffset: 768,0,1324
+		RequiresCondition: usechemicalitem
 	BlendTreeHandler:
 		DirectionTurret: primary
 	Selectable:
@@ -199,12 +201,14 @@ RUTEST2:
 	EquipmentSlot@test1:
 		Name: testslot1
 		SlotType: Item
+		InitEquipment: clothitem
 	EquipmentSlot@test2:
 		Name: testslot2
 		SlotType: Item
+		InitEquipment: rutestmissile
 	Inventory:
 		Name: test
-		InitItems: conditionitem1, item2, item6
+		InitItems: clothitem, rutestmissile, chemicalitem
 	ChangesHealth:
 		Step: 500
 
