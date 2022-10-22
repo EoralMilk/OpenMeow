@@ -152,7 +152,7 @@ namespace OpenRA.Meow.RPG.Mechanics
 			if (item.Type != info.SlotType || (item.EquipmentSlot != null && !canFromSlot))
 				return false;
 
-			if (inventory == null || !inventory.TryAdd(self, item))
+			if (inventory == null || !inventory.Items.Contains(item))
 				return false;
 
 			if (equipNotifiers.Any(notifyEquip => !notifyEquip.CanEquip(self, item)))
