@@ -472,6 +472,7 @@ ProtonFlameMissile:
 		ScatCount: 3
 		ScatDimensions: 5,5
 		ScatFootprint: __x__ _xxx_ xx_xx _xxx_ __x__
+		JetPalette: lightgreen
 	Warhead@1Dam: SpreadDamage
 		Damage: 3000
 		Versus:
@@ -499,6 +500,7 @@ ProtonFlameMissileCluster:
 		HorizonRotationRate: 13
 		VerticalRotationRate: 32
 		LifeTime: 35
+		JetPalette: lightgreen
 	Warhead@1Dam: SpreadDamage
 		Damage: 3000
 		Versus:

@@ -17,10 +17,10 @@
 		RequiresCondition: hascloth
 	SpeedMultiplier@test:
 		RequiresCondition: hascloth
-		Modifier: 90
+		Modifier: 80
 	DamageMultiplier@test:
 		RequiresCondition: hascloth
-		Modifier: 75
+		Modifier: 70
 	ExplosionOnDamageTransition:
 		Weapon: ProtonFlameMissileCluster
 		DamageState: Heavy
@@ -82,10 +82,10 @@ RUTEST:
 		AddToArmyValue: false
 	Mobile:
 		TurnSpeed: 66
-		Speed: 100
-		Locomotor: heavywalker
-		BlockedBy: Static
-		CanCrushActor: false
+		Speed: 120
+		Locomotor: superwalker
+		BlockedBy: None #Static
+		# CanCrushActor: false
 		PauseOnCondition: being-captured || carried
 		# AlwaysTurnInPlace: true
 		# CanMoveBackward: true
@@ -178,14 +178,14 @@ RUTEST2:
 		LocalOffset: 768,0,1324
 		RequiresCondition: !usechemicalitem
 	AttachedArmament@laser:
-		Weapon: LaserChainGun
+		Weapon: KittenProtonPulse #LaserChainGun
 		Turret: primary
 		SkeletonToUse: body
 		FromBonePose: a-s-Rig_Hand.L
 		LocalOffset: 768,0,1324
 		RequiresCondition: usechemicalitem
 	DamagedByTerrain@Tiberium:
-		Damage: -500
+		Damage: -1000
 		DamageInterval: 20
 		Terrain: Tiberium, BlueTiberium
 		RequiresCondition: !inside-tunnel && usechemicalitem

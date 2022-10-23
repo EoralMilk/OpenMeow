@@ -530,6 +530,7 @@ WalkImpact:
 			Concrete: 80
 		DamageTypes: TriggerProne, CrushedDeath
 		ValidTargets: Infantry, Crushable
+		ValidRelationships: Neutral, Enemy
 	Warhead@1Dam: Spread3DDamage
 		Damage: 10000
 		Spread: 0c200
@@ -542,7 +543,7 @@ WalkImpact:
 			Concrete: 75
 		DamageTypes: TriggerProne, CrushedDeath
 		ValidTargets: Ground, Water, Air, Trees
-		InvalidTargets: Building, Wall
+		ValidRelationships: Neutral, Enemy
 	Warhead@2Eff: CreateEffect
 		Image: cloud
 		Explosions: cloud1, cloud2

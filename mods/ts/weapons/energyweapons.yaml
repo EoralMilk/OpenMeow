@@ -384,6 +384,7 @@ LaserChainGun:
 	ReloadDelay: 3
 	Range: 8c768
 	Report: lastur1.aud
+	ValidTargets: Ground, Water, Air, Trees
 	Projectile: LaserZap
 		Inaccuracy: 555
 		Width: 24
@@ -405,6 +406,23 @@ LaserChainGun:
 	Warhead@flash: CreateEffect
 		ExplosionPalette: lightgreen
 
+KittenProtonPulse:
+	Inherits: ProtonPulse
+	Range: 9c0
+	ReloadDelay: 3
+	Burst: 1
+	BurstDelays: 1
+	Warhead@1Dam: Spread3DDamage
+		Spread: 0c172
+		Damage: 2000
+		Versus:
+			None: 100
+			Wood: 65
+			Light: 75
+			Heavy: 100
+			Concrete: 60
+		DamageTypes: Prone50Percent, TriggerProne, EnergyDeath
+		ValidTargets: Ground, Water, Air, Trees
 
 # banshee proton pulse cannon
 ProtonPulse:

@@ -92,7 +92,7 @@
 			Veins: 50
 	Locomotor@heavywalker:
 		Name: heavywalker
-		Crushes: wall, crate, infantry, bigguy
+		Crushes: wall, crate, infantry
 		TerrainSpeeds:
 			Clear: 90
 			Road: 100
@@ -103,6 +103,20 @@
 			Tiberium: 75
 			BlueTiberium: 75
 			Veins: 50
+	Locomotor@superwalker:
+		Name: superwalker
+		Crushes: wall, crate, infantry, bigguy
+		TerrainSpeeds:
+			Clear: 90
+			Road: 100
+			Bridge: 90
+			Rail: 90
+			DirtRoad: 90
+			Rough: 90
+			Tiberium: 80
+			BlueTiberium: 80
+			Veins: 80
+			Water: 80
 	Locomotor@TRACKED:
 		Name: tracked
 		Crushes: wall, crate, infantry
