@@ -255,6 +255,7 @@
 		ZOffset: 15
 		Scale: 10
 	ItemCache:
+	WidgetSkinManager:
 
 World:
 	Inherits: ^BaseWorld

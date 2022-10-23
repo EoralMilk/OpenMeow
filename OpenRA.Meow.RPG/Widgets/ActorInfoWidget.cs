@@ -94,8 +94,8 @@ namespace OpenRA.Meow.RPG.Widgets
 
 	public class ActorInfoWidget : Widget, IAddFactionSuffixWidget
 	{
-		public int2 MaxInventorySize = new int2(Skin.InventoryWidth, 200);
-		public int2 MaxSlotsSize = new int2(Skin.InventoryWidth, 200);
+		public int2 MaxInventorySize = new int2(150, 200);
+		public int2 MaxSlotsSize = new int2(150, 200);
 
 		public int InventoryPadding = 5;
 
@@ -137,16 +137,20 @@ namespace OpenRA.Meow.RPG.Widgets
 					MaxSlotsSize.X, MaxSlotsSize.Y);
 		}
 
+		public readonly Skin Skin;
+
 		[ObjectCreator.UseCtor]
 		public ActorInfoWidget(ModData modData, World world, WorldRenderer worldRenderer)
 		{
 			this.modData = modData;
 			this.world = world;
 			this.worldRenderer = worldRenderer;
+			Skin = world.WorldActor.Trait<WidgetSkinManager>().DefaultSkin;
+
 			player = world.LocalPlayer;
 			GetTooltipUnit = () => TooltipUnit;
-			currentInventory = new InventoryWidget(world, worldRenderer);
-			slotsWidget = new EquipmentSlotsWidget(world, worldRenderer);
+			currentInventory = new InventoryWidget(world, worldRenderer, Skin);
+			slotsWidget = new EquipmentSlotsWidget(world, worldRenderer, Skin);
 		}
 
 		public override void Initialize(WidgetArgs args)

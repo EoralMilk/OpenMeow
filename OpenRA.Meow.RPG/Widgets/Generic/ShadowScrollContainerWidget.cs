@@ -8,7 +8,7 @@ namespace OpenRA.Meow.RPG.Widgets
 {
 	public class ShadowScrollContainerWidget : ShadowContainerWidget
 	{
-		const int ThumbWidth = Skin.ScrollbarWidth - Skin.ScrollbarBorderWidth;
+		public int ThumbWidth => Skin.ScrollbarWidth - Skin.ScrollbarBorderWidth;
 
 		readonly ContainerWidget scrollContent;
 
@@ -18,7 +18,8 @@ namespace OpenRA.Meow.RPG.Widgets
 		int thumbPosition;
 		int scroll;
 
-		protected ShadowScrollContainerWidget()
+		protected ShadowScrollContainerWidget(Skin skin)
+			: base(skin)
 		{
 			base.AddChild(scrollContent = new ContainerWidget());
 		}

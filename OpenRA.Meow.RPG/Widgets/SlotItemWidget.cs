@@ -10,10 +10,10 @@ namespace OpenRA.Meow.RPG.Widgets
 {
 	public sealed class SlotItemWidget : ShadowContainerWidget
 	{
-		const int RowWidth = Skin.InventoryWidth - Skin.ScrollbarWidth - Skin.SpacingSmall * 2;
-		const int TextX = Skin.InventoryThumbnailSizeX + Skin.SpacingSmall;
-		const int TextWidth = RowWidth - TextX - 2;
-		const int StatsY = Skin.InventoryThumbnailSizeY - Skin.SpacingLarge - Skin.InventoryLabelHeight;
+		readonly int rowWidth;
+		readonly int textX;
+		readonly int textWidth;
+		readonly int statsY;
 
 		readonly Actor actor;
 		Item item;
@@ -21,20 +21,28 @@ namespace OpenRA.Meow.RPG.Widgets
 		ThumbnailWidget thumbnailWidget;
 		LabelWidget labelWidget;
 		readonly EquipmentSlot slot;
-		public SlotItemWidget(Actor actor, EquipmentSlot equipmentSlot, Item item, WorldRenderer worldRenderer)
+
+		public SlotItemWidget(Actor actor, EquipmentSlot equipmentSlot, Item item, WorldRenderer worldRenderer, Skin skin)
+			: base(skin)
 		{
 			this.actor = actor;
 			this.worldRenderer = worldRenderer;
 			slot = equipmentSlot;
-			Bounds = new Rectangle(Skin.SpacingSmall, 0, RowWidth, Skin.InventoryThumbnailSizeY + 6);
+			rowWidth = Skin.InventoryWidth - Skin.ScrollbarWidth - Skin.SpacingSmall * 2;
+			textX = Skin.InventoryThumbnailSizeX + Skin.SpacingSmall;
+			textWidth = rowWidth - textX - 2;
+			statsY = Skin.InventoryThumbnailSizeY - Skin.SpacingLarge - Skin.InventoryLabelHeight;
+
+			Bounds = new Rectangle(Skin.SpacingSmall, 0, rowWidth, Skin.InventoryThumbnailSizeY + 6);
 			Render = true;
 
 			labelWidget = new LabelWidget
 			{
 				Text = slot.Name,
-				Bounds = new Rectangle(Skin.SpacingLarge, Skin.SpacingLarge, RowWidth - Skin.SpacingLarge * 2, Skin.InventoryLabelHeight),
+				Bounds = new Rectangle(Skin.SpacingLarge, Skin.SpacingLarge, rowWidth - Skin.SpacingLarge * 2, Skin.InventoryLabelHeight),
 				Font = Skin.InGameUiFont,
 				FontsForScale = Skin.Fontsmall,
+				GetColor = () => slot != null && !slot.IsTraitDisabled ? labelWidget.TextColor : Color.DarkGray,
 				Align = TextAlign.Center,
 			};
 
@@ -58,7 +66,7 @@ namespace OpenRA.Meow.RPG.Widgets
 				labelWidget = new LabelWidget
 				{
 					Text = slot.Name,
-					Bounds = new Rectangle(Skin.SpacingLarge, Skin.SpacingLarge, RowWidth - Skin.SpacingLarge * 2, Skin.InventoryLabelHeight),
+					Bounds = new Rectangle(Skin.SpacingLarge, Skin.SpacingLarge, rowWidth - Skin.SpacingLarge * 2, Skin.InventoryLabelHeight),
 					Font = Skin.InGameUiFont,
 					FontsForScale = Skin.Fontsmall,
 					Align = TextAlign.Center,
@@ -68,7 +76,7 @@ namespace OpenRA.Meow.RPG.Widgets
 				return;
 			}
 
-			thumbnailWidget = new ThumbnailWidget(item, worldRenderer)
+			thumbnailWidget = new ThumbnailWidget(item, worldRenderer, Skin)
 			{
 				Bounds = new Rectangle(3, 3, Skin.InventoryThumbnailSizeX, Skin.InventoryThumbnailSizeY)
 			};
@@ -76,7 +84,7 @@ namespace OpenRA.Meow.RPG.Widgets
 			labelWidget = new LabelWidget
 			{
 				Text = item.Name,
-				Bounds = new Rectangle(TextX, Skin.SpacingLarge, TextWidth, Skin.InventoryLabelHeight),
+				Bounds = new Rectangle(textX, Skin.SpacingLarge, textWidth, Skin.InventoryLabelHeight),
 				Font = Skin.InGameUiFont,
 				FontsForScale = Skin.Fontsmall,
 			};

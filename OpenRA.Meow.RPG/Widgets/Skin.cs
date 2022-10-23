@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using OpenRA.Meow.RPG.Mechanics;
 using OpenRA.Primitives;
+using OpenRA.Traits;
 
 namespace OpenRA.Meow.RPG.Widgets
 {
@@ -25,56 +27,56 @@ namespace OpenRA.Meow.RPG.Widgets
 		}
 	}
 
-	public static class Skin
+	public class Skin
 	{
-		public const int InGameUiWidth = 1280;
-		public const int InGameUiHeight = 200;
-		public const string InGameUiFont = "Ethnocentric.12";
-		public const string InGameUiFontSmall = "Ethnocentric.11";
-		public const string InGameUiFontLittle = "Ethnocentric.10";
-		public const string InGameUiFontTiny = "Ethnocentric.8";
+		public readonly int InGameUiWidth = 1280;
+		public readonly int InGameUiHeight = 200;
+		public readonly string InGameUiFont = "Ethnocentric.12";
+		public readonly string InGameUiFontSmall = "Ethnocentric.11";
+		public readonly string InGameUiFontLittle = "Ethnocentric.10";
+		public readonly string InGameUiFontTiny = "Ethnocentric.8";
 
-		public static string[] Fontsmall = new string[] { Skin.InGameUiFontSmall, Skin.InGameUiFontLittle, Skin.InGameUiFontTiny};
+		public string[] Fontsmall => new string[] { InGameUiFontSmall, InGameUiFontLittle, InGameUiFontTiny};
 
-		public const int ScrollbarWidth = 10;
-		public const int ScrollbarBorderWidth = 1;
+		public readonly int ScrollbarWidth = 10;
+		public readonly int ScrollbarBorderWidth = 1;
 
-		public const int ActorIconHeight = 48;
-		public const int ActorIconWidth = 64;
-		public const int ActorHealthDiv = 100;
-		public const int ActorExpDiv = 100;
+		public readonly int ActorIconHeight = 48;
+		public readonly int ActorIconWidth = 64;
+		public readonly int ActorHealthDiv = 100;
+		public readonly int ActorExpDiv = 100;
 
-		public const int MinimapWidth = 180;
+		public readonly int MinimapWidth = 180;
 
-		public const int ResourcesWidth = 105;
-		public const int ResourceHeight = 25;
+		public readonly int ResourcesWidth = 105;
+		public readonly int ResourceHeight = 25;
 
-		public const int SquadsWidth = 235;
-		public const int SquadLabelHeight = 15;
-		public const int SquadThumbnailSize = 50;
+		public readonly int SquadsWidth = 235;
+		public readonly int SquadLabelHeight = 15;
+		public readonly int SquadThumbnailSize = 50;
 
-		public const int CharacterWidth = 100;
-		public const int CharacterPreviewHeight = 110;
-		public const int CharacterLabelHeight = 14;
+		public readonly int CharacterWidth = 100;
+		public readonly int CharacterPreviewHeight = 110;
+		public readonly int CharacterLabelHeight = 14;
 
-		public const int ActorNameHeight = 20;
+		public readonly int ActorNameHeight = 20;
 
-		public const int ActionsWidth = 180;
-		public const int ActionsButtonSize = 50;
+		public readonly int ActionsWidth = 180;
+		public readonly int ActionsButtonSize = 50;
 
-		public const int InventoryWidth = 150;
-		public const int InventoryThumbnailSizeX = 40;
-		public const int InventoryThumbnailSizeY = 40;
-		public const int InventoryLabelHeight = 16;
+		public readonly int InventoryWidth = 150;
+		public readonly int InventoryThumbnailSizeX = 40;
+		public readonly int InventoryThumbnailSizeY = 40;
+		public readonly int InventoryLabelHeight = 16;
 
-		public const int SpacingLarge = 10;
-		public const int SpacingSmall = 5;
+		public readonly int SpacingLarge = 10;
+		public readonly int SpacingSmall = 5;
 
-		public static Color Background = Color.FromArgb(0xff, 0x00, 0x33, 0x44);
-		public static readonly Color ScrollbarBorderColor = Color.FromArgb(0xff, 0xbb, 0xee, 0xff);
-		public static readonly Color ScrollbarThumbColor = Color.FromArgb(0x88, 0x00, 0xaa, 0xdd);
+		public readonly Color Background = Color.FromArgb(0xff, 0x00, 0x33, 0x44);
+		public readonly Color ScrollbarBorderColor = Color.FromArgb(0xff, 0xbb, 0xee, 0xff);
+		public readonly Color ScrollbarThumbColor = Color.FromArgb(0x88, 0x00, 0xaa, 0xdd);
 
-		public static readonly ShadowSkin BrightShadowSkin = new ShadowSkin
+		public readonly ShadowSkin BrightShadowSkin = new ShadowSkin
 		(
 			borderSize: 1,
 			shadowSize: 5,
@@ -83,7 +85,7 @@ namespace OpenRA.Meow.RPG.Widgets
 			shadowTransparent: Color.FromArgb(0x00, 0x0, 0xaa, 0xdd)
 		);
 
-		public static readonly ShadowSkin DarkShadowSkin = new ShadowSkin
+		public readonly ShadowSkin DarkShadowSkin = new ShadowSkin
 		(
 			borderSize: 1,
 			shadowSize: 5,
@@ -92,7 +94,7 @@ namespace OpenRA.Meow.RPG.Widgets
 			shadowTransparent: Color.FromArgb(0x00, 0x00, 0xaa, 0xdd)
 		);
 
-		public static readonly ShadowSkin ActiveShadowSkin = new ShadowSkin
+		public readonly ShadowSkin ActiveShadowSkin = new ShadowSkin
 		(
 			borderSize: 1,
 			shadowSize: 5,
@@ -101,7 +103,7 @@ namespace OpenRA.Meow.RPG.Widgets
 			shadowTransparent: Color.FromArgb(0x00, 0xee, 0x77, 0x00)
 		);
 
-		public static readonly ShadowSkin DisabledShadowSkin = new ShadowSkin
+		public readonly ShadowSkin DisabledShadowSkin = new ShadowSkin
 		(
 			borderSize: 1,
 			shadowSize: 5,
@@ -110,7 +112,7 @@ namespace OpenRA.Meow.RPG.Widgets
 			shadowTransparent: Color.FromArgb(0x00, 0x88, 0x88, 0x88)
 		);
 
-		public static readonly ShadowSkin HoverShadowSkin = new ShadowSkin
+		public readonly ShadowSkin HoverShadowSkin = new ShadowSkin
 		(
 			borderSize: 1,
 			shadowSize: 5,

@@ -61,6 +61,7 @@ namespace OpenRA.Meow.RPG.Mechanics
 		INotifyInventory[] inventoryNotifiers = Array.Empty<INotifyInventory>();
 
 		public IEnumerable<Item> Items => items.ToArray();
+		public string Name => Info.Name;
 
 		public Inventory(Actor self, InventoryInit inventoryInit, InventoryInfo inventoryInfo)
 		{
@@ -132,7 +133,7 @@ namespace OpenRA.Meow.RPG.Mechanics
 
 		public void ResolveOrder(Actor self, Order order)
 		{
-			if (order.OrderString == "TryAddItem")
+			if (order.OrderString == "TryAddItem" && order.TargetString == Name)
 			{
 				TryAdd(self, self.World.WorldActor.Trait<ItemCache>().GetItem(order.ExtraData));
 			}

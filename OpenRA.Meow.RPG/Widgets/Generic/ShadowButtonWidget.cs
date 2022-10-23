@@ -15,7 +15,8 @@ namespace OpenRA.Meow.RPG.Widgets
 		protected Func<bool> IsActive = () => false;
 #pragma warning restore IDE1006 // 命名样式
 
-		protected ShadowButtonWidget()
+		protected ShadowButtonWidget(Skin skin)
+			: base(skin)
 		{
 			IgnoreMouseOver = false;
 			IgnoreChildMouseOver = true;

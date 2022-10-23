@@ -13,7 +13,8 @@ namespace OpenRA.Meow.RPG.Widgets
 		readonly WorldRenderer worldRenderer;
 		readonly Animation thumbnail;
 
-		public ThumbnailWidget(Item item, WorldRenderer worldRenderer)
+		public ThumbnailWidget(Item item, WorldRenderer worldRenderer, Skin skin)
+			: base(skin)
 		{
 			this.item = item;
 			this.worldRenderer = worldRenderer;

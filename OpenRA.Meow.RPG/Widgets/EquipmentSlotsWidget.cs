@@ -16,11 +16,11 @@ namespace OpenRA.Meow.RPG.Widgets
 
 		Actor thisActor;
 		readonly World world;
-		public EquipmentSlotsWidget(World world,WorldRenderer worldRenderer)
+		public EquipmentSlotsWidget(World world,WorldRenderer worldRenderer, Skin skin)
+			: base(skin)
 		{
 			this.world = world;
 			this.worldRenderer = worldRenderer;
-
 			BottomSpacing = Skin.SpacingSmall;
 		}
 
@@ -50,7 +50,7 @@ namespace OpenRA.Meow.RPG.Widgets
 
 			foreach (var slot in slots)
 			{
-				var slotWidget = new SlotItemWidget(thisActor, slot, slot.Item, worldRenderer);
+				var slotWidget = new SlotItemWidget(thisActor, slot, slot.Item, worldRenderer, Skin);
 				slotWidgets.Add(slot, slotWidget);
 				AddChild(slotWidget);
 

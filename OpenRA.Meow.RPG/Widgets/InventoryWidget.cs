@@ -19,11 +19,12 @@ namespace OpenRA.Meow.RPG.Widgets
 		public Actor OtherInventoryActor;
 		public Inventory OtherInventory;
 		readonly World world;
-		public InventoryWidget(World world,WorldRenderer worldRenderer)
+
+		public InventoryWidget(World world,WorldRenderer worldRenderer, Skin skin)
+			: base(skin)
 		{
 			this.world = world;
 			this.worldRenderer = worldRenderer;
-
 			BottomSpacing = Skin.SpacingSmall;
 		}
 
@@ -50,7 +51,7 @@ namespace OpenRA.Meow.RPG.Widgets
 					if (itemWidgets.ContainsKey(item))
 						continue;
 
-					var itemWidget = new ItemWidget(this, InventoryActor, item, worldRenderer);
+					var itemWidget = new ItemWidget(this, InventoryActor, item, worldRenderer, Skin);
 					itemWidgets.Add(item, itemWidget);
 					AddChild(itemWidget);
 				}
@@ -67,11 +68,12 @@ namespace OpenRA.Meow.RPG.Widgets
 
 		public void TryTransfer(Item item)
 		{
-			if (OtherInventoryActor == null)
+			if (OtherInventoryActor == null || OtherInventory == null)
 				return;
 
 			world.IssueOrder(new Order("TryAddItem", OtherInventoryActor, false)
 			{
+				TargetString = OtherInventory.Name,
 				ExtraData = item.ItemActor.ActorID,
 			});
 		}

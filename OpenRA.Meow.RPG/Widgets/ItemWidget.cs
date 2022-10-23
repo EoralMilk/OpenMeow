@@ -10,25 +10,34 @@ namespace OpenRA.Meow.RPG.Widgets
 {
 	public sealed class ItemWidget : ContainerWidget
 	{
-		const int RowWidth = Skin.InventoryWidth - Skin.ScrollbarWidth - Skin.SpacingSmall * 2;
-		const int TextX = Skin.InventoryThumbnailSizeX + Skin.SpacingLarge;
-		const int TextWidth = RowWidth - Skin.InventoryThumbnailSizeX - Skin.SpacingSmall;
-		const int StatsY = Skin.InventoryThumbnailSizeY - Skin.SpacingLarge - Skin.InventoryLabelHeight;
+		readonly int rowWidth;
+		readonly int textX;
+		readonly int textWidth;
+		readonly int statsY;
 
 		readonly Animation thumbnail;
 
 		readonly InventoryWidget inventoryWidget;
 		readonly Item item;
 		readonly Actor actor;
-		public ItemWidget(InventoryWidget inventoryWidget, Actor actor, Item item, WorldRenderer worldRenderer)
+		public readonly Skin Skin;
+		public ItemWidget(InventoryWidget inventoryWidget, Actor actor, Item item, WorldRenderer worldRenderer, Skin skin)
 		{
 			this.inventoryWidget = inventoryWidget;
 			this.actor = actor;
 			this.item = item;
-			Bounds = new Rectangle(Skin.SpacingSmall, 0, RowWidth, Skin.InventoryThumbnailSizeY);
+
+			Skin = skin;
+
+			rowWidth = Skin.InventoryWidth - Skin.ScrollbarWidth - Skin.SpacingSmall * 2;
+			textX = Skin.InventoryThumbnailSizeX + Skin.SpacingLarge;
+			textWidth = rowWidth - Skin.InventoryThumbnailSizeX - Skin.SpacingSmall;
+			statsY = Skin.InventoryThumbnailSizeY - Skin.SpacingLarge - Skin.InventoryLabelHeight;
+
+			Bounds = new Rectangle(Skin.SpacingSmall, 0, rowWidth, Skin.InventoryThumbnailSizeY);
 
 			AddChild(
-				new ThumbnailWidget(item, worldRenderer) {
+				new ThumbnailWidget(item, worldRenderer, Skin) {
 					Bounds = new Rectangle(0, 0, Skin.InventoryThumbnailSizeX, Skin.InventoryThumbnailSizeY) }
 			);
 
@@ -36,7 +45,7 @@ namespace OpenRA.Meow.RPG.Widgets
 				new LabelWidget
 				{
 					Text = item.Name,
-					Bounds = new Rectangle(TextX, Skin.SpacingLarge, TextWidth, Skin.InventoryLabelHeight),
+					Bounds = new Rectangle(textX, Skin.SpacingLarge, textWidth, Skin.InventoryLabelHeight),
 					Font = Skin.InGameUiFont,
 					FontsForScale = Skin.Fontsmall,
 				}

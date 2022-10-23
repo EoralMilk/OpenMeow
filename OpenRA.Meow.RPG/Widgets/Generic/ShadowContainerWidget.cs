@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using OpenRA.Graphics;
+using OpenRA.Mods.Common.Traits.Render;
 using OpenRA.Mods.Common.Widgets;
 using OpenRA.Primitives;
 using OpenRA.Widgets;
@@ -16,11 +17,18 @@ namespace OpenRA.Meow.RPG.Widgets
 	public class ShadowContainerWidget : ContainerWidget, ITogglableRenderWidget
 	{
 #pragma warning disable IDE1006 // 命名样式
-		protected Func<ShadowSkin> ShadowSkin = () => Skin.BrightShadowSkin;
+		public readonly Skin Skin;
+		protected Func<ShadowSkin> ShadowSkin;
 		protected bool Inset;
 #pragma warning restore IDE1006 // 命名样式
 
 		public bool Render { get; set; }
+
+		protected ShadowContainerWidget(Skin skin)
+		{
+			Skin = skin;
+			ShadowSkin = () => Skin.BrightShadowSkin;
+		}
 
 		public override void Draw()
 		{
