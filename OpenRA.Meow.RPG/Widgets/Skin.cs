@@ -76,6 +76,9 @@ namespace OpenRA.Meow.RPG.Widgets
 		public readonly Color ScrollbarBorderColor = Color.FromArgb(0xff, 0xbb, 0xee, 0xff);
 		public readonly Color ScrollbarThumbColor = Color.FromArgb(0x88, 0x00, 0xaa, 0xdd);
 
+		public readonly Color HPMaxColor = Color.FromArgb(150, 123, 255, 166);
+		public readonly Color HPMinColor = Color.FromArgb(175, 30, 155, 50);
+
 		public readonly ShadowSkin BrightShadowSkin = new ShadowSkin
 		(
 			borderSize: 1,

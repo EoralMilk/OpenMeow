@@ -116,6 +116,8 @@ namespace OpenRA.Meow.RPG.Widgets
 		InventoryWidget lootInventory;
 		readonly EquipmentSlotsWidget slotsWidget;
 
+		ShadowProgressBarWidget hpBar;
+
 		readonly Player player;
 		readonly World world;
 		readonly ModData modData;
@@ -179,12 +181,32 @@ namespace OpenRA.Meow.RPG.Widgets
 
 			var fontsmall = Skin.Fontsmall;
 
-			var y = 14;
-			var x = 14;
+			var border = 12;
+
+			var y = border + 2;
+			var x = border + 2;
 			var valueX = x + 50;
 
-			var labelwidth = iconX - 12 - Skin.SpacingSmall;
+			var labelwidth = iconX - border - Skin.SpacingSmall;
 			var valueWidth = labelwidth - 50;
+			hpBar = new ShadowProgressBarWidget(Skin)
+			{
+				GetProgress = () =>
+				{
+					var health = TooltipUnit.GetValidActor()?.TraitOrDefault<Health>();
+					return health == null ? 0 : (float)health.HP / health.MaxHP;
+				},
+				GetColor = () =>
+				{
+					return Color.Lerp(Skin.HPMinColor, Skin.HPMaxColor, hpBar.GetProgress());
+				},
+				IsVisible = () => TooltipUnit != null,
+				Bounds = new Rectangle(x - 2, y - 2, Bounds.Width - border * 2, Skin.CharacterLabelHeight + 4),
+			};
+
+			AddChild(
+				hpBar
+			);
 
 			AddChild(
 				new LabelWidget
