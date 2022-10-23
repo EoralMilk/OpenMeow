@@ -254,7 +254,7 @@
 		Image: mmr-test
 		ZOffset: 15
 		Scale: 10
-
+	ItemCache:
 
 World:
 	Inherits: ^BaseWorld
@@ -440,6 +440,7 @@ World:
 		TerrainFlashSequence: idle
 		TerrainFlashPalette: moveflash
 		ActorFlashType: Tint
+
 
 EditorWorld:
 	Inherits: ^BaseWorld

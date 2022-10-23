@@ -129,7 +129,7 @@ rumya:
 
 mmr-test:
 	Meshes:
-		dummy: dummy
+		dummy: missile01
 			Material: black
 
 # turret-test2:

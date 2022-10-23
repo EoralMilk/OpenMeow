@@ -9,8 +9,6 @@ namespace OpenRA.Meow.RPG.Widgets
 {
 	public sealed class ThumbnailWidget : ShadowButtonWidget
 	{
-		public int2 IconOffset = int2.Zero;
-
 		readonly Item item;
 		readonly WorldRenderer worldRenderer;
 		readonly Animation thumbnail;
@@ -33,9 +31,13 @@ namespace OpenRA.Meow.RPG.Widgets
 
 			if (thumbnail != null && thumbnail.Image != null)
 			{
-				WidgetUtils.DrawSprite(thumbnail.Image,
+				var maxScale = Math.Min((float)RenderBounds.Width / thumbnail.Image.Bounds.Width,
+					(float)RenderBounds.Height / thumbnail.Image.Bounds.Height);
+				WidgetUtils.DrawSpriteCentered(thumbnail.Image,
 					worldRenderer.Palette(item.ThumbnailPal),
-					IconOffset + RenderBounds.Location);
+					RenderBounds.Location + new int2(RenderBounds.Width / 2, RenderBounds.Height / 2) -
+						int2.FromFloat3(maxScale * thumbnail.Image.Offset),
+					maxScale);
 			}
 
 			Game.Renderer.DisableAntialiasingFilter();

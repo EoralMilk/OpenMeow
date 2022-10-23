@@ -1,6 +1,7 @@
 clothitem:
 	ConditionItem:
 		Name: cloth
+		Type: Cloth
 		ThumbnailSequence: hunterseeker
 		Condition: hascloth
 
@@ -12,37 +13,6 @@ rutestmissile:
 
 chemicalitem:
 	ConditionItem:
-		Name: chemicalspray
+		Name: chemical
 		ThumbnailSequence: chemicalmissile
 		Condition: usechemicalitem
-
-
-item1:
-	Item:
-		Name: test01
-		ThumbnailSequence: clustermissile
-
-item2:
-	Item:
-		Name: test02
-		ThumbnailSequence: chemicalmissile
-
-item3:
-	Item:
-		Name: test03
-		ThumbnailSequence: ioncannon
-
-item4:
-	Item:
-		Name: test04
-		ThumbnailSequence: hunterseeker
-
-item5:
-	Item:
-		Name: test05
-		ThumbnailSequence: emp
-
-item6:
-	Item:
-		Name: test06
-		ThumbnailSequence: droppods

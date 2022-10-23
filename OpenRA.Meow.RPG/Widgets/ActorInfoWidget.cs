@@ -173,7 +173,7 @@ namespace OpenRA.Meow.RPG.Widgets
 				}
 			);
 
-			var fontsmall = new string[] { Skin.InGameUiFontSmall, Skin.InGameUiFontLittle, Skin.InGameUiFontTiny };
+			var fontsmall = Skin.Fontsmall;
 
 			var y = 14;
 			var x = 14;

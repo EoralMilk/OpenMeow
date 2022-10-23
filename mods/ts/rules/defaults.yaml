@@ -749,7 +749,7 @@
 	HiddenUnderFog:
 	ActorLostNotification:
 		TextNotification: Unit lost.
-	DamagedByTerrain:
+	DamagedByTerrain@Tiberium:
 		Terrain: Tiberium, BlueTiberium
 		Damage: 200
 		DamageInterval: 16
@@ -1723,7 +1723,7 @@
 		Connections: 0,-1, 0,1
 
 ^HealsOnTiberium:
-	DamagedByTerrain:
+	DamagedByTerrain@Tiberium:
 		Damage: -200
 		DamageInterval: 16
 		Terrain: Tiberium, BlueTiberium

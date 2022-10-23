@@ -110,7 +110,7 @@ JUMPJET:
 	-TakeCover:
 	Hovers:
 		RequiresCondition: airborne
-	DamagedByTerrain:
+	DamagedByTerrain@Tiberium:
 		RequiresCondition: !inside-tunnel && !airborne
 	ProducibleWithLevel:
 		Prerequisites: barracks.upgraded

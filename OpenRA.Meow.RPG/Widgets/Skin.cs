@@ -34,6 +34,8 @@ namespace OpenRA.Meow.RPG.Widgets
 		public const string InGameUiFontLittle = "Ethnocentric.10";
 		public const string InGameUiFontTiny = "Ethnocentric.8";
 
+		public static string[] Fontsmall = new string[] { Skin.InGameUiFontSmall, Skin.InGameUiFontLittle, Skin.InGameUiFontTiny};
+
 		public const int ScrollbarWidth = 10;
 		public const int ScrollbarBorderWidth = 1;
 
@@ -61,8 +63,8 @@ namespace OpenRA.Meow.RPG.Widgets
 		public const int ActionsButtonSize = 50;
 
 		public const int InventoryWidth = 150;
-		public const int InventoryThumbnailSizeX = 64;
-		public const int InventoryThumbnailSizeY = 48;
+		public const int InventoryThumbnailSizeX = 40;
+		public const int InventoryThumbnailSizeY = 40;
 		public const int InventoryLabelHeight = 16;
 
 		public const int SpacingLarge = 10;

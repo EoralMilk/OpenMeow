@@ -1990,6 +1990,9 @@ namespace OpenRA
 
 		public int HeightOfTerrain(in WPos pos)
 		{
+			if (pos.X < 0 || pos.Y < 0)
+				return 0;
+
 			var u = pos.X / MapGrid.MapMiniCellWidth;
 			var v = pos.Y / MapGrid.MapMiniCellWidth;
 			if (u < 0 || v < 0 || u >= VertexArrayWidth - 1 || v >= VertexArrayHeight - 1)

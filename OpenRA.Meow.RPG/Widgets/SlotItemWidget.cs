@@ -11,8 +11,8 @@ namespace OpenRA.Meow.RPG.Widgets
 	public sealed class SlotItemWidget : ShadowContainerWidget
 	{
 		const int RowWidth = Skin.InventoryWidth - Skin.ScrollbarWidth - Skin.SpacingSmall * 2;
-		const int TextX = Skin.InventoryThumbnailSizeX + Skin.SpacingLarge;
-		const int TextWidth = RowWidth - Skin.InventoryThumbnailSizeX - Skin.SpacingSmall;
+		const int TextX = Skin.InventoryThumbnailSizeX + Skin.SpacingSmall;
+		const int TextWidth = RowWidth - TextX - 2;
 		const int StatsY = Skin.InventoryThumbnailSizeY - Skin.SpacingLarge - Skin.InventoryLabelHeight;
 
 		readonly Actor actor;
@@ -20,13 +20,28 @@ namespace OpenRA.Meow.RPG.Widgets
 		readonly WorldRenderer worldRenderer;
 		ThumbnailWidget thumbnailWidget;
 		LabelWidget labelWidget;
-		public SlotItemWidget(Actor actor, Item item, WorldRenderer worldRenderer)
+		readonly EquipmentSlot slot;
+		public SlotItemWidget(Actor actor, EquipmentSlot equipmentSlot, Item item, WorldRenderer worldRenderer)
 		{
 			this.actor = actor;
 			this.worldRenderer = worldRenderer;
-			Bounds = new Rectangle(Skin.SpacingSmall, 0, RowWidth, Skin.InventoryThumbnailSizeY);
+			slot = equipmentSlot;
+			Bounds = new Rectangle(Skin.SpacingSmall, 0, RowWidth, Skin.InventoryThumbnailSizeY + 6);
 			Render = true;
+
+			labelWidget = new LabelWidget
+			{
+				Text = slot.Name,
+				Bounds = new Rectangle(Skin.SpacingLarge, Skin.SpacingLarge, RowWidth - Skin.SpacingLarge * 2, Skin.InventoryLabelHeight),
+				Font = Skin.InGameUiFont,
+				FontsForScale = Skin.Fontsmall,
+				Align = TextAlign.Center,
+			};
+
+			AddChild(labelWidget);
+
 			SetItem(item);
+			ShadowSkin = () => slot != null && !slot.IsTraitDisabled ? Skin.BrightShadowSkin : Skin.DarkShadowSkin;
 		}
 
 		public void SetItem(Item item)
@@ -34,24 +49,36 @@ namespace OpenRA.Meow.RPG.Widgets
 			if (this.item == item)
 				return;
 
-			if (this.item != null)
-				RemoveChildren();
+			RemoveChildren();
 
 			this.item = item;
 
 			if (item == null)
+			{
+				labelWidget = new LabelWidget
+				{
+					Text = slot.Name,
+					Bounds = new Rectangle(Skin.SpacingLarge, Skin.SpacingLarge, RowWidth - Skin.SpacingLarge * 2, Skin.InventoryLabelHeight),
+					Font = Skin.InGameUiFont,
+					FontsForScale = Skin.Fontsmall,
+					Align = TextAlign.Center,
+				};
+
+				AddChild(labelWidget);
 				return;
+			}
 
 			thumbnailWidget = new ThumbnailWidget(item, worldRenderer)
 			{
-				Bounds = new Rectangle(0, 0, Skin.InventoryThumbnailSizeX, Skin.InventoryThumbnailSizeY)
+				Bounds = new Rectangle(3, 3, Skin.InventoryThumbnailSizeX, Skin.InventoryThumbnailSizeY)
 			};
 
 			labelWidget = new LabelWidget
 			{
 				Text = item.Name,
 				Bounds = new Rectangle(TextX, Skin.SpacingLarge, TextWidth, Skin.InventoryLabelHeight),
-				Font = Skin.InGameUiFontSmall
+				Font = Skin.InGameUiFont,
+				FontsForScale = Skin.Fontsmall,
 			};
 
 			AddChild(thumbnailWidget);

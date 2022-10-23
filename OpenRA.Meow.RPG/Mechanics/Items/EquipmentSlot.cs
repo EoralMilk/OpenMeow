@@ -41,7 +41,7 @@ namespace OpenRA.Meow.RPG.Mechanics
 		}
 	}
 
-	public class EquipmentSlotInfo : TraitInfo
+	public class EquipmentSlotInfo : ConditionalTraitInfo
 	{
 		[FieldLoader.Require]
 		public readonly string Name = null;
@@ -57,7 +57,7 @@ namespace OpenRA.Meow.RPG.Mechanics
 		}
 	}
 
-	public class EquipmentSlot : INotifyCreated, INotifyInventory, IDeathActorInitModifier, IResolveOrder
+	public class EquipmentSlot : ConditionalTrait<EquipmentSlotInfo>,INotifyCreated, INotifyInventory, IDeathActorInitModifier, IResolveOrder
 	{
 		readonly EquipmentSlotInfo info;
 
@@ -74,6 +74,7 @@ namespace OpenRA.Meow.RPG.Mechanics
 		public Actor SlotOwnerActor => slotActor;
 
 		public EquipmentSlot(EquipmentSlotInfo info, EquipmentSlotsInit equipmentSlotsInit, Actor self)
+			: base(info)
 		{
 			this.info = info;
 			slotActor = self;
@@ -87,10 +88,6 @@ namespace OpenRA.Meow.RPG.Mechanics
 			if (info.InitEquipment != null && inventory.Info.InitItems.Contains(info.InitEquipment))
 			{
 				TryEquip(self, inventory.Items.Where(i => i.ItemActor.Info.Name == info.InitEquipment).First(), false);
-			}
-			else
-			{
-				throw new Exception("inventory has no InitEquipment: " + info.InitEquipment + " , the InitEquipment should be Item Actor Name not Item Name");
 			}
 
 			equipNotifiers = self.TraitsImplementing<INotifyEquip>().ToArray();
@@ -147,6 +144,9 @@ namespace OpenRA.Meow.RPG.Mechanics
 				return true;
 
 			if (Item != null && !canReplace)
+				return false;
+
+			if (IsTraitDisabled)
 				return false;
 
 			if (item.Type != info.SlotType || (item.EquipmentSlot != null && !canFromSlot))
@@ -228,12 +228,21 @@ namespace OpenRA.Meow.RPG.Mechanics
 		{
 			if (order.OrderString == "TryEquip" && order.TargetString == Name)
 			{
-				TryEquip(self, ItemCache.GetItem(order.ExtraData), false);
+				TryEquip(self, self.World.WorldActor.Trait<ItemCache>().GetItem(order.ExtraData), false);
 			}
 			else if (order.OrderString == "TryUnequip" && order.TargetString == Name)
 			{
 				TryUnequip(self);
 			}
+		}
+
+		protected override void TraitEnabled(Actor self)
+		{
+		}
+
+		protected override void TraitDisabled(Actor self)
+		{
+			TryUnequip(self);
 		}
 	}
 }

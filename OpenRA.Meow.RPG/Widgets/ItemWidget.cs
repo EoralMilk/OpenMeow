@@ -37,7 +37,8 @@ namespace OpenRA.Meow.RPG.Widgets
 				{
 					Text = item.Name,
 					Bounds = new Rectangle(TextX, Skin.SpacingLarge, TextWidth, Skin.InventoryLabelHeight),
-					Font = Skin.InGameUiFontSmall
+					Font = Skin.InGameUiFont,
+					FontsForScale = Skin.Fontsmall,
 				}
 			);
 

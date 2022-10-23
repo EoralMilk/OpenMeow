@@ -15,9 +15,6 @@
 		ThighMesh: gear01_body-thigh
 		CoveringMaterail: mdx_underwear
 		RequiresCondition: hascloth
-	# GrantConditionOnDamageState@test:
-	# 	Condition: nocloth
-	# 	ValidDamageStates: Heavy, Critical
 	SpeedMultiplier@test:
 		RequiresCondition: hascloth
 		Modifier: 90
@@ -28,11 +25,6 @@
 		Weapon: ProtonFlameMissileCluster
 		DamageState: Heavy
 		Offset: 0,0,1024
-	ExplodeWeapon@nocloth:
-		Weapon: ProtonFlameMissileClusterSmall
-		Interval: 50
-		Offset: 0,0,1024
-		RequiresCondition: !hascloth
 	# WithMeshCloth@skirt:
 	# 	Mesh: skirt-split
 	# 	Masks: Hip
@@ -192,6 +184,16 @@ RUTEST2:
 		FromBonePose: a-s-Rig_Hand.L
 		LocalOffset: 768,0,1324
 		RequiresCondition: usechemicalitem
+	DamagedByTerrain@Tiberium:
+		Damage: -500
+		DamageInterval: 20
+		Terrain: Tiberium, BlueTiberium
+		RequiresCondition: !inside-tunnel && usechemicalitem
+	ExplodeWeapon@chemical:
+		Weapon: ProtonFlameMissileClusterSmall
+		Interval: 50
+		Offset: 0,0,1024
+		RequiresCondition: usechemicalitem
 	BlendTreeHandler:
 		DirectionTurret: primary
 	Selectable:
@@ -199,18 +201,21 @@ RUTEST2:
 	Voiced:
 		VoiceSet: Oxanna
 	EquipmentSlot@test1:
-		Name: testslot1
-		SlotType: Item
+		Name: ClothSlot
+		SlotType: Cloth
 		InitEquipment: clothitem
 	EquipmentSlot@test2:
-		Name: testslot2
+		Name: ItemSlot
 		SlotType: Item
 		InitEquipment: rutestmissile
+	EquipmentSlot@test3:
+		Name: ExtraSlot
+		SlotType: Item
+		RequiresCondition: hascloth
 	Inventory:
 		Name: test
 		InitItems: clothitem, rutestmissile, chemicalitem
-	ChangesHealth:
-		Step: 500
+
 
 RUTEST3:
 	Inherits: RUTEST

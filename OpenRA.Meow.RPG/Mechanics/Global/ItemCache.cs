@@ -5,14 +5,25 @@ using System.Text;
 using System.Threading.Tasks;
 using OpenRA.Primitives;
 using System.Xml.Linq;
+using OpenRA.Traits;
 
 namespace OpenRA.Meow.RPG.Mechanics
 {
-	public static class ItemCache
+	public class ItemCacheInfo : TraitInfo
 	{
-		public static Dictionary<uint, Actor> GameItemActors = new Dictionary<uint, Actor>();
+		public override object Create(ActorInitializer init) { return new ItemCache(init.World, this); }
+	}
 
-		public static void AddItem(uint actorId, Actor itemActor)
+	public class ItemCache : IDisposable
+	{
+		public ItemCache(World world, ItemCacheInfo itemCacheInfo)
+		{
+
+		}
+
+		public Dictionary<uint, Actor> GameItemActors = new Dictionary<uint, Actor>();
+
+		public void AddItem(uint actorId, Actor itemActor)
 		{
 			if (GameItemActors.ContainsKey(actorId))
 				throw new Exception("the itemactor id " + actorId + " has already exist");
@@ -20,7 +31,7 @@ namespace OpenRA.Meow.RPG.Mechanics
 			GameItemActors.Add(actorId, itemActor);
 		}
 
-		public static Item AddItem(World world,string itemActorInfoName)
+		public Item AddItem(World world,string itemActorInfoName)
 		{
 			var a = world.CreateActor(false, itemActorInfoName, new TypeDictionary());
 			GameItemActors.Add(a.ActorID, a);
@@ -30,12 +41,26 @@ namespace OpenRA.Meow.RPG.Mechanics
 
 			return item;
 		}
-		public static Item GetItem(uint itemActorId)
+
+		public Item GetItem(uint itemActorId)
 		{
 			if (!GameItemActors.TryGetValue(itemActorId, out Actor a))
 				throw new Exception("The actorid: " + itemActorId + " does not in dictionary");
 
 			return a.TraitOrDefault<Item>();
+		}
+
+		public void RemvoeItem(uint itemActorId)
+		{
+			if (GameItemActors.ContainsKey(itemActorId))
+			{
+				GameItemActors.Remove(itemActorId);
+			}
+		}
+
+		public void Dispose()
+		{
+			GameItemActors.Clear();
 		}
 
 	}

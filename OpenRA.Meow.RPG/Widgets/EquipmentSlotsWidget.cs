@@ -50,7 +50,7 @@ namespace OpenRA.Meow.RPG.Widgets
 
 			foreach (var slot in slots)
 			{
-				var slotWidget = new SlotItemWidget(thisActor, slot.Item, worldRenderer);
+				var slotWidget = new SlotItemWidget(thisActor, slot, slot.Item, worldRenderer);
 				slotWidgets.Add(slot, slotWidget);
 				AddChild(slotWidget);
 

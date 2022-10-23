@@ -24,6 +24,12 @@ using OpenRA.Traits;
 
 namespace OpenRA
 {
+
+	public interface IDisposeWithWorld
+	{
+		void DisposeWIthWorld();
+	}
+
 	public enum WorldType { Regular, Shellmap, Editor }
 
 	public sealed class World : IDisposable

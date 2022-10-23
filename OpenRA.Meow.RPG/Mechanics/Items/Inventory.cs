@@ -71,7 +71,7 @@ namespace OpenRA.Meow.RPG.Mechanics
 			if (Info.InitItems != null)
 				foreach (var name in Info.InitItems)
 				{
-					TryAdd(self, ItemCache.AddItem(self.World, name));
+					TryAdd(self, self.World.WorldActor.Trait<ItemCache>().AddItem(self.World, name));
 				}
 		}
 
@@ -134,7 +134,7 @@ namespace OpenRA.Meow.RPG.Mechanics
 		{
 			if (order.OrderString == "TryAddItem")
 			{
-				TryAdd(self, ItemCache.GetItem(order.ExtraData));
+				TryAdd(self, self.World.WorldActor.Trait<ItemCache>().GetItem(order.ExtraData));
 			}
 		}
 	}
