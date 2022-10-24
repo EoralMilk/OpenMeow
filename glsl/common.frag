@@ -24,8 +24,8 @@ in vec3 FragPos;
 in vec2 TexCoords;
 in vec4 vTint;
 in vec3 vRemap;
-// x is colormap index, y is combinedmap index
-// b is Shininess * 100
+// x is colormap index, y is combinedmap index, z is Shininess x 100
+// combined texture: r is remap, g is Specular, b is emission
 flat in ivec4 fMaterial;
 
 uniform sampler2DArray Textures64;
@@ -183,7 +183,7 @@ vec4 CalcDirLight(DirLight light, vec3 normal, vec3 viewDir)
 
 	// specular
 	vec3 halfwayDir = normalize(lightDir + viewDir);
-	float spec = pow(max(dot(viewDir, halfwayDir), 0.0), float(fMaterial.b) / 100.0) * combined.g * 2.0;
+	float spec = pow(max(dot(viewDir, halfwayDir), 0.0), float(fMaterial.z) / 100.0) * combined.g * 2.0;
 	vec3 specular = light.specular * spec;
 
 	// merge

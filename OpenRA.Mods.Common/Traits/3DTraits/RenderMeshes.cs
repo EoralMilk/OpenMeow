@@ -118,23 +118,6 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 		public void Remove(MeshInstance m)
 		{
 			meshes.Remove(m);
-
-			if (hasSkeleton && created)
-			{
-				foreach (var mesh in meshes)
-				{
-					if (mesh.SkeletonBinded != null)
-					{
-						if (withSkeletons.ContainsKey(mesh.SkeletonBinded))
-						{
-							mesh.DrawId = () => withSkeletons[mesh.SkeletonBinded].GetDrawId();
-							mesh.Matrix = () => withSkeletons[mesh.SkeletonBinded].Skeleton.Offset;
-							mesh.UseMatrix = true;
-						}
-					}
-				}
-			}
-
 		}
 
 

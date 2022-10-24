@@ -73,7 +73,7 @@ namespace OpenRA.Mods.Common.Graphics
 			this.width = width;
 			this.next = next;
 			this.length = length;
-			this.skip = skip;
+			this.skip = 0;
 			this.startcolor = startcolor;
 			this.endcolor = endcolor;
 			this.zOffset = zOffset;
@@ -89,7 +89,7 @@ namespace OpenRA.Mods.Common.Graphics
 			this.width = width;
 			this.next = next;
 			this.length = length;
-			this.skip = skip;
+			this.skip = 0;
 			this.startcolor = startcolor;
 			this.endcolor = endcolor;
 			this.zOffset = zOffset;

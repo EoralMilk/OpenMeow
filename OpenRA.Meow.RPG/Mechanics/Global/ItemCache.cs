@@ -23,6 +23,11 @@ namespace OpenRA.Meow.RPG.Mechanics
 
 		public Dictionary<uint, Actor> GameItemActors = new Dictionary<uint, Actor>();
 
+		public Actor GetActor(uint actorId)
+		{
+			return GameItemActors[actorId];
+		}
+
 		public void AddItem(uint actorId, Actor itemActor)
 		{
 			if (GameItemActors.ContainsKey(actorId))

@@ -128,7 +128,7 @@ namespace OpenRA.Mods.Common.Projectiles
 		public readonly int ContrailZOffset = 2047;
 
 		[Desc("Delay of the contrail.")]
-		public readonly int ContrailDelay = 1;
+		public readonly int ContrailDelay = 0;
 
 		[Desc("Width of the contrail.")]
 		public readonly WDist ContrailWidth = new WDist(64);
@@ -192,7 +192,7 @@ namespace OpenRA.Mods.Common.Projectiles
 		readonly Animation jetanim;
 		protected bool renderJet = true;
 		protected bool renderTrail = true;
-		protected bool renderContrail = true;
+		protected bool renderContrail = false;
 
 		PaletteReference pal;
 		PaletteReference jetPal;
@@ -202,7 +202,7 @@ namespace OpenRA.Mods.Common.Projectiles
 		readonly float shadowAlpha;
 
 		readonly ContrailRenderable contrail;
-		int trailTicks;
+		int trailTicks, renderTick;
 		WPos trailLastPos, pos, matLastPos;
 		TSMatrix4x4 effectMatrix;
 		protected WVec matVec = WVec.Zero;
@@ -266,6 +266,7 @@ namespace OpenRA.Mods.Common.Projectiles
 			}
 
 			trailTicks = info.TrailDelay;
+			renderTick = 0;
 			trailLastPos = args.Source;
 
 			shadowColor = new float3(info.ShadowColor.R, info.ShadowColor.G, info.ShadowColor.B) / 255f;
@@ -288,6 +289,9 @@ namespace OpenRA.Mods.Common.Projectiles
 		bool renderTickStarted = false;
 		protected virtual void RenderTick(World world, in WPos pos)
 		{
+			if (renderTick > info.ContrailDelay)
+				renderContrail = true;
+			renderTick++;
 			anim?.Tick();
 			if (renderJet)
 				jetanim?.Tick();

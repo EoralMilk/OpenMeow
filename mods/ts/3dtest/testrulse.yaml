@@ -7,14 +7,14 @@
 	WithMesh@cater:
 		Mesh: cater
 		SkeletonBinded: body
-	WithMeshCloth@gear01:
-		Mesh: gear01
-		Masks: Torso,Hip,Thigh,Leg,Foot,UpperArm,LowerArm,Hand
-		SkeletonBinded: body
-		HipMesh: gear01_body-hip
-		ThighMesh: gear01_body-thigh
-		CoveringMaterail: mdx_underwear
-		RequiresCondition: hascloth
+	# WithMeshCloth@gear01:
+	# 	Mesh: gear01
+	# 	Masks: Torso,Hip,Thigh,Leg,Foot,UpperArm,LowerArm,Hand
+	# 	SkeletonBinded: body
+	# 	HipMesh: gear01_body-hip
+	# 	ThighMesh: gear01_body-thigh
+	# 	CoveringMaterail: mdx_underwear
+	# 	RequiresCondition: hascloth
 	SpeedMultiplier@test:
 		RequiresCondition: hascloth
 		Modifier: 80
@@ -190,7 +190,7 @@ RUTEST2:
 		Terrain: Tiberium, BlueTiberium
 		RequiresCondition: !inside-tunnel && usechemicalitem
 	ExplodeWeapon@chemical:
-		Weapon: ProtonFlameMissileClusterSmall
+		Weapon: ProtonFlameCluster
 		Interval: 50
 		Offset: 0,0,1024
 		RequiresCondition: usechemicalitem

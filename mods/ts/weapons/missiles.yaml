@@ -272,7 +272,7 @@ ReaperScythe: ##todo
 	Range: 9c0
 	MinRange: 1c0
 	Projectile: VectorBooster
-	    UsingScat: true
+		UsingScat: true
 		ScatCount: 2
 		ScatWeapon: ReaperScytheScat
 		LaunchAngle: 220
@@ -499,10 +499,8 @@ ProtonFlameMissileCluster:
 		LockOnTargetTypes: Air
 		HorizonRotationRate: 13
 		VerticalRotationRate: 32
-		LifeTime: 35
-		JetPalette: lightgreen
 	Warhead@1Dam: SpreadDamage
-		Damage: 3000
+		Damage: 6000
 		Versus:
 			None: 25
 			Wood: 65
@@ -515,12 +513,45 @@ ProtonFlameMissileCluster:
 		FireCount: 12
 		ForceTargetGround: true
 
-ProtonFlameMissileClusterSmall:
-	Inherits: ProtonFlameMissileCluster
+ProtonFlameCluster:
 	Warhead@Cluster: FireRadius
 		Weapon: GreenFireballLauncher
 		StartOffset: 0,-1024,0
 		FireCount: 3
 		ForceTargetGround: true
-	-Warhead@2Eff: CreateEffect
-	-Warhead@3EffWater:
+
+
+GreenScytheScat:
+	Inherits: ReaperScytheScat
+	Projectile: VectorBooster
+		LaunchAngle: -88
+		ContrailStartColor: 00FF00
+		ContrailStartColorOuter: AAAA00
+		JetPalette: lightgreen
+
+ProtonFlameMissileClusterSmall:
+	Inherits: ProtonFlameMissileCluster
+	-Report:
+	Projectile: VectorBooster
+		Speed: 100
+		MaxSpeed: 550
+		Acceleration: 10
+		IgnitionDelay: 15
+		ContrailDelay: 15
+		LockOnDelay: 10
+		LaunchAngle: -88
+		HorizonRotationRate: 5
+		VerticalRotationRate: 3
+		ContrailStartColor: 00FF00
+		ContrailStartColorOuter: AAAA00
+		AirburstAltitude: 0c512
+		JetPalette: lightgreen
+		UsingScat: true
+		ScatCount: 3
+		ScatWeapon: GreenScytheScat
+		ScatDist: 2c0
+	Warhead@Cluster: FireRadius
+		Weapon: GreenFireballLauncher
+		StartOffset: 0,-1024,0
+		FireCount: 3
+		ForceTargetGround: true

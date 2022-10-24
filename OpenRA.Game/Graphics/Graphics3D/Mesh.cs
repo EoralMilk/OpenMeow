@@ -12,12 +12,12 @@ namespace OpenRA.Graphics
 	{
 		public IOrderedMesh OrderedMesh { get; }
 
-		public readonly Func<WPos> PoistionFunc;
-		public readonly Func<WRot> RotationFunc;
-		public readonly Func<bool> IsVisible;
+		public Func<WPos> PoistionFunc;
+		public Func<WRot> RotationFunc;
+		public Func<bool> IsVisible;
 		public Func<TSMatrix4x4> Matrix;
 		public bool UseMatrix = false;
-		public readonly string SkeletonBinded = null;
+		public string SkeletonBinded = null;
 
 		public Func<int> DrawId;
 		public IMaterial Material;
@@ -40,6 +40,17 @@ namespace OpenRA.Graphics
 			IsVisible = isVisible;
 			DrawId = () => -1;
 			SkeletonBinded = skeleton;
+			Material = OrderedMesh.DefaultMaterial;
+		}
+
+		public MeshInstance(IOrderedMesh mesh)
+		{
+			OrderedMesh = mesh;
+			UseMatrix = true;
+			Matrix = () => TSMatrix4x4.Identity;
+			IsVisible = () => false;
+			DrawId = () => -1;
+			SkeletonBinded = null;
 			Material = OrderedMesh.DefaultMaterial;
 		}
 
@@ -104,6 +115,8 @@ namespace OpenRA.Graphics
 
 		public readonly float Shininess;
 
+		public readonly float Emission;
+
 		readonly int diffuseTint;
 		readonly int combineTint;
 
@@ -112,7 +125,8 @@ namespace OpenRA.Graphics
 		public CombinedMaterial(string name,
 			Sheet diffuseMap, float3 diffuseTint,
 			Sheet combinedMap, float specularTint,
-			float shininess)
+			float shininess,
+			float emission)
 		{
 			Name = name;
 			DiffuseTint = diffuseTint;
@@ -120,12 +134,13 @@ namespace OpenRA.Graphics
 			DiffuseMap = diffuseMap;
 			CombinedMap = combinedMap;
 			Shininess = shininess;
+			Emission = emission;
 			this.diffuseTint =
 				((int)(MathF.Min(diffuseTint.X, 1f) * 255) << 16) +
 				((int)(MathF.Min(diffuseTint.Y, 1f) * 255) << 8) +
 				((int)(MathF.Min(diffuseTint.Z, 1f) * 255));
 			this.diffuseTint = this.diffuseTint | (1 << 31);
-			combineTint = (0 << 16) + ((int)(MathF.Min(specularTint, 1f) * 255) << 8) + 0;
+			combineTint = (0 << 16) + ((int)(MathF.Min(specularTint, 1f) * 255) << 8) + (int)(MathF.Min(Emission, 1f) * 255);
 			combineTint = combineTint | (1 << 31);
 			texSize = DiffuseMap != null ? DiffuseMap.Size.Width : CombinedMap != null ? CombinedMap.Size.Width : 0;
 		}
@@ -170,6 +185,8 @@ namespace OpenRA.Graphics
 				shader.SetBool("BaseCombinedHasTexture", false);
 				shader.SetFloat("BaseSpecular", SpecularTint);
 			}
+
+			shader.SetFloat("BaseShininess", Shininess);
 		}
 
 		public void Dispose()

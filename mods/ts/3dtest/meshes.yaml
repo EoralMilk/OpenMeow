@@ -25,12 +25,12 @@ rumya:
 			catidle: catidle_Skeleton_CommonBody
 	Meshes:
 		face_addon: face_addon_DT_0
-			UseDQBSkin: false
+			UseDQBSkin: true
 			Material: face_addon
 		body-head: body_DT_0
 			Shader: CharacterBody
 			BaseMaterial: body
-			UseDQBSkin: false
+			UseDQBSkin: true
 			Material: none
 		body-torso: body_DT_1
 			Shader: CharacterBody
@@ -55,12 +55,12 @@ rumya:
 		body-foot: body_DT_5
 			Shader: CharacterBody
 			BaseMaterial: body
-			UseDQBSkin: false
+			UseDQBSkin: true
 			Material: none
 		body-upperarm: body_DT_6
 			Shader: CharacterBody
 			BaseMaterial: body
-			UseDQBSkin: false
+			UseDQBSkin: true
 			Material: none
 		body-lowerarm: body_DT_7
 			Shader: CharacterBody

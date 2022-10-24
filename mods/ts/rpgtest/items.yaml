@@ -1,18 +1,30 @@
 clothitem:
-	ConditionItem:
-		Name: cloth
+	GearItem:
+		Name: gear
 		Type: Cloth
 		ThumbnailSequence: hunterseeker
 		Condition: hascloth
 
+		GearType: Replacement
+		Image: rumya
+		AddonMeshPart: gear01
+		Masks: Torso,Hip,Thigh,Leg,Foot,UpperArm,LowerArm,Hand
+		HipMesh: gear01_body-hip
+		ThighMesh: gear01_body-thigh
+
 rutestmissile:
-	ConditionItem:
-		Name: missile
+	GearItem:
+		Name: underwaer
 		ThumbnailSequence: clustermissile
 		Condition: userutestmissile
+
+		GearType: CloseFitting
+		CoveringMaterail: mdx_underwear
+		Masks: Torso,Hip,Thigh,Leg
 
 chemicalitem:
 	ConditionItem:
 		Name: chemical
 		ThumbnailSequence: chemicalmissile
 		Condition: usechemicalitem
+

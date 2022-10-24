@@ -24,8 +24,8 @@ in vec3 FragPos;
 in vec2 TexCoords;
 in vec4 vTint;
 in vec3 vRemap;
-// x is colormap index, y is combinedmap index
-// b is Shininess * 100
+// x is colormap index, y is combinedmap index, z is Shininess x 100
+// combined texture: r is remap, g is Specular, b is emission
 flat in ivec4 fMaterial;
 
 uniform sampler2DArray Textures64;
@@ -38,6 +38,7 @@ uniform bool BaseColorHasTexture;
 uniform bool BaseCombinedHasTexture;
 uniform vec3 BaseDiffuseColor;
 uniform float BaseSpecular;
+uniform float BaseShininess;
 uniform sampler2D BaseColorTexture;
 uniform sampler2D BaseCombinedTexture;
 
@@ -54,21 +55,20 @@ uniform float ShadowBias;
 uniform int ShadowSampleType;
 uniform float AmbientIntencity;
 
+float additionAlpha = 0.0;
+
 vec4 GetColor(){
+	vec4 body, addition;
+	if (BaseColorHasTexture)
+		body = texture(BaseColorTexture, TexCoords);
+	else
+		body = vec4(BaseDiffuseColor, 1.0);
+
 	if (fMaterial.r < 0)
 	{
-		if (BaseColorHasTexture)
-			return texture(BaseColorTexture, TexCoords);
-		else
-			return vec4(BaseDiffuseColor, 1.0);
+		addition = vec4(0.0);
 	}
 	else{
-		vec4 body;
-		if (BaseColorHasTexture)
-			body = texture(BaseColorTexture, TexCoords);
-		else
-			body = vec4(BaseDiffuseColor, 1.0);
-		vec4 addition;
 		switch(fMaterial.a){
 			case 64:
 				addition = texture(Textures64, vec3(TexCoords, float(fMaterial.r)));
@@ -81,26 +81,28 @@ vec4 GetColor(){
 			case 1024:
 				addition = texture(Textures1024, vec3(TexCoords, float(fMaterial.r)));
 		}
-
-		return vec4(mix(body.rgb,addition.rgb,addition.a),max(body.a, addition.a));
 	}
+
+	additionAlpha = addition.a;
+	return vec4(mix(body.rgb,addition.rgb,additionAlpha),max(body.a, additionAlpha));
 }
 
 vec4 GetCombinedColor(){
+	vec4 body, addition;
+	if (BaseCombinedHasTexture)
+		body = texture(BaseCombinedTexture, TexCoords);
+	else
+		body = vec4(0, BaseSpecular, 0, 1.0);
+
 	if (fMaterial.g < 0)
 	{
-		if (BaseCombinedHasTexture)
-			return texture(BaseCombinedTexture, TexCoords);
-		else
-			return vec4(0, BaseSpecular, 0, 1.0);
+		addition = vec4(
+			float((fMaterial.g >> 16) & 255) / 255.0,
+			float((fMaterial.g >> 8) & 255) / 255.0,
+			float(fMaterial.g & 255) / 255.0,
+			1.0);
 	}
 	else{
-		vec4 body;
-		if (BaseCombinedHasTexture)
-			body = texture(BaseCombinedTexture, TexCoords);
-		else
-			body = vec4(0, BaseSpecular, 0, 1.0);
-		vec4 addition;
 		switch(fMaterial.a){
 			case 64:
 				addition = texture(Textures64, vec3(TexCoords, float(fMaterial.g)));
@@ -113,9 +115,9 @@ vec4 GetCombinedColor(){
 			case 1024:
 				addition =  texture(Textures1024, vec3(TexCoords, float(fMaterial.g)));
 		}
-
-		return mix(body,addition,addition.a);
 	}
+
+	return mix(body,addition,additionAlpha);
 }
 
 float CalShadow(DirLight light, vec3 normal){
@@ -208,7 +210,7 @@ vec4 CalcDirLight(DirLight light, vec3 normal, vec3 viewDir)
 
 	// specular
 	vec3 halfwayDir = normalize(lightDir + viewDir);
-	float spec = pow(max(dot(viewDir, halfwayDir), 0.0), float(fMaterial.b) / 100.0) * combined.g * 2.0;
+	float spec = pow(max(dot(viewDir, halfwayDir), 0.0), mix(BaseShininess,float(fMaterial.z) / 100.0,additionAlpha)) * combined.g;
 	vec3 specular = light.specular * spec;
 
 	// merge

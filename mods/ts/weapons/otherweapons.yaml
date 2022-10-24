@@ -575,6 +575,12 @@ VeinBomb:
 		Range: 4
 		AirThreshold: 8c0
 		ValidTargets: Ground, Water, Air
+	Warhead@2Eff: CreateEffect
+		Image: cloud
+		Explosions: cloud1, cloud2
+		ExplosionPalette: effectdust
+		ImpactSounds: expnew13.aud
+		ImpactActors: false
 	Warhead@Res1: CreateResource
 		AddsResourceType: Veins
 		Size: 0,0

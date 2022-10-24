@@ -14,6 +14,7 @@ namespace OpenRA.Mods.Common.Graphics
 		readonly float specTint;
 
 		readonly float shininess;
+		readonly float emission;
 		readonly string diffMapName;
 		readonly string combinedMapName;
 		readonly Sheet diffuseTex;
@@ -50,6 +51,7 @@ namespace OpenRA.Mods.Common.Graphics
 			diffMapName = ReadYamlInfo.LoadField(info, "DiffuseMap", "NO_TEXTURE");
 			combinedMapName = ReadYamlInfo.LoadField(info, "CombinedMap", "NO_TEXTURE");
 			shininess = ReadYamlInfo.LoadField(info, "Shininess", 0.0f);
+			emission = ReadYamlInfo.LoadField(info, "Emission", 0.0f);
 			if (diffMapName == "NO_TEXTURE")
 			{
 				diffuseTex = null;
@@ -97,7 +99,7 @@ namespace OpenRA.Mods.Common.Graphics
 
 		public IMaterial CreateMaterial()
 		{
-			return new CombinedMaterial(name, diffuseTex, diffuseTint, combinedTex, specTint, shininess);
+			return new CombinedMaterial(name, diffuseTex, diffuseTint, combinedTex, specTint, shininess, emission);
 		}
 	}
 
