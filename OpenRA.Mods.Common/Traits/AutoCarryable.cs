@@ -25,6 +25,8 @@ namespace OpenRA.Mods.Common.Traits
 	public class AutoCarryable : Carryable, ICallForTransport
 	{
 		readonly AutoCarryableInfo info;
+		public CPos? Destination { get; private set; }
+		public bool WantsTransport => Destination != null && !IsTraitDisabled;
 
 		public AutoCarryable(AutoCarryableInfo info)
 			: base(info)
@@ -63,13 +65,13 @@ namespace OpenRA.Mods.Common.Traits
 				return;
 
 			// Inform all idle carriers
-			var carriers = self.World.ActorsWithTrait<Carryall>()
-				.Where(c => c.Trait.State == Carryall.CarryallState.Idle && !c.Actor.IsDead && c.Actor.Owner == self.Owner && c.Actor.IsInWorld)
+			var carriers = self.World.ActorsWithTrait<AutoCarryall>()
+				.Where(c => c.Trait.EnableAutoCarry && c.Trait.State == Carryall.CarryallState.Idle && !c.Actor.IsDead && c.Actor.Owner == self.Owner && c.Actor.IsInWorld)
 				.OrderBy(p => (self.Location - p.Actor.Location).LengthSquared);
 
 			// Enumerate idle carriers to find the first that is able to transport us
 			foreach (var carrier in carriers)
-				if (carrier.Trait.RequestTransportNotify(carrier.Actor, self, destination))
+				if (carrier.Trait.RequestTransportNotify(carrier.Actor, self))
 					return;
 		}
 
@@ -84,35 +86,42 @@ namespace OpenRA.Mods.Common.Traits
 			base.Detached(self);
 		}
 
-		public override bool Reserve(Actor self, Actor carrier)
+		public bool AutoReserve(Actor self, Actor carrier, bool fromAutoCommand)
 		{
-			if (Reserved || !WantsTransport)
-				return false;
-
-			var delta = self.World.Map.CenterOfCell(Destination.Value) - self.CenterPosition;
-			if (delta.HorizontalLengthSquared < info.MinDistance.LengthSquared)
+			if (fromAutoCommand)
 			{
-				// Cancel pickup
-				MovementCancelled();
-				return false;
+				if (Reserved || !WantsTransport)
+					return false;
+
+				var delta = self.World.Map.CenterOfCell(Destination.Value) - self.CenterPosition;
+				if (delta.HorizontalLengthSquared < info.MinDistance.LengthSquared)
+				{
+					// Cancel pickup
+					MovementCancelled();
+					return false;
+				}
 			}
 
-			return base.Reserve(self, carrier);
+			return Reserve(self, carrier);
 		}
 
 		// Prepare for transport pickup
 		public override LockResponse LockForPickup(Actor self, Actor carrier)
 		{
-			if ((state == State.Locked && Carrier != carrier) || !WantsTransport)
+			if (state == State.Locked && Carrier != carrier)
 				return LockResponse.Failed;
 
-			// Last chance to change our mind...
-			var delta = self.World.Map.CenterOfCell(Destination.Value) - self.CenterPosition;
-			if (delta.HorizontalLengthSquared < info.MinDistance.LengthSquared)
+			// When there is no Destination, it means the carryall is called by player.
+			// When there is Destination, it means the carryall is applied by auto command
+			if (Destination != null)
 			{
-				// Cancel pickup
-				MovementCancelled();
-				return LockResponse.Failed;
+				var delta = self.World.Map.CenterOfCell(Destination.Value) - self.CenterPosition;
+				if (delta.HorizontalLengthSquared < info.MinDistance.LengthSquared)
+				{
+					// Cancel pickup
+					MovementCancelled();
+					return LockResponse.Failed;
+				}
 			}
 
 			return base.LockForPickup(self, carrier);

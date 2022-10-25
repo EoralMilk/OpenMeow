@@ -420,7 +420,7 @@ TRNSPORT:
 		Queue: Air
 		BuildPaletteOrder: 60
 		Prerequisites: ~gahpad, gadept
-		Description: VTOL aircraft capable of lifting\nand transporting vehicles.\n  Unarmed
+		Description: VTOL aircraft capable of lifting\nand transporting vehicles.\n  Unarmed \n Can deploy to auto-carry harvester to harvest
 	Aircraft:
 		TurnSpeed: 20
 		Speed: 149
@@ -428,12 +428,26 @@ TRNSPORT:
 		Roll: 0
 		TakeoffSounds: dropup1.aud
 		LandingSounds: dropdwn1.aud
-	Carryall:
+	AutoCarryall: 
 		Voice: Move
 		LocalOffset: 0,0,-243
 		BeforeLoadDelay: 10
 		BeforeUnloadDelay: 10
 		CarryableAnyCamp: true
+		AutoCarryCondition: autocarry
+	WithDecoration@AutoCarryall:
+		RequiresCondition: autocarry
+		Position: BottomRight
+		Margin: 3, 4
+		Image: auto-tag
+		Sequence: idle
+		Palette: player
+		IsPlayerPalette: true
+	GrantConditionOnDeploy:
+		DeployedCondition: autocarry
+		CanDeployOnRamps: true
+		SkipMakeAnimation: true
+		Voice: Move
 	Health:
 		HP: 17500
 	Armor:
