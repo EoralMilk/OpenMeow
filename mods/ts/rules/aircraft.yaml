@@ -268,6 +268,29 @@ ORCA:
 		Palette: pips
 		PipCount: 5
 
+ORCA.ASSULT:
+	Inherits: ORCA
+	-Selectable:
+	-SelectionDecorations:
+	RejectsOrders:
+	Interactable:
+	-AttackAircraft:
+	AttackBomber:
+		PersistentTargeting: false
+		PauseOnCondition: empdisable
+		FacingTolerance: 512
+		# AttackType: Strafe
+		# StrafeRunLength: 17c0
+		FacingFullOnTarget: true
+	Armament:
+		Weapon: VectorHellfire.Assult
+		LocalOffset: 300,195,70, 300,-195,70
+		LocalYaw: -110, 110
+	RenderSprites:
+		Image: orca
+	RenderModels:
+		Image: orca
+
 ORCAB:
 	Inherits: ^EMPableAircraft
 	Inherits@EXPERIENCE: ^GainsExperience

@@ -471,6 +471,31 @@ GARADR:
 	HitShape:
 		Type: Rectangle
 			VerticalTopOffset: 2172
+	AirstrikePower@veinbomb:
+		OrderName: OrcaAssult
+		Prerequisites: radar
+		Icon: orcaicon
+		ChargeInterval: 5000
+		Name: Orca Assult
+		SquadSize: 3
+		SquadOffset: -1536, 768, -1524
+		Description: An Orca Fighter assult in bound and attack your target.
+		SelectTargetSpeechNotification: SelectTarget
+		SelectTargetTextNotification: Select target.
+		CameraActor: camera
+		CameraRemoveDelay: 150
+		UnitType: orca.assult
+		QuantizedFacings: 8
+		Cursor: ioncannon
+		#DisplayBeacon: true
+		#BeaconPoster: pbmbicon
+		#ArrowSequence: arrow
+		#ClockSequence: clock
+		#CircleSequence: circles
+		#UseDirectionalTarget: True
+		#DirectionArrowAnimation: paradirection
+		SupportPowerPaletteOrder: 40
+
 
 GATECH:
 	Inherits: ^Building

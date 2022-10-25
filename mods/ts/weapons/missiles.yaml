@@ -388,6 +388,15 @@ Hellfire:
 			Heavy: 100
 			Concrete: 30
 
+VectorHellfire.Assult:
+	Inherits: VectorHellfire
+	ReloadDelay: 10000
+	Burst: 8
+	BurstDelays: 4
+	Range: 9c512
+	Warhead@1Dam: Spread3DDamage
+		Spread: 220
+
 VectorHellfire:
 	Inherits: ^VectorBooster
 	ReloadDelay: 10
@@ -528,6 +537,19 @@ GreenScytheScat:
 		ContrailStartColor: 00FF00
 		ContrailStartColorOuter: AAAA00
 		JetPalette: lightgreen
+	Warhead@1Dam: SpreadDamage
+		Damage: 6000
+		Versus:
+			None: 25
+			Wood: 85
+			Light: 100
+			Heavy: 85
+			Concrete: 60
+	Warhead@Cluster: FireRadius
+		Weapon: GreenFireballLauncher
+		StartOffset: 0,0,0
+		FireCount: 3
+		ForceTargetGround: true
 
 ProtonFlameMissileClusterSmall:
 	Inherits: ProtonFlameMissileCluster

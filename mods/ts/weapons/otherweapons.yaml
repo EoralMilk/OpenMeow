@@ -63,11 +63,12 @@ GreenFireballLauncher:
 		Chaos: true
 		ChaosInaccuracy: 0c512
 		ExplodeUnderThisAltitude: 0
-		StartScale: 0.45
+		StartScale: 0.35
 		EndScale: 2
 	Warhead@fireDam: Spread3DDamage
 		Spread: 0c220
 		Damage: 220
+		-ValidRelationships:
 
 ChemicalCloudLauncher:
 	Inherits: FireballLauncher
