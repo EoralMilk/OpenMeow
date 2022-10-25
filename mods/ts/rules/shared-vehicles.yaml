@@ -141,6 +141,13 @@ HARV:
 			BlueTiberium: pip-blue
 	WithDecoration@UNDERGROUND:
 		Sequence: harvester
+	-Carryable:
+	CarryableHarvester:
+	AutoCarryable: 
+		#MinDistance: 10240
+		RequiresCondition: !inside-tunnel
+		LockedCondition: carried
+		CarriedCondition: carring
 
 LPST:
 	Inherits: ^Tank
