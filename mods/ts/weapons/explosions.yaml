@@ -95,3 +95,46 @@ Demolish:
 DropPodExplode:
 	Warhead@1Eff: CreateEffect
 		Explosions: droppod_explosion, droppod2_explosion, droppody_explosion, droppody2_explosion
+
+BlueTiberiumChainReaction:
+	Inherits: ^DamagingExplosion
+	Burst: 1
+	Range: 3c0
+	ReloadDelay: 1
+	ValidTargets: BlueTiberium
+	Projectile: InstantHit
+		Inaccuracy: 0c400
+		Blockable: false
+	Warhead@2Eff: CreateEffect
+		Delay: 0
+		Explosions: large_twlt
+		ImpactSounds: expnew09.aud
+		ImpactActors: false
+	Warhead@1Dam: SpreadDamage
+		Delay: 0
+		Spread: 454
+		Damage: 15000
+		DamageTypes: Prone50Percent, TriggerProne, ExplosionDeath
+		ImpactActors: false
+	Warhead@ChainReaction: FireCluster
+		Delay: 10
+		Weapon: BlueTiberiumChainReaction
+		RandomClusterCount: 3
+		Dimensions: 3,3
+		Footprint: xxx xxx xxx
+		ImpactActors: false
+		ValidTargets: BlueTiberium
+	Warhead@Cloud: FireRadius
+		Delay: 0
+		Weapon: BlueTibCloudLauncher
+		StartOffset: 0,-1024,0
+		FireCount: 3
+		ForceTargetGround: true
+		ImpactActors: false
+	Warhead@destoryTib: DestroyResource
+		Size: 1
+		Delay: 0
+		ResourceAmount: 4
+		ResourceTypes: Tiberium, BlueTiberium
+		ImpactActors: false
+	-Warhead@4Smu:

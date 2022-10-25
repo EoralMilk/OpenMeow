@@ -70,6 +70,34 @@ GreenFireballLauncher:
 		Damage: 220
 		-ValidRelationships:
 
+BlueTibCloudLauncher:
+	Inherits: ChemicalCloudLauncher
+	Burst: 1
+	Projectile: BlastWave
+		Inaccuracy: 2c0
+		ShockDist: 2c512
+		Palette: effecttibblue
+		Image: cloudadditive
+		Sequences: cloud1, cloud2
+		Speed: 35, 45
+		Blockable: true
+		ExplodeUnderThisAltitude: 512
+		UseVerticalInaccuracy: true
+		Chaos: true
+		ChaosInaccuracy: 0c512
+		StartScale: 0.45
+		EndScale: 2
+	Warhead@fireDam: Spread3DDamage
+		Spread: 0c330
+		Damage: 300
+		Versus:
+			None: 200
+			Wood: 70
+			Light: 100
+			Heavy: 25
+			Concrete: 25
+		DamageTypes: Prone70Percent, TriggerProne, FireDeath
+
 ChemicalCloudLauncher:
 	Inherits: FireballLauncher
 	Burst: 7

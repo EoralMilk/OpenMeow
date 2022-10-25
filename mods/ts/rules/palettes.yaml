@@ -100,15 +100,19 @@
 	FixedColorPalette@effectcyan:
 		Base: effect
 		Name: effectcyan
-		Color: 00FFFF
+		Color: 228888
 	FixedColorPalette@effectblue:
 		Base: effect
 		Name: effectblue
-		Color: 0033FF
+		Color: 333388
+	FixedColorPalette@effecttibblue:
+		Base: effect
+		Name: effecttibblue
+		Color: 113377
 	FixedColorPalette@effectgreen:
 		Base: effect
 		Name: effectgreen
-		Color: 00FF00
+		Color: 227722
 	FixedColorPalette@effectdarkgreen:
 		Base: effect
 		Name: effectdarkgreen

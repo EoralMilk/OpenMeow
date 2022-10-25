@@ -52,7 +52,7 @@ DPOD2:
 		Speed: 300
 		CruiseAltitude: 16c0
 		MaximumPitch: 110
-		LandableTerrainTypes: Clear, Road, Rail, DirtRoad, Rough
+		LandableTerrainTypes: Clear, Road, Rail, DirtRoad, Rough, Tiberium, BlueTiberium, Veins
 	AttackAircraft:
 		Voice: Attack
 	Armament:
