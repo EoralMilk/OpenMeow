@@ -410,6 +410,7 @@ ORCATRAN:
 
 TRNSPORT:
 	Inherits: ^EMPableAircraft
+	Inherits@AImicroManagable: ^AImicroManagable
 	Valued:
 		Cost: 750
 	Tooltip:
@@ -434,9 +435,10 @@ TRNSPORT:
 		BeforeLoadDelay: 10
 		BeforeUnloadDelay: 10
 		CarryableAnyCamp: true
-		AutoCarryCondition: autocarry
+		AutoCarryCondition: autocarry || AImicroManage
+		CarryCondition: carried
 	WithDecoration@AutoCarryall:
-		RequiresCondition: autocarry
+		RequiresCondition: autocarry || AImicroManage
 		Position: BottomRight
 		Margin: 3, 4
 		Image: auto-tag
@@ -444,6 +446,7 @@ TRNSPORT:
 		Palette: player
 		IsPlayerPalette: true
 	GrantConditionOnDeploy:
+		RequiresCondition: !AImicroManage
 		DeployedCondition: autocarry
 		CanDeployOnRamps: true
 		SkipMakeAnimation: true
@@ -463,6 +466,12 @@ TRNSPORT:
 		RequiresCondition: empdisable
 	WithAircraftLandingEffect:
 		Image: caryland
+	AutoDeployer@AI:
+		RequiresCondition: AImicroManage && carried
+		DeployChance: 100
+		DeployTrigger: Periodically
+		DeployTicks: 1512
+		UndeployTicks: 1512
 
 SCRIN:
 	Inherits: ^EMPableAircraft
