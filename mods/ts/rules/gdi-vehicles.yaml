@@ -652,7 +652,7 @@ LIMPED:
 	Buildable:
 		Queue: Vehicle
 		BuildPaletteOrder: 21
-		Description: Small drone armed with explosives.\n\nGood vs: Vehicles, Aircraft\n\nSpecial:\n- Needs to be deployed to be armed\n- Invisible when deployed\n- Launches explosives towards a target after small delay
+		Description: Small drone armed with explosives.\n\nGood vs: Vehicles, Aircraft\n\nSpecial:\n- Needs to be deployed to be armed\n- Invisible and get a lot of extra protection when deployed\n- Launches explosives towards a target after small delay
 		Prerequisites: ~gaweap, ~techlevel.low
 	Health:
 		HP: 10000
@@ -711,16 +711,19 @@ LIMPED:
 	RevealOnFire:
 		ArmamentNames: deployed
 	WithRangeCircle:
-		Range: 6c0
+		Range: 6c512
 		Color: FFFF00CC
 		BorderColor: 000000CC
 		BorderWidth: 0
 		Width: 2
 		RequiresCondition: deployed
+	DamageMultiplier@bury-self:
+		RequiresCondition: cloaking-self
+		Modifier: 25
 	Cloak@bury-self:
 		RequiresCondition: deployed && !empdisable
 		InitialDelay: 0
-		CloakDelay: 30
+		CloakDelay: 20
 		Palette: cloak
 		IsPlayerPalette: true
 		UncloakOn: Attack, Unload, Infiltrate, Demolish

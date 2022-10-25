@@ -239,21 +239,28 @@ TitanMissile:
 
 LimpetMissile: ##todo
 	Inherits: BikeMissile
-	Range: 6c0
+	Range: 6c512
 	ReloadDelay: 90
 	ValidTargets: Ground, Water, Air, Trees
 	Projectile: VectorBooster
 		LaunchAngle: 253
-		LockOnDelay: 3
+		LockOnDelay: 16
 		IgnitionDelay: 17
+		ContrailDelay: 17
 		RangeLimit: 30c0
 		Speed: 200
 		ContrailLength: 10
 	Warhead@1Dam: Spread3DDamage
 		Damage: 8000
+		Versus:
+			None: 65
+			Wood: 75
+			Light: 100
+			Heavy: 85
+			Concrete: 60
 
 LurkerAimDummyWeapon:
-	Range: 6c0
+	Range: 6c512
 	ReloadDelay: 20
 	ValidTargets: Ground, Water, Air
 	Projectile: InstantHit
@@ -288,6 +295,7 @@ ReaperScytheScat:
 		LockOnInaccuracy: 0c512
 		LockOnDelay: 3
 		IgnitionDelay: 10
+		ContrailDelay: 9
 		ContrailLength: 6
 		ContrailWidth: 44
 		MeshScale: 1
@@ -351,7 +359,7 @@ BikeMissile:
 		ProximityRange: 200
 		LockOnDelay: 4
 		IgnitionDelay: 5
-		ContrailDelay: 0
+		ContrailDelay: 5
 		MinSpeed: 55
 		MaxSpeed: 388
 		LifeTime: 66
@@ -408,8 +416,8 @@ VectorHellfire:
 		Acceleration: 40
 		Speed: 150
 		LockOnDelay: 5
-		IgnitionDelay: 0
-		LaunchAngle: 0
+		IgnitionDelay: 2
+		LaunchAngle: 2
 		LifeTime: 46
 		Width: 40
 		MeshScale: 1.2
@@ -478,10 +486,11 @@ ProtonFlameMissile:
 		UsingScat: true
 		ScatWeapon: ProtonFlameMissileCluster
 		ScatDist: 3c0
-		ScatCount: 3
+		ScatCount: 0
 		ScatDimensions: 5,5
-		ScatFootprint: __x__ _xxx_ xx_xx _xxx_ __x__
+		ScatFootprint: __x__ _xXx_ xx_xx _XxX_ __x__
 		JetPalette: lightgreen
+		LifeTime: 40
 	Warhead@1Dam: SpreadDamage
 		Damage: 3000
 		Versus:
@@ -502,7 +511,7 @@ ProtonFlameMissileCluster:
 		AirburstAltitude: 1c0
 		ProximityRange: 128
 		ProximitySnapping: true
-		Inaccuracy: 1c512
+		Inaccuracy: 0c200
 		UseLockOnVerticalInaccuracy: true
 		LockOnInaccuracy: 3c768
 		LockOnTargetTypes: Air
@@ -519,7 +528,7 @@ ProtonFlameMissileCluster:
 	Warhead@Cluster: FireRadius
 		Weapon: GreenFireballLauncher
 		StartOffset: 0,-1024,0
-		FireCount: 12
+		FireCount: 15
 		ForceTargetGround: true
 
 ProtonFlameCluster:
