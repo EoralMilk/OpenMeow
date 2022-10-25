@@ -5,10 +5,11 @@ Player:
 	GrantConditionOnBotOwner@test:
 		Condition: enable-test-ai
 		Bots: test
-	#HarvesterBotModule:
-	#	RequiresCondition: enable-test-ai
-	#	HarvesterTypes: harv
-	#	RefineryTypes: proc
+	HarvesterBotModule:
+		RequiresCondition: enable-test-ai
+		HarvesterTypes: harv
+		RefineryTypes: proc
+		scanForIdleHarvestersTicks: 768 ## This module is pref-questionable, set it long enough
 
 	## Help AI on better plug
 	ProvidesPrerequisite@pluggablevulcan:
@@ -88,6 +89,7 @@ Player:
 			nastlh: 1
 			gahpad: 1
 			nahpad: 1
+			gadept: 2
 			nalasr: 10
 			gavulc: 10
 			garock: 3
@@ -103,7 +105,7 @@ Player:
 	SquadManagerBotModule@test:
 		RequiresCondition: enable-test-ai
 		SquadSize: 20
-		ExcludeFromSquadsTypes: harv, mcv, dpod, hunter
+		ExcludeFromSquadsTypes: harv, mcv, dpod, hunter, trnsport
 		IgnoredEnemyTargetTypes: Wall, AIgnored
 		ConstructionYardTypes: gacnst
 		AirUnitsTypes: orca, orcab, scrin, apache, jumpjetair
@@ -145,6 +147,7 @@ Player:
 			orcab: 11
 			apache: 15
 			scrin: 14
+			trnsport: 10
 			## test
 			rutest2: 40
 			apc: 1
@@ -153,13 +156,14 @@ Player:
 			limped: 10
 			reaper: 5
 		UnitLimits:
-			harv: 2
+			harv: 4
 			medic: 14
 			repair: 1
 			ghost: 1
 			cyc2: 1
 			hmec: 1
 			apc: 1
+			trnsport: 2
 	McvManagerBotModule@test:
 		RequiresCondition: enable-test-ai
 		McvTypes: mcv
