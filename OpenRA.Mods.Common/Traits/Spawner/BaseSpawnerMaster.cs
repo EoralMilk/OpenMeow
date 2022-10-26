@@ -243,11 +243,13 @@ namespace OpenRA.Mods.Common.Traits
 		{
 			var facingOffset = facing == null ? WAngle.Zero : facing.Facing;
 
-			var exitFacing = exit != null ? exit.Info.Facing : WAngle.Zero;
+			var exitFacing = WAngle.Zero;
+			if (exit != null && exit.Info.Facing.HasValue)
+				exitFacing = exit.Info.Facing.Value;
 
 			var spawnFacing = spawned.TraitOrDefault<IFacing>();
 			if (spawnFacing != null)
-				spawnFacing.Facing = facingOffset + exitFacing.Value;
+				spawnFacing.Facing = facingOffset + exitFacing;
 		}
 
 		public void StopSlaves()
