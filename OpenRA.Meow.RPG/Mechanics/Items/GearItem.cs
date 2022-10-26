@@ -47,6 +47,8 @@ namespace OpenRA.Meow.RPG.Mechanics
 			"Will affect material coverage and body mesh displaying")]
 		public readonly BodyMask[] Masks = { BodyMask.None };
 
+		public readonly int GearOrder = 0;
+
 		[Desc("Define the coving material on body mesh.")]
 		public readonly string CoveringMaterail = null;
 
@@ -71,6 +73,9 @@ namespace OpenRA.Meow.RPG.Mechanics
 	{
 		readonly GearItemInfo info;
 		public GearType ClothType => info.GearType;
+		public BodyMask[] Masks => info.Masks;
+		public int GearOrder => info.GearOrder;
+
 		public Func<bool> IsActive;
 		public bool Active { get; set; }
 		readonly bool[] drawFlags;

@@ -190,7 +190,7 @@ RUTEST2:
 		Terrain: Tiberium, BlueTiberium
 		RequiresCondition: !inside-tunnel && usechemicalitem
 	ExplodeWeapon@chemical:
-		Weapon: ProtonFlameCluster
+		Weapon: ChemicalCloudLauncher
 		Interval: 50
 		Offset: 0,0,1024
 		RequiresCondition: usechemicalitem

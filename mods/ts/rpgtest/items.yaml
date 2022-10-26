@@ -6,6 +6,7 @@ clothitem:
 		Condition: hascloth
 
 		GearType: Replacement
+		GearOrder: 20
 		Image: rumya
 		AddonMeshPart: gear01
 		Masks: Torso,Hip,Thigh,Leg,Foot,UpperArm,LowerArm,Hand
@@ -19,6 +20,7 @@ rutestmissile:
 		Condition: userutestmissile
 
 		GearType: CloseFitting
+		GearOrder: 2
 		CoveringMaterail: mdx_underwear
 		Masks: Torso,Hip,Thigh,Leg
 

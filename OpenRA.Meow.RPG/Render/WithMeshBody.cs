@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Numerics;
+using System.Threading.Tasks;
 using OpenRA.Graphics;
 using OpenRA.Meow.RPG.Mechanics;
 using OpenRA.Traits;
@@ -20,6 +22,135 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 		Hand,
 
 		None,
+	}
+
+	public class GearLayers
+	{
+		public SortedList<GearItem, Actor>[] CloseFitGears;
+
+		public SortedList<GearItem, Actor>[] ReplaceBodyPartGears;
+
+		public List<GearItem>[] BodyPartMaskGears;
+
+		class GearSort : IComparer<GearItem>
+		{
+			public int Compare(GearItem x, GearItem y)
+			{
+				int a = x.GearOrder;
+				int b = y.GearOrder;
+
+				return a.CompareTo(b);
+			}
+		}
+
+		public GearLayers()
+		{
+			CloseFitGears = new SortedList<GearItem, Actor>[(int)BodyMask.None];
+			ReplaceBodyPartGears = new SortedList<GearItem, Actor>[(int)BodyMask.None];
+			BodyPartMaskGears = new List<GearItem>[(int)BodyMask.None];
+		}
+
+		public IMaterial GetCoveringMaterail(BodyMask mask)
+		{
+			if (CloseFitGears[(int)mask] == null || CloseFitGears[(int)mask].Count == 0)
+			{
+				return null;
+			}
+			else
+			{
+				return CloseFitGears[(int)mask].LastOrDefault().Key.CoveringMaterail;
+			}
+		}
+
+		public bool HasMask(BodyMask mask)
+		{
+			return BodyPartMaskGears[(int)mask] != null && BodyPartMaskGears[(int)mask].Count > 0;
+		}
+
+		public MeshInstance GetBodyMeshPart(BodyMask mask)
+		{
+			if (ReplaceBodyPartGears[(int)mask] == null || ReplaceBodyPartGears[(int)mask].Count == 0)
+			{
+				return null;
+			}
+			else
+			{
+				return ReplaceBodyPartGears[(int)mask].FirstOrDefault().Key.BodyMeshInstances[(int)mask];
+			}
+		}
+
+		public void AddGear(GearItem gearItem)
+		{
+			if ((gearItem.ClothType == GearType.CloseFitting || gearItem.ClothType == GearType.Misc) && gearItem.CoveringMaterail != null)
+			{
+				foreach (var mask in gearItem.Masks)
+				{
+					if (CloseFitGears[(int)mask] == null)
+					{
+						CloseFitGears[(int)mask] = new SortedList<GearItem, Actor>(new GearSort());
+					}
+
+					CloseFitGears[(int)mask].Add(gearItem, gearItem.ItemActor);
+				}
+			}
+
+			if (gearItem.ClothType == GearType.Replacement || gearItem.ClothType == GearType.Misc)
+			{
+				foreach (var mask in gearItem.Masks)
+				{
+					if (gearItem.BodyMeshInstances[(int)mask] != null)
+					{
+						if (ReplaceBodyPartGears[(int)mask] == null)
+						{
+							ReplaceBodyPartGears[(int)mask] = new SortedList<GearItem, Actor>(new GearSort());
+						}
+
+						ReplaceBodyPartGears[(int)mask].Add(gearItem, gearItem.ItemActor);
+					}
+
+					if (BodyPartMaskGears[(int)mask] == null)
+					{
+						BodyPartMaskGears[(int)mask] = new List<GearItem>();
+					}
+
+					BodyPartMaskGears[(int)mask].Add(gearItem);
+				}
+			}
+		}
+
+		public void RemoveGear(GearItem gearItem)
+		{
+			if ((gearItem.ClothType == GearType.CloseFitting || gearItem.ClothType == GearType.Misc) && gearItem.CoveringMaterail != null)
+			{
+				foreach (var mask in gearItem.Masks)
+				{
+					if (CloseFitGears[(int)mask] != null)
+					{
+						CloseFitGears[(int)mask].Remove(gearItem);
+					}
+				}
+			}
+
+			if (gearItem.ClothType == GearType.Replacement || gearItem.ClothType == GearType.Misc)
+			{
+				foreach (var mask in gearItem.Masks)
+				{
+					if (gearItem.BodyMeshInstances[(int)mask] != null)
+					{
+						if (ReplaceBodyPartGears[(int)mask] != null)
+						{
+							ReplaceBodyPartGears[(int)mask].Remove(gearItem);
+						}
+					}
+
+					if (BodyPartMaskGears[(int)mask] != null)
+					{
+						BodyPartMaskGears[(int)mask].Remove(gearItem);
+					}
+				}
+			}
+		}
+
 	}
 
 	public class WithMeshBodyInfo : ConditionalTraitInfo, Requires<RenderMeshesInfo>
@@ -61,7 +192,8 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 
 		readonly Dictionary<Actor, GearItem> clothes = new Dictionary<Actor, GearItem>();
 		readonly MeshInstance[] currentBodyPart = new MeshInstance[(int)BodyMask.None];
-		readonly IMaterial[] currentCoveringMaterial = new IMaterial[(int)BodyMask.None];
+
+		readonly GearLayers gearLayers = new GearLayers();
 
 		#region add and remove cloth
 		public void AddClothFromClothActor(Actor actor)
@@ -90,19 +222,8 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 		void AddClothInner(Actor actor, GearItem clothItem)
 		{
 			clothes.Add(actor, clothItem);
+			gearLayers.AddGear(clothItem);
 			clothItem.IsActive = () => clothItem.Active && !IsTraitDisabled;
-
-			if (clothItem.CoveringMaterail != null)
-			{
-				for (int i = 0; i < (int)BodyMask.None; i++)
-				{
-					var mask = (BodyMask)i;
-					if (clothItem.GetMaskAt(mask))
-					{
-						ChangeBodyPartMaterail(clothItem.CoveringMaterail, mask);
-					}
-				}
-			}
 
 			if (clothItem.ClothType > GearType.CloseFitting)
 			{
@@ -120,26 +241,28 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 					}
 				}
 
-				if (clothItem.ClothType > GearType.MeshAddon && clothItem.BodyMeshInstances != null)
+				if (clothItem.ClothType > GearType.MeshAddon)
 				{
-					for (int i = 0; i < clothItem.BodyMeshInstances.Length; i++)
+					foreach (var mask in clothItem.Masks)
 					{
-						var mask = (BodyMask)i;
-						if (!clothItem.GetMaskAt(mask))
+						SetDrawPart(mask, !gearLayers.HasMask(mask));
+
+						var meshReplace = gearLayers.GetBodyMeshPart(mask);
+
+						if (meshReplace == null)
 							continue;
 
-						if (clothItem.BodyMeshInstances[i] == null)
-						{
-							SetDrawPart(mask, false);
-							continue;
-						}
-
-						clothItem.BodyMeshInstances[i].PoistionFunc = () => self.CenterPosition;
-						clothItem.BodyMeshInstances[i].RotationFunc = () => facing == null ? body?.QuantizeOrientation(self.Orientation) ?? self.Orientation : facing.Orientation;
-						clothItem.BodyMeshInstances[i].SkeletonBinded = info.SkeletonBinded;
-						SetPartMesh(mask, clothItem.BodyMeshInstances[i]);
+						meshReplace.PoistionFunc = () => self.CenterPosition;
+						meshReplace.RotationFunc = () => facing == null ? body?.QuantizeOrientation(self.Orientation) ?? self.Orientation : facing.Orientation;
+						meshReplace.SkeletonBinded = info.SkeletonBinded;
+						SetPartMesh(mask, meshReplace);
 					}
 				}
+			}
+
+			foreach (var mask in clothItem.Masks)
+			{
+				ChangeBodyPartMaterail(gearLayers.GetCoveringMaterail(mask), mask);
 			}
 		}
 
@@ -152,19 +275,8 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 		{
 			var clothItem = clothes[clothactor];
 			clothes.Remove(clothactor);
+			gearLayers.RemoveGear(clothItem);
 			clothItem.IsActive = () => clothItem.Active;
-
-			if (clothItem.CoveringMaterail != null)
-			{
-				for (int i = 0; i < (int)BodyMask.None; i++)
-				{
-					var mask = (BodyMask)i;
-					if (clothItem.GetMaskAt(mask))
-					{
-						ResetBodyPartMaterail(mask);
-					}
-				}
-			}
 
 			if (clothItem.ClothType > GearType.CloseFitting)
 			{
@@ -182,27 +294,34 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 					}
 				}
 
-				if (clothItem.ClothType > GearType.MeshAddon && clothItem.BodyMeshInstances != null)
+				if (clothItem.ClothType > GearType.MeshAddon)
 				{
-					for (int i = 0; i < clothItem.BodyMeshInstances.Length; i++)
+					foreach (var mask in clothItem.Masks)
 					{
-						var mask = (BodyMask)i;
-						if (!clothItem.GetMaskAt(mask))
+						SetDrawPart(mask, !gearLayers.HasMask(mask));
+
+						var meshReplace = gearLayers.GetBodyMeshPart(mask);
+
+						if (meshReplace == null)
 							continue;
 
-						if (clothItem.BodyMeshInstances[i] == null)
-						{
-							SetDrawPart(mask, true);
-							continue;
-						}
+						// meshReplace.PoistionFunc = () => clothactor.CenterPosition;
+						// meshReplace.RotationFunc = () => WRot.None;
+						// meshReplace.SkeletonBinded = null;
+						// meshReplace.Material = meshReplace.OrderedMesh.DefaultMaterial;
+						// ResetPartMesh(mask);
 
-						clothItem.BodyMeshInstances[i].PoistionFunc = () => clothactor.CenterPosition;
-						clothItem.BodyMeshInstances[i].RotationFunc = () => WRot.None;
-						clothItem.BodyMeshInstances[i].SkeletonBinded = null;
-						clothItem.BodyMeshInstances[i].Material = clothItem.BodyMeshInstances[i].OrderedMesh.DefaultMaterial;
-						ResetPartMesh(mask);
+						meshReplace.PoistionFunc = () => self.CenterPosition;
+						meshReplace.RotationFunc = () => facing == null ? body?.QuantizeOrientation(self.Orientation) ?? self.Orientation : facing.Orientation;
+						meshReplace.SkeletonBinded = info.SkeletonBinded;
+						SetPartMesh(mask, meshReplace);
 					}
 				}
+			}
+
+			foreach (var mask in clothItem.Masks)
+			{
+				ChangeBodyPartMaterail(gearLayers.GetCoveringMaterail(mask), mask);
 			}
 		}
 
@@ -212,17 +331,7 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 			if (currentBodyPart[(int)mask] != null)
 				RenderMeshes.Remove(currentBodyPart[(int)mask]);
 			currentBodyPart[(int)mask] = meshInstance;
-			UpdateBodyPartMaterail(mask);
 			RenderMeshes.Add(currentBodyPart[(int)mask]);
-		}
-
-		void ResetPartMesh(BodyMask mask)
-		{
-			SetDrawPart(mask, true);
-			if (currentBodyPart[(int)mask] != null)
-				RenderMeshes.Remove(currentBodyPart[(int)mask]);
-			currentBodyPart[(int)mask] = null;
-			UpdateBodyPartMaterail(mask);
 		}
 
 		public void SetDrawPart(BodyMask mask, bool draw)
@@ -234,27 +343,22 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 		{
 			if (material != null)
 			{
-				currentCoveringMaterial[(int)bodyMask] = material;
-				UpdateBodyPartMaterail(bodyMask);
+				if (currentBodyPart[(int)bodyMask] != null)
+					currentBodyPart[(int)bodyMask].Material = material;
+				bodyMeshInstances[(int)bodyMask].Material = material;
 			}
-		}
-
-		void UpdateBodyPartMaterail(BodyMask bodyMask)
-		{
-			if (currentBodyPart[(int)bodyMask] != null)
-				currentBodyPart[(int)bodyMask].Material = currentCoveringMaterial[(int)bodyMask];
-			bodyMeshInstances[(int)bodyMask].Material = currentCoveringMaterial[(int)bodyMask];
+			else
+				ResetBodyPartMaterail(bodyMask);
 		}
 
 		void ResetBodyPartMaterail(BodyMask bodyMask)
 		{
-			currentCoveringMaterial[(int)bodyMask] = bodyMeshInstances[(int)bodyMask].OrderedMesh.DefaultMaterial;
 			if (currentBodyPart[(int)bodyMask] != null)
 			{
-				currentBodyPart[(int)bodyMask].Material = currentCoveringMaterial[(int)bodyMask];
+				currentBodyPart[(int)bodyMask].Material = bodyMeshInstances[(int)bodyMask].OrderedMesh.DefaultMaterial;
 			}
 
-			bodyMeshInstances[(int)bodyMask].Material = currentCoveringMaterial[(int)bodyMask];
+			bodyMeshInstances[(int)bodyMask].Material = bodyMeshInstances[(int)bodyMask].OrderedMesh.DefaultMaterial;
 		}
 
 		#endregion
@@ -302,7 +406,6 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 					() => facing == null ? body?.QuantizeOrientation(self.Orientation) ?? self.Orientation : facing.Orientation,
 					() => !IsTraitDisabled && drawFlags[mask],
 					info.SkeletonBinded);
-				currentCoveringMaterial[i] = bodyMeshInstances[i].Material;
 				RenderMeshes.Add(bodyMeshInstances[i]);
 			}
 
