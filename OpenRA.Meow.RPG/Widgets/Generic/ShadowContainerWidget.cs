@@ -11,11 +11,9 @@ namespace OpenRA.Meow.RPG.Widgets
 {
 	public class ShadowContainerWidget : ContainerWidget
 	{
-#pragma warning disable IDE1006 // 命名样式
 		public readonly Skin Skin;
-		protected Func<ShadowSkin> ShadowSkin;
-		protected bool Inset;
-#pragma warning restore IDE1006 // 命名样式
+		public Func<ShadowSkin> ShadowSkin;
+		public bool Inset;
 
 		protected ShadowContainerWidget(Skin skin)
 		{

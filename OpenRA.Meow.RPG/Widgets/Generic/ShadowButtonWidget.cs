@@ -10,10 +10,8 @@ namespace OpenRA.Meow.RPG.Widgets
 	{
 		protected bool Hovered { get; private set; }
 
-#pragma warning disable IDE1006 // 命名样式
-		protected Func<bool> IsEnabled = () => true;
-		protected Func<bool> IsActive = () => false;
-#pragma warning restore IDE1006 // 命名样式
+		public Func<bool> IsEnabled = () => true;
+		public Func<bool> IsActive = () => false;
 
 		protected ShadowButtonWidget(Skin skin)
 			: base(skin)

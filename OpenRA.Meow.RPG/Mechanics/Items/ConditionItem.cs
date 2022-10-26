@@ -5,7 +5,6 @@ namespace OpenRA.Meow.RPG.Mechanics
 {
 	public class ConditionItemInfo : ItemInfo
 	{
-		[FieldLoader.Require]
 		[GrantedConditionReference]
 		[Desc("Condition to grant when equiped.")]
 		public readonly string Condition = null;
@@ -29,12 +28,12 @@ namespace OpenRA.Meow.RPG.Mechanics
 
 		public override void EquipingEffect(Actor actor)
 		{
-			if (actor != null && conditionToken == Actor.InvalidConditionToken)
+			if (Condition != null && actor != null && conditionToken == Actor.InvalidConditionToken)
 				conditionToken = actor.GrantCondition(Condition);
 		}
 
 		public override void UnequipingEffect(Actor actor) {
-			if (actor != null && conditionToken != Actor.InvalidConditionToken)
+			if (Condition != null && actor != null && conditionToken != Actor.InvalidConditionToken)
 				conditionToken = actor.RevokeCondition(conditionToken);
 		}
 	}

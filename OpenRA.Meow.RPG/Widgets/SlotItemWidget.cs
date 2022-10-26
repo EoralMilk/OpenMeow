@@ -44,7 +44,7 @@ namespace OpenRA.Meow.RPG.Widgets
 				Bounds = new Rectangle(Skin.SpacingLarge, Skin.SpacingLarge, rowWidth - Skin.SpacingLarge * 2, Skin.InventoryLabelHeight),
 				Font = Skin.InGameUiFont,
 				FontsForScale = Skin.Fontsmall,
-				GetColor = () => slot != null && !slot.IsTraitDisabled ? emptyLabel.TextColor : Color.DarkGray,
+				GetColor = () => slot != null && !slot.IsTraitDisabled ? Skin.FontColor : Skin.FontDisableColor,
 				Align = TextAlign.Center,
 			};
 

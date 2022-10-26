@@ -79,6 +79,10 @@ namespace OpenRA.Meow.RPG.Widgets
 		public readonly Color HPMaxColor = Color.FromArgb(150, 123, 255, 166);
 		public readonly Color HPMinColor = Color.FromArgb(175, 30, 155, 50);
 
+		public readonly Color FontColor = Color.FromArgb(220, 220, 220);
+		public readonly Color FontDisableColor = Color.FromArgb(120, 120, 120);
+		public readonly Color FontActiveColor = Color.FromArgb(255, 255, 255);
+
 		public readonly ShadowSkin BrightShadowSkin = new ShadowSkin
 		(
 			borderSize: 1,

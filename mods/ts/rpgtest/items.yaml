@@ -18,15 +18,34 @@ rutestmissile:
 		Name: underwaer
 		ThumbnailSequence: clustermissile
 		Condition: userutestmissile
-
 		GearType: CloseFitting
 		GearOrder: 2
 		CoveringMaterail: mdx_underwear
 		Masks: Torso,Hip,Thigh,Leg
 
 chemicalitem:
-	ConditionItem:
+	WeaponItem:
 		Name: chemical
+		Type: MainWeapon
 		ThumbnailSequence: chemicalmissile
 		Condition: usechemicalitem
+		Weapon: LaserChainGun
+		LocalOffset: 0,0,0
 
+gunitem:
+	WeaponItem:
+		Name: gun
+		Type: MainWeapon
+		ThumbnailSequence: ioncannon
+		Weapon: KittenProtonPulse
+		LocalOffset: 333,0,155
+
+vislitem:
+	WeaponItem:
+		Name: visl
+		ThumbnailSequence: vislrg
+		ThumbnailPalette: player
+		ThumbnailPaletteIsPlayerPalette: true
+		Condition: visl
+		Weapon: LaserChainGun
+		LocalOffset: 0,0,0

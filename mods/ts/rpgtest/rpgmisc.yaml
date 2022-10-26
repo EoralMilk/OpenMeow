@@ -11,3 +11,8 @@ items:
 	hunterseeker: detnicon
 	emp: pulsicon
 	droppods: podsicon
+	vislrg: vislrg
+		Length: 90
+		ShadowStart: 90
+		Tick: 80
+		Offset: 0, 0, 16

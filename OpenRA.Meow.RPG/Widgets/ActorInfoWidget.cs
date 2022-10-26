@@ -10,6 +10,7 @@ using OpenRA.Mods.Common.Widgets.Logic;
 using OpenRA.Primitives;
 using OpenRA.Support;
 using OpenRA.Widgets;
+using static OpenRA.Network.Session;
 
 namespace OpenRA.Meow.RPG.Widgets
 {
@@ -20,6 +21,8 @@ namespace OpenRA.Meow.RPG.Widgets
 		public readonly TooltipInfo TooltipInfo;
 		public readonly ActorDisplayInfomation ActorDisplaying;
 		public readonly BuildableInfo BuildableInfo;
+		public readonly bool HasInventory;
+		public readonly bool HasEquipmentSlot;
 		readonly string palette;
 		public PaletteReference Palette;
 		public readonly float Scale = 1;
@@ -58,6 +61,11 @@ namespace OpenRA.Meow.RPG.Widgets
 				Description = ActorDisplaying.Info.Description;
 			else if (BuildableInfo != null)
 				Description = BuildableInfo.Description;
+
+			if (actor.TraitsImplementing<Inventory>().Any())
+				HasInventory = true;
+			if (actor.TraitsImplementing<EquipmentSlot>().Any())
+				HasEquipmentSlot = true;
 		}
 
 		public Animation GetDisplayIcon(WorldRenderer wr)
@@ -92,6 +100,15 @@ namespace OpenRA.Meow.RPG.Widgets
 		}
 	}
 
+	public enum InfoDisplaying
+	{
+		None = 0,
+		Equipment,
+		Inventory,
+		Upgrade,
+		Skill,
+	}
+
 	public class ActorInfoWidget : Widget, IAddFactionSuffixWidget
 	{
 		public int2 MaxInventorySize = new int2(150, 200);
@@ -120,21 +137,44 @@ namespace OpenRA.Meow.RPG.Widgets
 		readonly World world;
 		readonly ModData modData;
 
-		/// <summary>
-		/// Align the bottom, place it on the left and space it by padding
-		/// </summary>
-		Rectangle CalculateInventoryBounds()
-		{
-			return new Rectangle(-MaxInventorySize.X - InventoryPadding,
-				Bounds.Height - MaxInventorySize.Y,
-				MaxInventorySize.X, MaxInventorySize.Y);
-		}
+		InfoDisplaying displayState;
+		public InfoDisplaying DisplayState {
+			get
+			{
+				return displayState;
+			}
+			set
+			{
+				currentInventory.ActiveToggle = false;
+				slotsWidget.ActiveToggle = false;
 
-		Rectangle CalculateEquipmentSlotsBounds()
-		{
-			return new Rectangle(-MaxSlotsSize.X - MaxInventorySize.X - InventoryPadding,
-					Bounds.Height - MaxSlotsSize.Y,
-					MaxSlotsSize.X, MaxSlotsSize.Y);
+				switch (value)
+				{
+					case InfoDisplaying.Equipment:
+						currentInventory.ActiveToggle = true;
+						slotsWidget.ActiveToggle = true;
+
+						toggleEquipment.SetActive = true;
+						toggleInventory.SetActive = false;
+						break;
+					case InfoDisplaying.Inventory:
+						currentInventory.ActiveToggle = true;
+						slotsWidget.ActiveToggle = false;
+
+						toggleEquipment.SetActive = false;
+						toggleInventory.SetActive = true;
+						break;
+					default:
+						currentInventory.ActiveToggle = false;
+						slotsWidget.ActiveToggle = false;
+
+						toggleEquipment.SetActive = false;
+						toggleInventory.SetActive = false;
+						break;
+				}
+
+				displayState = value;
+			}
 		}
 
 		public readonly Skin Skin;
@@ -153,18 +193,87 @@ namespace OpenRA.Meow.RPG.Widgets
 			slotsWidget = new EquipmentSlotsWidget(world, worldRenderer, Skin);
 		}
 
+		ToggleButtonWidget toggleEquipment;
+		ToggleButtonWidget toggleInventory;
+
+		public void InitializeStateTab()
+		{
+			var size = Bounds.Height / 5;
+			var x = -size - Skin.SpacingSmall;
+
+			toggleEquipment = new ToggleButtonWidget(worldRenderer, Skin)
+			{
+				IsVisible = () => TooltipUnit != null,
+				Bounds = new Rectangle(x , Bounds.Height - size, size, size),
+				IsEnabled = () => toggleEquipment.IsVisible() && TooltipUnit.HasEquipmentSlot,
+				OnClick = () => {
+					if (toggleEquipment.SetActive)
+						DisplayState = InfoDisplaying.Equipment;
+					else if (DisplayState == InfoDisplaying.Equipment)
+						DisplayState = InfoDisplaying.None;
+				}
+			};
+			toggleEquipment.AddChild(new LabelWidget
+			{
+				Text = "E",
+				IsVisible = () => TooltipUnit != null,
+				Bounds = new Rectangle(0, 0, toggleEquipment.Bounds.Width, toggleEquipment.Bounds.Height),
+				Font = Skin.InGameUiFont,
+				Align = TextAlign.Center,
+				VAlign = TextVAlign.Middle,
+				GetColor = () => TooltipUnit.HasEquipmentSlot ? Skin.FontColor : Skin.FontDisableColor,
+			});
+
+			x = x - size - Skin.SpacingSmall;
+
+			toggleInventory = new ToggleButtonWidget(worldRenderer, Skin)
+			{
+				IsVisible = () => TooltipUnit != null,
+				Bounds = new Rectangle(x, Bounds.Height - size, size, size),
+				IsEnabled = () => toggleInventory.IsVisible() && TooltipUnit.HasInventory,
+				OnClick = () => {
+					if (toggleInventory.SetActive)
+						DisplayState = InfoDisplaying.Inventory;
+					else if (DisplayState == InfoDisplaying.Inventory)
+						DisplayState = InfoDisplaying.None;
+				}
+			};
+			toggleInventory.AddChild(new LabelWidget
+			{
+				Text = "I",
+				IsVisible = () => TooltipUnit != null,
+				Bounds = new Rectangle(0, 0, toggleEquipment.Bounds.Width, toggleEquipment.Bounds.Height),
+				Font = Skin.InGameUiFont,
+				Align = TextAlign.Center,
+				VAlign = TextVAlign.Middle,
+				GetColor = () => TooltipUnit.HasInventory ? Skin.FontColor : Skin.FontDisableColor,
+			});
+
+			AddChild(toggleEquipment);
+			AddChild(toggleInventory);
+
+			currentInventory.Bounds = new Rectangle(-MaxInventorySize.X - InventoryPadding,
+					Bounds.Height - MaxInventorySize.Y - size - Skin.SpacingSmall,
+					MaxInventorySize.X, MaxInventorySize.Y);
+			slotsWidget.Bounds = new Rectangle(-MaxSlotsSize.X - MaxInventorySize.X - InventoryPadding,
+					Bounds.Height - MaxSlotsSize.Y - size - Skin.SpacingSmall,
+					MaxSlotsSize.X, MaxSlotsSize.Y);
+
+			DisplayState = InfoDisplaying.None;
+		}
+
 		public override void Initialize(WidgetArgs args)
 		{
 			base.Initialize(args);
 
-			currentInventory.Bounds = CalculateInventoryBounds();
-			slotsWidget.Bounds = CalculateEquipmentSlotsBounds();
+			var border = 12;
+
 			AddChild(currentInventory);
 			AddChild(slotsWidget);
 
 			var iconWidth = Bounds.Width * 5 / 10;
-			var iconHeight = 100;
-			var iconY = Skin.ActorNameHeight + 14;
+			var iconY = Skin.ActorNameHeight + border + 2;
+			var iconHeight = Bounds.Height - iconY - border - 2;
 			var iconX = Bounds.Width - iconWidth - Skin.SpacingSmall;
 
 			AddChild(
@@ -178,8 +287,6 @@ namespace OpenRA.Meow.RPG.Widgets
 			);
 
 			var fontsmall = Skin.Fontsmall;
-
-			var border = 12;
 
 			var y = border + 2;
 			var x = border + 2;
@@ -406,6 +513,8 @@ namespace OpenRA.Meow.RPG.Widgets
 					FontsForScale = fontsmall,
 				}
 			);
+
+			InitializeStateTab();
 		}
 
 		public Func<KeyInput, bool> OnKeyPress = _ => false;
@@ -418,6 +527,18 @@ namespace OpenRA.Meow.RPG.Widgets
 			currentInventory.InventoryActor = actor;
 			currentInventory.Inventory = actor == null ? null : actor?.TraitOrDefault<Inventory>();
 			slotsWidget?.UpdateActor(actor);
+
+			switch (DisplayState)
+			{
+				case InfoDisplaying.Equipment:
+					if (!toggleEquipment.IsEnabled())
+						DisplayState = InfoDisplaying.None;
+					break;
+				case InfoDisplaying.Inventory:
+					if (!toggleInventory.IsEnabled())
+						DisplayState = InfoDisplaying.None;
+					break;
+			}
 		}
 
 		public void RefreshActorDisplaying()

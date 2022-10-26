@@ -32,7 +32,7 @@ namespace OpenRA.Meow.RPG.Mechanics
 	public class Item
 	{
 		public readonly ItemInfo Info;
-		public string ThumbnailPal => Info.ThumbnailPaletteIsPlayerPalette ? Info.ThumbnailPalette + ItemActor.Owner.InternalName : Info.ThumbnailPalette;
+		public string ThumbnailPal => Info.ThumbnailPaletteIsPlayerPalette && ItemActor.Owner != null ? Info.ThumbnailPalette + ItemActor.Owner.InternalName : Info.ThumbnailPalette;
 		public readonly Actor ItemActor;
 
 		// This is managed by the Inventory class.

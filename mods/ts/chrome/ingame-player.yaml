@@ -24,8 +24,8 @@ Container@PLAYER_WIDGETS:
 			Background: unitinfo
 			X: WINDOW_RIGHT - WIDTH - 5
 			Y: WINDOW_BOTTOM - HEIGHT - 5
-			Width: 300
-			Height: 150
+			Width: 250
+			Height: 130
 
 		Container@SUPPORT_POWERS:
 			Logic: SupportPowerBinLogic
@@ -42,16 +42,16 @@ Container@PLAYER_WIDGETS:
 					HotkeyPrefix: SupportPower
 					HotkeyCount: 6
 		Image@COMMAND_BAR_BACKGROUND:
-			Logic: AddFactionSuffixLogic
+			Logic: AddFactionSuffixLogic, VisibleWhenSelectionLogic
 			X: 5
 			Y: WINDOW_BOTTOM - HEIGHT - 5
 			Width: 449
 			Height: 51
 			ImageCollection: sidebar
 			ImageName: background-commandbar
-			ClickThrough: False
+			ClickThrough: false
 		Container@COMMAND_BAR:
-			Logic: CommandBarLogic
+			Logic: CommandBarLogic, VisibleWhenSelectionLogic
 				HighlightOnButtonPress: True
 			X: 19
 			Y: WINDOW_BOTTOM - HEIGHT - 20
@@ -207,7 +207,7 @@ Container@PLAYER_WIDGETS:
 							ImageCollection: command-icons
 							ImageName: queue-orders
 		Container@STANCE_BAR:
-			Logic: StanceSelectorLogic
+			Logic: StanceSelectorLogic, VisibleWhenSelectionLogic
 			X: 306
 			Y: WINDOW_BOTTOM - HEIGHT - 20
 			Width: 138

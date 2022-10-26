@@ -505,6 +505,12 @@ FloaterSpray:
 		FireCount: 12
 		ForceTargetGround: true
 
+TibCloudSpray:
+	Warhead@Spray: FireRadius
+		Weapon: ChemicalCloudLauncher3
+		StartOffset: 0,-1024,0
+		FireCount: 3
+		ForceTargetGround: true
 
 ReaperWeb:
 	ReloadDelay: 250

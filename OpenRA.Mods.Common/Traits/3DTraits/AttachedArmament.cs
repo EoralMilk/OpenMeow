@@ -38,7 +38,7 @@ namespace OpenRA.Mods.Common.Traits
 	public class AttachedArmament : Armament
 	{
 		readonly WithSkeleton withSkeleton;
-		TurretAttachment turret;
+		new TurretAttachment attachTurret;
 
 		readonly bool hasFacingTolerance;
 		readonly List<(int Ticks, int Burst, Action<int> Func)> delayedActions = new List<(int, int, Action<int>)>();
@@ -84,7 +84,7 @@ namespace OpenRA.Mods.Common.Traits
 		protected override void Created(Actor self)
 		{
 			base.Created(self);
-			turret = self.TraitsImplementing<TurretAttachment>().FirstOrDefault(t => t.Name == Info.Turret);
+			attachTurret = self.TraitsImplementing<TurretAttachment>().FirstOrDefault(t => t.Name == Info.Turret);
 		}
 
 		protected override bool CanFire(Actor self, in Target target)
@@ -94,7 +94,7 @@ namespace OpenRA.Mods.Common.Traits
 
 			withSkeleton.CallForUpdate(boneIds[currentBarrel % boneIds.Length]);
 
-			if (turret != null && !turret.FacingWithInTolerance(Info.FacingTolerance))
+			if (attachTurret != null && !attachTurret.FacingWithInTolerance(Info.FacingTolerance))
 				return false;
 
 			if ((!target.IsInRange(self.CenterPosition, MaxRange()))
@@ -104,7 +104,7 @@ namespace OpenRA.Mods.Common.Traits
 			if (!Weapon.IsValidAgainst(target, self.World, self))
 				return false;
 
-			if (turret == null && hasFacingTolerance && facing != null)
+			if (attachTurret == null && hasFacingTolerance && facing != null)
 			{
 				var delta = target.CenterPosition - self.CenterPosition;
 				return Util.FacingWithinTolerance(facing.Facing, delta.Yaw + Info.FiringAngle, Info.FacingTolerance);

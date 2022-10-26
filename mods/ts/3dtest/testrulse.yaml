@@ -171,27 +171,32 @@ RUTEST2:
 		FromBonePose: a-s-Rig_Head
 		FacingTolerance: 512
 		RequiresCondition: userutestmissile
-	AttachedArmament@mg:
-		Weapon: KittenClaw
+	# AttachedArmament@mg:
+	# 	Weapon: KittenClaw
+	# 	Turret: primary
+	# 	SkeletonToUse: body
+	# 	FromBonePose: a-s-Rig_Hand.L
+	# 	LocalOffset: 768,0,1324
+	# 	RequiresCondition: !usechemicalitem
+	# AttachedArmament@laser:
+	# 	Weapon: KittenProtonPulse #LaserChainGun
+	# 	Turret: primary
+	# 	SkeletonToUse: body
+	# 	FromBonePose: a-s-Rig_Hand.L
+	# 	LocalOffset: 768,0,1324
+	# 	RequiresCondition: usechemicalitem
+	SlotArmament@test:
+		Weapon: DummyWeapon
 		Turret: primary
-		SkeletonToUse: body
-		FromBonePose: a-s-Rig_Hand.L
-		LocalOffset: 768,0,1324
-		RequiresCondition: !usechemicalitem
-	AttachedArmament@laser:
-		Weapon: KittenProtonPulse #LaserChainGun
-		Turret: primary
-		SkeletonToUse: body
-		FromBonePose: a-s-Rig_Hand.L
-		LocalOffset: 768,0,1324
-		RequiresCondition: usechemicalitem
+		SlotBind: MainWeapon
+		LocalOffset: 768,0,1724
 	DamagedByTerrain@Tiberium:
 		Damage: -1000
 		DamageInterval: 20
 		Terrain: Tiberium, BlueTiberium
 		RequiresCondition: !inside-tunnel && usechemicalitem
 	ExplodeWeapon@chemical:
-		Weapon: ChemicalCloudLauncher
+		Weapon: TibCloudSpray
 		Interval: 50
 		Offset: 0,0,1024
 		RequiresCondition: usechemicalitem
@@ -201,21 +206,26 @@ RUTEST2:
 		Bounds: 905, 3000, 0, -1300
 	Voiced:
 		VoiceSet: Oxanna
-	EquipmentSlot@test1:
-		Name: ClothSlot
+	EquipmentSlot@cloth:
+		Name: Cloth
 		SlotType: Cloth
 		InitEquipment: clothitem
-	EquipmentSlot@test2:
+	EquipmentSlot@weapon:
+		Name: MainWeapon
+		SlotType: MainWeapon
+		InitEquipment: gunitem
+	EquipmentSlot@item:
 		Name: ItemSlot
 		SlotType: Item
 		InitEquipment: rutestmissile
-	EquipmentSlot@test3:
+	EquipmentSlot@extra:
 		Name: ExtraSlot
 		SlotType: Item
 		RequiresCondition: hascloth
+		InitEquipment: vislitem
 	Inventory:
 		Name: test
-		InitItems: clothitem, rutestmissile, chemicalitem
+		InitItems: clothitem, rutestmissile, gunitem, chemicalitem, vislitem
 
 
 RUTEST3:

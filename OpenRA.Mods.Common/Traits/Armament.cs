@@ -16,6 +16,7 @@ using OpenRA.GameRules;
 using OpenRA.Mods.Common.Projectiles;
 using OpenRA.Mods.Common.Traits.Render;
 using OpenRA.Mods.Common.Traits.Trait3D;
+using OpenRA.Primitives;
 using OpenRA.Traits;
 using TrueSync;
 
@@ -35,8 +36,6 @@ namespace OpenRA.Mods.Common.Traits
 
 		[Desc("If this armament will show in actor info panel.")]
 		public readonly bool ShowInActorInfo = true;
-
-		public readonly int CalProjSpeed = 500;
 
 		[WeaponReference]
 		[FieldLoader.Require]
@@ -150,13 +149,14 @@ namespace OpenRA.Mods.Common.Traits
 
 	public class Armament : PausableConditionalTrait<ArmamentInfo>, ITick
 	{
-		public readonly WeaponInfo Weapon;
+		public WeaponInfo Weapon { get; protected set; }
+
 		public Barrel[] Barrels { get; protected set; }
 
 		readonly Actor self;
 		protected IFacing facing;
-		ITurreted turret;
-		BodyOrientation coords;
+		protected ITurreted turret;
+		protected BodyOrientation coords;
 		INotifyBurstComplete[] notifyBurstComplete;
 		INotifyAttack[] notifyAttacks;
 

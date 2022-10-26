@@ -20,13 +20,15 @@ namespace OpenRA.Meow.RPG.Widgets
 		public Inventory OtherInventory;
 		readonly World world;
 
+		public bool ActiveToggle = true;
+
 		public InventoryWidget(World world,WorldRenderer worldRenderer, Skin skin)
 			: base(skin)
 		{
 			this.world = world;
 			this.worldRenderer = worldRenderer;
 			BottomSpacing = Skin.SpacingSmall;
-			IsVisible = () => InventoryActor != null && Inventory != null && world.LocalPlayer == InventoryActor.Owner;
+			IsVisible = () => ActiveToggle && InventoryActor != null && Inventory != null && world.LocalPlayer == InventoryActor.Owner;
 		}
 
 		public override void Tick()

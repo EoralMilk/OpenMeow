@@ -21,6 +21,7 @@ namespace OpenRA.Mods.Common.Widgets
 
 	public class LabelWidget : Widget
 	{
+		public bool ClickThrough = true;
 		public string Text = null;
 		public TextAlign Align = TextAlign.Left;
 		public TextVAlign VAlign = TextVAlign.Middle;
@@ -139,5 +140,10 @@ namespace OpenRA.Mods.Common.Widgets
 		}
 
 		public override Widget Clone() { return new LabelWidget(this); }
+
+		public override bool HandleMouseInput(MouseInput mi)
+		{
+			return !ClickThrough && EventBounds.Contains(mi.Location);
+		}
 	}
 }

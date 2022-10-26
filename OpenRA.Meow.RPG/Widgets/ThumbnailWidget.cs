@@ -21,7 +21,13 @@ namespace OpenRA.Meow.RPG.Widgets
 			IsActive = () => this.item.EquipmentSlot != null;
 
 			thumbnail = new Animation(worldRenderer.World, item.Info.ThumbnailImage);
-			thumbnail.Play(item.Info.ThumbnailSequence);
+			thumbnail.PlayRepeating(item.Info.ThumbnailSequence);
+		}
+
+		public override void Tick()
+		{
+			thumbnail?.Tick();
+			base.Tick();
 		}
 
 		public override void Draw()
