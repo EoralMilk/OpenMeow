@@ -1,4 +1,5 @@
 ^Cannon:
+	Inherits@BlueTibReactionInit: ^BlueTibReactionInit
 	ReloadDelay: 50
 	Range: 7c768
 	Report: 120mmf.aud
@@ -138,6 +139,8 @@ RPGTower:
 		DamageTypes: Prone50Percent, TriggerProne, SmallExplosionDeath
 	Warhead@2Eff: CreateEffect
 		Explosions: large_clsn
+	Warhead@BlueTibChainReact: TerrainReactionInit
+		Chance: 40
 
 TitanRPG:
 	Inherits: RPGTower
@@ -163,6 +166,8 @@ TitanRPG:
 			Heavy: 35
 			Concrete: 35
 		DamageTypes: Prone100Percent, TriggerProne, ExplosionDeath
+	Warhead@BlueTibChainReact: TerrainReactionInit
+		Chance: 40
 
 ^ArtilleryDeployCheck:
 	Range: 17c768
@@ -263,6 +268,8 @@ Grenade:
 		Explosions: small_grey_explosion
 		ImpactSounds: expnew13.aud
 		ValidTargets: Ground, Trees, Air
+	Warhead@BlueTibChainReact: TerrainReactionInit
+		Chance: 5
 
 GrenadeBounce:
 	Warhead@waterbounce: CreateEffect

@@ -3,10 +3,10 @@ using OpenRA.GameRules;
 using OpenRA.Mods.Common.Warheads;
 using OpenRA.Traits;
 
-namespace OpenRA.Meow.RPG.Warheads
+namespace OpenRA.Mods.Cnc.Warheads
 {
-	[Desc("Fires weapons from the point of impact.")]
-	public class FireRadiusWarhead : Warhead, IRulesetLoaded<WeaponInfo>
+	[Desc("Fires weapons if the target cell is valid.")]
+	public class TerrainReactionInitWarhead : Warhead, IRulesetLoaded<WeaponInfo>
 	{
 		[WeaponReference]
 		[FieldLoader.Require]
@@ -14,13 +14,16 @@ namespace OpenRA.Meow.RPG.Warheads
 		public readonly string Weapon = null;
 
 		[Desc("Start offset of the first fire target")]
-		public readonly WVec StartOffset = new WVec(0, -1024, 0);
+		public readonly WVec StartOffset = new WVec(0, 0, 0);
 
 		[Desc("Number of weapons to fire.")]
 		public readonly int FireCount = 1;
 
 		[Desc("Fire the weapon to the ground level.")]
-		public readonly bool ForceTargetGround = false;
+		public readonly bool ForceTargetGround = true;
+
+		[Desc("Percentage chance the smudge is created.")]
+		public readonly int Chance = 100;
 
 		WeaponInfo weapon;
 
@@ -32,26 +35,44 @@ namespace OpenRA.Meow.RPG.Warheads
 				throw new YamlException($"Weapons Ruleset does not contain an entry '{Weapon.ToLowerInvariant()}'");
 		}
 
+		/// <summary>Checks if the warhead is valid against the terrain at impact position.</summary>
+		bool IsValidAgainstTerrain(Map map, WPos pos)
+		{
+			var cell = map.CellContaining(pos);
+			if (!map.Contains(cell))
+				return false;
+			var dat = map.DistanceAboveTerrain(pos);
+			var tts = map.GetTerrainInfo(cell).TargetTypes;
+			if (dat > AirThreshold)
+				return false;
+
+			return IsValidTarget(tts);
+		}
+
 		public override void DoImpact(in Target target, WarheadArgs args)
 		{
-			if (target.Type == TargetType.Invalid || FireCount <= 0)
+			var firedBy = args.SourceActor;
+			var world = firedBy.World;
+			var map = firedBy.World.Map;
+
+			if (FireCount <= 0 || !IsValidAgainstTerrain(map, target.CenterPosition))
+				return;
+
+			if (Chance < world.SharedRandom.Next(100))
 				return;
 
 			facingOffsets = Exts.MakeArray(FireCount, i => StartOffset.Rotate(WRot.FromFacing(i * 256 / FireCount)));
 
-			var firedBy = args.SourceActor;
-			var map = firedBy.World.Map;
-
 			foreach (var c in facingOffsets)
-				FireProjectileAtOffset(map, firedBy, target, c, args);
+				FireProjectileAtOffset(world, map, firedBy, target, c, args);
 		}
 
-		void FireProjectileAtOffset(Map map, Actor firedBy, Target target, WVec offset, WarheadArgs args)
+		void FireProjectileAtOffset(World world, Map map, Actor firedBy, Target target, WVec offset, WarheadArgs args)
 		{
 			var pos = target.CenterPosition + offset;
 			if (ForceTargetGround)
 				pos = new WPos(pos.X, pos.Y, map.HeightOfTerrain(pos));
-
+			var cell = map.CellContaining(pos);
 			var projectileArgs = new ProjectileArgs
 			{
 				Weapon = weapon,
@@ -66,7 +87,7 @@ namespace OpenRA.Meow.RPG.Warheads
 				CurrentSource = () => target.CenterPosition,
 				SourceActor = firedBy,
 				PassiveTarget = pos,
-				GuidedTarget = Target.FromPos(pos)
+				GuidedTarget = Target.FromTerrainPos(world, cell, pos)
 			};
 
 			if (projectileArgs.Weapon.Projectile != null)

@@ -1,4 +1,5 @@
 ^DefaultMissile:
+	Inherits@BlueTibReactionInit: ^BlueTibReactionInit
 	ReloadDelay: 60
 	Range: 7c512
 	MinRange: 0c512
@@ -79,6 +80,7 @@
 		InvalidTargets: Vehicle, Building, Wall
 
 ^VectorBooster:
+	Inherits@BlueTibReactionInit: ^BlueTibReactionInit
 	Range: 7c0
 	Report: hovrmis1.aud
 	ReloadDelay: 60

@@ -154,7 +154,10 @@ SonicWave:
 		InvalidTargets: Wall, Bridge
 		Condition: burning
 		Duration: 50
-
+	Warhead@5Res: DestroyResource
+		Size: 1
+		ResourceAmount: 1
+		ResourceTypes: Tiberium, BlueTiberium
 
 ^EnergyBlast:
 	ReloadDelay: 50

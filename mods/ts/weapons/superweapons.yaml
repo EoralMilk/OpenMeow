@@ -286,12 +286,9 @@ IonCannon:
 	# 	Delay: 7
 	# 	ResourceAmount: 4
 	# 	ResourceTypes: Tiberium, BlueTiberium
-	Warhead@BlueTibChainReact: FireCluster
+	Warhead@BlueTibChainReact: TerrainReactionInit
 		Delay: 7
 		Weapon: BlueTiberiumChainReaction
-		RandomClusterCount: 1
-		Dimensions: 3,3
-		Footprint: xxx xXx xxx
 		ValidTargets: BlueTiberium
 
 

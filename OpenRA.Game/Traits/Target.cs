@@ -63,6 +63,19 @@ namespace OpenRA.Traits
 			offset = WVec.Zero;
 		}
 
+		Target(World w, CPos c, WPos pos)
+		{
+			type = TargetType.Terrain;
+			terrainCenterPosition = w.Map.CenterOfCell(c);
+			terrainPositions = new[] { pos };
+			cell = c;
+			subCell = null;
+			actor = null;
+			frozen = null;
+			generation = 0;
+			offset = WVec.Zero;
+		}
+
 		Target(Actor a, int generation)
 		{
 			type = TargetType.Actor;
@@ -92,6 +105,7 @@ namespace OpenRA.Traits
 		}
 
 		public static Target FromPos(WPos p) { return new Target(p, WVec.Zero); }
+		public static Target FromTerrainPos(World w, CPos c, WPos p) { return new Target(w, c, p); }
 		public static Target FromTargetPositions(in Target t) { return new Target(t.CenterPosition, t.offset, t.Positions.ToArray()); }
 		public static Target FromCell(World w, CPos c, SubCell subCell = SubCell.FullCell) { return new Target(w, c, subCell); }
 		public static Target FromActor(Actor a) { return a != null ? new Target(a, a.Generation) : Invalid; }

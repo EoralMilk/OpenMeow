@@ -546,6 +546,7 @@ TitianDroneCheck:
 DummyWeapon:
 
 WalkImpact:
+	Inherits@BlueTibReactionInit: ^BlueTibReactionInit
 	ValidTargets: Ground, Water, Air, Trees
 	Warhead@inf: Spread3DDamage
 		Damage: 100000
@@ -584,6 +585,8 @@ WalkImpact:
 		Intensity: 1
 		Multiplier: 0,1
 		ValidTargets: Ground, Trees
+	Warhead@BlueTibChainReact: TerrainReactionInit
+		Chance: 10
 
 VeinBomb:
 	ReloadDelay: 60

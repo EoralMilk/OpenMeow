@@ -96,6 +96,13 @@ DropPodExplode:
 	Warhead@1Eff: CreateEffect
 		Explosions: droppod_explosion, droppod2_explosion, droppody_explosion, droppody2_explosion
 
+^BlueTibReactionInit:
+	Warhead@BlueTibChainReact: TerrainReactionInit
+		Weapon: BlueTiberiumChainReaction
+		ValidTargets: BlueTiberium
+		Chance: 20
+
+
 BlueTiberiumChainReaction:
 	Inherits: ^DamagingExplosion
 	Burst: 1
