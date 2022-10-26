@@ -90,7 +90,7 @@ namespace OpenRA.Mods.Common.Activities
 
 			if (state == PickupState.LockCarryable)
 			{
-				var lockResponse = carryable.LockForPickup(cargo, self);
+				var lockResponse = carryable.LockForPickup(self);
 				if (lockResponse == LockResponse.Failed)
 					Cancel(self);
 				else if (lockResponse == LockResponse.Success)
@@ -146,7 +146,7 @@ namespace OpenRA.Mods.Common.Activities
 				self.World.AddFrameEndTask(w =>
 				{
 					cargo.World.Remove(cargo);
-					carryable.Attached(cargo);
+					carryable.Attached();
 					carryall.AttachCarryable(self, cargo);
 				});
 			}

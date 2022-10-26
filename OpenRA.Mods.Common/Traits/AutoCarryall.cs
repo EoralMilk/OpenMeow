@@ -18,11 +18,11 @@ using OpenRA.Traits;
 
 namespace OpenRA.Mods.Common.Traits
 {
-	[Desc("Automatically transports harvesters with the Carryable trait between resource fields and refineries.")]
+	[Desc("Automatically transports harvesters with the AutoCarryable and CarryableHarvester between resource fields and refineries.")]
 	public class AutoCarryallInfo : CarryallInfo
 	{
 		[ConsumedConditionReference]
-		[Desc("Boolean expression defining the condition under which the auto carry is disabled")]
+		[Desc("Boolean expression defining the condition under which the auto carry behavior is enabled. Enabled at default.")]
 		public readonly BooleanExpression AutoCarryCondition = null;
 
 		public override object Create(ActorInitializer init) { return new AutoCarryall(init.Self, this); }
@@ -88,10 +88,10 @@ namespace OpenRA.Mods.Common.Traits
 
 			if (act != null)
 			{
-				if (State != CarryallState.Idle || !act.AutoReserve(carryable, self, underAutoCommand))
+				if (State != CarryallState.Idle || !act.AutoReserve(self, underAutoCommand))
 					return false;
 			}
-			else if (State != CarryallState.Idle || !carryable.Trait<Carryable>().Reserve(carryable, self))
+			else if (State != CarryallState.Idle || !carryable.Trait<Carryable>().Reserve(self))
 				return false;
 
 			Carryable = carryable;

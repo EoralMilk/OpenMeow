@@ -137,7 +137,7 @@ namespace OpenRA.Mods.Common.Traits
 					new OwnerInit(self.Owner)
 				});
 
-				unit.Trait<Carryable>().Attached(unit);
+				unit.Trait<Carryable>().Attached();
 				AttachCarryable(self, unit);
 			}
 		}
@@ -242,7 +242,7 @@ namespace OpenRA.Mods.Common.Traits
 			if (State == CarryallState.Reserved)
 				UnreserveCarryable(self);
 
-			if (State != CarryallState.Idle || !carryable.Trait<Carryable>().Reserve(carryable, self))
+			if (State != CarryallState.Idle || !carryable.Trait<Carryable>().Reserve(self))
 				return false;
 
 			Carryable = carryable;
@@ -253,7 +253,7 @@ namespace OpenRA.Mods.Common.Traits
 		public virtual void UnreserveCarryable(Actor self)
 		{
 			if (Carryable != null && Carryable.IsInWorld && !Carryable.IsDead)
-				Carryable.Trait<Carryable>().UnReserve(Carryable);
+				Carryable.Trait<Carryable>().UnReserve();
 
 			Carryable = null;
 			State = CarryallState.Idle;

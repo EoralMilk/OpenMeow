@@ -48,12 +48,14 @@ namespace OpenRA.Mods.Common.Traits
 		int carriedToken = Actor.InvalidConditionToken;
 		int lockedToken = Actor.InvalidConditionToken;
 
-		Mobile mobile;
 		IDelayCarryallPickup[] delayPickups;
 
 		public Actor Carrier { get; private set; }
+
 		public bool Reserved => state != State.Free;
 
+		protected Actor Self { get; private set; }
+		protected Mobile Mobile { get; private set; }
 		protected enum State { Free, Reserved, Locked }
 		protected State state = State.Free;
 		protected bool attached;
@@ -63,13 +65,14 @@ namespace OpenRA.Mods.Common.Traits
 
 		protected override void Created(Actor self)
 		{
-			mobile = self.TraitOrDefault<Mobile>();
+			Mobile = self.TraitOrDefault<Mobile>();
 			delayPickups = self.TraitsImplementing<IDelayCarryallPickup>().ToArray();
+			Self = self;
 
 			base.Created(self);
 		}
 
-		public virtual void Attached(Actor self)
+		public virtual void Attached()
 		{
 			if (attached)
 				return;
@@ -77,11 +80,11 @@ namespace OpenRA.Mods.Common.Traits
 			attached = true;
 
 			if (carriedToken == Actor.InvalidConditionToken)
-				carriedToken = self.GrantCondition(Info.CarriedCondition);
+				carriedToken = Self.GrantCondition(Info.CarriedCondition);
 		}
 
 		// This gets called by carrier after we touched down
-		public virtual void Detached(Actor self)
+		public virtual void Detached()
 		{
 			if (!attached)
 				return;
@@ -89,10 +92,10 @@ namespace OpenRA.Mods.Common.Traits
 			attached = false;
 
 			if (carriedToken != Actor.InvalidConditionToken)
-				carriedToken = self.RevokeCondition(carriedToken);
+				carriedToken = Self.RevokeCondition(carriedToken);
 		}
 
-		public virtual bool Reserve(Actor self, Actor carrier)
+		public virtual bool Reserve(Actor carrier)
 		{
 			if (Reserved || IsTraitDisabled)
 				return false;
@@ -101,33 +104,33 @@ namespace OpenRA.Mods.Common.Traits
 			Carrier = carrier;
 
 			if (reservedToken == Actor.InvalidConditionToken)
-				reservedToken = self.GrantCondition(Info.ReservedCondition);
+				reservedToken = Self.GrantCondition(Info.ReservedCondition);
 
 			return true;
 		}
 
-		public virtual void UnReserve(Actor self)
+		public virtual void UnReserve()
 		{
 			state = State.Free;
 			Carrier = null;
 
 			if (reservedToken != Actor.InvalidConditionToken)
-				reservedToken = self.RevokeCondition(reservedToken);
+				reservedToken = Self.RevokeCondition(reservedToken);
 
 			if (lockedToken != Actor.InvalidConditionToken)
-				lockedToken = self.RevokeCondition(lockedToken);
+				lockedToken = Self.RevokeCondition(lockedToken);
 		}
 
 		// Prepare for transport pickup
-		public virtual LockResponse LockForPickup(Actor self, Actor carrier)
+		public virtual LockResponse LockForPickup(Actor carrier)
 		{
 			if (state == State.Locked && Carrier != carrier)
 				return LockResponse.Failed;
 
-			if (delayPickups.Any(d => d.IsTraitEnabled() && !d.TryLockForPickup(self, carrier)))
+			if (delayPickups.Any(d => d.IsTraitEnabled() && !d.TryLockForPickup(Self, carrier)))
 				return LockResponse.Pending;
 
-			if (mobile != null && !mobile.CanStayInCell(self.Location))
+			if (Mobile != null && !Mobile.CanStayInCell(Self.Location))
 				return LockResponse.Pending;
 
 			if (state != State.Locked)
@@ -136,11 +139,11 @@ namespace OpenRA.Mods.Common.Traits
 				Carrier = carrier;
 
 				if (lockedToken == Actor.InvalidConditionToken)
-					lockedToken = self.GrantCondition(Info.LockedCondition);
+					lockedToken = Self.GrantCondition(Info.LockedCondition);
 			}
 
 			// Make sure we are not moving and at our normal position with respect to the cell grid
-			if (mobile != null && mobile.IsMovingBetweenCells)
+			if (Mobile != null && Mobile.IsMovingBetweenCells)
 				return LockResponse.Pending;
 
 			return LockResponse.Success;
