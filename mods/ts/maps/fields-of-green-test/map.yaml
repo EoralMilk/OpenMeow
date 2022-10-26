@@ -1695,5 +1695,9 @@ Actors:
 		Owner: Neutral
 		Faction: Random
 		Location: 63,14
+	Actor528: rutest2
+		Owner: Neutral
+		Facing: 384
+		Location: 62,-25
 
 Rules: rules.yaml

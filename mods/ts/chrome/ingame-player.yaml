@@ -26,9 +26,7 @@ Container@PLAYER_WIDGETS:
 			Y: WINDOW_BOTTOM - HEIGHT - 5
 			Width: 300
 			Height: 150
-			ClickThrough: true
 
-				
 		Container@SUPPORT_POWERS:
 			Logic: SupportPowerBinLogic
 			X: 10

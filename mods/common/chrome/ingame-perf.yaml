@@ -8,6 +8,7 @@ Container@PERF_WIDGETS:
 			Width: 200
 			Height: 200
 			Contrast: true
+			IgnoreMouseOver: true
 		Background@GRAPH_BG:
 			ClickThrough: true
 			Background: dialog4

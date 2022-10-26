@@ -65,7 +65,8 @@
 	AttachManager:
 	# AttachPoint@first:
 	# 	BoneAttach: a-s-Rig_Hand.R
-
+	Targetable@Rutest:
+		TargetTypes: Rutest
 
 
 RUTEST:

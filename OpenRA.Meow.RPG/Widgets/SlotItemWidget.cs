@@ -16,6 +16,8 @@ namespace OpenRA.Meow.RPG.Widgets
 		readonly int thumbnailX = 3;
 		readonly int thumbnailY = 3;
 
+		public static EquipmentSlot ForcusSlot;
+
 		readonly Actor actor;
 		Item item;
 		readonly WorldRenderer worldRenderer;
@@ -35,7 +37,6 @@ namespace OpenRA.Meow.RPG.Widgets
 			textWidth = rowWidth - textX - 2;
 
 			Bounds = new Rectangle(Skin.SpacingSmall, 0, rowWidth, Skin.InventoryThumbnailSizeY + 6);
-			Render = true;
 
 			emptyLabel = new LabelWidget
 			{
@@ -50,7 +51,9 @@ namespace OpenRA.Meow.RPG.Widgets
 			AddChild(emptyLabel);
 
 			SetItem(item);
-			ShadowSkin = () => slot != null && !slot.IsTraitDisabled ? Skin.BrightShadowSkin : Skin.DarkShadowSkin;
+			ShadowSkin = () => slot != null && slot.IsTraitDisabled ? Skin.DarkShadowSkin :
+				ForcusSlot != null && ForcusSlot == slot ? Skin.ActiveShadowSkin :
+				Skin.BrightShadowSkin;
 		}
 
 		public void SetItem(Item item)
@@ -88,6 +91,11 @@ namespace OpenRA.Meow.RPG.Widgets
 
 		public override bool HandleMouseInput(MouseInput mouseInput)
 		{
+			if (mouseInput.Button == MouseButton.Left && !slot.IsTraitDisabled)
+			{
+				ForcusSlot = slot;
+			}
+
 			if (item == null || (mouseInput.Button != MouseButton.Left && mouseInput.Button != MouseButton.Right))
 				return false;
 

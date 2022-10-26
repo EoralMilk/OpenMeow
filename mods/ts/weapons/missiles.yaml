@@ -488,9 +488,9 @@ ProtonFlameMissile:
 		UsingScat: true
 		ScatWeapon: ProtonFlameMissileCluster
 		ScatDist: 3c0
-		ScatCount: 0
+		ScatCount: 3
 		ScatDimensions: 5,5
-		ScatFootprint: __x__ _xXx_ xx_xx _XxX_ __x__
+		ScatFootprint: __x__ _xxx_ xx_xx _xxx_ __x__
 		JetPalette: lightgreen
 		LifeTime: 40
 	Warhead@1Dam: SpreadDamage
@@ -513,7 +513,7 @@ ProtonFlameMissileCluster:
 		AirburstAltitude: 1c0
 		ProximityRange: 128
 		ProximitySnapping: true
-		Inaccuracy: 0c200
+		Inaccuracy: 0c700
 		UseLockOnVerticalInaccuracy: true
 		LockOnInaccuracy: 3c768
 		LockOnTargetTypes: Air

@@ -99,7 +99,6 @@ namespace OpenRA.Meow.RPG.Widgets
 
 		public int InventoryPadding = 5;
 
-		public bool ClickThrough = true;
 		public string Background = "dialog";
 		public void AddFactionSuffix(string suffix)
 		{
@@ -109,7 +108,6 @@ namespace OpenRA.Meow.RPG.Widgets
 		readonly WorldRenderer worldRenderer;
 		int selectionHash;
 		public BasicUnitInfo TooltipUnit { get; private set; }
-		public bool ShouldRender => TooltipUnit != null;
 		public Func<BasicUnitInfo> GetTooltipUnit;
 
 		readonly InventoryWidget currentInventory;
@@ -410,8 +408,6 @@ namespace OpenRA.Meow.RPG.Widgets
 			);
 		}
 
-		public override string GetCursor(int2 pos) { return null; }
-
 		public Func<KeyInput, bool> OnKeyPress = _ => false;
 
 		public override bool HandleKeyPress(KeyInput e) { return OnKeyPress(e); }
@@ -451,28 +447,21 @@ namespace OpenRA.Meow.RPG.Widgets
 			UpdateTooltipActor(iconA);
 		}
 
+		public override bool HandleMouseInput(MouseInput mi)
+		{
+			return TooltipUnit != null && EventBounds.Contains(mi.Location);
+		}
+
 		public override void Draw()
 		{
 			if (TooltipUnit == null)
-			{
 				return;
-			}
 
 			WidgetUtils.DrawPanel(Background, RenderBounds);
 		}
 
 		public override void Tick()
 		{
-			//if (currentInventory.Render)
-			//	currentInventory.Bounds = CalculateInventoryBounds();
-			//else
-			//	currentInventory.Bounds = Rectangle.Empty;
-
-			//if (slotsWidget.Render)
-			//	slotsWidget.Bounds = CalculateEquipmentSlotsBounds();
-			//else
-			//	slotsWidget.Bounds = Rectangle.Empty;
-
 			if (selectionHash == world.Selection.Hash)
 				return;
 

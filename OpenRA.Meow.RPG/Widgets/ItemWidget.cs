@@ -27,6 +27,8 @@ namespace OpenRA.Meow.RPG.Widgets
 			this.actor = actor;
 			this.item = item;
 
+			IsVisible = inventoryWidget.IsVisible;
+
 			Skin = skin;
 
 			rowWidth = Skin.InventoryWidth - Skin.ScrollbarWidth - Skin.SpacingSmall * 2;
@@ -61,8 +63,6 @@ namespace OpenRA.Meow.RPG.Widgets
 			// ReSharper disable once ConvertIfStatementToSwitchStatement
 			if (mouseInput.Button == MouseButton.Left)
 			{
-				//item.EquipmentSlot.TryUnequip(actor);
-
 				if (item.EquipmentSlot != null)
 				{
 					var order = new Order("TryUnequip", actor, false)
@@ -70,6 +70,11 @@ namespace OpenRA.Meow.RPG.Widgets
 						TargetString = item.EquipmentSlot.Name
 					};
 					actor.World.IssueOrder(order);
+
+					if (SlotItemWidget.ForcusSlot != null && SlotItemWidget.ForcusSlot.SlotOwnerActor == inventoryWidget.InventoryActor)
+					{
+						inventoryWidget.TryEquip(item);
+					}
 				}
 				else
 					inventoryWidget.TryEquip(item);

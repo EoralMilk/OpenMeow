@@ -9,12 +9,7 @@ using OpenRA.Widgets;
 
 namespace OpenRA.Meow.RPG.Widgets
 {
-	public interface ITogglableRenderWidget
-	{
-		bool Render { get; set; }
-	}
-
-	public class ShadowContainerWidget : ContainerWidget, ITogglableRenderWidget
+	public class ShadowContainerWidget : ContainerWidget
 	{
 #pragma warning disable IDE1006 // 命名样式
 		public readonly Skin Skin;
@@ -22,19 +17,16 @@ namespace OpenRA.Meow.RPG.Widgets
 		protected bool Inset;
 #pragma warning restore IDE1006 // 命名样式
 
-		public bool Render { get; set; }
-
 		protected ShadowContainerWidget(Skin skin)
 		{
 			Skin = skin;
 			ShadowSkin = () => Skin.BrightShadowSkin;
 		}
 
+		public override string GetCursor(int2 pos) { return ChromeMetrics.Get<string>("DefaultCursor"); }
+
 		public override void Draw()
 		{
-			if (!Render)
-				return;
-
 			if (Inset)
 				DrawInset(ShadowSkin());
 			else

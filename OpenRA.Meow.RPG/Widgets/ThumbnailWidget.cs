@@ -22,7 +22,6 @@ namespace OpenRA.Meow.RPG.Widgets
 
 			thumbnail = new Animation(worldRenderer.World, item.Info.ThumbnailImage);
 			thumbnail.Play(item.Info.ThumbnailSequence);
-			Render = true;
 		}
 
 		public override void Draw()

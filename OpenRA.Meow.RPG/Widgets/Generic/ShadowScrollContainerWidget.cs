@@ -61,9 +61,6 @@ namespace OpenRA.Meow.RPG.Widgets
 
 		public override void Draw()
 		{
-			if (!Render)
-				return;
-
 			WidgetUtils.FillRectWithColor(
 				new Rectangle(RenderBounds.X + RenderBounds.Width - Skin.ScrollbarWidth,
 				RenderBounds.Y, Skin.ScrollbarBorderWidth, RenderBounds.Height),
@@ -81,7 +78,7 @@ namespace OpenRA.Meow.RPG.Widgets
 
 		public override void DrawOuter()
 		{
-			if (!IsVisible() || !Render)
+			if (!IsVisible())
 				return;
 
 			UpdateScroll();

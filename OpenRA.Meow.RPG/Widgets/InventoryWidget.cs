@@ -26,29 +26,31 @@ namespace OpenRA.Meow.RPG.Widgets
 			this.world = world;
 			this.worldRenderer = worldRenderer;
 			BottomSpacing = Skin.SpacingSmall;
+			IsVisible = () => InventoryActor != null && Inventory != null && world.LocalPlayer == InventoryActor.Owner;
 		}
 
 		public override void Tick()
 		{
-			Render = InventoryActor != null && Inventory != null;
+
+			var typeFilter = SlotItemWidget.ForcusSlot != null ? SlotItemWidget.ForcusSlot.Info.SlotType : null;
 
 			foreach (var (item, itemWidget) in itemWidgets.ToArray())
 			{
-				if (Inventory != null && Inventory.Items.Contains(item) && Render)
+				if (Inventory != null && Inventory.Items.Contains(item) && (typeFilter == null || item.Type == typeFilter))
 					continue;
 
 				itemWidgets.Remove(item);
 				RemoveChild(itemWidget);
 			}
 
-			if (!Render)
+			if (!IsVisible())
 				return;
 
 			if (Inventory != null && InventoryActor != null)
 			{
 				foreach (var item in Inventory.Items)
 				{
-					if (itemWidgets.ContainsKey(item))
+					if (itemWidgets.ContainsKey(item) || (typeFilter != null && item.Type != typeFilter))
 						continue;
 
 					var itemWidget = new ItemWidget(this, InventoryActor, item, worldRenderer, Skin);
@@ -83,6 +85,36 @@ namespace OpenRA.Meow.RPG.Widgets
 			if (InventoryActor == null)
 				return;
 
+			// only equip the item from same actor
+			if (SlotItemWidget.ForcusSlot != null && SlotItemWidget.ForcusSlot.SlotOwnerActor == InventoryActor)
+			{
+				if (SlotItemWidget.ForcusSlot.CanEquip(InventoryActor, item, true, true))
+				{
+					var order = new Order("TryEquipForce", InventoryActor, false)
+					{
+						TargetString = SlotItemWidget.ForcusSlot.Name,
+						ExtraData = item.ItemActor.ActorID,
+					};
+					world.IssueOrder(order);
+				}
+			}
+			else
+			{
+				foreach (var equipmentSlot in InventoryActor.TraitsImplementing<EquipmentSlot>())
+				{
+					if (equipmentSlot.CanEquip(InventoryActor, item, false))
+					{
+						var order = new Order("TryEquip", InventoryActor, false)
+						{
+							TargetString = equipmentSlot.Name,
+							ExtraData = item.ItemActor.ActorID,
+						};
+						world.IssueOrder(order);
+						break;
+					}
+				}
+			}
+
 			foreach (var equipmentSlot in InventoryActor.TraitsImplementing<EquipmentSlot>())
 			{
 				if (equipmentSlot.CanEquip(InventoryActor, item, false))
@@ -100,9 +132,7 @@ namespace OpenRA.Meow.RPG.Widgets
 
 		public override bool HandleMouseInput(MouseInput mouseInput)
 		{
-			if (!Render)
-				return false;
-			return base.HandleMouseInput(mouseInput);
+			return base.HandleMouseInput(mouseInput) || EventBounds.Contains(mouseInput.Location);
 		}
 	}
 }

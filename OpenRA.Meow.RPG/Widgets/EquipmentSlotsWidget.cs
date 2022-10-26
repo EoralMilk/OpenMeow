@@ -22,12 +22,15 @@ namespace OpenRA.Meow.RPG.Widgets
 			this.world = world;
 			this.worldRenderer = worldRenderer;
 			BottomSpacing = Skin.SpacingSmall;
+			IsVisible = () => thisActor != null && slotWidgets.Count > 0 && world.LocalPlayer == thisActor.Owner;
 		}
 
 		public void UpdateActor(Actor actor)
 		{
 			if (actor == thisActor)
 				return;
+
+			SlotItemWidget.ForcusSlot = null;
 
 			if (thisActor != null)
 			{
@@ -51,6 +54,7 @@ namespace OpenRA.Meow.RPG.Widgets
 			foreach (var slot in slots)
 			{
 				var slotWidget = new SlotItemWidget(thisActor, slot, slot.Item, worldRenderer, Skin);
+				slotWidget.IsVisible = IsVisible;
 				slotWidgets.Add(slot, slotWidget);
 				AddChild(slotWidget);
 
@@ -61,10 +65,15 @@ namespace OpenRA.Meow.RPG.Widgets
 
 		public override void Tick()
 		{
-			Render = thisActor != null && slotWidgets.Count > 0;
-
 			if (thisActor == null)
+			{
 				return;
+			}
+
+			if (SlotItemWidget.ForcusSlot != null && SlotItemWidget.ForcusSlot.IsTraitDisabled)
+			{
+				SlotItemWidget.ForcusSlot = null;
+			}
 
 			foreach (var (slot, itemWidget) in slotWidgets)
 			{
@@ -74,9 +83,7 @@ namespace OpenRA.Meow.RPG.Widgets
 
 		public override bool HandleMouseInput(MouseInput mouseInput)
 		{
-			if (!Render)
-				return false;
-			return base.HandleMouseInput(mouseInput);
+			return base.HandleMouseInput(mouseInput) || EventBounds.Contains(mouseInput.Location);
 		}
 	}
 }

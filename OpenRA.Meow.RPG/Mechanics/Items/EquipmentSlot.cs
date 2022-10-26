@@ -175,9 +175,9 @@ namespace OpenRA.Meow.RPG.Mechanics
 			return true;
 		}
 
-		public bool TryEquip(Actor self, Item item, bool canFromSlot = true)
+		public bool TryEquip(Actor self, Item item, bool canFromSlot = true, bool canReplace = false)
 		{
-			if (!CanEquip(self, item, canFromSlot))
+			if (!CanEquip(self, item, canFromSlot, canReplace))
 				return false;
 
 			if (Item == item)
@@ -189,10 +189,7 @@ namespace OpenRA.Meow.RPG.Mechanics
 			Item = item;
 			Item.EquipmentSlot = this;
 
-			SlotOwnerActor.World.AddFrameEndTask(w =>
-			{
-				Item.EquipingEffect(slotActor);
-			});
+			Item.EquipingEffect(slotActor);
 
 			foreach (var notifyEquip in equipNotifiers)
 				notifyEquip.Equipped(self, item);
@@ -210,10 +207,7 @@ namespace OpenRA.Meow.RPG.Mechanics
 
 			var item = Item;
 
-			SlotOwnerActor.World.AddFrameEndTask(w =>
-			{
-				item.UnequipingEffect(slotActor);
-			});
+			item.UnequipingEffect(slotActor);
 
 			Item.EquipmentSlot = null;
 			Item = null;
@@ -229,6 +223,10 @@ namespace OpenRA.Meow.RPG.Mechanics
 			if (order.OrderString == "TryEquip" && order.TargetString == Name)
 			{
 				TryEquip(self, self.World.WorldActor.Trait<ItemCache>().GetItem(order.ExtraData), false);
+			}
+			else if (order.OrderString == "TryEquipForce" && order.TargetString == Name)
+			{
+				TryEquip(self, self.World.WorldActor.Trait<ItemCache>().GetItem(order.ExtraData), true, true);
 			}
 			else if (order.OrderString == "TryUnequip" && order.TargetString == Name)
 			{
