@@ -260,11 +260,18 @@ namespace OpenRA.Mods.Common.Widgets
 
 			if (mi.Event == MouseInputEvent.Scroll)
 			{
-				if (mi.Delta.Y < 0)
+				if (mi.Delta.Y < 0 && CanScrollDown)
+				{
 					ScrollDown();
-				else if (mi.Delta.Y > 0)
+					Ui.ResetTooltips();
+				}
+				else if (mi.Delta.Y > 0 && CanScrollUp)
+				{
 					ScrollUp();
+					Ui.ResetTooltips();
+				}
 			}
+
 
 			if (icon == null)
 				return false;
