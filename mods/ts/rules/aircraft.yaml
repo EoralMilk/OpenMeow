@@ -447,6 +447,7 @@ TRNSPORT:
 		IsPlayerPalette: true
 	GrantConditionOnDeploy:
 		RequiresCondition: !AImicroManage
+		PauseOnCondition: carried
 		DeployedCondition: autocarry
 		CanDeployOnRamps: true
 		SkipMakeAnimation: true
