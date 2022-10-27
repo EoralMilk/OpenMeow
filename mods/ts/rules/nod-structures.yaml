@@ -677,6 +677,7 @@ NAWAST:
 		#ArrowSequence: arrow
 		#ClockSequence: clock
 		#CircleSequence: circles
-		#UseDirectionalTarget: True
-		#DirectionArrowAnimation: paradirection
+		UseDirectionalTarget: True
+		DirectionArrowAnimation: airstrikedirection
+		DirectionArrowPalette: mouse
 		SupportPowerPaletteOrder: 40

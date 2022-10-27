@@ -272,6 +272,8 @@ ORCA.ASSULT:
 	Inherits: ORCA
 	-Selectable:
 	-SelectionDecorations:
+	-Buildable:
+	-UpdatesPlayerStatistics:
 	RejectsOrders:
 	Interactable:
 	-AttackAircraft:
