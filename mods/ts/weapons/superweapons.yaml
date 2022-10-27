@@ -314,6 +314,8 @@ EMPulseCannon:
 		Duration: 250
 		Condition: empdisable
 		ValidTargets: Ground, Water, Air, Underground
+
+TestCrystalGrow:
 	Warhead@Res: CreateResource
 		AddsResourceType: BlueTiberium
 		Size: 5,0

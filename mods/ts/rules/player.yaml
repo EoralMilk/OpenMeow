@@ -158,3 +158,21 @@ Player:
 		Enabled: True
 		DisplayOrder: 9
 		Prerequisites: global-bounty
+	IonCannonPower@testcystalicon:
+		OrderName: growtestcystal
+		Prerequisites: ~disabled
+		Cursor: ioncannon
+		Weapon: TestCrystalGrow
+		Icon: testcystalicon
+		Effect: explosion
+		EffectSequence: ioncannonsparks
+		WeaponDelay: 0
+		ChargeInterval: 8750
+		Name: Grow Cystal
+		Description: Grow cystal on target location.
+		#EndChargeSpeechNotification: IonCannonReady
+		SelectTargetSpeechNotification: SelectTarget
+		EndChargeTextNotification: Cystal test ready.
+		SelectTargetTextNotification: Select target.
+		DisplayRadarPing: True
+		CameraActor: camera
