@@ -264,14 +264,15 @@ namespace OpenRA.Mods.Common.Widgets
 				{
 					ScrollDown();
 					Ui.ResetTooltips();
+					Game.Sound.PlayNotification(World.Map.Rules, World.LocalPlayer, "Sounds", ClickSound, null);
 				}
 				else if (mi.Delta.Y > 0 && CanScrollUp)
 				{
 					ScrollUp();
 					Ui.ResetTooltips();
+					Game.Sound.PlayNotification(World.Map.Rules, World.LocalPlayer, "Sounds", ClickSound, null);
 				}
 			}
-
 
 			if (icon == null)
 				return false;
