@@ -13,6 +13,7 @@ using OpenRA.Traits;
 using TrueSync;
 using OpenRA.GameRules;
 using TagLib.Ape;
+using static OpenRA.Network.Session;
 
 namespace OpenRA.Meow.RPG.Mechanics
 {
@@ -39,6 +40,10 @@ namespace OpenRA.Meow.RPG.Mechanics
 		protected override void Created(Actor self)
 		{
 			base.Created(self);
+			if (slot.Item != null && slot.Item is WeaponItem)
+			{
+				Weapon = (slot.Item as WeaponItem).WeaponInfo;
+			}
 		}
 
 		public override bool IsValidForArmamentChoose(in Target target, World world)
