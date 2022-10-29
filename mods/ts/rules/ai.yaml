@@ -25,7 +25,10 @@ Player:
 		RequiresCondition:  !enable-test-ai
 		Prerequisite: plug.power
 
-	CashTrickler@CashCheat: ## enough cash to build early game infantry, always on for megawealth
+	PowerDownBotModule:
+		RequiresCondition:  enable-test-ai
+
+	CashTrickler@CashCheat: ## enough cash for test AI
 		Interval: 300
 		Amount: 1000
 		ShowTicks: false
