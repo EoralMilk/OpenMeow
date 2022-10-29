@@ -456,7 +456,7 @@ NATMPL:
 		Range: 10c0
 		MaxHeightDelta: 2200
 	Power:
-		Amount: -200
+		Amount: -100
 	WithIdleOverlay@LIGHTS:
 		RequiresCondition: !build-incomplete && !disabled
 		Sequence: idle-lights
@@ -519,7 +519,7 @@ NAMISL:
 		Sequence: idle-lights-bright
 		Palette: bright
 	Power:
-		Amount: -50
+		Amount: -100
 	ProvidesPrerequisite@buildingname:
 	SupportPowerChargeBar:
 	NukePower@ClusterMissile:
@@ -599,6 +599,7 @@ NAMISL:
 
 NAWAST:
 	Inherits: ^Building
+	Inherits@IDISABLE: ^DisableOnLowPowerOrPowerDown
 	Inherits@bounty: ^GlobalBounty
 	HitShape:
 		TargetableCellAdditionalOffset: 0,0,418
@@ -614,7 +615,7 @@ NAWAST:
 		BuildPaletteOrder: 130
 		Prerequisites: namisl, ~structures.nod, ~techlevel.superweapons
 		BuildLimit: 1
-		Description: Processes Veins\ninto useable resources.\nMaximum 1 can be built.
+		Description: Processes Veins\ninto material for Chemical Missile.\nMaximum 1 can be built.
 	Building:
 		Footprint: Xx+ xx+ Xx+
 		Dimensions: 3,3
@@ -631,7 +632,7 @@ NAWAST:
 		Type: Chemicals
 		Capacity: 56
 	Power:
-		Amount: -40
+		Amount: -50
 	FreeActor:
 		Actor: WEED
 		SpawnOffset: 3,1
@@ -659,16 +660,17 @@ NAWAST:
 		Palette: pips
 	AirstrikePower@veinbomb:
 		OrderName: VeinBomb
+		PauseOnCondition: empdisable || disabled
 		Prerequisites: nawast
 		Icon: miniveinsw
 		ChargeInterval: 7500
 		Name: VeinBomb
-		Description: A Banshee drop Veinhole bomb on your target.
+		Description: A Banshee drop bomb to seed a Baby Veinhole on your target.
 		SelectTargetSpeechNotification: SelectTarget
 		SelectTargetTextNotification: Select target.
 		CameraActor: camera
 		CameraRemoveDelay: 150
-		UnitType: scrinvein
+		UnitType: scrin.vein
 		QuantizedFacings: 8
 		#DisplayBeacon: true
 		#BeaconPoster: pbmbicon

@@ -14,7 +14,7 @@ APC:
 		Queue: Vehicle
 		BuildPaletteOrder: 80
 		Prerequisites: ~gaweap, gapile, ~techlevel.medium
-		Description: Armored infantry transport.\nCan move on water.\n  Unarmed
+		Description: Armored infantry transport.\nCan move on water.\nHas a recon drone.\nCan use Force Attack to use drone to recon, has a very long range
 	Mobile:
 		Speed: 120
 		PauseOnCondition: empdisable || loading || being-captured || carried
@@ -90,7 +90,7 @@ HVR:
 		Queue: Vehicle
 		BuildPaletteOrder: 80
 		Prerequisites: ~gaweap, garadr, ~techlevel.high
-		Description: Hovering vehicle armed with\nlong range missiles.\n  Strong vs Vehicles, Aircraft\n  Weak vs Infantry
+		Description: Hovering vehicle armed with\nmid-long range missiles.\n  Strong vs Vehicles, Aircraft\n  Weak vs Infantry
 	Mobile:
 		Speed: 99
 		Locomotor: hover
@@ -151,7 +151,7 @@ SMECH:
 		Queue: Vehicle
 		BuildPaletteOrder: 20
 		Prerequisites: ~gaweap, ~techlevel.low
-		Description: Anti-personnel walker.\n  Strong vs Infantry, Light armor\n  Weak vs Vehicles, Aircraft
+		Description: Anti-personnel assualt walker.\n  Strong vs Infantry, Light armor\n  Weak vs Vehicles, Aircraft
 	Mobile:
 		TurnSpeed: 128
 		Speed: 130
@@ -220,7 +220,7 @@ MMCH:
 		Queue: Vehicle
 		BuildPaletteOrder: 50
 		Prerequisites: ~gaweap, ~techlevel.medium
-		Description: General purpose mechanized walker.\n  Strong vs Vehicles\n  Weak vs Infantry, Aircraft
+		Description: General purpose mechanized walker.\n  Strong vs Vehicles\n  Weak vs Infantry, Aircraft\n Can recieve Weapon Plugin\n-can recieve all 3 kinds of plugin at the same time
 	Mobile:
 		TurnSpeed: 20
 		Speed: 65
@@ -364,7 +364,7 @@ HMEC:
 		BuildPaletteOrder: 140
 		Prerequisites: ~gaweap, gatech, ~techlevel.high
 		BuildLimit: 1
-		Description: Slow heavy walker.\nArmed with dual railguns, rocket launchers and chain gun.\n  Strong vs Infantry, Vehicles, Aircraft and Buildings\n  Weak vs Nothing\nMaximum 1 can be built.
+		Description: Slow heavy walker.\nArmed with dual railguns, rocket launchers and chain gun.\n  Strong vs All\n  Weak vs Nothing\nMaximum 1 can be built.
 	Mobile:
 		TurnSpeed: 12
 		Speed: 42
@@ -425,7 +425,7 @@ SONIC:
 		Queue: Vehicle
 		BuildPaletteOrder: 120
 		Prerequisites: ~gaweap, gatech, ~techlevel.high
-		Description: Armored high-tech vehicle with\nlong range and sonic armament.\n  Strong vs Infantry, Vehicles, Buildings\n  Weak vs Aircraft
+		Description: Armored high-tech vehicle with\npowerful sonic armament.\n  Strong vs Ground\n  Weak vs Aircraft
 	Targetable:
 		TargetTypes: Ground, Vehicle, Disruptor
 	Mobile:
@@ -478,7 +478,7 @@ JUGG:
 		Queue: Vehicle
 		BuildPaletteOrder: 100
 		Prerequisites: ~gaweap, garadr, ~techlevel.high
-		Description: Mobile Artillery Mech.\nNeeds to deploy in order to shoot.\n  Strong vs Ground units\n  Weak vs Aircraft
+		Description: Mobile Artillery Mech.\nNeeds to deploy in order to shoot. \n-cannot deploy on ramp.\n  Strong vs Ground units\n  Weak vs Aircraft
 	Health:
 		HP: 35000
 	Armor:

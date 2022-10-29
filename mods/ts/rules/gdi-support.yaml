@@ -60,7 +60,7 @@ GACTWR:
 	Valued:
 		Cost: 300
 	Tooltip:
-		Name: Component Tower
+		Name: Component Tower \n Can recieve Weapon Plugin \n-max to 1 kind of plugin at the same time.\nStill working when low power.\n-can be turned off to save power.
 	Buildable:
 		Queue: Defense
 		BuildPaletteOrder: 70
@@ -173,48 +173,42 @@ GAVULC:
 	Valued:
 		Cost: 150
 	Tooltip:
-		Name: Vulcan Tower
+		Name: Weapon Plugin: Vulcan
 	Buildable:
 		Queue: Defense
 		BuildPaletteOrder: 80
 		Prerequisites: ~plug.vulcan, gapile, ~structures.gdi, ~techlevel.low
-		Description: General base defense.\nDoes not require power to operate.\n  Strong vs Infantry, Light armored units\n  Weak vs Heavy armored units
+		Description: Need to apply this plugin on Titian or Component Tower. \n Provide additional weapon that:\n-Strong vs Infantry, Light armored units.\n-Weak vs Heavy armored units. \nMakes Component Tower consume 30 power.
 	Plug:
 		Type: plug.vulcan
-	Power:
-		Amount: -20
 
 GAROCK:
 	Inherits: ^BuildingPlug
 	Valued:
 		Cost: 300
 	Tooltip:
-		Name: RPG Upgrade
+		Name: Weapon Plugin: RPG
 	Buildable:
 		Queue: Defense
 		BuildPaletteOrder: 90
 		Prerequisites: ~plug.rpg, gaweap, ~structures.gdi, ~techlevel.high
-		Description: Advanced ground defense.\nDoes not require power to operate.\n  Strong vs Armored ground units\n  Weak vs Aircraft
+		Description: Need to apply this plugin on Titian or Component Tower. \n Provide additional weapon that:\n-Strong vs Armored ground units\n-Weak vs Aircraft. \nMakes Component Tower consume 50 power.
 	Plug:
 		Type: plug.rpg
-	Power:
-		Amount: -20
 
 GACSAM:
 	Inherits: ^BuildingPlug
 	Valued:
 		Cost: 400
 	Tooltip:
-		Name: Missile Upgrade
+		Name: Weapon Plugin: Missile
 	Buildable:
 		Queue: Defense
 		BuildPaletteOrder: 100
 		Prerequisites: ~plug.missile, ~structures.gdi, garadr,~techlevel.medium
-		Description: General missile defense.\nDoes not require power to operate.\n  Strong vs Light armored units\n  Weak vs Infantry
+		Description: Need to apply this plugin on Titian or Component Tower. \n Provide additional weapon that:\n-Strong vs Aircraft.\n-Weak vs Ground. \nMakes Component Tower consume 50 power.
 	Plug:
 		Type: plug.missile
-	Power:
-		Amount: -30
 
 
 GAPOWRUP:
@@ -222,12 +216,12 @@ GAPOWRUP:
 	Valued:
 		Cost: 100
 	Tooltip:
-		Name: Power Turbine
+		Name: Power Plugin: Power Turbine
 	Buildable:
 		Queue: Defense
 		BuildPaletteOrder: 100
 		Prerequisites: ~plug.power, ~structures.gdi, ~techlevel.medium
-		Description: Provides extra power generation.
+		Description: Provides extra 50 power generation.
 	Plug:
 		Type: powrup
 	Power:

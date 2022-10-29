@@ -49,7 +49,7 @@ NAPOST:
 		Queue: Defense
 		BuildPaletteOrder: 150
 		Prerequisites: naapwr, ~structures.nod
-		Description: Stops infantry and blocks enemy fire.\nCan NOT be crushed by tanks.
+		Description: Stops infantry and blocks enemy fire.\nRequires power to operate.\n-can be turned off to save power. \nCan NOT be crushed by tanks.
 	Valued:
 		Cost: 200
 	Tooltip:
@@ -182,7 +182,7 @@ NALASR:
 		Queue: Defense
 		Prerequisites: nahand, ~structures.nod, ~techlevel.low
 		BuildPaletteOrder: 90
-		Description: Basic base defense.\nRequires power to operate.\n  Strong vs Ground units\n  Weak vs Aircraft
+		Description: Basic base defense.\nRequires power to operate.\n-can be turned off to save power.\n  Strong vs Ground units\n  Weak vs Aircraft
 	Health:
 		HP: 50000
 	Armor:
@@ -227,7 +227,7 @@ NAOBEL:
 		Queue: Defense
 		BuildPaletteOrder: 160
 		Prerequisites: natech, ~structures.nod, ~techlevel.high
-		Description: Advanced base defense.\nRequires power to operate.\n  Strong vs Ground units\n  Weak vs Aircraft
+		Description: Advanced base defense.\nRequires power to operate.\n-can be turned off to save power.\n  Strong vs Ground units\n  Weak vs Aircraft
 	Building:
 		Footprint: xx xx
 		Dimensions: 2,2
@@ -262,7 +262,7 @@ NAOBEL:
 
 NASAM:
 	Inherits: ^Defense
-	Inherits@IDISABLE: ^DisableOnLowPowerOrPowerDown
+	Inherits@IDISABLE: ^DisableOnPowerDown
 	Inherits@AUTOTARGET: ^AutoTargetAir
 	Inherits@bounty: ^GlobalBounty
 	Valued:
@@ -273,7 +273,7 @@ NASAM:
 		Queue: Defense
 		Prerequisites: naradr, ~structures.nod, ~techlevel.medium
 		BuildPaletteOrder: 100
-		Description: Nod Anti-Air base defense.\nRequires power to operate.\n  Strong vs Aircraft\n  Weak vs Ground units
+		Description: Nod Anti-Air base defense.\n  Strong vs Aircraft\n  Weak vs Ground units\nStill working when low power.\n-can be turned off to save power.
 	Health:
 		HP: 60000
 	Armor:
@@ -297,4 +297,4 @@ NASAM:
 		Weapon: RedEye2
 		LocalOffset: 543,0,455
 	Power:
-		Amount: -30
+		Amount: -50

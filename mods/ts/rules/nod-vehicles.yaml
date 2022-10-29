@@ -65,7 +65,7 @@ BIKE:
 		Queue: Vehicle
 		BuildPaletteOrder: 40
 		Prerequisites: ~naweap, ~techlevel.low
-		Description: Fast scout vehicle, armed with\nrockets.\n  Strong vs Vehicles\n  Weak vs Infantry, Aircraft
+		Description: Fast scout vehicle, armed with\nrockets.\n  Strong vs Vehicles, Aircraft\n  Weak vs Infantry
 	Mobile:
 		TurnSpeed: 40
 		Speed: 170
@@ -245,7 +245,7 @@ ART2:
 		Queue: Vehicle
 		BuildPaletteOrder: 100
 		Prerequisites: ~naweap, naradr, ~techlevel.high
-		Description: Heavy Long Range Mobile Artillery.\nNeeds to deploy in order to shoot.\n  Strong vs Ground units\n  Weak vs Aircraft
+		Description: Heavy Long Range Mobile Artillery.\nNeeds to deploy in order to shoot. \n-cannot deploy on ramp.\n  Strong vs Ground units\n  Weak vs Aircraft
 	Health:
 		HP: 30000
 	Armor:

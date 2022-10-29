@@ -268,31 +268,6 @@ ORCA:
 		Palette: pips
 		PipCount: 5
 
-ORCA.ASSULT:
-	Inherits: ORCA
-	-Selectable:
-	-SelectionDecorations:
-	-Buildable:
-	-UpdatesPlayerStatistics:
-	RejectsOrders:
-	Interactable:
-	-AttackAircraft:
-	AttackBomber:
-		PersistentTargeting: false
-		PauseOnCondition: empdisable
-		FacingTolerance: 512
-		# AttackType: Strafe
-		# StrafeRunLength: 17c0
-		FacingFullOnTarget: true
-	Armament:
-		Weapon: VectorHellfire.Assult
-		LocalOffset: 300,195,70, 300,-195,70
-		LocalYaw: -110, 110
-	RenderSprites:
-		Image: orca
-	RenderModels:
-		Image: orca
-
 ORCAB:
 	Inherits: ^EMPableAircraft
 	Inherits@EXPERIENCE: ^GainsExperience
@@ -308,7 +283,7 @@ ORCAB:
 		Queue: Air
 		BuildPaletteOrder: 30
 		Prerequisites: ~gahpad, gatech
-		Description: Heavy Assault bomber.\n  Strong vs Buildings, Vehicles\n  Weak vs Infantry, Aircraft
+		Description: Heavy Assault bomber.\n  Strong vs Buildings, Infantry, Light-Armored\n  Weak vs Heavy-Armored, Aircraft
 	Selectable:
 		Bounds: 905, 1448
 	Aircraft:
@@ -423,7 +398,7 @@ TRNSPORT:
 		Queue: Air
 		BuildPaletteOrder: 60
 		Prerequisites: ~gahpad, gadept
-		Description: VTOL aircraft capable of lifting\nand transporting vehicles.\n  Unarmed \n Can deploy to auto-carry harvester to harvest
+		Description: VTOL aircraft capable of lifting\nand transporting vehicles.\n  Unarmed \n Deploy to switch between auto-carry and manual mode: \n-auto carry mode help harvester to harvest
 	Aircraft:
 		TurnSpeed: 20
 		Speed: 149
@@ -625,7 +600,7 @@ APACHE:
 		UnloadVoice: Move
 		EjectOnDeath: true
 		AfterUnloadDelay: 40
-		InitialUnits: oxanna, slav
+		#InitialUnits: oxanna, slav
 	Health:
 		HP: 22500
 	Armor:
@@ -939,7 +914,8 @@ REPAIRDRONE:
 	-WithIdleOverlay@DAMAGED2:
 	-WithIdleOverlay@DAMAGED3:
 
-SCRINVEIN:
+## Support Power Aircraft
+SCRIN.VEIN:
 	Inherits: ^EMPableAircraft
 	Inherits@EXPERIENCE: ^GainsExperience
 	Inherits@bounty: ^GlobalBounty
@@ -1023,3 +999,28 @@ SCRINVEIN:
 		Image: scrin
 	RenderModels:
 		Image: scrin
+
+ORCA.ASSULT:
+	Inherits: ORCA
+	-Selectable:
+	-SelectionDecorations:
+	-Buildable:
+	-UpdatesPlayerStatistics:
+	RejectsOrders:
+	Interactable:
+	-AttackAircraft:
+	AttackBomber:
+		PersistentTargeting: false
+		PauseOnCondition: empdisable
+		FacingTolerance: 512
+		# AttackType: Strafe
+		# StrafeRunLength: 17c0
+		FacingFullOnTarget: true
+	Armament:
+		Weapon: VectorHellfire.Assult
+		LocalOffset: 300,195,70, 300,-195,70
+		LocalYaw: -110, 110
+	RenderSprites:
+		Image: orca
+	RenderModels:
+		Image: orca

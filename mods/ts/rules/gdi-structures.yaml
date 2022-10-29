@@ -7,7 +7,7 @@ GAPOWR:
 		Queue: Building
 		BuildPaletteOrder: 10
 		Prerequisites: ~structures.gdi, ~techlevel.low
-		Description: Provides power for other structures.
+		Description: Provides power for other structures. /n Can recieve Power Plugin
 	Valued:
 		Cost: 350
 	Tooltip:
@@ -552,7 +552,7 @@ GAPLUG:
 		BuildPaletteOrder: 110
 		Prerequisites: proc, gatech, ~structures.gdi, ~techlevel.superweapons
 		Queue: Building
-		Description: Can be upgraded for additional technology.
+		Description: Can be upgraded for additional technology.\nRequires power to operate.\n-can be turned off to save power.\n Can recieve Tech Plugin \n-max to 2 kind of plugin at the same time.
 	Building:
 		Footprint: xxx xxx
 		Dimensions: 2,3
@@ -630,7 +630,7 @@ GAPLUG:
 		Amount: -50
 	Power@droppod:
 		RequiresCondition: plug.droppoda || plug.droppodb
-		Amount: -20
+		Amount: -100
 	Pluggable@pluga:
 		Offset: 0,2
 		Conditions:
@@ -738,12 +738,12 @@ GAPLUG2:
 	Valued:
 		Cost: 1000
 	Tooltip:
-		Name: Seeker Control
+		Name: Tech Plugin: Seeker Control
 	Buildable:
 		Queue: Building
 		BuildPaletteOrder: 110
 		Prerequisites: gaplug.socket.hunterseeker, gatech, gaweap, ~structures.gdi, ~techlevel.superweapons
-		Description: Enables use of the hunter-seeker droid.
+		Description: Enables use of the hunter-seeker droid.\nMakes GDI Upgrade Center consume 50 more power.
 	Plug:
 		Type: plug.hunterseeker
 	Power:
@@ -754,12 +754,12 @@ GAPLUG3:
 	Valued:
 		Cost: 1500
 	Tooltip:
-		Name: Ion Cannon Uplink
+		Name: Tech Plugin: Ion Cannon Uplink
 	Buildable:
 		Queue: Building
 		BuildPaletteOrder: 120
 		Prerequisites: gaplug.socket.ioncannon, gatech, ~structures.gdi, ~techlevel.superweapons
-		Description: Enables use of the Ion Cannon.
+		Description: Enables use of the Ion Cannon.\nMakes GDI Upgrade Center consume 100 more power.
 	Plug:
 		Type: plug.ioncannon
 	Power:
@@ -770,13 +770,13 @@ GAPLUG4:
 	Valued:
 		Cost: 1000
 	Tooltip:
-		Name: Drop Pod Node
+		Name: Tech Plugin: Drop Pod Node
 	Buildable:
 		Queue: Building
 		BuildPaletteOrder: 180
 		Prerequisites: gaplug, gatech, ~structures.gdi, ~techlevel.superweapons
-		Description: Enables use of the Drop Pod Reinforcements.
+		Description: Enables use of the Drop Pod Reinforcements. \nMakes GDI Upgrade Center consume 100 more power.
 	Plug:
 		Type: plug.droppod
 	Power:
-		Amount: -20
+		Amount: -100
