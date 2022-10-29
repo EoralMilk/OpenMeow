@@ -17,7 +17,6 @@ using OpenRA.Mods.Common.Lint;
 using OpenRA.Mods.Common.Traits;
 using OpenRA.Primitives;
 using OpenRA.Widgets;
-using TagLib.Ape;
 
 namespace OpenRA.Mods.Common.Widgets
 {

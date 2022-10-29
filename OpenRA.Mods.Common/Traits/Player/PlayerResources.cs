@@ -61,6 +61,7 @@ namespace OpenRA.Mods.Common.Traits
 
 		[Desc("Special value of each resource type.", "Dictionary of [resource type]: [usage1 type : value type], [usage2 type : value type]...  .")]
 		public readonly Dictionary<string, Dictionary<string, int>> SpecialResourceValues = new Dictionary<string, Dictionary<string, int>>();
+
 		IEnumerable<LobbyOption> ILobbyOptions.LobbyOptions(MapPreview map)
 		{
 			var startingCash = SelectableCash.ToDictionary(c => c.ToString(), c => "$" + c.ToString());

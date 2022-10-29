@@ -15,7 +15,6 @@ using System.Linq;
 using OpenRA.Graphics;
 using OpenRA.Mods.Common.Orders;
 using OpenRA.Traits;
-using static DiscordRPC.User;
 
 namespace OpenRA.Mods.Common.Traits
 {
@@ -167,7 +166,7 @@ namespace OpenRA.Mods.Common.Traits
 		protected bool notifiedCharging;
 		bool notifiedReady;
 
-		PlayerResources playerResources;
+		readonly PlayerResources playerResources;
 
 		public void ResetTimer()
 		{
@@ -184,7 +183,6 @@ namespace OpenRA.Mods.Common.Traits
 			Manager = manager;
 
 			playerResources = Manager.Self.Owner.PlayerActor.TraitOrDefault<PlayerResources>();
-
 		}
 
 		public virtual void PrerequisitesAvailable(bool available)
