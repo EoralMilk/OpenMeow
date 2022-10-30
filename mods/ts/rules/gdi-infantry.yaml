@@ -95,6 +95,9 @@ MEDIC:
 		Delay: 60
 	Passenger:
 		CustomPipType: red
+	GuardsSelection:
+		ValidTargets: Infantry
+		MaxTargets: 6
 
 JUMPJET:
 	Inherits: ^Soldier

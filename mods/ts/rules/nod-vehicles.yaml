@@ -385,6 +385,9 @@ REPAIR:
 		FacingTolerance: 0
 	AutoTarget:
 		ScanRadius: 8
+	GuardsSelection:
+		ValidTargets: Vehicle
+		MaxTargets: 6
 
 WEED:
 	Inherits: ^Tank
