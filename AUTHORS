@@ -216,16 +216,32 @@ games which OpenRA aims to reimagine.
 
 Addtional Credit:
 The art assets used in TS mod
-Voxel & Other Model：
+Voxel & Other Model: 
     *Yetean: MCV
-    *issly：GDI Amphibious APC, Orca Fighter, Orca bomber, Nod attack bike, Nod buggy, Nod Tick Tank
-    *Gangster (Command and Conquer: Rewire): MCV, Nod Stealth Tank, Subterranean APC, Harvester, Orca Carryall,Orca Transprot, Devil's Tongue, Hover MRLS 
+
+    *issly: GDI Amphibious APC, Orca Fighter, 
+Orca bomber, Nod attack bike, Nod buggy, Nod Tick Tank
+
+    *Gangster (Command and Conquer: Rewire): MCV, Nod 
+Stealth Tank, Subterranean APC, Harvester, Orca Carryall,
+Orca Transprot, Devil's Tongue, Hover MRLS 
+
 SHP & Other Sprite:
     *Nolt: Baby Veinhole
-    *craftpix.net(https://free-game-assets.itch.io/free-animated-explosion-sprite-pack): PlasmaExplosion
-    *weisin(https://weisinx7.itch.io/earth-element): Ioncannon sparks
+
+    *craftpix.net(https://free-game-assets.itch.io/free-animated-explosion-sprite-pack): 
+PlasmaExplosion
+
+    *weisin(https://weisinx7.itch.io/earth-element): 
+Ioncannon sparks
+
 Code:
-    *Garion(https://github.com/AttacqueSuperior/Engine): Spawner logic, Autodeployer
-    *Mustapha(https://github.com/MustaphaTR/OpenRA): Some notable code fix
-    *Darkademic & Inq8(https://github.com/Inq8/CAmod): GuardsSelection
+    *Garion(https://github.com/AttacqueSuperior/Engine): 
+Spawner logic, Autodeployer
+
+    *Mustapha(https://github.com/MustaphaTR/OpenRA): 
+Some notable code fix
+
+    *Darkademic & Inq8(https://github.com/Inq8/CAmod): 
+GuardsSelection
 
