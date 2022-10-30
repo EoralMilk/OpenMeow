@@ -138,10 +138,10 @@ namespace OpenRA.Mods.Common.Traits
 
 			SpawnIntoWorld(self, carrierSlaveEntry.Actor, self.CenterPosition + carrierSlaveEntry.Offset.Rotate(self.Orientation));
 
-			if (spawnContainTokens.TryGetValue(a.Info.Name, out var spawnContainToken) && spawnContainToken.Any())
+			if (spawnContainTokens.TryGetValue(a.Info.Name, out var spawnContainToken) && spawnContainToken.Count > 0)
 				self.RevokeCondition(spawnContainToken.Pop());
 
-			if (loadedTokens.Any())
+			if (loadedTokens.Count > 0)
 				self.RevokeCondition(loadedTokens.Pop());
 
 			// Lambdas can't use 'in' variables, so capture a copy for later
