@@ -164,18 +164,21 @@ namespace OpenRA.Mods.Common.Activities
 			if (nextCell == null)
 				return false;
 
-			var firstFacing = self.World.Map.FacingBetween(mobile.FromCell, nextCell.Value.Cell, mobile.Facing);
-
-			if (mobile.Info.CanMoveBackward && self.World.WorldTick - startTicks < mobile.Info.BackwardDuration && Math.Abs(firstFacing.Angle - mobile.Facing.Angle) > mobile.Info.BackwardFacingTolerance.Angle)
-				firstFacing = new WAngle(firstFacing.Angle + 512);
-
-			if (firstFacing != mobile.Facing)
+			if (!mobile.Info.TurningWhileMoving)
 			{
-				path.Add(nextCell.Value.Cell);
-				QueueChild(new Turn(self, firstFacing));
-				mobile.TurnToMove = true;
-				mobile.AccleratedDelta = 0;
-				return false;
+				var firstFacing = self.World.Map.FacingBetween(mobile.FromCell, nextCell.Value.Cell, mobile.Facing);
+
+				if (mobile.Info.CanMoveBackward && self.World.WorldTick - startTicks < mobile.Info.BackwardDuration && Math.Abs(firstFacing.Angle - mobile.Facing.Angle) > mobile.Info.BackwardFacingTolerance.Angle)
+					firstFacing = new WAngle(firstFacing.Angle + 512);
+
+				if (firstFacing != mobile.Facing)
+				{
+					path.Add(nextCell.Value.Cell);
+					QueueChild(new Turn(self, firstFacing));
+					mobile.TurnToMove = true;
+					mobile.AccleratedDelta = 0;
+					return false;
+				}
 			}
 
 			mobile.SetLocation(mobile.FromCell, mobile.FromSubCell, nextCell.Value.Cell, nextCell.Value.SubCell);
@@ -360,6 +363,7 @@ namespace OpenRA.Mods.Common.Activities
 		{
 			protected readonly Move Move;
 			protected readonly WPos From, To;
+			protected readonly WAngle FromToYaw;
 			protected readonly WAngle FromFacing, ToFacing;
 			protected readonly WRot? FromTerrainOrientation, ToTerrainOrientation;
 			protected readonly bool EnableArc;
@@ -383,6 +387,7 @@ namespace OpenRA.Mods.Common.Activities
 				To = to;
 				FromFacing = fromFacing;
 				ToFacing = toFacing;
+				FromToYaw = (To - From).Yaw;
 				FromTerrainOrientation = fromTerrainOrientation;
 				ToTerrainOrientation = toTerrainOrientation;
 				progress = carryoverProgress;
@@ -440,7 +445,10 @@ namespace OpenRA.Mods.Common.Activities
 				if (progress >= Distance)
 				{
 					mobile.SetCenterPosition(self, new WPos(To.X, To.Y, self.World.Map.HeightOfTerrain(To)));
-					mobile.Facing = ToFacing;
+					if (mobile.Info.TurningWhileMoving)
+						mobile.Facing = Util.TickFacing(mobile.Facing, FromToYaw, mobile.TurnSpeed);
+					else
+						mobile.Facing = ToFacing;
 
 					Move.lastMovePartCompletedTick = self.World.WorldTick;
 					Queue(OnComplete(self, mobile, Move));
@@ -480,7 +488,11 @@ namespace OpenRA.Mods.Common.Activities
 					mobile.SetTerrainRampOrientation(orientation);
 				}
 
-				mobile.Facing = WAngle.Lerp(FromFacing, ToFacing, progress, Distance);
+				if (mobile.Info.TurningWhileMoving)
+					mobile.Facing = Util.TickFacing(mobile.Facing, FromToYaw, mobile.TurnSpeed);
+				else
+					mobile.Facing = WAngle.Lerp(FromFacing, ToFacing, progress, Distance);
+
 				return false;
 			}
 
@@ -520,7 +532,7 @@ namespace OpenRA.Mods.Common.Activities
 				var nextCell = parent.PopPath(self);
 				if (nextCell != null)
 				{
-					if (!mobile.IsTraitPaused && !mobile.IsTraitDisabled && IsTurn(mobile, nextCell.Value.Cell, map))
+					if (!mobile.IsTraitPaused && !mobile.IsTraitDisabled && !mobile.Info.TurningWhileMoving && IsTurn(mobile, nextCell.Value.Cell, map))
 					{
 						var nextSubcellOffset = map.Grid.OffsetOfSubCell(nextCell.Value.SubCell);
 						WRot? nextToTerrainOrientation = null;

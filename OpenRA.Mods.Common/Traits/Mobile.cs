@@ -51,6 +51,9 @@ namespace OpenRA.Mods.Common.Traits
 		[Desc("If set to true, this unit will always turn in place instead of following a curved trajectory (like infantry).")]
 		public readonly bool AlwaysTurnInPlace = false;
 
+		[Desc("If set to true, this unit won't stop to turn, used for TS Hover MRLS")]
+		public readonly bool TurningWhileMoving = false;
+
 		[CursorReference]
 		[Desc("Cursor to display when a move order can be issued at target location.")]
 		public readonly string Cursor = "move";
