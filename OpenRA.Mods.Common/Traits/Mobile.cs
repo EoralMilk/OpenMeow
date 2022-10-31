@@ -85,9 +85,6 @@ namespace OpenRA.Mods.Common.Traits
 		[Desc("After how many ticks the actor will turn forward during backoff")]
 		public readonly int BackwardDuration = 40;
 
-		[Desc("After how many ticks the actor will turn forward during backoff")]
-		public readonly WAngle BackwardFacingTolerance = new WAngle(256);
-
 		[ConsumedConditionReference]
 		[Desc("Boolean expression defining the condition under which the regular (non-force) move cursor is disabled.")]
 		public readonly BooleanExpression RequireForceMoveCondition = null;
