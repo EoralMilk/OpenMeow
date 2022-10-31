@@ -118,6 +118,7 @@ namespace OpenRA.Mods.Common.Activities
 		protected override void OnFirstRun(Actor self)
 		{
 			startTicks = self.World.WorldTick;
+			mobile.AccleratedDelta = 0;
 
 			if (evaluateNearestMovableCell && destination.HasValue)
 			{
@@ -173,6 +174,7 @@ namespace OpenRA.Mods.Common.Activities
 				path.Add(nextCell.Value.Cell);
 				QueueChild(new Turn(self, firstFacing));
 				mobile.TurnToMove = true;
+				mobile.AccleratedDelta = 0;
 				return false;
 			}
 
@@ -370,6 +372,7 @@ namespace OpenRA.Mods.Common.Activities
 			protected readonly bool MovingOnGroundLayer;
 			readonly int terrainOrientationMargin;
 			protected int progress;
+			int prevSpeed;
 
 			public MovePart(Move move, WPos from, WPos to, WAngle fromFacing, WAngle toFacing,
 				WRot? fromTerrainOrientation, WRot? toTerrainOrientation, int terrainOrientationMargin, int carryoverProgress, bool movingOnGroundLayer)
@@ -423,7 +426,16 @@ namespace OpenRA.Mods.Common.Activities
 				// Only move by a full speed step if we didn't already move this tick.
 				// If we did, we limit the move to any carried-over leftover progress.
 				if (Move.lastMovePartCompletedTick < self.World.WorldTick)
-					progress += mobile.MovementSpeedForCell(mobile.ToCell);
+				{
+					var currentSpeed = mobile.MovementSpeedForCell(mobile.ToCell);
+					progress += currentSpeed;
+
+					if (prevSpeed > currentSpeed)
+						mobile.AccleratedDelta = currentSpeed - mobile.Info.Speed > 0 ? currentSpeed - mobile.Info.Speed : 0;
+
+					prevSpeed = currentSpeed;
+					mobile.AccleratedDelta = mobile.AccleratedDelta + mobile.Info.SpeedAccleration;
+				}
 
 				if (progress >= Distance)
 				{
