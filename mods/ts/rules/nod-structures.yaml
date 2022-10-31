@@ -546,7 +546,7 @@ NAMISL:
 		DisplayTimerRelationships: None
 		DisplayRadarPing: True
 		CameraRange: 10c0
-		CameraRemoveDelay: 75
+		CameraRemoveDelay: 175
 		FlightVelocity: 1c0
 		TrailImage: small_smoke_trail
 		TrailInterval: 0
