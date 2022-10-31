@@ -354,7 +354,7 @@ GADEPT:
 		ValuePercentage: 0
 		Interval: 48
 		PauseOnCondition: empdisable
-		PlayerExperience: 15
+		PlayerExperience: 5
 		StartRepairingNotification: Repairing
 		StartRepairingTextNotification: Repairing.
 		FinishRepairingNotification: UnitRepaired

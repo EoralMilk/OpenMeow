@@ -496,7 +496,7 @@
 		Types: building
 	RepairableBuilding:
 		RepairStep: 700
-		PlayerExperience: 25
+		PlayerExperience: 5
 		RepairingNotification: Repairing
 	WithDeathAnimation:
 		DeathSequence: dead
