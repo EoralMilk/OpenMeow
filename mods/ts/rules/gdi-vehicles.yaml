@@ -94,8 +94,8 @@ HVR:
 		Speed: 99
 		Locomotor: hover
 		TerrainOrientationAdjustmentMargin: -1
-		CanMoveBackward: true
-		TurnSpeed: 40
+		TurningWhileMoving: true
+		TurnSpeed: 32
 	Selectable:
 		Bounds: 1206, 1600, 0, -900
 	Health:
@@ -120,7 +120,7 @@ HVR:
 	WithModelTurret:
 	Hovers:
 		RequiresCondition: !empdisable
-		BobDistance: -32
+		BobDistance: -48
 		InitialHeight: 192
 	Carryable:
 		CarriedCondition: carried
