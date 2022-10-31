@@ -118,7 +118,7 @@ namespace OpenRA.Mods.Common.Activities
 		protected override void OnFirstRun(Actor self)
 		{
 			startTicks = self.World.WorldTick;
-			mobile.AccleratedDelta = 0;
+			mobile.AcceleratedDelta = 0;
 
 			if (evaluateNearestMovableCell && destination.HasValue)
 			{
@@ -176,7 +176,7 @@ namespace OpenRA.Mods.Common.Activities
 					path.Add(nextCell.Value.Cell);
 					QueueChild(new Turn(self, firstFacing));
 					mobile.TurnToMove = true;
-					mobile.AccleratedDelta = 0;
+					mobile.AcceleratedDelta = 0;
 					return false;
 				}
 			}
@@ -436,10 +436,10 @@ namespace OpenRA.Mods.Common.Activities
 					progress += currentSpeed;
 
 					if (prevSpeed > currentSpeed)
-						mobile.AccleratedDelta = currentSpeed - mobile.Info.Speed > 0 ? currentSpeed - mobile.Info.Speed : 0;
+						mobile.AcceleratedDelta = currentSpeed - mobile.Info.Speed > 0 ? currentSpeed - mobile.Info.Speed : 0;
 
 					prevSpeed = currentSpeed;
-					mobile.AccleratedDelta = mobile.AccleratedDelta + mobile.Info.SpeedAccleration;
+					mobile.AcceleratedDelta = mobile.AcceleratedDelta + mobile.Info.SpeedAccleration;
 				}
 
 				if (progress >= Distance)

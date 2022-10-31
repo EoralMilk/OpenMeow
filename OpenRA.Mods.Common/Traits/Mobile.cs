@@ -227,7 +227,7 @@ namespace OpenRA.Mods.Common.Traits
 		INotifyFinishedMoving[] notifyFinishedMoving;
 		IWrapMove[] moveWrappers;
 		bool requireForceMove;
-		public int AccleratedDelta;
+		public int AcceleratedDelta;
 
 		public bool IsImmovable { get; private set; }
 		public bool TurnToMove;
@@ -802,7 +802,7 @@ namespace OpenRA.Mods.Common.Traits
 
 		public int MovementSpeedForCell(CPos cell)
 		{
-			var currentSpeed = Info.MaxSpeed > Info.Speed ? (Info.Speed + AccleratedDelta > Info.MaxSpeed ? Info.MaxSpeed : Info.Speed + AccleratedDelta) : Info.Speed;
+			var currentSpeed = Info.MaxSpeed > Info.Speed ? (Info.Speed + AcceleratedDelta > Info.MaxSpeed ? Info.MaxSpeed : Info.Speed + AcceleratedDelta) : Info.Speed;
 			var terrainSpeed = Locomotor.MovementSpeedForCell(cell);
 			var modifiers = speedModifiers.Value.Append(terrainSpeed);
 
