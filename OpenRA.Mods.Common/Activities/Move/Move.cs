@@ -146,7 +146,10 @@ namespace OpenRA.Mods.Common.Activities
 			}
 
 			if (mobile.IsTraitDisabled || mobile.IsTraitPaused)
+			{
+				mobile.AcceleratedDelta = 0;
 				return false;
+			}
 
 			if (destination == mobile.ToCell)
 				return true;
@@ -377,7 +380,6 @@ namespace OpenRA.Mods.Common.Activities
 			protected readonly bool TurnsWhileMoving;
 			readonly int terrainOrientationMargin;
 			protected int progress;
-			int prevSpeed;
 
 			public MovePart(Move move, WPos from, WPos to, WAngle fromFacing, WAngle toFacing,
 				WRot? fromTerrainOrientation, WRot? toTerrainOrientation, int terrainOrientationMargin, int carryoverProgress, bool movingOnGroundLayer)
@@ -439,11 +441,10 @@ namespace OpenRA.Mods.Common.Activities
 					var currentSpeed = mobile.MovementSpeedForCell(mobile.ToCell);
 					progress += currentSpeed;
 
-					if (prevSpeed > currentSpeed)
-						mobile.AcceleratedDelta = currentSpeed - mobile.Info.Speed > 0 ? currentSpeed - mobile.Info.Speed : 0;
-
-					prevSpeed = currentSpeed;
-					mobile.AcceleratedDelta = mobile.AcceleratedDelta + mobile.Info.SpeedAccleration;
+					if (mobile.IsTraitDisabled || mobile.IsTraitPaused)
+						mobile.AcceleratedDelta = 0;
+					else
+						mobile.AcceleratedDelta += mobile.Info.SpeedAccleration;
 				}
 
 				if (progress >= Distance)
