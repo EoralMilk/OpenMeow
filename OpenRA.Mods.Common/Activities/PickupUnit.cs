@@ -74,7 +74,8 @@ namespace OpenRA.Mods.Common.Activities
 				if (carryall.State == Carryall.CarryallState.Reserved)
 					carryall.UnreserveCarryable(self);
 
-				return true;
+				var aircraft = self.TraitOrDefault<Aircraft>();
+				aircraft?.RemoveInfluence();
 			}
 
 			if (cargo.IsDead || carryable.IsTraitDisabled || (!carryall.Info.CarryableAnyCamp && !cargo.AppearsFriendlyTo(self)))
