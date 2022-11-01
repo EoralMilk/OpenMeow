@@ -118,7 +118,6 @@ namespace OpenRA.Mods.Common.Activities
 		protected override void OnFirstRun(Actor self)
 		{
 			startTicks = self.World.WorldTick;
-			mobile.AcceleratedDelta = 0;
 
 			if (evaluateNearestMovableCell && destination.HasValue)
 			{
@@ -314,6 +313,7 @@ namespace OpenRA.Mods.Common.Activities
 
 		protected override void OnLastRun(Actor self)
 		{
+			mobile.AcceleratedDelta = 0;
 			path = null;
 		}
 

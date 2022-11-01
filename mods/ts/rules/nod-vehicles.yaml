@@ -17,7 +17,9 @@ BGGY:
 		Description: Fast scout and anti-infantry vehicle.\n  Strong vs Infantry, Light armor\n  Weak vs Vehicles, Aircraft
 	Mobile:
 		TurnSpeed: 40
-		Speed: 142
+		MaxSpeed: 142
+		Speed: 60
+		SpeedAccleration: 2
 		CanMoveBackward: true
 	Crushable:
 		CrushClasses: bigguy
@@ -66,8 +68,11 @@ BIKE:
 		Prerequisites: ~naweap, ~techlevel.low
 		Description: Fast scout vehicle, armed with\nrockets.\n  Strong vs Vehicles, Aircraft\n  Weak vs Infantry
 	Mobile:
-		TurnSpeed: 40
-		Speed: 170
+		TurnSpeed: 32
+		MaxSpeed: 170
+		Speed: 60
+		TurningWhileMoving: true
+		SpeedAccleration: 2
 	Crushable:
 		CrushClasses: bigguy
 	Targetable@Crushable:
@@ -124,7 +129,9 @@ TTNK:
 		Description: Nod's main battle tank.\nCan deploy to gain extra protection and range.\n  Strong vs Vehicles\n  Weak vs Infantry, Aircraft
 	Mobile:
 		TurnSpeed: 32
-		Speed: 85
+		MaxSpeed: 85
+		Speed: 40
+		SpeedAccleration: 2
 		ImmovableCondition: !undeployed
 	Health:
 		HP: 35000
@@ -250,7 +257,9 @@ ART2:
 	Armor:
 		Type: Light
 	Mobile:
-		Speed: 71
+		MaxSpeed: 72
+		Speed: 32
+		SpeedAccleration: 2
 		TurnSpeed: 8
 		ImmovableCondition: !undeployed
 	RevealsShroud@deploy:
@@ -364,7 +373,9 @@ REPAIR:
 	Armor:
 		Type: Light
 	Mobile:
-		Speed: 85
+		MaxSpeed: 85
+		SpeedAccleration: 2
+		Speed: 40
 		TurnSpeed: 20
 	RevealsShroud:
 		Range: 5c512
@@ -414,7 +425,9 @@ WEED:
 		HarvestVoice: Attack
 		DeliverVoice: Move
 	Mobile:
-		Speed: 71
+		Speed: 40
+		MaxSpeed: 71
+		SpeedAccleration: 2
 		TurnSpeed: 20
 	Health:
 		HP: 60000
@@ -457,7 +470,9 @@ SAPC:
 		Description: Troop transport that can move\nunderground to avoid detection.\n  Unarmed
 	Mobile:
 		TurnSpeed: 20
-		Speed: 71
+		Speed: 40
+		MaxSpeed: 71
+		SpeedAccleration: 2
 		PauseOnCondition: empdisable || loading || being-captured || carried
 		Locomotor: subterranean
 	Health:
@@ -511,7 +526,9 @@ SUBTANK:
 		Description: Subterranean Flame Tank.\nIs able to move underground.\n  Strong vs Infantry, Buildings\n  Weak vs Tanks, Aircraft
 	Mobile:
 		TurnSpeed: 24
-		Speed: 71
+		Speed: 40
+		MaxSpeed: 71
+		SpeedAccleration: 2
 		Locomotor: subterranean
 	Health:
 		HP: 30000
@@ -574,7 +591,9 @@ STNK:
 		Description: Lightly armoured tank equipped with a personal\nstealth generator. Armed with missiles.\nCan be spotted by infantry at close range.\n  Strong vs Vehicles, Aircraft\n  Weak vs Infantry
 	Mobile:
 		TurnSpeed: 40
-		Speed: 145
+		Speed: 60
+		MaxSpeed: 145
+		SpeedAccleration: 2
 		CanMoveBackward: true
 	Health:
 		HP: 18000
@@ -635,8 +654,11 @@ REAPER:
 	Selectable:
 		Bounds: 1206,2412,0,-603
 	Mobile:
-		TurnSpeed: 56
-		Speed: 105
+		TurnSpeed: 32
+		MaxSpeed: 105
+		Speed: 16
+		TurningWhileMoving: true
+		SpeedAccleration: 8
 		Locomotor: walker
 	Health:
 		HP: 25000

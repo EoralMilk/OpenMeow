@@ -13,7 +13,9 @@
 	Tooltip:
 		Name: Mammoth Tank
 	Mobile:
-		Speed: 56
+		Speed: 20
+		MaxSpeed: 56
+		SpeedAccleration: 2
 		TurnSpeed: 20
 	Health:
 		HP: 60000
@@ -88,7 +90,8 @@
 	Mobile:
 		Speed: 56
 		CanMoveBackward: true
-		BackwardFacingTolerance: 384
+		MaxSpeed: 85
+		SpeedAccleration: 2
 
 TRUCKA:
 	Inherits: ^TRUCK
@@ -131,10 +134,11 @@ BUS:
 		Name: School Bus
 	Mobile:
 		TurnSpeed: 20
-		Speed: 113
+		MaxSpeed: 113
+		Speed: 55
+		SpeedAccleration: 2
 		PauseOnCondition: empdisable || loading || being-captured || carried
 		CanMoveBackward: true
-		BackwardFacingTolerance: 384
 	Health:
 		HP: 10000
 	Cargo:
@@ -153,10 +157,11 @@ PICK:
 		Name: Pickup
 	Mobile:
 		TurnSpeed: 20
-		Speed: 113
+		MaxSpeed: 113
 		PauseOnCondition: empdisable || loading || being-captured || carried
 		CanMoveBackward: true
-		BackwardFacingTolerance: 384
+		Speed: 60
+		SpeedAccleration: 2
 	Health:
 		HP: 10000
 	Cargo:
@@ -175,10 +180,11 @@ CAR:
 		Name: Automobile
 	Mobile:
 		TurnSpeed: 20
-		Speed: 113
+		MaxSpeed: 113
 		PauseOnCondition: empdisable || loading || being-captured || carried
 		CanMoveBackward: true
-		BackwardFacingTolerance: 384
+		Speed: 55
+		SpeedAccleration: 2
 	Health:
 		HP: 10000
 	Cargo:
@@ -197,10 +203,11 @@ WINI:
 		Name: Recreational Vehicle
 	Mobile:
 		TurnSpeed: 20
-		Speed: 113
+		MaxSpeed: 113
 		PauseOnCondition: empdisable || loading || being-captured || carried
 		CanMoveBackward: true
-		BackwardFacingTolerance: 384
+		Speed: 55
+		SpeedAccleration: 2
 	Health:
 		HP: 20000
 	Cargo:

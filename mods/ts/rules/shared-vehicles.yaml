@@ -19,7 +19,9 @@ MCV:
 	Armor:
 		Type: Heavy
 	Mobile:
-		Speed: 50
+		MaxSpeed: 50
+		Speed: 20
+		SpeedAccleration: 1
 		TurnSpeed: 16
 	RevealsShroud:
 		RequiresCondition: !inside-tunnel
@@ -90,9 +92,10 @@ HARV:
 		DeliverVoice: Move
 		EmptyCondition: no-tiberium
 	Mobile:
-		Speed: 71
+		MaxSpeed: 75
+		Speed: 40
+		SpeedAccleration: 2
 		CanMoveBackward: true
-		BackwardFacingTolerance: 384
 		TurnSpeed: 20
 	Health:
 		HP: 100000
@@ -173,7 +176,9 @@ LPST:
 	Armor:
 		Type: Wood
 	Mobile:
-		Speed: 85
+		MaxSpeed: 85
+		Speed: 40
+		SpeedAccleration: 2
 		TurnSpeed: 20
 		ImmovableCondition: !undeployed
 		RequireForceMoveCondition: !undeployed
