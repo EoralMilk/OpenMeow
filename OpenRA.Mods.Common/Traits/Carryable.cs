@@ -10,12 +10,14 @@
 #endregion
 
 using System.Linq;
+using OpenRA.GameRules;
+using OpenRA.Primitives;
 using OpenRA.Traits;
 
 namespace OpenRA.Mods.Common.Traits
 {
 	[Desc("Can be carried by actors with the `" + nameof(Carryall) + "` trait.")]
-	public class CarryableInfo : ConditionalTraitInfo
+	public class CarryableInfo : ConditionalTraitInfo, IRulesetLoaded
 	{
 		[GrantedConditionReference]
 		[Desc("The condition to grant to self while a carryall has been reserved.")]
@@ -32,7 +34,47 @@ namespace OpenRA.Mods.Common.Traits
 		[Desc("Carryall attachment point relative to body.")]
 		public readonly WVec LocalOffset = WVec.Zero;
 
+		[Desc("Init Gravity at which aircraft falls to ground.")]
+		public readonly WDist Gravity = new WDist(0);
+
+		// fall from carryall settings
+		[Desc("Gravity (effect gravity per GravityChangeInterval tick) at which aircraft falls to ground.")]
+		public readonly WDist GravityAcceleration = new WDist(1);
+
+		[Desc("GravityChangeInterval.")]
+		public readonly int GravityChangeInterval = 1;
+
+		[Desc("Max Gravity at which aircraft falls to ground.")]
+		public readonly WDist MaxGravity = new WDist(18);
+
+		[Desc("Init velocity at which aircraft falls to ground.")]
+		public readonly WDist Velocity = WDist.Zero;
+
+		[Desc("Velocity (per tick) at which aircraft falls to ground.")]
+		public readonly WDist MaxVelocity = new WDist(512);
+
+		[WeaponReference]
+		[Desc("Explosion weapon that triggers when hitting ground.")]
+		public readonly string Explosion = "UnitExplode";
+
+		[Desc("Types of damage from falls.")]
+		public readonly BitSet<DamageType> FallDamageTypes = default;
+
+		public WeaponInfo ExplosionWeapon { get; private set; }
+
 		public override object Create(ActorInitializer init) { return new Carryable(this); }
+
+		public override void RulesetLoaded(Ruleset rules, ActorInfo ai)
+		{
+			if (string.IsNullOrEmpty(Explosion))
+				return;
+
+			var weaponToLower = Explosion.ToLowerInvariant();
+			if (!rules.Weapons.TryGetValue(weaponToLower, out var weapon))
+				throw new YamlException($"Weapons Ruleset does not contain an entry '{weaponToLower}'");
+
+			ExplosionWeapon = weapon;
+		}
 	}
 
 	public enum LockResponse { Success, Pending, Failed }
@@ -92,7 +134,12 @@ namespace OpenRA.Mods.Common.Traits
 			if (!attached)
 				return;
 
+			Mobile.OccupySpace = true;
+			Mobile.AddInfluence();
+			Mobile.TerrainOrientationIgnore = false;
 			attached = false;
+
+			Mobile.SetPosition(Self, Mobile.CenterPosition, true);
 
 			if (carriedToken != Actor.InvalidConditionToken)
 				carriedToken = Self.RevokeCondition(carriedToken);
@@ -116,10 +163,6 @@ namespace OpenRA.Mods.Common.Traits
 		{
 			state = State.Free;
 			Carrier = null;
-
-			Mobile.OccupySpace = true;
-			Mobile.AddInfluence();
-			Mobile.TerrainOrientationIgnore = false;
 
 			if (reservedToken != Actor.InvalidConditionToken)
 				reservedToken = Self.RevokeCondition(reservedToken);

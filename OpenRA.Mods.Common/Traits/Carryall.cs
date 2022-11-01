@@ -199,9 +199,16 @@ namespace OpenRA.Mods.Common.Traits
 			{
 				if (!Carryable.IsDead)
 				{
-					var positionable = Carryable.Trait<IPositionable>();
-					positionable.SetPosition(Carryable, self.Location);
-					Carryable.Kill(e.Attacker);
+					// var positionable = Carryable.Trait<IPositionable>();
+					// positionable.SetPosition(Carryable, self.Location);
+					// Carryable.Kill(e.Attacker);
+					var actor = Carryable;
+					var carryable = actor.TraitsImplementing<Carryable>().FirstEnabledConditionalTraitOrDefault();
+					DetachCarryable(self);
+					carryable.UnReserve();
+					carryable.Detached();
+					actor.CancelActivity();
+					actor.QueueActivity(new FallDown(actor, actor.CenterPosition, carryable.Info));
 				}
 
 				Carryable = null;

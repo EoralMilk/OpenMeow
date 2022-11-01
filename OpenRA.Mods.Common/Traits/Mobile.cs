@@ -102,6 +102,9 @@ namespace OpenRA.Mods.Common.Traits
 		[Desc("The condition to grant to self while airborne.")]
 		public readonly string AirborneCondition = null;
 
+		[Desc("Minimum altitude where this unit is considered airborne.")]
+		public readonly int MinAirborneAltitude = 256;
+
 		IEnumerable<ActorInit> IActorPreviewInitInfo.ActorPreviewInits(ActorInfo ai, ActorPreviewType type)
 		{
 			yield return new FacingInit(PreviewFacing);
@@ -235,6 +238,7 @@ namespace OpenRA.Mods.Common.Traits
 		public bool IsMovingBetweenCells => FromCell != ToCell;
 
 		int airborneConditionToken = Actor.InvalidConditionToken;
+		bool inAir = false;
 
 		#region IFacing
 
@@ -356,10 +360,19 @@ namespace OpenRA.Mods.Common.Traits
 			currentPos = CenterPosition;
 			currentSpeed = currentPos - lastPos;
 			lastPos = currentPos;
-			if (Info.AirborneCondition != null && self.IsInWorld && airborneConditionToken == Actor.InvalidConditionToken)
-				airborneConditionToken = self.GrantCondition(Info.AirborneCondition);
-			else if (airborneConditionToken != Actor.InvalidConditionToken && self.IsInWorld)
-				airborneConditionToken = self.RevokeCondition(airborneConditionToken);
+			if (self.World.Map.DistanceAboveTerrain(CenterPosition).Length > Info.MinAirborneAltitude)
+			{
+				inAir = true;
+				if (Info.AirborneCondition != null && self.IsInWorld &&
+					airborneConditionToken == Actor.InvalidConditionToken)
+					airborneConditionToken = self.GrantCondition(Info.AirborneCondition);
+			}
+			else
+			{
+				inAir = false;
+				if (airborneConditionToken != Actor.InvalidConditionToken && self.IsInWorld)
+					airborneConditionToken = self.RevokeCondition(airborneConditionToken);
+			}
 		}
 
 		public void UpdateMovement()
@@ -565,7 +578,7 @@ namespace OpenRA.Mods.Common.Traits
 
 		public void SetTerrainRampOrientation(WRot orientation)
 		{
-			if (TerrainOrientationIgnore)
+			if (TerrainOrientationIgnore || inAir)
 			{
 				terrainRampOrientation = WRot.None;
 				return;

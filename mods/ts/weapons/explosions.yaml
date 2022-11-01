@@ -3,6 +3,7 @@
 		Spread: 256
 		Falloff: 100, 50, 25, 12, 6, 3, 0
 		Damage: 50000
+		AffectsParent: true
 		Versus:
 			None: 90
 			Wood: 75
