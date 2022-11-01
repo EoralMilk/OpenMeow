@@ -722,7 +722,7 @@
 		Speed: 71
 		AlwaysTurnInPlace: true
 		Locomotor: foot
-		TurningWhileMoving: true
+		TurnsWhileMoving: true
 	TurnOnIdle:
 	Selectable:
 		DecorationBounds: 452, 1387, 0, -543

@@ -98,7 +98,7 @@ HVR:
 		SpeedAccleration: 2
 		Locomotor: hover
 		TerrainOrientationAdjustmentMargin: -1
-		TurningWhileMoving: true
+		TurnsWhileMoving: true
 		TurnSpeed: 32
 	Selectable:
 		Bounds: 1206, 1600, 0, -900
@@ -159,7 +159,7 @@ SMECH:
 		TurnSpeed: 64
 		MaxSpeed: 130
 		Speed: 20
-		TurningWhileMoving: true
+		TurnsWhileMoving: true
 		SpeedAccleration: 8
 		Locomotor: walker
 		AlwaysTurnInPlace: true
@@ -231,7 +231,7 @@ MMCH:
 		TurnSpeed: 24
 		MaxSpeed: 65
 		Speed: 8
-		TurningWhileMoving: true
+		TurnsWhileMoving: true
 		SpeedAccleration: 4
 		AlwaysTurnInPlace: true
 		Locomotor: heavywalker
@@ -379,7 +379,7 @@ HMEC:
 		MaxSpeed: 42
 		Speed: 5
 		SpeedAccleration: 1
-		TurningWhileMoving: true
+		TurnsWhileMoving: true
 		Locomotor: heavywalker
 	Health:
 		HP: 100000
@@ -501,7 +501,7 @@ JUGG:
 		MaxSpeed: 71
 		Speed: 10
 		SpeedAccleration: 4
-		TurningWhileMoving: true
+		TurnsWhileMoving: true
 		TurnSpeed: 32
 		AlwaysTurnInPlace: true
 		Locomotor: heavywalker
@@ -678,7 +678,7 @@ LIMPED:
 	Mobile:
 		Speed: 120
 		TurnSpeed: 1023
-		TurningWhileMoving: true
+		TurnsWhileMoving: true
 		Locomotor: hover
 		ImmovableCondition: !undeployed
 	Passenger:

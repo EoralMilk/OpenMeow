@@ -71,7 +71,7 @@ BIKE:
 		TurnSpeed: 32
 		MaxSpeed: 170
 		Speed: 60
-		TurningWhileMoving: true
+		TurnsWhileMoving: true
 		SpeedAccleration: 2
 	Crushable:
 		CrushClasses: bigguy
@@ -657,7 +657,7 @@ REAPER:
 		TurnSpeed: 32
 		MaxSpeed: 105
 		Speed: 16
-		TurningWhileMoving: true
+		TurnsWhileMoving: true
 		SpeedAccleration: 8
 		Locomotor: walker
 	Health:
