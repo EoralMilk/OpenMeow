@@ -20,6 +20,11 @@ using OpenRA.Traits;
 
 namespace OpenRA.Mods.Common.Traits
 {
+	public interface ICarryingPositionModifier
+	{
+		WVec WorldOffset { get; }
+	}
+
 	[Desc("Transports actors with the `" + nameof(Carryable) + "` trait.")]
 	public class CarryallInfo : TraitInfo, Requires<BodyOrientationInfo>, Requires<AircraftInfo>
 	{
@@ -113,6 +118,8 @@ namespace OpenRA.Mods.Common.Traits
 		int carryConditionToken = Actor.InvalidConditionToken;
 		int carryableConditionToken = Actor.InvalidConditionToken;
 
+		ICarryingPositionModifier[] carryingPositionModifiers;
+
 		/// <summary>Offset between the carryall's and the carried actor's CenterPositions</summary>
 		public WVec CarryableOffset { get; private set; }
 
@@ -128,6 +135,8 @@ namespace OpenRA.Mods.Common.Traits
 			body = self.Trait<BodyOrientation>();
 			facing = self.Trait<IFacing>();
 			this.self = self;
+
+			carryingPositionModifiers = self.TraitsImplementing<ICarryingPositionModifier>().ToArray();
 
 			if (!string.IsNullOrEmpty(info.InitialActor))
 			{
@@ -147,6 +156,21 @@ namespace OpenRA.Mods.Common.Traits
 			// Cargo may be killed in the same tick as, but after they are attached
 			if (Carryable != null && Carryable.IsDead)
 				DetachCarryable(self);
+			else if (State == CarryallState.Carrying && Carryable != null && !Carryable.IsDead && Carryable.IsInWorld)
+			{
+				var offset = CarryableOffset.Rotate(body.QuantizeOrientation(self.Orientation));
+				if (carryingPositionModifiers != null && carryingPositionModifiers.Length > 0)
+				{
+					foreach (var m in carryingPositionModifiers)
+					{
+						offset += m.WorldOffset;
+					}
+				}
+
+				var carryable = Carryable.TraitsImplementing<Carryable>().FirstEnabledConditionalTraitOrDefault();
+				carryable.Mobile.SetPosition(Carryable, self.CenterPosition + offset, true);
+				carryable.Mobile.Orientation = self.Orientation;
+			}
 
 			// HACK: We don't have an efficient way to know when the preview
 			// bounds change, so assume that we need to update the screen map
@@ -261,6 +285,8 @@ namespace OpenRA.Mods.Common.Traits
 
 		IEnumerable<IRenderable> IRender.Render(Actor self, WorldRenderer wr)
 		{
+			yield break;
+
 			if (State == CarryallState.Carrying && !Carryable.IsDead)
 			{
 				if (carryablePreview == null)

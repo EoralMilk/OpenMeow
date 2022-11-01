@@ -17,7 +17,7 @@ using OpenRA.Traits;
 namespace OpenRA.Mods.Common.Traits
 {
 	[Desc("Used to enable mouse interaction on actors that are not Selectable.")]
-	public class InteractableInfo : TraitInfo, IMouseBoundsInfo
+	public class InteractableInfo : ConditionalTraitInfo, IMouseBoundsInfo
 	{
 		[Desc("Defines a custom rectangle for mouse interaction with the actor.",
 			"If null, the engine will guess an appropriate size based on the With*Body trait.",
@@ -32,12 +32,13 @@ namespace OpenRA.Mods.Common.Traits
 		public override object Create(ActorInitializer init) { return new Interactable(this); }
 	}
 
-	public class Interactable : INotifyCreated, IMouseBounds
+	public class Interactable : ConditionalTrait<InteractableInfo>, INotifyCreated, IMouseBounds
 	{
 		readonly InteractableInfo info;
 		IAutoMouseBounds[] autoBounds;
 
 		public Interactable(InteractableInfo info)
+			: base(info)
 		{
 			this.info = info;
 		}
@@ -54,6 +55,9 @@ namespace OpenRA.Mods.Common.Traits
 
 		Polygon Bounds(Actor self, WorldRenderer wr, WDist[] bounds)
 		{
+			if (IsTraitDisabled)
+				return Polygon.Empty;
+
 			if (bounds == null)
 				return new Polygon(AutoBounds(self, wr));
 

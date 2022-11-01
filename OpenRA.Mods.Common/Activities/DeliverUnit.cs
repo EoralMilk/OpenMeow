@@ -104,7 +104,7 @@ namespace OpenRA.Mods.Common.Activities
 						return;
 
 					var carryable = cargo.Trait<Carryable>();
-					w.Add(cargo);
+					//w.Add(cargo);
 					carryall.DetachCarryable(self);
 					carryable.UnReserve();
 					carryable.Detached();

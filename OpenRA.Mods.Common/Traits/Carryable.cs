@@ -54,8 +54,8 @@ namespace OpenRA.Mods.Common.Traits
 
 		public bool Reserved => state != State.Free;
 
-		protected Actor Self { get; private set; }
-		protected Mobile Mobile { get; private set; }
+		public Actor Self { get; private set; }
+		public Mobile Mobile { get; private set; }
 		protected enum State { Free, Reserved, Locked }
 		protected State state = State.Free;
 		protected bool attached;
@@ -78,6 +78,9 @@ namespace OpenRA.Mods.Common.Traits
 				return;
 
 			attached = true;
+			Mobile.RemoveInfluence();
+			Mobile.OccupySpace = false;
+			Mobile.TerrainOrientationIgnore = true;
 
 			if (carriedToken == Actor.InvalidConditionToken)
 				carriedToken = Self.GrantCondition(Info.CarriedCondition);
@@ -113,6 +116,10 @@ namespace OpenRA.Mods.Common.Traits
 		{
 			state = State.Free;
 			Carrier = null;
+
+			Mobile.OccupySpace = true;
+			Mobile.AddInfluence();
+			Mobile.TerrainOrientationIgnore = false;
 
 			if (reservedToken != Actor.InvalidConditionToken)
 				reservedToken = Self.RevokeCondition(reservedToken);

@@ -12,6 +12,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using OpenRA.Activities;
 using OpenRA.Mods.Common.Activities;
 using OpenRA.Mods.Common.Pathfinder;
@@ -96,6 +97,10 @@ namespace OpenRA.Mods.Common.Traits
 		[Desc("The distance from the edge of a cell over which the actor will adjust its tilt when moving between cells with different ramp types.",
 			"-1 means that the actor does not tilt on slopes.")]
 		public readonly WDist TerrainOrientationAdjustmentMargin = new WDist(-1);
+
+		[GrantedConditionReference]
+		[Desc("The condition to grant to self while airborne.")]
+		public readonly string AirborneCondition = null;
 
 		IEnumerable<ActorInit> IActorPreviewInitInfo.ActorPreviewInits(ActorInfo ai, ActorPreviewType type)
 		{
@@ -229,6 +234,8 @@ namespace OpenRA.Mods.Common.Traits
 
 		public bool IsMovingBetweenCells => FromCell != ToCell;
 
+		int airborneConditionToken = Actor.InvalidConditionToken;
+
 		#region IFacing
 
 		[Sync]
@@ -349,6 +356,10 @@ namespace OpenRA.Mods.Common.Traits
 			currentPos = CenterPosition;
 			currentSpeed = currentPos - lastPos;
 			lastPos = currentPos;
+			if (Info.AirborneCondition != null && self.IsInWorld && airborneConditionToken == Actor.InvalidConditionToken)
+				airborneConditionToken = self.GrantCondition(Info.AirborneCondition);
+			else if (airborneConditionToken != Actor.InvalidConditionToken && self.IsInWorld)
+				airborneConditionToken = self.RevokeCondition(airborneConditionToken);
 		}
 
 		public void UpdateMovement()
@@ -643,7 +654,7 @@ namespace OpenRA.Mods.Common.Traits
 
 		public void AddInfluence()
 		{
-			if (self.IsInWorld)
+			if (self.IsInWorld && OccupySpace)
 				self.World.ActorMap.AddInfluence(self, this);
 		}
 

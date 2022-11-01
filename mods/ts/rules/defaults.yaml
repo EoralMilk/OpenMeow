@@ -1004,13 +1004,18 @@
 		TurnSpeed: 20
 		Voice: Move
 		TerrainOrientationAdjustmentMargin: 256
+		AirborneCondition: airborne
 	Selectable:
 		Bounds: 1206, 1448
+		RequiresCondition: !carring
 	Voiced:
 		VoiceSet: Vehicle
 	Targetable:
-		RequiresCondition: !inside-tunnel
+		RequiresCondition: !inside-tunnel && !airborne
 		TargetTypes: Ground, Vehicle
+	Targetable@AIRBORNE:
+		TargetTypes: Air
+		RequiresCondition: airborne
 	Targetable@REPAIR:
 		RequiresCondition: !inside-tunnel && damaged
 		TargetTypes: Repair

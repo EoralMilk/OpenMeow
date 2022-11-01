@@ -62,13 +62,14 @@ namespace OpenRA.Mods.Common.Traits.Render
 		}
 	}
 
-	public class Hovers : ConditionalTrait<HoversInfo>, IRenderModifier, ITick
+	public class Hovers : ConditionalTrait<HoversInfo>, IRenderModifier, ITick, ICarryingPositionModifier
 	{
 		readonly HoversInfo info;
 		readonly int stepPercentage;
 		readonly int fallTickHeight;
 
 		int ticks;
+		public WVec WorldOffset => worldVisualOffset;
 		WVec worldVisualOffset;
 
 		public Hovers(HoversInfo info)
