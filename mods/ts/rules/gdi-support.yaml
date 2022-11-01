@@ -60,12 +60,12 @@ GACTWR:
 	Valued:
 		Cost: 300
 	Tooltip:
-		Name: Component Tower \n Can recieve Weapon Plugin \n-max to 1 kind of plugin at the same time.\nStill working when low power.\n-can be turned off to save power.
+		Name: Component Tower
 	Buildable:
 		Queue: Defense
 		BuildPaletteOrder: 70
 		Prerequisites: gapile, ~structures.gdi, ~techlevel.low
-		Description: Modular tower for base defenses.
+		Description: Modular tower for base defenses. \n Can recieve Weapon Plugin \n-max to 1 kind of plugin at the same time.\nStill working when low power.\n-can be turned off to save power.
 	Health:
 		HP: 50000
 	Armor:
