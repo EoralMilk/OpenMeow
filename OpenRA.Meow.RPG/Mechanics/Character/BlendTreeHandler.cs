@@ -3,13 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using OpenRA.GameRules;
 using OpenRA.Graphics;
-using OpenRA.Mods.Common.Graphics;
+using OpenRA.Mods.Common.Traits.Trait3D;
 using OpenRA.Mods.Common.Pathfinder;
 using OpenRA.Primitives;
 using OpenRA.Traits;
 using TrueSync;
+using OpenRA.Mods.Common.Traits;
 
-namespace OpenRA.Mods.Common.Traits.Trait3D
+namespace OpenRA.Meow.RPG.Mechanics
 {
 	public class BlendTreeHandlerInfo : TraitInfo, Requires<WithSkeletonInfo>, IRulesetLoaded
 	{
@@ -62,7 +63,7 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 		public override object Create(ActorInitializer init) { return new BlendTreeHandler(init.Self, this); }
 	}
 
-	public class BlendTreeHandler : IBlendTreeHandler, IPrepareForAttack, ITick, INotifyCreated
+	public class BlendTreeHandler : IBlendTreeHandler, IPrepareForAttack, ITick, INotifyCreated, INotifyLongJump
 	{
 		readonly BlendTree blendTree;
 		readonly BlendTreeHandlerInfo info;
@@ -338,9 +339,27 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 		FP lerpSpeed = 0;
 		int angle;
 		int lastangle;
+
+		bool catcrawl;
+		public bool PrepareForLongJump()
+		{
+			catcrawl = true;
+			return OverideSwitch.BlendValue >= FP.One;
+		}
+
+		public void OnStartJump()
+		{
+			catcrawl = true;
+		}
+
+		public void OnLand()
+		{
+			catcrawl = false;
+		}
+
 		public void Tick(Actor self)
 		{
-			if (carryable != null && carryable.Reserved)
+			if (catcrawl || carryable != null && carryable.Reserved)
 			{
 				OverideSwitch.SetFlag(true);
 			}

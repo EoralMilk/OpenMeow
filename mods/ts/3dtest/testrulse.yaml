@@ -87,7 +87,7 @@ RUTEST:
 		Locomotor: superwalker
 		BlockedBy: None #Static
 		# CanCrushActor: false
-		PauseOnCondition: being-captured || carried
+		PauseOnCondition: being-captured || carried || Jumping
 		# AlwaysTurnInPlace: true
 		# CanMoveBackward: true
 	AutoCrusher:
@@ -226,7 +226,14 @@ RUTEST2:
 	Inventory:
 		Name: test
 		InitItems: clothitem, rutestmissile, gunitem, chemicalitem, vislitem
-
+	LongJumpSkill:
+		ChargeDelay: 25
+		TargetCursor: attack
+		TakeOffWeapon: JumpTakeOffExplode
+		LandWeapon: JumpLandExplode
+		Speed: 180
+		JumpAngle: 128
+		Voice: Attack
 
 RUTEST3:
 	Inherits: RUTEST

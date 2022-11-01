@@ -19,6 +19,8 @@ FireballLauncher:
 		KeepSourceAltitude: false
 		Blockable: true
 		ExplodeUnderThisAltitude: -24
+		StartScale: 0.6
+		EndScale: 1.5
 	Warhead@2Smu: LeaveSmudge
 		SmudgeType: SmallScorch
 		Chance: 5
@@ -630,3 +632,54 @@ VeinBomb:
 		Size: 1,1
 		Density: 1
 		Delay: 18
+
+
+DirtCloudLauncher:
+	Inherits: ChemicalCloudLauncher
+	Projectile: BlastWave
+		Inaccuracy: 0c768
+		Palette: effectdust
+		Image: cloud
+		Sequences: cloud1, cloud2
+		Speed: 65, 75
+		LaunchAngle: 10
+		Width: 15
+		ShockDist: 2c0
+		Chaos: true
+		ChaosInaccuracy: 0c512
+		ExplodeUnderThisAltitude: 0
+	-Warhead@fireDam:
+
+JumpTakeOffExplode:
+	Warhead@1Eff: CreateEffect
+		Image: jumpring
+		Explosions: idle
+		ImpactSounds: expnew13.aud
+
+JumpLandExplode:
+	Warhead@1Dam: SpreadDamage
+		Spread: 256
+		Falloff: 100, 50, 25, 12, 6, 3, 0
+		Damage: 50000
+		Versus:
+			None: 90
+			Wood: 75
+			Light: 60
+			Heavy: 25
+		DamageTypes: Prone50Percent, TriggerProne, SmallExplosionDeath
+	Warhead@Spray: FireRadius
+		Weapon: DirtCloudLauncher
+		StartOffset: 0,-1024,0
+		FireCount: 10
+		ForceTargetGround: true
+	Warhead@shakeScreen: ShakeScreen
+		Duration: 3
+		Intensity: 1
+		Multiplier: 1,1
+		ValidTargets: Ground, Trees
+	Warhead@2Eff: CreateEffect
+		Explosions: large_brnl, large_bang, medium_twlt
+		ImpactSounds: expnew09.aud, expnew10.aud, expnew12.aud
+	Warhead@4Smu: LeaveSmudge
+		SmudgeType: MediumCrater
+		InvalidTargets: Building, Wall
