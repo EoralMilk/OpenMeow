@@ -16,7 +16,9 @@ APC:
 		Prerequisites: ~gaweap, gapile, ~techlevel.medium
 		Description: Armored infantry transport.\nCan move on water.\nHas a recon drone.\nCan use Force Attack to use drone to recon, has a very long range
 	Mobile:
-		Speed: 120
+		MaxSpeed: 120
+		Speed: 60
+		SpeedAccleration: 2
 		PauseOnCondition: empdisable || loading || being-captured || carried
 		Locomotor: amphibious
 		CanMoveBackward: true
@@ -91,10 +93,12 @@ HVR:
 		Prerequisites: ~gaweap, garadr, ~techlevel.high
 		Description: Hovering vehicle armed with\nmid-long range missiles.\n  Strong vs Vehicles, Aircraft\n  Weak vs Infantry
 	Mobile:
-		Speed: 99
+		MaxSpeed: 99
+		Speed: 50
+		SpeedAccleration: 2
 		Locomotor: hover
 		TerrainOrientationAdjustmentMargin: -1
-		TurningWhileMoving: true
+		TurnsWhileMoving: true
 		TurnSpeed: 32
 	Selectable:
 		Bounds: 1206, 1600, 0, -900
@@ -120,7 +124,7 @@ HVR:
 	WithModelTurret:
 	Hovers:
 		RequiresCondition: !empdisable
-		BobDistance: -48
+		BobDistance: -54
 		InitialHeight: 192
 	Carryable:
 		CarriedCondition: carried
@@ -152,8 +156,11 @@ SMECH:
 		Prerequisites: ~gaweap, ~techlevel.low
 		Description: Anti-personnel assualt walker.\n  Strong vs Infantry, Light armor\n  Weak vs Vehicles, Aircraft
 	Mobile:
-		TurnSpeed: 128
-		Speed: 130
+		TurnSpeed: 64
+		MaxSpeed: 130
+		Speed: 20
+		TurnsWhileMoving: true
+		SpeedAccleration: 8
 		Locomotor: walker
 		AlwaysTurnInPlace: true
 		TerrainOrientationAdjustmentMargin: -1
@@ -221,8 +228,11 @@ MMCH:
 		Prerequisites: ~gaweap, ~techlevel.medium
 		Description: General purpose mechanized walker.\n  Strong vs Vehicles\n  Weak vs Infantry, Aircraft\n Can recieve Weapon Plugin\n-can recieve all 3 kinds of plugin at the same time
 	Mobile:
-		TurnSpeed: 20
-		Speed: 65
+		TurnSpeed: 24
+		MaxSpeed: 65
+		Speed: 8
+		TurnsWhileMoving: true
+		SpeedAccleration: 4
 		AlwaysTurnInPlace: true
 		Locomotor: heavywalker
 		TerrainOrientationAdjustmentMargin: -1
@@ -366,7 +376,10 @@ HMEC:
 		Description: Slow heavy walker.\nArmed with dual railguns, rocket launchers and chain gun.\n  Strong vs All\n  Weak vs Nothing\nMaximum 1 can be built.
 	Mobile:
 		TurnSpeed: 12
-		Speed: 42
+		MaxSpeed: 42
+		Speed: 5
+		SpeedAccleration: 1
+		TurnsWhileMoving: true
 		Locomotor: heavywalker
 	Health:
 		HP: 100000
@@ -429,7 +442,9 @@ SONIC:
 		TargetTypes: Ground, Vehicle, Disruptor
 	Mobile:
 		TurnSpeed: 16
-		Speed: 56
+		MaxSpeed: 56
+		Speed: 30
+		SpeedAccleration: 1
 	Health:
 		HP: 50000
 	Armor:
@@ -483,8 +498,11 @@ JUGG:
 	Armor:
 		Type: Light
 	Mobile:
-		Speed: 71
-		TurnSpeed: 20
+		MaxSpeed: 71
+		Speed: 10
+		SpeedAccleration: 4
+		TurnsWhileMoving: true
+		TurnSpeed: 32
 		AlwaysTurnInPlace: true
 		Locomotor: heavywalker
 		ImmovableCondition: !undeployed
@@ -658,8 +676,9 @@ LIMPED:
 	Armor:
 		Type: Light
 	Mobile:
-		Speed: 148
+		Speed: 120
 		TurnSpeed: 1023
+		TurnsWhileMoving: true
 		Locomotor: hover
 		ImmovableCondition: !undeployed
 	Passenger:
