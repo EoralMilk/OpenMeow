@@ -814,7 +814,11 @@
 		UseClassicPerspectiveFudge: False
 		CameraPitch: 85
 		QuantizedFacings: 8
-
+	ConsumableItem:
+		ThumbnailSequence: testdisplay
+		ThumbnailPalette: player
+		ThumbnailPaletteIsPlayerPalette: true
+		Weapon: Consume
 
 ^RegularInfantryDeath:
 	WithDeathAnimation@normal:

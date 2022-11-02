@@ -114,7 +114,6 @@ namespace OpenRA.Meow.RPG.Mechanics
 		[Sync]
 		int chargeTick = 0;
 
-		public bool IsJumping = false;
 		public bool CanAct => !IsTraitDisabled && !IsTraitPaused && chargeTick <= 0;
 
 		public LongJumpSkill(Actor self, LongJumpSkillInfo info)
@@ -244,7 +243,6 @@ namespace OpenRA.Meow.RPG.Mechanics
 			facing = self.Trait<IFacing>();
 			jumping = self.Trait<LongJumpSkill>();
 
-			jumping.IsJumping = true;
 			target = t;
 			angle = info.JumpAngle;
 			speed = info.Speed;
@@ -304,7 +302,7 @@ namespace OpenRA.Meow.RPG.Mechanics
 
 				sourcePos = self.CenterPosition;
 				length = Math.Max((target - sourcePos).Length / speed.Length, 1);
-				jumping?.ResetChargeTime();
+				jumping.ResetChargeTime();
 				if (info.JumpWeapon != null)
 				{
 					info.JumpWeapon.Impact(Target.FromPos(self.CenterPosition), self);
@@ -318,7 +316,6 @@ namespace OpenRA.Meow.RPG.Mechanics
 
 			if (ticks >= length)
 			{
-				jumping.IsJumping = false;
 				doAfterJump?.Invoke();
 				mobile.SetPosition(self, target, true);
 

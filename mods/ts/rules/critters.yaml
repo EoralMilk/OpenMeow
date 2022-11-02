@@ -113,6 +113,11 @@ VISC_SML:
 		IconScale: 0.6
 	Targetable@Crushable:
 		TargetTypes: Crushable
+	ConsumableItem:
+		ThumbnailSequence: idle
+		ThumbnailPalette: player
+		ThumbnailPaletteIsPlayerPalette: true
+		Weapon: Consume
 
 VISC_LRG:
 	Inherits: ^Visceroid
@@ -161,6 +166,11 @@ VISC_LRG:
 		IconScale: 0.7
 	Targetable@Crushable:
 		TargetTypes: Crushable
+	ConsumableItem:
+		ThumbnailSequence: idle
+		ThumbnailPalette: player
+		ThumbnailPaletteIsPlayerPalette: true
+		Weapon: Consume
 
 JFISH:
 	Inherits: ^Visceroid
@@ -222,6 +232,11 @@ JFISH:
 		IconPalette: player
 		IconPaletteIsPlayerPalette: true
 	-Crushable:
+	ConsumableItem:
+		ThumbnailSequence: idle
+		ThumbnailPalette: player
+		ThumbnailPaletteIsPlayerPalette: true
+		Weapon: Consume
 
 MINIVEIN:
 	Inherits: ^NonBuildingStaticActor

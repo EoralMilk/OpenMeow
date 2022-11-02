@@ -686,3 +686,15 @@ JumpLandExplode:
 	Warhead@4Smu: LeaveSmudge
 		SmudgeType: MediumCrater
 		InvalidTargets: Building, Wall
+
+Consume:
+	ValidTargets: Ground, Water, Air, Trees
+	Warhead@2Dam: TargetDamage
+		Damage: -20000
+		AffectsParent: true
+	Warhead@3Eff: CreateEffect
+		AffectsParent: true
+		Image: explosion
+		Explosions: heal
+		ImpactSounds: gulp.wav
+		ValidTargets: Ground, Water, Air, Trees

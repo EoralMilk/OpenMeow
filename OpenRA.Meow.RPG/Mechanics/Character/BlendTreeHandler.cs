@@ -63,7 +63,7 @@ namespace OpenRA.Meow.RPG.Mechanics
 		public override object Create(ActorInitializer init) { return new BlendTreeHandler(init.Self, this); }
 	}
 
-	public class BlendTreeHandler : IBlendTreeHandler, IPrepareForAttack, ITick, INotifyCreated, INotifyLongJump
+	public class BlendTreeHandler : IBlendTreeHandler, IPrepareForAttack, ITick, INotifyCreated, INotifyLongJump, INotifyPickUpItem
 	{
 		readonly BlendTree blendTree;
 		readonly BlendTreeHandlerInfo info;
@@ -84,7 +84,6 @@ namespace OpenRA.Meow.RPG.Mechanics
 		readonly AnimationNode idleUpperAnim;
 		readonly Switch guardSwitch;
 		readonly Switch guardUpperSwitch;
-
 
 		readonly AnimationNode forwardAnim;
 		readonly AnimationNode forwardRightAnim;
@@ -166,8 +165,6 @@ namespace OpenRA.Meow.RPG.Mechanics
 			backward = withSkeleton.OrderedSkeleton.SkeletonAsset.GetSkeletalAnim(withSkeleton.Image, info.Backward);
 			backwardLeft = withSkeleton.OrderedSkeleton.SkeletonAsset.GetSkeletalAnim(withSkeleton.Image, info.BackwardLeft);
 			backwardRight = withSkeleton.OrderedSkeleton.SkeletonAsset.GetSkeletalAnim(withSkeleton.Image, info.BackwardRight);
-
-
 
 			carrying = withSkeleton.OrderedSkeleton.SkeletonAsset.GetSkeletalAnim(withSkeleton.Image, info.Carrying);
 
@@ -340,26 +337,43 @@ namespace OpenRA.Meow.RPG.Mechanics
 		int angle;
 		int lastangle;
 
-		bool catcrawl;
+		bool playOverideBlend;
 		public bool PrepareForLongJump()
 		{
-			catcrawl = true;
+			playOverideBlend = true;
 			return OverideSwitch.BlendValue >= FP.One;
 		}
 
 		public void OnStartJump()
 		{
-			catcrawl = true;
+			playOverideBlend = true;
 		}
 
 		public void OnLand()
 		{
-			catcrawl = false;
+			playOverideBlend = false;
+		}
+
+		public bool PrepareForPickUpItem()
+		{
+			playOverideBlend = true;
+			return true;
+		}
+
+		public bool Picking()
+		{
+			playOverideBlend = true;
+			return OverideSwitch.BlendValue >= FP.One;
+		}
+
+		public void OnPickUpItem(Actor item)
+		{
+			playOverideBlend = false;
 		}
 
 		public void Tick(Actor self)
 		{
-			if (catcrawl || carryable != null && carryable.Reserved)
+			if (playOverideBlend || (carryable != null && carryable.Reserved))
 			{
 				OverideSwitch.SetFlag(true);
 			}

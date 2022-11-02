@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using OpenRA.Mods.Common.Activities;
 using OpenRA.Mods.Common.Traits;
 using OpenRA.Primitives;
 using OpenRA.Traits;
+using TagLib.Ape;
 
 namespace OpenRA.Meow.RPG.Mechanics
 {
@@ -51,11 +53,12 @@ namespace OpenRA.Meow.RPG.Mechanics
 		}
 	}
 
-	public class Inventory : INotifyCreated, IDeathActorInitModifier, IResolveOrder
+	public class Inventory : INotifyCreated, IDeathActorInitModifier, IResolveOrder, INotifyPickUpItem, INotifyKilled
 	{
 		public readonly InventoryInfo Info;
 		readonly Actor inventoryActor;
 		readonly List<Item> items = new List<Item>();
+		public readonly ItemCache ItemCache;
 
 		Item[] autoAdd;
 		INotifyInventory[] inventoryNotifiers = Array.Empty<INotifyInventory>();
@@ -68,11 +71,11 @@ namespace OpenRA.Meow.RPG.Mechanics
 			inventoryActor = self;
 			autoAdd = inventoryInit?.Items;
 			Info = inventoryInfo;
-
+			ItemCache = self.World.WorldActor.Trait<ItemCache>();
 			if (Info.InitItems != null)
 				foreach (var name in Info.InitItems)
 				{
-					TryAdd(self, self.World.WorldActor.Trait<ItemCache>().AddItem(self.World, name));
+					TryAdd(self, ItemCache.AddItem(self.World, name));
 				}
 		}
 
@@ -114,7 +117,7 @@ namespace OpenRA.Meow.RPG.Mechanics
 			return true;
 		}
 
-		bool TryRemove(Actor self, Item item)
+		public bool TryRemove(Actor self, Item item)
 		{
 			if (!items.Contains(item))
 				return false;
@@ -137,6 +140,53 @@ namespace OpenRA.Meow.RPG.Mechanics
 			{
 				TryAdd(self, self.World.WorldActor.Trait<ItemCache>().GetItem(order.ExtraData));
 			}
+		}
+
+		public bool PrepareForPickUpItem()
+		{
+			return true;
+		}
+
+		public bool Picking()
+		{
+			return true;
+		}
+
+		public void OnPickUpItem(Actor item)
+		{
+			if (item.IsInWorld && !item.IsDead)
+			{
+				// this item actor might not in the item cache, try to add it
+				ItemCache.TryAddItem(item);
+				inventoryActor.World.AddFrameEndTask(w => w.Remove(item));
+				TryAdd(inventoryActor, item.Trait<Item>());
+			}
+		}
+
+		public void Killed(Actor self, AttackInfo e)
+		{
+			var items = Items;
+			var deathPos = self.CenterPosition;
+			var deathFace = self.TraitOrDefault<IFacing>()?.Facing ?? WAngle.Zero;
+			inventoryActor.World.AddFrameEndTask(w =>
+			{
+				foreach (var item in items)
+				{
+					w.Add(item.ItemActor);
+					var position = item.ItemActor.TraitOrDefault<IPositionable>();
+					var facing = item.ItemActor.TraitOrDefault<IFacing>();
+					if (position != null)
+					{
+						position.SetPosition(item.ItemActor, deathPos, true);
+						item.ItemActor.QueueActivity(new FallDown(item.ItemActor, deathPos, 50));
+					}
+
+					if (facing != null)
+					{
+						facing.Facing = deathFace + new WAngle(self.World.SharedRandom.Next(0, 1023));
+					}
+				}
+			});
 		}
 	}
 }

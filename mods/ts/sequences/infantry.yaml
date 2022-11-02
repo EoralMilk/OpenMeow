@@ -12,6 +12,8 @@
 		Length: 1
 		Start: 0
 		ShadowStart: 0
+	testdisplay:
+		Start: 3
 
 ^BasicInfantry:
 	Inherits@defaults: ^InfantryBase
@@ -68,8 +70,6 @@
 		Frames: 0, 1, 2, 3, 0, 1, 2, 3, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13
 		Length: *
 		IgnoreWorldTint: True
-	testdisplay:
-		Start: 3
 
 ^BasicInfantryAttack:
 	attack:

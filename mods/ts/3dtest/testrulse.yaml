@@ -90,10 +90,10 @@ RUTEST:
 		PauseOnCondition: being-captured || carried || Jumping
 		# AlwaysTurnInPlace: true
 		# CanMoveBackward: true
-	AutoCrusher:
-		TargetRelationships: Enemy
-		MinimumScanTimeInterval: 2
-		MaximumScanTimeInterval: 5
+	# AutoCrusher:
+	# 	TargetRelationships: Enemy
+	# 	MinimumScanTimeInterval: 2
+	# 	MaximumScanTimeInterval: 5
 	Health:
 		HP: 120000
 	Armor:
@@ -222,10 +222,9 @@ RUTEST2:
 		Name: ExtraSlot
 		SlotType: Item
 		RequiresCondition: hascloth
-		InitEquipment: vislitem
 	Inventory:
 		Name: test
-		InitItems: clothitem, rutestmissile, gunitem, chemicalitem, vislitem
+		InitItems: clothitem, rutestmissile, gunitem, chemicalitem
 	LongJumpSkill:
 		ChargeDelay: 25
 		TargetCursor: ability
@@ -234,6 +233,9 @@ RUTEST2:
 		Speed: 180
 		JumpAngle: 128
 		Voice: Attack
+	PickUpItem:
+		TargetCursor: undeploy
+		Voice: Move
 
 RUTEST3:
 	Inherits: RUTEST

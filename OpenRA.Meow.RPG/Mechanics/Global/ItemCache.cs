@@ -28,6 +28,14 @@ namespace OpenRA.Meow.RPG.Mechanics
 			return GameItemActors[actorId];
 		}
 
+		public void TryAddItem(Actor itemActor)
+		{
+			if (GameItemActors.ContainsKey(itemActor.ActorID))
+				return;
+
+			GameItemActors.Add(itemActor.ActorID, itemActor);
+		}
+
 		public void AddItem(uint actorId, Actor itemActor)
 		{
 			if (GameItemActors.ContainsKey(actorId))
@@ -53,6 +61,11 @@ namespace OpenRA.Meow.RPG.Mechanics
 				throw new Exception("The actorid: " + itemActorId + " does not in dictionary");
 
 			return a.TraitOrDefault<Item>();
+		}
+
+		public bool HasItem(uint itemActorId)
+		{
+			return GameItemActors.ContainsKey(itemActorId);
 		}
 
 		public void RemvoeItem(uint itemActorId)

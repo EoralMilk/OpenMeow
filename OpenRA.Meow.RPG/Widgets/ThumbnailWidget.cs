@@ -20,7 +20,7 @@ namespace OpenRA.Meow.RPG.Widgets
 			this.worldRenderer = worldRenderer;
 			IsActive = () => this.item.EquipmentSlot != null;
 
-			thumbnail = new Animation(worldRenderer.World, item.Info.ThumbnailImage);
+			thumbnail = new Animation(worldRenderer.World, item.ThumbnailImage);
 			thumbnail.PlayRepeating(item.Info.ThumbnailSequence);
 		}
 

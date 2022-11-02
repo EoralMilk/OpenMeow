@@ -73,11 +73,14 @@ namespace OpenRA.Meow.RPG.Mechanics
 		readonly Actor slotActor;
 		public Actor SlotOwnerActor => slotActor;
 
+		public readonly ItemCache ItemCache;
+
 		public EquipmentSlot(EquipmentSlotInfo info, EquipmentSlotsInit equipmentSlotsInit, Actor self)
 			: base(info)
 		{
 			this.info = info;
 			slotActor = self;
+			ItemCache = self.World.WorldActor.Trait<ItemCache>();
 			equipmentSlotsInit?.Items.TryGetValue(this.info.SlotType, out autoEquip);
 		}
 
@@ -220,15 +223,15 @@ namespace OpenRA.Meow.RPG.Mechanics
 
 		public void ResolveOrder(Actor self, Order order)
 		{
-			if (order.OrderString == "TryEquip" && order.TargetString == Name)
+			if (order.OrderString == "TryEquip" && order.TargetString == Name && ItemCache.HasItem(order.ExtraData))
 			{
 				TryEquip(self, self.World.WorldActor.Trait<ItemCache>().GetItem(order.ExtraData), false);
 			}
-			else if (order.OrderString == "TryEquipForce" && order.TargetString == Name)
+			else if (order.OrderString == "TryEquipForce" && order.TargetString == Name && ItemCache.HasItem(order.ExtraData))
 			{
 				TryEquip(self, self.World.WorldActor.Trait<ItemCache>().GetItem(order.ExtraData), true, true);
 			}
-			else if (order.OrderString == "TryUnequip" && order.TargetString == Name)
+			else if (order.OrderString == "TryUnequip" && order.TargetString == Name && ItemCache.HasItem(order.ExtraData))
 			{
 				TryUnequip(self);
 			}

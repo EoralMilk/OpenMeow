@@ -2,6 +2,7 @@ clothitem:
 	GearItem:
 		Name: gear
 		Type: Cloth
+		ThumbnailImage: items
 		ThumbnailSequence: hunterseeker
 		Condition: hascloth
 
@@ -16,6 +17,7 @@ clothitem:
 rutestmissile:
 	GearItem:
 		Name: underwaer
+		ThumbnailImage: items
 		ThumbnailSequence: clustermissile
 		Condition: userutestmissile
 		GearType: CloseFitting
@@ -27,6 +29,7 @@ chemicalitem:
 	WeaponItem:
 		Name: chemical
 		Type: MainWeapon
+		ThumbnailImage: items
 		ThumbnailSequence: chemicalmissile
 		Condition: usechemicalitem
 		Weapon: LaserChainGun
@@ -36,16 +39,17 @@ gunitem:
 	WeaponItem:
 		Name: gun
 		Type: MainWeapon
+		ThumbnailImage: items
 		ThumbnailSequence: ioncannon
 		Weapon: KittenProtonPulse
 		LocalOffset: 333,0,155
 
-vislitem:
-	WeaponItem:
+testitem:
+	Item:
 		Name: visl
+		ThumbnailImage: items
 		ThumbnailSequence: vislrg
 		ThumbnailPalette: player
 		ThumbnailPaletteIsPlayerPalette: true
 		Condition: visl
-		Weapon: LaserChainGun
-		LocalOffset: 0,0,0
+
