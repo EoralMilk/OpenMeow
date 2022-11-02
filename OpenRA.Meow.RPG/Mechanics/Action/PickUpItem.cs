@@ -135,7 +135,7 @@ namespace OpenRA.Meow.RPG.Mechanics
 		{
 			var desiredFacing = (target.CenterPosition - self.CenterPosition).Yaw;
 			if (!target.IsInWorld || target.IsDead)
-				Cancel(self);
+				Cancel(self, true);
 
 			if (!started)
 			{
@@ -189,6 +189,19 @@ namespace OpenRA.Meow.RPG.Mechanics
 					return false;
 			}
 
+			if (IsCanceling)
+			{
+				if (notifyPicking != null && notifyPicking.Length > 0)
+				{
+					foreach (var notify in notifyPicking)
+					{
+						notify.OnPickUpItem(target);
+					}
+				}
+
+				return true;
+			}
+
 			if (facingToTarget == false)
 				return false;
 
@@ -228,7 +241,8 @@ namespace OpenRA.Meow.RPG.Mechanics
 			if (modifiers.HasModifier(TargetModifiers.ForceAttack) ||
 				modifiers.HasModifier(TargetModifiers.ForceMove) ||
 				target.Type != TargetType.Actor ||
-				target.Actor == null || target.Actor.TraitOrDefault<Item>() == null)
+				target.Actor == null || target.Actor.IsDead || !target.Actor.IsInWorld ||
+				target.Actor.TraitOrDefault<Item>() == null)
 				return false;
 
 			var xy = self.World.Map.CellContaining(target.CenterPosition);
