@@ -429,6 +429,7 @@ TRNSPORT:
 		CanDeployOnRamps: true
 		SkipMakeAnimation: true
 		Voice: Move
+	-Hovers@CRUISING:
 	Health:
 		HP: 17500
 	Armor:
