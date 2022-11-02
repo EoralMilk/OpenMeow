@@ -22,6 +22,7 @@ APC:
 		PauseOnCondition: empdisable || loading || being-captured || carried
 		Locomotor: amphibious
 		CanMoveBackward: true
+		MaxBackwardCells: 6
 		TurnSpeed: 40
 	Health:
 		HP: 20000

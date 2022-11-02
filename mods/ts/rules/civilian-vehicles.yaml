@@ -88,6 +88,7 @@
 	Mobile:
 		Speed: 56
 		CanMoveBackward: true
+		MaxBackwardCells: 6
 		MaxSpeed: 85
 		SpeedAccleration: 2
 
@@ -137,6 +138,7 @@ BUS:
 		SpeedAccleration: 2
 		PauseOnCondition: empdisable || loading || being-captured || carried
 		CanMoveBackward: true
+		MaxBackwardCells: 6
 	Health:
 		HP: 10000
 	Cargo:
@@ -158,6 +160,7 @@ PICK:
 		MaxSpeed: 113
 		PauseOnCondition: empdisable || loading || being-captured || carried
 		CanMoveBackward: true
+		MaxBackwardCells: 6
 		Speed: 60
 		SpeedAccleration: 2
 	Health:
@@ -181,6 +184,7 @@ CAR:
 		MaxSpeed: 113
 		PauseOnCondition: empdisable || loading || being-captured || carried
 		CanMoveBackward: true
+		MaxBackwardCells: 6
 		Speed: 55
 		SpeedAccleration: 2
 	Health:
@@ -204,6 +208,7 @@ WINI:
 		MaxSpeed: 113
 		PauseOnCondition: empdisable || loading || being-captured || carried
 		CanMoveBackward: true
+		MaxBackwardCells: 6
 		Speed: 55
 		SpeedAccleration: 2
 	Health:

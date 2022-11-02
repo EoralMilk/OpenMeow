@@ -96,6 +96,7 @@ HARV:
 		Speed: 40
 		SpeedAccleration: 2
 		CanMoveBackward: true
+		MaxBackwardCells: 6
 		TurnSpeed: 20
 	Health:
 		HP: 100000

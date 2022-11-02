@@ -21,6 +21,7 @@ BGGY:
 		Speed: 60
 		SpeedAccleration: 2
 		CanMoveBackward: true
+		MaxBackwardCells: 6
 	Crushable:
 		CrushClasses: bigguy
 	Targetable@Crushable:
@@ -595,6 +596,7 @@ STNK:
 		MaxSpeed: 145
 		SpeedAccleration: 2
 		CanMoveBackward: true
+		MaxBackwardCells: 6
 	Health:
 		HP: 18000
 	Armor:
