@@ -123,11 +123,11 @@ RUTEST2:
 		Cost: 4000
 	Health:
 		HP: 100000
-	# Buildable:
-	# 	Queue: Vehicle
-	# 	BuildPaletteOrder: 80
-	# 	Prerequisites: naweap, natech, ~structures.nod
-	# 	BuildLimit: 1
+	Buildable:
+		Queue: Vehicle
+		BuildPaletteOrder: 80
+		Prerequisites: ~none #naweap, natech, ~structures.nod
+		BuildLimit: 1
 	Turreted:
 		TurnSpeed: 44
 		RealignSpeed: 33
