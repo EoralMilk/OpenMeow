@@ -37,7 +37,7 @@ namespace OpenRA.Meow.RPG.Mechanics
 
 		[CursorReference]
 		[Desc("Cursor to display when targeting a teleport location.")]
-		public readonly string TargetCursor = "chrono-target";
+		public readonly string TargetCursor = "attack";
 
 		[CursorReference]
 		[Desc("Cursor to display when the targeted location is blocked.")]
@@ -141,7 +141,7 @@ namespace OpenRA.Meow.RPG.Mechanics
 				if (IsTraitDisabled)
 					yield break;
 
-				yield return new LongJumpOrderTargeter(Info.TargetCursor);
+				yield return new LongJumpOrderTargeter(Info);
 			}
 		}
 
@@ -165,6 +165,7 @@ namespace OpenRA.Meow.RPG.Mechanics
 				if (maxDistance != null)
 					self.QueueActivity(move.MoveWithinRange(order.Target, WDist.FromCells(maxDistance.Value), targetLineColor: Info.TargetLineColor));
 				self.QueueActivity(new JumpTo(self, info, order.Target.CenterPosition));
+				self.QueueActivity(new FallDown(self, WPos.Zero, info.Speed.Length));
 				self.QueueActivity(move.MoveTo(cell, 5, targetLineColor: Info.TargetLineColor));
 				self.ShowTargetLines();
 			}
@@ -218,8 +219,8 @@ namespace OpenRA.Meow.RPG.Mechanics
 		readonly WPos target;
 		readonly WAngle angle;
 		readonly WDist speed;
-		readonly WPos lastPos;
-		readonly int length;
+
+		int length;
 
 		readonly INotifyLongJump[] notifyLongJumps;
 
@@ -248,7 +249,6 @@ namespace OpenRA.Meow.RPG.Mechanics
 			angle = info.JumpAngle;
 			speed = info.Speed;
 			sourcePos = self.CenterPosition;
-			length = Math.Max((target - sourcePos).HorizontalLength / speed.Length, 1);
 			ticks = 0;
 			doAfterJump = after;
 
@@ -303,6 +303,7 @@ namespace OpenRA.Meow.RPG.Mechanics
 					conditionToken = self.GrantCondition(info.Condition);
 
 				sourcePos = self.CenterPosition;
+				length = Math.Max((target - sourcePos).Length / speed.Length, 1);
 				jumping?.ResetChargeTime();
 				if (info.JumpWeapon != null)
 				{
@@ -349,11 +350,11 @@ namespace OpenRA.Meow.RPG.Mechanics
 
 	class LongJumpOrderTargeter : IOrderTargeter
 	{
-		readonly string targetCursor;
+		readonly LongJumpSkillInfo info;
 
-		public LongJumpOrderTargeter(string targetCursor)
+		public LongJumpOrderTargeter(LongJumpSkillInfo info)
 		{
-			this.targetCursor = targetCursor;
+			this.info = info;
 		}
 
 		public string OrderID => "LongJump";
@@ -368,13 +369,15 @@ namespace OpenRA.Meow.RPG.Mechanics
 				var xy = self.World.Map.CellContaining(target.CenterPosition);
 
 				IsQueued = modifiers.HasModifier(TargetModifiers.ForceQueue);
-
-				if (self.IsInWorld && self.Owner.Shroud.IsExplored(xy))
+				var positionable = self.Info.TraitInfo<IPositionableInfo>();
+				if (self.IsInWorld && self.Owner.Shroud.IsExplored(xy) &&
+					positionable.CanEnterCell(self.World, null, xy))
 				{
-					cursor = targetCursor;
+					cursor = info.TargetCursor;
 					return true;
 				}
 
+				//cursor = info.TargetBlockedCursor;
 				return false;
 			}
 
@@ -450,8 +453,11 @@ namespace OpenRA.Meow.RPG.Mechanics
 
 		protected override string GetCursor(World world, CPos cell, int2 worldPixel, MouseInput mi)
 		{
+			var positionable = self.Info.TraitInfo<IPositionableInfo>();
+
 			if (self.IsInWorld && self.Location != cell
-				&& longJumpSkill.CanAct && self.Owner.Shroud.IsExplored(cell))
+				&& longJumpSkill.CanAct && self.Owner.Shroud.IsExplored(cell) &&
+				positionable.CanEnterCell(self.World, null, cell))
 				return info.TargetCursor;
 			else
 				return info.TargetBlockedCursor;

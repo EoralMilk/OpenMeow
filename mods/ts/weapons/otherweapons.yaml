@@ -667,11 +667,13 @@ JumpLandExplode:
 			Light: 60
 			Heavy: 25
 		DamageTypes: Prone50Percent, TriggerProne, SmallExplosionDeath
+		ValidTargets: Ground, Trees
 	Warhead@Spray: FireRadius
 		Weapon: DirtCloudLauncher
 		StartOffset: 0,-1024,0
 		FireCount: 10
 		ForceTargetGround: true
+		ValidTargets: Ground, Trees
 	Warhead@shakeScreen: ShakeScreen
 		Duration: 3
 		Intensity: 1
@@ -680,6 +682,7 @@ JumpLandExplode:
 	Warhead@2Eff: CreateEffect
 		Explosions: large_brnl, large_bang, medium_twlt
 		ImpactSounds: expnew09.aud, expnew10.aud, expnew12.aud
+		ValidTargets: Ground, Trees
 	Warhead@4Smu: LeaveSmudge
 		SmudgeType: MediumCrater
 		InvalidTargets: Building, Wall

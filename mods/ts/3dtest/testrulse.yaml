@@ -228,7 +228,7 @@ RUTEST2:
 		InitItems: clothitem, rutestmissile, gunitem, chemicalitem, vislitem
 	LongJumpSkill:
 		ChargeDelay: 25
-		TargetCursor: attack
+		TargetCursor: ability
 		TakeOffWeapon: JumpTakeOffExplode
 		LandWeapon: JumpLandExplode
 		Speed: 180

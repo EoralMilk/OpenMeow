@@ -56,7 +56,8 @@ namespace OpenRA.Mods.Common.Activities
 			triggered = true;
 
 			// Place the actor and retrieve its visual position (CenterPosition)
-			pos.SetPosition(self, dropPosition);
+			if (dropPosition != WPos.Zero)
+				pos.SetPosition(self, dropPosition);
 			currentPosition = self.CenterPosition;
 
 			return false;
@@ -67,13 +68,13 @@ namespace OpenRA.Mods.Common.Activities
 			var dat = self.World.Map.DistanceAboveTerrain(currentPosition);
 			pos.SetPosition(self, currentPosition - new WVec(WDist.Zero, WDist.Zero, dat));
 
-			if (info.ExplosionWeapon != null)
-			{
-				info.ExplosionWeapon.Impact(Target.FromPos(self.CenterPosition), self);
-			}
-
 			if (info != null)
 			{
+				if (info.ExplosionWeapon != null)
+				{
+					info.ExplosionWeapon.Impact(Target.FromPos(self.CenterPosition), self);
+				}
+
 				var health = self.TraitOrDefault<Health>();
 				var damage = health.MaxHP * speed / info.MaxVelocity.Length;
 				health.InflictDamage(self, self, new Damage(damage, info.FallDamageTypes), true);

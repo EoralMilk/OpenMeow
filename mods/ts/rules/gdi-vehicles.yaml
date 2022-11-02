@@ -208,6 +208,14 @@ SMECH:
 		# CargoCondition: ascargo
 	-DamagedByTerrain@VEINS:
 	-LeavesTrails@VEINS:
+	LongJumpSkill:
+		ChargeDelay: 25
+		TargetCursor: ability
+		TakeOffWeapon: JumpTakeOffExplode
+		LandWeapon: JumpLandExplode
+		Speed: 180
+		JumpAngle: 128
+		Voice: Attack
 
 MMCH:
 	Inherits: ^Tank
@@ -355,6 +363,14 @@ MMCH:
 	ProvidesPrerequisite@pluggableRPG:
 		RequiresCondition: AImicroManage && !rpg
 		Prerequisite: plug.rpg
+	LongJumpSkill:
+		ChargeDelay: 25
+		TargetCursor: ability
+		TakeOffWeapon: JumpTakeOffExplode
+		LandWeapon: JumpLandExplode
+		Speed: 180
+		JumpAngle: 128
+		Voice: Attack
 
 HMEC:
 	Inherits: ^Tank

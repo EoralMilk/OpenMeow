@@ -76,15 +76,6 @@
 	# WithModelBarrel:
 	WithMuzzleOverlay:
 
-	LongJumpSkill:
-		ChargeDelay: 50
-		TargetCursor: attack
-		TakeOffWeapon: JumpTakeOffExplode
-		LandWeapon: JumpLandExplode
-		Speed: 150
-		JumpAngle: 128
-		Voice: Attack
-
 ^TRUCK:
 	Inherits: ^CivilianVoxelVehicle
 	Inherits@selection: ^SelectableSupportUnit
