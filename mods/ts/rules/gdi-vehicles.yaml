@@ -159,7 +159,7 @@ SMECH:
 	Mobile:
 		TurnSpeed: 64
 		MaxSpeed: 130
-		Speed: 20
+		Speed: 80
 		TurnsWhileMoving: true
 		SpeedAccleration: 8
 		Locomotor: walker
@@ -241,7 +241,7 @@ MMCH:
 		MaxSpeed: 65
 		Speed: 8
 		TurnsWhileMoving: true
-		SpeedAccleration: 4
+		SpeedAccleration: 15
 		AlwaysTurnInPlace: true
 		Locomotor: heavywalker
 		TerrainOrientationAdjustmentMargin: -1
@@ -395,7 +395,7 @@ HMEC:
 		TurnSpeed: 12
 		MaxSpeed: 42
 		Speed: 5
-		SpeedAccleration: 1
+		SpeedAccleration: 5
 		TurnsWhileMoving: true
 		Locomotor: heavywalker
 	Health:
@@ -460,8 +460,8 @@ SONIC:
 	Mobile:
 		TurnSpeed: 16
 		MaxSpeed: 56
-		Speed: 30
-		SpeedAccleration: 1
+		Speed: 35
+		SpeedAccleration: 2
 	Health:
 		HP: 50000
 	Armor:
