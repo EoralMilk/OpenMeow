@@ -205,8 +205,15 @@ namespace OpenRA.Mods.Common.Activities
 
 			var actorFacingModifier = WAngle.Zero;
 			if (goBackward)
-				actorFacingModifier = new WAngle(512);
+				actorFacingModifier += new WAngle(512);
 
+			// We introduce this equation:
+			// Actor Facing = Moving Direction Facing + Actor Facing Modifier
+			// among those vars,
+			// 1. we can get Actor Facing from "mobile.Facing".
+			// 2. we know Actor Facing Modifier from "actorFacingModifier".
+			// 3. then we can calculate Moving Direction Facing, which is "mobile.Facing - actorFacingModifier"
+			// the same below.
 			QueueChild(new MoveFirstHalf(this, actorFacingModifier, from, to, mobile.Facing - actorFacingModifier, mobile.Facing - actorFacingModifier, null, toTerrainOrientation, margin, carryoverProgress, movingOnGroundLayer));
 			carryoverProgress = 0;
 			return false;
@@ -461,7 +468,7 @@ namespace OpenRA.Mods.Common.Activities
 				{
 					mobile.SetCenterPosition(self, new WPos(To.X, To.Y, self.World.Map.HeightOfTerrain(To)));
 					if (TurnsWhileMoving)
-						mobile.Facing = Util.TickFacing(mobile.Facing, FromToYaw, mobile.TurnSpeed);
+						mobile.Facing = Util.TickFacing(mobile.Facing, FromToYaw + ActorFacingModifier, mobile.TurnSpeed);
 					else
 						mobile.Facing = ToFacing + ActorFacingModifier;
 
@@ -504,7 +511,7 @@ namespace OpenRA.Mods.Common.Activities
 				}
 
 				if (TurnsWhileMoving)
-					mobile.Facing = Util.TickFacing(mobile.Facing, FromToYaw, mobile.TurnSpeed);
+					mobile.Facing = Util.TickFacing(mobile.Facing, FromToYaw + ActorFacingModifier, mobile.TurnSpeed);
 				else
 					mobile.Facing = WAngle.Lerp(FromFacing + ActorFacingModifier, ToFacing + ActorFacingModifier, progress, Distance);
 

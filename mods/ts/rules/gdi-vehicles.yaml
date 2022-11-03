@@ -100,7 +100,9 @@ HVR:
 		Locomotor: hover
 		TerrainOrientationAdjustmentMargin: -1
 		TurnsWhileMoving: true
-		TurnSpeed: 32
+		TurnSpeed: 16
+		CanMoveBackward: true
+		BackwardDuration: 5
 	Selectable:
 		Bounds: 1206, 1600, 0, -900
 	Health:
