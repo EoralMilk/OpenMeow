@@ -165,7 +165,7 @@ namespace OpenRA.Meow.RPG.Mechanics
 
 		public void Killed(Actor self, AttackInfo e)
 		{
-			var items = Items;
+			var items = Items.Where(i => i.EquipmentSlot == null || !i.EquipmentSlot.KeepItemInSlotWhenKilled);
 			var deathPos = self.CenterPosition;
 			var deathFace = self.TraitOrDefault<IFacing>()?.Facing ?? WAngle.Zero;
 			inventoryActor.World.AddFrameEndTask(w =>

@@ -51,6 +51,8 @@ namespace OpenRA.Meow.RPG.Mechanics
 
 		public readonly string InitEquipment = null;
 
+		public readonly bool KeepItemInSlotWhenKilled = false;
+
 		public override object Create(ActorInitializer init)
 		{
 			return new EquipmentSlot(this, init.GetOrDefault<EquipmentSlotsInit>(), init.Self);
@@ -72,6 +74,8 @@ namespace OpenRA.Meow.RPG.Mechanics
 
 		readonly Actor slotActor;
 		public Actor SlotOwnerActor => slotActor;
+
+		public bool KeepItemInSlotWhenKilled => info.KeepItemInSlotWhenKilled;
 
 		public readonly ItemCache ItemCache;
 

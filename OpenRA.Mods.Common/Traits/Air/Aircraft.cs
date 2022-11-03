@@ -274,6 +274,8 @@ namespace OpenRA.Mods.Common.Traits
 
 		WPos lastPos, currentPos;
 		WVec currentSpeed = WVec.Zero;
+		readonly WVec initSpeed;
+		public WVec InitSpeed => initSpeed;
 		public WVec CurrentSpeed => currentSpeed;
 
 		public WAngle GetTurnSpeed(bool isIdleTurn)
@@ -333,6 +335,8 @@ namespace OpenRA.Mods.Common.Traits
 			creationActivityDelay = init.GetValue<CreationActivityDelayInit, int>(0);
 			currentPos = CenterPosition;
 			lastPos = CenterPosition;
+			orientation = init.GetValue<OrientationInit, WRot>(WRot.FromYaw(Facing));
+			initSpeed = init.GetValue<VelocityInit, WVec>(WVec.Zero);
 		}
 
 		public WDist LandAltitude
@@ -753,6 +757,8 @@ namespace OpenRA.Mods.Common.Traits
 		public void ModifyDeathActorInit(Actor self, TypeDictionary init)
 		{
 			init.Add(new FacingInit(Facing));
+			init.Add(new OrientationInit(Orientation));
+			init.Add(new VelocityInit(CurrentSpeed));
 		}
 
 		void INotifyBecomingIdle.OnBecomingIdle(Actor self)

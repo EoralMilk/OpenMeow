@@ -46,8 +46,11 @@ namespace OpenRA.Mods.Common.Activities
 
 		public override bool Tick(Actor self)
 		{
-			if (self.World.Map.DistanceAboveTerrain(self.CenterPosition).Length <= 0)
+			var h = self.World.Map.HeightOfTerrain(self.CenterPosition);
+			if (self.CenterPosition.Z <= h)
 			{
+				aircraft.SetPosition(self, new WPos(self.CenterPosition.X, self.CenterPosition.Y, h));
+
 				if (info.ExplosionWeapon != null)
 				{
 					// Use .FromPos since this actor is killed. Cannot use Target.FromActor
@@ -74,7 +77,7 @@ namespace OpenRA.Mods.Common.Activities
 				aircraft.Facing = new WAngle(aircraft.Facing.Angle + spin);
 			}
 
-			var move = info.Moves ? aircraft.FlyStep(aircraft.Facing) : WVec.Zero;
+			var move = info.Moves ? aircraft.InitSpeed : WVec.Zero;
 			if (gravityTick++ >= info.GravityChangeInterval)
 			{
 				gravity = gravity >= info.MaxGravity.Length ? info.MaxGravity.Length : gravity + info.GravityAcceleration.Length;

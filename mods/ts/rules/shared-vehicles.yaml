@@ -93,8 +93,8 @@ HARV:
 		EmptyCondition: no-tiberium
 	Mobile:
 		MaxSpeed: 75
-		Speed: 40
-		SpeedAccleration: 2
+		Speed: 45
+		SpeedAccleration: 3
 		CanMoveBackward: true
 		MaxBackwardCells: 6
 		TurnSpeed: 20

@@ -1290,6 +1290,15 @@
 		Palette: effect
 		IsDecoration: true
 		Offset: -220, 140, 320
+	Explodes:
+		Weapon: UnitExplodeSmall
+		EmptyWeapon: UnitExplodeSmall
+		RequiresCondition: !airborne
+	ThrowsShrapnel:
+		Weapons: SmallDebris
+		Pieces: 3, 7
+		Range: 2c0, 5c0
+		RequiresCondition: !airborne
 
 ^EMPableAircraft:
 	Inherits: ^Aircraft
@@ -1360,6 +1369,10 @@
 		Palette: effect
 		IsDecoration: true
 		Offset: -220, 140, 320
+	ThrowsShrapnel:
+		Weapons: SmallDebris
+		Pieces: 3, 7
+		Range: 2c0, 5c0
 
 ^Visceroid:
 	Inherits@1: ^ExistsInWorld

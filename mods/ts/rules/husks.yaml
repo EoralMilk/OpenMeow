@@ -124,7 +124,7 @@ APACHE.Husk:
 		TurnSpeed: 20
 		Speed: 130
 	WithIdleOverlay:
-		Offset: 85,0,598
+		Offset: 85,0,346
 		Sequence: rotor
 	RenderSprites:
 		Image: apache

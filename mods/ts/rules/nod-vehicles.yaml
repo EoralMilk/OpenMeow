@@ -17,9 +17,9 @@ BGGY:
 		Description: Fast scout and anti-infantry vehicle.\n  Strong vs Infantry, Light armor\n  Weak vs Vehicles, Aircraft
 	Mobile:
 		TurnSpeed: 40
-		MaxSpeed: 142
+		MaxSpeed: 175
 		Speed: 60
-		SpeedAccleration: 2
+		SpeedAccleration: 4
 		CanMoveBackward: true
 		MaxBackwardCells: 6
 	Crushable:
@@ -70,10 +70,10 @@ BIKE:
 		Description: Fast scout vehicle, armed with\nrockets.\n  Strong vs Vehicles, Aircraft\n  Weak vs Infantry
 	Mobile:
 		TurnSpeed: 32
-		MaxSpeed: 170
+		MaxSpeed: 185
 		Speed: 60
 		TurnsWhileMoving: true
-		SpeedAccleration: 2
+		SpeedAccleration: 4
 	Crushable:
 		CrushClasses: bigguy
 	Targetable@Crushable:
@@ -132,7 +132,7 @@ TTNK:
 		TurnSpeed: 32
 		MaxSpeed: 85
 		Speed: 40
-		SpeedAccleration: 2
+		SpeedAccleration: 4
 		ImmovableCondition: !undeployed
 	Health:
 		HP: 35000
@@ -375,7 +375,7 @@ REPAIR:
 		Type: Light
 	Mobile:
 		MaxSpeed: 85
-		SpeedAccleration: 2
+		SpeedAccleration: 35
 		Speed: 40
 		TurnSpeed: 20
 	RevealsShroud:
@@ -428,7 +428,7 @@ WEED:
 	Mobile:
 		Speed: 40
 		MaxSpeed: 71
-		SpeedAccleration: 2
+		SpeedAccleration: 6
 		TurnSpeed: 20
 	Health:
 		HP: 60000
@@ -594,7 +594,7 @@ STNK:
 		TurnSpeed: 40
 		Speed: 60
 		MaxSpeed: 145
-		SpeedAccleration: 2
+		SpeedAccleration: 8
 		CanMoveBackward: true
 		MaxBackwardCells: 6
 	Health:

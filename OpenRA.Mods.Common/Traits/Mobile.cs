@@ -242,6 +242,7 @@ namespace OpenRA.Mods.Common.Traits
 
 		int airborneConditionToken = Actor.InvalidConditionToken;
 		bool inAir = false;
+		public bool IsInAir => inAir;
 
 		#region IFacing
 
@@ -325,6 +326,7 @@ namespace OpenRA.Mods.Common.Traits
 			}
 
 			Facing = oldFacing = init.GetValue<FacingInit, WAngle>(info.InitialFacing);
+			Orientation = init.GetValue<OrientationInit, WRot>(WRot.FromYaw(Facing));
 
 			// Sets the initial center position
 			// Unit will move into the cell grid (defined by LocationInit) as its initial activity
@@ -366,6 +368,7 @@ namespace OpenRA.Mods.Common.Traits
 			if (self.World.Map.DistanceAboveTerrain(CenterPosition).Length > Info.MinAirborneAltitude)
 			{
 				inAir = true;
+				RemoveInfluence();
 				if (Info.AirborneCondition != null && self.IsInWorld &&
 					airborneConditionToken == Actor.InvalidConditionToken)
 					airborneConditionToken = self.GrantCondition(Info.AirborneCondition);
@@ -670,7 +673,7 @@ namespace OpenRA.Mods.Common.Traits
 
 		public void AddInfluence()
 		{
-			if (self.IsInWorld && OccupySpace)
+			if (self.IsInWorld && OccupySpace && !inAir)
 				self.World.ActorMap.AddInfluence(self, this);
 		}
 
@@ -917,6 +920,8 @@ namespace OpenRA.Mods.Common.Traits
 		void IDeathActorInitModifier.ModifyDeathActorInit(Actor self, TypeDictionary init)
 		{
 			init.Add(new FacingInit(Facing));
+			init.Add(new OrientationInit(Orientation));
+			init.Add(new VelocityInit(CurrentSpeed));
 
 			// Allows the husk to drag to its final position
 			if (CanEnterCell(self.Location, self, BlockedByActor.Stationary))

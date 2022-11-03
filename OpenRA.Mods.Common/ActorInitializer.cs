@@ -17,9 +17,21 @@ using OpenRA.Traits;
 
 namespace OpenRA.Mods.Common
 {
+	public class VelocityInit: ValueActorInit<WVec>, ISingleInstanceInit
+	{
+		public VelocityInit(WVec value)
+			: base(value) { }
+	}
+
 	public class FacingInit : ValueActorInit<WAngle>, ISingleInstanceInit
 	{
 		public FacingInit(WAngle value)
+			: base(value) { }
+	}
+
+	public class OrientationInit : ValueActorInit<WRot>, ISingleInstanceInit
+	{
+		public OrientationInit(WRot value)
 			: base(value) { }
 	}
 

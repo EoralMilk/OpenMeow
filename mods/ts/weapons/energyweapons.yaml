@@ -96,8 +96,6 @@ SonicZap:
 		Blockable: true
 		TrackTarget: true
 		Color: 50F5FF45
-		StartScale: 0.7
-		EndScale: 1.2
 	Warhead@1Dam: SpreadDamage
 		Range: 0, 32
 		Falloff: 100, 100
@@ -143,6 +141,8 @@ SonicWave:
 		KeepSourceAltitude: false
 		Blockable: true
 		ExplodeUnderThisAltitude: -24
+		StartScale: 0.7
+		EndScale: 1.2
 	Warhead@fireDam: Spread3DDamage
 		Spread: 0c220
 		Damage: 1500
