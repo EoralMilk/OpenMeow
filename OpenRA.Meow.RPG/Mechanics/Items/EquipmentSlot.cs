@@ -235,7 +235,7 @@ namespace OpenRA.Meow.RPG.Mechanics
 			{
 				TryEquip(self, self.World.WorldActor.Trait<ItemCache>().GetItem(order.ExtraData), true, true);
 			}
-			else if (order.OrderString == "TryUnequip" && order.TargetString == Name && ItemCache.HasItem(order.ExtraData))
+			else if (order.OrderString == "TryUnequip" && order.TargetString == Name)
 			{
 				TryUnequip(self);
 			}
