@@ -662,16 +662,18 @@ JumpLandExplode:
 		Falloff: 100, 50, 25, 12, 6, 3, 0
 		Damage: 50000
 		Versus:
-			None: 90
-			Wood: 75
-			Light: 60
-			Heavy: 25
-		DamageTypes: Prone50Percent, TriggerProne, SmallExplosionDeath
+			None: 100
+			Wood: 50
+			Light: 50
+			Heavy: 35
+			Concrete: 35
+		DamageTypes: TriggerProne, CrushedDeath
 		ValidTargets: Ground, Trees
+		ValidRelationships: Neutral, Enemy # no friendly damage
 	Warhead@Spray: FireRadius
 		Weapon: DirtCloudLauncher
 		StartOffset: 0,-1024,0
-		FireCount: 10
+		FireCount: 8
 		ForceTargetGround: true
 		ValidTargets: Ground, Trees
 	Warhead@shakeScreen: ShakeScreen
@@ -682,7 +684,7 @@ JumpLandExplode:
 	Warhead@2Eff: CreateEffect
 		Explosions: large_brnl, large_bang, medium_twlt
 		ImpactSounds: expnew09.aud, expnew10.aud, expnew12.aud
-		ValidTargets: Ground, Trees
+		ValidTargets: Ground, Trees, Air
 	Warhead@4Smu: LeaveSmudge
 		SmudgeType: MediumCrater
 		InvalidTargets: Building, Wall

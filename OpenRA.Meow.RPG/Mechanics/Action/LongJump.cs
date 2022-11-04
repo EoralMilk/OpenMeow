@@ -165,7 +165,6 @@ namespace OpenRA.Meow.RPG.Mechanics
 					self.QueueActivity(move.MoveWithinRange(order.Target, WDist.FromCells(maxDistance.Value), targetLineColor: Info.TargetLineColor));
 				self.QueueActivity(new JumpTo(self, info, order.Target.CenterPosition));
 				self.QueueActivity(new FallDown(self, WPos.Zero, info.Speed.Length));
-				self.QueueActivity(move.MoveTo(cell, 5, targetLineColor: Info.TargetLineColor));
 				self.ShowTargetLines();
 			}
 		}
@@ -215,9 +214,10 @@ namespace OpenRA.Meow.RPG.Mechanics
 		readonly LongJumpSkill jumping;
 		readonly LongJumpSkillInfo info;
 
-		readonly WPos target;
+		WPos target;
 		readonly WAngle angle;
 		readonly WDist speed;
+		CPos? targetCell;
 
 		int length;
 
@@ -227,8 +227,11 @@ namespace OpenRA.Meow.RPG.Mechanics
 		int conditionToken = Actor.InvalidConditionToken;
 
 		readonly Action doAfterJump;
+		readonly int? maximumDistance;
 
 		bool started = false;
+
+		static HashSet<CPos> reserved = new HashSet<CPos>();
 
 		[Sync]
 		int ticks;
@@ -250,11 +253,20 @@ namespace OpenRA.Meow.RPG.Mechanics
 			ticks = 0;
 			doAfterJump = after;
 
+			maximumDistance = 8;
+
 			notifyLongJumps = self.TraitsImplementing<INotifyLongJump>().ToArray();
 		}
 
 		public override bool Tick(Actor self)
 		{
+			if (self.IsDead || !self.IsInWorld)
+			{
+				if (targetCell != null)
+					reserved.Remove(targetCell.Value);
+				return true;
+			}
+
 			if (!started)
 			{
 				if (IsCanceling)
@@ -262,6 +274,20 @@ namespace OpenRA.Meow.RPG.Mechanics
 
 				if (mobile != null && (mobile.IsTraitDisabled || mobile.IsTraitPaused))
 					return false;
+
+				if (jumping != null && !jumping.CanAct)
+					return false;
+
+				var h = self.World.Map.HeightOfTerrain(target);
+
+				// to ground
+				if (h >= target.Z - 512 && targetCell == null)
+				{
+					targetCell = ChooseBestDestinationCell(self, self.World.Map.CellContaining(target));
+
+					if (targetCell != null)
+						target = self.World.Map.CenterOfCell(targetCell.Value);
+				}
 
 				var desiredFacing = (target - self.CenterPosition).Yaw;
 
@@ -283,9 +309,6 @@ namespace OpenRA.Meow.RPG.Mechanics
 					if (ready == false)
 						return false;
 				}
-
-				if (jumping != null && !jumping.CanAct)
-					return false;
 
 				if (notifyLongJumps != null && notifyLongJumps.Length > 0)
 				{
@@ -318,7 +341,8 @@ namespace OpenRA.Meow.RPG.Mechanics
 			{
 				doAfterJump?.Invoke();
 				mobile.SetPosition(self, target, true);
-
+				if (targetCell != null)
+					reserved.Remove(targetCell.Value);
 				if (notifyLongJumps != null && notifyLongJumps.Length > 0)
 				{
 					foreach (var notify in notifyLongJumps)
@@ -342,6 +366,32 @@ namespace OpenRA.Meow.RPG.Mechanics
 			}
 
 			return false;
+		}
+
+		CPos? ChooseBestDestinationCell(Actor self, CPos destination)
+		{
+			if (mobile == null)
+				return null;
+
+			if (mobile.CanEnterCell(destination) && self.Owner.Shroud.IsExplored(destination) && !reserved.Contains(destination))
+			{
+				reserved.Add(destination);
+				return destination;
+			}
+
+			var max = maximumDistance != null ? maximumDistance.Value : self.World.Map.Grid.MaximumTileSearchRange;
+			foreach (var tile in self.World.Map.FindTilesInCircle(destination, max))
+			{
+				if (self.Owner.Shroud.IsExplored(tile)
+					&& !reserved.Contains(tile)
+					&& mobile.CanEnterCell(tile))
+				{
+					reserved.Add(tile);
+					return tile;
+				}
+			}
+
+			return null;
 		}
 	}
 
@@ -368,7 +418,7 @@ namespace OpenRA.Meow.RPG.Mechanics
 				IsQueued = modifiers.HasModifier(TargetModifiers.ForceQueue);
 				var positionable = self.Info.TraitInfo<IPositionableInfo>();
 				if (self.IsInWorld && self.Owner.Shroud.IsExplored(xy) &&
-					positionable.CanEnterCell(self.World, null, xy))
+					positionable.CanEnterCell(self.World, null, xy, check: BlockedByActor.None))
 				{
 					cursor = info.TargetCursor;
 					return true;
