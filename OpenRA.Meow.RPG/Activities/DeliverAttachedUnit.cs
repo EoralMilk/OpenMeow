@@ -11,44 +11,46 @@
 
 using System.Collections.Generic;
 using OpenRA.Activities;
+using OpenRA.Meow.RPG.Traits;
+using OpenRA.Mods.Common.Activities;
 using OpenRA.Mods.Common.Traits;
 using OpenRA.Primitives;
 using OpenRA.Traits;
 
-namespace OpenRA.Mods.Common.Activities
+namespace OpenRA.Meow.RPG.Activities
 {
-	public class DeliverUnit : Activity
+	public class DeliverAttachedUnit : Activity
 	{
-		readonly Carryall carryall;
+		readonly AttachCarryall carryall;
 		readonly bool assignTargetOnFirstRun;
 		readonly WDist deliverRange;
 		readonly Color? targetLineColor;
 
 		Target destination;
 
-		public DeliverUnit(Actor self, WDist deliverRange, Color? targetLineColor)
+		public DeliverAttachedUnit(Actor self, WDist deliverRange, Color? targetLineColor)
 			: this(self, Target.Invalid, deliverRange, targetLineColor)
 		{
 			ActivityType = ActivityType.Move;
 			assignTargetOnFirstRun = true;
 		}
 
-		public DeliverUnit(Actor self, in Target destination, WDist deliverRange, Color? targetLineColor)
+		public DeliverAttachedUnit(Actor self, in Target destination, WDist deliverRange, Color? targetLineColor)
 		{
 			ActivityType = ActivityType.Move;
 			this.destination = destination;
 			this.deliverRange = deliverRange;
 			this.targetLineColor = targetLineColor;
 
-			carryall = self.Trait<Carryall>();
+			carryall = self.Trait<AttachCarryall>();
 		}
 
 		protected override void OnFirstRun(Actor self)
 		{
-			// In case this activity was queued (either via queued order of via AutoCarryall)
+			// In case this activity was queued (either via queued order of via AutoAttachCarryall)
 			// something might have happened to the cargo in the time between the activity being
 			// queued and being run, so short out if it is no longer valid.
-			if (carryall.Carryable == null)
+			if (carryall.AttachCarryable == null)
 				return;
 
 			if (assignTargetOnFirstRun)
@@ -68,7 +70,7 @@ namespace OpenRA.Mods.Common.Activities
 
 		class ReleaseUnit : Activity
 		{
-			readonly Carryall carryall;
+			readonly AttachCarryall carryall;
 			readonly BodyOrientation body;
 			readonly IFacing facing;
 
@@ -76,7 +78,7 @@ namespace OpenRA.Mods.Common.Activities
 			{
 				ActivityType = ActivityType.Move;
 				facing = self.Trait<IFacing>();
-				carryall = self.Trait<Carryall>();
+				carryall = self.Trait<AttachCarryall>();
 				body = self.Trait<BodyOrientation>();
 			}
 
@@ -84,14 +86,14 @@ namespace OpenRA.Mods.Common.Activities
 			{
 				// HACK: Activities still tick between the actor being killed and being disposed
 				// Thus the carryable might have changed since queuing because the death handler set it to null
-				if (carryall.Carryable == null)
+				if (carryall.AttachCarryable == null)
 					return;
 
-				var localOffset = carryall.CarryableOffset.Rotate(body.QuantizeOrientation(self.Orientation));
+				var localOffset = carryall.AttachCarryableOffset.Rotate(body.QuantizeOrientation(self.Orientation));
 				var targetPosition = self.CenterPosition + body.LocalToWorld(localOffset);
 				var targetLocation = self.World.Map.CellContaining(targetPosition);
-				carryall.Carryable.Trait<IPositionable>().SetPosition(carryall.Carryable, targetLocation, SubCell.FullCell);
-				carryall.Carryable.Trait<IFacing>().Facing = facing.Facing;
+				carryall.AttachCarryable.Trait<IPositionable>().SetPosition(carryall.AttachCarryable, targetLocation, SubCell.FullCell);
+				carryall.AttachCarryable.Trait<IFacing>().Facing = facing.Facing;
 
 				// Put back into world
 				self.World.AddFrameEndTask(w =>
@@ -99,13 +101,12 @@ namespace OpenRA.Mods.Common.Activities
 					if (self.IsDead)
 						return;
 
-					var cargo = carryall.Carryable;
+					var cargo = carryall.AttachCarryable;
 					if (cargo == null)
 						return;
 
-					var carryable = cargo.Trait<Carryable>();
-					w.Add(cargo);
-					carryall.DetachCarryable(self);
+					var carryable = cargo.Trait<AttachCarryable>();
+					carryall.DetachAttachCarryable(self);
 					carryable.UnReserve();
 					carryable.Detached();
 				});

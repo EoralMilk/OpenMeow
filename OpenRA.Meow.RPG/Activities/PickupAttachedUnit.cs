@@ -11,17 +11,20 @@
 
 using System.Collections.Generic;
 using OpenRA.Activities;
+using OpenRA.Meow.RPG.Traits;
+using OpenRA.Mods.Common;
+using OpenRA.Mods.Common.Activities;
 using OpenRA.Mods.Common.Traits;
 using OpenRA.Primitives;
 using OpenRA.Traits;
 
-namespace OpenRA.Mods.Common.Activities
+namespace OpenRA.Meow.RPG.Activities
 {
-	public class PickupUnit : Activity
+	public class PickupAttachedUnit : Activity
 	{
 		readonly Actor cargo;
-		readonly Carryall carryall;
-		readonly Carryable carryable;
+		readonly AttachCarryall carryall;
+		readonly AttachCarryable carryable;
 		readonly IFacing carryableFacing;
 		readonly BodyOrientation carryableBody;
 
@@ -31,20 +34,20 @@ namespace OpenRA.Mods.Common.Activities
 		// TODO: Expose this to yaml
 		readonly WDist targetLockRange = WDist.FromCells(4);
 
-		enum PickupState { Intercept, LockCarryable, Pickup }
+		enum PickupState { Intercept, LockAttachCarryable, Pickup }
 		PickupState state = PickupState.Intercept;
 
-		public PickupUnit(Actor self, Actor cargo, int delay, Color? targetLineColor)
+		public PickupAttachedUnit(Actor self, Actor cargo, int delay, Color? targetLineColor)
 		{
 			ActivityType = ActivityType.Move;
 			this.cargo = cargo;
 			this.delay = delay;
 			this.targetLineColor = targetLineColor;
-			carryable = cargo.Trait<Carryable>();
+			carryable = cargo.Trait<AttachCarryable>();
 			carryableFacing = cargo.Trait<IFacing>();
 			carryableBody = cargo.Trait<BodyOrientation>();
 
-			carryall = self.Trait<Carryall>();
+			carryall = self.Trait<AttachCarryall>();
 
 			ChildHasPriority = false;
 		}
@@ -52,10 +55,10 @@ namespace OpenRA.Mods.Common.Activities
 		protected override void OnFirstRun(Actor self)
 		{
 			// The cargo might have become invalid while we were moving towards it.
-			if (cargo.IsDead || carryable.IsTraitDisabled || (!carryall.Info.CarryableAnyCamp && !cargo.AppearsFriendlyTo(self)))
+			if (cargo.IsDead || carryable.IsTraitDisabled || (!carryall.Info.AttachCarryableAnyCamp && !cargo.AppearsFriendlyTo(self)))
 				return;
 
-			if (carryall.ReserveCarryable(self, cargo))
+			if (carryall.ReserveAttachCarryable(self, cargo))
 			{
 				// Fly to the target and wait for it to be locked for pickup
 				// These activities will be cancelled and replaced by Land once the target has been locked
@@ -66,29 +69,30 @@ namespace OpenRA.Mods.Common.Activities
 
 		public override bool Tick(Actor self)
 		{
-			if (cargo != carryall.Carryable)
+			if (cargo != carryall.AttachCarryable)
 				return true;
 
 			if (IsCanceling)
 			{
-				if (carryall.State == Carryall.CarryallState.Reserved)
-					carryall.UnreserveCarryable(self);
+				if (carryall.State == AttachCarryall.AttachCarryallState.Reserved)
+					carryall.UnreserveAttachCarryable(self);
 
-				return true;
+				var aircraft = self.TraitOrDefault<Aircraft>();
+				aircraft?.RemoveInfluence();
 			}
 
-			if (cargo.IsDead || carryable.IsTraitDisabled || (!carryall.Info.CarryableAnyCamp && !cargo.AppearsFriendlyTo(self)))
+			if (cargo.IsDead || carryable.IsTraitDisabled || (!carryall.Info.AttachCarryableAnyCamp && !cargo.AppearsFriendlyTo(self)))
 			{
-				carryall.UnreserveCarryable(self);
+				carryall.UnreserveAttachCarryable(self);
 				return true;
 			}
 
 			// Wait until we are near the target before we try to lock it
 			var distSq = (cargo.CenterPosition - self.CenterPosition).HorizontalLengthSquared;
 			if (state == PickupState.Intercept && distSq <= targetLockRange.LengthSquared)
-				state = PickupState.LockCarryable;
+				state = PickupState.LockAttachCarryable;
 
-			if (state == PickupState.LockCarryable)
+			if (state == PickupState.LockAttachCarryable)
 			{
 				var lockResponse = carryable.LockForPickup(self);
 				if (lockResponse == LockResponse.Failed)
@@ -96,9 +100,9 @@ namespace OpenRA.Mods.Common.Activities
 				else if (lockResponse == LockResponse.Success)
 				{
 					// Pickup position and facing are now known - swap the fly/wait activity with Land
-					ChildActivity.Cancel(self);
+					ChildActivity?.Cancel(self);
 
-					var localOffset = carryall.OffsetForCarryable(self, cargo).Rotate(carryableBody.QuantizeOrientation(cargo.Orientation));
+					var localOffset = carryall.OffsetForAttachCarryable(self, cargo).Rotate(carryableBody.QuantizeOrientation(cargo.Orientation));
 					QueueChild(new Land(self, Target.FromActor(cargo), -carryableBody.LocalToWorld(localOffset), carryableFacing.Facing));
 
 					// Pause briefly before attachment for visual effect
@@ -126,28 +130,27 @@ namespace OpenRA.Mods.Common.Activities
 		class AttachUnit : Activity
 		{
 			readonly Actor cargo;
-			readonly Carryable carryable;
-			readonly Carryall carryall;
+			readonly AttachCarryable carryable;
+			readonly AttachCarryall carryall;
 
 			public AttachUnit(Actor self, Actor cargo)
 			{
 				ActivityType = ActivityType.Move;
 				this.cargo = cargo;
-				carryable = cargo.Trait<Carryable>();
-				carryall = self.Trait<Carryall>();
+				carryable = cargo.Trait<AttachCarryable>();
+				carryall = self.Trait<AttachCarryall>();
 			}
 
 			protected override void OnFirstRun(Actor self)
 			{
 				// The cargo might have become invalid while we were moving towards it.
-				if (cargo == null || cargo.IsDead || carryable.IsTraitDisabled || (!carryall.Info.CarryableAnyCamp && !cargo.AppearsFriendlyTo(self)))
+				if (cargo == null || cargo.IsDead || carryable.IsTraitDisabled || (!carryall.Info.AttachCarryableAnyCamp && !cargo.AppearsFriendlyTo(self)))
 					return;
 
 				self.World.AddFrameEndTask(w =>
 				{
-					cargo.World.Remove(cargo);
 					carryable.Attached();
-					carryall.AttachCarryable(self, cargo);
+					carryall.AttachAttachCarryable(self, cargo);
 				});
 			}
 		}

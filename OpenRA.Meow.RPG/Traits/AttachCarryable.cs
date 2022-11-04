@@ -10,12 +10,15 @@
 #endregion
 
 using System.Linq;
+using OpenRA.GameRules;
+using OpenRA.Mods.Common.Traits;
+using OpenRA.Primitives;
 using OpenRA.Traits;
 
-namespace OpenRA.Mods.Common.Traits
+namespace OpenRA.Meow.RPG.Traits
 {
-	[Desc("Can be carried by actors with the `" + nameof(Carryall) + "` trait.")]
-	public class CarryableInfo : ConditionalTraitInfo
+	[Desc("Can be carried by actors with the `" + nameof(AttachCarryall) + "` trait.")]
+	public class AttachCarryableInfo : ConditionalTraitInfo, IRulesetLoaded
 	{
 		[GrantedConditionReference]
 		[Desc("The condition to grant to self while a carryall has been reserved.")]
@@ -29,44 +32,82 @@ namespace OpenRA.Mods.Common.Traits
 		[Desc("The condition to grant to self while being locked for carry.")]
 		public readonly string LockedCondition = null;
 
-		[Desc("Carryall attachment point relative to body.")]
+		[Desc("AttachCarryall attachment point relative to body.")]
 		public readonly WVec LocalOffset = WVec.Zero;
 
-		public override object Create(ActorInitializer init) { return new Carryable(this); }
+		[Desc("Init Gravity at which aircraft falls to ground.")]
+		public readonly WDist Gravity = new WDist(0);
+
+		// fall from carryall settings
+		[Desc("Gravity (effect gravity per GravityChangeInterval tick) at which aircraft falls to ground.")]
+		public readonly WDist GravityAcceleration = new WDist(1);
+
+		[Desc("GravityChangeInterval.")]
+		public readonly int GravityChangeInterval = 1;
+
+		[Desc("Max Gravity at which aircraft falls to ground.")]
+		public readonly WDist MaxGravity = new WDist(18);
+
+		[Desc("Init velocity at which aircraft falls to ground.")]
+		public readonly WDist Velocity = WDist.Zero;
+
+		[Desc("Velocity (per tick) at which aircraft falls to ground.")]
+		public readonly WDist MaxVelocity = new WDist(512);
+
+		[WeaponReference]
+		[Desc("Explosion weapon that triggers when hitting ground.")]
+		public readonly string Explosion = "UnitExplode";
+
+		[Desc("Types of damage from falls.")]
+		public readonly BitSet<DamageType> FallDamageTypes = default;
+
+		public WeaponInfo ExplosionWeapon { get; private set; }
+
+		public override object Create(ActorInitializer init) { return new AttachCarryable(this); }
+
+		public override void RulesetLoaded(Ruleset rules, ActorInfo ai)
+		{
+			if (string.IsNullOrEmpty(Explosion))
+				return;
+
+			var weaponToLower = Explosion.ToLowerInvariant();
+			if (!rules.Weapons.TryGetValue(weaponToLower, out var weapon))
+				throw new YamlException($"Weapons Ruleset does not contain an entry '{weaponToLower}'");
+
+			ExplosionWeapon = weapon;
+		}
 	}
 
-	public enum LockResponse { Success, Pending, Failed }
-
-	public interface IDelayCarryallPickup
+	public interface IDelayAttachCarryallPickup
 	{
 		bool TryLockForPickup(Actor self, Actor carrier);
 	}
 
-	public class Carryable : ConditionalTrait<CarryableInfo>
+	public class AttachCarryable : ConditionalTrait<AttachCarryableInfo>
 	{
 		int reservedToken = Actor.InvalidConditionToken;
 		int carriedToken = Actor.InvalidConditionToken;
 		int lockedToken = Actor.InvalidConditionToken;
 
-		IDelayCarryallPickup[] delayPickups;
+		IDelayAttachCarryallPickup[] delayPickups;
 
 		public Actor Carrier { get; private set; }
 
 		public bool Reserved => state != State.Free;
 
-		protected Actor Self { get; private set; }
-		protected Mobile Mobile { get; private set; }
+		public Actor Self { get; private set; }
+		public Mobile Mobile { get; private set; }
 		protected enum State { Free, Reserved, Locked }
 		protected State state = State.Free;
 		protected bool attached;
 
-		public Carryable(CarryableInfo info)
+		public AttachCarryable(AttachCarryableInfo info)
 			: base(info) { }
 
 		protected override void Created(Actor self)
 		{
 			Mobile = self.TraitOrDefault<Mobile>();
-			delayPickups = self.TraitsImplementing<IDelayCarryallPickup>().ToArray();
+			delayPickups = self.TraitsImplementing<IDelayAttachCarryallPickup>().ToArray();
 			Self = self;
 
 			base.Created(self);
@@ -78,6 +119,9 @@ namespace OpenRA.Mods.Common.Traits
 				return;
 
 			attached = true;
+			Mobile.RemoveInfluence();
+			Mobile.OccupySpace = false;
+			Mobile.TerrainOrientationIgnore = true;
 
 			if (carriedToken == Actor.InvalidConditionToken)
 				carriedToken = Self.GrantCondition(Info.CarriedCondition);
@@ -89,7 +133,12 @@ namespace OpenRA.Mods.Common.Traits
 			if (!attached)
 				return;
 
+			Mobile.OccupySpace = true;
+			Mobile.AddInfluence();
+			Mobile.TerrainOrientationIgnore = false;
 			attached = false;
+
+			Mobile.SetPosition(Self, Mobile.CenterPosition, true);
 
 			if (carriedToken != Actor.InvalidConditionToken)
 				carriedToken = Self.RevokeCondition(carriedToken);
