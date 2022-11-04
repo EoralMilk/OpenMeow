@@ -175,11 +175,11 @@ namespace OpenRA.Graphics
 			var eb = endColor.B / 255.0f;
 			var ea = endColor.A / 255.0f;
 
+			if (end == start)
+				return;
+
 			if (world)
 			{
-				if (end == start)
-					return;
-
 				var dir = World3DCoordinate.Float3toVec3(end - start).Normalized;
 				var cam = Game.Renderer.World3DRenderer.InverseCameraFront;
 				vec3 cross;
@@ -204,7 +204,15 @@ namespace OpenRA.Graphics
 			}
 			else
 			{
-				var corner = width / 2 * CamUpOffset;
+				var dir = World3DCoordinate.Float3toVec3(end - start).Normalized;
+				var cam = new vec3(0, 0, -1);
+				vec3 cross;
+				if (dir == cam)
+					cross = new vec3(0, 1, 0);
+				else
+					cross = vec3.Cross(cam, dir).Normalized;
+
+				var corner = width / 2 * World3DCoordinate.Vec3toFloat3(cross);
 
 				vertices[0] = new Vertex(start - corner + ScreenOffset, sr, sg, sb, sa, 0, 0);
 				vertices[1] = new Vertex(start + corner + ScreenOffset, sr, sg, sb, sa, 0, 0);
