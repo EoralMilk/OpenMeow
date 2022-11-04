@@ -518,44 +518,98 @@ namespace TrueSync
 		/// <param name="result">JQuaternion representing an orientation.</param>
 		public static void CreateFromMatrix(ref TSMatrix matrix, out TSQuaternion result)
 		{
-			FP num8 = (matrix.M11 + matrix.M22) + matrix.M33;
-			if (num8 > FP.Zero)
+			var fourXSquaredMinus1 = matrix.m00 - matrix.m11 - matrix.m22;
+			var fourYSquaredMinus1 = matrix.m11 - matrix.m00 - matrix.m22;
+			var fourZSquaredMinus1 = matrix.m22 - matrix.m00 - matrix.m11;
+			var fourWSquaredMinus1 = matrix.m00 + matrix.m11 + matrix.m22;
+			var biggestIndex = 0;
+			var fourBiggestSquaredMinus1 = fourWSquaredMinus1;
+			if (fourXSquaredMinus1 > fourBiggestSquaredMinus1)
 			{
-				FP num = FP.Sqrt((num8 + FP.One));
-				result.w = num * FP.Half;
-				num = FP.Half / num;
-				result.x = (matrix.M23 - matrix.M32) * num;
-				result.y = (matrix.M31 - matrix.M13) * num;
-				result.z = (matrix.M12 - matrix.M21) * num;
+				fourBiggestSquaredMinus1 = fourXSquaredMinus1;
+				biggestIndex = 1;
 			}
-			else if ((matrix.M11 >= matrix.M22) && (matrix.M11 >= matrix.M33))
+
+			if (fourYSquaredMinus1 > fourBiggestSquaredMinus1)
 			{
-				FP num7 = FP.Sqrt((((FP.One + matrix.M11) - matrix.M22) - matrix.M33));
-				FP num4 = FP.Half / num7;
-				result.x = FP.Half * num7;
-				result.y = (matrix.M12 + matrix.M21) * num4;
-				result.z = (matrix.M13 + matrix.M31) * num4;
-				result.w = (matrix.M23 - matrix.M32) * num4;
+				fourBiggestSquaredMinus1 = fourYSquaredMinus1;
+				biggestIndex = 2;
 			}
-			else if (matrix.M22 > matrix.M33)
+
+			if (fourZSquaredMinus1 > fourBiggestSquaredMinus1)
 			{
-				FP num6 = FP.Sqrt((((FP.One + matrix.M22) - matrix.M11) - matrix.M33));
-				FP num3 = FP.Half / num6;
-				result.x = (matrix.M21 + matrix.M12) * num3;
-				result.y = FP.Half * num6;
-				result.z = (matrix.M32 + matrix.M23) * num3;
-				result.w = (matrix.M31 - matrix.M13) * num3;
+				fourBiggestSquaredMinus1 = fourZSquaredMinus1;
+				biggestIndex = 3;
 			}
-			else
+
+			var biggestVal = TSMath.Sqrt(fourBiggestSquaredMinus1 + 1.0) * 0.5;
+			var mult = 0.25 / biggestVal;
+			switch (biggestIndex)
 			{
-				FP num5 = FP.Sqrt((((FP.One + matrix.M33) - matrix.M11) - matrix.M22));
-				FP num2 = FP.Half / num5;
-				result.x = (matrix.M31 + matrix.M13) * num2;
-				result.y = (matrix.M32 + matrix.M23) * num2;
-				result.z = FP.Half * num5;
-				result.w = (matrix.M12 - matrix.M21) * num2;
+				case 0:
+					result.x = (matrix.m12 - matrix.m21) * mult;
+					result.y = (matrix.m20 - matrix.m02) * mult;
+					result.z = (matrix.m01 - matrix.m10) * mult;
+					result.w = biggestVal;
+					return;
+				case 1:
+					result.x = biggestVal;
+					result.y = (matrix.m01 + matrix.m10) * mult;
+					result.z = (matrix.m20 + matrix.m02) * mult;
+					result.w = (matrix.m12 - matrix.m21) * mult;
+					return;
+				case 2:
+					result.x = (matrix.m01 + matrix.m10) * mult;
+					result.y = biggestVal;
+					result.z = (matrix.m12 + matrix.m21) * mult;
+					result.w = (matrix.m20 - matrix.m02) * mult;
+					return;
+				default:
+					result.x = (matrix.m20 + matrix.m02) * mult;
+					result.y = (matrix.m12 + matrix.m21) * mult;
+					result.z = biggestVal;
+					result.w = (matrix.m01 - matrix.m10) * mult;
+					return;
 			}
-		}
+
+		//FP num8 = (matrix.m00 + matrix.m11) + matrix.m22;
+		//if (num8 > FP.Zero)
+		//{
+		//	FP num = FP.Sqrt((num8 + FP.One));
+		//	result.w = num * FP.Half;
+		//	num = FP.Half / num;
+		//	result.x = (matrix.m21 - matrix.m12) * num;
+		//	result.y = (matrix.m02 - matrix.m20) * num;
+		//	result.z = (matrix.m10 - matrix.m01) * num;
+		//}
+		//else if ((matrix.m00 >= matrix.m11) && (matrix.m00 >= matrix.m22))
+		//{
+		//	FP num7 = FP.Sqrt((((FP.One + matrix.m00) - matrix.m11) - matrix.m22));
+		//	FP num4 = FP.Half / num7;
+		//	result.x = FP.Half * num7;
+		//	result.y = (matrix.m10 + matrix.m01) * num4;
+		//	result.z = (matrix.m20 + matrix.m02) * num4;
+		//	result.w = (matrix.m21 - matrix.m12) * num4;
+		//}
+		//else if (matrix.m11 > matrix.m22)
+		//{
+		//	FP num6 = FP.Sqrt((((FP.One + matrix.m11) - matrix.m00) - matrix.m22));
+		//	FP num3 = FP.Half / num6;
+		//	result.x = (matrix.m01 + matrix.m10) * num3;
+		//	result.y = FP.Half * num6;
+		//	result.z = (matrix.m12 + matrix.m21) * num3;
+		//	result.w = (matrix.m02 - matrix.m20) * num3;
+		//}
+		//else
+		//{
+		//	FP num5 = FP.Sqrt((((FP.One + matrix.m22) - matrix.m00) - matrix.m11));
+		//	FP num2 = FP.Half / num5;
+		//	result.x = (matrix.m02 + matrix.m20) * num2;
+		//	result.y = (matrix.m12 + matrix.m21) * num2;
+		//	result.z = FP.Half * num5;
+		//	result.w = (matrix.m10 - matrix.m01) * num2;
+		//}
+	}
 		#endregion
 
 		/// <summary>

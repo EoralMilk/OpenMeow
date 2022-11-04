@@ -43,6 +43,14 @@ namespace OpenRA.Meow.RPG.Mechanics
 		public readonly int FootDownFrameLeft = 10;
 		public readonly int FootDownFrameRight = 22;
 
+		public readonly string[] BellyBones = Array.Empty<string>();
+
+		public readonly string[] ChurnSounds = Array.Empty<string>();
+		public readonly int ChurnInterval = 40;
+		public readonly float DigestionSpeed = 0.001f;
+
+		public readonly string[] EmptySounds = Array.Empty<string>();
+
 		[WeaponReference]
 		[FieldLoader.Require]
 		[Desc("Has to be defined in weapons.yaml as well.")]
@@ -63,7 +71,8 @@ namespace OpenRA.Meow.RPG.Mechanics
 		public override object Create(ActorInitializer init) { return new BlendTreeHandler(init.Self, this); }
 	}
 
-	public class BlendTreeHandler : IBlendTreeHandler, IPrepareForAttack, ITick, INotifyCreated, INotifyLongJump, INotifyPickUpItem
+	public class BlendTreeHandler : IBlendTreeHandler, IPrepareForAttack, ITick, INotifyCreated,
+		INotifyLongJump, INotifyPickUpItem, INotifyConsumeItem
 	{
 		readonly BlendTree blendTree;
 		readonly BlendTreeHandlerInfo info;
@@ -72,6 +81,7 @@ namespace OpenRA.Meow.RPG.Mechanics
 		readonly IFacing myFacing;
 		readonly BodyOrientation body;
 		readonly IMove move;
+		readonly IHealth health;
 
 		// nodes
 		//readonly Switch moveSwitch;
@@ -99,7 +109,7 @@ namespace OpenRA.Meow.RPG.Mechanics
 		readonly Blend9Pos locomotion;
 		readonly Blend2 guardBlend2;
 
-		readonly Switch OverideSwitch;
+		readonly Switch overideSwitch;
 
 		// temp test
 		readonly SkeletalAnim walk;
@@ -127,6 +137,10 @@ namespace OpenRA.Meow.RPG.Mechanics
 		IEnumerable<int> damageModifiers;
 
 		readonly int footLId, footRId;
+		readonly int[] bellyBones;
+		readonly HashSet<int> hashBellyBones;
+		readonly ModifiedBoneRestPose[] bellyScalesMb;
+
 		int GetBoneId(string name)
 		{
 			var boneid = withSkeleton.GetBoneId(name);
@@ -142,6 +156,7 @@ namespace OpenRA.Meow.RPG.Mechanics
 			body = self.Trait<BodyOrientation>();
 			move = self.Trait<IMove>();
 			myFacing = self.Trait<IFacing>();
+			health = self.Trait<Health>();
 
 			if (info.SkeletonToUse == null)
 				throw new YamlException("BlendTreeHandler must define a SkeletonToUse for get animations");
@@ -149,6 +164,32 @@ namespace OpenRA.Meow.RPG.Mechanics
 
 			footLId = GetBoneId(info.LeftFootBone);
 			footRId = GetBoneId(info.RightFootBone);
+
+			if (info.BellyBones.Length == 0)
+				throw new Exception("Belly bones length can not be zero");
+			bellyBones = new int[info.BellyBones.Length];
+			hashBellyBones = new HashSet<int>();
+			for (int i = 0; i < bellyBones.Length; i++)
+			{
+				bellyBones[i] = GetBoneId(info.BellyBones[i]);
+				hashBellyBones.Add(bellyBones[i]);
+				if (!withSkeleton.OrderedSkeleton.ModifiedBoneRestPoses.ContainsKey(bellyBones[i]))
+					throw new Exception("bellyBones  " + info.BellyBones[i] + " has no modifyer");
+			}
+
+			List<ModifiedBoneRestPose> tempBellyScale = new List<ModifiedBoneRestPose>();
+			foreach (var kv in withSkeleton.OrderedSkeleton.ModifiedBoneRestPoses)
+			{
+				if (kv.Value.OnlyRestPose)
+					continue;
+
+				if (hashBellyBones.Contains(kv.Key))
+				{
+					tempBellyScale.Add(kv.Value);
+				}
+			}
+
+			bellyScalesMb = tempBellyScale.ToArray();
 
 			walk = withSkeleton.OrderedSkeleton.SkeletonAsset.GetSkeletalAnim(withSkeleton.Image, info.Walk);
 			guard = withSkeleton.OrderedSkeleton.SkeletonAsset.GetSkeletalAnim(withSkeleton.Image, info.Guard);
@@ -237,9 +278,9 @@ namespace OpenRA.Meow.RPG.Mechanics
 
 			// moveSwitch = new Switch("Stand2Walk", 20, blendTree, allvalidmask, standAnim, locomotion, info.Stand2WalkTick);
 			guardBlend2 = new Blend2("GuardBlend", 21, blendTree, allvalidmask, locomotion, guardUpperSwitch);
-			OverideSwitch = new Switch("OverideSwitch", 24, blendTree, allvalidmask, guardBlend2, overide, 30);
+			overideSwitch = new Switch("OverideSwitch", 24, blendTree, allvalidmask, guardBlend2, overide, 30);
 
-			blendTree.InitTree(OverideSwitch);
+			blendTree.InitTree(overideSwitch);
 			guardBlend2.BlendValue = FP.FromFloat(0.8f);
 			withSkeleton.BlendTreeHandler = this;
 			guardBlendSpeed = FP.One / info.GuardBlendTick;
@@ -341,7 +382,7 @@ namespace OpenRA.Meow.RPG.Mechanics
 		public bool PrepareForLongJump()
 		{
 			playOverideBlend = true;
-			return OverideSwitch.BlendValue >= FP.One;
+			return overideSwitch.BlendValue >= FP.One;
 		}
 
 		public void OnStartJump()
@@ -363,7 +404,7 @@ namespace OpenRA.Meow.RPG.Mechanics
 		public bool Picking()
 		{
 			playOverideBlend = true;
-			return OverideSwitch.BlendValue >= FP.One;
+			return overideSwitch.BlendValue >= FP.One;
 		}
 
 		public void OnPickUpItem(Actor item)
@@ -371,15 +412,55 @@ namespace OpenRA.Meow.RPG.Mechanics
 			playOverideBlend = false;
 		}
 
+		FP maxStomachSize = 10;
+		FP stomachSize = 0;
+		int churnTick = 0;
+		public void Consume(Item item)
+		{
+			stomachSize = TSMath.Clamp(stomachSize + 1, 0, maxStomachSize);
+		}
+
+		public bool CanConsume(Item item)
+		{
+			return stomachSize <= (maxStomachSize - 1);
+		}
+
 		public void Tick(Actor self)
 		{
+			if (stomachSize > 0)
+			{
+				if (churnTick++ >= info.ChurnInterval)
+				{
+					var churnSound = info.ChurnSounds.RandomOrDefault(self.World.LocalRandom);
+					if (churnSound != null)
+						Game.Sound.Play(SoundType.World, churnSound, self.CenterPosition, float2.Lerp(0.2f, 3, (float)(stomachSize / maxStomachSize)));
+					health.InflictDamage(self, self, new Damage(-1000), true);
+					churnTick = 0;
+				}
+
+				foreach (var bg in bellyScalesMb)
+				{
+					withSkeleton.Skeleton.Bones[bg.Id].SetRestPose(
+						Transformation.LerpMatrix(bg.FirstTransform, bg.LastTransform, stomachSize / maxStomachSize));
+				}
+
+				stomachSize -= info.DigestionSpeed;
+				if (stomachSize <= 0)
+				{
+					stomachSize = 0;
+					var emptySound = info.EmptySounds.RandomOrDefault(self.World.LocalRandom);
+					if (emptySound != null)
+						Game.Sound.Play(SoundType.World, emptySound, self.CenterPosition, 1f);
+				}
+			}
+
 			if (playOverideBlend || (carryable != null && carryable.Reserved))
 			{
-				OverideSwitch.SetFlag(true);
+				overideSwitch.SetFlag(true);
 			}
 			else
 			{
-				OverideSwitch.SetFlag(false);
+				overideSwitch.SetFlag(false);
 			}
 
 			if (guardTick == guardTime)

@@ -407,9 +407,9 @@ namespace TrueSync
 		/// <param name="result">The transformed vector.</param>
 		public static void Transform(ref TSVector position, ref TSMatrix matrix, out TSVector result)
 		{
-			FP num0 = ((position.x * matrix.M11) + (position.y * matrix.M21)) + (position.z * matrix.M31);
-			FP num1 = ((position.x * matrix.M12) + (position.y * matrix.M22)) + (position.z * matrix.M32);
-			FP num2 = ((position.x * matrix.M13) + (position.y * matrix.M23)) + (position.z * matrix.M33);
+			FP num0 = ((position.x * matrix.m00) + (position.y * matrix.m01)) + (position.z * matrix.m02);
+			FP num1 = ((position.x * matrix.m10) + (position.y * matrix.m11)) + (position.z * matrix.m12);
+			FP num2 = ((position.x * matrix.m20) + (position.y * matrix.m21)) + (position.z * matrix.m22);
 
 			result.x = num0;
 			result.y = num1;
@@ -424,9 +424,9 @@ namespace TrueSync
 		/// <param name="result">The transformed vector.</param>
 		public static void TransposedTransform(ref TSVector position, ref TSMatrix matrix, out TSVector result)
 		{
-			FP num0 = ((position.x * matrix.M11) + (position.y * matrix.M12)) + (position.z * matrix.M13);
-			FP num1 = ((position.x * matrix.M21) + (position.y * matrix.M22)) + (position.z * matrix.M23);
-			FP num2 = ((position.x * matrix.M31) + (position.y * matrix.M32)) + (position.z * matrix.M33);
+			FP num0 = ((position.x * matrix.m00) + (position.y * matrix.m10)) + (position.z * matrix.m20);
+			FP num1 = ((position.x * matrix.m01) + (position.y * matrix.m11)) + (position.z * matrix.m21);
+			FP num2 = ((position.x * matrix.m02) + (position.y * matrix.m12)) + (position.z * matrix.m22);
 
 			result.x = num0;
 			result.y = num1;

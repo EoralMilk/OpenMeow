@@ -123,6 +123,8 @@ namespace OpenRA.Graphics
 		public readonly int AnimId;
 		public readonly TSMatrix4x4 FirstPose;
 		public readonly TSMatrix4x4 LastPose;
+		public readonly Transformation FirstTransform;
+		public readonly Transformation LastTransform;
 
 		public readonly bool OnlyRestPose = false;
 		public readonly TSMatrix4x4 RestPose;
@@ -134,7 +136,9 @@ namespace OpenRA.Graphics
 			AnimId = asset.AnimId;
 			RestPose = modifiedPose;
 			FirstPose = firstPose;
+			FirstTransform = new Transformation(firstPose);
 			LastPose = lastPos;
+			LastTransform = new Transformation(lastPos);
 			if (LastPose == FirstPose)
 				OnlyRestPose = true;
 		}
@@ -507,9 +511,9 @@ namespace OpenRA.Graphics
 					{
 						var boneInfo = boneDefine.Value.ToDictionary();
 						var firstIsRest = ReadYamlInfo.LoadField(boneInfo, "FirstPoseAsRestPose", false);
-						var restPose = asset.BonesDict[boneDefine.Key].RestPose * ReadYamlInfo.LoadFixPointMat4(boneInfo, "RestPoseModify");
-						var lastPose = asset.BonesDict[boneDefine.Key].RestPose * ReadYamlInfo.LoadFixPointMat4(boneInfo, "LastPose");
-						var firstPose = asset.BonesDict[boneDefine.Key].RestPose * ReadYamlInfo.LoadFixPointMat4(boneInfo, "FirstPose");
+						var restPose = asset.BonesDict[boneDefine.Key].RestPose * ReadYamlInfo.LoadTransformation(boneInfo, "RestPoseModify").Matrix;
+						var lastPose = asset.BonesDict[boneDefine.Key].RestPose * ReadYamlInfo.LoadTransformation(boneInfo, "LastPose").Matrix;
+						var firstPose = asset.BonesDict[boneDefine.Key].RestPose * ReadYamlInfo.LoadTransformation(boneInfo, "FirstPose").Matrix;
 						var mb = new ModifiedBoneRestPose(asset.BonesDict[boneDefine.Key], firstIsRest ? firstPose : restPose, firstPose, lastPose);
 						ModifiedBoneRestPoses.Add(asset.BonesDict[boneDefine.Key].Id, mb);
 					}
@@ -995,8 +999,8 @@ namespace OpenRA.Graphics
 
 				var parentName = ReadYamlInfo.LoadField(info, "Parent", "NO_Parent");
 				var parentID = ReadYamlInfo.LoadField(info, "ParentID", -1);
-				var restPose = ReadYamlInfo.LoadFixPointMat4(info, "RestPose");
-				var restPoseInv = ReadYamlInfo.LoadFixPointMat4(info, "RestPoseInv");
+				var restPose = ReadYamlInfo.LoadTransformation(info, "RestPose").Matrix;
+				var restPoseInv = ReadYamlInfo.LoadTransformation(info, "RestPoseInv").Matrix;
 				mat4 bindPose = ReadYamlInfo.LoadMat4(info, "BindPose");
 				BoneAsset bone = new BoneAsset(name, id, (skin ? 1 : -1), (anim ? 1 : -1), parentName, parentID, restPose, restPoseInv, bindPose);
 				bonesDict.Add(bone.Name, bone);

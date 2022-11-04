@@ -159,15 +159,15 @@ namespace TrueSync
 		#region public static void Absolute(ref JMatrix matrix,out JMatrix result)
 		public static void Absolute(ref TSMatrix matrix, out TSMatrix result)
 		{
-			result.M11 = FP.Abs(matrix.M11);
-			result.M12 = FP.Abs(matrix.M12);
-			result.M13 = FP.Abs(matrix.M13);
-			result.M21 = FP.Abs(matrix.M21);
-			result.M22 = FP.Abs(matrix.M22);
-			result.M23 = FP.Abs(matrix.M23);
-			result.M31 = FP.Abs(matrix.M31);
-			result.M32 = FP.Abs(matrix.M32);
-			result.M33 = FP.Abs(matrix.M33);
+			result.m00 = FP.Abs(matrix.m00);
+			result.m10 = FP.Abs(matrix.m10);
+			result.m20 = FP.Abs(matrix.m20);
+			result.m01 = FP.Abs(matrix.m01);
+			result.m11 = FP.Abs(matrix.m11);
+			result.m21 = FP.Abs(matrix.m21);
+			result.m02 = FP.Abs(matrix.m02);
+			result.m12 = FP.Abs(matrix.m12);
+			result.m22 = FP.Abs(matrix.m22);
 		}
 		#endregion
 

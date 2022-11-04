@@ -692,7 +692,7 @@ JumpLandExplode:
 Consume:
 	ValidTargets: Ground, Water, Air, Trees
 	Warhead@2Dam: TargetDamage
-		Damage: -20000
+		Damage: -1000
 		AffectsParent: true
 	Warhead@3Eff: CreateEffect
 		AffectsParent: true

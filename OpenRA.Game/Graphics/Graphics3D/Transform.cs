@@ -96,7 +96,10 @@ namespace OpenRA.Graphics
 			if (!scaleUpdated || !rotationUpdated || !positionUpdated)
 				throw new Exception("Can't update matrix");
 
-			matrix = TSMatrix4x4.TRS(Position, Rotation, Scale);
+			matrix = TSMatrix4x4.Rotate(Rotation) * TSMatrix4x4.Scale(Scale);
+			matrix.M14 = Position.x;
+			matrix.M24 = Position.y;
+			matrix.M34 = Position.z;
 			matrixUpdated = true;
 			return matrix;
 		}
@@ -257,11 +260,15 @@ namespace OpenRA.Graphics
 		// 获取旋转四元数
 		public static TSQuaternion MatRotation(in TSMatrix4x4 matrix)
 		{
+			//var fq = quat.FromMat4(ExtractRotationMatrix(matrix, MatScale(matrix)).ToMat4());
+			//return new TSQuaternion(fq.x, fq.y, fq.z, fq.w);
 			return TSQuaternion.CreateFromMatrix(ExtractRotationMatrix(matrix, MatScale(matrix)).Matrix3x3);
 		}
 
 		public static TSQuaternion MatRotation(in TSMatrix4x4 matrix, in TSVector scale)
 		{
+			//var fq = quat.FromMat4(ExtractRotationMatrix(matrix, scale).ToMat4());
+			//return new TSQuaternion(fq.x, fq.y, fq.z, fq.w);
 			return TSQuaternion.CreateFromMatrix(ExtractRotationMatrix(matrix, scale).Matrix3x3);
 		}
 
@@ -305,6 +312,27 @@ namespace OpenRA.Graphics
 
 			return new Transformation(s, r, p);
 		}
+
+		public static TSMatrix4x4 LerpMatrix(in Transformation a, in Transformation b, FP t)
+		{
+			var s = TSVector.Lerp(a.Scale, b.Scale, t);
+
+			var r = TSQuaternion.Slerp(a.Rotation, b.Rotation, t);
+
+			var p = TSVector.Lerp(a.Position, b.Position, t);
+
+			return new Transformation(s, r, p).Matrix;
+		}
+
+		public static TSMatrix4x4 LerpMatrix(in TSMatrix4x4 a, in TSMatrix4x4 b, FP t)
+		{
+			return LerpMatrix(new Transformation(a), new Transformation(b), t);
+		}
+
+		//public static TSMatrix4x4 LerpMatrix(in TSMatrix4x4 a, in TSMatrix4x4 b, in FP t)
+		//{
+		//	return a + (b - a).MulNum(t);
+		//}
 
 		public static TSMatrix4x4 Mat4by(in Transformation trans)
 		{

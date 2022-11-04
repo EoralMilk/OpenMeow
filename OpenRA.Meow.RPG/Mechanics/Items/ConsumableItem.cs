@@ -5,6 +5,12 @@ using OpenRA.Traits;
 
 namespace OpenRA.Meow.RPG.Mechanics
 {
+	public interface INotifyConsumeItem
+	{
+		bool CanConsume(Item item);
+		void Consume(Item item);
+	}
+
 	public class ConsumableItemInfo : ConditionItemInfo, IRulesetLoaded
 	{
 		public readonly int CanUse = 1;
@@ -49,6 +55,17 @@ namespace OpenRA.Meow.RPG.Mechanics
 
 		public override void EquipingEffect(Actor actor)
 		{
+			var notifies = actor.TraitsImplementing<INotifyConsumeItem>();
+			foreach (var notify in notifies)
+			{
+				if (!notify.CanConsume(this))
+				{
+					base.EquipingEffect(actor);
+					EquipmentSlot.TryUnequip(actor);
+					return;
+				}
+			}
+
 			if (useTime-- > 0)
 			{
 				Consume(actor);
@@ -81,6 +98,12 @@ namespace OpenRA.Meow.RPG.Mechanics
 			if (info.WeaponInfo != null)
 			{
 				info.WeaponInfo.Impact(Target.FromActor(actor), ItemActor);
+			}
+
+			var notifies = actor.TraitsImplementing<INotifyConsumeItem>();
+			foreach (var notify in notifies)
+			{
+				notify.Consume(this);
 			}
 		}
 	}
