@@ -1092,7 +1092,7 @@
 	SpeedMultiplier@CRITICAL:
 		RequiresCondition: critical-state
 		Modifier: 80
-	Carryable:
+	AttachCarryable:
 		RequiresCondition: !inside-tunnel
 		LockedCondition: carried
 		CarriedCondition: carring
