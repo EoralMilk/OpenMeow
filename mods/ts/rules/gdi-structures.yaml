@@ -455,8 +455,12 @@ GARADR:
 		Range: 10c0
 	RenderDetectionCircle:
 	RevealsShroud:
+		Range: 6c0
+		RequiresCondition: disabled || empdisable
+	RevealsShroud@radar:
 		Range: 14c0
 		MaxHeightDelta: 3000
+		RequiresCondition: !disabled && !empdisable
 	WithIdleOverlay@DISH:
 		RequiresCondition: !build-incomplete
 		PauseOnCondition: disabled || empdisable
@@ -464,7 +468,7 @@ GARADR:
 	Targetable:
 		TargetTypes: Ground, Building, C4, SpyInfiltrate
 	Power:
-		Amount: -50
+		Amount: -100
 	ProvidesPrerequisite@buildingname:
 	IsometricSelectable:
 		Height: 72
