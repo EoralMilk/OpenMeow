@@ -287,6 +287,19 @@ namespace OpenRA.Mods.Common.Traits
 					yield return i.Actor;
 		}
 
+		public void UpdateActorsPositionAt(CPos a)
+		{
+			foreach (var actor in GetActorsAt(a))
+			{
+				var position = actor.TraitOrDefault<IPositionable>();
+				if (position == null)
+					continue;
+				var h = actor.World.Map.HeightOfTerrain(actor.CenterPosition);
+				if (actor.CenterPosition.Z < h)
+					position.SetPosition(actor,new WPos(actor.CenterPosition.X, actor.CenterPosition.Y, h));
+			}
+		}
+
 		public bool HasFreeSubCell(CPos cell, bool checkTransient = true)
 		{
 			return FreeSubCell(cell, SubCell.Any, checkTransient) != SubCell.Invalid;

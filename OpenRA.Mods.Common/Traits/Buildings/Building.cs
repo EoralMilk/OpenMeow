@@ -322,6 +322,11 @@ namespace OpenRA.Mods.Common.Traits
 			if (Info.RemoveSmudgesOnBuild)
 				RemoveSmudges();
 
+			foreach (var c in Info.Tiles(self.Location))
+			{
+				self.World.Map.FlatCellWithHeight(self.World, c, self.CenterPosition.Z);
+			}
+
 			self.World.AddToMaps(self, this);
 			influence.AddInfluence(self, Info.Tiles(self.Location));
 		}

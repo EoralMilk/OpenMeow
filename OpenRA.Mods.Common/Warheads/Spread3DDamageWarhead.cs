@@ -92,9 +92,10 @@ namespace OpenRA.Mods.Warheads
 			if (TestDrawTerrain)
 			{
 				var map = firedBy.World.Map;
-				var cell = map.CellInfos[firedBy.World.Map.CellContaining(pos)];
-				TerrainRenderBlock.PaintAt(firedBy.World.Map, firedBy.World.Map.TextureCache.AllBrushes.First().Value,
-								pos, 1024, 0, 64);
+				var cell = firedBy.World.Map.CellContaining(pos);
+				//TerrainRenderBlock.PaintAt(firedBy.World.Map, firedBy.World.Map.TextureCache.AllBrushes.First().Value,
+				//				pos, 1024, 0, 64);
+				map.FlatCellWithHeight(firedBy.World, cell, pos.Z);
 			}
 
 			var debugVis = firedBy.World.WorldActor.TraitOrDefault<DebugVisualizations>();

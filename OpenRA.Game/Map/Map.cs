@@ -12,6 +12,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Dynamic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -1131,10 +1132,10 @@ namespace OpenRA
 					uvl = new float2(CellInfo.LU, CellInfo.LV);
 					uvr = new float2(CellInfo.RU, CellInfo.RV);
 
-					var tlm = CalTBN(pt, pl, pm, uvt, uvl, uvm);
-					var tmr = CalTBN(pt, pm, pr, uvt, uvm, uvr);
-					var mlb = CalTBN(pm, pl, pb, uvm, uvl, uvb);
-					var mbr = CalTBN(pm, pb, pr, uvm, uvb, uvr);
+					var tlm = CellInfo.CalTBN(pt, pl, pm, uvt, uvl, uvm);
+					var tmr = CellInfo.CalTBN(pt, pm, pr, uvt, uvm, uvr);
+					var mlb = CellInfo.CalTBN(pm, pl, pb, uvm, uvl, uvb);
+					var mbr = CellInfo.CalTBN(pm, pb, pr, uvm, uvb, uvr);
 
 					TerrainVertices[im].TBN = (tlm * 0.25f + tmr * 0.25f + mlb * 0.25f + mbr * 0.25f);
 
@@ -1192,10 +1193,10 @@ namespace OpenRA
 					WPos wposl = TerrainVertices[il].LogicPos;
 					WPos wposr = TerrainVertices[ir].LogicPos;
 
-					var tlNml = CalLogicNml(wposm, wpost, wposl);
-					var trNml = CalLogicNml(wposm, wposr, wpost);
-					var blNml = CalLogicNml(wposm, wposl, wposb);
-					var brNml = CalLogicNml(wposl, wposm, wposb);
+					var tlNml = CellInfo.CalLogicNml(wposm, wpost, wposl);
+					var trNml = CellInfo.CalLogicNml(wposm, wposr, wpost);
+					var blNml = CellInfo.CalLogicNml(wposm, wposl, wposb);
+					var brNml = CellInfo.CalLogicNml(wposm, wposb, wposl);
 
 					var itl = (mid.Y - 1) * VertexArrayWidth + mid.X - 1;
 					var itr = (mid.Y - 1) * VertexArrayWidth + mid.X + 1;
@@ -1222,8 +1223,8 @@ namespace OpenRA
 							TerrainVertices[ir].LogicPos.Z),
 						TerrainVertices[il].LogicPos.Z),
 						im, it, ib, il, ir, typeNum,
-						new int2(mid.Y - 1, mid.X - 1), new int2(mid.Y - 1, mid.X),
-						new int2(mid.Y, mid.X - 1), new int2(mid.Y, mid.X), flatCell,
+						new int2(mid.X - 1, mid.Y - 1), new int2(mid.X, mid.Y - 1),
+						new int2(mid.X - 1, mid.Y), new int2(mid.X, mid.Y), flatCell,
 						tlNml, trNml, blNml, brNml);
 
 					CellInfos[uv.ToCPos(this)] = cellInfo;
@@ -1261,7 +1262,7 @@ namespace OpenRA
 
 			for (int i = 0; i < TerrainVertices.Length; i++)
 			{
-				TerrainVertices[i].TBN = NormalizeTBN(TerrainVertices[i].TBN);
+				TerrainVertices[i].TBN = CellInfo.NormalizeTBN(TerrainVertices[i].TBN);
 			}
 
 			// uv retarget
@@ -1309,6 +1310,66 @@ namespace OpenRA
 						Math.Min((y + 1) * TerrainRenderBlock.SizeLimit, VertexArrayHeight - 2) - 1);
 					TerrainBlocks[y, x] = new TerrainRenderBlock(worldRenderer, this, tl, br);
 				}
+		}
+
+		public void FlatCellWithHeight(World world, CPos cell, int height)
+		{
+			if (!CellInfos.Contains(cell))
+				return;
+
+			CellInfos[cell].FlatCell(height, this);
+
+			UpdateCellVertex(world, cell);
+		}
+
+		public void UpdateCellVertex(World world, CPos cell)
+		{
+			CPos tL = new CPos(cell.X - 1, cell.Y - 1, cell.Layer);
+			CPos tT = new CPos(cell.X, cell.Y - 1, cell.Layer);
+			CPos tR = new CPos(cell.X + 1, cell.Y - 1, cell.Layer);
+
+			CPos mL = new CPos(cell.X - 1, cell.Y, cell.Layer);
+
+			CPos mR = new CPos(cell.X + 1, cell.Y, cell.Layer);
+
+			CPos bL = new CPos(cell.X - 1, cell.Y + 1, cell.Layer);
+			CPos bB = new CPos(cell.X, cell.Y + 1, cell.Layer);
+			CPos bR = new CPos(cell.X + 1, cell.Y + 1, cell.Layer);
+
+			var cposs = new CPos[]
+			{
+				tL,tT,tR,
+				mL,cell,mR,
+				bL,bB,bR
+			};
+
+			foreach (var c in cposs)
+			{
+				if (!CellInfos.Contains(c))
+					continue;
+
+				CellInfos[c].UpdateNml(this);
+
+				HeightStep[c] = (byte)((CellInfos[c].CellCenterPos.Z + 1) / MapGrid.MapHeightStep);
+
+				if (CellInfos[c].Flat)
+					Ramp[c] = 0;
+
+				world.ActorMap.UpdateActorsPositionAt(c);
+
+				var minicells = new int2[]
+				{
+					CellInfos[c].MiniCellTL,
+					CellInfos[c].MiniCellTR,
+					CellInfos[c].MiniCellBL,
+					CellInfos[c].MiniCellBR,
+				};
+
+				foreach (var minicell in minicells)
+				{
+					TerrainRenderBlock.UpdateVerticesByMiniCellUV(minicell, this);
+				}
+			}
 		}
 
 		void UpdateHeightStep()
@@ -1513,82 +1574,6 @@ namespace OpenRA
 		}
 
 		#region util for CalculateTileVertexInfo
-
-		TSVector TileTSVector(WPos pos)
-		{
-			return new TSVector(-(FP)pos.X / 256,
-										(FP)pos.Y / 256,
-										(FP)pos.Z / 256);
-		}
-
-		TSVector CalLogicNml(WPos a, WPos b, WPos c)
-		{
-			var va = TileTSVector(a);
-			var vb = TileTSVector(b);
-			var vc = TileTSVector(c);
-
-			var ab = vb - va;
-			var ac = vc - va;
-			//if (ab.LengthSquared == 0 || ac.LengthSquared == 0 || ab == ac || ab == -ac)
-			//	return new TSVector(0, 0, 1);
-			//var cross = TSVector.Cross(ab, ac);
-			//if (cross.sqrMagnitude <= 0)
-			//	return new TSVector(0, 0, 1);
-			//else
-			return TSVector.Cross(ab, ac).normalized;
-		}
-
-		vec3 CalNormal(float3 a, float3 b, float3 c)
-		{
-			var va = new vec3(a.X, a.Y, a.Z);
-			var vb = new vec3(b.X, b.Y, b.Z);
-			var vc = new vec3(c.X, c.Y, c.Z);
-			var ab = vb - va;
-			var ac = vc - va;
-			return vec3.Cross(ab, ac).Normalized;
-		}
-
-		mat3 CalTBN(float3 a, float3 b, float3 c, float2 uva, float2 uvb, float2 uvc)
-		{
-			// positions
-			vec3 pos1 = World3DCoordinate.Float3toVec3(a);
-			vec3 pos2 = World3DCoordinate.Float3toVec3(b);
-			vec3 pos3 = World3DCoordinate.Float3toVec3(c);
-
-			// texture coordinates
-			vec2 uv1 = new vec2(uva.X, uva.Y);
-			vec2 uv2 = new vec2(uvb.X, uvb.Y);
-			vec2 uv3 = new vec2(uvc.X, uvc.Y);
-
-			// normal vector
-			vec3 nm = CalNormal(a, b, c);
-
-			vec3 edge1 = pos2 - pos1;
-			vec3 edge2 = pos3 - pos1;
-			vec2 deltaUV1 = uv2 - uv1;
-			vec2 deltaUV2 = uv3 - uv1;
-
-			float f = 1.0f / (deltaUV1.x * deltaUV2.y - deltaUV2.x * deltaUV1.y);
-
-			vec3 tangent = vec3.Zero;
-			tangent.x = f * (deltaUV2.y * edge1.x - deltaUV1.y * edge2.x);
-			tangent.y = f * (deltaUV2.y * edge1.y - deltaUV1.y * edge2.y);
-			tangent.z = f * (deltaUV2.y * edge1.z - deltaUV1.y * edge2.z);
-			tangent = tangent.Normalized;
-
-			vec3 bitangent = vec3.Zero;
-			bitangent.x = f * (-deltaUV2.x * edge1.x + deltaUV1.x * edge2.x);
-			bitangent.y = f * (-deltaUV2.x * edge1.y + deltaUV1.x * edge2.y);
-			bitangent.z = f * (-deltaUV2.x * edge1.z + deltaUV1.x * edge2.z);
-			bitangent = bitangent.Normalized;
-
-			return new mat3(tangent, bitangent, nm);
-		}
-
-		mat3 NormalizeTBN (mat3 tbn)
-		{
-			return new mat3(tbn.Column0.NormalizedSafe, tbn.Column1.NormalizedSafe, tbn.Column2.NormalizedSafe);
-		}
 
 		int HMix(int a, int b)
 		{
@@ -2092,7 +2077,18 @@ namespace OpenRA
 			// else
 			// 	return WRot.None;
 			if (CellInfos.Contains(cell))
+			{
+				//if (Game.GetWorldRenderer() != null)
+				//{
+				//	var pos = CenterOfCell(cell);
+				//	var start = World3DCoordinate.WPosToFloat3(pos);
+				//	var end = start + 10 * World3DCoordinate.TSVec3ToFloat3(CellInfos[cell].LogicNml.normalized);
+				//	var world = Game.GetWorldRenderer().World;
+				//	world.AddFrameEndTask(w => w.Add(new DrawWorldLineEffect(world, pos, start, end, new WDist(64), Color.AliceBlue, 5)));
+				//}
+
 				return CellInfos[cell].TerrainOrientationM;
+			}
 			else
 				return WRot.None;
 		}

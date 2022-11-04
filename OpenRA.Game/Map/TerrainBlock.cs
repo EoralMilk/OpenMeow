@@ -581,6 +581,12 @@ namespace OpenRA
 			if (TerrainBlendShader == null)
 				return;
 
+			if (hasUpdateVertex)
+			{
+				blendVertexBuffer.SetData(blendVertices, blendVertices.Length);
+				finalVertexBuffer.SetData(finalVertices, finalVertices.Length);
+			}
+
 			if (force)
 			{
 				// skip bound cal
@@ -735,6 +741,98 @@ namespace OpenRA
 
 		public IFrameBuffer CoveringFrameBuffer { get; private set; }
 
+		bool hasUpdateVertex = false;
+
+		public readonly Dictionary<int2, int> VertexIndexOfMiniCellUV = new Dictionary<int2, int>();
+
+		public static void UpdateVerticesByMiniCellUV(int2 uv, Map map)
+		{
+			var blockx = uv.X / SizeLimit;
+			var blocky = uv.Y / SizeLimit;
+			if (map.BlocksArrayWidth <= blockx || map.BlocksArrayHeight <= blocky)
+				return;
+
+			var block = map.TerrainBlocks[blocky, blockx];
+
+			if (!block.VertexIndexOfMiniCellUV.TryGetValue(uv, out int index))
+				return;
+
+			block.needUpdateTexture = true;
+			block.hasUpdateVertex = true;
+
+			MiniCell cell = map.MiniCells[uv.Y, uv.X];
+			var vertTL = map.TerrainVertices[cell.TL];
+			var vertTR = map.TerrainVertices[cell.TR];
+			var vertBL = map.TerrainVertices[cell.BL];
+			var vertBR = map.TerrainVertices[cell.BR];
+
+			if (cell.Type == MiniCellType.TRBL)
+			{
+				block.blendVertices[index + 0] = new TerrainBlendingVertex(vertTR.UV,
+					new float2(block.blendVertices[index + 0].MaskU, block.blendVertices[index + 0].MaskV),
+					vertTR.TBN, vertTR.Color, 1.0f, 1);
+				block.blendVertices[index + 1] = new TerrainBlendingVertex(vertBL.UV,
+					new float2(block.blendVertices[index + 1].MaskU, block.blendVertices[index + 1].MaskV),
+					vertBL.TBN, vertBL.Color, 1.0f, 1);
+				block.blendVertices[index + 2] = new TerrainBlendingVertex(vertBR.UV,
+					new float2(block.blendVertices[index + 2].MaskU, block.blendVertices[index + 2].MaskV),
+					vertBR.TBN, vertBR.Color, 1.0f, 1);
+
+				block.blendVertices[index + 3] = new TerrainBlendingVertex(vertTR.UV,
+					new float2(block.blendVertices[index + 3].MaskU, block.blendVertices[index + 3].MaskV),
+					vertTR.TBN, vertTR.Color, 1.0f, 1);
+				block.blendVertices[index + 4] = new TerrainBlendingVertex(vertTL.UV,
+					new float2(block.blendVertices[index + 4].MaskU, block.blendVertices[index + 4].MaskV),
+					vertTL.TBN, vertTL.Color, 1.0f, 1);
+				block.blendVertices[index + 5] = new TerrainBlendingVertex(vertBL.UV,
+					new float2(block.blendVertices[index + 5].MaskU, block.blendVertices[index + 5].MaskV),
+					vertBL.TBN, vertBL.Color, 1.0f, 1);
+			}
+			else
+			{
+				block.blendVertices[index + 0] = new TerrainBlendingVertex(vertTL.UV,
+					new float2(block.blendVertices[index + 0].MaskU, block.blendVertices[index + 0].MaskV),
+					vertTL.TBN, vertTL.Color, 1.0f, 1);
+				block.blendVertices[index + 1] = new TerrainBlendingVertex(vertBL.UV,
+					new float2(block.blendVertices[index + 1].MaskU, block.blendVertices[index + 1].MaskV),
+					vertBL.TBN, vertBL.Color, 1.0f, 1);
+				block.blendVertices[index + 2] = new TerrainBlendingVertex(vertBR.UV,
+					new float2(block.blendVertices[index + 2].MaskU, block.blendVertices[index + 2].MaskV),
+					vertBR.TBN, vertBR.Color, 1.0f, 1);
+
+				block.blendVertices[index + 3] = new TerrainBlendingVertex(vertTR.UV,
+					new float2(block.blendVertices[index + 3].MaskU, block.blendVertices[index + 3].MaskV),
+					vertTR.TBN, vertTR.Color, 1.0f, 1);
+				block.blendVertices[index + 4] = new TerrainBlendingVertex(vertTL.UV,
+					new float2(block.blendVertices[index + 4].MaskU, block.blendVertices[index + 4].MaskV),
+					vertTL.TBN, vertTL.Color, 1.0f, 1);
+				block.blendVertices[index + 5] = new TerrainBlendingVertex(vertBR.UV,
+					new float2(block.blendVertices[index + 5].MaskU, block.blendVertices[index + 5].MaskV),
+					vertBR.TBN, vertBR.Color, 1.0f, 1);
+			}
+
+			if (cell.Type == MiniCellType.TRBL)
+			{
+				block.finalVertices[index + 0] = new TerrainFinalVertex(vertTR.Pos, new float2(block.finalVertices[index + 0].U, block.finalVertices[index + 0].V));
+				block.finalVertices[index + 1] = new TerrainFinalVertex(vertBL.Pos, new float2(block.finalVertices[index + 1].U, block.finalVertices[index + 1].V));
+				block.finalVertices[index + 2] = new TerrainFinalVertex(vertBR.Pos, new float2(block.finalVertices[index + 2].U, block.finalVertices[index + 2].V));
+
+				block.finalVertices[index + 3] = new TerrainFinalVertex(vertTR.Pos, new float2(block.finalVertices[index + 3].U, block.finalVertices[index + 3].V));
+				block.finalVertices[index + 4] = new TerrainFinalVertex(vertTL.Pos, new float2(block.finalVertices[index + 4].U, block.finalVertices[index + 4].V));
+				block.finalVertices[index + 5] = new TerrainFinalVertex(vertBL.Pos, new float2(block.finalVertices[index + 5].U, block.finalVertices[index + 5].V));
+			}
+			else
+			{
+				block.finalVertices[index + 0] = new TerrainFinalVertex(vertTL.Pos, new float2(block.finalVertices[index + 0].U, block.finalVertices[index + 0].V));
+				block.finalVertices[index + 1] = new TerrainFinalVertex(vertBL.Pos, new float2(block.finalVertices[index + 1].U, block.finalVertices[index + 1].V));
+				block.finalVertices[index + 2] = new TerrainFinalVertex(vertBR.Pos, new float2(block.finalVertices[index + 2].U, block.finalVertices[index + 2].V));
+
+				block.finalVertices[index + 3] = new TerrainFinalVertex(vertTR.Pos, new float2(block.finalVertices[index + 3].U, block.finalVertices[index + 3].V));
+				block.finalVertices[index + 4] = new TerrainFinalVertex(vertTL.Pos, new float2(block.finalVertices[index + 4].U, block.finalVertices[index + 4].V));
+				block.finalVertices[index + 5] = new TerrainFinalVertex(vertBR.Pos, new float2(block.finalVertices[index + 5].U, block.finalVertices[index + 5].V));
+			}
+		}
+
 		public TerrainRenderBlock(WorldRenderer worldRenderer, Map map, int2 tl, int2 br)
 		{
 			Range = new float2((float)SizeLimit / (map.VertexArrayWidth - 1), (float)SizeLimit / (map.VertexArrayHeight - 1));
@@ -777,6 +875,8 @@ namespace OpenRA
 				for (int x = Math.Max(TopLeft.X, 1); x <= Math.Min(BottomRight.X, map.VertexArrayWidth - 3); x++)
 				{
 					MiniCell cell = Map.MiniCells[y, x];
+					VertexIndexOfMiniCellUV.Add(new int2(x, y), index);
+
 					var vertTL = Map.TerrainVertices[cell.TL];
 					var vertTR = Map.TerrainVertices[cell.TR];
 					var vertBL = Map.TerrainVertices[cell.BL];
@@ -846,7 +946,7 @@ namespace OpenRA
 			}
 		}
 
-		float2 CalMaskUV(int2 idx, int2 topLeft)
+		static float2 CalMaskUV(int2 idx, int2 topLeft)
 		{
 			float x = (float)(idx.X - topLeft.X) / SizeLimit;
 			float y = (float)(idx.Y - topLeft.Y) / SizeLimit;

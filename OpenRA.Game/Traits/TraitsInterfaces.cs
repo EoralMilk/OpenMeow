@@ -208,6 +208,7 @@ namespace OpenRA.Traits
 	{
 		IEnumerable<Actor> GetActorsAt(CPos a);
 		IEnumerable<Actor> GetActorsAt(CPos a, SubCell sub);
+		void UpdateActorsPositionAt(CPos a);
 		bool HasFreeSubCell(CPos cell, bool checkTransient = true);
 		SubCell FreeSubCell(CPos cell, SubCell preferredSubCell = SubCell.Any, bool checkTransient = true);
 		SubCell FreeSubCell(CPos cell, SubCell preferredSubCell, Func<Actor, bool> checkIfBlocker);
