@@ -127,8 +127,15 @@ namespace OpenRA.Meow.RPG.Traits
 
 			// When "autoCommandReserved" is true, the carrying operation is given by auto command
 			// we still need to check the validity of "Destination" to ensure an effective trip.
-			if (autoCommandReserved && WantsTransport)
+			if (autoCommandReserved)
 			{
+				if (!WantsTransport)
+				{
+					// Cancel pickup
+					MovementCancelled();
+					return LockResponse.Failed;
+				}
+
 				if (!IsValidAutoCarryDistance(Destination.Value))
 				{
 					// Cancel pickup
