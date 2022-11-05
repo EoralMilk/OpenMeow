@@ -164,7 +164,8 @@ namespace OpenRA.Meow.RPG.Mechanics
 				if (maxDistance != null)
 					self.QueueActivity(move.MoveWithinRange(order.Target, WDist.FromCells(maxDistance.Value), targetLineColor: Info.TargetLineColor));
 				self.QueueActivity(new JumpTo(self, info, order.Target.CenterPosition));
-				self.QueueActivity(new FallDown(self, WPos.Zero, info.Speed.Length));
+				self.QueueActivity(new FallDown(self, WPos.Zero, info.Speed.Length,
+					 0, Info.LandingWeapon, 0, 0, 0, default));
 				self.ShowTargetLines();
 			}
 		}

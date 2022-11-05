@@ -14,6 +14,7 @@ using System.Linq;
 using OpenRA.Graphics;
 using OpenRA.Meow.RPG.Activities;
 using OpenRA.Mods.Common;
+using OpenRA.Mods.Common.Activities;
 using OpenRA.Mods.Common.Graphics;
 using OpenRA.Mods.Common.Orders;
 using OpenRA.Mods.Common.Traits;
@@ -209,7 +210,9 @@ namespace OpenRA.Meow.RPG.Traits
 					carryable.UnReserve();
 					carryable.Detached();
 					actor.CancelActivity();
-					actor.QueueActivity(new AttachedFallDown(actor, actor.CenterPosition, carryable.Info));
+					actor.QueueActivity(new FallDown(actor, actor.CenterPosition, carryable.Info.Velocity.Length,
+						carryable.Info.MaxVelocity.Length, carryable.Info.ExplosionWeapon, carryable.Info.GravityChangeInterval,
+						carryable.Info.MaxGravity.Length, carryable.Info.GravityAcceleration.Length, carryable.Info.FallDamageTypes));
 				}
 
 				AttachCarryable = null;
