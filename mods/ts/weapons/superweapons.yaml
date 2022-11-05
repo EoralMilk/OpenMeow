@@ -241,7 +241,7 @@ IonCannon:
 		SmudgeType: LargeScorch
 		InvalidTargets: Building, Wall
 		Delay: 3
-		Dig: 418
+		# Dig: 418
 	Warhead@4Effect: CreateEffect
 		Explosions: ionbeam
 		ImpactSounds: ion1.aud
