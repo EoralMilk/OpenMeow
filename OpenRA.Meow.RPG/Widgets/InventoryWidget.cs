@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using OpenRA.Graphics;
 using OpenRA.Meow.RPG.Mechanics;
@@ -38,7 +39,7 @@ namespace OpenRA.Meow.RPG.Widgets
 
 			foreach (var (item, itemWidget) in itemWidgets.ToArray())
 			{
-				if (Inventory != null && Inventory.Items.Contains(item) && (typeFilter == null || item.Type == typeFilter))
+				if (Inventory != null && item.ItemActor != null && !item.ItemActor.IsDead && Inventory.Items.Contains(item) && (typeFilter == null || item.Type == typeFilter))
 					continue;
 
 				itemWidgets.Remove(item);

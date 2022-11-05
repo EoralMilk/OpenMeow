@@ -56,7 +56,7 @@ namespace OpenRA.Meow.RPG.Mechanics
 	public class Inventory : INotifyCreated, IDeathActorInitModifier, IResolveOrder, INotifyPickUpItem, INotifyKilled
 	{
 		public readonly InventoryInfo Info;
-		readonly Actor inventoryActor;
+		public readonly Actor InventoryActor;
 		readonly List<Item> items = new List<Item>();
 		public readonly ItemCache ItemCache;
 
@@ -68,7 +68,7 @@ namespace OpenRA.Meow.RPG.Mechanics
 
 		public Inventory(Actor self, InventoryInit inventoryInit, InventoryInfo inventoryInfo)
 		{
-			inventoryActor = self;
+			InventoryActor = self;
 			autoAdd = inventoryInit?.Items;
 			Info = inventoryInfo;
 			ItemCache = self.World.WorldActor.Trait<ItemCache>();
@@ -105,7 +105,7 @@ namespace OpenRA.Meow.RPG.Mechanics
 			if (inventoryNotifiers.Any(notifyInventory => !notifyInventory.TryAdd(self, item)))
 				return false;
 
-			if (item.Inventory != null && !item.Inventory.TryRemove(item.Inventory.inventoryActor, item))
+			if (item.Inventory != null && !item.Inventory.TryRemove(item.Inventory.InventoryActor, item))
 				return false;
 
 			items.Add(item);
@@ -158,8 +158,8 @@ namespace OpenRA.Meow.RPG.Mechanics
 			{
 				// this item actor might not in the item cache, try to add it
 				ItemCache.TryAddItem(item);
-				inventoryActor.World.AddFrameEndTask(w => w.Remove(item));
-				TryAdd(inventoryActor, item.Trait<Item>());
+				InventoryActor.World.AddFrameEndTask(w => w.Remove(item));
+				TryAdd(InventoryActor, item.Trait<Item>());
 			}
 		}
 
@@ -168,7 +168,7 @@ namespace OpenRA.Meow.RPG.Mechanics
 			var items = Items.Where(i => i.EquipmentSlot == null || !i.EquipmentSlot.KeepItemInSlotWhenKilled);
 			var deathPos = self.CenterPosition;
 			var deathFace = self.TraitOrDefault<IFacing>()?.Facing ?? WAngle.Zero;
-			inventoryActor.World.AddFrameEndTask(w =>
+			InventoryActor.World.AddFrameEndTask(w =>
 			{
 				foreach (var item in items)
 				{

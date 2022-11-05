@@ -32,15 +32,15 @@ namespace OpenRA.Meow.RPG.Mechanics
 		}
 	}
 
-	public class Item
+	public class Item : INotifyKilled
 	{
 		public readonly ItemInfo Info;
-		string image;
+
 		public string ThumbnailImage
 		{
 			get
 			{
-				if (string.IsNullOrEmpty(Info.ThumbnailImage))
+				if (string.IsNullOrEmpty(Info.ThumbnailImage) && ItemActor != null && !ItemActor.IsDead)
 				{
 					var rs = ItemActor.TraitOrDefault<RenderSprites>();
 					if (rs != null)
@@ -66,7 +66,7 @@ namespace OpenRA.Meow.RPG.Mechanics
 		{
 			get
 			{
-				if (string.IsNullOrEmpty(Info.Name))
+				if (string.IsNullOrEmpty(Info.Name) && ItemActor != null && !ItemActor.IsDead)
 				{
 					var tooltip = ItemActor.TraitsImplementing<Tooltip>().Where(t => !t.IsTraitDisabled).FirstOrDefault();
 					if (tooltip != null)
@@ -90,5 +90,17 @@ namespace OpenRA.Meow.RPG.Mechanics
 		public virtual void EquipingEffect(Actor actor) { }
 		public virtual void UnequipingEffect(Actor actor) { }
 
+		public virtual void Killed(Actor self, AttackInfo e)
+		{
+			if (EquipmentSlot != null)
+			{
+				EquipmentSlot.TryUnequip(EquipmentSlot.SlotOwnerActor);
+			}
+
+			if (Inventory != null)
+			{
+				Inventory.TryRemove(Inventory.InventoryActor, this);
+			}
+		}
 	}
 }
