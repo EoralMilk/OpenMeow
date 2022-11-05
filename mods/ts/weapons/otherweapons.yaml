@@ -228,8 +228,9 @@ Bomb:
 		ValidTargets: Water
 		InvalidTargets: Vehicle
 	Warhead@4Smu: LeaveSmudge
-		SmudgeType: MediumCrater
-		InvalidTargets: Vehicle, Building, Wall
+		SmudgeType: LargeCrater
+		InvalidTargets: Building, Wall
+
 
 
 A10Napalm:

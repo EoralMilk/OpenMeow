@@ -1350,7 +1350,7 @@ namespace OpenRA
 
 				CellInfos[c].UpdateNml(this);
 
-				HeightStep[c] = (byte)((CellInfos[c].CellCenterPos.Z + 1) / MapGrid.MapHeightStep);
+				HeightStep[c] = CellInfos[c].CellCenterPos.Z > 0 ? (byte)((CellInfos[c].CellCenterPos.Z + 1) / MapGrid.MapHeightStep) : (byte)(0);
 
 				if (CellInfos[c].Flat)
 					Ramp[c] = 0;

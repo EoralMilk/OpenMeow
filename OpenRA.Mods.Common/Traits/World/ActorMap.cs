@@ -295,8 +295,7 @@ namespace OpenRA.Mods.Common.Traits
 				if (position == null)
 					continue;
 				var h = actor.World.Map.HeightOfTerrain(actor.CenterPosition);
-				if (actor.CenterPosition.Z < h)
-					position.SetPosition(actor,new WPos(actor.CenterPosition.X, actor.CenterPosition.Y, h));
+				position.SetPosition(actor,new WPos(actor.CenterPosition.X, actor.CenterPosition.Y, h));
 			}
 		}
 

@@ -577,7 +577,7 @@ ProtonFlameMissileClusterSmall:
 		VerticalRotationRate: 3
 		ContrailStartColor: 00FF00
 		ContrailStartColorOuter: AAAA00
-		AirburstAltitude: 0c512
+		AirburstAltitude: 1c512
 		JetPalette: lightgreen
 		UsingScat: true
 		ScatCount: 3

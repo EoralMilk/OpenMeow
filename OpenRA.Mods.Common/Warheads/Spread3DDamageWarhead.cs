@@ -89,14 +89,14 @@ namespace OpenRA.Mods.Warheads
 
 		protected override void DoImpact(WPos pos, Actor firedBy, WarheadArgs args)
 		{
-			if (TestDrawTerrain)
-			{
-				var map = firedBy.World.Map;
-				var cell = firedBy.World.Map.CellContaining(pos);
-				//TerrainRenderBlock.PaintAt(firedBy.World.Map, firedBy.World.Map.TextureCache.AllBrushes.First().Value,
-				//				pos, 1024, 0, 64);
-				map.FlatCellWithHeight(firedBy.World, cell, pos.Z);
-			}
+			//if (TestDrawTerrain)
+			//{
+			//	var map = firedBy.World.Map;
+			//	var cell = firedBy.World.Map.CellContaining(pos);
+			//	//TerrainRenderBlock.PaintAt(firedBy.World.Map, firedBy.World.Map.TextureCache.AllBrushes.First().Value,
+			//	//				pos, 1024, 0, 64);
+			//	// map.FlatCellWithHeight(firedBy.World, cell, pos.Z);
+			//}
 
 			var debugVis = firedBy.World.WorldActor.TraitOrDefault<DebugVisualizations>();
 			if (debugVis != null && debugVis.CombatGeometry)

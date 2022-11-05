@@ -47,6 +47,11 @@ namespace OpenRA.Mods.Common.Traits
 
 		public readonly bool AllowPlacementOnResources = false;
 
+		public readonly bool AllowPlaceOnRamp = false;
+
+		[Desc("Make the ground flat when place")]
+		public readonly bool FlattenTheGround = true;
+
 		[Desc("Clear smudges from underneath the building footprint.")]
 		public readonly bool RemoveSmudgesOnBuild = true;
 
@@ -322,9 +327,12 @@ namespace OpenRA.Mods.Common.Traits
 			if (Info.RemoveSmudgesOnBuild)
 				RemoveSmudges();
 
-			foreach (var c in Info.Tiles(self.Location))
+			if (Info.FlattenTheGround)
 			{
-				self.World.Map.FlatCellWithHeight(self.World, c, self.CenterPosition.Z);
+				foreach (var c in Info.Tiles(self.Location))
+				{
+					self.World.Map.FlatCellWithHeight(self.World, c, self.CenterPosition.Z);
+				}
 			}
 
 			self.World.AddToMaps(self, this);

@@ -584,6 +584,7 @@
 	Building:
 		Footprint: x
 		Dimensions: 1, 1
+		FlattenTheGround: false
 	Armor:
 		Type: heavy
 	Health:
@@ -628,6 +629,8 @@
 		BuildSounds: place2.aud
 		TerrainTypes: Clear, Rough, Road, DirtRoad, Green, Sand, Pavement
 		UndeploySounds: cashturn.aud
+		AllowPlaceOnRamp: true
+		FlattenTheGround: true
 	FootprintPlaceBuildingPreview:
 		Palette: ra
 		FootprintAlpha: 0.7
@@ -1574,6 +1577,9 @@
 ^Defense:
 	Inherits: ^Building
 	Inherits@selection: ^SelectableCombatBuilding
+	Building:
+		AllowPlaceOnRamp: true
+		FlattenTheGround: true
 	-GivesBuildableArea:
 	RenderRangeCircle:
 	RenderDetectionCircle:
@@ -1695,6 +1701,9 @@
 		Type: Heavy
 	LineBuildNode:
 		Types: wall, gate
+	Building:
+		AllowPlaceOnRamp: true
+		FlattenTheGround: true
 	-Capturable:
 	-GivesBuildableArea:
 	-MustBeDestroyed:

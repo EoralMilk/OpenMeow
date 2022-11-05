@@ -33,6 +33,9 @@ namespace OpenRA.Mods.Common.Warheads
 		[Desc("Size of the smudge, two value can be use for random size range.")]
 		public readonly int[] SizePerSmudge = { 0 };
 
+		[Desc("Dig the ground.")]
+		public readonly WDist Dig = WDist.Zero;
+
 		[Sync]
 		int sizeOverride = 0;
 
@@ -72,6 +75,12 @@ namespace OpenRA.Mods.Common.Warheads
 
 				if (!smudgeLayers.TryGetValue(smudgeType, out var smudgeLayer))
 					throw new NotImplementedException($"Unknown smudge type `{smudgeType}`");
+
+				if (Dig != WDist.Zero)
+				{
+					var h = world.Map.CenterOfCell(sc).Z;
+					world.Map.FlatCellWithHeight(world, sc, h - Dig.Length);
+				}
 
 				if (SizePerSmudge.Length > 1)
 					sizeOverride = world.SharedRandom.Next(SizePerSmudge[0], SizePerSmudge[1]);
