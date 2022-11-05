@@ -46,6 +46,11 @@ namespace OpenRA.Meow.RPG.Mechanics
 		public readonly string[] BellyBones = Array.Empty<string>();
 
 		public readonly string[] ChurnSounds = Array.Empty<string>();
+		public readonly float ChurnMinSoundScale = 0.2f;
+		public readonly float ChurnMaxSoundScale = 3f;
+
+		public readonly int ChurnHealthPercentage = 1;
+
 		public readonly int ChurnInterval = 40;
 		public readonly float DigestionSpeed = 0.001f;
 
@@ -433,8 +438,8 @@ namespace OpenRA.Meow.RPG.Mechanics
 				{
 					var churnSound = info.ChurnSounds.RandomOrDefault(self.World.LocalRandom);
 					if (churnSound != null)
-						Game.Sound.Play(SoundType.World, churnSound, self.CenterPosition, float2.Lerp(0.2f, 3, (float)(stomachSize / maxStomachSize)));
-					health.InflictDamage(self, self, new Damage(-1000), true);
+						Game.Sound.Play(SoundType.World, churnSound, self.CenterPosition, float2.Lerp(info.ChurnMinSoundScale, info.ChurnMaxSoundScale, (float)(stomachSize / maxStomachSize)));
+					health.InflictDamage(self, self, new Damage(-health.MaxHP / 100 * info.ChurnHealthPercentage), true);
 					churnTick = 0;
 				}
 

@@ -58,6 +58,8 @@
 		WalkWeapon: WalkImpact
 
 		BellyBones: s-Adj_Belly
+		ChurnSounds: churna.wav, churnb.wav, churnc.wav, churnd.wav, churne.wav, churnf.wav
+		EmptySounds: groooooorwp.wav
 		
 	WithSkeleton:
 		Name: body

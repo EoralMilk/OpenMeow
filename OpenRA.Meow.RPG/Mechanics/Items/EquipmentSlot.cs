@@ -150,6 +150,9 @@ namespace OpenRA.Meow.RPG.Mechanics
 			if (Item == item)
 				return true;
 
+			if (item.ItemActor == null || item.ItemActor.IsDead)
+				return false;
+
 			if (Item != null && !canReplace)
 				return false;
 
