@@ -1,5 +1,0 @@
-tsmod中使用的其他作者的作品鸣谢列表（暂时）：
-voxel：
-Yetean: MCV
-issly：GDI两栖运兵车、虎鲸战机、虎鲸轰炸机、Nod攻击摩托、Nod突击车、扁虱
-Gangster:暂时借用Command and Conquer: Rewire中的mcv，隐形坦克，钻地apc，矿车，吊装奥卡，奥卡运输机，烈焰之舌，悬浮mlrs，
