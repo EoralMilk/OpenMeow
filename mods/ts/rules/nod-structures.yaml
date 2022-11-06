@@ -531,7 +531,7 @@ NAMISL:
 		Cursor: nuke
 		Icon: clustermissile
 		OrderName: ClusterMissileAttack
-		ChargeInterval: 9500
+		ChargeInterval: 8750
 		Name: Cluster Missile
 		Description: Launches an explosive cluster warhead\nat a target location.
 		EndChargeSpeechNotification: ClusterMissileReady

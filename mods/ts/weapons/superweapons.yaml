@@ -60,9 +60,9 @@ ClusterMissile:
 		ValidTargets: Ground, Water, Air
 	Warhead@Cluster: FireCluster
 		Weapon: MultiCluster
-		RandomClusterCount: 13
+		RandomClusterCount: 5
 		Dimensions: 7,7
-		Footprint: __xxx__ _xxXxx_ xxxxxxx xXxXxXx xxxxxxx _xxXxx_ __xxx__
+		Footprint: __xxx__ _xxXxx_ xxXXXxx xXXXXXx xxXXXxx _xxXxx_ __xxx__
 	Warhead@Shake: ShakeScreen
 		Duration: 20
 		Intensity: 5
