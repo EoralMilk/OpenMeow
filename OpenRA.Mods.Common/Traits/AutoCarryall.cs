@@ -161,6 +161,7 @@ namespace OpenRA.Mods.Common.Traits
 					return;
 
 				underAutoCommand = false;
+				busy = true;
 				self.QueueActivity(order.Queued, new DeliverUnit(self, order.Target, Info.DropRange, Info.TargetLineColor));
 				self.ShowTargetLines();
 			}
@@ -170,6 +171,7 @@ namespace OpenRA.Mods.Common.Traits
 					return;
 
 				underAutoCommand = false;
+				busy = true;
 				self.QueueActivity(order.Queued, new DeliverUnit(self, Info.DropRange, Info.TargetLineColor));
 			}
 			else if (order.OrderString == "PickupUnit")
@@ -178,6 +180,7 @@ namespace OpenRA.Mods.Common.Traits
 					return;
 
 				underAutoCommand = false;
+				busy = true;
 				self.QueueActivity(order.Queued, new PickupUnit(self, order.Target.Actor, Info.BeforeLoadDelay, Info.TargetLineColor));
 				self.ShowTargetLines();
 			}
