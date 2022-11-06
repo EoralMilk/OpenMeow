@@ -423,8 +423,7 @@ TRNSPORT:
 		Palette: player
 		IsPlayerPalette: true
 	GrantConditionOnDeploy:
-		RequiresCondition: !AImicroManage
-		PauseOnCondition: carried
+		RequiresCondition: !AImicroManage && !carried
 		DeployedCondition: autocarry
 		CanDeployOnRamps: true
 		SkipMakeAnimation: true
