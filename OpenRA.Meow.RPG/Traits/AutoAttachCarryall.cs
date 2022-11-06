@@ -103,7 +103,7 @@ namespace OpenRA.Meow.RPG.Traits
 		static bool IsBestAutoAttachCarryallForCargo(Actor self, Actor candidateCargo)
 		{
 			// Find carriers
-			var carriers = self.World.ActorsHavingTrait<AutoAttachCarryall>(c => !c.busy)
+			var carriers = self.World.ActorsHavingTrait<AutoAttachCarryall>(c => !c.busy && c.EnableAutoCarry)
 				.Where(a => a.Owner == self.Owner && a.IsInWorld);
 
 			return carriers.ClosestTo(candidateCargo) == self;
