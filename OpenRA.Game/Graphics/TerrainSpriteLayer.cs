@@ -72,11 +72,6 @@ namespace OpenRA.Graphics
 			palettes = new PaletteReference[map.MapSize.X * map.MapSize.Y];
 
 			wr.PaletteInvalidated += UpdatePaletteIndices;
-
-			if (wr.TerrainLighting != null)
-			{
-				wr.TerrainLighting.CellChanged += UpdateTint;
-			}
 		}
 
 		void UpdatePaletteIndices()
@@ -138,63 +133,6 @@ namespace OpenRA.Graphics
 			dirtyRows.Add(uv.V);
 		}
 
-		void UpdateTint(MPos uv)
-		{
-			return;
-			//var offset = rowStride * uv.V + MaxVerticesPerMesh * uv.U;
-			//if (ignoreTint[offset])
-			//{
-			//	for (var i = 0; i < MaxVerticesPerMesh; i++)
-			//	{
-			//		var v = vertices[offset + i];
-			//		vertices[offset + i] = new MapVertex(v.X, v.Y, v.Z, v.S, v.T, v.U, v.V, v.P, v.C, v.A * float3.Ones, v.A, v.NX, v.NY, v.NZ, v.FNX, v.FNY, v.FNZ, v.TU, v.TV, v.DrawType);
-			//	}
-
-			//	return;
-			//}
-
-			//// Allow the terrain tint to vary linearly across the cell to smooth out the staircase effect
-			//// This is done by sampling the lighting the corners of the sprite, even though those pixels are
-			//// transparent for isometric tiles
-			//var tl = worldRenderer.TerrainLighting;
-			//var pos = map.CenterOfCell(uv.ToCPos(map));
-			//var step = map.Grid.Type == MapGridType.RectangularIsometric ? 724 : 512;
-			//var weights6 = new[]
-			//{
-			//	tl.TintAt(pos + new WVec(-step, -step, 0)),
-			//	tl.TintAt(pos + new WVec(step, -step, 0)),
-			//	tl.TintAt(pos + new WVec(step, step, 0)),
-			//	tl.TintAt(pos + new WVec(-step, step, 0))
-			//};
-
-			//var weights = new[]
-			//{
-			//	tl.TintAt(pos),
-			//	tl.TintAt(pos + new WVec(0, -724, 0)),
-			//	tl.TintAt(pos + new WVec(0, 724, 0)),
-			//	tl.TintAt(pos + new WVec(-724, 0, 0)),
-			//	tl.TintAt(pos + new WVec(724, 0, 0))
-			//};
-
-			//// Apply tint directly to the underlying vertices
-			//// This saves us from having to re-query the sprite information, which has not changed
-			//for (var i = 0; i < MaxVerticesPerMesh; i++)
-			//{
-			//	var v = vertices[offset + i];
-			//	var color = verticesColor[offset + i];
-			//	if (color == float3.Ones)
-			//	{
-			//		vertices[offset + i] = new MapVertex(v.X, v.Y, v.Z, v.S, v.T, v.U, v.V, v.P, v.C, v.A * weights6[CornerVertexMap6[i % 6]], v.A, v.NX, v.NY, v.NZ, v.FNX, v.FNY, v.FNZ, v.TU, v.TV, v.DrawType);
-			//	}
-			//	else
-			//	{
-			//		vertices[offset + i] = new MapVertex(v.X, v.Y, v.Z, v.S, v.T, v.U, v.V, v.P, v.C, v.A * weights[CornerVertexMap[i % 12]], v.A, v.NX, v.NY, v.NZ, v.FNX, v.FNY, v.FNZ, v.TU, v.TV, v.DrawType);
-			//	}
-			//}
-
-			//dirtyRows.Add(uv.V);
-		}
-
 		int GetOrAddSheetIndex(Sheet sheet)
 		{
 			if (sheet == null)
@@ -250,7 +188,7 @@ namespace OpenRA.Graphics
 			}
 
 			// The vertex buffer does not have geometry for cells outside the map
-			if (!map.Tiles.Contains(uv))
+			if (!map.CellInfos.Contains(uv))
 				return;
 
 			var cellinfo = map.CellInfos[uv];
@@ -283,7 +221,7 @@ namespace OpenRA.Graphics
 																	float3.Zero,
 																	float3.Zero,
 																	float3.Zero,
-																	cellinfo.Type,
+																	0,
 																	sprite, samplers, palette?.TextureIndex ?? 0, viewOffset, ignoreTint ? -alpha : alpha, rotation);
 
 					cells[cellIndex].Draw = true;
@@ -310,7 +248,7 @@ namespace OpenRA.Graphics
 																float3.Zero,
 																float3.Zero,
 																float3.Zero,
-																cellinfo.Type,
+																0,
 																sprite, samplers, palette?.TextureIndex ?? 0, viewOffset, ignoreTint ? -alpha : alpha, rotation);
 
 				cells[cellIndex].Draw = true;
@@ -318,11 +256,6 @@ namespace OpenRA.Graphics
 			}
 
 			palettes[uv.V * map.MapSize.X + uv.U] = palette;
-
-			if (worldRenderer.TerrainLighting != null)
-			{
-				UpdateTint(uv);
-			}
 
 			dirtyRows.Add(uv.V);
 		}
@@ -360,8 +293,6 @@ namespace OpenRA.Graphics
 		public void Dispose()
 		{
 			worldRenderer.PaletteInvalidated -= UpdatePaletteIndices;
-			if (worldRenderer.TerrainLighting != null)
-				worldRenderer.TerrainLighting.CellChanged -= UpdateTint;
 		}
 	}
 }

@@ -77,7 +77,7 @@ namespace OpenRA.Mods.Common.Traits
 			}
 
 			// Buildings can never be placed on ramps
-			//return world.Map.Ramp[cell] == 0 && bi.TerrainTypes.Contains(world.Map.GetTerrainInfo(cell).Type);
+			// return world.Map.Ramp[cell] == 0 && bi.TerrainTypes.Contains(world.Map.GetTerrainInfo(cell).Type);
 
 			// Why? I think sometime might buildings can be placed on ramp
 			if (bi.AllowPlaceOnRamp)
@@ -85,7 +85,7 @@ namespace OpenRA.Mods.Common.Traits
 				return bi.TerrainTypes.Contains(world.Map.GetTerrainInfo(cell).Type);
 			}
 			else
-				return world.Map.Ramp[cell] == 0 && bi.TerrainTypes.Contains(world.Map.GetTerrainInfo(cell).Type);
+				return world.Map.CellInfos[cell].AlmostFlat && bi.TerrainTypes.Contains(world.Map.GetTerrainInfo(cell).Type);
 		}
 
 		public static bool CanPlaceBuilding(this World world, CPos cell, ActorInfo ai, BuildingInfo bi, Actor toIgnore)

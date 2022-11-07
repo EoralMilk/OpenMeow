@@ -91,9 +91,9 @@ namespace OpenRA.Mods.Cnc.Traits
 			if (veinholeCells.Contains(neighbour))
 				return true;
 
-			// Neighbour must be flat or a cardinal slope, unless the resource cell itself is a slope
-			if (Map.Ramp[cell] == 0 && Map.Ramp[neighbour] > 4)
-				return false;
+			//// Neighbour must be flat or a cardinal slope, unless the resource cell itself is a slope
+			//if (Map.CellInfos[cell].Flat && Map.Ramp[neighbour] > 4)
+			//	return false;
 
 			// Neighbour must be have a compatible terrain type (which also implies no other resources)
 			var neighbourTerrain = Map.GetTerrainInfo(neighbour).Type;
@@ -107,8 +107,8 @@ namespace OpenRA.Mods.Cnc.Traits
 				return false;
 
 			// Resources are allowed on flat terrain and cardinal slopes
-			if (Map.Ramp[cell] > 4)
-				return false;
+			//if (Map.Ramp[cell] > 4)
+			//	return false;
 
 			if (!info.ResourceTypes.TryGetValue(resourceType, out var resourceInfo))
 				return false;
@@ -118,7 +118,7 @@ namespace OpenRA.Mods.Cnc.Traits
 
 			// Ensure there is space for the vein border tiles (not needed on ramps)
 			var check = resourceType == info.VeinType ? (Func<CPos, CPos, bool>)IsValidVeinNeighbour : IsValidResourceNeighbour;
-			var blockedByNeighbours = Map.Ramp[cell] == 0 && !Common.Util.ExpandFootprint(cell, false).All(c => check(cell, c));
+			var blockedByNeighbours = Map.CellInfos[cell].AlmostFlat && !Common.Util.ExpandFootprint(cell, false).All(c => check(cell, c));
 
 			return !blockedByNeighbours && (resourceType == info.VeinType || !BuildingInfluence.AnyBuildingAt(cell));
 		}

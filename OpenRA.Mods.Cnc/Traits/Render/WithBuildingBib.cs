@@ -56,7 +56,7 @@ namespace OpenRA.Mods.Cnc.Traits
 
 				// Some mods may define terrain-specific bibs
 				var sequence = Sequence;
-				if (map.Tiles.Contains(cell))
+				if (map.CellInfos.Contains(cell))
 				{
 					var terrain = map.GetTerrainInfo(cell).Type;
 					var testSequence = Sequence + "-" + terrain;

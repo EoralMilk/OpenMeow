@@ -360,11 +360,11 @@ namespace OpenRA
 			// Will be dropped on save if nothing is added to it
 			RuleDefinitions = new MiniYaml("");
 
+			CellInfos = new CellLayer<CellInfo>(Grid.Type, size);
 			Tiles = new CellLayer<TerrainTile>(Grid.Type, size);
 			Resources = new CellLayer<ResourceTile>(Grid.Type, size);
 			HeightStep = new CellLayer<byte>(Grid.Type, size);
 			Ramp = new CellLayer<byte>(Grid.Type, size);
-			CellInfos = new CellLayer<CellInfo>(Grid.Type, size);
 			Tiles.Clear(terrainInfo.DefaultTerrainTile);
 			if (Grid.MaximumTerrainHeight > 0)
 			{
@@ -643,9 +643,10 @@ namespace OpenRA
 
 		PPos[] ProjectCellInner(MPos uv)
 		{
-			var mapHeight = HeightStep;
-			if (!mapHeight.Contains(uv))
+			if (!HeightStep.Contains(uv))
 				return NoProjectedCells;
+
+			var mapHeight = HeightStep;
 
 			// Any changes to this function should be reflected when setting projectionSafeBounds.
 			var height = mapHeight[uv];
@@ -722,12 +723,7 @@ namespace OpenRA
 			Uid = ComputeUID(toPackage, MapFormat);
 		}
 
-		const int DT_WATER = 22;
-		const int DT_SHORE = 23;
-		const int DT_CLIFF = 25;
-		const int DT_GRASS = 30;
-		const int DT_ROAD = 32;
-
+		#region Terrain Vertex
 		public void CalculateTileVertexInfo()
 		{
 			VertexArrayWidth = MapSize.X * 2 + 2;
@@ -953,6 +949,7 @@ namespace OpenRA
 							Console.WriteLine("Invalid Ramp Type: " + ramp);
 							break;
 					}
+
 					var cpos = uv.ToCPos(this);
 					TerrainVertices[im].LogicPos = TileWPos(hm, cpos, WPos.Zero);
 					TerrainVertices[im].Pos = TilePos(TerrainVertices[im].LogicPos);
@@ -1166,26 +1163,6 @@ namespace OpenRA
 					vertexNmlCaled[ir] = true;
 
 					var type = Rules.TerrainInfo.GetTerrainInfo(Tiles[uv]);
-					var typename = Rules.TerrainInfo.TerrainTypes[type.TerrainType].Type;
-					uint typeNum = (uint)Ramp[uv];
-
-					switch (typename)
-					{
-						case "Water":
-							typeNum = DT_WATER;
-							break;
-						case "Cliff":
-							typeNum += DT_CLIFF;
-							break;
-						case "Rough":
-							typeNum = DT_GRASS;
-							break;
-						case "Road":
-							typeNum = DT_ROAD;
-							break;
-						default:
-							break;
-					}
 
 					WPos wposm = TerrainVertices[im].LogicPos;
 					WPos wpost = TerrainVertices[it].LogicPos;
@@ -1222,9 +1199,9 @@ namespace OpenRA
 								TerrainVertices[ib].LogicPos.Z),
 							TerrainVertices[ir].LogicPos.Z),
 						TerrainVertices[il].LogicPos.Z),
-						im, it, ib, il, ir, typeNum,
+						im, it, ib, il, ir,
 						new int2(mid.X - 1, mid.Y - 1), new int2(mid.X, mid.Y - 1),
-						new int2(mid.X - 1, mid.Y), new int2(mid.X, mid.Y), flatCell,
+						new int2(mid.X - 1, mid.Y), new int2(mid.X, mid.Y), flatCell, ramp == 0,
 						tlNml, trNml, blNml, brNml);
 
 					CellInfos[uv.ToCPos(this)] = cellInfo;
@@ -1274,44 +1251,6 @@ namespace OpenRA
 
 		}
 
-		public void DisposeRenderBlocks()
-		{
-			foreach (var rb in TerrainBlocks)
-				rb.Dispose();
-			TerrainBlocks = null;
-		}
-
-		public void CreateRenderBlocks(WorldRenderer worldRenderer)
-		{
-			// Create Terrain Render Blocks
-			var blockX = (VertexArrayWidth - 1) / TerrainRenderBlock.SizeLimit;
-			if ((VertexArrayWidth - 1) % TerrainRenderBlock.SizeLimit != 0)
-				blockX += 1;
-			var blockY = (VertexArrayHeight - 1) / TerrainRenderBlock.SizeLimit;
-			if ((VertexArrayHeight - 1) % TerrainRenderBlock.SizeLimit != 0)
-				blockY += 1;
-			BlocksArrayWidth = blockX;
-			BlocksArrayHeight = blockY;
-
-			Console.WriteLine("BlocksArray " + BlocksArrayWidth + " " + BlocksArrayHeight);
-
-			Console.WriteLine("VertexArray " + VertexArrayWidth + " " + VertexArrayHeight);
-
-			Console.WriteLine("MapSize " + MapSize);
-
-			TerrainBlocks = new TerrainRenderBlock[blockY, blockX];
-
-			for (int y = 0; y < blockY; y++)
-				for (int x = 0; x < blockX; x++)
-				{
-					int2 tl = new int2(x * TerrainRenderBlock.SizeLimit, y * TerrainRenderBlock.SizeLimit);
-					int2 br = new int2(
-						Math.Min((x + 1) * TerrainRenderBlock.SizeLimit, VertexArrayWidth - 2) - 1,
-						Math.Min((y + 1) * TerrainRenderBlock.SizeLimit, VertexArrayHeight - 2) - 1);
-					TerrainBlocks[y, x] = new TerrainRenderBlock(worldRenderer, this, tl, br);
-				}
-		}
-
 		public void FlatCellWithHeight(World world, CPos cell, int height)
 		{
 			if (!CellInfos.Contains(cell))
@@ -1352,7 +1291,7 @@ namespace OpenRA
 
 				HeightStep[c] = CellInfos[c].CellCenterPos.Z > 0 ? (byte)((CellInfos[c].CellCenterPos.Z + 1) / MapGrid.MapHeightStep) : (byte)(0);
 
-				if (CellInfos[c].Flat)
+				if (CellInfos[c].AlmostFlat)
 					Ramp[c] = 0;
 
 				world.ActorMap.UpdateActorsPositionAt(c);
@@ -1372,12 +1311,90 @@ namespace OpenRA
 			}
 		}
 
-		void UpdateHeightStep()
+		#endregion
+
+		#region util for CalculateTileVertexInfo
+
+		int HMix(int a, int b)
 		{
-			foreach (var uv in AllCells.MapCoords)
-			{
-				HeightStep[uv] = (byte)((CellInfos[uv].CellCenterPos.Z + 1) / MapGrid.MapHeightStep);
-			}
+			//return a + (b - a) / 2;
+			return a / 4 + b;
+		}
+
+		bool IsBoundVert(int vi)
+		{
+			if (vi <= VertexArrayWidth || vi >= (VertexArrayHeight - 1) * VertexArrayWidth)
+				return true;
+			if (vi % VertexArrayWidth == 0 || (vi + 1) % VertexArrayWidth == 0)
+				return true;
+			return false;
+		}
+
+		float3 Color2Float3(in Color color)
+		{
+			return new float3(((float)color.R) / 255, ((float)color.G) / 255, ((float)color.B) / 255);
+		}
+
+		WPos TileWPos(int h, CPos cell, WPos offset)
+		{
+			return new WPos(724 * (cell.X - cell.Y + 1) + offset.X, 724 * (cell.X + cell.Y + 1) + offset.Y, h + offset.Z);
+		}
+
+		float3 TilePos(WPos pos)
+		{
+			return new float3(-(float)pos.X / 256,
+										(float)pos.Y / 256,
+										(float)pos.Z / 256);
+		}
+
+		float3 TilePos(int h, CPos cell, WPos offset)
+		{
+			var pos = new WPos(724 * (cell.X - cell.Y + 1) + offset.X, 724 * (cell.X + cell.Y + 1) + offset.Y, 0);
+
+			return new float3(-(float)pos.X / 256,
+										(float)pos.Y / 256,
+										(float)h / 256);
+		}
+
+		#endregion
+
+		#region terrain block
+		public void DisposeRenderBlocks()
+		{
+			foreach (var rb in TerrainBlocks)
+				rb.Dispose();
+			TerrainBlocks = null;
+		}
+
+		public void CreateRenderBlocks(WorldRenderer worldRenderer)
+		{
+			// Create Terrain Render Blocks
+			var blockX = (VertexArrayWidth - 1) / TerrainRenderBlock.SizeLimit;
+			if ((VertexArrayWidth - 1) % TerrainRenderBlock.SizeLimit != 0)
+				blockX += 1;
+			var blockY = (VertexArrayHeight - 1) / TerrainRenderBlock.SizeLimit;
+			if ((VertexArrayHeight - 1) % TerrainRenderBlock.SizeLimit != 0)
+				blockY += 1;
+			BlocksArrayWidth = blockX;
+			BlocksArrayHeight = blockY;
+
+			Console.WriteLine("BlocksArray " + BlocksArrayWidth + " " + BlocksArrayHeight);
+
+			Console.WriteLine("VertexArray " + VertexArrayWidth + " " + VertexArrayHeight);
+
+			Console.WriteLine("MapSize " + MapSize);
+
+			TerrainBlocks = new TerrainRenderBlock[blockY, blockX];
+
+			for (int y = 0; y < blockY; y++)
+				for (int x = 0; x < blockX; x++)
+				{
+					int2 tl = new int2(x * TerrainRenderBlock.SizeLimit, y * TerrainRenderBlock.SizeLimit);
+					int2 br = new int2(
+						Math.Min((x + 1) * TerrainRenderBlock.SizeLimit, VertexArrayWidth - 2) - 1,
+						Math.Min((y + 1) * TerrainRenderBlock.SizeLimit, VertexArrayHeight - 2) - 1);
+					TerrainBlocks[y, x] = new TerrainRenderBlock(worldRenderer, this, tl, br);
+				}
 		}
 
 		public bool MaskInitByTexFile = false;
@@ -1571,49 +1588,6 @@ namespace OpenRA
 			{
 				block.Render(left, right, top, bottom);
 			}
-		}
-
-		#region util for CalculateTileVertexInfo
-
-		int HMix(int a, int b)
-		{
-			//return a + (b - a) / 2;
-			return a / 4 + b;
-		}
-
-		bool IsBoundVert(int vi)
-		{
-			if (vi <= VertexArrayWidth || vi >= (VertexArrayHeight - 1) * VertexArrayWidth)
-				return true;
-			if (vi % VertexArrayWidth == 0 || (vi + 1) % VertexArrayWidth == 0)
-				return true;
-			return false;
-		}
-
-		float3 Color2Float3(in Color color)
-		{
-			return new float3(((float)color.R) / 255, ((float)color.G) / 255, ((float)color.B) / 255);
-		}
-
-		WPos TileWPos(int h, CPos cell, WPos offset)
-		{
-			return new WPos(724 * (cell.X - cell.Y + 1) + offset.X, 724 * (cell.X + cell.Y + 1) + offset.Y, h + offset.Z);
-		}
-
-		float3 TilePos(WPos pos)
-		{
-			return new float3(-(float)pos.X / 256,
-										(float)pos.Y / 256,
-										(float)pos.Z / 256);
-		}
-
-		float3 TilePos(int h, CPos cell, WPos offset)
-		{
-			var pos = new WPos(724 * (cell.X - cell.Y + 1) + offset.X, 724 * (cell.X + cell.Y + 1) + offset.Y, 0);
-
-			return new float3(-(float)pos.X / 256,
-										(float)pos.Y / 256,
-										(float)h / 256);
 		}
 
 		#endregion
@@ -2243,16 +2217,19 @@ namespace OpenRA
 
 		public void Resize(int width, int height)
 		{
+			Console.WriteLine("The Resize Method still in WIP, don't use this");
 			var oldMapTiles = Tiles;
 			var oldMapResources = Resources;
 			var oldMapHeight = HeightStep;
 			var oldMapRamp = Ramp;
+			var oldCellInfos = CellInfos;
 			var newSize = new Size(width, height);
 
 			Tiles = CellLayer.Resize(oldMapTiles, newSize, oldMapTiles[MPos.Zero]);
 			Resources = CellLayer.Resize(oldMapResources, newSize, oldMapResources[MPos.Zero]);
 			HeightStep = CellLayer.Resize(oldMapHeight, newSize, oldMapHeight[MPos.Zero]);
 			Ramp = CellLayer.Resize(oldMapRamp, newSize, oldMapRamp[MPos.Zero]);
+			CellInfos = CellLayer.Resize(oldCellInfos, newSize, oldCellInfos[MPos.Zero]);
 			MapSize = new int2(newSize);
 
 			var tl = new MPos(0, 0);

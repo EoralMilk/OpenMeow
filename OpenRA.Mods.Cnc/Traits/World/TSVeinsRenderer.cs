@@ -88,7 +88,7 @@ namespace OpenRA.Mods.Cnc.Traits
 
 					// Cell is a vein border if it is flat and adjacent to at least one cell
 					// that is also flat and contains veins (borders are not drawn next to slope vein cells)
-					var isBorder = map.Ramp[uv] == 0 && Common.Util.ExpandFootprint(uv.ToCPos(map), false).Any(c =>
+					var isBorder = map.CellInfos[uv].AlmostFlat && Common.Util.ExpandFootprint(uv.ToCPos(map), false).Any(c =>
 					{
 						if (!map.Resources.Contains(c))
 							return false;
@@ -96,7 +96,7 @@ namespace OpenRA.Mods.Cnc.Traits
 						if (veinholeCells.Contains(c))
 							return true;
 
-						return map.Resources[c].Type == resourceIndex && map.Ramp[c] == 0;
+						return map.Resources[c].Type == resourceIndex && map.CellInfos[uv].AlmostFlat;
 					});
 
 					if (isBorder)
@@ -221,15 +221,17 @@ namespace OpenRA.Mods.Cnc.Traits
 			if (contents.Type != info.ResourceType || contents.Density == 0)
 				return null;
 
-			var ramp = world.Map.Ramp[cell];
-			switch (ramp)
-			{
-				case 1: return Ramp1Indices;
-				case 2: return Ramp2Indices;
-				case 3: return Ramp3Indices;
-				case 4: return Ramp4Indices;
-				default: return contents.Density == maxDensity ? HeavyIndices : LightIndices;
-			}
+			return contents.Density == maxDensity ? HeavyIndices : LightIndices;
+
+			// var ramp = world.Map.Ramp[cell];
+			// switch (ramp)
+			// {
+			// 	case 1: return Ramp1Indices;
+			// 	case 2: return Ramp2Indices;
+			// 	case 3: return Ramp3Indices;
+			// 	case 4: return Ramp4Indices;
+			// 	default: return contents.Density == maxDensity ? HeavyIndices : LightIndices;
+			// }
 		}
 
 		void IRenderOverlay.ModifyTerrainRender(WorldRenderer wr) { }
@@ -269,13 +271,13 @@ namespace OpenRA.Mods.Cnc.Traits
 				return false;
 
 			// Draw the vein border if this is a flat cell with veins, or a veinhole
-			return (world.Map.Ramp[cell] == 0 && renderIndices[cell] != null) || veinholeCells.Contains(cell);
+			return (world.Map.CellInfos[cell].AlmostFlat && renderIndices[cell] != null) || veinholeCells.Contains(cell);
 		}
 
 		Adjacency CalculateBorders(CPos cell)
 		{
 			// Borders are only valid on flat cells
-			if (world.Map.Ramp[cell] != 0)
+			if (!world.Map.CellInfos[cell].AlmostFlat)
 				return Adjacency.None;
 
 			var ret = Adjacency.None;
@@ -307,7 +309,7 @@ namespace OpenRA.Mods.Cnc.Traits
 		void UpdateBorderSprite(CPos cell)
 		{
 			// Borders are never drawn on ramps or in cells that contain resources
-			if (HasBorder(cell) || world.Map.Ramp[cell] != 0)
+			if (HasBorder(cell) || !world.Map.CellInfos[cell].AlmostFlat)
 				return;
 
 			var adjacency = CalculateBorders(cell);

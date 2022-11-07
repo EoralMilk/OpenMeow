@@ -49,9 +49,9 @@ namespace OpenRA.Mods.Cnc.Traits
 			if (actorLayer.PreviewsAt(neighbour).Any(a => info.VeinholeActors.Contains(a.Info.Name)))
 				return true;
 
-			// Neighbour must be flat or a cardinal slope, unless the resource cell itself is a slope
-			if (Map.Ramp[cell] == 0 && Map.Ramp[neighbour] > 4)
-				return false;
+			//// Neighbour must be flat or a cardinal slope, unless the resource cell itself is a slope
+			//if (Map.CellInfos[cell].Flat && !Map.CellInfos[neighbour].Flat)
+			//	return false;
 
 			var terrainInfo = Map.Rules.TerrainInfo;
 			var terrainType = terrainInfo.TerrainTypes[terrainInfo.GetTerrainInfo(Map.Tiles[neighbour]).TerrainType].Type;

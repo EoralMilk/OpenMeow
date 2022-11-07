@@ -208,7 +208,7 @@ namespace OpenRA.Mods.Common.Traits
 
 		protected virtual bool AllowResourceAt(string resourceType, CPos cell)
 		{
-			if (!Map.Ramp.Contains(cell) || Map.Ramp[cell] != 0)
+			if (!Map.Contains(cell) || !Map.CellInfos[cell].AlmostFlat)
 				return false;
 
 			if (!info.ResourceTypes.TryGetValue(resourceType, out var resourceInfo))

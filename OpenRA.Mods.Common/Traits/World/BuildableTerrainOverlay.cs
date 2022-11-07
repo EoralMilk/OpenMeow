@@ -72,7 +72,7 @@ namespace OpenRA.Mods.Common.Traits
 
 			var cells = w.Map.AllCells.Where(c => w.Map.Contains(c) &&
 				(!info.AllowedTerrainTypes.Contains(w.Map.GetTerrainInfo(c).Type) ||
-				world.Map.Ramp[c] != 0)).ToHashSet();
+				!world.Map.CellInfos[c].AlmostFlat)).ToHashSet();
 
 			palette = wr.Palette(info.Palette);
 
@@ -85,7 +85,7 @@ namespace OpenRA.Mods.Common.Traits
 			if (!world.Map.Contains(cell))
 				return;
 
-			var buildableSprite = !info.AllowedTerrainTypes.Contains(world.Map.GetTerrainInfo(cell).Type) || world.Map.Ramp[cell] != 0 ? disabledSprite : null;
+			var buildableSprite = !info.AllowedTerrainTypes.Contains(world.Map.GetTerrainInfo(cell).Type) || !world.Map.CellInfos[cell].AlmostFlat ? disabledSprite : null;
 			render.Update(cell, buildableSprite, palette, 1f, info.Alpha, zOffset: 15, ignoreTint: true, additional: true);
 		}
 

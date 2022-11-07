@@ -1,4 +1,5 @@
-﻿using System.Runtime.ConstrainedExecution;
+﻿using System;
+using System.Runtime.ConstrainedExecution;
 using GlmSharp;
 using OpenRA.Primitives;
 using TrueSync;
@@ -39,8 +40,6 @@ namespace OpenRA
 		public WPos CellCenterPos;
 		public int CellMiniHeight;
 
-		public uint Type;
-
 		/// <summary>
 		/// use as MiniCells[CellInfos[cell].MiniCellTR.Y, CellInfos[cell].MiniCellTR.X]
 		/// </summary>
@@ -49,6 +48,7 @@ namespace OpenRA
 		public readonly int M, T, B, L, R;
 
 		public bool Flat;
+		public bool AlmostFlat;
 
 		public TSVector LogicNmlTL;
 		public TSVector LogicNmlTR;
@@ -63,7 +63,7 @@ namespace OpenRA
 		public WRot TerrainOrientationM;
 
 		public CellInfo(WPos center, int miniHeight,
-			int m, int t, int b, int l, int r, uint type, int2 ctl, int2 ctr, int2 cbl, int2 cbr, bool flat,
+			int m, int t, int b, int l, int r, int2 ctl, int2 ctr, int2 cbl, int2 cbr, bool flat, bool almostFlat,
 			TSVector tlnml, TSVector trnml, TSVector blnml, TSVector brnml)
 		{
 			CellCenterPos = center;
@@ -73,7 +73,6 @@ namespace OpenRA
 			B = b;
 			L = l;
 			R = r;
-			Type = type;
 
 			MiniCellTL = ctl;
 			MiniCellTR = ctr;
@@ -81,6 +80,7 @@ namespace OpenRA
 			MiniCellBR = cbr;
 
 			Flat = flat;
+			AlmostFlat = almostFlat;
 			LogicNmlTL = tlnml.normalized;
 			LogicNmlTR = trnml.normalized;
 			LogicNmlBL = blnml.normalized;
@@ -159,6 +159,7 @@ namespace OpenRA
 			UpdateNml(map);
 
 			Flat = true;
+			AlmostFlat = true;
 		}
 
 		public static mat3 CalTBN(float3 a, float3 b, float3 c, float2 uva, float2 uvb, float2 uvc)

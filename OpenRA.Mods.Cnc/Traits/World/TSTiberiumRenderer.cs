@@ -78,17 +78,19 @@ namespace OpenRA.Mods.Cnc.Traits
 
 		protected override ISpriteSequence ChooseVariant(string resourceType, CPos cell)
 		{
-			Dictionary<string, Dictionary<string, ISpriteSequence>> variants;
-			switch (world.Map.Ramp[cell])
-			{
-				case 1: variants = ramp1Variants; break;
-				case 2: variants = ramp2Variants; break;
-				case 3: variants = ramp3Variants; break;
-				case 4: variants = ramp4Variants; break;
-				default: variants = Variants; break;
-			}
+			return Variants[resourceType].Values.Random(world.LocalRandom);
 
-			return variants[resourceType].Values.Random(world.LocalRandom);
+			// Dictionary<string, Dictionary<string, ISpriteSequence>> variants;
+			// switch (world.Map.Ramp[cell])
+			// {
+			// 	case 1: variants = ramp1Variants; break;
+			// 	case 2: variants = ramp2Variants; break;
+			// 	case 3: variants = ramp3Variants; break;
+			// 	case 4: variants = ramp4Variants; break;
+			// 	default: variants = Variants; break;
+			// }
+
+			// return variants[resourceType].Values.Random(world.LocalRandom);
 		}
 	}
 }

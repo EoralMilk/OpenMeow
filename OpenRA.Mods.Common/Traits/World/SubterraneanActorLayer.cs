@@ -82,7 +82,7 @@ namespace OpenRA.Mods.Common.Traits
 			if (sli.SubterraneanTransitionOnRamps)
 				return true;
 
-			return map.Ramp[cell] == 0;
+			return map.CellInfos[cell].AlmostFlat;
 		}
 
 		short ICustomMovementLayer.EntryMovementCost(LocomotorInfo li, CPos cell)

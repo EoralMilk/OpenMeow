@@ -259,7 +259,8 @@ namespace OpenRA.Mods.Common.Traits
 				return true;
 
 			var map = self.World.Map;
-			return !map.Ramp.Contains(location) || map.Ramp[location] == 0;
+
+			return map.CellInfos[location].AlmostFlat;
 		}
 
 		public void FinishedDeployPrepare(Actor self)
