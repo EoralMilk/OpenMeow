@@ -4,9 +4,9 @@
 	WithMesh@hair:
 		Mesh: hair
 		SkeletonBinded: body
-	WithMesh@cater:
-		Mesh: cater
-		SkeletonBinded: body
+	# WithMesh@cater:
+	# 	Mesh: cater
+	# 	SkeletonBinded: body
 	# WithMeshCloth@gear01:
 	# 	Mesh: gear01
 	# 	Masks: Torso,Hip,Thigh,Leg,Foot,UpperArm,LowerArm,Hand
@@ -206,7 +206,7 @@ RUTEST2:
 		SlotType: MainWeapon
 		InitEquipment: gunitem
 		EquipmentSkeleton: body
-		EquipmentBone: a-s-Rig_Hand.R
+		EquipmentBone: e_Hand.R
 	EquipmentSlot@item:
 		Name: ItemSlot
 		SlotType: Item

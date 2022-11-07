@@ -233,7 +233,7 @@ namespace OpenRA.Mods.Common.Projectiles
 					remapColor = args.SourceActor.Owner.Color;
 				var mesh = world.MeshCache.GetMeshSequence(info.Unit, info.Meshes[0]);
 				meshes.Add(new MeshInstance(mesh,
-					GetMatrix().ToMat4,
+					() => GetMatrix().ToMat4(),
 					() => true,
 					null));
 			}
