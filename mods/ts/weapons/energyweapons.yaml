@@ -365,6 +365,7 @@ TurretLaserFire:
 		Duration: 8
 		SecondaryBeamWidth: 144
 		SecondaryBeamColor: FF000050
+		Blockable: true
 	Warhead@1Dam: SpreadDamage
 		Damage: 3000
 	Warhead@2Eff: CreateEffect

@@ -58,7 +58,7 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 						if (withSkeletons.ContainsKey(mesh.SkeletonBinded))
 						{
 							mesh.DrawId = () => withSkeletons[mesh.SkeletonBinded].GetDrawId();
-							mesh.Matrix = () => withSkeletons[mesh.SkeletonBinded].Skeleton.Offset;
+							mesh.Matrix = () => withSkeletons[mesh.SkeletonBinded].Skeleton.Offset.ToMat4();
 							mesh.UseMatrix = true;
 						}
 					}
@@ -79,7 +79,7 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 				initializePalettes = false;
 			}
 
-			if (created)
+			if (created && meshes != null && meshes.Count > 0)
 				yield return new MeshRenderable(meshes, self.CenterPosition, Info.ZOffset, remap, Info.Scale, this);
 		}
 
@@ -106,7 +106,7 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 						if (withSkeletons.ContainsKey(mesh.SkeletonBinded))
 						{
 							mesh.DrawId = () => withSkeletons[mesh.SkeletonBinded].GetDrawId();
-							mesh.Matrix = () => withSkeletons[mesh.SkeletonBinded].Skeleton.Offset;
+							mesh.Matrix = () => withSkeletons[mesh.SkeletonBinded].Skeleton.Offset.ToMat4();
 							mesh.UseMatrix = true;
 						}
 					}

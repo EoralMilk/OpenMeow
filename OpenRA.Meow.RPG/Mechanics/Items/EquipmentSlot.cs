@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using GlmSharp;
 using OpenRA.Mods.Common.Traits;
+using OpenRA.Mods.Common.Traits.Trait3D;
 using OpenRA.Primitives;
 using OpenRA.Traits;
 
@@ -53,6 +55,10 @@ namespace OpenRA.Meow.RPG.Mechanics
 
 		public readonly bool KeepItemInSlotWhenKilled = false;
 
+		public readonly string EquipmentSkeleton;
+
+		public readonly string EquipmentBone;
+
 		public override object Create(ActorInitializer init)
 		{
 			return new EquipmentSlot(this, init.GetOrDefault<EquipmentSlotsInit>(), init.Self);
@@ -66,6 +72,10 @@ namespace OpenRA.Meow.RPG.Mechanics
 		List<Item> autoEquip;
 		Inventory inventory;
 		INotifyEquip[] equipNotifiers = Array.Empty<INotifyEquip>();
+		RenderMeshes renderMeshes;
+		WithSkeleton withSkeleton;
+		int boneId;
+		Func<mat4> slotGetRenderMatrix;
 
 		public Item Item { get; private set; }
 
@@ -91,6 +101,20 @@ namespace OpenRA.Meow.RPG.Mechanics
 		void INotifyCreated.Created(Actor self)
 		{
 			inventory = self.TraitOrDefault<Inventory>();
+			renderMeshes = self.TraitOrDefault<RenderMeshes>();
+
+			if (info.EquipmentSkeleton != null)
+			{
+				if (info.EquipmentBone == null)
+					throw new Exception("EquipmentBone can not be null if we use EquipmentSkeleton");
+
+				withSkeleton = self.TraitsImplementing<WithSkeleton>().Single(w => w.Info.Name == info.EquipmentSkeleton);
+				if (withSkeleton == null)
+					throw new Exception("Can not find EquipmentSkeleton");
+
+				boneId = withSkeleton.GetBoneId(info.EquipmentBone);
+				slotGetRenderMatrix = () => withSkeleton.GetRenderMatrixFromBoneId(boneId);
+			}
 
 			if (info.InitEquipment != null && inventory.Info.InitItems.Contains(info.InitEquipment))
 			{
@@ -204,6 +228,16 @@ namespace OpenRA.Meow.RPG.Mechanics
 			foreach (var notifyEquip in equipNotifiers)
 				notifyEquip.Equipped(self, item);
 
+			if (renderMeshes != null && slotGetRenderMatrix != null)
+			{
+				var itemMeshes = item.ItemActor.TraitsImplementing<ItemMesh>();
+				foreach (var im in itemMeshes)
+				{
+					im.MeshInstance.Matrix = slotGetRenderMatrix;
+					renderMeshes.Add(im.MeshInstance);
+				}
+			}
+
 			return true;
 		}
 
@@ -224,6 +258,16 @@ namespace OpenRA.Meow.RPG.Mechanics
 
 			foreach (var notifyEquip in equipNotifiers)
 				notifyEquip.Unequipped(self, item);
+
+			if (renderMeshes != null && slotGetRenderMatrix != null)
+			{
+				var itemMeshes = item.ItemActor.TraitsImplementing<ItemMesh>();
+				foreach (var im in itemMeshes)
+				{
+					im.MeshInstance.Matrix = null;
+					renderMeshes.Remove(im.MeshInstance);
+				}
+			}
 
 			return true;
 		}

@@ -66,7 +66,7 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 			if (!replaceMeshInit)
 			{
 				var mesh = self.World.MeshCache.GetMeshSequence(image, info.Mesh);
-				meshInstance = new MeshInstance(mesh, () => (AttachmentSkeleton == null ? Transformation.MatWithNewScale(MainSkeleton.Skeleton.BoneOffsetMat(AttachBoneId), Scale) : AttachmentSkeleton.Skeleton.Offset),
+				meshInstance = new MeshInstance(mesh, () => (AttachmentSkeleton == null ? Transformation.MatWithNewScale(MainSkeleton.Skeleton.BoneOffsetMat(AttachBoneId), Scale).ToMat4() : AttachmentSkeleton.Skeleton.Offset.ToMat4()),
 					() => !IsTraitDisabled, AttachmentSkeleton == null ? null : info.AttachmentSkeleton);
 
 				RenderMeshes.Add(meshInstance);

@@ -11,6 +11,7 @@
 
 using System;
 using System.Collections.Generic;
+using GlmSharp;
 using OpenRA.Graphics;
 using OpenRA.Mods.Common.Activities;
 using OpenRA.Mods.Common.Graphics;
@@ -155,6 +156,11 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 		{
 			CallForUpdate(id);
 			return Skeleton.BoneOffsetMat(id);
+		}
+
+		public mat4 GetRenderMatrixFromBoneId(int id)
+		{
+			return Skeleton.BoneRenderOffsetMat(id);
 		}
 
 		public TSQuaternion GetQuatFromBoneId(int id)

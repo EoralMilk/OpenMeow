@@ -176,20 +176,6 @@ RUTEST2:
 		FromBonePose: a-s-Rig_Head
 		FacingTolerance: 512
 		RequiresCondition: userutestmissile
-	# AttachedArmament@mg:
-	# 	Weapon: KittenClaw
-	# 	Turret: primary
-	# 	SkeletonToUse: body
-	# 	FromBonePose: a-s-Rig_Hand.L
-	# 	LocalOffset: 768,0,1324
-	# 	RequiresCondition: !usechemicalitem
-	# AttachedArmament@laser:
-	# 	Weapon: KittenProtonPulse #LaserChainGun
-	# 	Turret: primary
-	# 	SkeletonToUse: body
-	# 	FromBonePose: a-s-Rig_Hand.L
-	# 	LocalOffset: 768,0,1324
-	# 	RequiresCondition: usechemicalitem
 	SlotArmament@test:
 		Weapon: DummyWeapon
 		Turret: primary
@@ -219,6 +205,8 @@ RUTEST2:
 		Name: MainWeapon
 		SlotType: MainWeapon
 		InitEquipment: gunitem
+		EquipmentSkeleton: body
+		EquipmentBone: a-s-Rig_Hand.R
 	EquipmentSlot@item:
 		Name: ItemSlot
 		SlotType: Item

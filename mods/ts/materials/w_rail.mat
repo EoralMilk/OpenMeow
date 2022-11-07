@@ -1,0 +1,4 @@
+W_Rail:
+	DiffuseMap: w_rail.png
+	Specular: 0.3
+	Shininess: 16

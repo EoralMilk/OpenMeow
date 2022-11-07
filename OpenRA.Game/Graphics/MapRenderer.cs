@@ -211,7 +211,7 @@ namespace OpenRA.Graphics
 
 			var vv = Util.FastCreateTileActor(wPos, World3DCoordinate.Vec3toFloat3(viewOffset),
 				s, samplers, ResolveTextureIndex(s, pal),
-				scale, tint, alpha, map);
+				scale, float3.Zero, alpha, map);
 
 			if (nv + vv.Length >= vertices.Length)
 				Flush();

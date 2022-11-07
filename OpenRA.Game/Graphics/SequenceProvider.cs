@@ -27,7 +27,7 @@ namespace OpenRA.Graphics
 		FloatBoard,
 		TileOverlay,
 		TileOverlayNoStretch,
-		TileActor,
+		TerrainCovering,
 		TileActorNoStretch,
 		Cell,
 		UI,

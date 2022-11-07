@@ -195,7 +195,7 @@ veinhole:
 		ZOffset: 1
 		Length: *
 		Facings: 1
-		MeshType: TileActor # use MapRenderer
+		MeshType: TerrainCovering # use MapRenderer
 	idle:
 		Frames: 0
 	todie:

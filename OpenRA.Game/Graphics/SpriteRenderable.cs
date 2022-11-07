@@ -118,7 +118,7 @@ namespace OpenRA.Graphics
 			var a = alpha;
 
 			// this sprite should use MapRenderer to render
-			if (Sprite.SpriteMeshType == SpriteMeshType.TileActor || Sprite.SpriteMeshType == SpriteMeshType.TileActorNoStretch)
+			if (Sprite.SpriteMeshType == SpriteMeshType.TerrainCovering || Sprite.SpriteMeshType == SpriteMeshType.TileActorNoStretch)
 			{
 				Game.Renderer.MapRenderer.DrawTileAdditonSprite(Sprite, palette, Pos, viewOffset, scale, t, a, wr.World.Map);
 				return;

@@ -13,6 +13,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
+using OpenRA.Primitives;
 using OpenRA.Traits;
 
 namespace OpenRA.Graphics
@@ -234,7 +235,14 @@ namespace OpenRA.Graphics
 					cells[cellIndex].IgnoreTint = ignoreTint;
 
 				}
-				else
+				else if (spriteMeshType == SpriteMeshType.TerrainCovering)
+				{
+					cells[cellIndex].Vertices = Util.FastCreateTileActor(pos, World3DCoordinate.Vec3toFloat3(viewOffset), sprite, samplers, palette?.TextureIndex ?? 0,
+						scale, float3.Zero, ignoreTint ? -alpha : alpha, map);
+					cells[cellIndex].Draw = true;
+					cells[cellIndex].IgnoreTint = ignoreTint;
+				}
+				 else
 				{
 					throw new Exception("TerrainSpriteLayer only support Plane and Cell MeshType Now.");
 				}

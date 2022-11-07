@@ -202,7 +202,7 @@ namespace OpenRA.Graphics
 			// don't sort it now, we only need to sort the alpha renderable
 			foreach (var renderable in renderablesBuffer.OrderBy(RenderableZPositionComparisonKey))
 			{
-				if (renderable is SpriteRenderable && (renderable as SpriteRenderable).Sprite.SpriteMeshType == SpriteMeshType.TileActor)
+				if (renderable is SpriteRenderable && (renderable as SpriteRenderable).Sprite.SpriteMeshType == SpriteMeshType.TerrainCovering)
 					preparedMapAdditonRenderables.Add(renderable.PrepareRender(this));
 				else
 				{

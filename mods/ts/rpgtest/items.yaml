@@ -42,7 +42,12 @@ gunitem:
 		ThumbnailImage: items
 		ThumbnailSequence: ioncannon
 		Weapon: KittenProtonPulse
-		LocalOffset: 333,0,155
+		LocalOffset: 433,0,155
+	RenderMeshes:
+		Image: rumya
+	ItemMesh@test:
+		Mesh: w_rail
+
 
 testitem:
 	Item:
@@ -52,4 +57,3 @@ testitem:
 		ThumbnailPalette: player
 		ThumbnailPaletteIsPlayerPalette: true
 		Condition: visl
-

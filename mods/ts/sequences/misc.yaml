@@ -675,11 +675,10 @@ resources:
 		BlendMode: Alpha
 		UseTilesetExtension: true
 		Length: 12
-		ShadowStart: 12
-		Offset: 0, -12, 1
-		ZRamp: 1
+		# ShadowStart: 12
+		Offset: 0, -12, 0
 		IgnoreWorldTint: true
-		ZOffset: 8
+		ZOffset: 1024
 		MeshType: Plane
 	tib01: tib01
 	tib02: tib02
@@ -704,8 +703,10 @@ resources:
 	veins: veins
 		Length: *
 		ShadowStart: -1
+		Offset: 0, -13, 0
 		UseTilesetExtension: false
 		IgnoreWorldTint: false
+
 
 veins:
 	idle: veinatac

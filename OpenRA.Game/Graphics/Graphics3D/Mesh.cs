@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Numerics;
+using GlmSharp;
 using OpenRA.FileSystem;
 using OpenRA.Primitives;
 using TrueSync;
@@ -15,7 +16,7 @@ namespace OpenRA.Graphics
 		public Func<WPos> PoistionFunc;
 		public Func<WRot> RotationFunc;
 		public Func<bool> IsVisible;
-		public Func<TSMatrix4x4> Matrix;
+		public Func<mat4> Matrix;
 		public bool UseMatrix = false;
 		public string SkeletonBinded = null;
 
@@ -32,7 +33,7 @@ namespace OpenRA.Graphics
 			Material = OrderedMesh.DefaultMaterial;
 		}
 
-		public MeshInstance(IOrderedMesh mesh, Func<TSMatrix4x4> matrix, Func<bool> isVisible, string skeleton = null)
+		public MeshInstance(IOrderedMesh mesh, Func<mat4> matrix, Func<bool> isVisible, string skeleton = null)
 		{
 			OrderedMesh = mesh;
 			UseMatrix = true;
@@ -47,7 +48,7 @@ namespace OpenRA.Graphics
 		{
 			OrderedMesh = mesh;
 			UseMatrix = true;
-			Matrix = () => TSMatrix4x4.Identity;
+			Matrix = () => mat4.Identity;
 			IsVisible = () => false;
 			DrawId = () => -1;
 			SkeletonBinded = null;

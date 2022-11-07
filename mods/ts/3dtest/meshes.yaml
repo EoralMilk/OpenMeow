@@ -95,6 +95,8 @@ rumya:
 			BaseMaterial: body
 			UseDQBSkin: true
 			Material: none
+		w_rail: w_rail
+			Material: w_rail
 
 
 # rumya-2:

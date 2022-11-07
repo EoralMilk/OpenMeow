@@ -200,11 +200,15 @@ namespace OpenRA.Graphics
 
 				if (m.UseMatrix)
 				{
-					TSMatrix4x4 t = m.Matrix();
-					float[] data = new float[23] { (float)t.M11, (float)t.M21, (float)t.M31, (float)t.M41,
-																(float)t.M12, (float)t.M22, (float)t.M32, (float)t.M42,
-																(float)t.M13, (float)t.M23, (float)t.M33, (float)t.M43,
-																(float)t.M14, (float)t.M24, (float)t.M34, (float)t.M44,
+					if (m.Matrix == null)
+						continue;
+
+					var t = m.Matrix();
+
+					float[] data = new float[23] { (float)t.m00, (float)t.m01, (float)t.m02, (float)t.m03,
+																(float)t.m10, (float)t.m11, (float)t.m12, (float)t.m13,
+																(float)t.m20, (float)t.m21, (float)t.m22, (float)t.m23,
+																(float)t.m30, (float)t.m31, (float)t.m32, (float)t.m33,
 																tint.X, tint.Y, tint.Z, alpha,
 																remap.R, remap.G, remap.B,
 					};

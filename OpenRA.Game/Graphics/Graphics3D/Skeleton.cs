@@ -224,6 +224,11 @@ namespace OpenRA.Graphics
 			return Bones[id].CurrentPose;
 		}
 
+		public mat4 BoneRenderOffsetMat(int id)
+		{
+			return Bones[id].RenderCurrentPose;
+		}
+
 		public void SetBoneOffsetMat(int id, TSMatrix4x4 mat, bool ignoreScale = false)
 		{
 			if (ignoreScale)

@@ -620,7 +620,7 @@ namespace OpenRA.Graphics
 			var height = (int)(r.Bounds.Height * Game.Renderer.World3DRenderer.WDistPerPix * scale);
 
 			// height * 2 for isometric tile
-			if (r.SpriteMeshType == SpriteMeshType.TileActor)
+			if (r.SpriteMeshType == SpriteMeshType.TerrainCovering)
 				height *= 2;
 
 			var w = width / 2;
@@ -682,28 +682,28 @@ namespace OpenRA.Graphics
 							index = iRT;
 							uv = CalUV(map.TerrainVertices[index].LogicPos, TLX, TLY, width, height);
 							vertices[i] = new MapVertex(map.TerrainVertices[index].Pos + viewOffset, map.TerrainVertices[index].TBN, uv,
-								r.Left + r.LR * uv.X, r.Top + r.TB * uv.Y, sl + lr * uv.X, st + tb * uv.Y, paletteTextureIndex, fAttribC);
+								r.Left + r.LR * uv.X, r.Top + r.TB * uv.Y, sl + lr * uv.X, st + tb * uv.Y, paletteTextureIndex, fAttribC, tint, alpha);
 							index = iLT;
 							uv = CalUV(map.TerrainVertices[index].LogicPos, TLX, TLY, width, height);
 							vertices[i + 1] = new MapVertex(map.TerrainVertices[index].Pos + viewOffset, map.TerrainVertices[index].TBN, uv,
-								r.Left + r.LR * uv.X, r.Top + r.TB * uv.Y, sl + lr * uv.X, st + tb * uv.Y, paletteTextureIndex, fAttribC);
+								r.Left + r.LR * uv.X, r.Top + r.TB * uv.Y, sl + lr * uv.X, st + tb * uv.Y, paletteTextureIndex, fAttribC, tint, alpha);
 							index = iRB;
 							uv = CalUV(map.TerrainVertices[index].LogicPos, TLX, TLY, width, height);
 							vertices[i + 2] = new MapVertex(map.TerrainVertices[index].Pos + viewOffset, map.TerrainVertices[index].TBN, uv,
-								r.Left + r.LR * uv.X, r.Top + r.TB * uv.Y, sl + lr * uv.X, st + tb * uv.Y, paletteTextureIndex, fAttribC);
+								r.Left + r.LR * uv.X, r.Top + r.TB * uv.Y, sl + lr * uv.X, st + tb * uv.Y, paletteTextureIndex, fAttribC, tint, alpha);
 
 							index = iLT;
 							uv = CalUV(map.TerrainVertices[index].LogicPos, TLX, TLY, width, height);
 							vertices[i + 3] = new MapVertex(map.TerrainVertices[index].Pos + viewOffset, map.TerrainVertices[index].TBN, uv,
-								r.Left + r.LR * uv.X, r.Top + r.TB * uv.Y, sl + lr * uv.X, st + tb * uv.Y, paletteTextureIndex, fAttribC);
+								r.Left + r.LR * uv.X, r.Top + r.TB * uv.Y, sl + lr * uv.X, st + tb * uv.Y, paletteTextureIndex, fAttribC, tint, alpha);
 							index = iLB;
 							uv = CalUV(map.TerrainVertices[index].LogicPos, TLX, TLY, width, height);
 							vertices[i + 4] = new MapVertex(map.TerrainVertices[index].Pos + viewOffset, map.TerrainVertices[index].TBN, uv,
-								r.Left + r.LR * uv.X, r.Top + r.TB * uv.Y, sl + lr * uv.X, st + tb * uv.Y, paletteTextureIndex, fAttribC);
+								r.Left + r.LR * uv.X, r.Top + r.TB * uv.Y, sl + lr * uv.X, st + tb * uv.Y, paletteTextureIndex, fAttribC, tint, alpha);
 							index = iRB;
 							uv = CalUV(map.TerrainVertices[index].LogicPos, TLX, TLY, width, height);
 							vertices[i + 5] = new MapVertex(map.TerrainVertices[index].Pos + viewOffset, map.TerrainVertices[index].TBN, uv,
-								r.Left + r.LR * uv.X, r.Top + r.TB * uv.Y, sl + lr * uv.X, st + tb * uv.Y, paletteTextureIndex, fAttribC);
+								r.Left + r.LR * uv.X, r.Top + r.TB * uv.Y, sl + lr * uv.X, st + tb * uv.Y, paletteTextureIndex, fAttribC, tint, alpha);
 						}
 						else
 						{
@@ -715,28 +715,28 @@ namespace OpenRA.Graphics
 							index = iRT;
 							uv = CalUV(map.TerrainVertices[index].LogicPos, TLX, TLY, width, height);
 							vertices[i] = new MapVertex(map.TerrainVertices[index].Pos + viewOffset, map.TerrainVertices[index].TBN, uv,
-								r.Left + r.LR * uv.X, r.Top + r.TB * uv.Y, sl + lr * uv.X, st + tb * uv.Y, paletteTextureIndex, fAttribC);
+								r.Left + r.LR * uv.X, r.Top + r.TB * uv.Y, sl + lr * uv.X, st + tb * uv.Y, paletteTextureIndex, fAttribC, tint, alpha);
 							index = iLT;
 							uv = CalUV(map.TerrainVertices[index].LogicPos, TLX, TLY, width, height);
 							vertices[i + 1] = new MapVertex(map.TerrainVertices[index].Pos + viewOffset, map.TerrainVertices[index].TBN, uv,
-								r.Left + r.LR * uv.X, r.Top + r.TB * uv.Y, sl + lr * uv.X, st + tb * uv.Y, paletteTextureIndex, fAttribC);
+								r.Left + r.LR * uv.X, r.Top + r.TB * uv.Y, sl + lr * uv.X, st + tb * uv.Y, paletteTextureIndex, fAttribC, tint, alpha);
 							index = iLB;
 							uv = CalUV(map.TerrainVertices[index].LogicPos, TLX, TLY, width, height);
 							vertices[i + 2] = new MapVertex(map.TerrainVertices[index].Pos + viewOffset, map.TerrainVertices[index].TBN, uv,
-								r.Left + r.LR * uv.X, r.Top + r.TB * uv.Y, sl + lr * uv.X, st + tb * uv.Y, paletteTextureIndex, fAttribC);
+								r.Left + r.LR * uv.X, r.Top + r.TB * uv.Y, sl + lr * uv.X, st + tb * uv.Y, paletteTextureIndex, fAttribC, tint, alpha);
 
 							index = iRT;
 							uv = CalUV(map.TerrainVertices[index].LogicPos, TLX, TLY, width, height);
 							vertices[i + 3] = new MapVertex(map.TerrainVertices[index].Pos + viewOffset, map.TerrainVertices[index].TBN, uv,
-								r.Left + r.LR * uv.X, r.Top + r.TB * uv.Y, sl + lr * uv.X, st + tb * uv.Y, paletteTextureIndex, fAttribC);
+								r.Left + r.LR * uv.X, r.Top + r.TB * uv.Y, sl + lr * uv.X, st + tb * uv.Y, paletteTextureIndex, fAttribC, tint, alpha);
 							index = iLB;
 							uv = CalUV(map.TerrainVertices[index].LogicPos, TLX, TLY, width, height);
 							vertices[i + 4] = new MapVertex(map.TerrainVertices[index].Pos + viewOffset, map.TerrainVertices[index].TBN, uv,
-								r.Left + r.LR * uv.X, r.Top + r.TB * uv.Y, sl + lr * uv.X, st + tb * uv.Y, paletteTextureIndex, fAttribC);
+								r.Left + r.LR * uv.X, r.Top + r.TB * uv.Y, sl + lr * uv.X, st + tb * uv.Y, paletteTextureIndex, fAttribC, tint, alpha);
 							index = iRB;
 							uv = CalUV(map.TerrainVertices[index].LogicPos, TLX, TLY, width, height);
 							vertices[i + 5] = new MapVertex(map.TerrainVertices[index].Pos + viewOffset, map.TerrainVertices[index].TBN, uv,
-								r.Left + r.LR * uv.X, r.Top + r.TB * uv.Y, sl + lr * uv.X, st + tb * uv.Y, paletteTextureIndex, fAttribC);
+								r.Left + r.LR * uv.X, r.Top + r.TB * uv.Y, sl + lr * uv.X, st + tb * uv.Y, paletteTextureIndex, fAttribC, tint, alpha);
 						}
 
 						i += 6;
