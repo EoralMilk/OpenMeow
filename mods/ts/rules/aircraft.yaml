@@ -726,6 +726,7 @@ HUNTER:
 
 QDRONE:
 	Inherits: ^Aircraft
+	-UpdatesPlayerStatistics:
 	-Selectable:
 	-SelectionDecorations:
 	Interactable:
@@ -769,7 +770,6 @@ QDRONE:
 	-SpawnActorOnDeath:
 	-RenderModels:
 	-WithModelBody:
-	-UpdatesPlayerStatistics:
 	-ActorLostNotification:
 	WithSpriteBody:
 	WithShadow:
@@ -788,6 +788,7 @@ QDRONE:
 RPGDRONE:
 	Inherits: ^Aircraft
 	Inherits@AUTOTARGET: ^AutoTargetAir
+	-UpdatesPlayerStatistics:
 	-Selectable:
 	-SelectionDecorations:
 	Interactable:
@@ -831,7 +832,6 @@ RPGDRONE:
 	-SpawnActorOnDeath:
 	-RenderModels:
 	-WithModelBody:
-	-UpdatesPlayerStatistics:
 	-ActorLostNotification:
 	AutoTarget:
 		ScanRadius: 8
@@ -853,6 +853,7 @@ RPGDRONE:
 REPAIRDRONE:
 	Inherits: ^Aircraft
 	Inherits@AUTOTARGET: ^AutoTargetRepair
+	-UpdatesPlayerStatistics:
 	-Selectable:
 	-SelectionDecorations:
 	Interactable:
@@ -897,7 +898,6 @@ REPAIRDRONE:
 	-SpawnActorOnDeath:
 	-RenderModels:
 	-WithModelBody:
-	-UpdatesPlayerStatistics:
 	-ActorLostNotification:
 	QuantizeFacingsFromSequence:
 	WithFacingSpriteBody:
@@ -923,10 +923,10 @@ SCRIN.VEIN:
 		Cost: 1700
 	Tooltip:
 		Name: "Banshee" Fighter
-	UpdatesPlayerStatistics:
-		AddToArmyValue: true
+	-UpdatesPlayerStatistics:
 	-Selectable:
 	-SelectionDecorations:
+	-MapEditorData:
 	RejectsOrders:
 	Interactable:
 	Aircraft:
@@ -1001,20 +1001,40 @@ SCRIN.VEIN:
 		Image: scrin
 
 ORCA.ASSULT:
-	Inherits: ORCA
+	Inherits: ^EMPableAircraft
+	Inherits@bounty: ^GlobalBounty
+	Valued:
+		Cost: 1000
+	Tooltip:
+		Name: "Orca" Fighter
 	-Selectable:
 	-SelectionDecorations:
-	-Buildable:
 	-UpdatesPlayerStatistics:
+	-MapEditorData:
 	RejectsOrders:
 	Interactable:
-	-AttackAircraft:
+	Aircraft:
+		TurnSpeed: 32
+		Speed: 206
+		TakeoffSounds: orcaup1.aud
+		LandingSounds: orcadwn1.aud
+		AltitudeVelocity: 128
+		CanSlide: false
+		TakeOffOnResupply: true
+	Health:
+		HP: 20000
+	Armor:
+		Type: Light
+	SpawnActorOnDeath:
+		Actor: ORCA.Husk
+		RequiresCondition: !empdisable && airborne
+	SpawnActorOnDeath@EMP:
+		Actor: ORCA.Husk.EMP
+		RequiresCondition: empdisable && airborne
 	AttackBomber:
 		PersistentTargeting: false
 		PauseOnCondition: empdisable
 		FacingTolerance: 512
-		# AttackType: Strafe
-		# StrafeRunLength: 17c0
 		FacingFullOnTarget: true
 	Armament:
 		Weapon: VectorHellfire.Assult

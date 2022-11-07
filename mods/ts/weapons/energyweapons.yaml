@@ -124,7 +124,7 @@ SonicWave:
 	ValidTargets: Ground, Trees, Water
 	ReloadDelay: 75
 	Range: 6c512
-	Report: sonic4.aud
+	StartBurstReport: sonic4.aud
 	Burst: 20
 	BurstDelays: 2
 	Projectile: BlastWave

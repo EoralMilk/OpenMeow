@@ -85,6 +85,7 @@ ENGINEER:
 	Captures:
 		CaptureTypes: building
 		PlayerExperience: 50
+		CaptureDelay: 75
 	RenderSprites:
 		Image: engineer.gdi
 		FactionImages:

@@ -239,7 +239,7 @@ TitanMissile:
 			Heavy: 70
 			Concrete: 60
 
-LimpetMissile: ##todo
+LimpetMissile:
 	Inherits: BikeMissile
 	Range: 6c512
 	ReloadDelay: 90
@@ -588,3 +588,89 @@ ProtonFlameMissileClusterSmall:
 		StartOffset: 0,-1024,0
 		FireCount: 3
 		ForceTargetGround: true
+
+LauncherMultiCluster:
+	Inherits: ^VectorBooster
+	ValidTargets: Ground, Water, Air, Trees
+	-Report:
+	Projectile: VectorBooster
+		Speed: 120
+		MinSpeed: 55
+		MaxSpeed: 388
+		Inaccuracy: 1c0
+		Acceleration: 10
+		# MaximumLaunchSpeed: 120
+		# MinimumLaunchAngle: -255
+		# MaximumLaunchAngle: 255
+		# RangeLimit: 10c0
+		# VerticalRateOfTurn: 64
+		LaunchAngle: 0
+		LifeTime: 66
+		AllowSnapping: false
+		HorizonRotationRate: 14
+		VerticalRotationRate: 11
+	Warhead@1Dam: SpreadDamage
+		Spread: 458
+		Damage: 20000
+		ValidTargets: Ground, Water, Air, Trees
+		Versus:
+			None: 100
+			Wood: 85
+			Light: 100
+			Heavy: 75
+			Concrete: 30
+		DamageTypes: Prone50Percent, TriggerProne, ExplosionDeath
+	Warhead@2Eff: CreateEffect
+		ImpactActors: false
+		Explosions: large_twlt
+		ImpactSounds: expnew09.aud
+	Warhead@5Res: DestroyResource
+		Size: 2
+		ResourceAmount: 4
+		ResourceTypes: Tiberium, BlueTiberium
+
+LauncherClusterMissile:
+	ValidTargets: Ground, Water, Air, Trees
+	Inherits: ^DefaultMissile
+	Range: 9999c0
+	ReloadDelay: 50
+	Report: samshot1.aud
+	ValidTargets: Ground, Water, Air, Trees
+	Projectile: Missile
+		Unit: missile
+		Meshes: idle
+		MeshScale: 6
+		HomingActivationDelay: 80
+		RangeLimit: -1
+		LifeTime: -1
+		MaxSpeed: 800
+		HorizontalRateOfTurn: 128
+		MinimumLaunchSpeed: 512
+		MaximumLaunchSpeed: 512
+		Acceleration: 96
+		MinimumLaunchAngle: 253
+		MaximumLaunchAngle: 253
+		Gravity: 0
+		ContrailLength: 10
+		ContrailWidth: 256
+		CruiseAltitude: 90c0
+		AirburstAltitude: 6c0
+		TrailCount: 2
+		ContrailStartColor: DFA877
+		ContrailStartColorOuter: FFDD44
+		ContrailStartColorAlpha: 152
+		ContrailStartColorAlphaOuter: 0
+	Warhead@SoundEffect: CreateEffect
+		Explosions: large_twlt
+		ImpactSounds: expnew19.aud
+		ImpactActors: false
+		ValidTargets: Ground, Water, Air
+	Warhead@Cluster: FireCluster
+		Weapon: LauncherMultiCluster
+		RandomClusterCount: 5
+		Dimensions: 7,7
+		Footprint: __xxx__ _xxXxx_ xxXXXxx xXXXXXx xxXXXxx _xxXxx_ __xxx__
+	Warhead@Shake: ShakeScreen
+		Duration: 20
+		Intensity: 5
+		Multiplier: 1,1

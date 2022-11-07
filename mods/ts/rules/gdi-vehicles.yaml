@@ -473,6 +473,8 @@ SONIC:
 	Armament:
 		Weapon: SonicWave
 		LocalOffset: 171,0,535 #-71,0,535
+		ExhaustAllBurst: true
+		NotCheckRangeToExhaustAllBurst: true
 	AttackTurreted:
 		Voice: Attack
 		PauseOnCondition: empdisable

@@ -98,32 +98,6 @@ TRUCKA:
 TRUCKB:
 	Inherits: ^TRUCK
 
-ICBM:
-	Inherits: ^CivilianVoxelCrusher
-	Inherits@selection: ^SelectableSupportUnit
-	Valued:
-		Cost: 1400
-	Tooltip:
-		Name: Ballistic Missile Launcher
-	Health:
-		HP: 50000
-	Armor:
-		Type: Light
-	Mobile:
-		Speed: 85
-		TurnSpeed: 20
-	RevealsShroud:
-		RequiresCondition: !inside-tunnel
-		Range: 7c0
-		MaxHeightDelta: 1100
-	Transforms:
-		IntoActor: gaicbm
-		Offset: -1,-1
-		Facing: 384
-		TransformSounds:
-		NoTransformSounds:
-		Voice: Move
-
 BUS:
 	Inherits: ^CivilianVoxelCrusher
 	Inherits@CARGOPIPS: ^CargoPips

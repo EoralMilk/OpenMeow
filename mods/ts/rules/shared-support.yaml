@@ -3,6 +3,7 @@ NAPULS:
 	Inherits@IDISABLE: ^DisableOnLowPowerOrPowerDown
 	Inherits@SHAPE: ^2x2Shape
 	Inherits@bounty: ^GlobalBounty
+	Inherits@AImicroManagable: ^AImicroManagable
 	Valued:
 		Cost: 1000
 	Tooltip:
@@ -27,10 +28,27 @@ NAPULS:
 		RealignDelay: -1
 	AttackTurreted:
 		RequiresCondition: !build-incomplete && !empdisable && !disabled
-	Armament:
+	Armament@trueweapon:
 		Weapon: EMPulseCannon
 		LocalOffset: 212,0,1020
 		LocalYaw: 0,100
+		Name: superweapon
+	FireArmamentPower:
+		AllowMultiple: false
+		Cursor: emp
+		ArmamentName: superweapon
+		Icon: emp
+		ChargeInterval: 4500
+		TargetCircleRange: 4c0
+		Name: E.M. Pulse
+		Description: Fires a pulse blast which disables\nall mechanical units in the area.
+		EndChargeSpeechNotification: EmPulseCannonReady
+		SelectTargetSpeechNotification: SelectTarget
+		EndChargeTextNotification: EMP cannon ready.
+		SelectTargetTextNotification: Select target.
+		OrderName: Nodemp
+		PauseOnCondition: disabled || empdisable
+		RequiresCondition: !AImicroManagable
 	WithSpriteTurret:
 		RequiresCondition: !build-incomplete
 		Sequence: turret
@@ -43,14 +61,33 @@ NAPULS:
 			nod: napuls.nod
 	ProvidesPrerequisite@gdi:
 		ResetOnOwnerChange: true
-	AttackOrderPower:
-		PauseOnCondition: empdisable || disabled
-		Cursor: emp
-		Icon: emp
-		ChargeInterval: 3375
-		Name: E.M. Pulse
-		Description: Fires a pulse blast which disables\nall mechanical units in the area.
-		EndChargeSpeechNotification: EmPulseCannonReady
-		SelectTargetSpeechNotification: SelectTarget
-		EndChargeTextNotification: EMP cannon ready.
-		SelectTargetTextNotification: Select target.
+	Armament@AIonly:
+		Weapon: EMPulseCannon
+		LocalOffset: 200,0,1900
+		LocalYaw: 0,100
+		RequiresCondition: AImicroManagable
+		PauseOnCondition: !ammo || disabled || empdisable
+	ReloadAmmoPool@AIonly:
+		AmmoPool: primary
+		RequiresCondition: AImicroManagable
+		Count: 1
+		Delay: 4500
+		PauseOnCondition: disabled || empdisable
+	AmmoPool@AIonly:
+		Ammo: 1
+		InitialAmmo: 0
+		AmmoCondition: ammo
+	ProvidesPrerequisite@AIBuildLimit:
+		RequiresCondition: AImicroManagable
+		Prerequisite: AIEmpBuildLimit
+	AutoTarget@AIonly:
+		RequiresCondition: AImicroManagable && ammo
+		InitialStanceAI: Defend
+		MinimumScanTimeInterval: 83
+		MaximumScanTimeInterval: 100
+		ScanRadius: 25
+	AutoTargetPriority@AIonly:
+		RequiresCondition: AImicroManagable
+		ValidTargets: Vehicle
+		ValidRelationships: Enemy
+		Priority: 2

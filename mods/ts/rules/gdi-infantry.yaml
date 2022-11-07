@@ -67,7 +67,7 @@ MEDIC:
 		Queue: Infantry
 		BuildPaletteOrder: 50
 		Prerequisites: ~gapile, ~techlevel.low
-		Description: Heals nearby infantry.\n  Unarmed
+		Description: Heals nearby infantry.\n  Unarmed \n Undamaged by Tiberium field
 	Voiced:
 		VoiceSet: Medic
 	RevealsShroud:
@@ -85,6 +85,7 @@ MEDIC:
 		Cursor: heal
 		OutsideRangeCursor: heal
 		RequiresCondition: !WebDisable && !inside-tunnel
+	-DamagedByTerrain@Tiberium:
 	AttackFrontal:
 		FacingTolerance: 0
 		RequiresCondition: !WebDisable && !inside-tunnel
@@ -177,7 +178,7 @@ JUMPJETAIR:
 			TopLeft: -250, -250
 			BottomRight: 250, 250
 	Health:
-		HP: 15000
+		HP: 8000
 	Armament@1:
 		Weapon: JumpVulcan
 		LocalOffset: 360,0,433

@@ -595,6 +595,7 @@ GAPLUG:
 		SelectTargetTextNotification: Select target.
 		DisplayRadarPing: True
 		CameraActor: camera
+		OrderName: Ioncannon
 	DropPodsPower:
 		Cursor: ioncannon
 		PauseOnCondition: disabled || empdisable
@@ -609,6 +610,7 @@ GAPLUG:
 		UnitTypes: DPOD2E1, DPOD2E2
 		CameraActor: camera
 		Weapon: DummyWeapon
+		OrderName: Droppod
 	ProduceActorPower:
 		PauseOnCondition: disabled || empdisable
 		RequiresCondition: plug.hunterseekera || plug.hunterseekerb
@@ -717,11 +719,14 @@ GAPLUG:
 		Palette: bright
 	ProvidesPrerequisite@buildingname:
 	ProvidesPrerequisite@pluggableion:
-		RequiresCondition: !plug.ioncannona && !plug.ioncannonb
+		RequiresCondition: plug.ioncannona || plug.ioncannonb
 		Prerequisite: gaplug.socket.ioncannon
 	ProvidesPrerequisite@pluggablehunter:
-		RequiresCondition: !plug.hunterseekera && !plug.hunterseekerb
+		RequiresCondition: plug.hunterseekera || plug.hunterseekerb
 		Prerequisite: gaplug.socket.hunterseeker
+	ProvidesPrerequisite@pluggabledrop:
+		RequiresCondition: plug.droppoda || plug.droppodb
+		Prerequisite: gaplug.socket.drop
 	IsometricSelectable:
 		Height: 48
 
@@ -746,7 +751,7 @@ GAPLUG2:
 	Buildable:
 		Queue: Building
 		BuildPaletteOrder: 110
-		Prerequisites: gaplug.socket.hunterseeker, gatech, gaweap, ~structures.gdi, ~techlevel.superweapons
+		Prerequisites: ~!gaplug.socket.hunterseeker, gatech, gaplug, ~structures.gdi, ~techlevel.superweapons
 		Description: Enables use of the hunter-seeker droid.\nMakes GDI Upgrade Center consume 50 more power.
 	Plug:
 		Type: plug.hunterseeker
@@ -762,7 +767,7 @@ GAPLUG3:
 	Buildable:
 		Queue: Building
 		BuildPaletteOrder: 120
-		Prerequisites: gaplug.socket.ioncannon, gatech, ~structures.gdi, ~techlevel.superweapons
+		Prerequisites: ~!gaplug.socket.ioncannon, gatech, gaplug, ~structures.gdi, ~techlevel.superweapons
 		Description: Enables use of the Ion Cannon.\nMakes GDI Upgrade Center consume 100 more power.
 	Plug:
 		Type: plug.ioncannon
@@ -778,7 +783,7 @@ GAPLUG4:
 	Buildable:
 		Queue: Building
 		BuildPaletteOrder: 180
-		Prerequisites: gaplug, gatech, ~structures.gdi, ~techlevel.superweapons
+		Prerequisites: ~!gaplug.socket.drop, gatech, gaplug, ~structures.gdi, ~techlevel.superweapons
 		Description: Enables use of the Drop Pod Reinforcements. \nMakes GDI Upgrade Center consume 100 more power.
 	Plug:
 		Type: plug.droppod

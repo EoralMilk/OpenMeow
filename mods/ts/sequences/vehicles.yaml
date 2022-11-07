@@ -440,6 +440,46 @@ truckb:
 icbm:
 	Inherits@defaults: ^VehicleBase
 	Inherits: ^VehicleOverlays
+	idle: gaicbmmk
+		Offset: 0, -8, 9
+		UseTilesetCode: true
+		DepthSprite: isodepth.shp
+		DepthSpriteOffset: -12, 6
+		Start: 28
+		ShadowStart: 58
+		Scale: 1.1
+	damaged-idle: gaicbmmk
+		Offset: 0, -8, 9
+		UseTilesetCode: true
+		DepthSprite: isodepth.shp
+		DepthSpriteOffset: -12, 6
+		Start: 28
+		ShadowStart: 58
+		Scale: 1.1
+	launched-idle: gaicbmmk
+		Offset: 0, -8, 9
+		UseTilesetCode: true
+		DepthSprite: isodepth.shp
+		DepthSpriteOffset: -12, 6
+		Start: 29
+		ShadowStart: 59
+		Scale: 1.1
+	emp-overlay: emp_fx01
+		Length: *
+		Offset: 0, 0, 13
+		UseTilesetCode: false
+		ZOffset: 512
+		BlendMode: Additive
+		IgnoreWorldTint: True
+	make: gaicbmmk
+		Offset: 0, -8, 9
+		UseTilesetCode: true
+		DepthSprite: isodepth.shp
+		DepthSpriteOffset: -12, 6
+		Length: 28
+		Scale: 1.1
+		ShadowStart: 30
+	icon: mltiicon
 
 bus:
 	Inherits@defaults: ^VehicleBase

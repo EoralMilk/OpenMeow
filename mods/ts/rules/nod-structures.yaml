@@ -531,7 +531,7 @@ NAMISL:
 		Cursor: nuke
 		Icon: clustermissile
 		OrderName: ClusterMissileAttack
-		ChargeInterval: 8750
+		ChargeInterval: 9750
 		Name: Cluster Missile
 		Description: Launches an explosive cluster warhead\nat a target location.
 		EndChargeSpeechNotification: ClusterMissileReady
@@ -676,13 +676,8 @@ NAWAST:
 		CameraRemoveDelay: 150
 		UnitType: scrin.vein
 		QuantizedFacings: 8
-		#DisplayBeacon: true
-		#BeaconPoster: pbmbicon
 		SquadSize: 1
 		SquadOffset: 1792,1792,0
-		#ArrowSequence: arrow
-		#ClockSequence: clock
-		#CircleSequence: circles
 		UseDirectionalTarget: True
 		DirectionArrowAnimation: airstrikedirection
 		DirectionArrowPalette: mouse

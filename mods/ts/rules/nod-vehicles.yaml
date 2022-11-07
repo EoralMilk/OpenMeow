@@ -405,6 +405,7 @@ WEED:
 	Inherits@VOXELS: ^VoxelActor
 	Inherits@WithRA2VoxRender: ^WithRA2VoxRender
 	Inherits@selection: ^SelectableEconomicUnit
+	Inherits@AImicroManagable: ^AImicroManagable
 	Inherits@bounty: ^GlobalBounty
 	Valued:
 		Cost: 1400
@@ -430,6 +431,9 @@ WEED:
 		MaxSpeed: 71
 		SpeedAccleration: 6
 		TurnSpeed: 20
+	Targetable@AIveinBomb:
+		RequiresCondition: AImicroManagable
+		TargetTypes: AIvein
 	Health:
 		HP: 60000
 	ChangesHealth:
@@ -638,7 +642,6 @@ REAPER:
 	Inherits: ^Vehicle
 	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Inherits@EXPERIENCE: ^GainsExperience
-	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@bounty: ^GlobalBounty
 	Inherits@3: ^HealsOnTiberium
 	Inherits@LeaveTib: ^LeaveTiberiumWhenDeath
@@ -705,3 +708,106 @@ REAPER:
 	-SpawnActorOnDeath@ctech:
 	-DamagedByTerrain@VEINS:
 	-LeavesTrails@VEINS:
+
+ICBM:
+	Inherits: ^Vehicle
+	Inherits@VOXELS: ^VoxelActor
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@bounty: ^GlobalBounty
+	Inherits@AImicroManagable: ^AImicroManagable
+	Valued:
+		Cost: 4000
+	Tooltip:
+		Name: Ballistic Missile Launcher
+		RequiresCondition: !deployed
+	Tooltip@DEPLOYED:
+		Name: Ballistic Missile Launcher (deployed)
+		RequiresCondition: deployed
+	Health:
+		HP: 50000
+	Buildable:
+		Queue: Vehicle
+		BuildPaletteOrder: 149
+		Prerequisites: ~naweap, naradr, ~techlevel.high
+		Description: Long Range Missle Launcher.\nNeeds to deploy in order to shoot. \n-cannot deploy on ramp.\n  Strong vs Ground units\n  Weak vs Aircraft \n Maximum 1 can be builded.
+		BuildLimit: 1
+	Armor:
+		Type: Light
+	Mobile:
+		MaxSpeed: 50
+		TurnSpeed: 20
+		Speed: 16
+		SpeedAccleration: 1
+	RevealsShroud:
+		RequiresCondition: !inside-tunnel
+		Range: 7c0
+		MaxHeightDelta: 1100
+	GrantConditionOnDeploy:
+		PauseOnCondition: empdisable || being-captured
+		DeployedCondition: deployed
+		UndeployedCondition: undeployed
+		UndeployOnMove: true
+		UndeployOnPickup: true
+		Facing: 640
+		AllowedTerrainTypes: Clear, Road, DirtRoad, Rough, Tiberium, BlueTiberium
+		DeploySounds: place2.aud
+		UndeploySounds: clicky1.aud
+		Voice: Move
+	WithMakeAnimation:
+	EntersTunnels:
+		RequireForceMoveCondition: !undeployed
+	Repairable:
+		RequireForceMoveCondition: !undeployed
+	Passenger:
+		RequireForceMoveCondition: !undeployed
+	GrantCondition@PREVIEWWORKAROUND:
+		Condition: real-actor
+	WithModelBody:
+		RequiresCondition: undeployed
+	WithSpriteBody@deployedloaded:
+		RequiresCondition: !undeployed && real-actor && !reload
+	WithSpriteBody@deployedunloaded:
+		RequiresCondition: !undeployed && real-actor && reload
+		Sequence: launched-idle
+	AutoDeployer@AI:
+		RequiresCondition: AImicroManage && undeployed
+		DeployChance: 100
+		DeployTrigger: BecomingIdle
+		DeployTicks: 100
+		UndeployTicks: 100
+	Wanders@AI:
+		RequiresCondition: AImicroManage && !deployed
+		WanderMoveRadius: 4
+		MinMoveDelay: 300
+		MaxMoveDelay: 300
+	FireArmamentPower:
+		Cursor: nuke
+		Icon: clustermissile
+		ChargeInterval: 4000
+		ArmamentName: Superweapon
+		Name: Ballistic Missile
+		Description: Fires smaller cluster missile bombard target location.
+		Prerequisite: icbm
+		OrderName: icbmcluster
+		EndChargeSpeechNotification: ClusterMissileReady
+		SelectTargetSpeechNotification: SelectTarget
+		IncomingSpeechNotification: MissileLaunchDetected
+		EndChargeTextNotification: Cluster missile ready.
+		SelectTargetTextNotification: Select target.
+		IncomingTextNotification: Missile launch detected.
+		DisplayTimerRelationships: Ally
+		PauseOnCondition: empdisable || !deployed
+		CameraRange: 7c0
+		CameraSpawnAdvance: 25
+		CameraRemoveDelay: 350
+	ProvidesPrerequisite@icbm:
+		Prerequisite: icbm
+		ResetOnOwnerChange: true
+	Armament@SuperWeapon1:
+		Weapon: LauncherClusterMissile
+		LocalOffset: -600,100,0
+		Name: Superweapon
+		PauseOnCondition: empdisable
+		ReloadingCondition: reload
+	AttackOmni:
+

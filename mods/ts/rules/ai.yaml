@@ -30,7 +30,7 @@ Player:
 
 	CashTrickler@CashCheat: ## enough cash for test AI
 		Interval: 300
-		Amount: 1000
+		Amount: 750
 		ShowTicks: false
 		RequiresCondition: enable-test-ai
 	AutoDeployManager@AIall:
@@ -56,18 +56,18 @@ Player:
 			gasilo: 2
 			gapowr: 10
 			napowr: 10
-			gapile: 1
-			nahand: 1
-			gaweap: 1
-			naweap: 1
+			gapile: 2
+			nahand: 2
+			gaweap: 4
+			naweap: 4
 			garadr: 1
 			naradr: 1
 			gatech: 1
 			natech: 1
 			natmpl: 1
 			nastlh: 1
-			gahpad: 3
-			nahpad: 3
+			gahpad: 7
+			nahpad: 7
 			gadept: 2
 			gavulc: 8
 			garock: 2
@@ -76,12 +76,13 @@ Player:
 			naobel: 2
 			nalasr: 8
 			nasam: 4
-			#titanugvulcan: 14
-			#titanugmissile: 8
+			napuls: 1
+			namisl: 1
+			nawast: 1
 		BuildingFractions:
 			proc: 100
-			gapile: 30
-			nahand: 30
+			gapile: 100
+			nahand: 100
 			gaweap: 50
 			naweap: 50
 			garadr: 1
@@ -100,15 +101,27 @@ Player:
 			gactwr: 18
 			nasam: 6
 			naobel: 3
+			napuls: 1
+			nawast: 1
+			namisl: 1
 			gapowrup: 2
 			titanugvulcan: 14
 			titanugmissile: 8
+			gaplug: 1
+			gaplug3: 1
+			gaplug4: 1
+		BuildingDelays:
+			garadr: 4000
+			naradr: 4000
+			gatech: 7000
+			natech: 6000
+			proc: 600
 	BuildingRepairBotModule:
 		RequiresCondition: enable-test-ai
 	SquadManagerBotModule@test:
 		RequiresCondition: enable-test-ai
 		SquadSize: 20
-		ExcludeFromSquadsTypes: harv, mcv, dpod, hunter, trnsport
+		ExcludeFromSquadsTypes: harv, mcv, dpod, hunter, trnsport, weed, icbm
 		IgnoredEnemyTargetTypes: Wall, AIgnored
 		ConstructionYardTypes: gacnst
 		AirUnitsTypes: orca, orcab, scrin, apache, jumpjetair
@@ -118,9 +131,9 @@ Player:
 		IdleScanRadius: 15
 		AttackScanRadius: 14
 		ProtectionScanRadius: 15
-		SuggestedGroundLeaderLocomotor: foot, wheeled, heavywheeled, tracked, critter, visceroid, smallvisc
+		SuggestedGroundLeaderLocomotor: foot, wheeled, heavywheeled, tracked, critter, visceroid, smallvisc, walker, heavywalker, superwalker
 		SuggestedNavyLeaderLocomotor: Naval
-		GuerrillaTypes: smech, bggy, jumpjetair, hvr, bike, subtank, stnk, limped
+		GuerrillaTypes: smech, bggy, jumpjetair, hvr, bike, subtank, stnk, limped, apache
 	UnitBuilderBotModule@test:
 		RequiresCondition: enable-test-ai
 		UnitQueues: Vehicle, Infantry, Air
@@ -158,8 +171,12 @@ Player:
 			art2: 10
 			limped: 10
 			reaper: 5
+			weed: 1
+			icbm: 1
+			engineer: 1
 		UnitLimits:
 			harv: 4
+			weed: 3
 			medic: 14
 			repair: 1
 			ghost: 1
@@ -167,8 +184,141 @@ Player:
 			hmec: 1
 			apc: 1
 			trnsport: 2
+			engineer: 1
 	McvManagerBotModule@test:
 		RequiresCondition: enable-test-ai
 		McvTypes: mcv
 		ConstructionYardTypes: gacnst
 		McvFactoryTypes: gaweap, naweap
+		MinimumConstructionYardCount: 3
+		MinBaseRadius: 5
+		MaxBaseRadius: 30
+	CncEngineerBotModule@test:
+		RequiresCondition: enable-test-ai
+		EngineerActorTypes: engineer
+		CapturableActorTypes: gacnst, caarmr
+		RepairableActorTypes: well, gacnst, gaweap, naweap, garadr, naradr, gatech, natech, gaplug, natmpl, napuls, nastlh, namisl
+		RepairableHutActorTypes: cabhut
+	SupportPowerBotModule:
+		RequiresCondition: enable-test-ai
+		Decisions:
+			ioncannon:
+				OrderName: Ioncannon
+				MinimumAttractiveness: 8000
+				MinimumScanTimeInterval: 83
+				MaximumScanTimeInterval: 100
+				Consideration@2:
+					Against: Enemy
+					Types: Ground, Water
+					Attractiveness: 1
+					TargetMetric: Value
+					CheckRadius: 4c0
+				Consideration@3:
+					Against: Ally
+					Types: Ground, Water
+					Attractiveness: -10
+					TargetMetric: Value
+					CheckRadius: 5c0
+			apocalypsemissile:
+				OrderName: ClusterMissileAttack
+				MinimumAttractiveness: 10000
+				MinimumScanTimeInterval: 83
+				MaximumScanTimeInterval: 100
+				Consideration@1:
+					Against: Enemy
+					Types: Ground, Water
+					Attractiveness: 1
+					TargetMetric: Value
+					CheckRadius: 8c0
+				Consideration@2:
+					Against: Ally
+					Types: Ground, Water
+					Attractiveness: -10
+					TargetMetric: Value
+					CheckRadius: 7c0
+			toxinMissile:
+				OrderName: ChemicalMissileAttack
+				MinimumAttractiveness: 3000
+				MinimumScanTimeInterval: 83
+				MaximumScanTimeInterval: 100
+				Consideration@1:
+					Against: Enemy
+					Types: Vehicle, Infantry
+					Attractiveness: 1
+					TargetMetric: Value
+					CheckRadius: 5c0
+				Consideration@2:
+					Against: Ally
+					Types: Ground, Water
+					Attractiveness: -10
+					TargetMetric: Value
+					CheckRadius: 7c0
+			droppod:
+				OrderName: Droppod
+				MinimumAttractiveness: 3000
+				MinimumScanTimeInterval: 83
+				MaximumScanTimeInterval: 100
+				Consideration@2:
+					Against: Enemy
+					Types: Building
+					Attractiveness: 10
+					TargetMetric: Value
+					CheckRadius: 5c0
+				Consideration@3:
+					Against: Enemy
+					Types: Defence
+					Attractiveness: -100
+					TargetMetric: Value
+					CheckRadius: 7c0
+				Consideration@4:
+					Against: Enemy
+					Types: Ground
+					Attractiveness: 1
+					TargetMetric: Value
+					CheckRadius: 5c0
+			icbmcluster:
+				OrderName: icbmcluster
+				MinimumAttractiveness: 3500
+				MinimumScanTimeInterval: 83
+				MaximumScanTimeInterval: 100
+				Consideration@1:
+					Against: Enemy
+					Types: Ground, Water
+					Attractiveness: 1
+					TargetMetric: Value
+					CheckRadius: 4c0
+				Consideration@2:
+					Against: Ally
+					Types: Ground, Water
+					Attractiveness: -10
+					TargetMetric: Value
+					CheckRadius: 4c0
+			VeinBomb:
+				OrderName: VeinBomb
+				MinimumAttractiveness: 1
+				MinimumScanTimeInterval: 83
+				MaximumScanTimeInterval: 100
+				Consideration@2:
+					Against: Ally
+					Types: AIvein
+					Attractiveness: 1
+					TargetMetric: Value
+					CheckRadius: 8c0
+			OrcaAssult:
+				OrderName: OrcaAssult
+				MinimumAttractiveness: 1000
+				MinimumScanTimeInterval: 83
+				MaximumScanTimeInterval: 100
+				Consideration@1:
+					Against: Enemy
+					Types: Ground, Water
+					Attractiveness: 1
+					TargetMetric: Value
+					CheckRadius: 4c0
+				Consideration@2:
+					Against: Ally
+					Types: Ground, Water
+					Attractiveness: -10
+					TargetMetric: Value
+					CheckRadius: 4c0
+
