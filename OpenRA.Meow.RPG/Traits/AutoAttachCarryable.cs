@@ -26,7 +26,6 @@ namespace OpenRA.Meow.RPG.Traits
 	public class AutoAttachCarryable : AttachCarryable, ICallForTransport
 	{
 		readonly AutoAttachCarryableInfo info;
-		bool autoCommandReserved = false;
 
 		public CPos? Destination { get; private set; }
 		public bool WantsTransport => Destination != null && !IsTraitDisabled;
@@ -49,7 +48,6 @@ namespace OpenRA.Meow.RPG.Traits
 				return;
 
 			Destination = null;
-			autoCommandReserved = false;
 
 			// TODO: We could implement something like a carrier.Trait<AttachCarryall>().CancelTransportNotify(self) and call it here
 		}
@@ -107,50 +105,10 @@ namespace OpenRA.Meow.RPG.Traits
 				}
 			}
 
-			if (Reserve(carrier))
-			{
-				// When successfully reserved by auto command,
-				// set the "autoCommandReserved" to true
-				if (fromAutoCommand)
-					autoCommandReserved = true;
-				return true;
-			}
-
-			return false;
+			return Reserve(carrier);
 		}
 
-		// Prepare for transport pickup
-		public override LockResponse LockForPickup(Actor carrier)
-		{
-			if (state == State.Locked && Carrier != carrier)
-				return LockResponse.Failed;
-
-			// When "autoCommandReserved" is true, the carrying operation is given by auto command
-			// we still need to check the validity of "Destination" to ensure an effective trip.
-			if (autoCommandReserved)
-			{
-				if (!WantsTransport)
-				{
-					// Cancel pickup
-					MovementCancelled();
-					return LockResponse.Failed;
-				}
-
-				if (!IsValidAutoCarryDistance(Destination.Value))
-				{
-					// Cancel pickup
-					MovementCancelled();
-					return LockResponse.Failed;
-				}
-
-				// Reset "AutoCommandReserved" as we finished the check
-				autoCommandReserved = false;
-			}
-
-			return base.LockForPickup(carrier);
-		}
-
-		bool IsValidAutoCarryDistance(CPos destination)
+		public bool IsValidAutoCarryDistance(CPos destination)
 		{
 			if (Mobile == null)
 				return false;

@@ -76,9 +76,6 @@ namespace OpenRA.Meow.RPG.Activities
 			{
 				if (carryall.State == AttachCarryall.AttachCarryallState.Reserved)
 					carryall.UnreserveAttachCarryable(self);
-
-				var aircraft = self.TraitOrDefault<Aircraft>();
-				aircraft?.RemoveInfluence();
 			}
 
 			if (cargo.IsDead || carryable.IsTraitDisabled || (!carryall.Info.AttachCarryableAnyCamp && !cargo.AppearsFriendlyTo(self)))
@@ -103,14 +100,14 @@ namespace OpenRA.Meow.RPG.Activities
 					ChildActivity?.Cancel(self);
 
 					var localOffset = carryall.OffsetForAttachCarryable(self, cargo).Rotate(carryableBody.QuantizeOrientation(cargo.Orientation));
-					QueueChild(new Land(self, Target.FromActor(cargo), -carryableBody.LocalToWorld(localOffset), carryableFacing.Facing));
+					QueueChild(new Land(self, Target.FromActor(cargo), -carryableBody.LocalToWorld(localOffset), carryableFacing.Facing, addLandInfluence: false));
 
 					// Pause briefly before attachment for visual effect
 					if (delay > 0)
 						QueueChild(new Wait(delay, false));
 
 					// Remove our carryable from world
-					QueueChild(new AttachUnit(self, cargo));
+					QueueChild(new AttachAttachedUnit(self, cargo));
 					QueueChild(new TakeOff(self));
 
 					state = PickupState.Pickup;
@@ -127,13 +124,13 @@ namespace OpenRA.Meow.RPG.Activities
 				yield return new TargetLineNode(Target.FromActor(cargo), targetLineColor.Value);
 		}
 
-		class AttachUnit : Activity
+		class AttachAttachedUnit : Activity
 		{
 			readonly Actor cargo;
 			readonly AttachCarryable carryable;
 			readonly AttachCarryall carryall;
 
-			public AttachUnit(Actor self, Actor cargo)
+			public AttachAttachedUnit(Actor self, Actor cargo)
 			{
 				ActivityType = ActivityType.Move;
 				this.cargo = cargo;

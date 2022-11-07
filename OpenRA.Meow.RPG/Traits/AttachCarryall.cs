@@ -14,6 +14,7 @@ using System.Linq;
 using OpenRA.Graphics;
 using OpenRA.Meow.RPG.Activities;
 using OpenRA.Mods.Common;
+using OpenRA.Mods.Common.Activities;
 using OpenRA.Mods.Common.Graphics;
 using OpenRA.Mods.Common.Orders;
 using OpenRA.Mods.Common.Traits;
@@ -92,7 +93,7 @@ namespace OpenRA.Meow.RPG.Traits
 		public override object Create(ActorInitializer init) { return new AttachCarryall(init.Self, this); }
 	}
 
-	public class AttachCarryall : INotifyKilled, ISync, ITick, IRender, INotifyActorDisposing, IIssueOrder, IResolveOrder,
+	public class AttachCarryall : INotifyKilled, ISync, ITick, INotifyActorDisposing, IIssueOrder, IResolveOrder,
 		IOrderVoice, IIssueDeployOrder, IAircraftCenterPositionOffset, IOverrideAircraftLanding
 	{
 		public enum AttachCarryallState
@@ -209,7 +210,9 @@ namespace OpenRA.Meow.RPG.Traits
 					carryable.UnReserve();
 					carryable.Detached();
 					actor.CancelActivity();
-					actor.QueueActivity(new AttachedFallDown(actor, actor.CenterPosition, carryable.Info));
+					actor.QueueActivity(new FallDown(actor, actor.CenterPosition, carryable.Info.Velocity.Length,
+						carryable.Info.MaxVelocity.Length, carryable.Info.ExplosionWeapon, carryable.Info.GravityChangeInterval,
+						carryable.Info.MaxGravity.Length, carryable.Info.GravityAcceleration.Length, carryable.Info.FallDamageTypes));
 				}
 
 				AttachCarryable = null;
@@ -289,52 +292,6 @@ namespace OpenRA.Meow.RPG.Traits
 
 			AttachCarryable = null;
 			State = AttachCarryallState.Idle;
-		}
-
-		IEnumerable<IRenderable> IRender.Render(Actor self, WorldRenderer wr)
-		{
-			yield break;
-
-			/*
-			if (State == AttachCarryallState.Carrying && !AttachCarryable.IsDead)
-			{
-				if (carryablePreview == null)
-				{
-					var carryableInits = new TypeDictionary()
-					{
-						new OwnerInit(AttachCarryable.Owner),
-						new DynamicFacingInit(() => facing.Facing),
-					};
-
-					foreach (var api in AttachCarryable.TraitsImplementing<IActorPreviewInitModifier>())
-						api.ModifyActorPreviewInit(AttachCarryable, carryableInits);
-
-					var init = new ActorPreviewInitializer(AttachCarryable.Info, wr, carryableInits);
-					carryablePreview = AttachCarryable.Info.TraitInfos<IRenderActorPreviewInfo>()
-						.SelectMany(rpi => rpi.RenderPreview(init))
-						.ToArray();
-				}
-
-				var offset = body.LocalToWorld(AttachCarryableOffset.Rotate(body.QuantizeOrientation(self.Orientation)));
-				var previewRenderables = carryablePreview
-					.SelectMany(p => p.Render(wr, self.CenterPosition + offset))
-					.OrderBy(WorldRenderer.RenderableZPositionComparisonKey);
-
-				foreach (var r in previewRenderables)
-					yield return r;
-			}
-			*/
-		}
-
-		IEnumerable<Rectangle> IRender.ScreenBounds(Actor self, WorldRenderer wr)
-		{
-			if (carryablePreview == null)
-				yield break;
-
-			var pos = self.CenterPosition;
-			foreach (var p in carryablePreview)
-				foreach (var b in p.ScreenBounds(wr, pos))
-					yield return b;
 		}
 
 		// Check if we can drop the unit at our current location.

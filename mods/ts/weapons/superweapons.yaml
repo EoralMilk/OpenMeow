@@ -3,6 +3,76 @@ MultiCluster:
 	ValidTargets: Ground, Water, Air, Trees
 	-Report:
 	Projectile: VectorBooster
+		Speed: 120
+		MinSpeed: 55
+		MaxSpeed: 388
+		Inaccuracy: 1c0
+		Acceleration: 10
+		# MaximumLaunchSpeed: 120
+		# MinimumLaunchAngle: -255
+		# MaximumLaunchAngle: 255
+		# RangeLimit: 10c0
+		# VerticalRateOfTurn: 64
+		LaunchAngle: 0
+		LifeTime: 66
+		AllowSnapping: false
+		HorizonRotationRate: 14
+		VerticalRotationRate: 11
+	Warhead@1Dam: SpreadDamage
+		Spread: 458
+		Damage: 22000
+		ValidTargets: Ground, Water, Air, Trees
+		Versus:
+			None: 100
+			Wood: 85
+			Light: 100
+			Heavy: 75
+			Concrete: 55
+		DamageTypes: Prone50Percent, TriggerProne, ExplosionDeath
+	Warhead@2Eff: CreateEffect
+		ImpactActors: false
+		Explosions: large_twlt
+		ImpactSounds: expnew09.aud
+	Warhead@5Res: DestroyResource
+		Size: 2
+		ResourceAmount: 4
+		ResourceTypes: Tiberium, BlueTiberium
+
+
+ClusterMissile:
+	ValidTargets: Ground, Water, Air, Trees
+	Warhead@1Dam: SpreadDamage
+		Spread: 512
+		Falloff: 100, 100, 0
+		Damage: 26000
+		ValidTargets: Ground, Water, Air, Trees
+		Versus:
+			None: 100
+			Wood: 85
+			Light: 70
+			Heavy: 35
+			Concrete: 28
+		DamageTypes: Prone50Percent, TriggerProne, ExplosionDeath
+	Warhead@SoundEffect: CreateEffect
+		Explosions: large_twlt
+		ImpactSounds: expnew19.aud
+		ImpactActors: false
+		ValidTargets: Ground, Water, Air
+	Warhead@Cluster: FireCluster
+		Weapon: MultiCluster
+		RandomClusterCount: 5
+		Dimensions: 7,7
+		Footprint: __xxx__ _xxXxx_ xxXXXxx xXXXXXx xxXXXxx _xxXxx_ __xxx__
+	Warhead@Shake: ShakeScreen
+		Duration: 20
+		Intensity: 5
+		Multiplier: 1,1
+
+MultiCluster2:
+	Inherits: ^VectorBooster
+	ValidTargets: Ground, Water, Air, Trees
+	-Report:
+	Projectile: VectorBooster
 		Speed: 100
 		MinSpeed: 55
 		MaxSpeed: 200
@@ -39,7 +109,7 @@ MultiCluster:
 		Dimensions: 7,7
 		Footprint: __xxx__ _xxXxx_ xxxxxxx xXxXxXx xxxxxxx _xxXxx_ __xxx__
 
-ClusterMissile:
+ClusterMissile2:
 	ValidTargets: Ground, Water, Air, Trees
 	Warhead@1Dam: SpreadDamage
 		Spread: 512
@@ -63,7 +133,7 @@ ClusterMissile:
 		Intensity: 5
 		Multiplier: 1,1
 	Warhead@Cluster: FireRadius
-		Weapon: MultiCluster
+		Weapon: MultiCluster2
 		StartOffset: 0,3333,0
 		FireCount: 3
 		ForceTargetGround: true

@@ -103,7 +103,7 @@ namespace OpenRA.Meow.RPG.Traits
 		static bool IsBestAutoAttachCarryallForCargo(Actor self, Actor candidateCargo)
 		{
 			// Find carriers
-			var carriers = self.World.ActorsHavingTrait<AutoAttachCarryall>(c => !c.busy)
+			var carriers = self.World.ActorsHavingTrait<AutoAttachCarryall>(c => !c.busy && c.EnableAutoCarry)
 				.Where(a => a.Owner == self.Owner && a.IsInWorld);
 
 			return carriers.ClosestTo(candidateCargo) == self;
@@ -162,6 +162,7 @@ namespace OpenRA.Meow.RPG.Traits
 					return;
 
 				underAutoCommand = false;
+				busy = true;
 				self.QueueActivity(order.Queued, new DeliverAttachedUnit(self, order.Target, Info.DropRange, Info.TargetLineColor));
 				self.ShowTargetLines();
 			}
@@ -171,6 +172,7 @@ namespace OpenRA.Meow.RPG.Traits
 					return;
 
 				underAutoCommand = false;
+				busy = true;
 				self.QueueActivity(order.Queued, new DeliverAttachedUnit(self, Info.DropRange, Info.TargetLineColor));
 			}
 			else if (order.OrderString == "PickupAttachedUnit")
@@ -179,6 +181,7 @@ namespace OpenRA.Meow.RPG.Traits
 					return;
 
 				underAutoCommand = false;
+				busy = true;
 				self.QueueActivity(order.Queued, new PickupAttachedUnit(self, order.Target.Actor, Info.BeforeLoadDelay, Info.TargetLineColor));
 				self.ShowTargetLines();
 			}
@@ -200,19 +203,29 @@ namespace OpenRA.Meow.RPG.Traits
 
 			protected override void OnFirstRun(Actor self)
 			{
-				if (!cargo.IsDead)
+				var destination = carryable.Destination != null ? carryable.Destination.Value : cargo.Location;
+				if (!cargo.IsDead && carryable.IsValidAutoCarryDistance(destination))
 					QueueChild(new PickupAttachedUnit(self, cargo, 0, carryall.Info.TargetLineColor));
 			}
 
 			public override bool Tick(Actor self)
 			{
 				if (cargo.IsDead)
+				{
+					ChildActivity?.Cancel(self);
 					return true;
+				}
+
+				var destination = carryable.Destination != null ? carryable.Destination.Value : cargo.Location;
+
+				if (carryall.AttachCarryable == null && !carryable.IsValidAutoCarryDistance(destination))
+				{
+					ChildActivity?.Cancel(self);
+					return true;
+				}
 
 				var dropRange = carryall.Info.DropRange;
-				var destination = carryable.Destination;
-				if (destination != null)
-					self.QueueActivity(true, new DeliverAttachedUnit(self, Target.FromCell(self.World, destination.Value), dropRange, carryall.Info.TargetLineColor));
+				self.QueueActivity(true, new DeliverAttachedUnit(self, Target.FromCell(self.World, destination), dropRange, carryall.Info.TargetLineColor));
 
 				return true;
 			}

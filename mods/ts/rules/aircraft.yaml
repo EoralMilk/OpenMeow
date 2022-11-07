@@ -391,7 +391,7 @@ TRNSPORT:
 	Valued:
 		Cost: 750
 	Tooltip:
-		Name: Carryall
+		Name: AttachCarryall
 	UpdatesPlayerStatistics:
 		AddToArmyValue: true
 	Buildable:
@@ -406,15 +406,15 @@ TRNSPORT:
 		Roll: 0
 		TakeoffSounds: dropup1.aud
 		LandingSounds: dropdwn1.aud
-	AutoCarryall: 
+	AutoAttachCarryall: 
 		Voice: Move
 		LocalOffset: 0,0,-243
 		BeforeLoadDelay: 10
 		BeforeUnloadDelay: 10
-		CarryableAnyCamp: true
+		AttachCarryableAnyCamp: true
 		AutoCarryCondition: autocarry || AImicroManage
 		CarryCondition: carried
-	WithDecoration@AutoCarryall:
+	WithDecoration@AutoAttachCarryall:
 		RequiresCondition: autocarry || AImicroManage
 		Position: BottomRight
 		Margin: 3, 4
@@ -423,8 +423,7 @@ TRNSPORT:
 		Palette: player
 		IsPlayerPalette: true
 	GrantConditionOnDeploy:
-		RequiresCondition: !AImicroManage
-		PauseOnCondition: carried
+		RequiresCondition: !AImicroManage && !carried
 		DeployedCondition: autocarry
 		CanDeployOnRamps: true
 		SkipMakeAnimation: true

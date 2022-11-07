@@ -85,7 +85,7 @@ ORCATRAN.Husk.EMP:
 TRNSPORT.Husk:
 	Inherits: ^AircraftHusk
 	Tooltip:
-		Name: Carryall
+		Name: AttachCarryall
 	Aircraft:
 		TurnSpeed: 20
 		Speed: 149

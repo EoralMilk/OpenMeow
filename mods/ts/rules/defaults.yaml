@@ -1006,7 +1006,7 @@
 		Modifier: 50
 		RequiresCondition: empdisable
 	Mobile:
-		PauseOnCondition: empdisable || being-captured || carried
+		PauseOnCondition: empdisable || being-captured || carried || carring
 		Locomotor: wheeled
 		TurnSpeed: 20
 		Voice: Move
@@ -1092,7 +1092,7 @@
 	SpeedMultiplier@CRITICAL:
 		RequiresCondition: critical-state
 		Modifier: 80
-	Carryable:
+	AttachCarryable:
 		RequiresCondition: !inside-tunnel
 		LockedCondition: carried
 		CarriedCondition: carring
