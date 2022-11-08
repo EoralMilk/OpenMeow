@@ -218,7 +218,7 @@ Player:
 					Types: Ground, Water
 					Attractiveness: -10
 					TargetMetric: Value
-					CheckRadius: 5c0
+					CheckRadius: 4c0
 			apocalypsemissile:
 				OrderName: ClusterMissileAttack
 				MinimumAttractiveness: 10000
@@ -229,13 +229,13 @@ Player:
 					Types: Ground, Water
 					Attractiveness: 1
 					TargetMetric: Value
-					CheckRadius: 8c0
+					CheckRadius: 6c0
 				Consideration@2:
 					Against: Ally
 					Types: Ground, Water
 					Attractiveness: -10
 					TargetMetric: Value
-					CheckRadius: 7c0
+					CheckRadius: 6c0
 			toxinMissile:
 				OrderName: ChemicalMissileAttack
 				MinimumAttractiveness: 3000
@@ -252,7 +252,7 @@ Player:
 					Types: Ground, Water
 					Attractiveness: -10
 					TargetMetric: Value
-					CheckRadius: 7c0
+					CheckRadius: 5c0
 			droppod:
 				OrderName: Droppod
 				MinimumAttractiveness: 3000
@@ -301,7 +301,7 @@ Player:
 				Consideration@2:
 					Against: Ally
 					Types: AIvein
-					Attractiveness: 1
+					Attractiveness: 10000
 					TargetMetric: Value
 					CheckRadius: 8c0
 			OrcaAssult:
