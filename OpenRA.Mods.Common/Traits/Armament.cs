@@ -357,7 +357,7 @@ namespace OpenRA.Mods.Common.Traits
 					var c = distLensqr;
 					var delta = (b * b) - (4 * a * c);
 
-					if (delta >= 0)
+					if (delta >= 0 && a != 0)
 					{
 						var t = (-b + (int)Exts.ISqrt(delta)) / (2 * a);
 						var t2 = (-b - (int)Exts.ISqrt(delta)) / (2 * a);
