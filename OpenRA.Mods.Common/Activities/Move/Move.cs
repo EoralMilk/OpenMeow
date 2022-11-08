@@ -457,7 +457,7 @@ namespace OpenRA.Mods.Common.Activities
 				{
 					mobile.SetCenterPosition(self, new WPos(To.X, To.Y, self.World.Map.HeightOfTerrain(To)));
 					if (TurnsWhileMoving)
-						mobile.Facing = Util.TickFacing(mobile.Facing, FromToYaw + Move.actorFacingModifier, mobile.TurnSpeed);
+						mobile.Facing = Util.TickFacing(mobile.Facing, FromToYaw + Move.actorFacingModifier - mobile.Info.MobileFacing, mobile.TurnSpeed);
 					else
 						mobile.Facing = ToFacing;
 
@@ -500,7 +500,7 @@ namespace OpenRA.Mods.Common.Activities
 				}
 
 				if (TurnsWhileMoving)
-					mobile.Facing = Util.TickFacing(mobile.Facing, FromToYaw + Move.actorFacingModifier, mobile.TurnSpeed);
+					mobile.Facing = Util.TickFacing(mobile.Facing, FromToYaw + Move.actorFacingModifier - mobile.Info.MobileFacing, mobile.TurnSpeed);
 				else
 					mobile.Facing = WAngle.Lerp(FromFacing, ToFacing, progress, Distance);
 
@@ -565,7 +565,7 @@ namespace OpenRA.Mods.Common.Activities
 							from,
 							to,
 							mobile.Facing,
-							map.FacingBetween(mobile.ToCell, nextCell.Value.Cell, mobile.Facing) + Move.actorFacingModifier,
+							map.FacingBetween(mobile.ToCell, nextCell.Value.Cell, mobile.Facing) + Move.actorFacingModifier - mobile.Info.MobileFacing,
 							ToTerrainOrientation,
 							nextToTerrainOrientation,
 							margin,
