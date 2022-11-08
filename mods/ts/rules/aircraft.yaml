@@ -76,6 +76,7 @@ DPOD2:
 	FallsToEarth:
 		Explosion: DropPodExplode
 		Moves: true
+		UseAircraftSpeed: true
 		Velocity: 556
 		MaxVelocity: 556
 		MaximumSpinSpeed: 0

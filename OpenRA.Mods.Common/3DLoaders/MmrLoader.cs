@@ -11,6 +11,9 @@ using TrueSync;
 
 namespace OpenRA.Mods.Common.Graphics
 {
+	/// <summary>
+	/// Meow Mesh Resource
+	/// </summary>
 	public sealed class MmrLoader : IMeshLoader
 	{
 
@@ -138,11 +141,18 @@ namespace OpenRA.Mods.Common.Graphics
 		readonly MeshVertex[] vertices;
 		readonly uint[] indices;
 		readonly TSVector min, max;
+
+		const char EndOfStr = '?';
 		public MmrReader(Stream s, SkeletonAsset skeleton)
 		{
 			if (!s.ReadASCII(8).StartsWith("MeowMesh"))
 				throw new InvalidDataException("Invalid mesh header");
-			var meshName = s.ReadUntil('?');
+			var meshVersion = s.ReadUntil(EndOfStr);
+			var meshName = s.ReadUntil(EndOfStr);
+
+			// reserve for unforeseen using
+			for (int i = 0; i < 20; i++)
+				s.ReadInt32();
 
 			// vertex
 			int vertexCount = s.ReadInt32();
@@ -157,7 +167,7 @@ namespace OpenRA.Mods.Common.Graphics
 			string[] vgroupNames = new string[vgroupCount];
 			for (int i = 0; i < vgroupCount; i++)
 			{
-				vgroupNames[i] = s.ReadUntil('?');
+				vgroupNames[i] = s.ReadUntil(EndOfStr);
 			}
 
 			if (vgroupCount > 0)
@@ -203,6 +213,7 @@ namespace OpenRA.Mods.Common.Graphics
 			for (int i = 0; i < faceCount; i++)
 			{
 				int vcount = s.ReadInt32();
+
 				// uint drawType = s.ReadUInt32();
 				uint[] vIdxArray = new uint[vcount];
 
@@ -222,6 +233,7 @@ namespace OpenRA.Mods.Common.Graphics
 					}
 				}
 
+				// triangularization
 				for (int di = 1; di < vcount - 1; di++)
 				{
 					drawIndicesList.Add(vIdxArray[0]);

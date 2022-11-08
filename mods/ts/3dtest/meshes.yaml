@@ -125,26 +125,10 @@ rumya:
 # 			Material: h-pt2
 
 
-# turret-test:
-# 	Skeleton: turret_skeleton
-# 		Anims:
-# 			test: turret_test
-# 	Meshes:
-# 		turret: turret_test
-# 			Material: turret
-
 mmr-test:
 	Meshes:
-		dummy: missile01
+		dummy: dummy
 			Material: black
-
-# turret-test2:
-# 	Skeleton: TextTurret
-# 	Meshes:
-# 		turret: TurretMesh
-# 			Material: turret
-# 		idle: Missile
-# 			Material: turret
 
 missile:
 	Meshes:
@@ -155,5 +139,5 @@ missile:
 
 ^Materails:
 	Meshes:
-		dummy01: empty
+		dummy01: dummy
 			Material: mdx_underwear

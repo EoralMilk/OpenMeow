@@ -77,7 +77,7 @@ namespace OpenRA.Mods.Common.Activities
 				aircraft.Facing = new WAngle(aircraft.Facing.Angle + spin);
 			}
 
-			var move = info.Moves ? aircraft.InitSpeed : WVec.Zero;
+			var move = info.Moves ? (info.UseAircraftSpeed ? new WVec(0, -aircraft.Info.Speed, 0).Rotate(WRot.FromYaw(aircraft.Facing)) : aircraft.InitSpeed) : WVec.Zero;
 			if (gravityTick++ >= info.GravityChangeInterval)
 			{
 				gravity = gravity >= info.MaxGravity.Length ? info.MaxGravity.Length : gravity + info.GravityAcceleration.Length;

@@ -34,8 +34,11 @@ namespace OpenRA.Mods.Common.Traits
 		[Desc("Spin Acceleration.")]
 		public readonly int SpinAcceleration = 1;
 
-		[Desc("Does the aircraft (husk) move forward at aircraft speed?")]
+		[Desc("Does the aircraft (husk) move forward?")]
 		public readonly bool Moves = false;
+
+		[Desc("Does the aircraft (husk) move forward at aircraft speed? No to calculate speed as actor init info")]
+		public readonly bool UseAircraftSpeed = false;
 
 		[Desc("Init Gravity at which aircraft falls to ground.")]
 		public readonly WDist Gravity = new WDist(0);
