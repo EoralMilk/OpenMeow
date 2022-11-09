@@ -48,7 +48,7 @@ NAPULS:
 		SelectTargetTextNotification: Select target.
 		OrderName: Nodemp
 		PauseOnCondition: disabled || empdisable
-		RequiresCondition: !AImicroManagable
+		RequiresCondition: !AImicroManage
 	WithSpriteTurret:
 		RequiresCondition: !build-incomplete
 		Sequence: turret
@@ -65,11 +65,11 @@ NAPULS:
 		Weapon: EMPulseCannon
 		LocalOffset: 200,0,1900
 		LocalYaw: 0,100
-		RequiresCondition: AImicroManagable
+		RequiresCondition: AImicroManage
 		PauseOnCondition: !ammo || disabled || empdisable
 	ReloadAmmoPool@AIonly:
 		AmmoPool: primary
-		RequiresCondition: AImicroManagable
+		RequiresCondition: AImicroManage
 		Count: 1
 		Delay: 4500
 		PauseOnCondition: disabled || empdisable
@@ -78,16 +78,16 @@ NAPULS:
 		InitialAmmo: 0
 		AmmoCondition: ammo
 	ProvidesPrerequisite@AIBuildLimit:
-		RequiresCondition: AImicroManagable
+		RequiresCondition: AImicroManage
 		Prerequisite: AIEmpBuildLimit
 	AutoTarget@AIonly:
-		RequiresCondition: AImicroManagable && ammo
+		RequiresCondition: AImicroManage && ammo
 		InitialStanceAI: Defend
 		MinimumScanTimeInterval: 83
 		MaximumScanTimeInterval: 100
 		ScanRadius: 25
 	AutoTargetPriority@AIonly:
-		RequiresCondition: AImicroManagable
+		RequiresCondition: AImicroManage
 		ValidTargets: Vehicle
 		ValidRelationships: Enemy
 		Priority: 2

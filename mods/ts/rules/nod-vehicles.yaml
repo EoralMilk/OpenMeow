@@ -405,10 +405,9 @@ WEED:
 	Inherits@VOXELS: ^VoxelActor
 	Inherits@WithRA2VoxRender: ^WithRA2VoxRender
 	Inherits@selection: ^SelectableEconomicUnit
-	Inherits@AImicroManagable: ^AImicroManagable
 	Inherits@bounty: ^GlobalBounty
 	Valued:
-		Cost: 1400
+		Cost: 900
 	Tooltip:
 		Name: Weed Eater
 	Buildable:
@@ -432,7 +431,6 @@ WEED:
 		SpeedAccleration: 6
 		TurnSpeed: 20
 	Targetable@AIveinBomb:
-		RequiresCondition: AImicroManagable
 		TargetTypes: AIvein
 	Health:
 		HP: 60000

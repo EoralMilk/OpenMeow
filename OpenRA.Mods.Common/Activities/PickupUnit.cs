@@ -74,6 +74,15 @@ namespace OpenRA.Mods.Common.Activities
 				if (carryall.State == Carryall.CarryallState.Reserved)
 					carryall.UnreserveCarryable(self);
 
+				// Make sure we run the TakeOff activity if we are / have landed
+				if (self.Trait<Aircraft>().HasInfluence())
+				{
+					ChildHasPriority = true;
+					IsInterruptible = false;
+					QueueChild(new TakeOff(self));
+					return false;
+				}
+
 				return true;
 			}
 
@@ -112,6 +121,10 @@ namespace OpenRA.Mods.Common.Activities
 					state = PickupState.Pickup;
 				}
 			}
+
+			// We don't want to allow TakeOff to be cancelled
+			if (ChildActivity is TakeOff)
+				ChildHasPriority = true;
 
 			// Return once we are in the pickup state and the pickup activities have completed
 			return TickChild(self) && state == PickupState.Pickup;

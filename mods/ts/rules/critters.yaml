@@ -241,6 +241,7 @@ JFISH:
 MINIVEIN:
 	Inherits: ^NonBuildingStaticActor
 	Inherits@2: ^SpriteActor
+	Inherits@AImicroManagable:^AImicroManagable
 	RadarColorFromTerrain:
 		Terrain: Veins
 	Tooltip:
@@ -274,3 +275,9 @@ MINIVEIN:
 		StartIfBelow: 200
 		DamageCooldown: 50
 		Delay: 25
+	ProvidesPrerequisite@AIveinLimit1:
+		RequiresCondition: AImicroManage
+		Prerequisite: AIveinLimit1
+	ProvidesPrerequisite@AIveinLimit2:
+		RequiresPrerequisites:  AIveinLimit1, AIveinLimit1
+		Prerequisite: AIveinLimit2

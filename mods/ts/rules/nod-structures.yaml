@@ -628,6 +628,8 @@ NAWAST:
 	RevealsShroud:
 		Range: 6c0
 		MaxHeightDelta: 1100
+	Targetable@AIveinBomb:
+		TargetTypes: AIvein
 	TiberianSunRefinery:
 		DockAngle: 640
 		DockOffset: 2,1
