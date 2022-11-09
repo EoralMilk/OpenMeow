@@ -482,6 +482,8 @@
 ^Building:
 	Inherits@1: ^BasicBuilding
 	Inherits@2: ^EmpDisable
+	Building:
+		AllowPlaceOnRamp: true
 	Armor:
 		Type: Wood
 	GivesBuildableArea:
@@ -1515,6 +1517,7 @@
 		CrushClasses: bigguy
 	Targetable@Crushable:
 		TargetTypes: Crushable
+	KilledWhenPlaceBuilding:
 
 ^Rock:
 	Inherits@1: ^SpriteActor

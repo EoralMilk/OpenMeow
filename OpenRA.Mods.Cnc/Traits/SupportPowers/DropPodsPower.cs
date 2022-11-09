@@ -9,7 +9,9 @@
  */
 #endregion
 
+using System;
 using System.Linq;
+using Newtonsoft.Json.Linq;
 using OpenRA.GameRules;
 using OpenRA.Mods.Cnc.Effects;
 using OpenRA.Mods.Common;
@@ -79,11 +81,18 @@ namespace OpenRA.Mods.Cnc.Traits
 	public class DropPodsPower : SupportPower
 	{
 		readonly DropPodsPowerInfo info;
+		Cargo cargo;
 
 		public DropPodsPower(Actor self, DropPodsPowerInfo info)
 			: base(self, info)
 		{
 			this.info = info;
+		}
+
+		protected override void Created(Actor self)
+		{
+			base.Created(self);
+			cargo = self.TraitOrDefault<Cargo>();
 		}
 
 		public override void Activate(Actor self, Order order, SupportPowerManager manager)
@@ -150,6 +159,16 @@ namespace OpenRA.Mods.Cnc.Traits
 						w.Add(new DropPodImpact(self.Owner, info.WeaponInfo, w, location, podTarget, info.WeaponDelay,
 							info.EntryEffect, info.EntryEffectSequence, info.EntryEffectPalette));
 						w.Add(pod);
+						var podcargo = pod.TraitOrDefault<Cargo>();
+						if (cargo != null && podcargo != null && cargo.Passengers.Any())
+						{
+							var passenger = cargo.Passengers.FirstOrDefault(p => podcargo.CanLoad(p));
+							if (passenger != null && !passenger.IsDead)
+							{
+								cargo.Unload(pod, passenger);
+								podcargo.Load(pod, passenger);
+							}
+						}
 					}
 				}
 			});

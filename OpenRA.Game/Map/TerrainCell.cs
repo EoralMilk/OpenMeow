@@ -95,7 +95,7 @@ namespace OpenRA
 			TerrainOrientationM = Map.NormalToTerrainOrientation(LogicNml);
 		}
 
-		public void UpdateNml(Map map)
+		void UpdateNml(Map map)
 		{
 			var pm = map.TerrainVertices[M].Pos;
 			var pt = map.TerrainVertices[T].Pos;
@@ -143,6 +143,32 @@ namespace OpenRA
 			TerrainOrientationBL = Map.NormalToTerrainOrientation(LogicNmlBL);
 			TerrainOrientationBR = Map.NormalToTerrainOrientation(LogicNmlBR);
 			TerrainOrientationM = Map.NormalToTerrainOrientation(LogicNml);
+		}
+
+		public void UpdateCell(Map map)
+		{
+			CellCenterPos = map.TerrainVertices[M].LogicPos;
+
+			CellMiniHeight =
+				Math.Min(
+						Math.Min(
+							Math.Min(
+								Math.Min(map.TerrainVertices[M].LogicPos.Z,
+									map.TerrainVertices[T].LogicPos.Z),
+								map.TerrainVertices[B].LogicPos.Z),
+							map.TerrainVertices[R].LogicPos.Z),
+						map.TerrainVertices[L].LogicPos.Z);
+
+			if (map.TerrainVertices[M].LogicPos.Z == map.TerrainVertices[T].LogicPos.Z &&
+				map.TerrainVertices[M].LogicPos.Z == map.TerrainVertices[B].LogicPos.Z &&
+				map.TerrainVertices[M].LogicPos.Z == map.TerrainVertices[R].LogicPos.Z &&
+				map.TerrainVertices[M].LogicPos.Z == map.TerrainVertices[L].LogicPos.Z)
+			{
+				AlmostFlat = true;
+				Flat = true;
+			}
+
+			UpdateNml(map);
 		}
 
 		public void FlatCell(int h, Map map)

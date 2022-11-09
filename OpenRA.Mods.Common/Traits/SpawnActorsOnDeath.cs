@@ -76,11 +76,14 @@ namespace OpenRA.Mods.Common.Traits
 		BuildingInfo buildingInfo;
 		ValuedInfo valued;
 		int dudesValue = 99999;
+		public string[] ActorTypes;
+
 		public SpawnActorsOnDeath(ActorInitializer init, SpawnActorsOnDeathInfo info)
 			: base(info)
 		{
 			enabled = !info.RequiresLobbyCreeps || init.Self.World.WorldActor.Trait<MapCreeps>().Enabled;
 			faction = init.GetValue<FactionInit, string>(init.Self.Owner.Faction.InternalName);
+			ActorTypes = info.ActorTypes;
 		}
 
 		protected override void Created(Actor self)
@@ -120,6 +123,9 @@ namespace OpenRA.Mods.Common.Traits
 		void INotifyRemovedFromWorld.RemovedFromWorld(Actor self)
 		{
 			if (attackingPlayer == null)
+				return;
+
+			if (ActorTypes == null || ActorTypes.Length == 0)
 				return;
 
 			var defeated = self.Owner.WinState == WinState.Lost;
@@ -177,7 +183,7 @@ namespace OpenRA.Mods.Common.Traits
 					if (eligibleLocations.Count == 0)
 						return;
 
-					foreach (var a in Info.ActorTypes)
+					foreach (var a in ActorTypes)
 					{
 						// Console.WriteLine(self.Info.Name + self.ActorID + " death dudesValue: " + dudesValue);
 						var ac = self.World.Map.Rules.Actors[a].TraitInfoOrDefault<ValuedInfo>();
@@ -207,7 +213,7 @@ namespace OpenRA.Mods.Common.Traits
 					td.Add(new LocationInit(selfloc));
 					td.Add(new CenterPositionInit(selfpos));
 
-					foreach (var a in Info.ActorTypes)
+					foreach (var a in ActorTypes)
 					{
 						var ac = self.World.Map.Rules.Actors[a].TraitInfoOrDefault<ValuedInfo>();
 						var at = ac?.Cost ?? 0;

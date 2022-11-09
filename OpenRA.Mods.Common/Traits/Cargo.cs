@@ -38,6 +38,8 @@ namespace OpenRA.Mods.Common.Traits
 		[Desc("When this actor dies should all of its passengers be unloaded?")]
 		public readonly bool EjectOnDeath = false;
 
+		public readonly bool ForceEject = false;
+
 		[Desc("Terrain types that this actor is allowed to eject actors onto. Leave empty for all terrain types.")]
 		public readonly HashSet<string> UnloadTerrainTypes = new HashSet<string>();
 
@@ -81,6 +83,8 @@ namespace OpenRA.Mods.Common.Traits
 		[Desc("Conditions to grant when specified actors are loaded inside the transport.",
 			"A dictionary of [actor name]: [condition].")]
 		public readonly Dictionary<string, string> PassengerConditions = new Dictionary<string, string>();
+
+		public readonly WDist MinAirborneAltitude = new WDist(418);
 
 		[GrantedConditionReference]
 		public IEnumerable<string> LinterPassengerConditions => PassengerConditions.Values;
@@ -406,15 +410,15 @@ namespace OpenRA.Mods.Common.Traits
 		void INotifyKilled.Killed(Actor self, AttackInfo e)
 		{
 			if (Info.EjectOnDeath)
-				while (!IsEmpty() && CanUnload(BlockedByActor.All))
+				while (!IsEmpty() && (Info.ForceEject || CanUnload(BlockedByActor.All)))
 				{
 					var passenger = Unload(self);
 					var cp = self.CenterPosition;
-					var inAir = self.World.Map.DistanceAboveTerrain(cp).Length != 0;
+					var inAir = self.World.Map.DistanceAboveTerrain(cp).Length <= Info.MinAirborneAltitude.Length;
 					var positionable = passenger.Trait<IPositionable>();
 					positionable.SetPosition(passenger, self.Location);
 
-					if (!inAir && positionable.CanEnterCell(self.Location, self, BlockedByActor.None))
+					if (Info.ForceEject || (!inAir && positionable.CanEnterCell(self.Location, self, BlockedByActor.None)))
 					{
 						self.World.AddFrameEndTask(w => w.Add(passenger));
 						var nbms = passenger.TraitsImplementing<INotifyBlockingMove>();

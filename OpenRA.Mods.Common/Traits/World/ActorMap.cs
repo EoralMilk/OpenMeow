@@ -292,10 +292,16 @@ namespace OpenRA.Mods.Common.Traits
 			foreach (var actor in GetActorsAt(a))
 			{
 				var position = actor.TraitOrDefault<IPositionable>();
-				if (position == null)
-					continue;
-				var h = actor.World.Map.HeightOfTerrain(actor.CenterPosition);
-				position.SetPosition(actor,new WPos(actor.CenterPosition.X, actor.CenterPosition.Y, h));
+				if (position != null)
+				{
+					var h = actor.World.Map.HeightOfTerrain(actor.CenterPosition);
+					position.SetPosition(actor, new WPos(actor.CenterPosition.X, actor.CenterPosition.Y, h));
+				}
+
+				var building = actor.TraitOrDefault<Building>();
+				if (building != null)
+					building.UpdateCenterPos();
+
 			}
 		}
 

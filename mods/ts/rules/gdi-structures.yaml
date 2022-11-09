@@ -548,6 +548,7 @@ GAPLUG:
 	Inherits@IDISABLE: ^DisableOnLowPowerOrPowerDown
 	Inherits@SHAPE: ^2x3Shape
 	Inherits@bounty: ^GlobalBounty
+	Inherits@cargopips: ^CargoPips
 	Valued:
 		Cost: 1000
 	Tooltip:
@@ -611,6 +612,12 @@ GAPLUG:
 		CameraActor: camera
 		Weapon: DummyWeapon
 		OrderName: Droppod
+		Drops: 8, 8
+	Cargo: # can be load to droppod
+		Types: Infantry
+		MaxWeight: 20
+		UnloadVoice:
+		EjectOnDeath: true
 	ProduceActorPower:
 		PauseOnCondition: disabled || empdisable
 		RequiresCondition: plug.hunterseekera || plug.hunterseekerb

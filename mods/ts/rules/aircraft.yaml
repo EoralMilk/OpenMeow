@@ -48,6 +48,7 @@ DPOD2:
 	Armor:
 		Type: Light
 	Aircraft:
+		IdleBehavior: Land
 		TurnSpeed: 20
 		Speed: 300
 		CruiseAltitude: 16c0
@@ -80,6 +81,12 @@ DPOD2:
 		Velocity: 556
 		MaxVelocity: 556
 		MaximumSpinSpeed: 0
+	Cargo:
+		Types: Infantry
+		MaxWeight: 2
+		UnloadVoice:
+		EjectOnDeath: true
+		ForceEject: true
 
 DPOD2E1:
 	Inherits: DPOD2

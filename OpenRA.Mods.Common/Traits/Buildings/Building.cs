@@ -272,6 +272,7 @@ namespace OpenRA.Mods.Common.Traits
 		INotifyAddedToWorld, INotifyRemovedFromWorld
 	{
 		public readonly BuildingInfo Info;
+		readonly World world;
 
 		[Sync]
 		readonly CPos topLeft;
@@ -284,8 +285,13 @@ namespace OpenRA.Mods.Common.Traits
 		readonly CPos[] transitOnlyCells;
 
 		public CPos TopLeft => topLeft;
-		public WPos CenterPosition { get; }
+		public WPos CenterPosition { get; private set; }
 		public bool OccupySpace { get; set; }
+
+		public void UpdateCenterPos()
+		{
+			CenterPosition = world.Map.CenterOfCell(topLeft) + Info.CenterOffset(world);
+		}
 
 		public Building(ActorInitializer init, BuildingInfo info)
 		{
@@ -302,8 +308,9 @@ namespace OpenRA.Mods.Common.Traits
 				.Select(c => (c, SubCell.FullCell)).ToArray();
 
 			transitOnlyCells = Info.TransitOnlyTiles(TopLeft).ToArray();
-
-			CenterPosition = init.World.Map.CenterOfCell(topLeft) + Info.CenterOffset(init.World);
+			world = init.World;
+			UpdateCenterPos();
+			// CenterPosition = init.World.Map.CenterOfCell(topLeft) + Info.CenterOffset(init.World);
 		}
 
 		public (CPos, SubCell)[] OccupiedCells()
@@ -327,6 +334,20 @@ namespace OpenRA.Mods.Common.Traits
 			if (Info.RemoveSmudgesOnBuild)
 				RemoveSmudges();
 
+			foreach (var c in Info.Tiles(self.Location))
+			{
+				foreach (var a in world.ActorMap.GetActorsAt(c))
+				{
+					if (a.TraitOrDefault<KilledWhenPlaceBuilding>() != null)
+						a.Kill(self);
+				}
+
+				if (Info.FlattenTheGround)
+				{
+					self.World.Map.FlatCellWithHeight(self.World, c, self.CenterPosition.Z);
+				}
+			}
+
 			if (Info.FlattenTheGround)
 			{
 				foreach (var c in Info.Tiles(self.Location))
@@ -335,6 +356,7 @@ namespace OpenRA.Mods.Common.Traits
 				}
 			}
 
+			UpdateCenterPos();
 			self.World.AddToMaps(self, this);
 			influence.AddInfluence(self, Info.Tiles(self.Location));
 		}
