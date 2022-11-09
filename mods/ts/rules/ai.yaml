@@ -204,7 +204,7 @@ Player:
 		Decisions:
 			ioncannon:
 				OrderName: Ioncannon
-				MinimumAttractiveness: 8000
+				MinimumAttractiveness: 5000
 				MinimumScanTimeInterval: 83
 				MaximumScanTimeInterval: 100
 				Consideration@2:
@@ -221,7 +221,7 @@ Player:
 					CheckRadius: 4c0
 			apocalypsemissile:
 				OrderName: ClusterMissileAttack
-				MinimumAttractiveness: 10000
+				MinimumAttractiveness: 7000
 				MinimumScanTimeInterval: 83
 				MaximumScanTimeInterval: 100
 				Consideration@1:
@@ -278,7 +278,7 @@ Player:
 					CheckRadius: 5c0
 			icbmcluster:
 				OrderName: icbmcluster
-				MinimumAttractiveness: 3500
+				MinimumAttractiveness: 3000
 				MinimumScanTimeInterval: 83
 				MaximumScanTimeInterval: 100
 				Consideration@1:
@@ -293,17 +293,6 @@ Player:
 					Attractiveness: -10
 					TargetMetric: Value
 					CheckRadius: 4c0
-			VeinBomb:
-				OrderName: VeinBomb
-				MinimumAttractiveness: 1
-				MinimumScanTimeInterval: 83
-				MaximumScanTimeInterval: 100
-				Consideration@2:
-					Against: Ally
-					Types: AIvein
-					Attractiveness: 10000
-					TargetMetric: Value
-					CheckRadius: 8c0
 			OrcaAssult:
 				OrderName: OrcaAssult
 				MinimumAttractiveness: 1000
@@ -321,4 +310,21 @@ Player:
 					Attractiveness: -10
 					TargetMetric: Value
 					CheckRadius: 4c0
+	GrantConditionOnPrerequisite@AIveinLimit2:
+		Prerequisites: AIveinLimit2
+		Condition: ai-limit2
+	SupportPowerBotModule@veinbomb:
+		RequiresCondition: enable-test-ai && !ai-limit2
+		Decisions:
+			VeinBomb:
+				OrderName: VeinBomb
+				MinimumAttractiveness: 1
+				MinimumScanTimeInterval: 83
+				MaximumScanTimeInterval: 100
+				Consideration@2:
+					Against: Ally
+					Types: AIvein
+					Attractiveness: 100000
+					TargetMetric: Value
+					CheckRadius: 8c0
 
