@@ -543,12 +543,84 @@ GATECH:
 	IsometricSelectable:
 		Height: 48
 
+
+GTDROP:
+	Inherits: ^Building
+	Inherits@IDISABLED: ^DisableOnLowPower
+	Inherits@SHAPE: ^3x2Shape
+	Inherits@bounty: ^GlobalBounty
+	Inherits@cargopips: ^CargoPips
+	Buildable:
+		Queue: Building
+		BuildPaletteOrder: 95
+		Prerequisites: gatech, ~structures.gdi, ~techlevel.medium
+		Description: Staging area for drop pod assault.
+	Tooltip:
+		Name: GDI Dropship Bay
+	Valued:
+		Cost: 1500
+	Building:
+		Footprint: xxx xxx xxx
+		Dimensions: 3,3
+	Health:
+		HP: 100000
+	Armor:
+		Type: Wood
+	RevealsShroud:
+		Range: 8c0
+		MaxHeightDelta: 1100
+	WithIdleOverlay@DISH:
+		Sequence: idle-dish
+		RequiresCondition: !Building-Buildup
+	WithIdleOverlay@LIGHTS:
+		RequiresCondition: !Building-Buildup
+		Sequence: idle-lights
+		Palette: player-nobright
+		IsPlayerPalette: true
+	WithIdleOverlay@LIGHTS-BRIGHT:
+		RequiresCondition: !Building-Buildup
+		Sequence: idle-lights-bright
+		Palette: bright
+	Power:
+		Amount: -100
+	ProvidesPrerequisite@buildingname:
+	IsometricSelectable:
+		Height: 48
+	Exit:
+		SpawnOffset: 350,450,0
+		ExitCell: 2,2
+	DropPodsPower:
+		Cursor: ioncannon
+		PauseOnCondition: disabled || empdisable
+		Icon: droppods
+		Name: Drop Pods
+		Description: Drop Pod reinforcements.\nSmall team of elite soldiers orbital drops\nto target location.
+		SelectTargetSpeechNotification: SelectTarget
+		SelectTargetTextNotification: Select target.
+		DisplayRadarPing: true
+		ChargeInterval: 6000
+		UnitTypes: DPOD2E1, DPOD2E2
+		CameraActor: camera
+		Weapon: DummyWeapon
+		OrderName: Droppod
+		Drops: 8, 8
+		TransportorType: dshp.droppod
+		TransportorLandOffset: 350,450,0
+		TransportorInitOffset: 0,0,14c0
+		TransportorInitFacing: 640
+		TransportorLoadDelay: 20
+		TransportorPrepareDelay: 20
+	Cargo: # can be load to droppod
+		Types: Infantry
+		MaxWeight: 16
+		UnloadVoice:
+		EjectOnDeath: true
+
 GAPLUG:
 	Inherits: ^Building
 	Inherits@IDISABLE: ^DisableOnLowPowerOrPowerDown
 	Inherits@SHAPE: ^2x3Shape
 	Inherits@bounty: ^GlobalBounty
-	Inherits@cargopips: ^CargoPips
 	Valued:
 		Cost: 1000
 	Tooltip:
@@ -597,27 +669,6 @@ GAPLUG:
 		DisplayRadarPing: True
 		CameraActor: camera
 		OrderName: Ioncannon
-	DropPodsPower:
-		Cursor: ioncannon
-		PauseOnCondition: disabled || empdisable
-		RequiresCondition: plug.droppoda || plug.droppodb
-		Icon: droppods
-		Name: Drop Pods
-		Description: Drop Pod reinforcements.\nSmall team of elite soldiers orbital drops\nto target location.
-		SelectTargetSpeechNotification: SelectTarget
-		SelectTargetTextNotification: Select target.
-		DisplayRadarPing: true
-		ChargeInterval: 6000
-		UnitTypes: DPOD2E1, DPOD2E2
-		CameraActor: camera
-		Weapon: DummyWeapon
-		OrderName: Droppod
-		Drops: 8, 8
-	Cargo: # can be load to droppod
-		Types: Infantry
-		MaxWeight: 20
-		UnloadVoice:
-		EjectOnDeath: true
 	ProduceActorPower:
 		PauseOnCondition: disabled || empdisable
 		RequiresCondition: plug.hunterseekera || plug.hunterseekerb
@@ -787,11 +838,12 @@ GAPLUG4:
 		Cost: 1000
 	Tooltip:
 		Name: Tech Plugin: Drop Pod Node
-	Buildable:
-		Queue: Building
-		BuildPaletteOrder: 180
-		Prerequisites: ~!gaplug.socket.drop, gatech, gaplug, ~structures.gdi, ~techlevel.superweapons
-		Description: Enables use of the Drop Pod Reinforcements. \nMakes GDI Upgrade Center consume 100 more power.
+
+	# Buildable:
+	# 	Queue: Building
+	# 	BuildPaletteOrder: 180
+	# 	Prerequisites: ~!gaplug.socket.drop, gatech, gaplug, ~structures.gdi, ~techlevel.superweapons
+	# 	Description: Enables use of the Drop Pod Reinforcements. \nMakes GDI Upgrade Center consume 100 more power.
 	Plug:
 		Type: plug.droppod
 	Power:

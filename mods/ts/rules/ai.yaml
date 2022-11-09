@@ -63,6 +63,7 @@ Player:
 			garadr: 1
 			naradr: 1
 			gatech: 1
+			gtdrop: 1
 			natech: 1
 			natmpl: 1
 			nastlh: 1
@@ -88,6 +89,7 @@ Player:
 			garadr: 1
 			naradr: 1
 			gatech: 1
+			gtdrop: 1
 			natech: 1
 			natmpl: 1
 			nastlh: 1
@@ -109,7 +111,7 @@ Player:
 			titanugmissile: 8
 			gaplug: 1
 			gaplug3: 1
-			gaplug4: 1
+			# gaplug4: 1
 		BuildingDelays:
 			garadr: 4000
 			naradr: 4000
@@ -125,7 +127,7 @@ Player:
 		IgnoredEnemyTargetTypes: Wall, AIgnored
 		ConstructionYardTypes: gacnst
 		AirUnitsTypes: orca, orcab, scrin, apache, jumpjetair
-		ProtectionTypes: gapowr, gapowrup, gapile, gaweap, gahpad, gadept, garadr, gatech, gaplug, gagate_a, gagate_b, gactwr, gavulc, garock, gacsam, titanugvulcan, titanugmissile, napowr, naapwr, nahand, naweap, nahpad, naradr, natech, nastlh, natmpl, namisl, nawast, nagate_a, nagate_b, nalasr, naobel, nasam, weed, gacnst, proc, gasilo, napuls, mcv, harv
+		ProtectionTypes: gapowr, gapowrup, gapile, gaweap, gahpad, gadept, garadr, gatech, gtdrop, gaplug, gagate_a, gagate_b, gactwr, gavulc, garock, gacsam, titanugvulcan, titanugmissile, napowr, naapwr, nahand, naweap, nahpad, naradr, natech, nastlh, natmpl, namisl, nawast, nagate_a, nagate_b, nalasr, naobel, nasam, weed, gacnst, proc, gasilo, napuls, mcv, harv
 		MinimumAttackForceDelay: 2500
 		AssignRolesInterval: 73
 		IdleScanRadius: 15

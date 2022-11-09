@@ -10,8 +10,10 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json.Linq;
+using OpenRA.Activities;
 using OpenRA.GameRules;
 using OpenRA.Mods.Cnc.Effects;
 using OpenRA.Mods.Common;
@@ -28,6 +30,19 @@ namespace OpenRA.Mods.Cnc.Traits
 		[Desc("Drop pod unit")]
 		[ActorReference(new[] { typeof(AircraftInfo), typeof(FallsToEarthInfo) })]
 		public readonly string[] UnitTypes = null;
+
+		[Desc("Unit for transport passenger to starport")]
+		public readonly string TransportorType = null;
+
+		public readonly WVec TransportorLandOffset = WVec.Zero;
+
+		public readonly WVec TransportorInitOffset = WVec.Zero;
+
+		public readonly WAngle TransportorInitFacing = WAngle.Zero;
+
+		public readonly int TransportorLoadDelay = 20;
+
+		public readonly int TransportorPrepareDelay = 20;
 
 		[Desc("Number of drop pods spawned.")]
 		public readonly int2 Drops = new int2(5, 8);
@@ -111,67 +126,213 @@ namespace OpenRA.Mods.Cnc.Traits
 			var fallsToEarthInfo = actorInfo.TraitInfo<FallsToEarthInfo>();
 			var delta = new WVec(0, -altitude * aircraftInfo.Speed / fallsToEarthInfo.Velocity.Length, 0).Rotate(approachRotation);
 
-			self.World.AddFrameEndTask(w =>
+			var drops = self.World.SharedRandom.Next(info.Drops.X, info.Drops.Y);
+			List<Actor> pods = new List<Actor>();
+
+			// cargo, passenger
+			Dictionary<Actor, Actor> passengers = new Dictionary<Actor, Actor>();
+			HashSet<Actor> reservePassengers = new HashSet<Actor>();
+
+			if (info.TransportorType != null)
 			{
-				var target = order.Target.CenterPosition;
-				var targetCell = self.World.Map.CellContaining(target);
-				var podLocations = self.World.Map.FindTilesInCircle(targetCell, info.PodScatter)
-					.Where(c => aircraftInfo.LandableTerrainTypes.Contains(w.Map.GetTerrainInfo(c).Type)
-						&& !self.World.ActorMap.GetActorsAt(c).Any());
-
-				if (!podLocations.Any())
-					return;
-
-				if (info.CameraActor != null)
+				self.World.AddFrameEndTask(w =>
 				{
-					var camera = w.CreateActor(info.CameraActor, new TypeDictionary
+					var target = order.Target.CenterPosition;
+					var targetCell = self.World.Map.CellContaining(target);
+					var podLocations = self.World.Map.FindTilesInCircle(targetCell, info.PodScatter)
+						.Where(c => aircraftInfo.LandableTerrainTypes.Contains(w.Map.GetTerrainInfo(c).Type)
+							&& !self.World.ActorMap.GetActorsAt(c).Any());
+
+					if (!podLocations.Any())
+						return;
+
+					PlayLaunchSounds();
+
+					// prepare pods and choose passengers
+					for (var i = 0; i < drops; i++)
 					{
-						new LocationInit(targetCell),
-						new OwnerInit(self.Owner),
-					});
+						var unitType = info.UnitTypes.Random(self.World.SharedRandom);
+						var podLocation = podLocations.Random(self.World.SharedRandom);
+						var podTarget = Target.FromCell(w, podLocation);
+						var location = self.World.Map.CenterOfCell(podLocation) - delta + new WVec(0, 0, altitude);
 
-					camera.QueueActivity(new Wait(info.CameraRemoveDelay));
-					camera.QueueActivity(new RemoveSelf());
-				}
-
-				PlayLaunchSounds();
-
-				var drops = self.World.SharedRandom.Next(info.Drops.X, info.Drops.Y);
-				for (var i = 0; i < drops; i++)
-				{
-					var unitType = info.UnitTypes.Random(self.World.SharedRandom);
-					var podLocation = podLocations.Random(self.World.SharedRandom);
-					var podTarget = Target.FromCell(w, podLocation);
-					var location = self.World.Map.CenterOfCell(podLocation) - delta + new WVec(0, 0, altitude);
-
-					var pod = w.CreateActor(false, unitType, new TypeDictionary
-					{
-						new CenterPositionInit(location),
-						new OwnerInit(self.Owner),
-						new FacingInit(facing)
-					});
-
-					var aircraft = pod.Trait<Aircraft>();
-					if (!aircraft.CanLand(podLocation))
-						pod.Dispose();
-					else
-					{
-						w.Add(new DropPodImpact(self.Owner, info.WeaponInfo, w, location, podTarget, info.WeaponDelay,
-							info.EntryEffect, info.EntryEffectSequence, info.EntryEffectPalette));
-						w.Add(pod);
-						var podcargo = pod.TraitOrDefault<Cargo>();
-						if (cargo != null && podcargo != null && cargo.Passengers.Any())
+						var pod = w.CreateActor(false, unitType, new TypeDictionary
 						{
-							var passenger = cargo.Passengers.FirstOrDefault(p => podcargo.CanLoad(p));
-							if (passenger != null && !passenger.IsDead)
+							new CenterPositionInit(location),
+							new OwnerInit(self.Owner),
+							new FacingInit(facing)
+						});
+
+						var aircraft = pod.Trait<Aircraft>();
+						if (!aircraft.CanLand(podLocation))
+							pod.Dispose();
+						else
+						{
+							pods.Add(pod);
+
+							var podcargo = pod.TraitOrDefault<Cargo>();
+							if (cargo != null && podcargo != null && cargo.Passengers.Any())
 							{
-								cargo.Unload(pod, passenger);
-								podcargo.Load(pod, passenger);
+								var passenger = cargo.Passengers.FirstOrDefault(p => podcargo.CanLoad(p) && !reservePassengers.Contains(p));
+								if (passenger != null && !passenger.IsDead)
+								{
+									passengers.Add(pod, passenger);
+									reservePassengers.Add(passenger);
+								}
 							}
 						}
 					}
+
+					// call for transport
+					if (passengers.Count > 0)
+					{
+						var landpos = self.CenterPosition + info.TransportorLandOffset;
+
+						var trans = w.CreateActor(false, info.TransportorType, new TypeDictionary
+						{
+							new CenterPositionInit(landpos + info.TransportorInitOffset),
+							new OwnerInit(self.Owner),
+							new FacingInit(info.TransportorInitFacing)
+						});
+
+						w.Add(trans);
+						trans.QueueActivity(new Land(trans, Target.FromActor(self), offset: info.TransportorLandOffset, addLandInfluence: false));
+						trans.QueueActivity(new Wait(info.TransportorLoadDelay, false));
+						trans.QueueActivity(new LoadDoppodPassengers(self, passengers.Values.ToArray()));
+						trans.QueueActivity(new TakeOff(trans));
+						trans.QueueActivity(new PrepareDroppods(passengers, pods.ToArray(),
+							info.CameraActor, info.CameraRemoveDelay, targetCell, info.TransportorPrepareDelay));
+						trans.QueueActivity(new RemoveSelf());
+					}
+					else
+					{
+						foreach (var p in passengers.Values)
+						{
+							cargo.Unload(self, p);
+						}
+
+						if (info.CameraActor != null)
+						{
+							var camera = w.CreateActor(info.CameraActor, new TypeDictionary
+						{
+							new LocationInit(targetCell),
+							new OwnerInit(self.Owner),
+						});
+
+							camera.QueueActivity(new Wait(info.CameraRemoveDelay));
+							camera.QueueActivity(new RemoveSelf());
+						}
+
+						foreach (var pod in pods)
+						{
+							w.Add(pod);
+
+							var podcargo = pod.TraitOrDefault<Cargo>();
+							if (podcargo != null && passengers.TryGetValue(pod, out var passenger))
+							{
+								if (passenger != null && !passenger.IsDead)
+								{
+									podcargo.Load(pod, passenger);
+								}
+							}
+						}
+					}
+
+				});
+			}
+		}
+	}
+
+	public class LoadDoppodPassengers : Activity
+	{
+		Actor from;
+		Actor[] passengers;
+
+		public LoadDoppodPassengers(Actor from, Actor[] passengers)
+		{
+			this.from = from;
+			this.passengers = passengers;
+			IsInterruptible = false;
+		}
+
+		public override bool Tick(Actor self)
+		{
+			if (IsCanceling) return true;
+			var cargo = from.Trait<Cargo>();
+
+			foreach (var p in passengers)
+			{
+				if (cargo.Passengers.Contains(p))
+				{
+					cargo.Unload(from, p);
 				}
+
+			}
+
+			return true;
+		}
+	}
+
+	public class PrepareDroppods : Activity
+	{
+		Dictionary<Actor, Actor> passengers;
+		Actor[] pods;
+		string cameraActor;
+		int cameraDelay;
+		CPos cameraCell;
+		int dropDelay;
+
+		public PrepareDroppods(Dictionary<Actor, Actor> passengers, Actor[] pods,
+			string cameraActor, int cameraDelay, CPos cameraCell, int dropDelay = 0)
+		{
+			this.passengers = passengers;
+			this.pods = pods;
+			this.cameraActor = cameraActor;
+			this.cameraDelay = cameraDelay;
+			this.cameraCell = cameraCell;
+			IsInterruptible = false;
+			this.dropDelay = dropDelay;
+		}
+
+		public override bool Tick(Actor self)
+		{
+			if (IsCanceling) return true;
+			if (--dropDelay > 0)
+				return false;
+
+			var world = self.World;
+
+			world.AddFrameEndTask(w =>
+			{
+				if (cameraActor != null)
+				{
+					var camera = w.CreateActor(cameraActor, new TypeDictionary
+						{
+							new LocationInit(cameraCell),
+							new OwnerInit(self.Owner),
+						});
+
+					camera.QueueActivity(new Wait(cameraDelay));
+					camera.QueueActivity(new RemoveSelf());
+				}
+
+				foreach (var pod in pods)
+				{
+					w.Add(pod);
+
+					var podcargo = pod.TraitOrDefault<Cargo>();
+					if (podcargo != null && passengers.TryGetValue(pod, out var passenger))
+					{
+						if (passenger != null && !passenger.IsDead && !passenger.IsInWorld)
+						{
+							podcargo.Load(pod, passenger);
+						}
+					}
+				}
+
 			});
+
+			return true;
 		}
 	}
 }

@@ -121,7 +121,7 @@ DSHP:
 		AltitudeVelocity: 256
 		MoveIntoShroud: true
 	Health:
-		HP: 20000
+		HP: 200000
 	Armor:
 		Type: Heavy
 	RevealsShroud:
@@ -132,6 +132,39 @@ DSHP:
 		MaxWeight: 5
 		UnloadVoice: Move
 		EjectOnDeath: true
+	SpawnActorOnDeath:
+		Actor: DSHP.Husk
+		RequiresCondition: airborne
+
+# send infantry to spaceport for sending to target by droppod
+DSHP.DROPPOD:
+	Inherits: ^Aircraft
+	Valued:
+		Cost: 1000
+	Tooltip:
+		Name: Dropship
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Health:
+		HP: 200000
+	Armor:
+		Type: Heavy
+	Aircraft:
+		IdleBehavior: LeaveMapAtClosestEdge
+		Pitch: 0
+		Roll: 0
+		TurnSpeed: 20
+		Speed: 168
+		TakeoffSounds: dropup1.aud
+		LandingSounds: dropdwn1.aud
+		IdealSeparation: 1275
+		CruiseAltitude: 12c512
+		AltitudeVelocity: 256
+		MoveIntoShroud: true
+	RenderModels:
+		Image: dshp
+	RenderSprites:
+		Image: dshp
 	SpawnActorOnDeath:
 		Actor: DSHP.Husk
 		RequiresCondition: airborne
