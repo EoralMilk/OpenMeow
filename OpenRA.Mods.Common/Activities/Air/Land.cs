@@ -27,7 +27,6 @@ namespace OpenRA.Mods.Common.Activities
 		readonly CPos[] clearCells;
 		readonly WDist landRange;
 		readonly Color? targetLineColor;
-		readonly bool addLandInfluence;
 
 		Target target;
 		WPos targetPosition;
@@ -42,16 +41,16 @@ namespace OpenRA.Mods.Common.Activities
 			assignTargetOnFirstRun = true;
 		}
 
-		public Land(Actor self, in Target target, WAngle? facing = null, Color? targetLineColor = null, bool addLandInfluence = true)
-			: this(self, target, new WDist(-1), WVec.Zero, facing, targetLineColor: targetLineColor, addLandInfluence: addLandInfluence) { ActivityType = ActivityType.Move; }
+		public Land(Actor self, in Target target, WAngle? facing = null, Color? targetLineColor = null)
+			: this(self, target, new WDist(-1), WVec.Zero, facing, targetLineColor: targetLineColor) { ActivityType = ActivityType.Move; }
 
-		public Land(Actor self, in Target target, WDist landRange, WAngle? facing = null, Color? targetLineColor = null, bool addLandInfluence = true)
-			: this(self, target, landRange, WVec.Zero, facing, targetLineColor: targetLineColor, addLandInfluence: addLandInfluence) { ActivityType = ActivityType.Move; }
+		public Land(Actor self, in Target target, WDist landRange, WAngle? facing = null, Color? targetLineColor = null)
+			: this(self, target, landRange, WVec.Zero, facing, targetLineColor: targetLineColor) { ActivityType = ActivityType.Move; }
 
-		public Land(Actor self, in Target target, in WVec offset, WAngle? facing = null, Color? targetLineColor = null, bool addLandInfluence = true)
-			: this(self, target, WDist.Zero, offset, facing, targetLineColor: targetLineColor, addLandInfluence: addLandInfluence) { ActivityType = ActivityType.Move; }
+		public Land(Actor self, in Target target, in WVec offset, WAngle? facing = null, Color? targetLineColor = null)
+			: this(self, target, WDist.Zero, offset, facing, targetLineColor: targetLineColor) { ActivityType = ActivityType.Move; }
 
-		public Land(Actor self, in Target target, WDist landRange, in WVec offset, WAngle? facing = null, CPos[] clearCells = null, Color? targetLineColor = null, bool addLandInfluence = true)
+		public Land(Actor self, in Target target, WDist landRange, in WVec offset, WAngle? facing = null, CPos[] clearCells = null, Color? targetLineColor = null)
 		{
 			ActivityType = ActivityType.Move;
 			aircraft = self.Trait<Aircraft>();
@@ -60,7 +59,6 @@ namespace OpenRA.Mods.Common.Activities
 			this.clearCells = clearCells ?? Array.Empty<CPos>();
 			this.landRange = landRange.Length >= 0 ? landRange : aircraft.Info.LandRange;
 			this.targetLineColor = targetLineColor;
-			this.addLandInfluence = addLandInfluence;
 
 			// NOTE: Assigning null to desiredFacing means we should not prefer any particular facing and instead just
 			// use whatever facing gives us the most direct path to the landing site.
@@ -233,8 +231,7 @@ namespace OpenRA.Mods.Common.Activities
 				foreach (var notify in self.TraitsImplementing<INotifyLanding>())
 					notify.Landing(self);
 
-				if (addLandInfluence)
-					aircraft.AddInfluence(landingCell);
+				aircraft.AddInfluence(landingCell);
 				aircraft.EnteringCell(self);
 				landingInitiated = true;
 			}

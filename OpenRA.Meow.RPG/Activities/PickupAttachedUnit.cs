@@ -76,6 +76,17 @@ namespace OpenRA.Meow.RPG.Activities
 			{
 				if (carryall.State == AttachCarryall.AttachCarryallState.Reserved)
 					carryall.UnreserveAttachCarryable(self);
+
+				// Make sure we run the TakeOff activity if we are / have landed
+				if (self.Trait<Aircraft>().HasInfluence())
+				{
+					ChildHasPriority = true;
+					IsInterruptible = false;
+					QueueChild(new TakeOff(self));
+					return false;
+				}
+
+				return true;
 			}
 
 			if (cargo.IsDead || carryable.IsTraitDisabled || (!carryall.Info.AttachCarryableAnyCamp && !cargo.AppearsFriendlyTo(self)))
@@ -100,7 +111,7 @@ namespace OpenRA.Meow.RPG.Activities
 					ChildActivity?.Cancel(self);
 
 					var localOffset = carryall.OffsetForAttachCarryable(self, cargo).Rotate(carryableBody.QuantizeOrientation(cargo.Orientation));
-					QueueChild(new Land(self, Target.FromActor(cargo), -carryableBody.LocalToWorld(localOffset), carryableFacing.Facing, addLandInfluence: false));
+					QueueChild(new Land(self, Target.FromActor(cargo), -carryableBody.LocalToWorld(localOffset), carryableFacing.Facing));
 
 					// Pause briefly before attachment for visual effect
 					if (delay > 0)
@@ -113,6 +124,10 @@ namespace OpenRA.Meow.RPG.Activities
 					state = PickupState.Pickup;
 				}
 			}
+
+			// We don't want to allow TakeOff to be cancelled
+			if (ChildActivity is TakeOff)
+				ChildHasPriority = true;
 
 			// Return once we are in the pickup state and the pickup activities have completed
 			return TickChild(self) && state == PickupState.Pickup;

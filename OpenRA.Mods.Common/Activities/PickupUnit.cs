@@ -108,7 +108,7 @@ namespace OpenRA.Mods.Common.Activities
 					ChildActivity.Cancel(self);
 
 					var localOffset = carryall.OffsetForCarryable(self, cargo).Rotate(carryableBody.QuantizeOrientation(cargo.Orientation));
-					QueueChild(new Land(self, Target.FromActor(cargo), -carryableBody.LocalToWorld(localOffset), carryableFacing.Facing, addLandInfluence: false));
+					QueueChild(new Land(self, Target.FromActor(cargo), -carryableBody.LocalToWorld(localOffset), carryableFacing.Facing));
 
 					// Pause briefly before attachment for visual effect
 					if (delay > 0)
