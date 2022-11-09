@@ -736,12 +736,14 @@ ICBM:
 		TurnSpeed: 20
 		Speed: 16
 		SpeedAccleration: 1
+		RequiresCondition: !reload
 	RevealsShroud:
 		RequiresCondition: !inside-tunnel
 		Range: 7c0
 		MaxHeightDelta: 1100
 	GrantConditionOnDeploy:
 		PauseOnCondition: empdisable || being-captured
+		RequiresCondition: !reload
 		DeployedCondition: deployed
 		UndeployedCondition: undeployed
 		UndeployOnMove: true
