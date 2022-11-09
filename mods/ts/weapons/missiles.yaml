@@ -660,6 +660,7 @@ LauncherClusterMissile:
 		ContrailStartColorOuter: FFDD44
 		ContrailStartColorAlpha: 152
 		ContrailStartColorAlphaOuter: 0
+		Inaccuracy: 0
 	Warhead@SoundEffect: CreateEffect
 		Explosions: large_twlt
 		ImpactSounds: expnew19.aud
