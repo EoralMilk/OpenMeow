@@ -116,11 +116,13 @@ ChemicalCluster:
 		Explosions: idle,idlefx,idlefy,idlefxy
 		ImpactSounds: expnew19.aud
 		ImpactActors: false
+		ExplosionPalette: effect_alpha
 		ValidTargets: Ground, Water, Air
 	Warhead@Effect2: CreateEffect
 		Image: chemmissilesmoke
 		Explosions: idle,idlefx,idlefy,idlefxy
 		ImpactActors: false
+		ExplosionPalette: effect_alpha
 		ValidTargets: Ground, Water, Air
 		ForceDisplayAtGroundLevel: true
 		Delay: 20

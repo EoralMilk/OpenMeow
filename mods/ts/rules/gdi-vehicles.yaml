@@ -417,26 +417,29 @@ HMEC:
 	WithMuzzleOverlay:
 	Armament@PulseChainGun:
 		Weapon: MechPulseGun
-		LocalOffset: 1000,0,370
+		LocalOffset: 1500,0,555
 		FacingTolerance: 256
 		MuzzleSequence: muzzle
 		MuzzlePalette: effectcyan
 	Armament@MISSILES:
 		Weapon: MammothTuskMk2
-		LocalOffset: -243,-368,697, -243,368,697
+		LocalOffset: -486,-736,1396, -486,736,1396
+		LocalYaw: 120, -120
 		FacingTolerance: 256
 	Armament@RAILGUN:
 		Weapon: MechRailgun
 		BurstsPerFire: 2
-		LocalOffset: 368,-311,595, 368,311,595
+		LocalOffset: 736,-622,1190, 736,622,1190
 		FacingTolerance: 15
 	-WithModelBody:
 	WithModelWalkerBody:
 		TickRate: 1
+	RenderModels:
+		Scale: 2.25
 	Selectable:
-		Bounds: 1206, 2413, 0, -482
+		Bounds: 2400, 4000, 0, -1000
 	AttachCarryable:
-		LocalOffset: 0,0,509
+		LocalOffset: 0,0,1000
 	BodyOrientation:
 		QuantizedFacings: 1024
 
