@@ -11,6 +11,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using Newtonsoft.Json.Linq;
 using OpenRA.Activities;
@@ -42,7 +43,7 @@ namespace OpenRA.Mods.Cnc.Traits
 
 		public readonly int TransportorLoadDelay = 20;
 
-		public readonly int TransportorPrepareDelay = 20;
+		public readonly int TransportorPrepareDelay = 0;
 
 		[Desc("Number of drop pods spawned.")]
 		public readonly int2 Drops = new int2(5, 8);
@@ -196,11 +197,11 @@ namespace OpenRA.Mods.Cnc.Traits
 						});
 
 						w.Add(trans);
-						trans.QueueActivity(new Land(trans, Target.FromActor(self), offset: info.TransportorLandOffset, addLandInfluence: false));
+						trans.QueueActivity(new Land(trans, Target.FromActor(self), offset: info.TransportorLandOffset));
 						trans.QueueActivity(new Wait(info.TransportorLoadDelay, false));
 						trans.QueueActivity(new LoadDoppodPassengers(self, passengers.Values.ToArray()));
 						trans.QueueActivity(new TakeOff(trans));
-						trans.QueueActivity(new PrepareDroppods(passengers, pods.ToArray(),
+						trans.QueueActivity(new PrepareDroppods(self.World, passengers, pods.ToArray(),
 							info.CameraActor, info.CameraRemoveDelay, targetCell, info.TransportorPrepareDelay));
 						trans.QueueActivity(new RemoveSelf());
 					}
@@ -245,8 +246,8 @@ namespace OpenRA.Mods.Cnc.Traits
 
 	public class LoadDoppodPassengers : Activity
 	{
-		Actor from;
-		Actor[] passengers;
+		readonly Actor from;
+		readonly Actor[] passengers;
 
 		public LoadDoppodPassengers(Actor from, Actor[] passengers)
 		{
@@ -275,14 +276,15 @@ namespace OpenRA.Mods.Cnc.Traits
 
 	public class PrepareDroppods : Activity
 	{
-		Dictionary<Actor, Actor> passengers;
-		Actor[] pods;
-		string cameraActor;
-		int cameraDelay;
-		CPos cameraCell;
+		readonly Dictionary<Actor, Actor> passengers;
+		readonly Actor[] pods;
+		readonly string cameraActor;
+		readonly int cameraDelay;
+		readonly CPos cameraCell;
 		int dropDelay;
+		readonly World world;
 
-		public PrepareDroppods(Dictionary<Actor, Actor> passengers, Actor[] pods,
+		public PrepareDroppods(World world, Dictionary<Actor, Actor> passengers, Actor[] pods,
 			string cameraActor, int cameraDelay, CPos cameraCell, int dropDelay = 0)
 		{
 			this.passengers = passengers;
@@ -292,15 +294,15 @@ namespace OpenRA.Mods.Cnc.Traits
 			this.cameraCell = cameraCell;
 			IsInterruptible = false;
 			this.dropDelay = dropDelay;
+			this.world = world;
 		}
 
 		public override bool Tick(Actor self)
 		{
 			if (IsCanceling) return true;
+
 			if (--dropDelay > 0)
 				return false;
-
-			var world = self.World;
 
 			world.AddFrameEndTask(w =>
 			{

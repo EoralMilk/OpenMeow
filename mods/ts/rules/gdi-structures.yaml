@@ -609,7 +609,7 @@ GTDROP:
 		TransportorInitOffset: 0,0,14c0
 		TransportorInitFacing: 640
 		TransportorLoadDelay: 20
-		TransportorPrepareDelay: 20
+		TransportorPrepareDelay: 0
 	Cargo: # can be load to droppod
 		Types: Infantry
 		MaxWeight: 16
