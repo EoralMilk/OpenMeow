@@ -203,29 +203,19 @@ namespace OpenRA.Meow.RPG.Traits
 
 			protected override void OnFirstRun(Actor self)
 			{
-				var destination = carryable.Destination != null ? carryable.Destination.Value : cargo.Location;
-				if (!cargo.IsDead && carryable.IsValidAutoCarryDistance(destination))
+				if (!cargo.IsDead)
 					QueueChild(new PickupAttachedUnit(self, cargo, 0, carryall.Info.TargetLineColor));
 			}
 
 			public override bool Tick(Actor self)
 			{
 				if (cargo.IsDead)
-				{
-					ChildActivity?.Cancel(self);
 					return true;
-				}
-
-				var destination = carryable.Destination != null ? carryable.Destination.Value : cargo.Location;
-
-				if (carryall.AttachCarryable == null && !carryable.IsValidAutoCarryDistance(destination))
-				{
-					ChildActivity?.Cancel(self);
-					return true;
-				}
 
 				var dropRange = carryall.Info.DropRange;
-				self.QueueActivity(true, new DeliverAttachedUnit(self, Target.FromCell(self.World, destination), dropRange, carryall.Info.TargetLineColor));
+				var destination = carryable.Destination;
+				if (destination != null)
+					self.QueueActivity(true, new DeliverAttachedUnit(self, Target.FromCell(self.World, destination.Value), dropRange, carryall.Info.TargetLineColor));
 
 				return true;
 			}
