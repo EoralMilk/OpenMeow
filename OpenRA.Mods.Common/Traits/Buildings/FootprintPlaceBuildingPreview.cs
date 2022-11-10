@@ -42,6 +42,9 @@ namespace OpenRA.Mods.Common.Traits
 		[Desc("Render terrain geometry when place building.")]
 		public readonly bool RenderTerrainGeometry = true;
 
+		[Desc("Custom opacity to apply to the line-build placement sprite.")]
+		public readonly int RenderTerrainGeometryAlpha = 64;
+
 		protected virtual IPlaceBuildingPreview CreatePreview(WorldRenderer wr, ActorInfo ai, TypeDictionary init)
 		{
 			return new FootprintPlaceBuildingPreviewPreview(wr, ai, this);
@@ -168,8 +171,8 @@ namespace OpenRA.Mods.Common.Traits
 				// Colors change between points, so render separately
 				for (var i = 0; i < cellCorner.Length - 1; i++)
 				{
-					var startColor = Color.FromAhsv(128, (float)cellCorner[i].Z / mapMaxHeight, 1, 1);
-					var endColor = Color.FromAhsv(128, (float)cellCorner[i + 1].Z / mapMaxHeight, 1, 1);
+					var startColor = Color.FromAhsv(info.RenderTerrainGeometryAlpha, (float)cellCorner[i].Z / mapMaxHeight, 1, 1);
+					var endColor = Color.FromAhsv(info.RenderTerrainGeometryAlpha, (float)cellCorner[i + 1].Z / mapMaxHeight, 1, 1);
 
 					yield return new LineAnnotationRenderable(cellCorner[i], cellCorner[i + 1], width, startColor, endColor);
 				}
