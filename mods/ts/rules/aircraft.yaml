@@ -94,12 +94,12 @@ DPOD2:
 DPOD2E1:
 	Inherits: DPOD2
 	SpawnActorOnDeath:
-		Actor: E1R3
+		Actor: E1
 
 DPOD2E2:
 	Inherits: DPOD2
 	SpawnActorOnDeath:
-		Actor: E2R3
+		Actor: E1
 
 DSHP:
 	Inherits: ^Aircraft
@@ -140,7 +140,6 @@ DSHP:
 # send infantry to spaceport for sending to target by droppod
 DSHP.DROPPOD:
 	Inherits: ^Aircraft
-	Inherits@CARGOPIPS: ^CargoPips
 	Valued:
 		Cost: 1000
 	Tooltip:
@@ -186,7 +185,7 @@ DSHP.DROPPOD:
 		Actor: DSHP.Husk
 		RequiresCondition: airborne
 	Cargo:
-		Types: Infantry
+		Types: Vehicle
 		MaxWeight: 16
 		UnloadVoice:
 		EjectOnDeath: true

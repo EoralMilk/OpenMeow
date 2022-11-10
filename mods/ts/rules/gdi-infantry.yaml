@@ -38,19 +38,6 @@ E2:
 	ProducibleWithLevel:
 		Prerequisites: barracks.upgraded
 
-E2R3:
-	Inherits: E2
-	RenderSprites:
-		Image: E2
-	Tooltip:
-		Name: Elite Disc Thrower
-	ProducibleWithLevel:
-		Prerequisites: techlevel.low
-		InitialLevels: 3
-	-Buildable:
-	UnitDisplayInfo:
-		Description: Infantry armed with special explosive discs.\n  Strong vs Buildings, Infantry\n  Weak vs Vehicles, Aircraft
-
 MEDIC:
 	Inherits: ^Soldier
 	Inherits@EXPERIENCE: ^GainsExperience
