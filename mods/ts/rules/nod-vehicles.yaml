@@ -12,6 +12,7 @@ BGGY:
 		AddToArmyValue: true
 	Buildable:
 		Queue: Vehicle
+		BuildAtProductionType: Factory
 		BuildPaletteOrder: 30
 		Prerequisites: ~naweap, ~techlevel.low
 		Description: Fast scout and anti-infantry vehicle.\n  Strong vs Infantry, Light armor\n  Weak vs Vehicles, Aircraft
@@ -65,6 +66,7 @@ BIKE:
 		AddToArmyValue: true
 	Buildable:
 		Queue: Vehicle
+		BuildAtProductionType: Factory
 		BuildPaletteOrder: 40
 		Prerequisites: ~naweap, ~techlevel.low
 		Description: Fast scout vehicle, armed with\nrockets.\n  Strong vs Vehicles, Aircraft\n  Weak vs Infantry
@@ -125,6 +127,7 @@ TTNK:
 		AddToArmyValue: true
 	Buildable:
 		Queue: Vehicle
+		BuildAtProductionType: Factory
 		BuildPaletteOrder: 60
 		Prerequisites: ~naweap, ~techlevel.medium
 		Description: Nod's main battle tank.\nCan deploy to gain extra protection and range.\n  Strong vs Vehicles\n  Weak vs Infantry, Aircraft
@@ -250,6 +253,7 @@ ART2:
 		AddToArmyValue: true
 	Buildable:
 		Queue: Vehicle
+		BuildAtProductionType: Factory
 		BuildPaletteOrder: 100
 		Prerequisites: ~naweap, naradr, ~techlevel.high
 		Description: Heavy Long Range Mobile Artillery.\nNeeds to deploy in order to shoot. \n-cannot deploy on ramp.\n  Strong vs Ground units\n  Weak vs Aircraft
@@ -360,6 +364,7 @@ REPAIR:
 	Inherits@bounty: ^GlobalBounty
 	Buildable:
 		Queue: Vehicle
+		BuildAtProductionType: Factory
 		BuildPaletteOrder: 70
 		Prerequisites: ~naweap, ~techlevel.medium
 		Description: Repairs nearby vehicles.\n  Unarmed
@@ -412,6 +417,7 @@ WEED:
 		Name: Weed Eater
 	Buildable:
 		Queue: Vehicle
+		BuildAtProductionType: Factory
 		BuildPaletteOrder: 170
 		Prerequisites: ~naweap, nawast, ~techlevel.superweapons
 		Description: Collects veins for processing.\n  Unarmed
@@ -468,6 +474,7 @@ SAPC:
 		AddToArmyValue: true
 	Buildable:
 		Queue: Vehicle
+		BuildAtProductionType: Factory
 		BuildPaletteOrder: 110
 		Prerequisites: ~naweap, natech, ~techlevel.medium
 		Description: Troop transport that can move\nunderground to avoid detection.\n  Unarmed
@@ -524,6 +531,7 @@ SUBTANK:
 		AddToArmyValue: true
 	Buildable:
 		Queue: Vehicle
+		BuildAtProductionType: Factory
 		BuildPaletteOrder: 130
 		Prerequisites: ~naweap, natech, ~techlevel.high
 		Description: Subterranean Flame Tank.\nIs able to move underground.\n  Strong vs Infantry, Buildings\n  Weak vs Tanks, Aircraft
@@ -588,9 +596,10 @@ STNK:
 	UpdatesPlayerStatistics:
 		AddToArmyValue: true
 	Buildable:
+		Queue: Vehicle
+		BuildAtProductionType: Factory
 		BuildPaletteOrder: 150
 		Prerequisites: ~naweap, natech, ~techlevel.high
-		Queue: Vehicle
 		Description: Lightly armoured tank equipped with a personal\nstealth generator. Armed with missiles.\nCan be spotted by infantry at close range.\n  Strong vs Vehicles, Aircraft\n  Weak vs Infantry
 	Mobile:
 		TurnSpeed: 40
@@ -651,6 +660,7 @@ REAPER:
 		AddToArmyValue: true
 	Buildable:
 		Queue: Vehicle
+		BuildAtProductionType: Factory
 		BuildPaletteOrder: 151
 		Description: Raiding walker armed with cluster missiles, and web launchers.\n\nGood vs: Ground\n\nSpecial:\n- Can attack enemies ahead while moving\n- Can target air\n- Can ensnare infantry with webs\n- Can shoot over walls
 		Prerequisites: ~naweap, natech, ~techlevel.high
@@ -725,6 +735,7 @@ ICBM:
 		HP: 50000
 	Buildable:
 		Queue: Vehicle
+		BuildAtProductionType: Factory
 		BuildPaletteOrder: 149
 		Prerequisites: ~naweap, naradr, ~techlevel.high
 		Description: Long Range Missle Launcher.\nNeeds to deploy in order to shoot. \n-cannot deploy on ramp.\n  Strong vs Ground units\n  Weak vs Aircraft \n Maximum 1 can be builded.

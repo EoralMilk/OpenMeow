@@ -222,7 +222,7 @@ GAWEAP:
 		ExitDelay: 5
 	ExitsDebugOverlay:
 	Production:
-		Produces: Vehicle
+		Produces: Vehicle, Factory
 		PauseOnCondition: empdisable
 	ProductionBar:
 		ProductionType: Vehicle
@@ -545,6 +545,7 @@ GTDROP:
 		ActorType: dshp.droppod
 		ReadyAudio: UnitReady
 		PauseOnCondition: empdisable
+		Facing: 640
 	ProductionBar:
 		ProductionType: Vehicle
 	Armor:
@@ -592,7 +593,7 @@ GTDROP:
 		Drops: 8, 8
 		TransportorType: dshp.droppod
 		TransportorLandOffset: 350,450,0
-		TransportorInitOffset: 0,0,14c0
+		TransportorInitOffset: 0,0,20c0
 		TransportorInitFacing: 640
 		TransportorLoadDelay: 20
 		TransportorPrepareDelay: 20 # useless

@@ -160,18 +160,26 @@ DSHP.DROPPOD:
 		Pitch: 0
 		Roll: 0
 		TurnSpeed: 20
-		Speed: 350
+		Speed: 1024
 		TakeoffSounds: dropup1.aud
 		LandingSounds: dropdwn1.aud
 		IdealSeparation: 1275
-		CruiseAltitude: 12c512
-		AltitudeVelocity: 256
+		CruiseAltitude: 20c512
+		AltitudeVelocity: 128
 		MoveIntoShroud: true
+		TakeUpCellWhenLand: false
 	-Targetable@AIRBORNE:
 	-Targetable@GROUND:
 	-Targetable@REPAIR:
+	GrantConditionAboveAltitude:
+		MinAltitude: 10c0
+		Condition: outofsight
+	RevealsShroud@airborne:
+		RequiresCondition: !outofsight
 	RenderModels:
 		Image: dshp
+	WithModelBody:
+		RequiresCondition: !outofsight
 	RenderSprites:
 		Image: dshp
 	SpawnActorOnDeath:

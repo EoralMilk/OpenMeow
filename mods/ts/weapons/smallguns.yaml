@@ -290,7 +290,7 @@ KittenClaw:
 MechPulseGun:
 	Inherits: ^Vulcan
 	Burst: 10
-	Report: silencer.aud
+	Report: cygun_a.wav, cygun_b.wav
 	Range: 9c512
 	ReloadDelay: 25
 	Projectile: Bullet

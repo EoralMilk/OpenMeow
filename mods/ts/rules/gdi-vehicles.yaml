@@ -12,6 +12,7 @@ APC:
 		AddToArmyValue: true
 	Buildable:
 		Queue: Vehicle
+		BuildAtProductionType: Factory
 		BuildPaletteOrder: 80
 		Prerequisites: ~gaweap, gapile, ~techlevel.medium
 		Description: Armored infantry transport.\nCan move on water.\nHas a recon drone.\nCan use Force Attack to use drone to recon, has a very long range
@@ -90,6 +91,7 @@ HVR:
 		AddToArmyValue: true
 	Buildable:
 		Queue: Vehicle
+		BuildAtProductionType: Factory
 		BuildPaletteOrder: 80
 		Prerequisites: ~gaweap, garadr, ~techlevel.high
 		Description: Hovering vehicle armed with\nmid-long range missiles.\n  Strong vs Vehicles, Aircraft\n  Weak vs Infantry
@@ -148,13 +150,14 @@ SMECH:
 	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Inherits@bounty: ^GlobalBounty
 	Valued:
-		Cost: 400
+		Cost: 500
 	Tooltip:
 		Name: Wolverine
 	UpdatesPlayerStatistics:
 		AddToArmyValue: true
 	Buildable:
 		Queue: Vehicle
+		BuildAtProductionType: Factory
 		BuildPaletteOrder: 20
 		Prerequisites: ~gaweap, ~techlevel.low
 		Description: Anti-personnel assualt walker.\n  Strong vs Infantry, Light armor\n  Weak vs Vehicles, Aircraft
@@ -235,6 +238,7 @@ MMCH:
 		AddToArmyValue: true
 	Buildable:
 		Queue: Vehicle
+		BuildAtProductionType: Factory
 		BuildPaletteOrder: 50
 		Prerequisites: ~gaweap, ~techlevel.medium
 		Description: General purpose mechanized walker.\n  Strong vs Vehicles\n  Weak vs Infantry, Aircraft\n Can recieve Weapon Plugin\n-can recieve all 3 kinds of plugin at the same time
@@ -458,6 +462,7 @@ SONIC:
 		AddToArmyValue: true
 	Buildable:
 		Queue: Vehicle
+		BuildAtProductionType: Factory
 		BuildPaletteOrder: 120
 		Prerequisites: ~gaweap, gatech, ~techlevel.high
 		Description: Armored high-tech vehicle with\npowerful sonic armament.\n  Strong vs Ground\n  Weak vs Aircraft
@@ -515,6 +520,7 @@ JUGG:
 		AddToArmyValue: true
 	Buildable:
 		Queue: Vehicle
+		BuildAtProductionType: Factory
 		BuildPaletteOrder: 100
 		Prerequisites: ~gaweap, garadr, ~techlevel.high
 		Description: Mobile Artillery Mech.\nNeeds to deploy in order to shoot. \n-cannot deploy on ramp.\n  Strong vs Ground units\n  Weak vs Aircraft
@@ -693,6 +699,7 @@ LIMPED:
 		Name: Limpet Drone
 	Buildable:
 		Queue: Vehicle
+		BuildAtProductionType: Factory
 		BuildPaletteOrder: 21
 		Description: Small drone armed with explosives.\n\nGood vs: Vehicles, Aircraft\n\nSpecial:\n- Needs to be deployed to be armed\n- Invisible and get a lot of extra protection when deployed\n- Launches explosives towards a target after small delay
 		Prerequisites: ~gaweap, ~techlevel.low

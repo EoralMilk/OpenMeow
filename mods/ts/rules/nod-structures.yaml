@@ -217,7 +217,7 @@ NAWEAP:
 		ExitDelay: 5
 	ExitsDebugOverlay:
 	Production:
-		Produces: Vehicle
+		Produces: Vehicle, Factory
 		PauseOnCondition: empdisable
 	ProductionBar:
 		ProductionType: Vehicle
