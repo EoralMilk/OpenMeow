@@ -9,7 +9,7 @@ GAPOWR:
 		Prerequisites: ~structures.gdi, ~techlevel.low
 		Description: Provides power for other structures. /n Can recieve Power Plugin
 	Valued:
-		Cost: 350
+		Cost: 300
 	Tooltip:
 		Name: GDI Power Plant
 	ProvidesPrerequisite:
