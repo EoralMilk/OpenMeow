@@ -91,7 +91,7 @@ DPOD2:
 		EjectOnDeath: true
 		ForceEject: true
 	SpawnActorOnDeath:
-		Actor: MWMN
+		Actor: E1
 
 DSHP:
 	Inherits: ^Aircraft
