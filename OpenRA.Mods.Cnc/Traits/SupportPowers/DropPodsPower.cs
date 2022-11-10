@@ -133,6 +133,7 @@ namespace OpenRA.Mods.Cnc.Traits
 			// cargo, passenger
 			Dictionary<Actor, Actor> passengers = new Dictionary<Actor, Actor>();
 			HashSet<Actor> reservePassengers = new HashSet<Actor>();
+			Dictionary<Actor, Target> podTargets = new Dictionary<Actor, Target>();
 
 			if (info.TransportorType != null)
 			{
@@ -170,6 +171,7 @@ namespace OpenRA.Mods.Cnc.Traits
 						else
 						{
 							pods.Add(pod);
+							podTargets.Add(pod, podTarget);
 
 							var podcargo = pod.TraitOrDefault<Cargo>();
 							if (cargo != null && podcargo != null && cargo.Passengers.Any())
@@ -184,6 +186,8 @@ namespace OpenRA.Mods.Cnc.Traits
 						}
 					}
 
+					reservePassengers.Clear();
+
 					// call for transport
 					if (passengers.Count > 0)
 					{
@@ -196,14 +200,26 @@ namespace OpenRA.Mods.Cnc.Traits
 							new FacingInit(info.TransportorInitFacing)
 						});
 
+						var transcargo = trans.Trait<Cargo>();
+
 						w.Add(trans);
+						foreach (var kv in passengers)
+						{
+							if (!transcargo.CanLoad(kv.Value))
+								reservePassengers.Add(kv.Key);
+						}
+
+						foreach (var k in reservePassengers)
+						{
+							passengers.Remove(k);
+						}
+
 						trans.QueueActivity(new Land(trans, Target.FromActor(self), offset: info.TransportorLandOffset));
 						trans.QueueActivity(new Wait(info.TransportorLoadDelay, false));
-						trans.QueueActivity(new LoadDoppodPassengers(self, passengers.Values.ToArray()));
+						trans.QueueActivity(new LoadDoppodPassengers(self, passengers));
 						trans.QueueActivity(new TakeOff(trans));
-						trans.QueueActivity(new PrepareDroppods(self.World, passengers, pods.ToArray(),
+						trans.QueueActivity(new PrepareDroppods(self.World, passengers, pods.ToArray(), podTargets,
 							info.CameraActor, info.CameraRemoveDelay, targetCell, info.TransportorPrepareDelay));
-						trans.QueueActivity(new RemoveSelf());
 					}
 					else
 					{
@@ -227,6 +243,11 @@ namespace OpenRA.Mods.Cnc.Traits
 						foreach (var pod in pods)
 						{
 							w.Add(pod);
+							if (podTargets.TryGetValue(pod, out var pt))
+							{
+								var attack = pod.Trait<AttackBomber>();
+								attack.SetTarget(pt.CenterPosition);
+							}
 
 							var podcargo = pod.TraitOrDefault<Cargo>();
 							if (podcargo != null && passengers.TryGetValue(pod, out var passenger))
@@ -247,9 +268,9 @@ namespace OpenRA.Mods.Cnc.Traits
 	public class LoadDoppodPassengers : Activity
 	{
 		readonly Actor from;
-		readonly Actor[] passengers;
+		readonly Dictionary<Actor, Actor> passengers;
 
-		public LoadDoppodPassengers(Actor from, Actor[] passengers)
+		public LoadDoppodPassengers(Actor from, Dictionary<Actor, Actor> passengers)
 		{
 			this.from = from;
 			this.passengers = passengers;
@@ -259,15 +280,29 @@ namespace OpenRA.Mods.Cnc.Traits
 		public override bool Tick(Actor self)
 		{
 			if (IsCanceling) return true;
-			var cargo = from.Trait<Cargo>();
 
-			foreach (var p in passengers)
+			if (from != null && !from.IsDead)
 			{
-				if (cargo.Passengers.Contains(p))
-				{
-					cargo.Unload(from, p);
-				}
+				var cargo = from.Trait<Cargo>();
+				var selfcargo = self.Trait<Cargo>();
 
+				foreach (var kv in passengers)
+				{
+					if (cargo.Passengers.Contains(kv.Value) && cargo.CanUnload() && selfcargo.CanLoad(kv.Value))
+					{
+						cargo.Unload(from, kv.Value);
+						selfcargo.Load(self, kv.Value);
+					}
+					else
+					{
+						passengers.Remove(kv.Key);
+					}
+
+				}
+			}
+			else
+			{
+				passengers.Clear();
 			}
 
 			return true;
@@ -277,18 +312,21 @@ namespace OpenRA.Mods.Cnc.Traits
 	public class PrepareDroppods : Activity
 	{
 		readonly Dictionary<Actor, Actor> passengers;
+		readonly Dictionary<Actor, Target> podTargets;
+
 		readonly Actor[] pods;
 		readonly string cameraActor;
 		readonly int cameraDelay;
 		readonly CPos cameraCell;
-		int dropDelay;
+		readonly int dropDelay;
 		readonly World world;
 
-		public PrepareDroppods(World world, Dictionary<Actor, Actor> passengers, Actor[] pods,
+		public PrepareDroppods(World world, Dictionary<Actor, Actor> passengers, Actor[] pods, Dictionary<Actor, Target> podTargets,
 			string cameraActor, int cameraDelay, CPos cameraCell, int dropDelay = 0)
 		{
 			this.passengers = passengers;
 			this.pods = pods;
+			this.podTargets = podTargets;
 			this.cameraActor = cameraActor;
 			this.cameraDelay = cameraDelay;
 			this.cameraCell = cameraCell;
@@ -300,9 +338,6 @@ namespace OpenRA.Mods.Cnc.Traits
 		public override bool Tick(Actor self)
 		{
 			if (IsCanceling) return true;
-
-			if (--dropDelay > 0)
-				return false;
 
 			world.AddFrameEndTask(w =>
 			{
@@ -318,20 +353,30 @@ namespace OpenRA.Mods.Cnc.Traits
 					camera.QueueActivity(new RemoveSelf());
 				}
 
+				var selfcargo = self.Trait<Cargo>();
+
 				foreach (var pod in pods)
 				{
 					w.Add(pod);
 
-					var podcargo = pod.TraitOrDefault<Cargo>();
-					if (podcargo != null && passengers.TryGetValue(pod, out var passenger))
+					if (podTargets.TryGetValue(pod, out var pt))
 					{
-						if (passenger != null && !passenger.IsDead && !passenger.IsInWorld)
+						var attack = pod.Trait<AttackBomber>();
+						attack.SetTarget(pt.CenterPosition);
+					}
+
+					var podcargo = pod.TraitOrDefault<Cargo>();
+					if (podcargo != null && passengers.Count > 0 && passengers.TryGetValue(pod, out var passenger))
+					{
+						if (passenger != null && !passenger.IsDead && selfcargo.Passengers.Contains(passenger))
 						{
+							selfcargo.Unload(self, passenger);
 							podcargo.Load(pod, passenger);
 						}
 					}
 				}
 
+				self.Dispose();
 			});
 
 			return true;

@@ -54,8 +54,11 @@ DPOD2:
 		CruiseAltitude: 16c0
 		MaximumPitch: 110
 		LandableTerrainTypes: Clear, Road, Rail, DirtRoad, Rough, Tiberium, BlueTiberium, Veins
-	AttackAircraft:
+	AttackBomber:
 		Voice: Attack
+		PersistentTargeting: false
+		PauseOnCondition: empdisable
+		FacingTolerance: 512
 	Armament:
 		Weapon: DropVulcan
 	HiddenUnderFog:
@@ -78,8 +81,8 @@ DPOD2:
 		Explosion: DropPodExplode
 		Moves: true
 		UseAircraftSpeed: true
-		Velocity: 556
-		MaxVelocity: 556
+		Velocity: 512
+		MaxVelocity: 512
 		MaximumSpinSpeed: 0
 	Cargo:
 		Types: Infantry
@@ -139,6 +142,7 @@ DSHP:
 # send infantry to spaceport for sending to target by droppod
 DSHP.DROPPOD:
 	Inherits: ^Aircraft
+	Inherits@CARGOPIPS: ^CargoPips
 	Valued:
 		Cost: 1000
 	Tooltip:
@@ -168,6 +172,11 @@ DSHP.DROPPOD:
 	SpawnActorOnDeath:
 		Actor: DSHP.Husk
 		RequiresCondition: airborne
+	Cargo:
+		Types: Infantry
+		MaxWeight: 16
+		UnloadVoice:
+		EjectOnDeath: true
 
 A10:
 	Inherits: ^EMPableAircraft

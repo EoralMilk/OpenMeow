@@ -499,12 +499,35 @@ TinyShard:
 DropVulcan:
 	Inherits: ^SA
 	Report: jumpjet1.aud
+	Burst: 30
+	BurstDelays: 1
+	Range: 30c0
+	ReloadDelay: 90
+	FirstBurstTargetOffset: 0,3000,0
+	FollowingBurstTargetOffset: 0,-200,0
 	Projectile: Bullet
 		Speed: 2c0
 		ContrailLength: 2
 		ContrailWidthFadeRate: 1
-		Inaccuracy: 990
-
+		Inaccuracy: 1c0
+		InaccuracyType: Absolute
+		UseVerticalInaccuracy: false
+	Warhead@1Dam: Spread3DDamage
+		Damage: 3300
+		Falloff: 100, 100, 30
+		Spread: 0c268
+		DamageOne: false
+		OnlyDamageDirectlyHit: false
+		ValidRelationships: Neutral, Enemy # no friendly damage
+		Versus:
+			None: 100
+			Wood: 20
+			Light: 100
+			Heavy: 10
+			Concrete: 5
+		DamageTypes: Prone70Percent, TriggerProne, BulletDeath
+		ValidTargets: Ground, Water, Air
+		InvalidTargets: Wall, Bridge
 
 A10Vulcan:
 	Inherits: ^SA

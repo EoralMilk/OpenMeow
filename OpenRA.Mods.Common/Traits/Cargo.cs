@@ -343,6 +343,9 @@ namespace OpenRA.Mods.Common.Traits
 
 			totalWeight -= GetWeight(passenger);
 
+			if (passenger.IsDead)
+				return passenger;
+
 			SetPassengerFacing(passenger);
 
 			foreach (var npe in self.TraitsImplementing<INotifyPassengerExited>())
@@ -413,6 +416,9 @@ namespace OpenRA.Mods.Common.Traits
 				while (!IsEmpty() && (Info.ForceEject || CanUnload(BlockedByActor.All)))
 				{
 					var passenger = Unload(self);
+					if (passenger == null || passenger.IsDead)
+						continue;
+
 					var cp = self.CenterPosition;
 					var inAir = self.World.Map.DistanceAboveTerrain(cp).Length <= Info.MinAirborneAltitude.Length;
 					var positionable = passenger.Trait<IPositionable>();
