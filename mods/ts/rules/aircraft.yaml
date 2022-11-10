@@ -90,16 +90,8 @@ DPOD2:
 		UnloadVoice:
 		EjectOnDeath: true
 		ForceEject: true
-
-DPOD2E1:
-	Inherits: DPOD2
 	SpawnActorOnDeath:
-		Actor: E1
-
-DPOD2E2:
-	Inherits: DPOD2
-	SpawnActorOnDeath:
-		Actor: E1
+		Actor: MWMN
 
 DSHP:
 	Inherits: ^Aircraft

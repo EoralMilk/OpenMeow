@@ -594,7 +594,7 @@ GTDROP:
 		SelectTargetTextNotification: Select target.
 		DisplayRadarPing: true
 		ChargeInterval: 6000
-		UnitTypes: DPOD2E1, DPOD2E2
+		UnitTypes: DPOD2
 		CameraActor: camera
 		Weapon: DummyWeapon
 		OrderName: Droppod
