@@ -395,7 +395,7 @@ HMEC:
 		Queue: Vehicle
 		BuildPaletteOrder: 140
 		BuildAtProductionType: DropZone
-		Prerequisites: gtdrop, ~techlevel.high
+		Prerequisites: ~gaweap, gtdrop, ~techlevel.high
 		BuildLimit: 1
 		Description: Slow heavy walker.\nArmed with dual railguns, rocket launchers and chain gun.\n  Strong vs All\n  Weak vs Nothing\nMaximum 1 can be built.
 	Mobile:
