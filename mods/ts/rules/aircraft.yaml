@@ -109,8 +109,6 @@ DSHP:
 		Cost: 1000
 	Tooltip:
 		Name: Dropship
-	UpdatesPlayerStatistics:
-		AddToArmyValue: true
 	Aircraft:
 		IdleBehavior: Land
 		Pitch: 0
@@ -147,24 +145,31 @@ DSHP.DROPPOD:
 		Cost: 1000
 	Tooltip:
 		Name: Dropship
-	UpdatesPlayerStatistics:
-		AddToArmyValue: true
 	Health:
 		HP: 200000
 	Armor:
 		Type: Heavy
+	-Selectable:
+	-SelectionDecorations:
+	-UpdatesPlayerStatistics:
+	-MapEditorData:
+	RejectsOrders:
+	Interactable:
 	Aircraft:
 		IdleBehavior: LeaveMapAtClosestEdge
 		Pitch: 0
 		Roll: 0
 		TurnSpeed: 20
-		Speed: 168
+		Speed: 350
 		TakeoffSounds: dropup1.aud
 		LandingSounds: dropdwn1.aud
 		IdealSeparation: 1275
 		CruiseAltitude: 12c512
 		AltitudeVelocity: 256
 		MoveIntoShroud: true
+	-Targetable@AIRBORNE:
+	-Targetable@GROUND:
+	-Targetable@REPAIR:
 	RenderModels:
 		Image: dshp
 	RenderSprites:

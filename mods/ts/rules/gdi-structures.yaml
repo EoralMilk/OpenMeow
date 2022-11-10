@@ -475,31 +475,6 @@ GARADR:
 	HitShape:
 		Type: Rectangle
 			VerticalTopOffset: 2172
-	AirstrikePower@veinbomb:
-		OrderName: OrcaAssult
-		Prerequisites: radar
-		Icon: orcaicon
-		ChargeInterval: 5000
-		Name: Orca Assult
-		SquadSize: 3
-		SquadOffset: -1536, 768, -1524
-		Description: An Orca Fighter assult in bound and attack your target.
-		SelectTargetSpeechNotification: SelectTarget
-		SelectTargetTextNotification: Select target.
-		CameraActor: camera
-		CameraRemoveDelay: 150
-		UnitType: orca.assult
-		QuantizedFacings: 8
-		Cursor: ioncannon
-		#DisplayBeacon: true
-		#BeaconPoster: pbmbicon
-		#ArrowSequence: arrow
-		#ClockSequence: clock
-		#CircleSequence: circles
-		UseDirectionalTarget: True
-		DirectionArrowAnimation: airstrikedirection
-		DirectionArrowPalette: mouse
-		SupportPowerPaletteOrder: 40
 
 
 GATECH:
@@ -554,7 +529,8 @@ GTDROP:
 		Queue: Building
 		BuildPaletteOrder: 95
 		Prerequisites: gatech, ~structures.gdi, ~techlevel.medium
-		Description: Staging area for drop pod assault.
+		Description: Staging area for drop pod assault. \n Produces MK2
+		BuildLimit: 1
 	Tooltip:
 		Name: GDI Dropship Bay
 	Valued:
@@ -564,6 +540,13 @@ GTDROP:
 		Dimensions: 3,3
 	Health:
 		HP: 100000
+	ProductionAirdrop:
+		Produces: DropZone, Vehicle
+		ActorType: dshp.droppod
+		ReadyAudio: UnitReady
+		PauseOnCondition: empdisable
+	ProductionBar:
+		ProductionType: Vehicle
 	Armor:
 		Type: Wood
 	RevealsShroud:
@@ -587,8 +570,11 @@ GTDROP:
 	IsometricSelectable:
 		Height: 48
 	Exit:
+		ProductionTypes: Vehicle
 		SpawnOffset: 350,450,0
 		ExitCell: 2,2
+	RallyPoint:
+		Path: 4,4
 	DropPodsPower:
 		Cursor: ioncannon
 		PauseOnCondition: disabled || empdisable
@@ -678,6 +664,27 @@ GAPLUG:
 		Actors: hunter
 		Type: HunterSeeker
 		ChargeInterval: 8000
+	AirstrikePower@OrcaAssult:
+		OrderName: OrcaAssult
+		Icon: orcaicon
+		PauseOnCondition: disabled || empdisable
+		RequiresCondition: plug.droppoda || plug.droppodb
+		ChargeInterval: 4000
+		Name: Orca Assult
+		SquadSize: 3
+		SquadOffset: -1536, 768, -1524
+		Description: An Orca Fighter assult in bound and attack your target.
+		SelectTargetSpeechNotification: SelectTarget
+		SelectTargetTextNotification: Select target.
+		CameraActor: camera
+		CameraRemoveDelay: 150
+		UnitType: orca.assult
+		QuantizedFacings: 8
+		Cursor: ioncannon
+		UseDirectionalTarget: True
+		DirectionArrowAnimation: airstrikedirection
+		DirectionArrowPalette: mouse
+		SupportPowerPaletteOrder: 40
 	Production:
 		Produces: HunterSeeker
 		PauseOnCondition: empdisable
@@ -837,13 +844,12 @@ GAPLUG4:
 	Valued:
 		Cost: 1000
 	Tooltip:
-		Name: Tech Plugin: Drop Pod Node
-
-	# Buildable:
-	# 	Queue: Building
-	# 	BuildPaletteOrder: 180
-	# 	Prerequisites: ~!gaplug.socket.drop, gatech, gaplug, ~structures.gdi, ~techlevel.superweapons
-	# 	Description: Enables use of the Drop Pod Reinforcements. \nMakes GDI Upgrade Center consume 100 more power.
+		Name: Tech Plugin: Airstrike Node
+	Buildable:
+	 	Queue: Building
+	 	BuildPaletteOrder: 180
+	 	Prerequisites: ~!gaplug.socket.drop, gatech, gaplug, ~structures.gdi, ~techlevel.superweapons
+	 	Description: Enables use of the Orca Airstrike. \nMakes GDI Upgrade Center consume 100 more power.
 	Plug:
 		Type: plug.droppod
 	Power:

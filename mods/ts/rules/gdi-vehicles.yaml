@@ -390,7 +390,8 @@ HMEC:
 	Buildable:
 		Queue: Vehicle
 		BuildPaletteOrder: 140
-		Prerequisites: ~gaweap, gatech, ~techlevel.high
+		BuildAtProductionType: DropZone
+		Prerequisites: gtdrop, ~techlevel.high
 		BuildLimit: 1
 		Description: Slow heavy walker.\nArmed with dual railguns, rocket launchers and chain gun.\n  Strong vs All\n  Weak vs Nothing\nMaximum 1 can be built.
 	Mobile:
@@ -417,29 +418,29 @@ HMEC:
 	WithMuzzleOverlay:
 	Armament@PulseChainGun:
 		Weapon: MechPulseGun
-		LocalOffset: 1500,0,555
+		LocalOffset: 1300,0,490
 		FacingTolerance: 256
 		MuzzleSequence: muzzle
 		MuzzlePalette: effectcyan
 	Armament@MISSILES:
 		Weapon: MammothTuskMk2
-		LocalOffset: -486,-736,1396, -486,736,1396
+		LocalOffset: -440,-580,1100, -440,580,1100
 		LocalYaw: 120, -120
 		FacingTolerance: 256
 	Armament@RAILGUN:
 		Weapon: MechRailgun
 		BurstsPerFire: 2
-		LocalOffset: 736,-622,1190, 736,622,1190
+		LocalOffset: 698,-580,1000, 698,580,1000
 		FacingTolerance: 15
 	-WithModelBody:
 	WithModelWalkerBody:
 		TickRate: 1
 	RenderModels:
-		Scale: 2.25
+		Scale: 2
 	Selectable:
-		Bounds: 2400, 4000, 0, -1000
+		Bounds: 2000, 3400, 0, -768
 	AttachCarryable:
-		LocalOffset: 0,0,1000
+		LocalOffset: 0,0,768
 	BodyOrientation:
 		QuantizedFacings: 1024
 
