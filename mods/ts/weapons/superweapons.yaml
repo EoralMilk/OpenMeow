@@ -41,6 +41,36 @@ MultiCluster:
 
 ClusterMissile:
 	ValidTargets: Ground, Water, Air, Trees
+	Inherits: ^DefaultMissile
+	Range: 9999c0
+	ReloadDelay: 50
+	Report: icbm1.aud
+	Projectile: Missile
+		Unit: missile
+		Meshes: idle
+		MeshScale: 8
+		HomingActivationDelay: 80
+		RangeLimit: -1
+		LifeTime: -1
+		MaxSpeed: 800
+		HorizontalRateOfTurn: 128
+		MinimumLaunchSpeed: 512
+		MaximumLaunchSpeed: 512
+		Acceleration: 96
+		MinimumLaunchAngle: 253
+		MaximumLaunchAngle: 253
+		Gravity: 0
+		ContrailLength: 10
+		ContrailWidth: 320
+		CruiseAltitude: 90c0
+		AirburstAltitude: 9c0
+		TrailCount: 1
+		TrailInterval: 0
+		ContrailStartColor: DFA877
+		ContrailStartColorOuter: FFDD44
+		ContrailStartColorAlpha: 152
+		ContrailStartColorAlphaOuter: 0
+		Inaccuracy: 0
 	Warhead@1Dam: SpreadDamage
 		Spread: 512
 		Falloff: 100, 100, 0
@@ -74,7 +104,43 @@ ClusterMissile:
 	# 	ForceTargetGround: true
 
 ChemicalMissile:
-	Inherits: ClusterMissile
+	Inherits: ^DefaultMissile
+	Range: 9999c0
+	ReloadDelay: 50
+	Report: icbm1.aud
+	Projectile: Missile
+		Unit: missile
+		Meshes: idle
+		MeshScale: 6
+		HomingActivationDelay: 80
+		RangeLimit: -1
+		LifeTime: -1
+		MaxSpeed: 800
+		HorizontalRateOfTurn: 128
+		MinimumLaunchSpeed: 512
+		MaximumLaunchSpeed: 512
+		Acceleration: 96
+		MinimumLaunchAngle: 253
+		MaximumLaunchAngle: 253
+		Gravity: 0
+		ContrailLength: 10
+		ContrailWidth: 320
+		CruiseAltitude: 90c0
+		AirburstAltitude: 9c0
+		TrailCount: 1
+		TrailInterval: 0
+		TrailPalette: effectgreen
+		ContrailStartColor: 00FF00
+		ContrailStartColorOuter: AAAA00
+		ContrailStartColorAlpha: 152
+		ContrailStartColorAlphaOuter: 0
+		Inaccuracy: 0
+	Warhead@SoundEffect: CreateEffect
+		Explosions: large_twlt
+		ExplosionPalette: effectgreen
+		ImpactSounds: expnew19.aud
+		ImpactActors: false
+		ValidTargets: Ground, Water, Air
 	Warhead@Cluster: FireRadius
 		Weapon: ChemicalCluster
 		StartOffset: 0,-2222,0

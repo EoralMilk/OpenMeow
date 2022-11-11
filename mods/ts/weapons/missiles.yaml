@@ -655,7 +655,7 @@ LauncherClusterMissile:
 		ContrailWidth: 256
 		CruiseAltitude: 90c0
 		AirburstAltitude: 6c0
-		TrailCount: 2
+		TrailCount: 1
 		ContrailStartColor: DFA877
 		ContrailStartColorOuter: FFDD44
 		ContrailStartColorAlpha: 152
