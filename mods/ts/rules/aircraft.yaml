@@ -38,7 +38,6 @@ DPOD:
 
 DPOD2:
 	Inherits@2: ^ExistsInWorld
-	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
 	Valued:
 		Cost: 10
 	Tooltip:
