@@ -111,7 +111,7 @@ Player:
 			titanugmissile: 8
 			gaplug: 1
 			gaplug3: 1
-			# gaplug4: 1
+			gaplug4: 1
 		BuildingDelays:
 			garadr: 4000
 			naradr: 4000
@@ -123,7 +123,7 @@ Player:
 	SquadManagerBotModule@test:
 		RequiresCondition: enable-test-ai
 		SquadSize: 20
-		ExcludeFromSquadsTypes: harv, mcv, dpod, hunter, trnsport, weed, icbm
+		ExcludeFromSquadsTypes: harv, mcv, dpod2, hunter, trnsport, weed, icbm, engineer
 		IgnoredEnemyTargetTypes: Wall, AIgnored
 		ConstructionYardTypes: gacnst
 		AirUnitsTypes: orca, orcab, scrin, apache, jumpjetair
@@ -201,7 +201,7 @@ Player:
 		CapturableActorTypes: gacnst, caarmr
 		RepairableActorTypes: well, gacnst, gaweap, naweap, garadr, naradr, gatech, natech, gaplug, natmpl, napuls, nastlh, namisl
 		RepairableHutActorTypes: cabhut
-	SupportPowerBotModule:
+	SupportPowerBotASModule:
 		RequiresCondition: enable-test-ai
 		Decisions:
 			ioncannon:
@@ -315,7 +315,7 @@ Player:
 	GrantConditionOnPrerequisite@AIveinLimit2:
 		Prerequisites: AIveinLimit2
 		Condition: ai-limit2
-	SupportPowerBotModule@veinbomb:
+	SupportPowerBotASModule@veinbomb:
 		RequiresCondition: enable-test-ai && !ai-limit2
 		Decisions:
 			VeinBomb:
@@ -329,4 +329,7 @@ Player:
 					Attractiveness: 100000
 					TargetMetric: Value
 					CheckRadius: 8c0
-
+	GarrisonBotModule:
+		RequiresCondition: enable-test-ai
+		TransportAndPassengers: 
+			gtdrop: e1,e2,e3,cyborg,weedguy,ghost,cyc2,medic,limped,engineer,smech
