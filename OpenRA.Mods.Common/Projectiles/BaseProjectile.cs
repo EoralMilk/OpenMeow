@@ -133,6 +133,21 @@ namespace OpenRA.Mods.Common.Projectiles
 		[Desc("Width of the contrail.")]
 		public readonly WDist ContrailWidth = new WDist(64);
 
+		[Desc("Contrail Image to display.")]
+		public readonly string ContrailImage = null;
+
+		[SequenceReference(nameof(ContrailImage), allowNullImage: true)]
+		[Desc("Loop a randomly chosen sequence of Image from this list for contrail.")]
+		public readonly string[] ContrailSequences = { "idle" };
+
+		public readonly bool ContrailSpriteTopToDown = false;
+
+		[Desc("The palette used to draw this contrail sprite.")]
+		[PaletteReference("IsPlayerPalette")]
+		public readonly string ContrailPalette = "effect";
+
+		public readonly bool ContrailIsPlayerPalette = false;
+
 		// color
 		public readonly bool ContrailUseInnerOuterColor = false;
 
@@ -190,6 +205,8 @@ namespace OpenRA.Mods.Common.Projectiles
 		bool hasInitPal = false;
 		readonly Animation anim;
 		readonly Animation jetanim;
+		readonly Animation contrailAnim;
+		readonly string contrailPal;
 		protected bool renderJet = true;
 		protected bool renderTrail = true;
 		protected bool renderContrail = false;
@@ -250,6 +267,15 @@ namespace OpenRA.Mods.Common.Projectiles
 				jetanim.PlayRepeating(info.JetSequence.Random(world.SharedRandom));
 			}
 
+			contrailPal = info.Palette;
+			if (info.IsPlayerPalette)
+				contrailPal += args.SourceActor.Owner.InternalName;
+			if (!string.IsNullOrEmpty(info.ContrailImage))
+			{
+				contrailAnim = new Animation(args.SourceActor.World, info.ContrailImage);
+				contrailAnim.PlayRepeating(info.ContrailSequences.Random(args.SourceActor.World.SharedRandom));
+			}
+
 			if (info.ContrailLength > 0)
 			{
 				var startcolor = info.ContrailStartColorUsePlayerColor ? Color.FromArgb(info.ContrailStartColorAlpha, args.SourceActor.Owner.Color) : Color.FromArgb(info.ContrailStartColorAlpha, info.ContrailStartColor);
@@ -259,10 +285,10 @@ namespace OpenRA.Mods.Common.Projectiles
 				{
 					var startcolorOuter = info.ContrailStartColorUsePlayerColor ? Color.FromArgb(info.ContrailStartColorAlphaOuter, args.SourceActor.Owner.Color) : Color.FromArgb(info.ContrailStartColorAlphaOuter, info.ContrailStartColorOuter);
 					var endcolorOuter = info.ContrailEndColorUsePlayerColor ? Color.FromArgb(info.ContrailEndColorAlphaOuter, args.SourceActor.Owner.Color) : Color.FromArgb(info.ContrailEndColorAlphaOuter, info.ContrailEndColorOuter);
-					contrail = new ContrailRenderable(world, startcolor, endcolor, info.ContrailWidth, info.ContrailLength, info.ContrailDelay, info.ContrailZOffset, info.ContrailWidthFadeRate, info.ContrailBlendMode, startcolorOuter, endcolorOuter);
+					contrail = new ContrailRenderable(contrailAnim, contrailPal, info.ContrailSpriteTopToDown, world, startcolor, endcolor, info.ContrailWidth, info.ContrailLength, info.ContrailDelay, info.ContrailZOffset, info.ContrailWidthFadeRate, info.ContrailBlendMode, startcolorOuter, endcolorOuter);
 				}
 				else
-					contrail = new ContrailRenderable(world, startcolor, endcolor, info.ContrailWidth, info.ContrailLength, info.ContrailDelay, info.ContrailZOffset, info.ContrailWidthFadeRate, info.ContrailBlendMode);
+					contrail = new ContrailRenderable(contrailAnim, contrailPal, info.ContrailSpriteTopToDown, world, startcolor, endcolor, info.ContrailWidth, info.ContrailLength, info.ContrailDelay, info.ContrailZOffset, info.ContrailWidthFadeRate, info.ContrailBlendMode);
 			}
 
 			trailTicks = info.TrailDelay;
@@ -300,7 +326,10 @@ namespace OpenRA.Mods.Common.Projectiles
 			matLastPos = pos;
 
 			if (info.ContrailLength > 0 && renderContrail)
+			{
+				contrailAnim?.Tick();
 				contrail.Update(pos);
+			}
 
 			if (hasInitPal)
 			{

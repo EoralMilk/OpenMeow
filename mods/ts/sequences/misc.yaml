@@ -439,18 +439,6 @@ crystal4:
 		MeshType: Plane
 		BlendMode: ScreenAdditive
 
-litning:
-	Defaults:
-		ZOffset: 512
-		IgnoreWorldTint: True
-		# MeshType: FloatBoard
-		BlendMode: Additive
-	bright:
-		Length: 4
-	dim:
-		Start: 4
-		Length: 4
-
 torpedo:
 	idle:
 		Length: *
@@ -1179,3 +1167,63 @@ airstrikedirection:
 	arrow-tl: mouse
 		Start: 9
 		Offset: -15, -15, 0
+
+
+lasertest:
+	idle: LaserTest.png
+		ZOffset: 512
+		Length: *
+		Frames: 0,0,0,0,0,  0,0,0,0,0,  0,0,0,0,0,  0,0,0,0,0,
+		MeshType: Board
+		UseTilesetCode: false
+	 	AddExtension: false
+		BlendMode: Additive
+		AlphaFade: True
+
+fsidle_bg:
+	idle:
+		Length: *
+		BlendMode: Additive #Translucent
+		ZOffset: 15
+		IgnoreWorldTint: true
+		AlphaFade: True
+		MeshType: Board
+
+fsidle_loop:
+	Defaults:
+		Length: *
+		BlendMode: Additive #Translucent
+		ZOffset: 15
+		Tick: 90
+		IgnoreWorldTint: true
+		MeshType: Board
+	idle: fsidle_bg
+		Frames: 4,5,6,7,8,9,8,7,6,5
+	litning1: litning1
+	litning2: litning2
+	litning3: litning3
+
+fsgrnd_bg:
+	idle:
+		Length: *
+		BlendMode: Additive #Translucent
+		ZOffset: 15
+		IgnoreWorldTint: true
+		AlphaFade: True
+		MeshType: Board
+
+
+litning:
+	Defaults:
+		ZOffset: 512
+		IgnoreWorldTint: True
+		BlendMode: Additive
+		Length: *
+		MeshType: Board
+		AlphaFade: True
+	litning1: litning1
+		Frames: 0,1,2, 0,1,2, 0,1,2, 0,1,2
+	litning2: litning2
+		Frames: 0,1,2, 0,1,2, 0,1,2, 0,1,2
+	litning3: litning3
+		Frames: 0,1,2, 0,1,2, 0,1,2, 0,1,2

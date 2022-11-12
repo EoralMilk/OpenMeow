@@ -41,6 +41,21 @@ namespace OpenRA.Mods.Common.Projectiles
 		[Desc("The number of ticks between the beam causing warhead impacts in its area of effect.")]
 		public readonly int DamageInterval = 1;
 
+		[Desc("Image to display.")]
+		public readonly string Image = null;
+
+		[SequenceReference(nameof(Image), allowNullImage: true)]
+		[Desc("Loop a randomly chosen sequence of Image from this list for laser sprite.")]
+		public readonly string[] Sequences = { "idle" };
+
+		public readonly bool SpriteTopToDown = false;
+
+		[Desc("The palette used to draw this laser sprite.")]
+		[PaletteReference("IsPlayerPalette")]
+		public readonly string Palette = "effect";
+
+		public readonly bool IsPlayerPalette = false;
+
 		public readonly bool UsePlayerColor = false;
 
 		[Desc("Color of the beam.")]
@@ -113,6 +128,9 @@ namespace OpenRA.Mods.Common.Projectiles
 		readonly ProjectileArgs args;
 		readonly LaserZapInfo info;
 		readonly Animation hitanim;
+		readonly Animation anim;
+		readonly string palette;
+
 		readonly Color color;
 		readonly Color secondaryColor;
 		readonly bool hasLaunchEffect;
@@ -132,6 +150,11 @@ namespace OpenRA.Mods.Common.Projectiles
 			this.args = args;
 			this.info = info;
 			this.color = color;
+
+			palette = info.Palette;
+			if (info.IsPlayerPalette)
+				palette += args.SourceActor.Owner.InternalName;
+
 			secondaryColor = info.SecondaryBeamUsePlayerColor ? args.SourceActor.Owner.Color : info.SecondaryBeamColor;
 			target = args.PassiveTarget;
 			source = args.Source;
@@ -148,12 +171,20 @@ namespace OpenRA.Mods.Common.Projectiles
 				showHitAnim = true;
 			}
 
+			if (!string.IsNullOrEmpty(info.Image))
+			{
+				anim = new Animation(args.SourceActor.World, info.Image);
+				anim.PlayFetchIndex(info.Sequences.Random(args.SourceActor.World.SharedRandom),
+						() => int2.Lerp(0, anim.CurrentSequence.Length, ticks, info.Duration + 1));
+			}
+
 			hasLaunchEffect = !string.IsNullOrEmpty(info.LaunchEffectImage) && !string.IsNullOrEmpty(info.LaunchEffectSequence);
 		}
 
 		public void Tick(World world)
 		{
 			source = args.CurrentSource();
+			anim?.Tick();
 
 			if (hasLaunchEffect && ticks == 0)
 				world.AddFrameEndTask(w => w.Add(new SpriteEffect(args.CurrentSource, args.CurrentMuzzleFacing, world,
@@ -203,14 +234,25 @@ namespace OpenRA.Mods.Common.Projectiles
 			if (ticks < info.Duration)
 			{
 				var rc = Color.FromArgb((info.Duration - ticks) * color.A / info.Duration, color);
-				yield return new BeamRenderable(source, info.ZOffset, target - source, info.Shape, info.Width, rc, info.BlendMode);
-
-				if (info.SecondaryBeam)
+				if (anim != null)
 				{
-					var src = Color.FromArgb((info.Duration - ticks) * secondaryColor.A / info.Duration, secondaryColor);
-					yield return new BeamRenderable(source, info.SecondaryBeamZOffset, target - source,
-						info.SecondaryBeamShape, info.SecondaryBeamWidth, src, info.BlendMode);
+					if (info.SpriteTopToDown)
+						yield return new SpriteBeamRenderable(anim.Image, wr.Palette(palette), anim.CurrentSequence.GetAlpha(anim.CurrentFrame), target, info.ZOffset, source, info.Width, rc, info.BlendMode);
+					else
+						yield return new SpriteBeamRenderable(anim.Image, wr.Palette(palette), anim.CurrentSequence.GetAlpha(anim.CurrentFrame), source, info.ZOffset, target, info.Width, rc, info.BlendMode);
 				}
+				else
+				{
+					yield return new BeamRenderable(source, info.ZOffset, target - source, info.Shape, info.Width, rc, info.BlendMode);
+
+					if (info.SecondaryBeam)
+					{
+						var src = Color.FromArgb((info.Duration - ticks) * secondaryColor.A / info.Duration, secondaryColor);
+						yield return new BeamRenderable(source, info.SecondaryBeamZOffset, target - source,
+							info.SecondaryBeamShape, info.SecondaryBeamWidth, src, info.BlendMode);
+					}
+				}
+
 			}
 
 			if (showHitAnim)

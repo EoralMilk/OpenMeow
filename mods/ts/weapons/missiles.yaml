@@ -119,7 +119,11 @@
 		
 		ContrailZOffset: 22
 		ContrailLength: 12
-		ContrailWidth: 178
+		ContrailWidth: 884 #178
+
+		ContrailImage: fsidle_loop
+		ContrailSequences: litning1, litning2, litning3
+		ContrailSpriteTopToDown: true
 
 		ContrailUseInnerOuterColor: true
 
@@ -130,10 +134,10 @@
 
 		ContrailEndColor: A8A8A8
 		ContrailEndColorOuter: A8A8A8
-		ContrailEndColorAlpha: 64
+		ContrailEndColorAlpha: 0 #64
 		ContrailEndColorAlphaOuter: 0
 
-		ContrailWidthFadeRate: 1
+		# ContrailWidthFadeRate: 1
 		ContrailDelay: 0
 		ContrailBlendMode: Additive
 

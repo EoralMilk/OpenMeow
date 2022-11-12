@@ -12,6 +12,7 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
+using GlmSharp;
 
 namespace OpenRA
 {
@@ -24,6 +25,7 @@ namespace OpenRA
 
 		public float3(float x, float y, float z) { X = x; Y = y; Z = z; }
 		public float3(float2 xy, float z) { X = xy.X; Y = xy.Y; Z = z; }
+		public float3(vec3 xyz) { X = xyz.x; Y = xyz.y; Z = xyz.z; }
 
 		public static implicit operator float3(int2 src) { return new float3(src.X, src.Y, 0); }
 		public static implicit operator float3(float2 src) { return new float3(src.X, src.Y, 0); }

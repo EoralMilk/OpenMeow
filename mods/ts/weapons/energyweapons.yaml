@@ -300,6 +300,45 @@ Proton:
 	Warhead@2Eff: CreateEffect
 		Explosions: proton_explo
 
+
+^SpriteLaser:
+	Projectile: LaserZap
+		TrackTarget: false
+		Width: 278
+		Duration: 15
+		ZOffset: 355
+		Color: FFFFFF
+		Image: lasertest
+		LaunchEffectImage: flash
+		LaunchEffectSequence: laserstart
+		LaunchEffectPalette: red
+	Warhead@1Dam: SpreadDamage
+		Spread: 96
+		Falloff: 100, 45, 12, 3
+		Damage: 25000
+		Versus:
+			None: 100
+			Wood: 100
+			Light: 100
+			Heavy: 100
+			Concrete: 60
+		DamageTypes: Prone80Percent, TriggerProne, EnergyDeath
+	Warhead@flash: CreateEffect
+		Image: flash
+		Explosions: laserend
+		ExplosionPalette: red
+		ValidTargets: Ground, Water, Air
+	Warhead@2Eff: CreateEffect
+		Explosions: laserburning
+		ValidTargets: Ground
+		InvalidTargets: Vehicle, Building, Wall
+	Warhead@3Smu: LeaveSmudge
+		SmudgeType: SmallScorch
+		ValidTargets: Ground
+		AirThreshold: 512
+		InvalidTargets: Vehicle, Building, Wall
+
+
 ^Laser:
 	Projectile: LaserZap
 		TrackTarget: false
@@ -341,7 +380,7 @@ Proton:
 		InvalidTargets: Vehicle, Building, Wall
 
 ObeliskLaserFire:
-	Inherits: ^Laser
+	Inherits: ^SpriteLaser #^Laser
 	ReloadDelay: 100
 	Range: 11c512
 	Report: obelray1.aud
@@ -356,15 +395,17 @@ ObeliskLaserFire:
 
 
 TurretLaserFire:
-	Inherits: ^Laser
+	Inherits: ^SpriteLaser #^Laser
 	ReloadDelay: 30
 	Range: 7c512
 	Report: lastur1.aud
 	Projectile: LaserZap
-		Width: 36
-		Duration: 8
-		SecondaryBeamWidth: 144
-		SecondaryBeamColor: FF000050
+		# Width: 36
+		# Duration: 8
+		# SecondaryBeamWidth: 144
+		# SecondaryBeamColor: FF000050
+		Width: 299
+		Image: fsgrnd_bg
 		Blockable: true
 	Warhead@1Dam: SpreadDamage
 		Damage: 3000

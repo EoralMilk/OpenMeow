@@ -12,6 +12,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Net;
 using GlmSharp;
 using OpenRA.Primitives;
 
@@ -195,6 +196,21 @@ namespace OpenRA.Graphics
 		{
 			var samplers = SetRenderStateForSprite(s);
 			Util.FastCreateBoard(vertices, wPos, viewOffset, s, samplers, ResolveTextureIndex(s, pal), scale, tint, alpha, nv, rotation);
+			nv += 6;
+		}
+
+		public void DrawDirectionSprite(Sprite s, PaletteReference pal,
+			in float3 leftTop, in float3 rightTop, in float3 leftBottom, in float3 rightBottom,
+			in float3 tint, float alpha, in float3 endTint, float endAlpha,
+			float uvOffsetStart = 0, float uvOffsetEnd = 1)
+		{
+			var samplers = SetRenderStateForSprite(s);
+
+			Util.FastCreateDirection(vertices, leftTop, rightTop, leftBottom, rightBottom, s, samplers, ResolveTextureIndex(s, pal),
+			tint, alpha,
+			endTint, endAlpha,
+			nv,
+			uvOffsetStart, uvOffsetEnd);
 			nv += 6;
 		}
 

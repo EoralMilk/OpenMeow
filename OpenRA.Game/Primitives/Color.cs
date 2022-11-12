@@ -29,6 +29,14 @@ namespace OpenRA.Primitives
 			return FromArgb(LerpAxis(a.A, b.A, t), LerpAxis(a.R, b.R, t), LerpAxis(a.G, b.G, t), LerpAxis(a.B, b.B, t));
 		}
 
+		public static Color PremultiplyAlpha(Color c)
+		{
+			if (c.A == byte.MaxValue)
+				return c;
+			var a = c.A / 255f;
+			return Color.FromArgb(c.A, (byte)(c.R * a + 0.5f), (byte)(c.G * a + 0.5f), (byte)(c.B * a + 0.5f));
+		}
+
 		public static Color FromArgb(int red, int green, int blue)
 		{
 			return FromArgb(byte.MaxValue, red, green, blue);

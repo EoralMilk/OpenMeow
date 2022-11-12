@@ -11,6 +11,7 @@
 
 using System;
 using System.Dynamic;
+using System.Security.Cryptography.X509Certificates;
 using GlmSharp;
 using OpenRA.FileFormats;
 using OpenRA.Primitives;
@@ -476,6 +477,60 @@ namespace OpenRA.Graphics
 			vertices[nv + 3] = new Vertex(rightBottom, r.Right, r.Bottom, sr, sb, paletteTextureIndex, fAttribC, tint, alpha);
 			vertices[nv + 4] = new Vertex(leftBottom, r.Left, r.Bottom, sl, sb, paletteTextureIndex, fAttribC, tint, alpha);
 			vertices[nv + 5] = new Vertex(leftTop, r.Left, r.Top, sl, st, paletteTextureIndex, fAttribC, tint, alpha);
+		}
+
+		public static void FastCreateDirection(Vertex[] vertices,
+			in float3 leftTop, in float3 rightTop, in float3 leftBottom, in float3 rightBottom,
+			Sprite r, int2 samplers, float paletteTextureIndex,
+			in float3 tint, float alpha,
+			in float3 endtint, float endalpha,
+			int nv,
+			float uvOffsetStart = 0, float uvOffsetEnd = 1)
+		{
+			if (r.HasMeshCreateInfo)
+			{
+				if (!r.UpdateMeshInfo())
+					throw new Exception("invalide create mesh time: sprite has not create mesh data");
+			}
+
+			float sl = 0;
+			float st = 0;
+			float sr = 0;
+			float sb = 0;
+
+			// See combined.vert for documentation on the channel attribute format
+			var attribC = r.Channel == TextureChannel.RGBA ? 0x02 : ((byte)r.Channel) << 1 | 0x01;
+			attribC |= samplers.X << 6;
+			if (r is SpriteWithSecondaryData ss)
+			{
+				sl = ss.SecondaryLeft;
+				st = ss.SecondaryTop;
+				sr = ss.SecondaryRight;
+				sb = ss.SecondaryBottom;
+
+				attribC |= ((byte)ss.SecondaryChannel) << 4 | 0x08;
+				attribC |= samplers.Y << 9;
+			}
+
+			//var uvLT = new float2(r.Left, r.Top);
+			//var uvRT = new float2(r.Right, r.Top);
+			//var uvLB = new float2(r.Left, r.Bottom);
+			//var uvRB = new float2(r.Right, r.Bottom);
+
+			var stl = r.Left;
+			var str = r.Right;
+			var stt = r.Top + r.TB * uvOffsetStart;
+			var stb = r.Top + r.TB * uvOffsetEnd;
+
+			var fAttribC = (float)attribC;
+
+			vertices[nv] = new Vertex(leftTop, stl, stt, sl, st, paletteTextureIndex, fAttribC, tint, alpha);
+			vertices[nv + 1] = new Vertex(rightTop, str, stt, sr, st, paletteTextureIndex, fAttribC, tint, alpha);
+			vertices[nv + 2] = new Vertex(rightBottom, str, stb, sr, sb, paletteTextureIndex, fAttribC, endtint, endalpha);
+
+			vertices[nv + 3] = new Vertex(rightBottom, str, stb, sr, sb, paletteTextureIndex, fAttribC, endtint, endalpha);
+			vertices[nv + 4] = new Vertex(leftBottom, stl, stb, sl, sb, paletteTextureIndex, fAttribC, endtint, endalpha);
+			vertices[nv + 5] = new Vertex(leftTop, stl, stt, sl, st, paletteTextureIndex, fAttribC, tint, alpha);
 		}
 
 		static float2 CalUV(WPos vpos, int TLX, int TLY, int width, int height)

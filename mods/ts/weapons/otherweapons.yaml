@@ -358,20 +358,15 @@ TentacleElectric:
 	Range: 3c0
 	ReloadDelay: 8
 	ValidTargets: Ground, Water, Air, Trees
-	# Projectile: TeslaZap
-	# 	Image: litning
-	# 	Duration: 4
-	# 	Palette: player
-	# 	TrackTarget: false
 	Projectile: LaserZap
-		Width: 72
+		TrackTarget: false
+		Width: 343
 		Duration: 15
-		ZOffset: 2047
-		Color: FF000080
-		SecondaryBeam: true
-		SecondaryBeamWidth: 180
-		SecondaryBeamZOffset: 2047
-		SecondaryBeamColor: FF000040
+		ZOffset: 355
+		Color: E2E2FF
+		Image: litning
+		SpriteTopToDown: true
+		Sequences: litning1, litning2, litning3
 	Warhead@1Dam: SpreadDamage
 		Spread: 0c122
 		Falloff: 100, 75, 35

@@ -71,6 +71,21 @@ namespace OpenRA.Mods.Common.Traits
 		[Desc("The alpha value [from 0 to 255] of color when the contrail ends.")]
 		public readonly int EndColorAlphaOuter = 0;
 
+		[Desc("Image to display.")]
+		public readonly string Image = null;
+
+		[SequenceReference(nameof(Image), allowNullImage: true)]
+		[Desc("Loop a randomly chosen sequence of Image from this list.")]
+		public readonly string[] Sequences = { "idle" };
+
+		public readonly bool SpriteTopToDown = false;
+
+		[Desc("The palette used to draw this contail.")]
+		[PaletteReference("IsPlayerPalette")]
+		public readonly string Palette = "effect";
+
+		public readonly bool IsPlayerPalette = false;
+
 		public readonly BlendMode BlendMode = BlendMode.Alpha;
 
 		public override object Create(ActorInitializer init) { return new Contrail(init.Self, this); }
@@ -84,6 +99,8 @@ namespace OpenRA.Mods.Common.Traits
 		readonly Color endcolor;
 		readonly Color startcolorOuter;
 		readonly Color endcolorOuter;
+		readonly Animation anim;
+		readonly string palette;
 
 		// This is a mutable struct, so it can't be readonly.
 		ContrailRenderable trail;
@@ -93,6 +110,16 @@ namespace OpenRA.Mods.Common.Traits
 		{
 			this.info = info;
 
+			palette = info.Palette;
+			if (info.IsPlayerPalette)
+				palette += self.Owner.InternalName;
+
+			if (!string.IsNullOrEmpty(info.Image))
+			{
+				anim = new Animation(self.World, info.Image);
+				anim.PlayRepeating(info.Sequences.Random(self.World.SharedRandom));
+			}
+
 			startcolor = info.StartColorUsePlayerColor ? Color.FromArgb(info.StartColorAlpha, self.Owner.Color) : Color.FromArgb(info.StartColorAlpha, info.StartColor);
 			endcolor = info.EndColorUsePlayerColor ? Color.FromArgb(info.EndColorAlpha, self.Owner.Color) : Color.FromArgb(info.EndColorAlpha, info.EndColor);
 
@@ -101,10 +128,10 @@ namespace OpenRA.Mods.Common.Traits
 				startcolorOuter = info.StartColorUsePlayerColor ? Color.FromArgb(info.StartColorAlphaOuter, self.Owner.Color) : Color.FromArgb(info.StartColorAlphaOuter, info.StartColorOuter);
 				endcolorOuter = info.EndColorUsePlayerColor ? Color.FromArgb(info.EndColorAlphaOuter, self.Owner.Color) : Color.FromArgb(info.EndColorAlphaOuter, info.EndColorOuter);
 
-				trail = new ContrailRenderable(self.World, startcolor, endcolor, info.TrailWidth, info.TrailLength, info.TrailDelay, info.ZOffset, info.WidthFadeRate, info.BlendMode, startcolorOuter, endcolorOuter);
+				trail = new ContrailRenderable(anim, palette, info.SpriteTopToDown, self.World, startcolor, endcolor, info.TrailWidth, info.TrailLength, info.TrailDelay, info.ZOffset, info.WidthFadeRate, info.BlendMode, startcolorOuter, endcolorOuter);
 			}
 			else
-				trail = new ContrailRenderable(self.World, startcolor, endcolor, info.TrailWidth, info.TrailLength, info.TrailDelay, info.ZOffset, info.WidthFadeRate, info.BlendMode);
+				trail = new ContrailRenderable(anim, palette, info.SpriteTopToDown, self.World, startcolor, endcolor, info.TrailWidth, info.TrailLength, info.TrailDelay, info.ZOffset, info.WidthFadeRate, info.BlendMode);
 
 			body = self.Trait<BodyOrientation>();
 		}
@@ -115,6 +142,7 @@ namespace OpenRA.Mods.Common.Traits
 			// otherwise we might get visual 'jumps' when the trait is re-enabled.
 			var local = info.Offset.Rotate(body.QuantizeOrientation(self.Orientation));
 			trail.Update(self.CenterPosition + body.LocalToWorld(local));
+			anim?.Tick();
 		}
 
 		IEnumerable<IRenderable> IRender.Render(Actor self, WorldRenderer wr)
@@ -134,9 +162,9 @@ namespace OpenRA.Mods.Common.Traits
 		void INotifyAddedToWorld.AddedToWorld(Actor self)
 		{
 			if (info.UseInnerOuterColor)
-				trail = new ContrailRenderable(self.World, startcolor, endcolor, info.TrailWidth, info.TrailLength, info.TrailDelay, info.ZOffset, info.WidthFadeRate, info.BlendMode, startcolorOuter, endcolorOuter);
+				trail = new ContrailRenderable(anim, palette, info.SpriteTopToDown, self.World, startcolor, endcolor, info.TrailWidth, info.TrailLength, info.TrailDelay, info.ZOffset, info.WidthFadeRate, info.BlendMode, startcolorOuter, endcolorOuter);
 			else
-				trail = new ContrailRenderable(self.World, startcolor, endcolor, info.TrailWidth, info.TrailLength, info.TrailDelay, info.ZOffset, info.WidthFadeRate, info.BlendMode);
+				trail = new ContrailRenderable(anim, palette, info.SpriteTopToDown, self.World, startcolor, endcolor, info.TrailWidth, info.TrailLength, info.TrailDelay, info.ZOffset, info.WidthFadeRate, info.BlendMode);
 		}
 	}
 }
