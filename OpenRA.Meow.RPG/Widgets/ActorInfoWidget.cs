@@ -490,7 +490,7 @@ namespace OpenRA.Meow.RPG.Widgets
 			AddChild(
 				new LabelWidget
 				{
-					Text = "XP",
+					Text = "Kill",
 					IsVisible = () => TooltipUnit != null,
 					Bounds = new Rectangle(x, y, labelwidth, Skin.CharacterLabelHeight),
 					Font = Skin.InGameUiFont
@@ -504,7 +504,7 @@ namespace OpenRA.Meow.RPG.Widgets
 					{
 						var gainsExperiences = TooltipUnit.GetValidActor()?.TraitsImplementing<GainsExperience>().Where(g => g.IsTraitEnabled()).ToArray();
 
-						return gainsExperiences == null || gainsExperiences.Length == 0 ? "-" : $"{gainsExperiences.First().Experience / Skin.ActorExpDiv}";
+						return gainsExperiences == null || gainsExperiences.Length == 0 ? "-" : $"{gainsExperiences.First().KillsCount}";
 					},
 					IsVisible = () => TooltipUnit != null,
 					Bounds = new Rectangle(valueX, y, valueWidth, Skin.CharacterLabelHeight),

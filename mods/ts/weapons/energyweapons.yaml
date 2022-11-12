@@ -304,11 +304,12 @@ Proton:
 ^SpriteLaser:
 	Projectile: LaserZap
 		TrackTarget: false
-		Width: 278
+		Width: 348
 		Duration: 15
 		ZOffset: 355
 		Color: FFFFFF
-		Image: lasertest
+		Image: laser
+		Sequences: obelisk
 		LaunchEffectImage: flash
 		LaunchEffectSequence: laserstart
 		LaunchEffectPalette: red
@@ -404,8 +405,9 @@ TurretLaserFire:
 		# Duration: 8
 		# SecondaryBeamWidth: 144
 		# SecondaryBeamColor: FF000050
-		Width: 299
-		Image: fsgrnd_bg
+		Width: 252
+		Color: FF4444
+		Sequences: laser
 		Blockable: true
 	Warhead@1Dam: SpreadDamage
 		Damage: 3000

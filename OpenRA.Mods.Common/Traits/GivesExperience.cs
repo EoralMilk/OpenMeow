@@ -70,6 +70,7 @@ namespace OpenRA.Mods.Common.Traits
 				var killerExperienceModifier = e.Attacker.TraitsImplementing<IGainsExperienceModifier>()
 					.Select(x => x.GetGainsExperienceModifier()).Append(info.ActorExperienceModifier);
 				killer.GiveExperience(Util.ApplyPercentageModifiers(exp, killerExperienceModifier));
+				killer.KillsCount += 1;
 			}
 
 			e.Attacker.Owner.PlayerActor.TraitOrDefault<PlayerExperience>()

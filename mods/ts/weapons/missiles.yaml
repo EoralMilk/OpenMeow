@@ -119,10 +119,10 @@
 		
 		ContrailZOffset: 22
 		ContrailLength: 12
-		ContrailWidth: 884 #178
+		ContrailWidth: 284 #178
 
 		ContrailImage: fsidle_loop
-		ContrailSequences: litning1, litning2, litning3
+		ContrailSequences: laser
 		ContrailSpriteTopToDown: true
 
 		ContrailUseInnerOuterColor: true

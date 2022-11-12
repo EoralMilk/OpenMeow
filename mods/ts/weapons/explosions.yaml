@@ -1,5 +1,6 @@
 ^DamagingExplosion:
-	Warhead@1Dam: SpreadDamage
+	ValidTargets: Ground, Water, Air, Trees
+	Warhead@1Dam: Spread3DDamage
 		Spread: 256
 		Falloff: 100, 50, 25, 12, 6, 3, 0
 		Damage: 50000
@@ -9,12 +10,15 @@
 			Light: 60
 			Heavy: 25
 		DamageTypes: Prone50Percent, TriggerProne, SmallExplosionDeath
+		ValidTargets: Ground, Water, Air, Trees
 	Warhead@2Eff: CreateEffect
 		Explosions: large_brnl, large_bang, medium_twlt
 		ImpactSounds: expnew09.aud, expnew10.aud, expnew12.aud
+		ValidTargets: Ground, Water, Air, Trees
 	Warhead@4Smu: LeaveSmudge
 		SmudgeType: MediumCrater
 		InvalidTargets: Building, Wall
+		ValidTargets: Ground, Water, Air, Trees
 
 UnitExplode:
 	Inherits: ^DamagingExplosion

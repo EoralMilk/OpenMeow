@@ -1295,15 +1295,25 @@
 		Palette: effect
 		IsDecoration: true
 		Offset: -220, 140, 320
-	Explodes:
+	Explodes@ground:
 		Weapon: UnitExplodeSmall
 		EmptyWeapon: UnitExplodeSmall
 		RequiresCondition: !airborne
-	ThrowsShrapnel:
+	ThrowsShrapnel@ground:
 		Weapons: SmallDebris
 		Pieces: 3, 7
 		Range: 2c0, 5c0
 		RequiresCondition: !airborne
+	Explodes@airborne:
+		Weapon: UnitExplodeSmall
+		EmptyWeapon: UnitExplodeSmall
+		RequiresCondition: !empdisable && airborne
+	ThrowsShrapnel@airborne:
+		Weapons: SmallDebris
+		Pieces: 1, 3
+		Range: 2c0, 5c0
+		RequiresCondition: !empdisable && airborne
+
 
 ^EMPableAircraft:
 	Inherits: ^Aircraft

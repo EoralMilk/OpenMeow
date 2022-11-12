@@ -363,7 +363,7 @@ TentacleElectric:
 		Width: 343
 		Duration: 15
 		ZOffset: 355
-		Color: E2E2FF
+		Color: D2D2FF
 		Image: litning
 		SpriteTopToDown: true
 		Sequences: litning1, litning2, litning3

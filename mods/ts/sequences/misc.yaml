@@ -1169,16 +1169,19 @@ airstrikedirection:
 		Offset: -15, -15, 0
 
 
-lasertest:
-	idle: LaserTest.png
+laser:
+	Defaults: LaserTest.png
 		ZOffset: 512
 		Length: *
 		Frames: 0,0,0,0,0,  0,0,0,0,0,  0,0,0,0,0,  0,0,0,0,0,
 		MeshType: Board
 		UseTilesetCode: false
 	 	AddExtension: false
+		IgnoreWorldTint: true
 		BlendMode: Additive
 		AlphaFade: True
+	obelisk: ObeliskLaser.png
+	laser: Laser.png
 
 fsidle_bg:
 	idle:
@@ -1202,6 +1205,12 @@ fsidle_loop:
 	litning1: litning1
 	litning2: litning2
 	litning3: litning3
+	lasertest: LaserTest.png
+	 	AddExtension: false
+	obelisk: ObeliskLaser.png
+	 	AddExtension: false
+	laser: Laser.png
+	 	AddExtension: false
 
 fsgrnd_bg:
 	idle:

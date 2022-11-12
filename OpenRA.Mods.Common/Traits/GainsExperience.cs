@@ -70,6 +70,8 @@ namespace OpenRA.Mods.Common.Traits
 		public int Level { get; private set; }
 		public readonly int MaxLevel;
 
+		public int KillsCount = 0;
+
 		public GainsExperience(ActorInitializer init, GainsExperienceInfo info)
 		{
 			self = init.Self;
@@ -78,6 +80,7 @@ namespace OpenRA.Mods.Common.Traits
 			Experience = 0;
 			MaxLevel = info.Conditions.Count;
 			initialExperience = init.GetValue<ExperienceInit, int>(info, 0);
+			KillsCount = 0;
 		}
 
 		void INotifyCreated.Created(Actor self)

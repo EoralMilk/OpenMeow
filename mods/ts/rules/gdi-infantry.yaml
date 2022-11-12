@@ -235,6 +235,10 @@ JUMPJETAIR:
 	-WithIdleOverlay@DAMAGED1:
 	-WithIdleOverlay@DAMAGED2:
 	-WithIdleOverlay@DAMAGED3:
+	-Explodes@ground:
+	-ThrowsShrapnel@ground:
+	-Explodes@airborne:
+	-ThrowsShrapnel@airborne:
 
 JUMPJET.Husk:
 	BodyOrientation:
