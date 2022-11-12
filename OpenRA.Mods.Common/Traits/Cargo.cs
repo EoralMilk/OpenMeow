@@ -331,7 +331,6 @@ namespace OpenRA.Mods.Common.Traits
 		}
 
 		public bool HasSpace(int weight) { return totalWeight + reservedWeight + weight <= Info.MaxWeight; }
-		public int Space() { return Info.MaxWeight - totalWeight - reservedWeight; }
 		public bool IsEmpty() { return cargo.Count == 0; }
 
 		public Actor Peek() { return cargo.Last(); }

@@ -12,19 +12,21 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using OpenRA.Activities;
 using OpenRA.Traits;
 
 namespace OpenRA.Mods.Common.Traits
 {
-	[Desc("Manages AI repairing base buildings.")]
+	[Desc("Manages AI load unit.")]
 	public class GarrisonBotModuleInfo : ConditionalTraitInfo
 	{
 		public readonly HashSet<string> Transports = default;
 		public readonly HashSet<string> Passengers = default;
-		public readonly PlayerRelationship ValidTransportRelationship = PlayerRelationship.Ally;
-		public readonly bool OnlyEnterSelf = true;
+		public readonly bool OnlyEnterOwnerPlayer = true;
 		public readonly string EnterOrderName = "EnterTransport";
 		public readonly int ScanTick = 300;
+		public readonly DamageState ValidDamageState = DamageState.Heavy;
+
 		public override object Create(ActorInitializer init) { return new GarrisonBotModule(init.Self, this); }
 	}
 
@@ -32,9 +34,13 @@ namespace OpenRA.Mods.Common.Traits
 	{
 		readonly World world;
 		readonly Player player;
-		readonly PlayerRelationship transportRelationship;
+		readonly Predicate<Actor> unitCannotBeOrdered;
 		readonly Predicate<Actor> unitCannotBeOrderedOrIsBusy;
+		readonly Predicate<Actor> unitCannotBeOrderedOrIsIdle;
 		readonly Predicate<Actor> invalidTransport;
+
+		readonly List<UnitWposWrapper> activePassengers = new List<UnitWposWrapper>();
+		readonly List<Actor> stuckPassengers = new List<Actor>();
 		int minAssignRoleDelayTicks;
 
 		public GarrisonBotModule(Actor self, GarrisonBotModuleInfo info)
@@ -42,12 +48,13 @@ namespace OpenRA.Mods.Common.Traits
 		{
 			world = self.World;
 			player = self.Owner;
-			transportRelationship = info.ValidTransportRelationship;
-			if (info.ValidTransportRelationship.HasRelationship(PlayerRelationship.Ally) && info.OnlyEnterSelf)
+			if (info.OnlyEnterOwnerPlayer)
 				invalidTransport = a => a == null || a.IsDead || !a.IsInWorld || a.Owner != player;
 			else
-				invalidTransport = a => a == null || a.IsDead || !a.IsInWorld || !transportRelationship.HasRelationship(a.Owner.RelationshipWith(player));
-			unitCannotBeOrderedOrIsBusy = a => a == null || a.IsDead || !a.IsInWorld || a.Owner != player || !a.IsIdle;
+				invalidTransport = a => a == null || a.IsDead || !a.IsInWorld || a.Owner.RelationshipWith(player) == PlayerRelationship.Ally;
+			unitCannotBeOrdered = a => a == null || a.IsDead || !a.IsInWorld || a.Owner != player;
+			unitCannotBeOrderedOrIsBusy = a => unitCannotBeOrdered(a) || !a.IsIdle;
+			unitCannotBeOrderedOrIsIdle = a => unitCannotBeOrdered(a) || a.IsIdle;
 		}
 
 		protected override void TraitEnabled(Actor self)
@@ -62,8 +69,29 @@ namespace OpenRA.Mods.Common.Traits
 			{
 				minAssignRoleDelayTicks = Info.ScanTick;
 
-				var tcs = world.ActorsWithTrait<Cargo>().Where(at => Info.Transports.Contains(at.Actor.Info.Name)
-				&& !invalidTransport(at.Actor) && at.Trait.HasSpace(1)).ToArray();
+				activePassengers.RemoveAll(u => unitCannotBeOrderedOrIsIdle(u.Actor));
+				stuckPassengers.RemoveAll(a => unitCannotBeOrdered(a));
+				for (var i = 0; i < activePassengers.Count; i++)
+				{
+					var p = activePassengers[i];
+					if (p.Actor.CurrentActivity.ChildActivity != null && p.Actor.CurrentActivity.ChildActivity.ActivityType == ActivityType.Move && p.Actor.CenterPosition == p.WPos)
+					{
+						stuckPassengers.Add(p.Actor);
+						bot.QueueOrder(new Order("Stop", p.Actor, false));
+						activePassengers.RemoveAt(i);
+						i--;
+					}
+
+					p.WPos = p.Actor.CenterPosition;
+				}
+
+				var tcs = world.ActorsWithTrait<Cargo>().Where(
+				at =>
+				{
+					var health = at.Actor.TraitOrDefault<IHealth>()?.DamageState;
+					return Info.Transports.Contains(at.Actor.Info.Name) && !invalidTransport(at.Actor)
+					&& at.Trait.HasSpace(1) && (health == null || health < Info.ValidDamageState);
+				}).ToArray();
 
 				if (tcs.Length == 0)
 					return;
@@ -71,9 +99,9 @@ namespace OpenRA.Mods.Common.Traits
 				var tc = tcs.Random(world.LocalRandom);
 				var cargo = tc.Trait;
 				var transport = tc.Actor;
-				var space = cargo.Space();
+				var spaceTaken = 0;
 
-				var passengers = world.ActorsWithTrait<Passenger>().Where(at => !unitCannotBeOrderedOrIsBusy(at.Actor) && Info.Passengers.Contains(at.Actor.Info.Name) && at.Trait.Info.Weight <= space)
+				var passengers = world.ActorsWithTrait<Passenger>().Where(at => !unitCannotBeOrderedOrIsBusy(at.Actor) && Info.Passengers.Contains(at.Actor.Info.Name) && !stuckPassengers.Contains(at.Actor) && cargo.HasSpace(at.Trait.Info.Weight))
 					.OrderByDescending(at => (at.Actor.CenterPosition - transport.CenterPosition).HorizontalLengthSquared);
 
 				var orderedActors = new List<Actor>();
@@ -84,13 +112,14 @@ namespace OpenRA.Mods.Common.Traits
 					if (mobile == null || !mobile.PathFinder.PathExistsForLocomotor(mobile.Locomotor, p.Actor.Location, transport.Location))
 						continue;
 
-					if (space - p.Trait.Info.Weight >= 0)
+					if (cargo.HasSpace(spaceTaken + p.Trait.Info.Weight))
 					{
-						space -= p.Trait.Info.Weight;
+						spaceTaken += p.Trait.Info.Weight;
 						orderedActors.Add(p.Actor);
+						activePassengers.Add(new UnitWposWrapper(p.Actor));
 					}
 
-					if (space <= 0)
+					if (!cargo.HasSpace(spaceTaken + 1))
 						break;
 				}
 
