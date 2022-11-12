@@ -331,5 +331,5 @@ Player:
 					CheckRadius: 8c0
 	GarrisonBotModule:
 		RequiresCondition: enable-test-ai
-		TransportAndPassengers: 
-			gtdrop: e1,e2,e3,cyborg,weedguy,ghost,cyc2,medic,limped,engineer,smech
+		Transports: gtdrop
+		Passengers: e1,e2,e3,cyborg,weedguy,ghost,cyc2,medic,limped,engineer,smech

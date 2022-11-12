@@ -19,7 +19,8 @@ namespace OpenRA.Mods.Common.Traits
 	[Desc("Manages AI repairing base buildings.")]
 	public class GarrisonBotModuleInfo : ConditionalTraitInfo
 	{
-		public readonly Dictionary<string, HashSet<string>> TransportAndPassengers = default;
+		public readonly HashSet<string> Transports = default;
+		public readonly HashSet<string> Passengers = default;
 		public readonly PlayerRelationship ValidTransportRelationship = PlayerRelationship.Ally;
 		public readonly bool OnlyEnterSelf = true;
 		public readonly string EnterOrderName = "EnterTransport";
@@ -61,7 +62,7 @@ namespace OpenRA.Mods.Common.Traits
 			{
 				minAssignRoleDelayTicks = Info.ScanTick;
 
-				var tcs = world.ActorsWithTrait<Cargo>().Where(at => Info.TransportAndPassengers.ContainsKey(at.Actor.Info.Name)
+				var tcs = world.ActorsWithTrait<Cargo>().Where(at => Info.Transports.Contains(at.Actor.Info.Name)
 				&& !invalidTransport(at.Actor) && at.Trait.HasSpace(1)).ToArray();
 
 				if (tcs.Length == 0)
@@ -72,8 +73,7 @@ namespace OpenRA.Mods.Common.Traits
 				var transport = tc.Actor;
 				var space = cargo.Space();
 
-				var allowpassengers = Info.TransportAndPassengers[transport.Info.Name];
-				var passengers = world.ActorsWithTrait<Passenger>().Where(at => !unitCannotBeOrderedOrIsBusy(at.Actor) && allowpassengers.Contains(at.Actor.Info.Name) && at.Trait.Info.Weight <= space)
+				var passengers = world.ActorsWithTrait<Passenger>().Where(at => !unitCannotBeOrderedOrIsBusy(at.Actor) && Info.Passengers.Contains(at.Actor.Info.Name) && at.Trait.Info.Weight <= space)
 					.OrderByDescending(at => (at.Actor.CenterPosition - transport.CenterPosition).HorizontalLengthSquared);
 
 				var orderedActors = new List<Actor>();
