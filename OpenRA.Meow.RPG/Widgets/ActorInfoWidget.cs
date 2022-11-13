@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Linq;
+using System.Reflection;
 using OpenRA.Graphics;
+using OpenRA.Mods.Common;
 using OpenRA.Meow.RPG.Mechanics;
 using OpenRA.Meow.RPG.Mechanics.Display;
 using OpenRA.Mods.Common.Traits;
@@ -9,8 +11,11 @@ using OpenRA.Mods.Common.Widgets;
 using OpenRA.Mods.Common.Widgets.Logic;
 using OpenRA.Primitives;
 using OpenRA.Support;
+using OpenRA.Traits;
 using OpenRA.Widgets;
 using static OpenRA.Network.Session;
+using System.Numerics;
+using TagLib.Ape;
 
 namespace OpenRA.Meow.RPG.Widgets
 {
@@ -329,6 +334,27 @@ namespace OpenRA.Meow.RPG.Widgets
 				}
 			);
 
+			AddChild(
+				new LabelWidget
+				{
+					GetText = () =>
+					{
+						string click = controlMode ? "[" : "";
+						click += moveUp ? " U" : "";
+						click += moveDown ? " D" : "";
+						click += moveLeft ? " L" : "";
+						click += moveRight ? " R" : "";
+						click += controlMode ? " ]" : "";
+
+						return click;
+					},
+					IsVisible = () => TooltipUnit != null,
+					Bounds = new Rectangle(0, -Skin.CharacterLabelHeight - 20, labelwidth + iconWidth, Skin.CharacterLabelHeight),
+					Font = Skin.InGameUiFont,
+					FontsForScale = fontsmall,
+				}
+			);
+
 			y += Skin.ActorNameHeight;
 
 			AddChild(
@@ -517,10 +543,6 @@ namespace OpenRA.Meow.RPG.Widgets
 			InitializeStateTab();
 		}
 
-		public Func<KeyInput, bool> OnKeyPress = _ => false;
-
-		public override bool HandleKeyPress(KeyInput e) { return OnKeyPress(e); }
-
 		void UpdateTooltipActor(Actor actor)
 		{
 			TooltipUnit = actor == null ? null : new BasicUnitInfo(actor);
@@ -581,13 +603,133 @@ namespace OpenRA.Meow.RPG.Widgets
 			WidgetUtils.DrawPanel(Background, RenderBounds);
 		}
 
+		bool lastMove;
 		public override void Tick()
 		{
+			if (TooltipUnit == null || TooltipUnit.Actor == null || TooltipUnit.Actor.IsDead || !TooltipUnit.Actor.IsInWorld)
+			{
+				controlMode = false;
+			}
+
+			if (controlMode)
+			{
+				Ui.KeyboardFocusWidget = this;
+
+				var mover = TooltipUnit.Actor.TraitOrDefault<Mobile>();
+
+				if (mover == null)
+				{
+					controlMode = false;
+				}
+
+				if (controlMode)
+				{
+					WVec mVec = WVec.Zero;
+
+					if (moveUp)
+					{
+						mVec += new WVec(0, -1024, 0);
+					}
+
+					if (moveDown)
+					{
+						mVec += new WVec(0, 1024, 0);
+					}
+
+					if (moveLeft)
+					{
+						mVec += new WVec(-1024, 0, 0);
+					}
+
+					if (moveRight)
+					{
+						mVec += new WVec(1024, 0, 0);
+					}
+
+					if (mVec != WVec.Zero)
+					{
+						var tPos = mover.CenterPosition + mVec;
+						var order = new Order("Mover:Move", TooltipUnit.Actor, Target.FromPos(tPos), false);
+						TooltipUnit.Actor.World.IssueOrder(order);
+						lastMove = true;
+					}
+					else if (lastMove)
+					{
+						lastMove = false;
+						var order = new Order("Mover:Stop", TooltipUnit.Actor, false);
+						TooltipUnit.Actor.World.IssueOrder(order);
+					}
+				}
+			}
+			else
+			{
+				if (Ui.KeyboardFocusWidget == this)
+					Ui.KeyboardFocusWidget = null;
+				lastMove = false;
+				moveUp = false;
+				moveDown = false;
+				moveLeft = false;
+				moveRight = false;
+			}
+
 			if (selectionHash == world.Selection.Hash)
 				return;
 
 			RefreshActorDisplaying();
 			selectionHash = world.Selection.Hash;
+		}
+
+		public Action<KeyInput> OnKeyPress = _ => { };
+		public HotkeyReference ToggleControlKey = new HotkeyReference();
+		bool controlMode = false;
+
+		public HotkeyReference MoveUpKey = new HotkeyReference();
+		public HotkeyReference MoveDownKey = new HotkeyReference();
+		public HotkeyReference MoveLeftKey = new HotkeyReference();
+		public HotkeyReference MoveRightKey = new HotkeyReference();
+
+		bool moveUp;
+		bool moveDown;
+		bool moveLeft;
+		bool moveRight;
+
+		public override bool HandleKeyPress(KeyInput e)
+		{
+			if (ToggleControlKey.IsActivatedBy(e) && e.Event == KeyInputEvent.Down && !e.IsRepeat)
+				controlMode = !controlMode;
+
+			if (!controlMode || TooltipUnit == null || TooltipUnit.Actor == null || TooltipUnit.Actor.IsDead || !TooltipUnit.Actor.IsInWorld)
+			{
+				controlMode = false;
+			}
+
+			if (controlMode)
+			{
+				OnKeyPress(e);
+				if (MoveUpKey.IsActivatedBy(e) && e.Event == KeyInputEvent.Down)
+					moveUp = true;
+				else if (MoveUpKey.IsActivatedBy(e) && e.Event == KeyInputEvent.Up)
+					moveUp = false;
+
+				if (MoveDownKey.IsActivatedBy(e) && e.Event == KeyInputEvent.Down)
+					moveDown = true;
+				else if (MoveDownKey.IsActivatedBy(e) && e.Event == KeyInputEvent.Up)
+					moveDown = false;
+
+				if (MoveLeftKey.IsActivatedBy(e) && e.Event == KeyInputEvent.Down)
+					moveLeft = true;
+				else if (MoveLeftKey.IsActivatedBy(e) && e.Event == KeyInputEvent.Up)
+					moveLeft = false;
+
+				if (MoveRightKey.IsActivatedBy(e) && e.Event == KeyInputEvent.Down)
+					moveRight = true;
+				else if (MoveRightKey.IsActivatedBy(e) && e.Event == KeyInputEvent.Up)
+					moveRight = false;
+
+				return true;
+			}
+
+			return false;
 		}
 	}
 }

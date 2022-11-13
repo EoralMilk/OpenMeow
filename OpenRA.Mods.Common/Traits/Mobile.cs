@@ -192,6 +192,7 @@ namespace OpenRA.Mods.Common.Traits
 
 	public class Mobile : PausableConditionalTrait<MobileInfo>, IIssueOrder, IResolveOrder, IOrderVoice, IPositionable, IMove, ITick, ICreationActivity,
 		IFacing, IDeathActorInitModifier, INotifyAddedToWorld, INotifyRemovedFromWorld, INotifyBlockingMove, IActorPreviewInitModifier, INotifyBecomingIdle
+		, IMover
 	{
 		readonly Actor self;
 		readonly Lazy<IEnumerable<int>> speedModifiers;
@@ -362,8 +363,11 @@ namespace OpenRA.Mods.Common.Traits
 			lastPos = CenterPosition;
 		}
 
+		WVec moverDir;
 		void ITick.Tick(Actor self)
 		{
+			MoveToward(moverDir);
+
 			UpdateMovement();
 			currentPos = CenterPosition;
 			currentSpeed = currentPos - lastPos;
@@ -1013,11 +1017,27 @@ namespace OpenRA.Mods.Common.Traits
 			if (IsTraitDisabled)
 				return;
 
+			if (order.OrderString == "Mover:Move")
+			{
+				self.CancelActivity();
+				moverDir = order.Target.CenterPosition - CenterPosition;
+			}
+			else if (order.OrderString == "Mover:Stop")
+			{
+				moverDir = WVec.Zero;
+			}
+
 			if (order.OrderString == "Move")
 			{
 				var cell = self.World.Map.Clamp(this.self.World.Map.CellContaining(order.Target.CenterPosition));
 				if (!Info.LocomotorInfo.MoveIntoShroud && !self.Owner.Shroud.IsExplored(cell))
 					return;
+
+				var from = (FromCell.Layer == 0 ? self.World.Map.CenterOfCell(FromCell) :
+					self.World.GetCustomMovementLayers()[FromCell.Layer].CenterOfCell(FromCell)) +
+					self.World.Map.Grid.OffsetOfSubCell(FromSubCell);
+				if (CenterPosition != from)
+					self.QueueActivity(LocalMove(self, CenterPosition, from));
 
 				self.QueueActivity(order.Queued, WrapMove(new Move(self, cell, WDist.FromCells(8), null, true, Info.TargetLineColor)));
 				self.ShowTargetLines();
@@ -1057,6 +1077,50 @@ namespace OpenRA.Mods.Common.Traits
 		Activity ICreationActivity.GetCreationActivity()
 		{
 			return returnToCellOnCreation ? new ReturnToCellActivity(self, creationActivityDelay, returnToCellOnCreationRecalculateSubCell) : null;
+		}
+
+		public void MoveToward(WVec mVec)
+		{
+			if (mVec != WVec.Zero)
+			{
+				var map = self.World.Map;
+				var loc = map.CellContaining(CenterPosition);
+				var tPos = CenterPosition + MovementSpeedForCell(loc) * mVec / mVec.Length;
+				var h = map.HeightOfTerrain(tPos);
+				tPos = new WPos(tPos.X, tPos.Y, h);
+				var tcell = map.CellContaining(tPos);
+				if (tcell == loc || CanEnterCell(tcell, self))
+				{
+					var dir = (tPos - CenterPosition).Yaw;
+					Facing = Util.TickFacing(Facing, dir, TurnSpeed);
+					SetPosition(self, tPos, true);
+				}
+			}
+		}
+
+		public void MoveToPos(WPos pos)
+		{
+			var map = self.World.Map;
+			var loc = map.CellContaining(CenterPosition);
+
+			var mVec = pos - CenterPosition;
+			var speed = MovementSpeedForCell(loc);
+			var dist = mVec.Length;
+			var tPos = CenterPosition + speed * mVec / dist;
+			if (dist < speed)
+			{
+				tPos = pos;
+			}
+
+			var h = map.HeightOfTerrain(tPos);
+			tPos = new WPos(tPos.X, tPos.Y, h);
+			var tcell = map.CellContaining(tPos);
+			if (tcell == loc || CanEnterCell(tcell, self))
+			{
+				var dir = (tPos - CenterPosition).Yaw;
+				Facing = Util.TickFacing(Facing, dir, TurnSpeed);
+				SetPosition(self, tPos, true);
+			}
 		}
 
 		class MoveOrderTargeter : IOrderTargeter

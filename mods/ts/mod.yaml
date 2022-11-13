@@ -264,6 +264,7 @@ Hotkeys:
 	common|hotkeys/editor.yaml
 	common|hotkeys/control-groups.yaml
 	ts|hotkeys.yaml
+	ts|controler.yaml
 
 LoadScreen: LogoStripeLoadScreen
 	Image: ts|uibits/loadscreen.png

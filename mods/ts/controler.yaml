@@ -1,0 +1,29 @@
+UseActor: E
+	Description: Use Actor
+	Types: Unit
+	Contexts: Actor
+
+MoveUp: UP
+	Description: Move Up
+	Types: Unit
+	Contexts: Actor
+
+MoveDown: DOWN
+	Description: Move Down
+	Types: Unit
+	Contexts: Actor
+
+MoveLeft: LEFT
+	Description: Move Left
+	Types: Unit
+	Contexts: Actor
+
+MoveRight: RIGHT
+	Description: Move Right
+	Types: Unit
+	Contexts: Actor
+
+ToggleUnitControl: BACKSLASH
+	Description: Toggle Unit Control
+	Types: Unit
+	Contexts: Actor

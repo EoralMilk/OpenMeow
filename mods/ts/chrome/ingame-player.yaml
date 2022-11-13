@@ -26,6 +26,11 @@ Container@PLAYER_WIDGETS:
 			Y: WINDOW_BOTTOM - HEIGHT - 5
 			Width: 250
 			Height: 130
+			ToggleControlKey: ToggleUnitControl
+			MoveUpKey: MoveUp
+			MoveDownKey: MoveDown
+			MoveLeftKey: MoveLeft
+			MoveRightKey: MoveRight
 
 		Container@SUPPORT_POWERS:
 			Logic: SupportPowerBinLogic

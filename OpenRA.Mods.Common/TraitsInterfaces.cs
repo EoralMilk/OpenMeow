@@ -472,6 +472,12 @@ namespace OpenRA.Mods.Common.Traits
 		bool CanEnterTargetNow(Actor self, in Target target);
 	}
 
+	public interface IMover
+	{
+		void MoveToward(WVec mVec);
+		void MoveToPos(WPos pos);
+	}
+
 	public interface IWrapMove
 	{
 		Activity WrapMove(Activity moveInner);
