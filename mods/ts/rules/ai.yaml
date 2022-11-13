@@ -329,7 +329,7 @@ Player:
 					Attractiveness: 100000
 					TargetMetric: Value
 					CheckRadius: 8c0
-	GarrisonBotModule:
+	LoadCargoBotModule:
 		RequiresCondition: enable-test-ai
 		Transports: gtdrop
 		Passengers: e1,e2,e3,cyborg,weedguy,ghost,cyc2,medic,limped,engineer,smech
