@@ -94,6 +94,7 @@ RUTEST:
 		# CanCrushActor: false
 		PauseOnCondition: being-captured || carried || Jumping
 		# CanMoveBackward: true
+		MovementMode: Universal
 	# AutoCrusher:
 	# 	TargetRelationships: Enemy
 	# 	MinimumScanTimeInterval: 2

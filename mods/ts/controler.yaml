@@ -3,22 +3,22 @@ UseActor: E
 	Types: Unit
 	Contexts: Actor
 
-MoveUp: UP
+MoveUp: W
 	Description: Move Up
 	Types: Unit
 	Contexts: Actor
 
-MoveDown: DOWN
+MoveDown: S
 	Description: Move Down
 	Types: Unit
 	Contexts: Actor
 
-MoveLeft: LEFT
+MoveLeft: A
 	Description: Move Left
 	Types: Unit
 	Contexts: Actor
 
-MoveRight: RIGHT
+MoveRight: D
 	Description: Move Right
 	Types: Unit
 	Contexts: Actor
