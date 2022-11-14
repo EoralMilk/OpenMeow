@@ -270,6 +270,7 @@
 		Scale: 10
 	ItemCache:
 	WidgetSkinManager:
+	IngameCursorManager:
 
 World:
 	Inherits: ^BaseWorld

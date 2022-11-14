@@ -613,9 +613,16 @@ namespace OpenRA.Meow.RPG.Widgets
 		}
 
 		bool lastMove;
-		bool lastClick;
+
 		public override void Tick()
 		{
+			worldRenderer.Viewport.LerpTarget = Target.Invalid;
+			var ingameCursorManager = worldRenderer.World.WorldActor.TraitOrDefault<IngameCursorManager>();
+			if (ingameCursorManager != null)
+			{
+				ingameCursorManager.CurrentCursor = null;
+			}
+
 			if (TooltipUnit == null || TooltipUnit.Actor == null || TooltipUnit.Actor.IsDead || !TooltipUnit.Actor.IsInWorld)
 			{
 				controlMode = false;
@@ -663,6 +670,8 @@ namespace OpenRA.Meow.RPG.Widgets
 						var order = new Order("Mover:Move", TooltipUnit.Actor, Target.FromPos(new WPos(mVec)), false);
 						TooltipUnit.Actor.World.IssueOrder(order);
 						lastMove = true;
+
+						worldRenderer.Viewport.LerpTarget = Target.FromActor(TooltipUnit.Actor);
 					}
 					else if (lastMove)
 					{
@@ -688,6 +697,14 @@ namespace OpenRA.Meow.RPG.Widgets
 						mPos = worldRenderer.Viewport.ViewToWorldPos(mi.Location, cell);
 						var order = new Order("Controler:Mi1Down", TooltipUnit.Actor, Target.FromPos(mPos), false);
 						TooltipUnit.Actor.World.IssueOrder(order);
+					}
+
+					if (controler.CanAttack())
+					{
+						if (ingameCursorManager != null)
+						{
+							ingameCursorManager.CurrentCursor = controler.TargetCursor;
+						}
 					}
 				}
 			}
@@ -723,7 +740,7 @@ namespace OpenRA.Meow.RPG.Widgets
 		public HotkeyReference MoveDownKey = new HotkeyReference();
 		public HotkeyReference MoveLeftKey = new HotkeyReference();
 		public HotkeyReference MoveRightKey = new HotkeyReference();
-
+		public float ViewportLerpSpeed = 0.5f;
 		bool moveUp;
 		bool moveDown;
 		bool moveLeft;

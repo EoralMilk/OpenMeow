@@ -13,6 +13,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using OpenRA.Primitives;
+using OpenRA.Traits;
 
 namespace OpenRA.Graphics
 {
@@ -47,6 +48,8 @@ namespace OpenRA.Graphics
 		// Map bounds (world-px)
 		readonly Rectangle mapBounds;
 		public readonly Size tileSize;
+
+		public Target LerpTarget = Target.Invalid;
 
 		// Viewport geometry (world-px)
 		public int2 CenterLocation { get; private set; }
@@ -192,6 +195,11 @@ namespace OpenRA.Graphics
 		{
 			if (lastViewportDistance != graphicSettings.ViewportDistance)
 				UpdateViewportZooms();
+
+			if (LerpTarget.Type != TargetType.Invalid)
+			{
+				worldRenderer.Viewport.Center(LerpTarget.CenterPosition);
+			}
 		}
 
 		float CalculateMinimumZoom(float minHeight, float maxHeight)

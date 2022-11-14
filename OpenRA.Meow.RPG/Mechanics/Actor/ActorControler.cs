@@ -31,7 +31,7 @@ namespace OpenRA.Meow.RPG
 	public class ActorControler : PausableConditionalTrait<ActorControlerInfo>,
 		INotifyCreated, IResolveOrder, ITick
 	{
-		AttackBase attack;
+		AttackBase[] attacks;
 		IFacing facing;
 		Turreted[] turreteds;
 		IMover mover;
@@ -42,7 +42,6 @@ namespace OpenRA.Meow.RPG
 		Target attackTarget = Target.Invalid;
 		WVec moverDir = WVec.Zero;
 		int conditionToken = Actor.InvalidConditionToken;
-
 		public string TargetCursor => info.TargetCursor;
 		public ActorControler(Actor self , ActorControlerInfo info)
 			: base(info)
@@ -61,6 +60,9 @@ namespace OpenRA.Meow.RPG
 		{
 			if (conditionToken != Actor.InvalidConditionToken)
 				conditionToken = self.RevokeCondition(conditionToken);
+
+			ClearTarget();
+			moverDir = WVec.Zero;
 		}
 
 		public void Tick(Actor self)
@@ -76,37 +78,50 @@ namespace OpenRA.Meow.RPG
 					conditionToken = self.RevokeCondition(conditionToken);
 
 				moverDir = WVec.Zero;
-				attackTarget = Target.Invalid;
-				if (attack != null)
-				{
-					attack.IsAiming = false;
-					if (attack is AttackFollow && (attack as AttackFollow).RequestedTarget.Type != TargetType.Invalid && UnderControl)
-					{
-						(attack as AttackFollow).ClearRequestedTarget(false);
-					}
-				}
 			}
 
-			if (mover != null && moverDir != WVec.Zero)
+			if (mover != null)
 			{
-				Game.GetWorldRenderer()?.Viewport.CenterLerp(self.CenterPosition, 0.6f);
 				mover.MoveToward(moverDir);
 			}
 
 			if (!CanAttack() || attackTarget.Type == TargetType.Invalid)
 			{
-				if (attack != null)
+				if (attacks != null)
 				{
-					attack.IsAiming = false;
+					foreach (var a in attacks)
+					{
+						a.IsAiming = false;
+					}
 				}
 
 				return;
 			}
 
-			if (attack != null)
+			bool turnFacing = true;
+			WAngle attackFace = WAngle.Zero;
+			int range = 0;
+			if (attacks != null)
 			{
-				attack.IsAiming = true;
-				var range = attack.GetMiniArmMaximumRangeVersusTarget(attackTarget).Length;
+				foreach (var a in attacks)
+				{
+					if (a.IsTraitDisabled)
+						continue;
+
+					a.IsAiming = true;
+					if (a is AttackFollow)
+					{
+						turnFacing = false;
+					}
+					else
+					{
+						attackFace = a.Info.FiringAngle;
+						turnFacing = true;
+					}
+
+					range = Math.Max(range, a.GetMaximumRangeVersusTarget(attackTarget).Length);
+				}
+
 				var dir = attackTarget.CenterPosition - self.CenterPosition;
 				var dist = dir.Length;
 				if (range < dist)
@@ -115,29 +130,53 @@ namespace OpenRA.Meow.RPG
 					tPos = new WPos(tPos, self.World.Map.HeightOfTerrain(tPos));
 					attackTarget = Target.FromPos(tPos);
 				}
-			}
 
-			// if (turreteds != null && turreteds.Where(tur => !tur.IsTraitDisabled).Any())
-			// {
-			// 	// use AttackFollow SetRequestedTarget
-			// }
-			if (attack is AttackFollow)
-			{
-				(attack as AttackFollow).SetRequestedTarget(attackTarget, true);
-			}
-			else if (facing != null)
-			{
-				var desiredFacing = (attackTarget.CenterPosition - self.CenterPosition).Yaw;
-				if (desiredFacing + attack.Info.FiringAngle != facing.Facing)
-					facing.Facing = Util.TickFacing(facing.Facing, desiredFacing + attack.Info.FiringAngle, facing.TurnSpeed);
+				if (facing != null && turnFacing)
+				{
+					var desiredFacing = (attackTarget.CenterPosition - self.CenterPosition).Yaw;
+					if (desiredFacing + attackFace != facing.Facing)
+						facing.Facing = Util.TickFacing(facing.Facing, desiredFacing + attackFace, facing.TurnSpeed);
+				}
 
-				attack.DoAttack(self, attackTarget);
+				foreach (var a in attacks)
+				{
+					if (a.IsTraitDisabled)
+						continue;
+
+					if (a is AttackFollow && UnderControl)
+					{
+						(a as AttackFollow).SetRequestedTarget(attackTarget, true);
+					}
+					else
+					{
+						a.DoAttack(self, attackTarget);
+					}
+				}
 			}
 		}
 
 		public bool CanAttack()
 		{
-			return UnderControl && !IsTraitDisabled && attack != null;
+			return UnderControl && !IsTraitDisabled && attacks != null && attacks.Length > 0;
+		}
+
+		void ClearTarget()
+		{
+			attackTarget = Target.Invalid;
+			if (attacks != null)
+			{
+				foreach (var a in attacks)
+				{
+					if (a.IsTraitDisabled)
+						continue;
+
+					a.IsAiming = false;
+					if (a is AttackFollow && (a as AttackFollow).RequestedTarget.Type != TargetType.Invalid)
+					{
+						(a as AttackFollow).ClearRequestedTarget(false);
+					}
+				}
+			}
 		}
 
 		//public IEnumerable<IOrderTargeter> Orders
@@ -151,7 +190,7 @@ namespace OpenRA.Meow.RPG
 
 		protected override void Created(Actor self)
 		{
-			attack = self.TraitOrDefault<AttackBase>();
+			attacks = self.TraitsImplementing<AttackBase>().ToArray();
 			facing = self.TraitOrDefault<IFacing>();
 			turreteds = self.TraitsImplementing<Turreted>().ToArray();
 			mover = self.TraitOrDefault<IMover>();
@@ -175,6 +214,7 @@ namespace OpenRA.Meow.RPG
 			else if (order.OrderString == "Controler:Disable")
 			{
 				UnderControl = false;
+				ClearTarget();
 			}
 
 			if (order.OrderString == "Controler:Mi1Down" && order.Target.Type != TargetType.Invalid && CanAttack())
@@ -184,15 +224,7 @@ namespace OpenRA.Meow.RPG
 
 			if (order.OrderString == "Contorler:Mi1Up")
 			{
-				attackTarget = Target.Invalid;
-				if (attack != null)
-				{
-					attack.IsAiming = false;
-					if (attack is AttackFollow && (attack as AttackFollow).RequestedTarget.Type != TargetType.Invalid && UnderControl)
-					{
-						(attack as AttackFollow).ClearRequestedTarget(false);
-					}
-				}
+				ClearTarget();
 			}
 
 			if (order.OrderString == "Mover:Move")

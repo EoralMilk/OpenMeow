@@ -849,6 +849,7 @@ namespace OpenRA.Mods.Common.Traits
 				var currentSpeed = Info.MaxSpeed > Info.Speed ?
 					Math.Clamp(AcceleratedDelta, Info.Speed, Info.MaxSpeed)
 					: Info.Speed;
+				AcceleratedDelta = Math.Clamp(AcceleratedDelta, 0, currentSpeed);
 				return Util.ApplyPercentageModifiers(currentSpeed, modifiers);
 			}
 			else
@@ -856,6 +857,7 @@ namespace OpenRA.Mods.Common.Traits
 				var currentSpeed = Info.MaxSpeed > Info.Speed ?
 					Math.Clamp(AcceleratedDelta, -Info.MaxSpeed, -Info.Speed) :
 					-Info.Speed;
+				AcceleratedDelta = Math.Clamp(AcceleratedDelta, currentSpeed, 0);
 				return Util.ApplyPercentageModifiers(currentSpeed, modifiers);
 			}
 		}
