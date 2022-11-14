@@ -392,6 +392,40 @@ namespace OpenRA.Mods.Common.Traits
 			return max != WDist.Zero ? max : maxFallback;
 		}
 
+		public WDist GetMiniArmMaximumRangeVersusTarget(in Target target)
+		{
+			if (IsTraitDisabled)
+				return WDist.Zero;
+
+			var max = WDist.Zero;
+
+			// We want actors to use only weapons with ammo for this, except when ALL weapons are out of ammo,
+			// then we use the paused, valid weapon with highest range.
+			var maxFallback = WDist.Zero;
+
+			// PERF: Avoid LINQ.
+			foreach (var armament in Armaments)
+			{
+				if (armament.IsTraitDisabled)
+					continue;
+
+				if (!armament.Weapon.IsValidAgainst(target, self.World, self))
+					continue;
+
+				var range = armament.MaxRange();
+				if (maxFallback > range)
+					maxFallback = range;
+
+				if (armament.IsTraitPaused)
+					continue;
+
+				if (max < range)
+					max = range;
+			}
+
+			return max != WDist.Zero ? max : maxFallback;
+		}
+
 		// Enumerates all armaments, that this actor possesses, that can be used against Target t
 		public IEnumerable<Armament> ChooseArmamentsForTarget(Target t, bool forceAttack)
 		{

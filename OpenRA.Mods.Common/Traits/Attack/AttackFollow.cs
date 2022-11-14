@@ -56,9 +56,9 @@ namespace OpenRA.Mods.Common.Traits
 			requestedTargetPresetForActivity = requestedTargetPreset;
 		}
 
-		public void ClearRequestedTarget()
+		public void ClearRequestedTarget(bool keepPersistent = true)
 		{
-			if (Info.PersistentTargeting)
+			if (Info.PersistentTargeting && keepPersistent)
 			{
 				OpportunityTarget = RequestedTarget;
 				opportunityForceAttack = requestedForceAttack;

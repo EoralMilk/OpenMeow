@@ -23,6 +23,7 @@ BGGY:
 		SpeedAccleration: 4
 		CanMoveBackward: true
 		MaxBackwardCells: 6
+		MovementMode: Wheel
 	Crushable:
 		CrushClasses: bigguy
 	Targetable@Crushable:
@@ -74,8 +75,8 @@ BIKE:
 		TurnSpeed: 32
 		MaxSpeed: 185
 		Speed: 60
-		TurnsWhileMoving: true
 		SpeedAccleration: 4
+		MovementMode: Wheel
 	Crushable:
 		CrushClasses: bigguy
 	Targetable@Crushable:
@@ -608,6 +609,7 @@ STNK:
 		SpeedAccleration: 8
 		CanMoveBackward: true
 		MaxBackwardCells: 6
+		MovementMode: Universal
 	Health:
 		HP: 18000
 	Armor:
@@ -670,7 +672,7 @@ REAPER:
 		TurnSpeed: 32
 		MaxSpeed: 105
 		Speed: 16
-		TurnsWhileMoving: true
+		MovementMode: Universal
 		SpeedAccleration: 8
 		Locomotor: walker
 	Health:

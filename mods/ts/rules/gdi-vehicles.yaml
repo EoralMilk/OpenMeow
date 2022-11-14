@@ -101,7 +101,7 @@ HVR:
 		SpeedAccleration: 2
 		Locomotor: hover
 		TerrainOrientationAdjustmentMargin: -1
-		TurnsWhileMoving: true
+		MovementMode: Universal
 		TurnSpeed: 16
 		CanMoveBackward: true
 		BackwardDuration: 5
@@ -165,10 +165,9 @@ SMECH:
 		TurnSpeed: 64
 		MaxSpeed: 130
 		Speed: 80
-		TurnsWhileMoving: true
+		MovementMode: Universal
 		SpeedAccleration: 8
 		Locomotor: walker
-		AlwaysTurnInPlace: true
 		TerrainOrientationAdjustmentMargin: -1
 	Crushable:
 		CrushClasses: bigguy
@@ -246,9 +245,8 @@ MMCH:
 		TurnSpeed: 24
 		MaxSpeed: 65
 		Speed: 8
-		TurnsWhileMoving: true
+		MovementMode: Universal
 		SpeedAccleration: 15
-		AlwaysTurnInPlace: true
 		Locomotor: heavywalker
 		TerrainOrientationAdjustmentMargin: -1
 	Health:
@@ -403,7 +401,7 @@ HMEC:
 		MaxSpeed: 42
 		Speed: 5
 		SpeedAccleration: 5
-		TurnsWhileMoving: true
+		MovementMode: Universal
 		Locomotor: heavywalker
 	Health:
 		HP: 100000
@@ -532,9 +530,8 @@ JUGG:
 		MaxSpeed: 71
 		Speed: 10
 		SpeedAccleration: 4
-		TurnsWhileMoving: true
+		MovementMode: Universal
 		TurnSpeed: 32
-		AlwaysTurnInPlace: true
 		Locomotor: heavywalker
 		ImmovableCondition: !undeployed
 		TerrainOrientationAdjustmentMargin: -1
@@ -710,7 +707,7 @@ LIMPED:
 	Mobile:
 		Speed: 120
 		TurnSpeed: 1023
-		TurnsWhileMoving: true
+		MovementMode: Universal
 		Locomotor: hover
 		ImmovableCondition: !undeployed
 	Passenger:

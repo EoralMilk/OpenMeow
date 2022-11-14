@@ -32,6 +32,7 @@ namespace OpenRA.Widgets
 		public static Widget MouseFocusWidget;
 		public static Widget KeyboardFocusWidget;
 		public static Widget MouseOverWidget;
+		public static MouseInput CurrentMouseInput;
 
 		static readonly Mediator Mediator = new Mediator();
 
@@ -121,6 +122,8 @@ namespace OpenRA.Widgets
 
 				MouseOverWidget?.MouseEntered();
 			}
+
+			CurrentMouseInput = mi;
 
 			return handled;
 		}

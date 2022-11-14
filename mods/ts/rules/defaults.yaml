@@ -6,6 +6,8 @@
 		PlayerExperienceModifier: 1
 	ScriptTriggers:
 	RenderDebugState:
+	ActorControler:
+		TargetCursor: nuke
 
 ^SpriteActor:
 	BodyOrientation:
@@ -725,9 +727,9 @@
 		Voice: Move
 		TurnSpeed: 150
 		Speed: 71
-		AlwaysTurnInPlace: true
 		Locomotor: foot
-		TurnsWhileMoving: true
+		MovementMode: Universal
+		RequiresCondition: !under-control
 	TurnOnIdle:
 	Selectable:
 		DecorationBounds: 452, 1387, 0, -543
@@ -1014,6 +1016,7 @@
 		Voice: Move
 		TerrainOrientationAdjustmentMargin: 256
 		AirborneCondition: airborne
+		RequiresCondition: !under-control
 	Selectable:
 		Bounds: 1206, 1448
 		RequiresCondition: !carring

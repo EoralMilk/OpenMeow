@@ -179,7 +179,7 @@ namespace OpenRA.Mods.Common.Activities
 			else
 				actorFacingModifier = WAngle.Zero;
 
-			if (!mobile.Info.TurnsWhileMoving && firstFacing != mobile.Facing)
+			if (mobile.Info.MovementMode != MovementMode.Universal && firstFacing != mobile.Facing)
 			{
 				path.Add(nextCell.Value.Cell);
 				QueueChild(new Turn(self, firstFacing));
@@ -405,7 +405,7 @@ namespace OpenRA.Mods.Common.Activities
 
 				IsInterruptible = false; // See comments in Move.Cancel()
 
-				TurnsWhileMoving = move.mobile.Info.TurnsWhileMoving;
+				TurnsWhileMoving = move.mobile.Info.MovementMode == MovementMode.Universal;
 				if (TurnsWhileMoving)
 					FromToYaw = (To - From).Yaw;
 
@@ -524,7 +524,7 @@ namespace OpenRA.Mods.Common.Activities
 			bool IsTurn(Actor self, Mobile mobile, CPos nextCell, Map map)
 			{
 				// Some actors with a limited number of sprite facings should never move along curved trajectories.
-				if (mobile.Info.AlwaysTurnInPlace)
+				if (mobile.Info.MovementMode == MovementMode.TurnInPlace)
 					return false;
 
 				if (Move.actorFacingModifier != WAngle.Zero && self.World.WorldTick - Move.startTicks >= mobile.Info.BackwardDuration)

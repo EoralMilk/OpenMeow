@@ -372,6 +372,15 @@ namespace OpenRA.Graphics
 			allCellsDirty = true;
 		}
 
+		public void CenterLerp(WPos pos, float calparam)
+		{
+			var loc = worldRenderer.ScreenPxPosition(pos).Clamp(mapBounds);
+			var len = (CenterLocation - loc).LengthSquared;
+			CenterLocation = float2.Lerp(CenterLocation.ToFloat2(), loc.ToFloat2(), calparam).ToInt2();
+			cellsDirty = true;
+			allCellsDirty = true;
+		}
+
 		public void Scroll(float2 delta, bool ignoreBorders)
 		{
 			// Convert scroll delta from world-px to viewport-px

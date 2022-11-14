@@ -1211,6 +1211,8 @@ fsidle_loop:
 	 	AddExtension: false
 	laser: Laser.png
 	 	AddExtension: false
+	trail: MissileTrail.png
+		AddExtension: false
 
 fsgrnd_bg:
 	idle:

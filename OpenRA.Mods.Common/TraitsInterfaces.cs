@@ -475,7 +475,6 @@ namespace OpenRA.Mods.Common.Traits
 	public interface IMover
 	{
 		void MoveToward(WVec mVec);
-		void MoveToPos(WPos pos);
 	}
 
 	public interface IWrapMove

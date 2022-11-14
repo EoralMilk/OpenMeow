@@ -16,6 +16,7 @@ using OpenRA.Widgets;
 using static OpenRA.Network.Session;
 using System.Numerics;
 using TagLib.Ape;
+using OpenRA.Mods.Common.Orders;
 
 namespace OpenRA.Meow.RPG.Widgets
 {
@@ -342,8 +343,9 @@ namespace OpenRA.Meow.RPG.Widgets
 						string click = controlMode ? "[" : "";
 						click += moveUp ? " U" : "";
 						click += moveDown ? " D" : "";
-						click += moveLeft ? " L" : "";
+						click += moveLeft ? " L": "";
 						click += moveRight ? " R" : "";
+						click += mi1Down ? " Mi1" : "";
 						click += controlMode ? " ]" : "";
 
 						return click;
@@ -545,6 +547,11 @@ namespace OpenRA.Meow.RPG.Widgets
 
 		void UpdateTooltipActor(Actor actor)
 		{
+			if (TooltipUnit != null && TooltipUnit.Actor != null)
+			{
+				TooltipUnit.Actor.World.IssueOrder(new Order("Controler:Disable", TooltipUnit.Actor, false));
+			}
+
 			TooltipUnit = actor == null ? null : new BasicUnitInfo(actor);
 			currentInventory.InventoryActor = actor;
 			currentInventory.Inventory = actor == null ? null : actor?.TraitOrDefault<Inventory>();
@@ -563,7 +570,7 @@ namespace OpenRA.Meow.RPG.Widgets
 			}
 		}
 
-		public void RefreshActorDisplaying()
+		public void RefreshActorSelecting()
 		{
 			if (world == null || world.Selection == null || world.Selection.Actors == null)
 			{
@@ -590,6 +597,8 @@ namespace OpenRA.Meow.RPG.Widgets
 			UpdateTooltipActor(iconA);
 		}
 
+		WPos mPos = WPos.Zero;
+		bool mi1Down = false;
 		public override bool HandleMouseInput(MouseInput mi)
 		{
 			return TooltipUnit != null && EventBounds.Contains(mi.Location);
@@ -604,6 +613,7 @@ namespace OpenRA.Meow.RPG.Widgets
 		}
 
 		bool lastMove;
+		bool lastClick;
 		public override void Tick()
 		{
 			if (TooltipUnit == null || TooltipUnit.Actor == null || TooltipUnit.Actor.IsDead || !TooltipUnit.Actor.IsInWorld)
@@ -615,15 +625,17 @@ namespace OpenRA.Meow.RPG.Widgets
 			{
 				Ui.KeyboardFocusWidget = this;
 
-				var mover = TooltipUnit.Actor.TraitOrDefault<Mobile>();
+				var controler = TooltipUnit.Actor.TraitOrDefault<ActorControler>();
 
-				if (mover == null)
+				if (controler == null)
 				{
 					controlMode = false;
 				}
 
 				if (controlMode)
 				{
+					TooltipUnit.Actor.World.IssueOrder(new Order("Controler:Enable", TooltipUnit.Actor, false));
+
 					WVec mVec = WVec.Zero;
 
 					if (moveUp)
@@ -648,8 +660,7 @@ namespace OpenRA.Meow.RPG.Widgets
 
 					if (mVec != WVec.Zero)
 					{
-						var tPos = mover.CenterPosition + mVec;
-						var order = new Order("Mover:Move", TooltipUnit.Actor, Target.FromPos(tPos), false);
+						var order = new Order("Mover:Move", TooltipUnit.Actor, Target.FromPos(new WPos(mVec)), false);
 						TooltipUnit.Actor.World.IssueOrder(order);
 						lastMove = true;
 					}
@@ -659,10 +670,34 @@ namespace OpenRA.Meow.RPG.Widgets
 						var order = new Order("Mover:Stop", TooltipUnit.Actor, false);
 						TooltipUnit.Actor.World.IssueOrder(order);
 					}
+
+					var mi = Ui.CurrentMouseInput;
+					if (mi.Event == MouseInputEvent.Down && mi.Button == MouseButton.Right)
+					{
+						mi1Down = true;
+					}
+					else if (mi.Event == MouseInputEvent.Up && mi.Button == MouseButton.Right)
+					{
+						mi1Down = false;
+						TooltipUnit.Actor.World.IssueOrder(new Order("Contorler:Mi1Up", TooltipUnit.Actor, false));
+					}
+
+					if (mi1Down)
+					{
+						var cell = worldRenderer.Viewport.ViewToWorld(mi.Location);
+						mPos = worldRenderer.Viewport.ViewToWorldPos(mi.Location, cell);
+						var order = new Order("Controler:Mi1Down", TooltipUnit.Actor, Target.FromPos(mPos), false);
+						TooltipUnit.Actor.World.IssueOrder(order);
+					}
 				}
 			}
 			else
 			{
+				if (TooltipUnit != null && TooltipUnit.Actor != null && !TooltipUnit.Actor.IsDead && TooltipUnit.Actor.IsInWorld)
+				{
+					TooltipUnit.Actor.World.IssueOrder(new Order("Controler:Disable", TooltipUnit.Actor, false));
+				}
+
 				if (Ui.KeyboardFocusWidget == this)
 					Ui.KeyboardFocusWidget = null;
 				lastMove = false;
@@ -670,12 +705,13 @@ namespace OpenRA.Meow.RPG.Widgets
 				moveDown = false;
 				moveLeft = false;
 				moveRight = false;
+				mi1Down = false;
 			}
 
 			if (selectionHash == world.Selection.Hash)
 				return;
 
-			RefreshActorDisplaying();
+			RefreshActorSelecting();
 			selectionHash = world.Selection.Hash;
 		}
 

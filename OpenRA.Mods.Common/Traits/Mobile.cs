@@ -14,6 +14,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using OpenRA.Activities;
+using OpenRA.Graphics;
 using OpenRA.Mods.Common.Activities;
 using OpenRA.Mods.Common.Pathfinder;
 using OpenRA.Primitives;
@@ -22,6 +23,14 @@ using OpenRA.Traits;
 
 namespace OpenRA.Mods.Common.Traits
 {
+	public enum MovementMode
+	{
+		Universal,
+		TurnInPlace,
+		Wheel,
+		Track,
+	}
+
 	[Desc("Unit is able to move.")]
 	public class MobileInfo : PausableConditionalTraitInfo, IMoveInfo, IPositionableInfo, IFacingInfo, IActorPreviewInitInfo,
 		IEditorActorOptions
@@ -55,8 +64,7 @@ namespace OpenRA.Mods.Common.Traits
 		[Desc("If set to true, this unit will always turn in place instead of following a curved trajectory (like infantry).")]
 		public readonly bool AlwaysTurnInPlace = false;
 
-		[Desc("If set to true, this unit won't stop to turn, used for TS Hover MRLS")]
-		public readonly bool TurnsWhileMoving = false;
+		public readonly MovementMode MovementMode = MovementMode.Track;
 
 		[CursorReference]
 		[Desc("Cursor to display when a move order can be issued at target location.")]
@@ -363,10 +371,10 @@ namespace OpenRA.Mods.Common.Traits
 			lastPos = CenterPosition;
 		}
 
-		WVec moverDir;
 		void ITick.Tick(Actor self)
 		{
-			MoveToward(moverDir);
+			if (movementTypes == MovementType.None)
+				AcceleratedDelta = 0;
 
 			UpdateMovement();
 			currentPos = CenterPosition;
@@ -833,11 +841,23 @@ namespace OpenRA.Mods.Common.Traits
 
 		public int MovementSpeedForCell(CPos cell)
 		{
-			var currentSpeed = Info.MaxSpeed > Info.Speed ? (Info.Speed + AcceleratedDelta > Info.MaxSpeed ? Info.MaxSpeed : Info.Speed + AcceleratedDelta) : Info.Speed;
 			var terrainSpeed = Locomotor.MovementSpeedForCell(cell);
 			var modifiers = speedModifiers.Value.Append(terrainSpeed);
 
-			return Util.ApplyPercentageModifiers(currentSpeed, modifiers);
+			if (AcceleratedDelta >= 0)
+			{
+				var currentSpeed = Info.MaxSpeed > Info.Speed ?
+					Math.Clamp(AcceleratedDelta, Info.Speed, Info.MaxSpeed)
+					: Info.Speed;
+				return Util.ApplyPercentageModifiers(currentSpeed, modifiers);
+			}
+			else
+			{
+				var currentSpeed = Info.MaxSpeed > Info.Speed ?
+					Math.Clamp(AcceleratedDelta, -Info.MaxSpeed, -Info.Speed) :
+					-Info.Speed;
+				return Util.ApplyPercentageModifiers(currentSpeed, modifiers);
+			}
 		}
 
 		public CPos NearestMoveableCell(CPos target, int minRange, int maxRange)
@@ -1017,16 +1037,6 @@ namespace OpenRA.Mods.Common.Traits
 			if (IsTraitDisabled)
 				return;
 
-			if (order.OrderString == "Mover:Move")
-			{
-				self.CancelActivity();
-				moverDir = order.Target.CenterPosition - CenterPosition;
-			}
-			else if (order.OrderString == "Mover:Stop")
-			{
-				moverDir = WVec.Zero;
-			}
-
 			if (order.OrderString == "Move")
 			{
 				var cell = self.World.Map.Clamp(this.self.World.Map.CellContaining(order.Target.CenterPosition));
@@ -1083,43 +1093,141 @@ namespace OpenRA.Mods.Common.Traits
 		{
 			if (mVec != WVec.Zero)
 			{
-				var map = self.World.Map;
-				var loc = map.CellContaining(CenterPosition);
-				var tPos = CenterPosition + MovementSpeedForCell(loc) * mVec / mVec.Length;
-				var h = map.HeightOfTerrain(tPos);
-				tPos = new WPos(tPos.X, tPos.Y, h);
-				var tcell = map.CellContaining(tPos);
-				if (tcell == loc || CanEnterCell(tcell, self))
+				switch (Info.MovementMode)
 				{
-					var dir = (tPos - CenterPosition).Yaw;
-					Facing = Util.TickFacing(Facing, dir, TurnSpeed);
-					SetPosition(self, tPos, true);
+					case MovementMode.Universal:
+						{
+							AcceleratedDelta += Info.SpeedAccleration;
+
+							var map = self.World.Map;
+							var loc = map.CellContaining(CenterPosition);
+							var speed = MovementSpeedForCell(loc);
+							var tPos = CenterPosition + speed * mVec / mVec.Length;
+							var h = map.HeightOfTerrain(tPos);
+							tPos = new WPos(tPos.X, tPos.Y, h);
+							var tcell = map.CellContaining(tPos);
+							if (tcell == loc || CanEnterCell(tcell, self))
+							{
+								var dir = (tPos - CenterPosition).Yaw;
+								Facing = Util.TickFacing(Facing, dir, TurnSpeed);
+								SetPosition(self, tPos, true);
+							}
+						}
+
+						break;
+					case MovementMode.TurnInPlace:
+						{
+							var map = self.World.Map;
+							var loc = map.CellContaining(CenterPosition);
+							var speed = MovementSpeedForCell(loc);
+							var tPos = CenterPosition + speed * mVec / mVec.Length;
+							var h = map.HeightOfTerrain(tPos);
+							tPos = new WPos(tPos.X, tPos.Y, h);
+							var tcell = map.CellContaining(tPos);
+
+							if (tcell == loc || CanEnterCell(tcell, self))
+							{
+								var dir = (tPos - CenterPosition).Yaw;
+								Facing = Util.TickFacing(Facing, dir, TurnSpeed);
+								if (Facing == dir)
+									SetPosition(self, tPos, true);
+								else
+								{
+									AcceleratedDelta = 0;
+								}
+							}
+						}
+
+						break;
+
+					case MovementMode.Wheel:
+						{
+							if (mVec.Y != 0)
+							{
+								if (mVec.X > 0)
+								{
+									Facing = Util.TickFacing(Facing, Facing - new WAngle(256), TurnSpeed);
+								}
+								else if (mVec.X < 0)
+								{
+									Facing = Util.TickFacing(Facing, Facing + new WAngle(256), TurnSpeed);
+								}
+							}
+							else
+							{
+								return;
+							}
+
+							if (mVec.Y < 0)
+							{
+								AcceleratedDelta += Info.SpeedAccleration;
+							}
+							else
+							{
+								AcceleratedDelta -= Info.SpeedAccleration;
+							}
+
+							var map = self.World.Map;
+							var loc = map.CellContaining(CenterPosition);
+							var speed = MovementSpeedForCell(loc);
+
+							var mDir = new WVec(0, -speed, 0).Rotate(WRot.FromYaw(Facing));
+							var tPos = CenterPosition + mDir;
+							var h = map.HeightOfTerrain(tPos);
+							tPos = new WPos(tPos.X, tPos.Y, h);
+							var tcell = map.CellContaining(tPos);
+
+							if (tcell == loc || CanEnterCell(tcell, self))
+							{
+								SetPosition(self, tPos, true);
+							}
+						}
+
+						break;
+
+					case MovementMode.Track:
+						{
+							if (mVec.X > 0)
+							{
+								Facing = Util.TickFacing(Facing, Facing - new WAngle(256), TurnSpeed);
+							}
+							else if (mVec.X < 0)
+							{
+								Facing = Util.TickFacing(Facing, Facing + new WAngle(256), TurnSpeed);
+							}
+
+							if (mVec.Y == 0)
+							{
+								return;
+							}
+
+							if (mVec.Y < 0)
+							{
+								AcceleratedDelta += Info.SpeedAccleration;
+							}
+							else
+							{
+								AcceleratedDelta -= Info.SpeedAccleration;
+							}
+
+							var map = self.World.Map;
+							var loc = map.CellContaining(CenterPosition);
+							var speed = MovementSpeedForCell(loc);
+
+							var mDir = new WVec(0, -speed, 0).Rotate(WRot.FromYaw(Facing));
+							var tPos = CenterPosition + mDir;
+							var h = map.HeightOfTerrain(tPos);
+							tPos = new WPos(tPos.X, tPos.Y, h);
+							var tcell = map.CellContaining(tPos);
+
+							if (tcell == loc || CanEnterCell(tcell, self))
+							{
+								SetPosition(self, tPos, true);
+							}
+						}
+
+						break;
 				}
-			}
-		}
-
-		public void MoveToPos(WPos pos)
-		{
-			var map = self.World.Map;
-			var loc = map.CellContaining(CenterPosition);
-
-			var mVec = pos - CenterPosition;
-			var speed = MovementSpeedForCell(loc);
-			var dist = mVec.Length;
-			var tPos = CenterPosition + speed * mVec / dist;
-			if (dist < speed)
-			{
-				tPos = pos;
-			}
-
-			var h = map.HeightOfTerrain(tPos);
-			tPos = new WPos(tPos.X, tPos.Y, h);
-			var tcell = map.CellContaining(tPos);
-			if (tcell == loc || CanEnterCell(tcell, self))
-			{
-				var dir = (tPos - CenterPosition).Yaw;
-				Facing = Util.TickFacing(Facing, dir, TurnSpeed);
-				SetPosition(self, tPos, true);
 			}
 		}
 

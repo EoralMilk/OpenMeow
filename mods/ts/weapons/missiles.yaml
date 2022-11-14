@@ -30,9 +30,14 @@
 		TrailInterval: 1
 		TrailCount: 0 #2
 		TrailDelay: 0
+
 		ContrailZOffset: 22
 		ContrailLength: 12
-		ContrailWidth: 178
+		ContrailWidth: 284 #178
+
+		ContrailImage: fsidle_loop
+		ContrailSequences: trail
+
 		ContrailUseInnerOuterColor: true
 
 		ContrailStartColor: DFA877
@@ -42,10 +47,10 @@
 
 		ContrailEndColor: A8A8A8
 		ContrailEndColorOuter: A8A8A8
-		ContrailEndColorAlpha: 32
+		ContrailEndColorAlpha: 0 #64
 		ContrailEndColorAlphaOuter: 0
 
-		ContrailWidthFadeRate: 1
+		ContrailWidthFadeRate: 0
 		ContrailDelay: 0
 		ContrailBlendMode: Additive
 		
@@ -122,8 +127,7 @@
 		ContrailWidth: 284 #178
 
 		ContrailImage: fsidle_loop
-		ContrailSequences: laser
-		ContrailSpriteTopToDown: true
+		ContrailSequences: trail
 
 		ContrailUseInnerOuterColor: true
 
@@ -137,7 +141,7 @@
 		ContrailEndColorAlpha: 0 #64
 		ContrailEndColorAlphaOuter: 0
 
-		# ContrailWidthFadeRate: 1
+		ContrailWidthFadeRate: 0
 		ContrailDelay: 0
 		ContrailBlendMode: Additive
 
@@ -231,7 +235,7 @@ TitanMissile:
 		LifeTime: 70
 		LaunchAngle: 128
 		ContrailLength: 6
-		ContrailWidth: 44
+		ContrailWidth: 244
 		MeshScale: 1
 		JetSequence: mislflash1small
 	Warhead@1Dam: Spread3DDamage
@@ -303,7 +307,7 @@ ReaperScytheScat:
 		IgnitionDelay: 10
 		ContrailDelay: 9
 		ContrailLength: 6
-		ContrailWidth: 44
+		ContrailWidth: 244
 		MeshScale: 1
 		JetSequence: mislflash1small
 		InaccuracyType: Absolute
@@ -656,7 +660,7 @@ LauncherClusterMissile:
 		MaximumLaunchAngle: 253
 		Gravity: 0
 		ContrailLength: 10
-		ContrailWidth: 256
+		ContrailWidth: 356
 		CruiseAltitude: 90c0
 		AirburstAltitude: 6c0
 		TrailCount: 1

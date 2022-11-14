@@ -93,7 +93,6 @@ RUTEST:
 		BlockedBy: None #Static
 		# CanCrushActor: false
 		PauseOnCondition: being-captured || carried || Jumping
-		# AlwaysTurnInPlace: true
 		# CanMoveBackward: true
 	# AutoCrusher:
 	# 	TargetRelationships: Enemy
@@ -248,7 +247,6 @@ RUTEST3:
 # 		TurnSpeed: 34
 # 		Speed: 88
 # 		Locomotor: tracked
-# 		# AlwaysTurnInPlace: true
 # 	AttackTurreted:
 # 		Turrets: turret1, turret2
 # 		Voice: Attack
