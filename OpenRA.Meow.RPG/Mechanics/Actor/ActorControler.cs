@@ -37,12 +37,24 @@ namespace OpenRA.Meow.RPG
 		IMover mover;
 		readonly ActorControlerInfo info;
 		readonly Actor self;
-		public bool UnderControl;
 
+		// state
 		Target attackTarget = Target.Invalid;
 		WVec moverDir = WVec.Zero;
-		int conditionToken = Actor.InvalidConditionToken;
+		int controlingConditionToken = Actor.InvalidConditionToken;
+		public bool UnderControl;
+
 		public string TargetCursor => info.TargetCursor;
+
+		ControlerType controlerType;
+
+		public enum ControlerType
+		{
+			None,
+			Mobile,
+			Airborne,
+		}
+
 		public ActorControler(Actor self , ActorControlerInfo info)
 			: base(info)
 		{
@@ -52,14 +64,14 @@ namespace OpenRA.Meow.RPG
 
 		protected override void TraitEnabled(Actor self)
 		{
-			if (conditionToken == Actor.InvalidConditionToken && UnderControl)
-				conditionToken = self.GrantCondition(Info.Condition);
+			if (controlingConditionToken == Actor.InvalidConditionToken && UnderControl)
+				controlingConditionToken = self.GrantCondition(Info.Condition);
 		}
 
 		protected override void TraitDisabled(Actor self)
 		{
-			if (conditionToken != Actor.InvalidConditionToken)
-				conditionToken = self.RevokeCondition(conditionToken);
+			if (controlingConditionToken != Actor.InvalidConditionToken)
+				controlingConditionToken = self.RevokeCondition(controlingConditionToken);
 
 			ClearTarget();
 			moverDir = WVec.Zero;
@@ -69,13 +81,13 @@ namespace OpenRA.Meow.RPG
 		{
 			if (UnderControl)
 			{
-				if (conditionToken == Actor.InvalidConditionToken)
-					conditionToken = self.GrantCondition(Info.Condition);
+				if (controlingConditionToken == Actor.InvalidConditionToken)
+					controlingConditionToken = self.GrantCondition(Info.Condition);
 			}
 			else
 			{
-				if (conditionToken != Actor.InvalidConditionToken)
-					conditionToken = self.RevokeCondition(conditionToken);
+				if (controlingConditionToken != Actor.InvalidConditionToken)
+					controlingConditionToken = self.RevokeCondition(controlingConditionToken);
 
 				moverDir = WVec.Zero;
 			}
@@ -98,9 +110,11 @@ namespace OpenRA.Meow.RPG
 				return;
 			}
 
-			bool turnFacing = true;
+			bool turnFacing = false;
 			WAngle attackFace = WAngle.Zero;
 			int range = 0;
+
+			// determine if we should turn turrets or faceing
 			if (attacks != null)
 			{
 				foreach (var a in attacks)
@@ -109,11 +123,7 @@ namespace OpenRA.Meow.RPG
 						continue;
 
 					a.IsAiming = true;
-					if (a is AttackFollow)
-					{
-						turnFacing = false;
-					}
-					else
+					if (!(a is AttackFollow))
 					{
 						attackFace = a.Info.FiringAngle;
 						turnFacing = true;
@@ -122,6 +132,7 @@ namespace OpenRA.Meow.RPG
 					range = Math.Max(range, a.GetMaximumRangeVersusTarget(attackTarget).Length);
 				}
 
+				// re-calculate target
 				var dir = attackTarget.CenterPosition - self.CenterPosition;
 				var dist = dir.Length;
 				if (range < dist)
@@ -179,31 +190,17 @@ namespace OpenRA.Meow.RPG
 			}
 		}
 
-		//public IEnumerable<IOrderTargeter> Orders
-		//{
-		//	get
-		//	{
-		//		if (!IsTraitDisabled && UnderControl)
-		//			yield return new ControlerAttackOrderTargeter(self, this);
-		//	}
-		//}
-
 		protected override void Created(Actor self)
 		{
 			attacks = self.TraitsImplementing<AttackBase>().ToArray();
 			facing = self.TraitOrDefault<IFacing>();
 			turreteds = self.TraitsImplementing<Turreted>().ToArray();
 			mover = self.TraitOrDefault<IMover>();
+			if (mover != null && (mover is Mobile))
+				controlerType = ControlerType.Mobile;
+
 			base.Created(self);
 		}
-
-		//public Order IssueOrder(Actor self, IOrderTargeter order, in Target target, bool queued)
-		//{
-		//	//if (order.OrderID == "Contorler:Attack")
-		//	//	return new Order(order.OrderID, self, target, queued);
-
-		//	return null;
-		//}
 
 		public void ResolveOrder(Actor self, Order order)
 		{
@@ -237,44 +234,5 @@ namespace OpenRA.Meow.RPG
 				moverDir = WVec.Zero;
 			}
 		}
-	}
-
-	class ControlerAttackOrderTargeter : IOrderTargeter
-	{
-		readonly Actor self;
-		readonly ActorControler actorControler;
-		public bool TargetOverridesSelection(Actor self, in Target target, List<Actor> actorsAt, CPos xy, TargetModifiers modifiers)
-		{
-			return true;
-		}
-
-		public ControlerAttackOrderTargeter(Actor self, ActorControler unit)
-		{
-			this.self = self;
-			actorControler = unit;
-		}
-
-		public string OrderID => "";
-		public int OrderPriority => 7;
-		public bool IsQueued => false;
-
-		public bool CanTarget(Actor self, in Target target, ref TargetModifiers modifiers, ref string cursor)
-		{
-			if (!actorControler.CanAttack())
-				return false;
-
-			if (modifiers == TargetModifiers.None)
-			{
-				cursor = actorControler.TargetCursor;
-				return true;
-			}
-
-			return false;
-		}
-	}
-
-	public class ControlerOrderGenerator : UnitOrderGenerator
-	{
-		public override bool ClearSelectionOnLeftClick => false;
 	}
 }

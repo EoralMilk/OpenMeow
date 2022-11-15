@@ -27,6 +27,7 @@ Container@PLAYER_WIDGETS:
 			Width: 250
 			Height: 130
 			ToggleControlKey: ToggleUnitControl
+			ToggleActorCameraKey: ToggleActorCamera
 			MoveUpKey: MoveUp
 			MoveDownKey: MoveDown
 			MoveLeftKey: MoveLeft

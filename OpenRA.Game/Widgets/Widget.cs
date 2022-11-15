@@ -32,7 +32,8 @@ namespace OpenRA.Widgets
 		public static Widget MouseFocusWidget;
 		public static Widget KeyboardFocusWidget;
 		public static Widget MouseOverWidget;
-		public static MouseInput CurrentMouseInput;
+
+		public static HashSet<Widget> MouseInputListener = new HashSet<Widget>();
 
 		static readonly Mediator Mediator = new Mediator();
 
@@ -123,7 +124,10 @@ namespace OpenRA.Widgets
 				MouseOverWidget?.MouseEntered();
 			}
 
-			CurrentMouseInput = mi;
+			foreach (var widget in MouseInputListener)
+			{
+				widget.ListenMouseInput(mi);
+			}
 
 			return handled;
 		}
@@ -401,6 +405,8 @@ namespace OpenRA.Widgets
 		/// <returns><c>true</c>, if mouse input was handled, <c>false</c> if the input should bubble to the parent widget</returns>
 		/// <param name="mi">Mouse input data</param>
 		public virtual bool HandleMouseInput(MouseInput mi) { return false; }
+
+		public virtual void ListenMouseInput(MouseInput mi) { }
 
 		public bool HandleMouseInputOuter(MouseInput mi)
 		{

@@ -197,6 +197,8 @@ namespace OpenRA.Meow.RPG.Widgets
 			GetTooltipUnit = () => TooltipUnit;
 			currentInventory = new InventoryWidget(world, worldRenderer, Skin);
 			slotsWidget = new EquipmentSlotsWidget(world, worldRenderer, Skin);
+
+			Ui.MouseInputListener.Add(this);
 		}
 
 		ToggleButtonWidget toggleEquipment;
@@ -347,6 +349,7 @@ namespace OpenRA.Meow.RPG.Widgets
 						click += moveRight ? " R" : "";
 						click += mi1Down ? " Mi1" : "";
 						click += controlMode ? " ]" : "";
+						click += actorCameraMode ? " Follow " : "";
 
 						return click;
 					},
@@ -616,7 +619,14 @@ namespace OpenRA.Meow.RPG.Widgets
 
 		public override void Tick()
 		{
-			worldRenderer.Viewport.LerpTarget = Target.Invalid;
+			if (actorCameraMode && TooltipUnit != null && TooltipUnit.Actor != null && TooltipUnit.Actor.IsInWorld && !TooltipUnit.Actor.IsDead)
+				worldRenderer.Viewport.LerpTarget = Target.FromActor(TooltipUnit.Actor);
+			else
+			{
+				actorCameraMode = false;
+				worldRenderer.Viewport.LerpTarget = Target.Invalid;
+			}
+
 			var ingameCursorManager = worldRenderer.World.WorldActor.TraitOrDefault<IngameCursorManager>();
 			if (ingameCursorManager != null)
 			{
@@ -670,8 +680,6 @@ namespace OpenRA.Meow.RPG.Widgets
 						var order = new Order("Mover:Move", TooltipUnit.Actor, Target.FromPos(new WPos(mVec)), false);
 						TooltipUnit.Actor.World.IssueOrder(order);
 						lastMove = true;
-
-						worldRenderer.Viewport.LerpTarget = Target.FromActor(TooltipUnit.Actor);
 					}
 					else if (lastMove)
 					{
@@ -680,21 +688,10 @@ namespace OpenRA.Meow.RPG.Widgets
 						TooltipUnit.Actor.World.IssueOrder(order);
 					}
 
-					var mi = Ui.CurrentMouseInput;
-					if (mi.Event == MouseInputEvent.Down && mi.Button == MouseButton.Right)
-					{
-						mi1Down = true;
-					}
-					else if (mi.Event == MouseInputEvent.Up && mi.Button == MouseButton.Right)
-					{
-						mi1Down = false;
-						TooltipUnit.Actor.World.IssueOrder(new Order("Contorler:Mi1Up", TooltipUnit.Actor, false));
-					}
-
 					if (mi1Down)
 					{
-						var cell = worldRenderer.Viewport.ViewToWorld(mi.Location);
-						mPos = worldRenderer.Viewport.ViewToWorldPos(mi.Location, cell);
+						var cell = worldRenderer.Viewport.ViewToWorld(currentMouseInput.Location);
+						mPos = worldRenderer.Viewport.ViewToWorldPos(currentMouseInput.Location, cell);
 						var order = new Order("Controler:Mi1Down", TooltipUnit.Actor, Target.FromPos(mPos), false);
 						TooltipUnit.Actor.World.IssueOrder(order);
 					}
@@ -734,7 +731,10 @@ namespace OpenRA.Meow.RPG.Widgets
 
 		public Action<KeyInput> OnKeyPress = _ => { };
 		public HotkeyReference ToggleControlKey = new HotkeyReference();
+		public HotkeyReference ToggleActorCameraKey = new HotkeyReference();
+
 		bool controlMode = false;
+		bool actorCameraMode = false;
 
 		public HotkeyReference MoveUpKey = new HotkeyReference();
 		public HotkeyReference MoveDownKey = new HotkeyReference();
@@ -746,43 +746,79 @@ namespace OpenRA.Meow.RPG.Widgets
 		bool moveLeft;
 		bool moveRight;
 
+		MouseInput currentMouseInput;
+
+		public override void ListenMouseInput(MouseInput mi)
+		{
+			currentMouseInput = mi;
+
+			if (TooltipUnit == null || TooltipUnit.Actor == null || TooltipUnit.Actor.IsDead || !TooltipUnit.Actor.IsInWorld)
+			{
+				controlMode = false;
+			}
+
+			if (mi.Event == MouseInputEvent.Down && mi.Button == MouseButton.Right)
+			{
+				mi1Down = true;
+			}
+			else if (mi.Event == MouseInputEvent.Up && mi.Button == MouseButton.Right)
+			{
+				mi1Down = false;
+
+				if (controlMode)
+				{
+					TooltipUnit.Actor.World.IssueOrder(new Order("Contorler:Mi1Up", TooltipUnit.Actor, false));
+				}
+			}
+
+		}
+
 		public override bool HandleKeyPress(KeyInput e)
 		{
 			if (ToggleControlKey.IsActivatedBy(e) && e.Event == KeyInputEvent.Down && !e.IsRepeat)
 				controlMode = !controlMode;
 
-			if (!controlMode || TooltipUnit == null || TooltipUnit.Actor == null || TooltipUnit.Actor.IsDead || !TooltipUnit.Actor.IsInWorld)
+			if (ToggleActorCameraKey.IsActivatedBy(e) && e.Event == KeyInputEvent.Down && !e.IsRepeat)
+				actorCameraMode = !actorCameraMode;
+
+			if (TooltipUnit == null || TooltipUnit.Actor == null || TooltipUnit.Actor.IsDead || !TooltipUnit.Actor.IsInWorld)
 			{
 				controlMode = false;
 			}
 
+			OnKeyPress(e);
+			if (MoveUpKey.IsActivatedBy(e) && e.Event == KeyInputEvent.Down)
+				moveUp = true;
+			else if (MoveUpKey.IsActivatedBy(e) && e.Event == KeyInputEvent.Up)
+				moveUp = false;
+
+			if (MoveDownKey.IsActivatedBy(e) && e.Event == KeyInputEvent.Down)
+				moveDown = true;
+			else if (MoveDownKey.IsActivatedBy(e) && e.Event == KeyInputEvent.Up)
+				moveDown = false;
+
+			if (MoveLeftKey.IsActivatedBy(e) && e.Event == KeyInputEvent.Down)
+				moveLeft = true;
+			else if (MoveLeftKey.IsActivatedBy(e) && e.Event == KeyInputEvent.Up)
+				moveLeft = false;
+
+			if (MoveRightKey.IsActivatedBy(e) && e.Event == KeyInputEvent.Down)
+				moveRight = true;
+			else if (MoveRightKey.IsActivatedBy(e) && e.Event == KeyInputEvent.Up)
+				moveRight = false;
+
 			if (controlMode)
 			{
-				OnKeyPress(e);
-				if (MoveUpKey.IsActivatedBy(e) && e.Event == KeyInputEvent.Down)
-					moveUp = true;
-				else if (MoveUpKey.IsActivatedBy(e) && e.Event == KeyInputEvent.Up)
-					moveUp = false;
-
-				if (MoveDownKey.IsActivatedBy(e) && e.Event == KeyInputEvent.Down)
-					moveDown = true;
-				else if (MoveDownKey.IsActivatedBy(e) && e.Event == KeyInputEvent.Up)
-					moveDown = false;
-
-				if (MoveLeftKey.IsActivatedBy(e) && e.Event == KeyInputEvent.Down)
-					moveLeft = true;
-				else if (MoveLeftKey.IsActivatedBy(e) && e.Event == KeyInputEvent.Up)
-					moveLeft = false;
-
-				if (MoveRightKey.IsActivatedBy(e) && e.Event == KeyInputEvent.Down)
-					moveRight = true;
-				else if (MoveRightKey.IsActivatedBy(e) && e.Event == KeyInputEvent.Up)
-					moveRight = false;
-
 				return true;
 			}
 
 			return false;
+		}
+
+		public override void Removed()
+		{
+			Ui.MouseInputListener.Remove(this);
+			base.Removed();
 		}
 	}
 }

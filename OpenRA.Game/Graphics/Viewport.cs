@@ -53,9 +53,11 @@ namespace OpenRA.Graphics
 
 		// Viewport geometry (world-px)
 		public int2 CenterLocation { get; private set; }
+
 		public int2 TopLeft => CenterLocation - ViewportSize / 2;
 		public int2 BottomRight => CenterLocation + ViewportSize / 2;
 
+		public float3 CenterPositionFloat => worldRenderer.ProjectedPositionFloat(CenterLocation.ToFloat2());
 		public WPos CenterPosition => worldRenderer.ProjectedPosition(CenterLocation);
 		public WPos TopLeftPosition => worldRenderer.ProjectedPosition(TopLeft);
 		public WPos BottomRightPosition => worldRenderer.ProjectedPosition(BottomRight);
@@ -380,11 +382,18 @@ namespace OpenRA.Graphics
 			allCellsDirty = true;
 		}
 
+		long lastLerpTime;
 		public void CenterLerp(WPos pos, float calparam)
 		{
 			var loc = worldRenderer.ScreenPxPosition(pos).Clamp(mapBounds);
-			var len = (CenterLocation - loc).LengthSquared;
-			CenterLocation = float2.Lerp(CenterLocation.ToFloat2(), loc.ToFloat2(), calparam).ToInt2();
+
+			if (loc == CenterLocation)
+				return;
+
+			var deltaScale = Math.Max(1, Math.Min(Game.RunTime - lastLerpTime, 25f));
+			lastLerpTime = Game.RunTime;
+
+			CenterLocation = int2.LerpUnsync(CenterLocation, loc, calparam / deltaScale * 25f);
 			cellsDirty = true;
 			allCellsDirty = true;
 		}

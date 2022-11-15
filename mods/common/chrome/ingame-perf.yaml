@@ -17,6 +17,7 @@ Container@PERF_WIDGETS:
 			Y: WINDOW_BOTTOM - HEIGHT - 56
 			Width: 210
 			Height: 210
+			ClickThrough: true
 			Children:
 				PerfGraph@GRAPH:
 					X: 5

@@ -570,6 +570,11 @@ namespace OpenRA.Graphics
 			return new WPos(TileScale * screenPx.X / TileSize.Width, TileScale * screenPx.Y / TileSize.Height, 0);
 		}
 
+		public float3 ProjectedPositionFloat(float2 screenPx)
+		{
+			return new float3(TileScale * screenPx.X / TileSize.Width, TileScale * screenPx.Y / TileSize.Height, 0);
+		}
+
 		public void Dispose()
 		{
 			DisposeTextures();

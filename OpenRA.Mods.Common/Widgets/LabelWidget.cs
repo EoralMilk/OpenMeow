@@ -39,6 +39,8 @@ namespace OpenRA.Mods.Common.Widgets
 		public Func<Color> GetContrastColorDark;
 		public Func<Color> GetContrastColorLight;
 
+		public override Rectangle EventBounds => ClickThrough ? Rectangle.Empty : RenderBounds;
+
 		public LabelWidget()
 		{
 			GetText = () => Text;

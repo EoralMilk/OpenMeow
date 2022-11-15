@@ -371,10 +371,13 @@ namespace OpenRA.Mods.Common.Traits
 
 		void ITick.Tick(Actor self)
 		{
+			MoveTowardInner(moveDir);
+
+			UpdateMovement();
+
 			if (movementTypes == MovementType.None)
 				AcceleratedDelta = 0;
 
-			UpdateMovement();
 			currentPos = CenterPosition;
 			currentSpeed = currentPos - lastPos;
 			lastPos = currentPos;
@@ -847,16 +850,18 @@ namespace OpenRA.Mods.Common.Traits
 				var currentSpeed = Info.MaxSpeed > Info.Speed ?
 					Math.Clamp(AcceleratedDelta, Info.Speed, Info.MaxSpeed)
 					: Info.Speed;
+				currentSpeed = Util.ApplyPercentageModifiers(currentSpeed, modifiers);
 				AcceleratedDelta = Math.Clamp(AcceleratedDelta, 0, currentSpeed);
-				return Util.ApplyPercentageModifiers(currentSpeed, modifiers);
+				return currentSpeed;
 			}
 			else
 			{
 				var currentSpeed = Info.MaxSpeed > Info.Speed ?
 					Math.Clamp(AcceleratedDelta, -Info.MaxSpeed, -Info.Speed) :
 					-Info.Speed;
+				currentSpeed = Util.ApplyPercentageModifiers(currentSpeed, modifiers);
 				AcceleratedDelta = Math.Clamp(AcceleratedDelta, currentSpeed, 0);
-				return Util.ApplyPercentageModifiers(currentSpeed, modifiers);
+				return currentSpeed;
 			}
 		}
 
@@ -1089,7 +1094,13 @@ namespace OpenRA.Mods.Common.Traits
 			return returnToCellOnCreation ? new ReturnToCellActivity(self, creationActivityDelay, returnToCellOnCreationRecalculateSubCell) : null;
 		}
 
+		WVec moveDir;
 		public void MoveToward(WVec mVec)
+		{
+			moveDir = mVec;
+		}
+
+		public void MoveTowardInner(WVec mVec)
 		{
 			if (mVec != WVec.Zero)
 			{

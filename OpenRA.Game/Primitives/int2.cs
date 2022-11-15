@@ -82,6 +82,11 @@ namespace OpenRA
 			return a + (b - a) * mul / div;
 		}
 
+		public static int2 LerpUnsync(int2 a, int2 b, float t)
+		{
+			return a + ((b - a).ToFloat2() * t).ToInt2();
+		}
+
 		public int2 Clamp(Rectangle r)
 		{
 			return new int2(Math.Min(r.Right, Math.Max(X, r.Left)),

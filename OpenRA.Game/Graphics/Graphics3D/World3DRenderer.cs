@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using GlmSharp;
 using OpenRA.Primitives;
+using OpenRA.Traits;
 using TrueSync;
 
 namespace OpenRA.Graphics
@@ -44,6 +45,9 @@ namespace OpenRA.Graphics
 		public readonly WRot WRotRotationFix;
 
 		public vec3 CameraPos { get; private set; }
+		vec3 viewPoint;
+		long lastLerpTime;
+
 		public readonly float PixPerMeter;
 		public readonly float MeterPerPix;
 		public readonly int WDistPerPix;
@@ -124,7 +128,17 @@ namespace OpenRA.Graphics
 				var far = heightMeter / CosCameraPitch + TanCameraPitch * ortho.Item4 + 100f;
 				Projection = mat4.Ortho(ortho.Item1, ortho.Item2, ortho.Item3, ortho.Item4, far / 8, far);
 
-				var viewPoint = Get3DRenderPositionFromWPos(viewport.CenterPosition);// new vec3((float)viewport.CenterPosition.X / WPosPerMeter, (float)viewport.CenterPosition.Y / WPosPerMeter, 0);
+				// we lerp the camera by ourself, reduce jitter
+				if (viewport.LerpTarget.Type != TargetType.Invalid)
+				{
+					var deltaScale = Math.Max(1, Math.Min(Game.RunTime - lastLerpTime, 25f));
+					lastLerpTime = Game.RunTime;
+					var fpos = new float3(viewport.LerpTarget.CenterPosition.X, viewport.LerpTarget.CenterPosition.Y - (float)viewport.LerpTarget.CenterPosition.Z * TanCameraPitch, 0);
+					viewPoint = vec3.Lerp(viewPoint, Get3DRenderPositionFromFloat3(fpos), 0.5f / deltaScale * 25f);
+				}
+				else
+					viewPoint = Get3DRenderPositionFromFloat3(viewport.CenterPositionFloat);// new vec3((float)viewport.CenterPosition.X / WPosPerMeter, (float)viewport.CenterPosition.Y / WPosPerMeter, 0);
+
 				CameraPos = new vec3(0, TanCameraPitch * heightMeter, heightMeter);
 
 				CameraPos = quat.FromAxisAngle(CameraRotTest, WorldUp) * CameraPos + new vec3(viewPoint.x, viewPoint.y, 0);
@@ -167,6 +181,13 @@ namespace OpenRA.Graphics
 					Console.WriteLine("~~~~~~~~~~~~~~~~~~~~~~~~~");
 				}
 			}
+		}
+
+		public vec3 Get3DRenderPositionFromFloat3(float3 pos)
+		{
+			return new vec3(-pos.X / World3DCoordinate.WDistPerMeter,
+										pos.Y / World3DCoordinate.WDistPerMeter,
+										pos.Z / World3DCoordinate.WDistPerMeter);
 		}
 
 		public vec3 Get3DRenderPositionFromWPos(WPos pos)
