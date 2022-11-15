@@ -690,8 +690,21 @@ namespace OpenRA.Meow.RPG.Widgets
 
 					if (mi1Down)
 					{
-						var cell = worldRenderer.Viewport.ViewToWorld(currentMouseInput.Location);
-						mPos = worldRenderer.Viewport.ViewToWorldPos(currentMouseInput.Location, cell);
+						var actors = world.ScreenMap.ActorsAtMouse(currentMouseInput)
+							.Where(a => !a.Actor.IsDead && a.Actor.Info.HasTraitInfo<ITargetableInfo>() && !world.FogObscures(a.Actor))
+							.Select(a => a.Actor);
+
+						if (actors != null && actors.Any())
+						{
+							mPos = Target.FromActor(actors.First()).Positions.PositionClosestTo(TooltipUnit.Actor.CenterPosition);
+						}
+						else
+						{
+							var cell = worldRenderer.Viewport.ViewToWorld(currentMouseInput.Location);
+							mPos = worldRenderer.Viewport.ViewToWorldPos(currentMouseInput.Location, cell);
+							mPos = new WPos(mPos, world.Map.HeightOfTerrain(mPos) + 128);
+						}
+
 						var order = new Order("Controler:Mi1Down", TooltipUnit.Actor, Target.FromPos(mPos), false);
 						TooltipUnit.Actor.World.IssueOrder(order);
 					}

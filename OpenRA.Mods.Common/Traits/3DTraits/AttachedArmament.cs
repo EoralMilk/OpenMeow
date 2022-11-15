@@ -101,7 +101,7 @@ namespace OpenRA.Mods.Common.Traits
 				|| (Weapon.MinRange != WDist.Zero && target.IsInRange(self.CenterPosition, Weapon.MinRange)))
 				return false;
 
-			if (!Weapon.IsValidAgainst(target, self.World, self))
+			if (!WeaponIsValidAgainst(target, self.World, self))
 				return false;
 
 			if (attachTurret == null && hasFacingTolerance && facing != null)

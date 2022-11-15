@@ -104,6 +104,11 @@ namespace OpenRA.Meow.RPG
 					foreach (var a in attacks)
 					{
 						a.IsAiming = false;
+
+						foreach (var arm in a.Armaments)
+						{
+							arm.IgnoreAirborne = false;
+						}
 					}
 				}
 
@@ -123,22 +128,29 @@ namespace OpenRA.Meow.RPG
 						continue;
 
 					a.IsAiming = true;
+
+					foreach (var arm in a.Armaments)
+					{
+						arm.IgnoreAirborne = true;
+					}
+
 					if (!(a is AttackFollow))
 					{
 						attackFace = a.Info.FiringAngle;
 						turnFacing = true;
 					}
 
-					range = Math.Max(range, a.GetMaximumRangeVersusTarget(attackTarget).Length);
+					range = Math.Max(range, a.GetMiniArmMaximumRange(attackTarget).Length);
 				}
 
 				// re-calculate target
 				var dir = attackTarget.CenterPosition - self.CenterPosition;
 				var dist = dir.Length;
-				if (range < dist)
+				if (range < dist && range > 1)
 				{
 					var tPos = self.CenterPosition + ((range - 1) * dir / dist);
-					tPos = new WPos(tPos, self.World.Map.HeightOfTerrain(tPos));
+
+					// tPos = new WPos(tPos, self.World.Map.HeightOfTerrain(tPos));
 					attackTarget = Target.FromPos(tPos);
 				}
 

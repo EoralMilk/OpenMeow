@@ -145,7 +145,7 @@ VEINHOLE:
 		MaxHeightDelta: 3000
 	Armament:
 		RequiresCondition: !damage-cool
-		Weapon: VeinholeTest
+		Weapon: VeinholeSpray
 		LocalOffset: 0,0,0
 		FireDelay: 19
 	WithAttackAnimation:

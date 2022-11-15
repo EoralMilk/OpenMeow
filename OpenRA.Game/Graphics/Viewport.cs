@@ -12,6 +12,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using GlmSharp;
 using OpenRA.Primitives;
 using OpenRA.Traits;
 
@@ -57,7 +58,7 @@ namespace OpenRA.Graphics
 		public int2 TopLeft => CenterLocation - ViewportSize / 2;
 		public int2 BottomRight => CenterLocation + ViewportSize / 2;
 
-		public float3 CenterPositionFloat => worldRenderer.ProjectedPositionFloat(CenterLocation.ToFloat2());
+		public vec3 ViewPoint { get; private set; }
 		public WPos CenterPosition => worldRenderer.ProjectedPosition(CenterLocation);
 		public WPos TopLeftPosition => worldRenderer.ProjectedPosition(TopLeft);
 		public WPos BottomRightPosition => worldRenderer.ProjectedPosition(BottomRight);
@@ -193,6 +194,7 @@ namespace OpenRA.Graphics
 			UpdateViewportZooms();
 		}
 
+		long lastLerpTime;
 		public void Tick()
 		{
 			if (lastViewportDistance != graphicSettings.ViewportDistance)
@@ -200,7 +202,18 @@ namespace OpenRA.Graphics
 
 			if (LerpTarget.Type != TargetType.Invalid)
 			{
-				worldRenderer.Viewport.Center(LerpTarget.CenterPosition);
+				var deltaScale = Math.Max(1, Math.Min(Game.RunTime - lastLerpTime, 25f));
+				lastLerpTime = Game.RunTime;
+				var fpos = new float3(LerpTarget.CenterPosition.X, LerpTarget.CenterPosition.Y - (float)LerpTarget.CenterPosition.Z * Game.Renderer.World3DRenderer.TanCameraPitch, 0);
+				ViewPoint = vec3.Lerp(ViewPoint,
+					Game.Renderer.World3DRenderer.Get3DRenderPositionFromFloat3(fpos),
+					0.5f / deltaScale * 25f);
+
+				Center(World3DCoordinate.Vec3ToWPosForRender(ViewPoint));
+			}
+			else
+			{
+				ViewPoint = World3DCoordinate.WPosToVec3(CenterPosition);
 			}
 		}
 
@@ -378,22 +391,6 @@ namespace OpenRA.Graphics
 		public void Center(WPos pos)
 		{
 			CenterLocation = worldRenderer.ScreenPxPosition(pos).Clamp(mapBounds);
-			cellsDirty = true;
-			allCellsDirty = true;
-		}
-
-		long lastLerpTime;
-		public void CenterLerp(WPos pos, float calparam)
-		{
-			var loc = worldRenderer.ScreenPxPosition(pos).Clamp(mapBounds);
-
-			if (loc == CenterLocation)
-				return;
-
-			var deltaScale = Math.Max(1, Math.Min(Game.RunTime - lastLerpTime, 25f));
-			lastLerpTime = Game.RunTime;
-
-			CenterLocation = int2.LerpUnsync(CenterLocation, loc, calparam / deltaScale * 25f);
 			cellsDirty = true;
 			allCellsDirty = true;
 		}

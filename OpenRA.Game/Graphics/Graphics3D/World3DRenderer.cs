@@ -128,16 +128,7 @@ namespace OpenRA.Graphics
 				var far = heightMeter / CosCameraPitch + TanCameraPitch * ortho.Item4 + 100f;
 				Projection = mat4.Ortho(ortho.Item1, ortho.Item2, ortho.Item3, ortho.Item4, far / 8, far);
 
-				// we lerp the camera by ourself, reduce jitter
-				if (viewport.LerpTarget.Type != TargetType.Invalid)
-				{
-					var deltaScale = Math.Max(1, Math.Min(Game.RunTime - lastLerpTime, 25f));
-					lastLerpTime = Game.RunTime;
-					var fpos = new float3(viewport.LerpTarget.CenterPosition.X, viewport.LerpTarget.CenterPosition.Y - (float)viewport.LerpTarget.CenterPosition.Z * TanCameraPitch, 0);
-					viewPoint = vec3.Lerp(viewPoint, Get3DRenderPositionFromFloat3(fpos), 0.5f / deltaScale * 25f);
-				}
-				else
-					viewPoint = Get3DRenderPositionFromFloat3(viewport.CenterPositionFloat);// new vec3((float)viewport.CenterPosition.X / WPosPerMeter, (float)viewport.CenterPosition.Y / WPosPerMeter, 0);
+				viewPoint = viewport.ViewPoint;// new vec3((float)viewport.CenterPosition.X / WPosPerMeter, (float)viewport.CenterPosition.Y / WPosPerMeter, 0);
 
 				CameraPos = new vec3(0, TanCameraPitch * heightMeter, heightMeter);
 

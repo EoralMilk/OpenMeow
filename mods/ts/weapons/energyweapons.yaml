@@ -42,7 +42,7 @@
 		InvalidTargets: Vehicle, Building, Wall
 
 ^RailgunLineDamage:
-	Warhead@1Dam: SpreadDamage
+	Warhead@1Dam: Spread3DDamage
 		Range: 0, 32
 		Falloff: 100, 100
 		ValidRelationships: Neutral, Enemy
@@ -96,7 +96,7 @@ SonicZap:
 		Blockable: true
 		TrackTarget: true
 		Color: 50F5FF45
-	Warhead@1Dam: SpreadDamage
+	Warhead@1Dam: Spread3DDamage
 		Range: 0, 32
 		Falloff: 100, 100
 		Damage: 800
@@ -107,7 +107,7 @@ SonicZap:
 			Heavy: 80
 			Concrete: 60
 		DamageTypes: Prone50Percent, TriggerProne, SmallExplosionDeath
-	Warhead@2Dam: SpreadDamage
+	Warhead@2Dam: Spread3DDamage
 		Range: 0, 32
 		Falloff: 50, 50
 		Damage: 800
@@ -166,7 +166,7 @@ SonicWave:
 	Range: 7c0
 	Report: scrin5b.aud
 	ValidTargets: Ground
-	Warhead@1Dam: SpreadDamage
+	Warhead@1Dam: Spread3DDamage
 		ValidTargets: Ground
 	Warhead@2Eff: CreateEffect
 		Explosions: large_explosion
@@ -287,7 +287,7 @@ Proton:
 		Shadow: true
 		Inaccuracy: 128
 		Image: proton_projectile
-	Warhead@1Dam: SpreadDamage
+	Warhead@1Dam: Spread3DDamage
 		Spread: 128
 		Damage: 2000
 		Versus:
@@ -313,7 +313,7 @@ Proton:
 		LaunchEffectImage: flash
 		LaunchEffectSequence: laserstart
 		LaunchEffectPalette: red
-	Warhead@1Dam: SpreadDamage
+	Warhead@1Dam: Spread3DDamage
 		Spread: 96
 		Falloff: 100, 45, 12, 3
 		Damage: 25000
@@ -354,7 +354,7 @@ Proton:
 		LaunchEffectImage: flash
 		LaunchEffectSequence: laserstart
 		LaunchEffectPalette: red
-	Warhead@1Dam: SpreadDamage
+	Warhead@1Dam: Spread3DDamage
 		Spread: 96
 		Falloff: 100, 45, 12, 3
 		Damage: 25000
@@ -387,7 +387,7 @@ ObeliskLaserFire:
 	Report: obelray1.aud
 	Projectile: LaserZap
 		LaunchEffectSequence: oblaserstart
-	Warhead@1Dam: SpreadDamage
+	Warhead@1Dam: Spread3DDamage
 		Damage: 40000
 	Warhead@flash: CreateEffect
 		Explosions: oblaserend
@@ -409,7 +409,7 @@ TurretLaserFire:
 		Color: FF4444
 		Sequences: laser
 		Blockable: true
-	Warhead@1Dam: SpreadDamage
+	Warhead@1Dam: Spread3DDamage
 		Damage: 3000
 	Warhead@2Eff: CreateEffect
 		Explosions: laserburningsmall
@@ -446,7 +446,7 @@ LaserChainGun:
 		LaunchEffectImage: flash
 		LaunchEffectSequence: laserstart
 		LaunchEffectPalette: lightgreen
-	Warhead@1Dam: SpreadDamage
+	Warhead@1Dam: Spread3DDamage
 		Damage: 1900
 	Warhead@2Eff: CreateEffect
 		Explosions: laserburningmini

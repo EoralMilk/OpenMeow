@@ -8,10 +8,12 @@
 	RenderDebugState:
 	ActorControler:
 		TargetCursor: nuke
-	InaccuracyMultiplier:
-		Modifier: 120
-		RequiresCondition: !under-control
-
+	InaccuracyMultiplier@controler:
+		Modifier: 75
+		RequiresCondition: under-control
+	RangeMultiplier@controler:
+		RequiresCondition: under-control
+		Modifier: 115
 
 ^SpriteActor:
 	BodyOrientation:

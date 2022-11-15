@@ -271,7 +271,7 @@ namespace OpenRA.Mods.Common.Traits
 			{
 				var checkIsValid = checkForCenterTargetingWeapons ? armament.Weapon.TargetActorCenter : !armament.IsTraitPaused;
 				var reloadingStateIsValid = !reloadingIsInvalid || !armament.IsReloading;
-				if (checkIsValid && reloadingStateIsValid && !armament.IsTraitDisabled && armament.Weapon.IsValidAgainst(t, self.World, self))
+				if (checkIsValid && reloadingStateIsValid && !armament.IsTraitDisabled && armament.WeaponIsValidAgainst(t, self.World, self))
 				{
 					armament.AimTargetOn(self, self.CenterPosition, t);
 					return true;
@@ -347,7 +347,7 @@ namespace OpenRA.Mods.Common.Traits
 				if (armament.IsTraitPaused)
 					continue;
 
-				if (!armament.Weapon.IsValidAgainst(target, self.World, self))
+				if (!armament.WeaponIsValidAgainst(target, self.World, self))
 					continue;
 
 				var range = armament.Weapon.MinRange;
@@ -375,7 +375,7 @@ namespace OpenRA.Mods.Common.Traits
 				if (armament.IsTraitDisabled)
 					continue;
 
-				if (!armament.Weapon.IsValidAgainst(target, self.World, self))
+				if (!armament.WeaponIsValidAgainst(target, self.World, self))
 					continue;
 
 				var range = armament.MaxRange();
@@ -392,12 +392,12 @@ namespace OpenRA.Mods.Common.Traits
 			return max != WDist.Zero ? max : maxFallback;
 		}
 
-		public WDist GetMiniArmMaximumRangeVersusTarget(in Target target)
+		public WDist GetMiniArmMaximumRange(in Target target)
 		{
 			if (IsTraitDisabled)
 				return WDist.Zero;
 
-			var max = WDist.Zero;
+			var min = WDist.Zero;
 
 			// We want actors to use only weapons with ammo for this, except when ALL weapons are out of ammo,
 			// then we use the paused, valid weapon with highest range.
@@ -409,21 +409,18 @@ namespace OpenRA.Mods.Common.Traits
 				if (armament.IsTraitDisabled)
 					continue;
 
-				if (!armament.Weapon.IsValidAgainst(target, self.World, self))
-					continue;
-
 				var range = armament.MaxRange();
-				if (maxFallback > range)
+				if (maxFallback < range)
 					maxFallback = range;
 
 				if (armament.IsTraitPaused)
 					continue;
 
-				if (max < range)
-					max = range;
+				if (min > range)
+					min = range;
 			}
 
-			return max != WDist.Zero ? max : maxFallback;
+			return min != WDist.Zero ? min : maxFallback;
 		}
 
 		// Enumerates all armaments, that this actor possesses, that can be used against Target t
@@ -446,7 +443,7 @@ namespace OpenRA.Mods.Common.Traits
 			return Armaments.Where(a =>
 				!a.IsTraitDisabled
 				&& (owner == null || (forceAttack ? a.Info.ForceTargetRelationships : a.Info.TargetRelationships).HasRelationship(self.Owner.RelationshipWith(owner)))
-				&& a.Weapon.IsValidAgainst(t, self.World, self) && a.IsValidForArmamentChoose(t, self.World));
+				&& a.WeaponIsValidAgainst(t, self.World, self) && a.IsValidForArmamentChoose(t, self.World));
 		}
 
 		public void AttackTarget(in Target target, AttackSource source, bool queued, bool allowMove, bool forceAttack = false, Color? targetLineColor = null)

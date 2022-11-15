@@ -25,7 +25,7 @@ UnitExplode:
 
 UnitExplodeSmall:
 	Inherits: ^DamagingExplosion
-	Warhead@1Dam: SpreadDamage
+	Warhead@1Dam: Spread3DDamage
 		Spread: 192
 		Damage: 4000
 	Warhead@2Eff: CreateEffect
@@ -63,7 +63,7 @@ VisceroidExplode:
 
 TiberiumExplosion:
 	Inherits: ^DamagingExplosion
-	Warhead@1Dam: SpreadDamage
+	Warhead@1Dam: Spread3DDamage
 		Spread: 9
 		Damage: 1000
 		DamageTypes: Prone50Percent, TriggerProne, ExplosionDeath
@@ -81,7 +81,7 @@ TiberiumExplosion:
 		Footprint: __xxx__ _xxxxx_ xxx_xxx xx___xx xxx_xxx _xxxxx_ __xxx__
 
 TiberiumDeath:
-	Warhead@1Dam: SpreadDamage
+	Warhead@1Dam: Spread3DDamage
 		Spread: 1
 		Damage: 1
 	Warhead@4Res: CreateResource
@@ -90,7 +90,7 @@ TiberiumDeath:
 		Density: 1, 4
 
 Demolish:
-	Warhead@1Dam: SpreadDamage
+	Warhead@1Dam: Spread3DDamage
 		DamageTypes: DefaultDeath
 	Warhead@2Eff: CreateEffect
 		Explosions: large_twlt
@@ -121,7 +121,7 @@ BlueTiberiumChainReaction:
 		Explosions: large_twlt
 		ImpactSounds: expnew09.aud
 		ImpactActors: false
-	Warhead@1Dam: SpreadDamage
+	Warhead@1Dam: Spread3DDamage
 		Delay: 0
 		Spread: 454
 		Damage: 15000

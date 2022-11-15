@@ -178,6 +178,8 @@ namespace OpenRA.Mods.Common.Traits
 		public int FireDelay { get; protected set; }
 		public int Burst { get; protected set; }
 
+		public bool IgnoreAirborne = false;
+
 		public Armament(Actor self, ArmamentInfo info, bool replaceBarrel = false)
 			: base(info)
 		{
@@ -214,6 +216,11 @@ namespace OpenRA.Mods.Common.Traits
 		public virtual bool IsValidForArmamentChoose(in Target target, World world)
 		{
 			return true;
+		}
+
+		public virtual bool WeaponIsValidAgainst(in Target target, World world, Actor firedBy)
+		{
+			return Weapon.IsValidAgainst(target, world, firedBy, IgnoreAirborne);
 		}
 
 		public virtual WDist MaxRange()
@@ -395,7 +402,7 @@ namespace OpenRA.Mods.Common.Traits
 				(Weapon.MinRange != WDist.Zero && target.IsInRange(self.CenterPosition, Weapon.MinRange))))
 				return false;
 
-			if (!Weapon.IsValidAgainst(target, self.World, self))
+			if (!WeaponIsValidAgainst(target, self.World, self))
 				return false;
 
 			if (turret == null && hasFacingTolerance && facing != null)

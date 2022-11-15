@@ -58,6 +58,13 @@ namespace OpenRA.Primitives
 			return new vec3(f3.X, f3.Y, f3.Z);
 		}
 
+		public static vec3 WPosToVec3(WPos pos)
+		{
+			return new vec3(-(float)pos.X / WDistPerMeter,
+										(float)pos.Y / WDistPerMeter,
+										(float)pos.Z / WDistPerMeter);
+		}
+
 		public static float3 WPosToFloat3(WPos pos)
 		{
 			return new float3(-(float)pos.X / WDistPerMeter,
@@ -80,6 +87,16 @@ namespace OpenRA.Primitives
 			return new WPos(-(int)(f3.X * WDistPerMeter),
 										(int)(f3.Y * WDistPerMeter),
 										(int)(f3.Z * WDistPerMeter));
+		}
+
+		/// <summary>
+		/// warning: only use for render
+		/// </summary>
+		public static WPos Vec3ToWPosForRender(in vec3 v3)
+		{
+			return new WPos(-(int)(v3.x * WDistPerMeter),
+										(int)(v3.y * WDistPerMeter),
+										(int)(v3.z * WDistPerMeter));
 		}
 
 		public static WPos GetWPosFromMatrix(in TSMatrix4x4 matrix)

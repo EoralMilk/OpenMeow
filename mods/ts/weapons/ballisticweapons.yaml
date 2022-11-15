@@ -38,7 +38,7 @@
 		OnlyHitToExplode: true
 		ExplodeUnderThisAltitude: -418
 		Blockable: false
-	Warhead@1Dam: SpreadDamage
+	Warhead@1Dam: Spread3DDamage
 		Spread: 125
 		Falloff: 100, 50, 25, 12, 6, 3, 0
 		Damage: 4800
@@ -49,6 +49,7 @@
 			Heavy: 100
 			Concrete: 60
 		DamageTypes: Prone70Percent, TriggerProne, SmallExplosionDeath
+		ValidTargets: Ground, Water, Air, Trees, Wall
 	Warhead@2Eff: CreateEffect
 		Explosions: medium_clsn
 		ImpactSounds: expnew14.aud
@@ -94,7 +95,7 @@
 		LaunchAngle: 0
 		Inaccuracy: 310
 		TrailSequences: idle2
-	Warhead@1Dam: SpreadDamage
+	Warhead@1Dam: Spread3DDamage
 		Damage: 10500
 
 120mmx:
@@ -102,7 +103,7 @@
 	ReloadDelay: 80
 	# Burst: 2
 	# BurstDelays: 5
-	Warhead@1Dam: SpreadDamage
+	Warhead@1Dam: Spread3DDamage
 		Damage: 8000
 
 RPGTower:
@@ -127,7 +128,7 @@ RPGTower:
 		ContrailStartColorOuter: FFCF66A0
 		ContrailDelay: 0
 		ContrailBlendMode: Alpha
-	Warhead@1Dam: SpreadDamage
+	Warhead@1Dam: Spread3DDamage
 		Damage: 15000
 		Spread: 256
 		Versus:
@@ -156,7 +157,7 @@ TitanRPG:
 		ContrailLength: 10
 		ContrailWidth: 175
 		LaunchAngle: 75
-	Warhead@1Dam: SpreadDamage
+	Warhead@1Dam: Spread3DDamage
 		Spread: 255
 		Falloff: 100, 85, 50, 24, 10, 3
 		Versus:
@@ -186,7 +187,7 @@ TitanRPG:
 		Speed: 384
 		LaunchAngle: 165
 		ContrailLength: 12
-	Warhead@1Dam: SpreadDamage
+	Warhead@1Dam: Spread3DDamage
 		Damage: 15000
 	Warhead@2Eff: CreateEffect
 		Explosions: large_explosion
@@ -214,7 +215,7 @@ Jugg90mm:
 		ContrailEndColor: 330000
 		ContrailWidth: 87
 		TrailSequences: idle2
-	Warhead@1Dam: SpreadDamage
+	Warhead@1Dam: Spread3DDamage
 		Spread: 188
 		Damage: 7500
 	Warhead@2Eff: CreateEffect
@@ -253,7 +254,7 @@ Grenade:
 		ContrailEndColorOuter: FFFFFF
 		ContrailEndColorAlpha: 10
 		ContrailEndColorAlphaOuter: 5
-	Warhead@1Dam: SpreadDamage
+	Warhead@1Dam: Spread3DDamage
 		Spread: 235
 		Damage: 5500
 		Versus:

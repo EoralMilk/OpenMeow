@@ -448,7 +448,6 @@ OxannaGun:
 		ScatWeapons: ^ShotGunScat
 		ScatCounts: 10
 		Inaccuracy: 200
-	Warhead@1Dam: SpreadDamage
 
 ShardShotGun:
 	Inherits: ^ShotGun

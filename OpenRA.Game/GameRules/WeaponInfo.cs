@@ -186,7 +186,7 @@ namespace OpenRA.GameRules
 		}
 
 		/// <summary>Checks if the weapon is valid against (can target) the target.</summary>
-		public bool IsValidAgainst(in Target target, World world, Actor firedBy)
+		public bool IsValidAgainst(in Target target, World world, Actor firedBy, bool ignoreAirborne = false)
 		{
 			if (target.Type == TargetType.Actor)
 				return IsValidAgainst(target.Actor, firedBy);
@@ -197,7 +197,7 @@ namespace OpenRA.GameRules
 			if (target.Type == TargetType.Terrain)
 			{
 				var dat = world.Map.DistanceAboveTerrain(target.CenterPosition);
-				if (dat > AirThreshold)
+				if (!ignoreAirborne && dat > AirThreshold)
 					return IsValidTarget(TargetTypeAir);
 
 				var cell = world.Map.CellContaining(target.CenterPosition);
