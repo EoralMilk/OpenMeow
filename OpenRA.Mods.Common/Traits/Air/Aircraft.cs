@@ -841,7 +841,8 @@ namespace OpenRA.Mods.Common.Traits
 				{
 					self.World.ActorMap.RemoveInfluence(self, this);
 					landingCells = currentPos;
-					self.World.ActorMap.AddInfluence(self, this);
+					if (Info.TakeUpCellWhenLand)
+						self.World.ActorMap.AddInfluence(self, this);
 				}
 			}
 
@@ -923,7 +924,7 @@ namespace OpenRA.Mods.Common.Traits
 
 		public bool HasInfluence()
 		{
-			return (Info.TakeUpCellWhenLand && landingCells.Length > 0) || self.World.Map.DistanceAboveTerrain(CenterPosition).Length < Info.MinAirborneAltitude;
+			return Info.TakeUpCellWhenLand && landingCells.Length > 0;
 		}
 
 		#endregion
