@@ -145,7 +145,11 @@ namespace OpenRA.Mods.Common.Traits
 					return;
 
 				// Randomly choose enemy player to attack
-				targetPlayer = world.Players.Where(p => p.RelationshipWith(player) == PlayerRelationship.Enemy).Random(world.LocalRandom);
+				var enemyPlayers = world.Players.Where(p => p.RelationshipWith(player) == PlayerRelationship.Enemy && p.WinState != WinState.Lost).ToArray();
+				if (enemyPlayers.Length == 0)
+					return;
+
+				targetPlayer = enemyPlayers.Where(p => p.RelationshipWith(player) == PlayerRelationship.Enemy).Random(world.LocalRandom);
 
 				var targets = world.Actors.Where(a =>
 				{

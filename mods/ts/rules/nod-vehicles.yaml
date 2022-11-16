@@ -467,6 +467,8 @@ SAPC:
 	Inherits@VOXELS: ^VoxelActor
 	Inherits@CARGOPIPS: ^CargoPips
 	Inherits@bounty: ^GlobalBounty
+	Inherits@AImicroManagable: ^AImicroManagable
+	Inherits@AUTOTARGET: ^AutoTargetAllAssaultMove
 	Valued:
 		Cost: 800
 	Tooltip:
@@ -499,6 +501,7 @@ SAPC:
 		UnloadVoice: Unload
 		LoadingCondition: loading
 		EjectOnDeath: true
+		LoadedCondition: loaded
 	WithModelWalkerBody:
 		TickRate: 1
 		RequiresCondition: !submerged
@@ -516,6 +519,22 @@ SAPC:
 		RequiresCondition: !submerged
 	WithDecoration@UNDERGROUND:
 		RequiresCondition: inside-tunnel || submerged
+	Armament@AIunloadingDummyWeapon:
+		Weapon: AITransportAimingDummyWeapon
+		RequiresCondition: AImicroManage && loaded && !StopAndDeploy
+		ReloadingCondition: StopAndDeploy
+	AttackFrontal@AIAimOnly:
+		RequiresCondition: AImicroManage && loaded && !StopAndDeploy
+		FacingTolerance: 512
+	AutoTarget:
+		RequiresCondition: AImicroManage
+	AutoDeployer@AI:
+		RequiresCondition: AImicroManage && loaded
+		DeployChance: 100
+		DeployTicks: 200
+		UndeployTicks: 0
+		DeployTrigger: Damage
+	-RevealOnFire:
 
 SUBTANK:
 	Inherits: ^Tank
