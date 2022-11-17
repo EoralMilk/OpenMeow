@@ -85,14 +85,17 @@ namespace OpenRA.Meow.RPG.Traits
 			if (State == AttachCarryallState.Reserved)
 				UnreserveAttachCarryable(self);
 
+			if (State != AttachCarryallState.Idle)
+				return false;
+
 			var act = carryable.TraitOrDefault<AutoAttachCarryable>();
 
 			if (act != null)
 			{
-				if (State != AttachCarryallState.Idle || !act.AutoReserve(self, underAutoCommand))
+				if (!act.AutoReserve(self, underAutoCommand))
 					return false;
 			}
-			else if (State != AttachCarryallState.Idle || !carryable.Trait<AttachCarryable>().Reserve(self))
+			else if (!carryable.Trait<AttachCarryable>().Reserve(self))
 				return false;
 
 			AttachCarryable = carryable;

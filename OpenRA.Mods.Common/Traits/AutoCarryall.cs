@@ -84,14 +84,17 @@ namespace OpenRA.Mods.Common.Traits
 			if (State == CarryallState.Reserved)
 				UnreserveCarryable(self);
 
+			if (State != CarryallState.Idle)
+				return false;
+
 			var act = carryable.TraitOrDefault<AutoCarryable>();
 
 			if (act != null)
 			{
-				if (State != CarryallState.Idle || !act.AutoReserve(self, underAutoCommand))
+				if (!act.AutoReserve(self, underAutoCommand))
 					return false;
 			}
-			else if (State != CarryallState.Idle || !carryable.Trait<Carryable>().Reserve(self))
+			else if (!carryable.Trait<Carryable>().Reserve(self))
 				return false;
 
 			Carryable = carryable;
