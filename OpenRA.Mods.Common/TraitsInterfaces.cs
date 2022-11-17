@@ -474,6 +474,7 @@ namespace OpenRA.Mods.Common.Traits
 
 	public interface IMover
 	{
+		bool UnderControl { get; set; }
 		void MoveToward(WVec mVec);
 	}
 

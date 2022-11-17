@@ -735,7 +735,7 @@
 		Speed: 71
 		Locomotor: foot
 		MovementMode: Universal
-		RequiresCondition: !under-control
+		# RequiresCondition: !under-control
 	TurnOnIdle:
 	Selectable:
 		DecorationBounds: 452, 1387, 0, -543
@@ -1022,7 +1022,8 @@
 		Voice: Move
 		TerrainOrientationAdjustmentMargin: 256
 		AirborneCondition: airborne
-		RequiresCondition: !under-control
+		MovementMode: Track
+		# RequiresCondition: !under-control
 	Selectable:
 		Bounds: 1206, 1448
 		RequiresCondition: !carring
@@ -1135,6 +1136,7 @@
 	Inherits: ^Vehicle
 	Mobile:
 		Locomotor: tracked
+		MovementMode: Track
 	RevealsShroud:
 		RequiresCondition: !inside-tunnel
 		Range: 6c512
@@ -1170,6 +1172,8 @@
 ^CivilianVoxelVehicle:
 	Inherits: ^Vehicle
 	Inherits: ^VoxelActor
+	Mobile:
+		MovementMode: Wheel
 	-MustBeDestroyed:
 	RevealsShroud:
 		RequiresCondition: !inside-tunnel

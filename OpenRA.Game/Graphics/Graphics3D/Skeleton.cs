@@ -35,8 +35,9 @@ namespace OpenRA.Graphics
 		}
 	}
 
-	public struct BoneInstance
+	public class BoneInstance
 	{
+		public readonly SkeletonInstance Skeleton;
 		public readonly int Id;
 		public readonly int AnimId;
 
@@ -52,8 +53,9 @@ namespace OpenRA.Graphics
 		public mat4 RenderCurrentPose;
 		public bool OverridePose;
 
-		public BoneInstance(in BoneAsset asset)
+		public BoneInstance(in BoneAsset asset, SkeletonInstance skeletonInstance)
 		{
+			Skeleton = skeletonInstance;
 			Id = asset.Id;
 			AnimId = asset.AnimId;
 			ParentId = asset.ParentId;
@@ -71,6 +73,20 @@ namespace OpenRA.Graphics
 		{
 			RestPose = pos;
 			RenderRestPose = RestPose.ToMat4();
+			if (!Skeleton.OrdererSkeleton.UseDynamicAdjBonePose && Skeleton.SkeletonAsset.Bones[Id].IsAdjBone)
+			{
+				mat4 bindPose = ApplyRestPose(Id) * Skeleton.SkeletonAsset.Bones[Id].BindPose;
+
+				Skeleton.OrdererSkeleton.ChangeBoneBindTransform(Id, bindPose);
+			}
+		}
+
+		public mat4 ApplyRestPose(int id)
+		{
+			if (Skeleton.SkeletonAsset.Bones[Skeleton.Bones[id].ParentId].IsAdjBone)
+				return ApplyRestPose(Skeleton.Bones[id].ParentId) * Skeleton.Bones[id].RenderRestPose;
+			else
+				return Skeleton.Bones[id].RenderRestPose;
 		}
 
 		public void UpdateOffset(in TSMatrix4x4 parent)
@@ -163,8 +179,8 @@ namespace OpenRA.Graphics
 		public readonly BoneInstance[] Bones;
 		bool hasUpdatedAll = false;
 
-		readonly SkeletonAsset asset;
-		readonly OrderedSkeleton skeleton;
+		public readonly SkeletonAsset SkeletonAsset;
+		public readonly OrderedSkeleton OrdererSkeleton;
 
 		readonly int boneSize;
 		readonly bool[] renderUpdateFlags;
@@ -260,8 +276,8 @@ namespace OpenRA.Graphics
 
 		public SkeletonInstance(in BoneAsset[] boneAssets, in SkeletonAsset asset, in OrderedSkeleton skeleton)
 		{
-			this.asset = asset;
-			this.skeleton = skeleton;
+			this.SkeletonAsset = asset;
+			this.OrdererSkeleton = skeleton;
 			skipUpdateAdjBonePose = !skeleton.UseDynamicAdjBonePose;
 			boneSize = boneAssets.Length;
 			renderUpdateFlags = new bool[boneSize];
@@ -270,7 +286,7 @@ namespace OpenRA.Graphics
 			Bones = new BoneInstance[boneSize];
 			for (int i = 0; i < boneSize; i++)
 			{
-				Bones[i] = new BoneInstance(boneAssets[i]);
+				Bones[i] = new BoneInstance(boneAssets[i], this);
 			}
 
 			foreach (var mb in skeleton.ModifiedBoneRestPoses)
@@ -295,7 +311,7 @@ namespace OpenRA.Graphics
 		{
 			if (updateFlags[id])
 				return;
-			UpdateBoneInner(id, EmptyFrame, asset.AllValidMask);
+			UpdateBoneInner(id, EmptyFrame, SkeletonAsset.AllValidMask);
 		}
 
 		public void UpdateAll()
@@ -303,9 +319,9 @@ namespace OpenRA.Graphics
 			// init update the current pose
 			for (int i = 0; i < boneSize; i++)
 			{
-				if (skipUpdateAdjBonePose && asset.Bones[i].IsAdjBone)
+				if (skipUpdateAdjBonePose && SkeletonAsset.Bones[i].IsAdjBone)
 					continue;
-				UpdateBoneInner(i, EmptyFrame, asset.AllValidMask);
+				UpdateBoneInner(i, EmptyFrame, SkeletonAsset.AllValidMask);
 			}
 		}
 
@@ -414,9 +430,9 @@ namespace OpenRA.Graphics
 		{
 			for (int i = 0; i < boneSize; i++)
 			{
-				if (skipUpdateAdjBonePose && asset.Bones[i].IsAdjBone)
+				if (SkeletonAsset.Bones[i].SkinId < 0 || (skipUpdateAdjBonePose && SkeletonAsset.Bones[i].IsAdjBone))
 					continue;
-				RenderUpdateBoneInner(i, animFrame == null ? EmptyFrame : animFrame, animMask == null ? asset.AllValidMask : animMask);
+				RenderUpdateBoneInner(i, animFrame == null ? EmptyFrame : animFrame, animMask == null ? SkeletonAsset.AllValidMask : animMask);
 			}
 
 			hasUpdatedAll = true;
@@ -431,7 +447,7 @@ namespace OpenRA.Graphics
 		{
 			if (InstanceID == -1 || !hasUpdatedAll)
 				return;
-			int dataWidth = asset.SkinBonesIndices.Length * 16;
+			int dataWidth = SkeletonAsset.SkinBonesIndices.Length * 16;
 			int start = OrderedSkeleton.AnimTransformDataIndex;
 			if ((start + dataWidth) >= OrderedSkeleton.AnimTransformData.Length)
 				throw new Exception("ProcessManagerData: Skeleton Instance drawId out of range: might be too many skeleton to draw!");
@@ -441,9 +457,9 @@ namespace OpenRA.Graphics
 
 			for (int x = 0; x < dataWidth; x += 16)
 			{
-				int id = asset.SkinBonesIndices[i];
+				int id = SkeletonAsset.SkinBonesIndices[i];
 				if (skipUpdateAdjBonePose)
-					id = asset.SkinBonesMatchIndices[i];
+					id = SkeletonAsset.SkinBonesMatchIndices[i];
 				var mat4 = Bones[id].RenderCurrentPose;
 				var c0 = mat4.Column0;
 				var c1 = mat4.Column1;
@@ -466,7 +482,7 @@ namespace OpenRA.Graphics
 				OrderedSkeleton.AnimTransformData[start + x + 14] = c3.z;
 				OrderedSkeleton.AnimTransformData[start + x + 15] = c3.w;
 				i++;
-				if (i >= asset.SkinBonesIndices.Length)
+				if (i >= SkeletonAsset.SkinBonesIndices.Length)
 				{
 					break;
 				}
@@ -560,42 +576,53 @@ namespace OpenRA.Graphics
 
 			foreach (var bone in SkeletonAsset.Bones)
 			{
-				if (bone.SkinId != -1)
-				{
-					var y = bone.SkinId * 16;
-					mat4 bindPose = bone.BindPose;
-
-					// notice: Adj bone's bindPose can be (RestPose * BindPose),
-					// if the adj Bone is a child of another adj bone, the bindPose should apply the parentBone's restpose, until the parent is not adj bone.
-					if (bone.IsAdjBone && !UseDynamicAdjBonePose)
-					{
-						bindPose = ApplyBindPose(bone.Id) * bone.BindPose;
-					}
-
-					BindTransformData[y + 0] = bindPose.Column0[0];
-					BindTransformData[y + 1] = bindPose.Column0[1];
-					BindTransformData[y + 2] = bindPose.Column0[2];
-					BindTransformData[y + 3] = bindPose.Column0[3];
-					BindTransformData[y + 4] = bindPose.Column1[0];
-					BindTransformData[y + 5] = bindPose.Column1[1];
-					BindTransformData[y + 6] = bindPose.Column1[2];
-					BindTransformData[y + 7] = bindPose.Column1[3];
-					BindTransformData[y + 8] = bindPose.Column2[0];
-					BindTransformData[y + 9] = bindPose.Column2[1];
-					BindTransformData[y + 10] = bindPose.Column2[2];
-					BindTransformData[y + 11] = bindPose.Column2[3];
-					BindTransformData[y + 12] = bindPose.Column3[0];
-					BindTransformData[y + 13] = bindPose.Column3[1];
-					BindTransformData[y + 14] = bindPose.Column3[2];
-					BindTransformData[y + 15] = bindPose.Column3[3];
-				}
+				UpdateBoneBindTransform(bone.Id);
 			}
 		}
 
-		public mat4 ApplyBindPose(int id)
+		void UpdateBoneBindTransform(int id)
+		{
+			if (SkeletonAsset.Bones[id].SkinId != -1)
+			{
+				mat4 bindPose = SkeletonAsset.Bones[id].BindPose;
+
+				// notice: Adj bone's bindPose can be (RestPose * BindPose),
+				// if the adj Bone is a child of another adj bone, the bindPose should apply the parentBone's restpose, until the parent is not adj bone.
+				if (SkeletonAsset.Bones[id].IsAdjBone && !UseDynamicAdjBonePose)
+				{
+					bindPose = ApplyRestPose(SkeletonAsset.Bones[id].Id) * SkeletonAsset.Bones[id].BindPose;
+				}
+
+				ChangeBoneBindTransform(id, bindPose);
+			}
+		}
+
+		public void ChangeBoneBindTransform(int id, in mat4 bindPose)
+		{
+			var y = SkeletonAsset.Bones[id].SkinId * 16;
+
+			BindTransformData[y + 0] = bindPose.Column0[0];
+			BindTransformData[y + 1] = bindPose.Column0[1];
+			BindTransformData[y + 2] = bindPose.Column0[2];
+			BindTransformData[y + 3] = bindPose.Column0[3];
+			BindTransformData[y + 4] = bindPose.Column1[0];
+			BindTransformData[y + 5] = bindPose.Column1[1];
+			BindTransformData[y + 6] = bindPose.Column1[2];
+			BindTransformData[y + 7] = bindPose.Column1[3];
+			BindTransformData[y + 8] = bindPose.Column2[0];
+			BindTransformData[y + 9] = bindPose.Column2[1];
+			BindTransformData[y + 10] = bindPose.Column2[2];
+			BindTransformData[y + 11] = bindPose.Column2[3];
+			BindTransformData[y + 12] = bindPose.Column3[0];
+			BindTransformData[y + 13] = bindPose.Column3[1];
+			BindTransformData[y + 14] = bindPose.Column3[2];
+			BindTransformData[y + 15] = bindPose.Column3[3];
+		}
+
+		public mat4 ApplyRestPose(int id)
 		{
 			if (SkeletonAsset.Bones[SkeletonAsset.Bones[id].ParentId].IsAdjBone)
-				return ApplyBindPose(SkeletonAsset.Bones[id].ParentId) * TSMatrix4x4ToMat4(preBakeInstance.Bones[id].RestPose);
+				return ApplyRestPose(SkeletonAsset.Bones[id].ParentId) * TSMatrix4x4ToMat4(preBakeInstance.Bones[id].RestPose);
 			else
 				return TSMatrix4x4ToMat4(preBakeInstance.Bones[id].RestPose);
 		}

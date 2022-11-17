@@ -94,6 +94,7 @@ namespace OpenRA.Meow.RPG
 
 			if (mover != null)
 			{
+				mover.UnderControl = UnderControl;
 				mover.MoveToward(moverDir);
 			}
 
@@ -154,7 +155,7 @@ namespace OpenRA.Meow.RPG
 					attackTarget = Target.FromPos(tPos);
 				}
 
-				if (facing != null && turnFacing)
+				if (facing != null && turnFacing && moverDir == WVec.Zero)
 				{
 					var desiredFacing = (attackTarget.CenterPosition - self.CenterPosition).Yaw;
 					if (desiredFacing + attackFace != facing.Facing)
@@ -222,21 +223,25 @@ namespace OpenRA.Meow.RPG
 			}
 			else if (order.OrderString == "Controler:Disable")
 			{
+				if (UnderControl)
+					ClearTarget();
+
 				UnderControl = false;
-				ClearTarget();
 			}
 
 			if (order.OrderString == "Controler:Mi1Down" && order.Target.Type != TargetType.Invalid && CanAttack())
 			{
-				attackTarget = order.Target;
+				if (UnderControl)
+					attackTarget = order.Target;
 			}
 
 			if (order.OrderString == "Contorler:Mi1Up")
 			{
-				ClearTarget();
+				if (UnderControl)
+					ClearTarget();
 			}
 
-			if (order.OrderString == "Mover:Move")
+			if (order.OrderString == "Mover:Move" && UnderControl)
 			{
 				self.CancelActivity();
 				moverDir = new WVec(order.Target.CenterPosition);

@@ -121,15 +121,16 @@
 		Name: tracked
 		Crushes: wall, crate, infantry
 		TerrainSpeeds:
-			Clear: 70
+			Clear: 100
 			Road: 100
 			Bridge: 100
 			Rail: 100
-			DirtRoad: 90
-			Rough: 60
-			Tiberium: 70
-			BlueTiberium: 70
+			DirtRoad: 100
+			Rough: 90
+			Tiberium: 75
+			BlueTiberium: 75
 			Veins: 70
+				PathingCost: 90
 	Locomotor@AMPHIBIOUS:
 		Name: amphibious
 		Crushes: wall, crate, infantry

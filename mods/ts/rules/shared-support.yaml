@@ -34,7 +34,7 @@ NAPULS:
 		LocalYaw: 0,100
 		Name: superweapon
 	FireArmamentPower:
-		AllowMultiple: false
+		AllowMultiple: true
 		Cursor: emp
 		ArmamentName: superweapon
 		Icon: emp

@@ -22,7 +22,9 @@ MCV:
 	Mobile:
 		MaxSpeed: 50
 		Speed: 20
-		SpeedAccleration: 1
+		SpeedAccleration: 4
+		CanMoveBackward: true
+		MaxBackwardCells: 6
 		TurnSpeed: 16
 	RevealsShroud:
 		RequiresCondition: !inside-tunnel

@@ -281,12 +281,9 @@ namespace OpenRA.Mods.Common.Widgets
 
 		public override string GetCursor(int2 pos)
 		{
-			var worldCursorManager = worldRenderer.World.WorldActor.TraitOrDefault<IngameCursorManager>();
-			string cursor = worldCursorManager?.CurrentCursor ?? null;
-
 			if (!(IsJoystickScrolling || isStandardScrolling) &&
 				(!Game.Settings.Game.ViewportEdgeScroll || Ui.MouseOverWidget != this))
-				return cursor;
+				return null;
 
 			var blockedDirections = worldRenderer.Viewport.GetBlockedDirections();
 
@@ -302,7 +299,7 @@ namespace OpenRA.Mods.Common.Widgets
 				if (edgeDirections.Includes(dir.Key))
 					return dir.Value + (blockedDirections.Includes(dir.Key) ? "-blocked" : "");
 
-			return cursor;
+			return null;
 		}
 
 		bool IsJoystickScrolling =>

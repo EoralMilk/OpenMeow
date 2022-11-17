@@ -12,6 +12,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using OpenRA.Graphics;
+using OpenRA.Mods.Common.Traits;
 using OpenRA.Orders;
 using OpenRA.Traits;
 using OpenRA.Widgets;
@@ -88,7 +89,11 @@ namespace OpenRA.Mods.Common.Orders
 					(mi.Modifiers.HasModifier(Modifiers.Shift) || !world.Selection.Actors.Any());
 			}
 
-			return useSelect ? worldSelectCursor : worldDefaultCursor;
+			// cursor override
+			var worldCursorManager = world.WorldActor.TraitOrDefault<IngameCursorManager>();
+			string cursor = worldCursorManager?.CurrentCursor ?? worldDefaultCursor;
+
+			return useSelect ? worldSelectCursor : cursor;
 		}
 
 		public void Deactivate() { }

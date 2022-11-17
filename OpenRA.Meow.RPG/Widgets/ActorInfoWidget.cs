@@ -761,6 +761,8 @@ namespace OpenRA.Meow.RPG.Widgets
 
 		MouseInput currentMouseInput;
 
+		MouseButton Mouse1 => Game.Settings.Game.UseClassicMouseStyle ? MouseButton.Left : MouseButton.Right;
+
 		public override void ListenMouseInput(MouseInput mi)
 		{
 			currentMouseInput = mi;
@@ -770,11 +772,11 @@ namespace OpenRA.Meow.RPG.Widgets
 				controlMode = false;
 			}
 
-			if (mi.Event == MouseInputEvent.Down && mi.Button == MouseButton.Right)
+			if (mi.Event == MouseInputEvent.Down && mi.Button == Mouse1)
 			{
 				mi1Down = true;
 			}
-			else if (mi.Event == MouseInputEvent.Up && mi.Button == MouseButton.Right)
+			else if (mi.Event == MouseInputEvent.Up && mi.Button == Mouse1)
 			{
 				mi1Down = false;
 
@@ -788,8 +790,11 @@ namespace OpenRA.Meow.RPG.Widgets
 
 		public override bool HandleKeyPress(KeyInput e)
 		{
+			var input = false;
 			if (ToggleControlKey.IsActivatedBy(e) && e.Event == KeyInputEvent.Down && !e.IsRepeat)
+			{
 				controlMode = !controlMode;
+			}
 
 			if (ToggleActorCameraKey.IsActivatedBy(e) && e.Event == KeyInputEvent.Down && !e.IsRepeat)
 				actorCameraMode = !actorCameraMode;
@@ -801,26 +806,50 @@ namespace OpenRA.Meow.RPG.Widgets
 
 			OnKeyPress(e);
 			if (MoveUpKey.IsActivatedBy(e) && e.Event == KeyInputEvent.Down)
+			{
+				input = true;
 				moveUp = true;
+			}
 			else if (MoveUpKey.IsActivatedBy(e) && e.Event == KeyInputEvent.Up)
+			{
+
 				moveUp = false;
+			}
 
 			if (MoveDownKey.IsActivatedBy(e) && e.Event == KeyInputEvent.Down)
+			{
+				input = true;
 				moveDown = true;
+			}
 			else if (MoveDownKey.IsActivatedBy(e) && e.Event == KeyInputEvent.Up)
+			{
+
 				moveDown = false;
+			}
 
 			if (MoveLeftKey.IsActivatedBy(e) && e.Event == KeyInputEvent.Down)
+			{
+				input = true;
 				moveLeft = true;
+			}
 			else if (MoveLeftKey.IsActivatedBy(e) && e.Event == KeyInputEvent.Up)
+			{
+
 				moveLeft = false;
+			}
 
 			if (MoveRightKey.IsActivatedBy(e) && e.Event == KeyInputEvent.Down)
+			{
+				input = true;
 				moveRight = true;
+			}
 			else if (MoveRightKey.IsActivatedBy(e) && e.Event == KeyInputEvent.Up)
-				moveRight = false;
+			{
 
-			if (controlMode)
+				moveRight = false;
+			}
+
+			if (controlMode && input)
 			{
 				return true;
 			}

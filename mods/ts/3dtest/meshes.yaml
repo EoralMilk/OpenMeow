@@ -1,6 +1,6 @@
 rumya:
 	Skeleton: Skeleton_CommonBody #testArmature
-		UseDynamicAdjBonePose: true
+		UseDynamicAdjBonePose: false
 		Bones:
 			s-Adj_Belly:
 				LastPoseScale: 2.7, 2.2, 3.9

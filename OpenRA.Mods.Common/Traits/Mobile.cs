@@ -64,6 +64,8 @@ namespace OpenRA.Mods.Common.Traits
 		[Desc("If set to true, this unit will always turn in place instead of following a curved trajectory (like infantry).")]
 		public readonly bool AlwaysTurnInPlace = false;
 
+		[Desc("The Movement Mode of this actor: Universal can turn and move at same time, " +
+			"TurnInPlace must stop to turn, wheel and track is for contorler mode.")]
 		public readonly MovementMode MovementMode = MovementMode.Track;
 
 		[CursorReference]
@@ -375,9 +377,6 @@ namespace OpenRA.Mods.Common.Traits
 
 			UpdateMovement();
 
-			if (movementTypes == MovementType.None)
-				AcceleratedDelta = 0;
-
 			currentPos = CenterPosition;
 			currentSpeed = currentPos - lastPos;
 			lastPos = currentPos;
@@ -395,6 +394,10 @@ namespace OpenRA.Mods.Common.Traits
 				if (airborneConditionToken != Actor.InvalidConditionToken && self.IsInWorld)
 					airborneConditionToken = self.RevokeCondition(airborneConditionToken);
 			}
+
+
+			if (movementTypes == MovementType.None)
+				AcceleratedDelta = 0;
 		}
 
 		public void UpdateMovement()
@@ -848,19 +851,17 @@ namespace OpenRA.Mods.Common.Traits
 			if (AcceleratedDelta >= 0)
 			{
 				var currentSpeed = Info.MaxSpeed > Info.Speed ?
-					Math.Clamp(AcceleratedDelta, Info.Speed, Info.MaxSpeed)
-					: Info.Speed;
-				currentSpeed = Util.ApplyPercentageModifiers(currentSpeed, modifiers);
-				AcceleratedDelta = Math.Clamp(AcceleratedDelta, 0, currentSpeed);
+					Math.Clamp(AcceleratedDelta, Util.ApplyPercentageModifiers(Info.Speed, modifiers), Util.ApplyPercentageModifiers(Info.MaxSpeed, modifiers))
+					: Util.ApplyPercentageModifiers(Info.Speed, modifiers);
+				AcceleratedDelta = currentSpeed;
 				return currentSpeed;
 			}
 			else
 			{
 				var currentSpeed = Info.MaxSpeed > Info.Speed ?
-					Math.Clamp(AcceleratedDelta, -Info.MaxSpeed, -Info.Speed) :
-					-Info.Speed;
-				currentSpeed = Util.ApplyPercentageModifiers(currentSpeed, modifiers);
-				AcceleratedDelta = Math.Clamp(AcceleratedDelta, currentSpeed, 0);
+					Math.Clamp(AcceleratedDelta, -Util.ApplyPercentageModifiers(Info.MaxSpeed, modifiers), -Util.ApplyPercentageModifiers(Info.Speed, modifiers)) :
+					-Util.ApplyPercentageModifiers(Info.Speed, modifiers);
+				AcceleratedDelta = currentSpeed;
 				return currentSpeed;
 			}
 		}
@@ -1023,7 +1024,7 @@ namespace OpenRA.Mods.Common.Traits
 		{
 			get
 			{
-				if (!IsTraitDisabled)
+				if (!IsTraitDisabled && !UnderControl)
 					yield return new MoveOrderTargeter(self, this);
 			}
 		}
@@ -1031,7 +1032,7 @@ namespace OpenRA.Mods.Common.Traits
 		// Note: Returns a valid order even if the unit can't move to the target
 		Order IIssueOrder.IssueOrder(Actor self, IOrderTargeter order, in Target target, bool queued)
 		{
-			if (order is MoveOrderTargeter)
+			if (order is MoveOrderTargeter && !UnderControl)
 				return new Order("Move", self, target, queued);
 
 			return null;
@@ -1039,7 +1040,7 @@ namespace OpenRA.Mods.Common.Traits
 
 		void IResolveOrder.ResolveOrder(Actor self, Order order)
 		{
-			if (IsTraitDisabled)
+			if (IsTraitDisabled || UnderControl)
 				return;
 
 			if (order.OrderString == "Move")
@@ -1094,6 +1095,7 @@ namespace OpenRA.Mods.Common.Traits
 			return returnToCellOnCreation ? new ReturnToCellActivity(self, creationActivityDelay, returnToCellOnCreationRecalculateSubCell) : null;
 		}
 
+		public bool UnderControl { get; set; }
 		WVec moveDir;
 		public void MoveToward(WVec mVec)
 		{
@@ -1214,11 +1216,13 @@ namespace OpenRA.Mods.Common.Traits
 
 							if (mVec.Y < 0)
 							{
-								AcceleratedDelta += Info.SpeedAccleration;
+								if (mVec.X == 0)
+									AcceleratedDelta += Info.SpeedAccleration;
 							}
 							else
 							{
-								AcceleratedDelta -= Info.SpeedAccleration;
+								if (mVec.X == 0)
+									AcceleratedDelta -= Info.SpeedAccleration;
 							}
 
 							var map = self.World.Map;

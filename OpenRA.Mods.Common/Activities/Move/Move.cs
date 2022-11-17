@@ -148,7 +148,6 @@ namespace OpenRA.Mods.Common.Activities
 
 			if (mobile.IsTraitDisabled || mobile.IsTraitPaused)
 			{
-				mobile.AcceleratedDelta = 0;
 				return false;
 			}
 
@@ -184,7 +183,9 @@ namespace OpenRA.Mods.Common.Activities
 				path.Add(nextCell.Value.Cell);
 				QueueChild(new Turn(self, firstFacing));
 				mobile.TurnToMove = true;
-				mobile.AcceleratedDelta = 0;
+				if (mobile.Info.MovementMode == MovementMode.TurnInPlace)
+					mobile.AcceleratedDelta = 0;
+
 				return false;
 			}
 
@@ -322,7 +323,6 @@ namespace OpenRA.Mods.Common.Activities
 
 		protected override void OnLastRun(Actor self)
 		{
-			mobile.AcceleratedDelta = 0;
 			path = null;
 		}
 
@@ -447,10 +447,7 @@ namespace OpenRA.Mods.Common.Activities
 					var currentSpeed = mobile.MovementSpeedForCell(mobile.ToCell);
 					progress += currentSpeed;
 
-					if (mobile.IsTraitDisabled || mobile.IsTraitPaused)
-						mobile.AcceleratedDelta = 0;
-					else
-						mobile.AcceleratedDelta += mobile.Info.SpeedAccleration;
+					mobile.AcceleratedDelta += mobile.Info.SpeedAccleration;
 				}
 
 				if (progress >= Distance)

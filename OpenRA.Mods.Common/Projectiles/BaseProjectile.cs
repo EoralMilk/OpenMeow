@@ -294,6 +294,7 @@ namespace OpenRA.Mods.Common.Projectiles
 			trailTicks = info.TrailDelay;
 			renderTick = 0;
 			trailLastPos = args.Source;
+			matLastPos = args.Source - matVec;
 
 			shadowColor = new float3(info.ShadowColor.R, info.ShadowColor.G, info.ShadowColor.B) / 255f;
 			shadowAlpha = info.ShadowColor.A / 255f;

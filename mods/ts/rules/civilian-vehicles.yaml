@@ -17,6 +17,8 @@
 		MaxSpeed: 56
 		SpeedAccleration: 2
 		TurnSpeed: 20
+		CanMoveBackward: true
+		MaxBackwardCells: 6
 	Health:
 		HP: 60000
 	Armor:
