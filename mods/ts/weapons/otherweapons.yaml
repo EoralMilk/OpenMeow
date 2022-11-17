@@ -552,6 +552,12 @@ TitianDroneCheck:
 	Projectile: InstantHit
 		Blockable: false
 
+AITransportAimingDummyWeapon:
+	ValidTargets: Ground, Water, Air
+	Range: 8c0
+	ReloadDelay: 30
+	Projectile: InstantHit
+
 DummyWeapon:
 
 WalkImpact:

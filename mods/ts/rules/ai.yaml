@@ -123,7 +123,7 @@ Player:
 	SquadManagerBotModule@test:
 		RequiresCondition: enable-test-ai
 		SquadSize: 20
-		ExcludeFromSquadsTypes: harv, mcv, dpod2, hunter, trnsport, weed, icbm, engineer
+		ExcludeFromSquadsTypes: harv, mcv, dpod2, hunter, trnsport, weed, icbm, engineer, subtank, sapc
 		IgnoredEnemyTargetTypes: Wall, AIgnored
 		ConstructionYardTypes: gacnst
 		AirUnitsTypes: orca, orcab, scrin, apache, jumpjetair
@@ -135,7 +135,7 @@ Player:
 		ProtectionScanRadius: 15
 		SuggestedGroundLeaderLocomotor: foot, wheeled, heavywheeled, tracked, critter, visceroid, smallvisc, walker, heavywalker, superwalker
 		SuggestedNavyLeaderLocomotor: Naval
-		GuerrillaTypes: smech, bggy, jumpjetair, hvr, bike, subtank, stnk, limped, apache
+		GuerrillaTypes: smech, bggy, jumpjetair, hvr, bike, stnk, limped, apache
 	UnitBuilderBotModule@test:
 		RequiresCondition: enable-test-ai
 		UnitQueues: Vehicle, Infantry, Air
@@ -159,6 +159,7 @@ Player:
 			hvr: 20
 			bike: 20
 			subtank: 10
+			sapc: 5
 			sonic: 10
 			stnk: 8
 			orca: 15
@@ -331,5 +332,12 @@ Player:
 					CheckRadius: 8c0
 	LoadCargoBotModule:
 		RequiresCondition: enable-test-ai
-		Transports: gtdrop
+		Transports: gtdrop, apc, sapc
 		Passengers: e1,e2,e3,cyborg,weedguy,ghost,cyc2,medic,limped,engineer,smech
+	SendUnitToAttackBotModule:
+		RequiresCondition: enable-test-ai
+		ActorsAndAttackDesire: 
+			subtank: 10
+			sapc: 10
+		ValidTargets: Building
+		InvalidTargets: Defence
