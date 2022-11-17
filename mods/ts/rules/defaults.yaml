@@ -1022,7 +1022,7 @@
 		Voice: Move
 		TerrainOrientationAdjustmentMargin: 256
 		AirborneCondition: airborne
-		MovementMode: Track
+		MovementMode: Wheel
 		# RequiresCondition: !under-control
 	Selectable:
 		Bounds: 1206, 1448
