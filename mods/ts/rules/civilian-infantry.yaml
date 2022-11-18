@@ -29,7 +29,7 @@ WEEDGUY:
 		ProneOffset: 128,0,0 #-320
 	AttackFrontal:
 		Voice: Attack
-		FacingTolerance: 0
+		FacingTolerance: 16
 		RequiresCondition: !WebDisable && !inside-tunnel
 	-SpawnActorOnDeath@FLAMEGUY:
 	WithDeathAnimation@fire:
@@ -77,7 +77,7 @@ UMAGON:
 	AttackFrontal:
 		Voice: Attack
 		RequiresCondition: !WebDisable && !inside-tunnel
-		FacingTolerance: 0
+		FacingTolerance: 16
 	WithSplitAttackPaletteInfantryBody:
 		DefaultAttackSequence: attack
 	ProducibleWithLevel:
@@ -150,7 +150,7 @@ MUTANT:
 		RequiresCondition: !WebDisable && !inside-tunnel
 	AttackFrontal:
 		Voice: Attack
-		FacingTolerance: 0
+		FacingTolerance: 16
 		RequiresCondition: !WebDisable && !inside-tunnel
 	WithSplitAttackPaletteInfantryBody:
 		DefaultAttackSequence: attack
@@ -191,7 +191,7 @@ MWMN:
 		RequiresCondition: !WebDisable && !inside-tunnel
 	AttackFrontal:
 		Voice: Attack
-		FacingTolerance: 0
+		FacingTolerance: 16
 		RequiresCondition: !WebDisable && !inside-tunnel
 	WithSplitAttackPaletteInfantryBody:
 		DefaultAttackSequence: attack
@@ -235,7 +235,7 @@ MUTANT3:
 		RequiresCondition: !WebDisable && !inside-tunnel
 	AttackFrontal:
 		Voice: Attack
-		FacingTolerance: 0
+		FacingTolerance: 16
 		RequiresCondition: !WebDisable && !inside-tunnel
 	WithSplitAttackPaletteInfantryBody:
 		DefaultAttackSequence: attack
@@ -297,7 +297,7 @@ OXANNA:
 		DefaultAttackSequence: attack
 	AttackFrontal:
 		Voice: Attack
-		FacingTolerance: 0
+		FacingTolerance: 16
 		RequiresCondition: !WebDisable && !inside-tunnel
 	Armament:
 		LocalOffset: 312,0,502
@@ -335,7 +335,7 @@ SLAV:
 		DefaultAttackSequence: attack
 	AttackFrontal:
 		Voice: Attack
-		FacingTolerance: 0
+		FacingTolerance: 16
 		RequiresCondition: !WebDisable && !inside-tunnel
 	Armament:
 		LocalOffset: 320,0,422
@@ -367,7 +367,7 @@ CIV1:
 		RequiresCondition: !WebDisable && !inside-tunnel
 	AttackFrontal:
 		Voice: Attack
-		FacingTolerance: 0
+		FacingTolerance: 16
 		RequiresCondition: !WebDisable && !inside-tunnel
 	Voiced:
 		VoiceSet: Civilian1

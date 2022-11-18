@@ -35,7 +35,7 @@ DOGGIE:
 		RequiresCondition: !WebDisable && !inside-tunnel
 	AttackFrontal:
 		Voice: Attack
-		FacingTolerance: 0
+		FacingTolerance: 16
 		# FiringAngle: 512
 		RequiresCondition: !WebDisable && !inside-tunnel
 	AttackWander:
@@ -140,7 +140,7 @@ VISC_LRG:
 		ScanRadius: 5
 	AttackFrontal:
 		Voice: Attack
-		FacingTolerance: 0
+		FacingTolerance: 16
 	AttackWander:
 		WanderMoveRadius: 2
 		MinMoveDelay: 25
@@ -198,7 +198,7 @@ JFISH:
 	AutoTarget:
 		ScanRadius: 5
 	AttackFrontal:
-		FacingTolerance: 0
+		FacingTolerance: 16
 	AttackWander:
 		WanderMoveRadius: 6
 		MinMoveDelay: 250

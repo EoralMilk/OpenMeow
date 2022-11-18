@@ -31,12 +31,13 @@ namespace OpenRA.Meow.RPG
 	public class ActorControler : PausableConditionalTrait<ActorControlerInfo>,
 		INotifyCreated, IResolveOrder, ITick
 	{
+		readonly ActorControlerInfo info;
+		readonly Actor self;
+
 		AttackBase[] attacks;
 		IFacing facing;
 		Turreted[] turreteds;
 		IMover mover;
-		readonly ActorControlerInfo info;
-		readonly Actor self;
 
 		// state
 		Target attackTarget = Target.Invalid;
@@ -92,10 +93,16 @@ namespace OpenRA.Meow.RPG
 				moverDir = WVec.Zero;
 			}
 
+			bool moving = false;
+
 			if (mover != null)
 			{
 				mover.UnderControl = UnderControl;
-				mover.MoveToward(moverDir);
+				if (mover.CanMove)
+				{
+					mover.MoveToward(moverDir);
+					moving = true;
+				}
 			}
 
 			if (!CanAttack() || attackTarget.Type == TargetType.Invalid)
@@ -155,7 +162,7 @@ namespace OpenRA.Meow.RPG
 					attackTarget = Target.FromPos(tPos);
 				}
 
-				if (facing != null && turnFacing && moverDir == WVec.Zero)
+				if (facing != null && turnFacing && moving)
 				{
 					var desiredFacing = (attackTarget.CenterPosition - self.CenterPosition).Yaw;
 					if (desiredFacing + attackFace != facing.Facing)

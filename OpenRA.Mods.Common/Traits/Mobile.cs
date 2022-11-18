@@ -323,6 +323,9 @@ namespace OpenRA.Mods.Common.Traits
 
 			ToSubCell = FromSubCell = info.LocomotorInfo.SharesCell ? init.World.Map.Grid.DefaultSubCell : SubCell.FullCell;
 
+			if (info.MaxSpeed > 512 || info.Speed > 512)
+				throw new Exception("Mobile Speed > 512 might cause some problem");
+
 			var subCellInit = init.GetOrDefault<SubCellInit>();
 			if (subCellInit != null)
 			{
@@ -1094,6 +1097,7 @@ namespace OpenRA.Mods.Common.Traits
 			return returnToCellOnCreation ? new ReturnToCellActivity(self, creationActivityDelay, returnToCellOnCreationRecalculateSubCell) : null;
 		}
 
+		public bool CanMove => !IsImmovable && !IsTraitDisabled && !IsTraitPaused;
 		public bool UnderControl { get; set; }
 		WVec moveDir;
 		public void MoveToward(WVec mVec)

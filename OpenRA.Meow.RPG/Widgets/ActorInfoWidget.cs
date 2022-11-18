@@ -631,6 +631,7 @@ namespace OpenRA.Meow.RPG.Widgets
 			if (ingameCursorManager != null)
 			{
 				ingameCursorManager.CurrentCursor = null;
+				ingameCursorManager.CanSelect = true;
 			}
 
 			if (TooltipUnit == null || TooltipUnit.Actor == null || TooltipUnit.Actor.IsDead || !TooltipUnit.Actor.IsInWorld)
@@ -641,6 +642,7 @@ namespace OpenRA.Meow.RPG.Widgets
 			if (controlMode)
 			{
 				Ui.KeyboardFocusWidget = this;
+				ingameCursorManager.CanSelect = false;
 
 				var controler = TooltipUnit.Actor.TraitOrDefault<ActorControler>();
 
@@ -690,13 +692,14 @@ namespace OpenRA.Meow.RPG.Widgets
 
 					if (mi1Down)
 					{
-						var actors = world.ScreenMap.ActorsAtMouse(currentMouseInput)
+						var worldPixel = worldRenderer.Viewport.ViewToWorldPx(Viewport.LastMousePos);
+						var actor = world.ScreenMap.ActorsAtMouse(currentMouseInput)
 							.Where(a => !a.Actor.IsDead && a.Actor.Info.HasTraitInfo<ITargetableInfo>() && !world.FogObscures(a.Actor))
-							.Select(a => a.Actor);
+							.WithHighestSelectionPriority(worldPixel, Modifiers.None);
 
-						if (actors != null && actors.Any())
+						if (actor != null)
 						{
-							mPos = Target.FromActor(actors.First()).Positions.PositionClosestTo(TooltipUnit.Actor.CenterPosition);
+							mPos = Target.FromActor(actor).Positions.PositionClosestTo(TooltipUnit.Actor.CenterPosition);
 						}
 						else
 						{
@@ -761,7 +764,7 @@ namespace OpenRA.Meow.RPG.Widgets
 
 		MouseInput currentMouseInput;
 
-		MouseButton Mouse1 => Game.Settings.Game.UseClassicMouseStyle ? MouseButton.Left : MouseButton.Right;
+		MouseButton Mouse1 => MouseButton.Left;
 
 		public override void ListenMouseInput(MouseInput mi)
 		{
@@ -791,9 +794,17 @@ namespace OpenRA.Meow.RPG.Widgets
 		public override bool HandleKeyPress(KeyInput e)
 		{
 			var input = false;
+
+			var toggleOn = false;
 			if (ToggleControlKey.IsActivatedBy(e) && e.Event == KeyInputEvent.Down && !e.IsRepeat)
 			{
 				controlMode = !controlMode;
+
+				if (controlMode)
+				{
+					world.Selection.Clear();
+					toggleOn = true;
+				}
 			}
 
 			if (ToggleActorCameraKey.IsActivatedBy(e) && e.Event == KeyInputEvent.Down && !e.IsRepeat)
@@ -802,6 +813,10 @@ namespace OpenRA.Meow.RPG.Widgets
 			if (TooltipUnit == null || TooltipUnit.Actor == null || TooltipUnit.Actor.IsDead || !TooltipUnit.Actor.IsInWorld)
 			{
 				controlMode = false;
+			}
+			else if (controlMode && toggleOn)
+			{
+				world.Selection.Add(TooltipUnit.Actor);
 			}
 
 			OnKeyPress(e);

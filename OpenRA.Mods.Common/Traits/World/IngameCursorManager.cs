@@ -17,5 +17,6 @@ namespace OpenRA.Mods.Common.Traits
 		}
 
 		public string CurrentCursor = null;
+		public bool CanSelect = true;
 	}
 }

@@ -30,7 +30,7 @@ E3:
 		ProneOffset: 52,64,0
 	AttackFrontal:
 		Voice: Attack
-		FacingTolerance: 0
+		FacingTolerance: 16
 		RequiresCondition: !WebDisable && !inside-tunnel
 	WithSplitAttackPaletteInfantryBody:
 		DefaultAttackSequence: attack
@@ -81,7 +81,7 @@ CYBORG:
 		UseBlindage: true
 	AttackFrontal:
 		Voice: Attack
-		FacingTolerance: 0
+		FacingTolerance: 16
 		RequiresCondition: !WebDisable && !inside-tunnel && !empdisable
 	ProducibleWithLevel:
 		Prerequisites: barracks.upgraded
@@ -125,7 +125,7 @@ CYC2:
 		RequiresCondition: !WebDisable && !inside-tunnel && !empdisable
 	AttackFrontal:
 		Voice: Attack
-		FacingTolerance: 0
+		FacingTolerance: 16
 		RequiresCondition: !WebDisable && !inside-tunnel && !empdisable
 	ProducibleWithLevel:
 		Prerequisites: barracks.upgraded

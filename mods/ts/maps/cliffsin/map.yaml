@@ -1528,8 +1528,8 @@ Actors:
 Rules:
 	^BaseWorld:
 		TerrainLighting:
-			Intensity: 0.68
-			HeightStep: 0.039
+			Intensity: 0.78
+			HeightStep: 0.022
 	INGRNLMP:
 		TerrainLightSource:
 			Range: 7c832

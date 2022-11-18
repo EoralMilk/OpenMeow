@@ -26,7 +26,7 @@ E1:
 		RequiresCondition: !WebDisable && !inside-tunnel
 	AttackFrontal:
 		Voice: Attack
-		FacingTolerance: 0
+		FacingTolerance: 16
 		RequiresCondition: !WebDisable && !inside-tunnel
 	WithSplitAttackPaletteInfantryBody:
 		DefaultAttackSequence: attack

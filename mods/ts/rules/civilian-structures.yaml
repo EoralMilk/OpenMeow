@@ -1490,9 +1490,9 @@ GASAND:
 	Tooltip:
 		Name: Sandbags
 	Health:
-		HP: 25000
+		HP: 18500
 	Armor:
-		Type: Light
+		Type: Heavy
 	LineBuild:
 		NodeTypes: sandbags
 	LineBuildNode:

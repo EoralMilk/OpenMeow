@@ -86,6 +86,8 @@ namespace OpenRA.Mods.Common.Widgets
 
 			var useClassicMouseStyle = Game.Settings.Game.UseClassicMouseStyle;
 
+			var ingameCursorManager = worldRenderer.World.WorldActor.TraitOrDefault<IngameCursorManager>();
+
 			var multiClick = mi.MultiTapCount >= 2;
 
 			if (!(World.OrderGenerator is UnitOrderGenerator uog))
@@ -95,6 +97,9 @@ namespace OpenRA.Mods.Common.Widgets
 				YieldMouseFocus(mi);
 				return true;
 			}
+
+			if (!ingameCursorManager.CanSelect)
+				return false;
 
 			if (mi.Button == MouseButton.Left && mi.Event == MouseInputEvent.Down)
 			{

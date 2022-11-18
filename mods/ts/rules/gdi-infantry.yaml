@@ -29,7 +29,7 @@ E2:
 		ProneOffset: 160,128,0 #-555
 	AttackFrontal:
 		Voice: Attack
-		FacingTolerance: 0
+		FacingTolerance: 16
 		RequiresCondition: !WebDisable && !inside-tunnel
 	WithSplitAttackPaletteInfantryBody:
 		DefaultAttackSequence: attack
@@ -74,7 +74,7 @@ MEDIC:
 		RequiresCondition: !WebDisable && !inside-tunnel
 	-DamagedByTerrain@Tiberium:
 	AttackFrontal:
-		FacingTolerance: 0
+		FacingTolerance: 16
 		RequiresCondition: !WebDisable && !inside-tunnel
 	WithSplitAttackPaletteInfantryBody:
 		DefaultAttackSequence: heal
@@ -317,7 +317,7 @@ GHOST:
 		CrushSound: squishy2.aud
 	AttackFrontal:
 		Voice: Attack
-		FacingTolerance: 0
+		FacingTolerance: 16
 		RequiresCondition: !WebDisable && !inside-tunnel
 	Demolition:
 		DetonationDelay: 45

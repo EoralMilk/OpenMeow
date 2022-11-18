@@ -724,6 +724,7 @@ namespace OpenRA.Graphics
 
 		// unit sequence to anims
 		public Dictionary<string, Dictionary<string, SkeletalAnim>> AnimationsRef = new Dictionary<string, Dictionary<string, SkeletalAnim>>();
+
 		// unit mask ref
 		public Dictionary<string, Dictionary<string, AnimMask>> MasksRef = new Dictionary<string, Dictionary<string, AnimMask>>();
 

@@ -100,7 +100,7 @@ BIKE:
 	AttackFrontal:
 		Voice: Attack
 		PauseOnCondition: empdisable
-		FacingTolerance: 0
+		FacingTolerance: 16
 	DamagedByTerrain@VEINS:
 		RequiresCondition: !inside-tunnel && !rank-elite
 	LeavesTrails@VEINS:
@@ -184,7 +184,7 @@ TTNK:
 		Voice: Attack
 		RequiresCondition: undeployed
 		PauseOnCondition: empdisable
-		FacingTolerance: 0
+		FacingTolerance: 16
 	Turreted:
 		TurnSpeed: 24
 		Turret: deployed
@@ -399,7 +399,7 @@ REPAIR:
 	AttackFrontal:
 		Voice: Attack
 		PauseOnCondition: empdisable
-		FacingTolerance: 0
+		FacingTolerance: 16
 	AutoTarget:
 		ScanRadius: 8
 	GuardsSelection:
@@ -655,7 +655,7 @@ STNK:
 	AttackFrontal:
 		Voice: Attack
 		PauseOnCondition: empdisable
-		FacingTolerance: 0
+		FacingTolerance: 16
 	AutoTarget:
 		InitialStance: HoldFire
 		InitialStanceAI: ReturnFire

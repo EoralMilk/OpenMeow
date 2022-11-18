@@ -188,7 +188,7 @@ SMECH:
 	AttackFrontal:
 		Voice: Attack
 		PauseOnCondition: empdisable
-		FacingTolerance: 0
+		FacingTolerance: 16
 	Armament:
 		LocalOffset: 111,200,255, 111,-220,255
 		BurstsPerFire: 2

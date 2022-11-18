@@ -19,7 +19,7 @@
 		DetectTargetFromLengthPercentage: 10
 		ContrailZOffset: 22
 		ContrailLength: 15
-		ContrailWidth: 175
+		ContrailWidth: 200
 		ContrailImage: lineidle_loop
 		ContrailSequences: railgun
 		ContrailStartColor: 33FFFF
@@ -68,6 +68,7 @@
 		InvalidTargets: Vehicle, Building, Wall
 
 ^RailgunLineDamage:
+	ValidTargets: Ground, Water, Air
 	Warhead@1Dam: Spread3DDamage
 		Range: 0, 32
 		Falloff: 100, 100
@@ -106,7 +107,7 @@ MechRailgun:
 	Report: railuse5.aud
 	Projectile: Bullet
 		ContrailLength: 18
-		ContrailWidth: 275
+		ContrailWidth: 335
 	Warhead@1Dam: Spread3DDamage
 		Damage: 20000
 		Condition: empdisable
