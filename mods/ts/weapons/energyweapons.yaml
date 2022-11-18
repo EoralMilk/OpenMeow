@@ -2,17 +2,43 @@
 	ReloadDelay: 60
 	Range: 8c0
 	Report: bigggun1.aud
-	Projectile: Railgun
-		Duration: 15
-		Speed: 1668
+	# Projectile: Railgun
+	# 	Duration: 15
+	# 	Speed: 668
+	# 	Width: 256
+	# 	StartDamageLineTick: 0
+	# 	Blockable: true
+	# 	DamageActorsInLine: true
+	# 	LineWeapon: ^RailgunLineDamage
+	# 	BeamColor: 0080FFC8
+	# 	HelixColor: 0080FFC8
+	# 	BeamBlendMode: Additive #ScreenAdditive
+	# 	ZOffset: 522
+	# 	HelixRadiusDeltaPerTick: 2
+	Projectile: Bullet
+		DetectTargetFromLengthPercentage: 10
+		ContrailZOffset: 22
+		ContrailLength: 15
+		ContrailWidth: 175
+		ContrailImage: lineidle_loop
+		ContrailSequences: railgun
+		ContrailStartColor: 33FFFF
+		ContrailStartColorAlpha: 255
+		ContrailEndColor: 2565BB
+		ContrailEndColorAlpha: 64
+		ContrailWidthFadeRate: 0
+		ContrailDelay: 0
+		ContrailBlendMode: Additive
+		Speed: 1550
+		Inaccuracy: 0
+		UseVerticalInaccuracy: true
+		OnlyHitToExplode: true
+		ExplodeUnderThisAltitude: -418
+		Blockable: false
 		Width: 256
-		StartDamageLineTick: 0
-		Blockable: true
-		DamageActorsInLine: true
-		LineWeapon: ^RailgunLineDamage
-		BeamColor: 0080FFC8
-		HelixColor: 0080FFC8
-		BeamBlendMode: Additive #ScreenAdditive
+		LifeTime: 7
+		LineWeapon: EmpLineDamage
+		PenetrationUnder: 20000
 	Warhead@1Dam: Spread3DDamage
 		Speed: 0c128
 		Falloff: 100, 100, 20, 2, 1
@@ -24,7 +50,7 @@
 			Light: 150
 			Heavy: 110
 			Concrete: 5
-		DamageTypes: Prone100Percent, TriggerProne, ExplosionDeath
+		DamageTypes: Prone100Percent, TriggerProne, SmallExplosionDeath
 		ValidTargets: Ground, Water, Air
 	Warhead@2Eff: CreateEffect
 		Explosions: smallpulse_explosion
@@ -48,13 +74,24 @@
 		ValidRelationships: Neutral, Enemy
 		Damage: 7500
 		AffectsParent: false
+		ValidTargets: Ground, Air, Water
 		Versus:
-			None: 130
+			None: 175
 			Wood: 100
 			Light: 150
 			Heavy: 110
 			Concrete: 5
-		DamageTypes: Prone100Percent, TriggerProne, ExplosionDeath
+		DamageTypes: Prone100Percent, TriggerProne, SmallExplosionDeath
+	Warhead@2Eff: CreateEffect
+		Explosions: emp_fx01
+		Image: explosion
+		ValidTargets: Ground, Air, Water
+
+EmpLineDamage:
+	Inherits: ^RailgunLineDamage
+	Warhead@1Dam: Spread3DDamage
+		Condition: empdisable
+		Duration: 30
 
 LtRail:
 	Inherits: ^Railgun
@@ -67,8 +104,9 @@ MechRailgun:
 	Inherits: ^Railgun
 	Range: 9c512
 	Report: railuse5.aud
-	Projectile: Railgun
-		BeamColor: 00FFFFC8
+	Projectile: Bullet
+		ContrailLength: 18
+		ContrailWidth: 275
 	Warhead@1Dam: Spread3DDamage
 		Damage: 20000
 		Condition: empdisable
@@ -209,7 +247,7 @@ CyCannonProton:
 		RangeLimit: 8c0
 		TerrainHeightAware: true
 	Warhead@1Dam: Spread3DDamage
-		ValidTargets: Ground, Trees
+		ValidTargets: Ground, Air, Water
 		Spread: 0c168
 		Damage: 12500
 		Versus:
@@ -490,7 +528,7 @@ ProtonPulse:
 		ExplodeUnderThisAltitude: -418
 		# Image: TORPEDO
 		Width: 256
-		DetectTargetFromLength: 0.7
+		DetectTargetFromLengthPercentage: 75
 		DetectTargetBeforeDist: 2c0
 		ContrailLength: 2
 		ContrailWidth: 68
@@ -564,7 +602,7 @@ ProtonBomb:
 		Shadow: false
 		LaunchAngle: 60
 		Inaccuracy: 200
-		DetectTargetFromLength: 0.5
+		DetectTargetFromLengthPercentage: 50
 		DetectTargetBeforeDist: 2c0
 		BounceCount: 1
 		BounceRangeModifier: 20

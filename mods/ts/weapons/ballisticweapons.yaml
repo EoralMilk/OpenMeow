@@ -7,7 +7,7 @@
 		# Image: 120mm
 		# Shadow: true
 		# Palette: ra
-		DetectTargetFromLength: 0.8
+		DetectTargetFromLengthPercentage: 80
 		DetectTargetBeforeDist: 2c512
 
 		ContrailZOffset: 22
@@ -26,27 +26,6 @@
 		ContrailWidthFadeRate: 0.5
 		ContrailDelay: 0
 		ContrailBlendMode: Additive
-
-		# ContrailDelay: 0
-		# ContrailLength: 4
-		# ContrailWidth: 0c112
-
-		# ContrailUseInnerOuterColor: true
-
-		# ContrailStartColor: BBBB00
-		# ContrailStartColorOuter: 330000
-		# ContrailStartColorAlpha: 255
-		# ContrailStartColorAlphaOuter: 32
-
-		# ContrailEndColor: BB2200
-		# ContrailEndColorOuter: 000000
-		# ContrailEndColorAlpha: 10
-		# ContrailEndColorAlphaOuter: 0
-
-		# ContrailBlendMode: Additive
-		# ContrailWidthFadeRate: 1
-		# ContrailZOffset: 3000
-
 		TrailImage: cannonsmokecircle
 		TrailPalette: effect
 		TrailDelay: 0

@@ -1213,6 +1213,8 @@ lineidle_loop:
 	 	AddExtension: false
 	trail: MissileTrail.png
 		AddExtension: false
+	railgun: RailGun.png
+		AddExtension: false
 
 fsgrnd_bg:
 	idle:

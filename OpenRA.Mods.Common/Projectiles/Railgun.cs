@@ -290,7 +290,7 @@ namespace OpenRA.Mods.Common.Projectiles
 							// FindActorsOnLine guarantees that the beam touches the target's HitShape,
 							// so we just assume a center hit to avoid bogus warhead recalculations.
 							ImpactPosition = a.CenterPosition,
-							Blocker = blocker,
+							Blocker = a,
 						};
 
 						info.LineWeaponInfo.Impact(Target.FromActor(a), lineAgs);

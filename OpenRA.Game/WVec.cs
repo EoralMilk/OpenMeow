@@ -60,7 +60,7 @@ namespace OpenRA
 			var y = num2;
 			var z = num1;
 			var nml = new WVec(x, y, z);
-			var length = nml.Length;
+			var length = Math.Max(nml.Length,1);
 			return new WVec(
 				(int)((long)x * 1024 / length),
 				(int)((long)y * 1024 / length),

@@ -139,7 +139,7 @@
 		ScatDist: 3c512
 		ScatCount: 3
 		DetectTargetOnCurve: true
-		DetectTargetFromLength: 0.7
+		DetectTargetFromLengthPercentage: 70
 		DetectTargetBeforeDist: 3c0
 		JetImage: mislflash
 		JetSequence: mislflash1

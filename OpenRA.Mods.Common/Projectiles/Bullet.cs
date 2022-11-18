@@ -23,9 +23,17 @@ namespace OpenRA.Mods.Common.Projectiles
 	{
 		public readonly bool InstantDropToGround = false;
 
-		public readonly float DetectTargetFromLength = 1f;
+		public readonly int DetectTargetFromLengthPercentage = 100;
 
 		public readonly WDist DetectTargetBeforeDist = WDist.Zero;
+
+		[WeaponReference]
+		[Desc("Weapon fire to any actor in line which detected.")]
+		public readonly string LineWeapon = null;
+		public WeaponInfo LineWeaponInfo { get; private set; }
+
+		[Desc("When use lineWeapon, A unit which HP above this value is impenetrable.")]
+		public int PenetrationUnder = 0;
 
 		[Desc("Projectile acceleration.")]
 		public readonly WDist Acceleration = WDist.Zero;
@@ -91,6 +99,13 @@ namespace OpenRA.Mods.Common.Projectiles
 				if (!rules.Weapons.TryGetValue(BounceWeapon.ToLowerInvariant(), out var bounceWeapon))
 					throw new YamlException("Weapons Ruleset does not contain an entry '{0}'".F(BounceWeapon.ToLowerInvariant()));
 				BounceWeaponInfo = bounceWeapon;
+			}
+
+			if (LineWeapon != null)
+			{
+				if (!rules.Weapons.TryGetValue(LineWeapon.ToLowerInvariant(), out var lineWeapon))
+					throw new YamlException("Weapons Ruleset does not contain an entry '{0}'".F(LineWeapon.ToLowerInvariant()));
+				LineWeaponInfo = lineWeapon;
 			}
 		}
 
@@ -250,20 +265,55 @@ namespace OpenRA.Mods.Common.Projectiles
 			}
 
 			var flightLengthReached = ticks++ >= length;
-			var checkLengthReached = (ticks >= (length * info.DetectTargetFromLength) && (pos - source).LengthSquared > detectTargetBeforeDistSquare);
+			var checkLengthReached = (ticks >= (length * info.DetectTargetFromLengthPercentage / 100) && (pos - source).LengthSquared > detectTargetBeforeDistSquare);
 			var shouldBounce = remainingBounces > 0;
 			var dat = world.Map.DistanceAboveTerrain(pos).Length;
 
 			if (flightLengthReached || checkLengthReached || remainingBounces < info.BounceCount || info.AlwaysDetectTarget)
 			{
-				// check target at PassiveTargetPos
-				if (FirstValidTargetsOnLine(world, lastPos, pos, info.Width, args.SourceActor, true, args.GuidedTarget.Actor, out var hitpos, out blocker))
+				// railgun damage the actors in line
+				if (info.LineWeaponInfo != null)
 				{
-					pos = hitpos;
-					return true;
+					var actors = world.FindActorsOnLine(lastPos, pos, info.Width);
+					foreach (var a in actors)
+					{
+						if (args.SourceActor != null)
+							if (a == args.SourceActor || !info.ValidDetectRelationships.HasRelationship(a.Owner.RelationshipWith(args.SourceActor.Owner)))
+								continue;
+
+						var hp = a.TraitOrDefault<Health>()?.HP ?? 0;
+
+						var lineAgs = new WarheadArgs(args)
+						{
+							ImpactOrientation = new WRot(WAngle.Zero, Util.GetVerticalAngle(args.Source, target), args.Facing),
+
+							// Calculating an impact position is bogus for line damage.
+							// FindActorsOnLine guarantees that the beam touches the target's HitShape,
+							// so we just assume a center hit to avoid bogus warhead recalculations.
+							ImpactPosition = a.CenterPosition,
+							Blocker = a,
+							DamageModifiers = args.DamageModifiers,
+						};
+
+						info.LineWeaponInfo.Impact(Target.FromActor(a), lineAgs);
+
+						if (info.PenetrationUnder < hp)
+						{
+							if (FirstValidTargetsOnLine(world, lastPos, pos, info.Width, args.SourceActor, true, a, out var hitpos, out blocker))
+							{
+								pos = hitpos;
+								return true;
+							}
+						}
+					}
 				}
-				else if (AnyValidTargetsInRadius(world, pos, info.Width, args.SourceActor, true))
-					return true;
+				else if (FirstValidTargetsOnLine(world, lastPos, pos, info.Width, args.SourceActor, true, args.GuidedTarget.Actor, out var hitpos, out blocker))
+				{
+					{
+						pos = hitpos;
+						return true;
+					}
+				}
 			}
 
 			if (shouldBounce && dat <= 0 && bouncingTick <= 0)
