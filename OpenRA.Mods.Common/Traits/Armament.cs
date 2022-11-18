@@ -353,12 +353,12 @@ namespace OpenRA.Mods.Common.Traits
 						return offset;
 
 					var dist = firePos - target.CenterPosition;
-					var moveLensqr = move.CurrentSpeed.LengthSquared;
+					var moveLensqr = move.CurrentVelocity.LengthSquared;
 					if (moveLensqr == 0)
 						return offset;
 
 					var distLensqr = dist.LengthSquared;
-					var coss = WVec.Dot(dist, move.CurrentSpeed);
+					var coss = WVec.Dot(dist, move.CurrentVelocity);
 					var a = moveLensqr - projSpeed * projSpeed;
 					var b = -(2 * coss);
 					var c = distLensqr;
@@ -373,7 +373,7 @@ namespace OpenRA.Mods.Common.Traits
 
 						if (t > 0)
 						{
-							offset = new WVec((int)(t * move.CurrentSpeed.X), (int)(t * move.CurrentSpeed.Y), (int)(t * move.CurrentSpeed.Z));
+							offset = new WVec((int)(t * move.CurrentVelocity.X), (int)(t * move.CurrentVelocity.Y), (int)(t * move.CurrentVelocity.Z));
 							target.SetOffset(offset);
 
 							return offset;

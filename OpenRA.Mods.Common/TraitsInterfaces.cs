@@ -452,7 +452,7 @@ namespace OpenRA.Mods.Common.Traits
 
 	public interface IMove
 	{
-		WVec CurrentSpeed { get; }
+		WVec CurrentVelocity { get; }
 		Activity MoveTo(CPos cell, int nearEnough = 0, Actor ignoreActor = null,
 		 	bool evaluateNearestMovableCell = false, Color? targetLineColor = null);
 		Activity MoveWithinRange(in Target target, WDist range,

@@ -244,7 +244,7 @@ namespace OpenRA.Mods.Common.Traits
 		INotifyFinishedMoving[] notifyFinishedMoving;
 		IWrapMove[] moveWrappers;
 		bool requireForceMove;
-		public int AcceleratedDelta;
+		public int CurrentSpeedAccDelta;
 
 		public bool IsImmovable { get; private set; }
 		public bool TurnToMove;
@@ -309,8 +309,8 @@ namespace OpenRA.Mods.Common.Traits
 		#endregion
 
 		WPos lastPos, currentPos;
-		WVec currentSpeed = WVec.Zero;
-		public WVec CurrentSpeed => currentSpeed;
+		WVec currentVelocity = WVec.Zero;
+		public WVec CurrentVelocity => currentVelocity;
 
 		public Mobile(ActorInitializer init, MobileInfo info)
 			: base(info)
@@ -378,7 +378,7 @@ namespace OpenRA.Mods.Common.Traits
 			UpdateMovement();
 
 			currentPos = CenterPosition;
-			currentSpeed = currentPos - lastPos;
+			currentVelocity = currentPos - lastPos;
 			lastPos = currentPos;
 			if (self.World.Map.DistanceAboveTerrain(CenterPosition).Length > Info.MinAirborneAltitude)
 			{
@@ -395,9 +395,8 @@ namespace OpenRA.Mods.Common.Traits
 					airborneConditionToken = self.RevokeCondition(airborneConditionToken);
 			}
 
-
 			if (movementTypes == MovementType.None)
-				AcceleratedDelta = 0;
+				CurrentSpeedAccDelta = 0;
 		}
 
 		public void UpdateMovement()
@@ -848,21 +847,21 @@ namespace OpenRA.Mods.Common.Traits
 			var terrainSpeed = Locomotor.MovementSpeedForCell(cell);
 			var modifiers = speedModifiers.Value.Append(terrainSpeed);
 
-			if (AcceleratedDelta >= 0)
+			if (CurrentSpeedAccDelta >= 0)
 			{
 				var currentSpeed = Info.MaxSpeed > Info.Speed ?
-					Math.Clamp(AcceleratedDelta, Util.ApplyPercentageModifiers(Info.Speed, modifiers), Util.ApplyPercentageModifiers(Info.MaxSpeed, modifiers))
-					: Util.ApplyPercentageModifiers(Info.Speed, modifiers);
-				AcceleratedDelta = currentSpeed;
-				return currentSpeed;
+					Math.Clamp(CurrentSpeedAccDelta, Info.Speed, Info.MaxSpeed)
+					: Info.Speed;
+				CurrentSpeedAccDelta = Math.Clamp(CurrentSpeedAccDelta, 0, currentSpeed);
+				return Util.ApplyPercentageModifiers(currentSpeed, modifiers);
 			}
 			else
 			{
 				var currentSpeed = Info.MaxSpeed > Info.Speed ?
-					Math.Clamp(AcceleratedDelta, -Util.ApplyPercentageModifiers(Info.MaxSpeed, modifiers), -Util.ApplyPercentageModifiers(Info.Speed, modifiers)) :
-					-Util.ApplyPercentageModifiers(Info.Speed, modifiers);
-				AcceleratedDelta = currentSpeed;
-				return currentSpeed;
+					Math.Clamp(CurrentSpeedAccDelta, -Info.MaxSpeed, -Info.Speed) :
+					-Info.Speed;
+				CurrentSpeedAccDelta = Math.Clamp(CurrentSpeedAccDelta, currentSpeed, 0);
+				return Util.ApplyPercentageModifiers(currentSpeed, modifiers);
 			}
 		}
 
@@ -916,7 +915,7 @@ namespace OpenRA.Mods.Common.Traits
 
 		Activity LocalMove(Actor self, WPos fromPos, WPos toPos, CPos cell)
 		{
-			AcceleratedDelta = Info.MaxSpeed > Info.Speed ? Info.MaxSpeed - Info.Speed : 0;
+			CurrentSpeedAccDelta = Info.MaxSpeed > Info.Speed ? Info.MaxSpeed - Info.Speed : 0;
 			var speed = MovementSpeedForCell(cell);
 			var length = speed > 0 ? (toPos - fromPos).Length / speed : 0;
 
@@ -954,7 +953,7 @@ namespace OpenRA.Mods.Common.Traits
 		{
 			init.Add(new FacingInit(Facing));
 			init.Add(new OrientationInit(Orientation));
-			init.Add(new VelocityInit(CurrentSpeed));
+			init.Add(new VelocityInit(CurrentVelocity));
 
 			// Allows the husk to drag to its final position
 			if (CanEnterCell(self.Location, self, BlockedByActor.Stationary))
@@ -1110,7 +1109,7 @@ namespace OpenRA.Mods.Common.Traits
 				{
 					case MovementMode.Universal:
 						{
-							AcceleratedDelta += Info.SpeedAccleration;
+							CurrentSpeedAccDelta += Info.SpeedAccleration;
 
 							var map = self.World.Map;
 							var loc = map.CellContaining(CenterPosition);
@@ -1146,7 +1145,7 @@ namespace OpenRA.Mods.Common.Traits
 									SetPosition(self, tPos, true);
 								else
 								{
-									AcceleratedDelta = 0;
+									CurrentSpeedAccDelta = 0;
 								}
 							}
 						}
@@ -1173,11 +1172,11 @@ namespace OpenRA.Mods.Common.Traits
 
 							if (mVec.Y < 0)
 							{
-								AcceleratedDelta += Info.SpeedAccleration;
+								CurrentSpeedAccDelta += Info.SpeedAccleration;
 							}
 							else
 							{
-								AcceleratedDelta -= Info.SpeedAccleration;
+								CurrentSpeedAccDelta -= Info.SpeedAccleration;
 							}
 
 							var map = self.World.Map;
@@ -1216,13 +1215,17 @@ namespace OpenRA.Mods.Common.Traits
 
 							if (mVec.Y < 0)
 							{
+								if (CurrentSpeedAccDelta < 0)
+									CurrentSpeedAccDelta = 0;
 								if (mVec.X == 0)
-									AcceleratedDelta += Info.SpeedAccleration;
+									CurrentSpeedAccDelta += Info.SpeedAccleration;
 							}
 							else
 							{
+								if (CurrentSpeedAccDelta > 0)
+									CurrentSpeedAccDelta = 0;
 								if (mVec.X == 0)
-									AcceleratedDelta -= Info.SpeedAccleration;
+									CurrentSpeedAccDelta -= Info.SpeedAccleration;
 							}
 
 							var map = self.World.Map;

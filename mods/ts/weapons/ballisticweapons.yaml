@@ -9,25 +9,44 @@
 		# Palette: ra
 		DetectTargetFromLength: 0.8
 		DetectTargetBeforeDist: 2c512
+
+		ContrailZOffset: 22
+		ContrailLength: 10
+		ContrailWidth: 125
+
+		ContrailImage: lineidle_loop
+		ContrailSequences: trail
+
+		ContrailStartColor: DBDB50
+		ContrailStartColorAlpha: 233
+
+		ContrailEndColor: BB6525
+		ContrailEndColorAlpha: 0 #64
+
+		ContrailWidthFadeRate: 0.5
 		ContrailDelay: 0
-		ContrailLength: 4
-		ContrailWidth: 0c112
-
-		ContrailUseInnerOuterColor: true
-
-		ContrailStartColor: BBBB00
-		ContrailStartColorOuter: 330000
-		ContrailStartColorAlpha: 255
-		ContrailStartColorAlphaOuter: 32
-
-		ContrailEndColor: BB2200
-		ContrailEndColorOuter: 000000
-		ContrailEndColorAlpha: 10
-		ContrailEndColorAlphaOuter: 0
-
 		ContrailBlendMode: Additive
-		ContrailWidthFadeRate: 1
-		ContrailZOffset: 3000
+
+		# ContrailDelay: 0
+		# ContrailLength: 4
+		# ContrailWidth: 0c112
+
+		# ContrailUseInnerOuterColor: true
+
+		# ContrailStartColor: BBBB00
+		# ContrailStartColorOuter: 330000
+		# ContrailStartColorAlpha: 255
+		# ContrailStartColorAlphaOuter: 32
+
+		# ContrailEndColor: BB2200
+		# ContrailEndColorOuter: 000000
+		# ContrailEndColorAlpha: 10
+		# ContrailEndColorAlphaOuter: 0
+
+		# ContrailBlendMode: Additive
+		# ContrailWidthFadeRate: 1
+		# ContrailZOffset: 3000
+
 		TrailImage: cannonsmokecircle
 		TrailPalette: effect
 		TrailDelay: 0
@@ -69,10 +88,7 @@
 	Warhead@2Eff: CreateEffect
 		Explosions: small_clsn
 	Projectile: Bullet
-		ContrailWidth: 0c172
-		ContrailLength: 4
-		ContrailEndColorAlpha: 64
-		ContrailWidthFadeRate: 1
+		ContrailWidth: 0c100
 		Inaccuracy: 310
 		TrailSequences: idle2
 	Warhead@4Smu: LeaveSmudge
@@ -87,10 +103,7 @@
 	ReloadDelay: 75
 	Range: 8c768
 	Projectile: Bullet
-		ContrailWidth: 0c190
-		ContrailLength: 4
-		ContrailEndColorAlpha: 64
-		ContrailWidthFadeRate: 1
+		ContrailWidth: 0c130
 		Blockable: false
 		LaunchAngle: 0
 		Inaccuracy: 310
@@ -122,8 +135,8 @@ RPGTower:
 		Shadow: true
 		LaunchAngle: 75
 		Palette: player
-		ContrailLength: 7
-		ContrailWidth: 0c146
+		ContrailLength: 12
+		ContrailWidth: 0c156
 		ContrailStartColor: FFCF66A0
 		ContrailStartColorOuter: FFCF66A0
 		ContrailDelay: 0
@@ -154,8 +167,8 @@ TitanRPG:
 		Blockable: false
 		Image: 120mm
 		Palette: ra
-		ContrailLength: 10
-		ContrailWidth: 175
+		ContrailLength: 12
+		ContrailWidth: 225
 		LaunchAngle: 75
 	Warhead@1Dam: Spread3DDamage
 		Spread: 255
@@ -186,7 +199,7 @@ TitanRPG:
 	Projectile: Bullet
 		Speed: 384
 		LaunchAngle: 165
-		ContrailLength: 12
+		ContrailLength: 15
 	Warhead@1Dam: Spread3DDamage
 		Damage: 15000
 	Warhead@2Eff: CreateEffect
@@ -213,7 +226,7 @@ Jugg90mm:
 		Inaccuracy: 2c0
 		ContrailStartColor: 996600
 		ContrailEndColor: 330000
-		ContrailWidth: 87
+		ContrailWidth: 144
 		TrailSequences: idle2
 	Warhead@1Dam: Spread3DDamage
 		Spread: 188
@@ -252,6 +265,7 @@ Grenade:
 		ContrailStartColorAlphaOuter: 64
 		ContrailEndColor: FFFFFF
 		ContrailEndColorOuter: FFFFFF
+		-ContrailImage:
 		ContrailEndColorAlpha: 10
 		ContrailEndColorAlphaOuter: 5
 	Warhead@1Dam: Spread3DDamage

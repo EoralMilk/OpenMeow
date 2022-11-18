@@ -91,7 +91,7 @@ namespace OpenRA.Mods.Cnc.Traits
 
 		WPos lastPos, currentPos;
 		WVec currentSpeed = WVec.Zero;
-		public WVec CurrentSpeed => currentSpeed;
+		public WVec CurrentVelocity => currentSpeed;
 
 		public TDGunboat(ActorInitializer init, TDGunboatInfo info)
 		{

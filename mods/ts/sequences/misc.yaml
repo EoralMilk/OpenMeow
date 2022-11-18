@@ -1192,7 +1192,7 @@ fsidle_bg:
 		AlphaFade: True
 		MeshType: Board
 
-fsidle_loop:
+lineidle_loop:
 	Defaults:
 		Length: *
 		BlendMode: Additive #Translucent

@@ -8,10 +8,12 @@
 	Projectile: Bullet
 		DetectTargetFromLength: 0.7
 		DetectTargetBeforeDist: 2c0
+		
 		ContrailZOffset: 22
 		ContrailLength: 3
 		ContrailWidth: 50
-		ContrailUseInnerOuterColor: true
+
+		ContrailUseInnerOuterColor: false
 
 		ContrailStartColor: FFFF88
 		ContrailStartColorOuter: FFFF88

@@ -276,7 +276,7 @@ namespace OpenRA.Mods.Common.Traits
 		WVec currentSpeed = WVec.Zero;
 		readonly WVec initSpeed;
 		public WVec InitSpeed => initSpeed;
-		public WVec CurrentSpeed => currentSpeed;
+		public WVec CurrentVelocity => currentSpeed;
 
 		public WAngle GetTurnSpeed(bool isIdleTurn)
 		{
@@ -758,7 +758,7 @@ namespace OpenRA.Mods.Common.Traits
 		{
 			init.Add(new FacingInit(Facing));
 			init.Add(new OrientationInit(Orientation));
-			init.Add(new VelocityInit(CurrentSpeed));
+			init.Add(new VelocityInit(CurrentVelocity));
 		}
 
 		void INotifyBecomingIdle.OnBecomingIdle(Actor self)

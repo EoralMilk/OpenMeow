@@ -52,6 +52,7 @@ namespace OpenRA.Graphics
 		public mat4 RenderRestPose { get; private set; }
 		public mat4 RenderCurrentPose;
 		public bool OverridePose;
+		public bool NeedUpdateWhenRender = false;
 
 		public BoneInstance(in BoneAsset asset, SkeletonInstance skeletonInstance)
 		{
@@ -430,7 +431,7 @@ namespace OpenRA.Graphics
 		{
 			for (int i = 0; i < boneSize; i++)
 			{
-				if (SkeletonAsset.Bones[i].SkinId < 0 || (skipUpdateAdjBonePose && SkeletonAsset.Bones[i].IsAdjBone))
+				if (!Bones[i].NeedUpdateWhenRender && (SkeletonAsset.Bones[i].SkinId < 0 || (skipUpdateAdjBonePose && SkeletonAsset.Bones[i].IsAdjBone)))
 					continue;
 				RenderUpdateBoneInner(i, animFrame == null ? EmptyFrame : animFrame, animMask == null ? SkeletonAsset.AllValidMask : animMask);
 			}
@@ -510,6 +511,7 @@ namespace OpenRA.Graphics
 		int instanceCount = 0;
 
 		public readonly SkeletonAsset SkeletonAsset;
+
 		// public Dictionary<string, PreBakedSkeletalAnim> PreBakedAnimations = new Dictionary<string, PreBakedSkeletalAnim>();
 		public float[] BindTransformData = new float[SkeletonAsset.MaxSkinBones * 16];
 		readonly SkeletonInstance preBakeInstance;
@@ -599,6 +601,9 @@ namespace OpenRA.Graphics
 
 		public void ChangeBoneBindTransform(int id, in mat4 bindPose)
 		{
+			if (SkeletonAsset.Bones[id].SkinId < 0)
+				return;
+
 			var y = SkeletonAsset.Bones[id].SkinId * 16;
 
 			BindTransformData[y + 0] = bindPose.Column0[0];

@@ -33,22 +33,16 @@
 
 		ContrailZOffset: 22
 		ContrailLength: 12
-		ContrailWidth: 284 #178
+		ContrailWidth: 254
 
-		ContrailImage: fsidle_loop
+		ContrailImage: lineidle_loop
 		ContrailSequences: trail
 
-		ContrailUseInnerOuterColor: true
-
 		ContrailStartColor: DFA877
-		ContrailStartColorOuter: FFDD44
 		ContrailStartColorAlpha: 233
-		ContrailStartColorAlphaOuter: 0
 
 		ContrailEndColor: A8A8A8
-		ContrailEndColorOuter: A8A8A8
 		ContrailEndColorAlpha: 0 #64
-		ContrailEndColorAlphaOuter: 0
 
 		ContrailWidthFadeRate: 0
 		ContrailDelay: 0
@@ -124,22 +118,16 @@
 		
 		ContrailZOffset: 22
 		ContrailLength: 12
-		ContrailWidth: 284 #178
+		ContrailWidth: 254
 
-		ContrailImage: fsidle_loop
+		ContrailImage: lineidle_loop
 		ContrailSequences: trail
 
-		ContrailUseInnerOuterColor: true
-
 		ContrailStartColor: DFA877
-		ContrailStartColorOuter: FFDD44
 		ContrailStartColorAlpha: 233
-		ContrailStartColorAlphaOuter: 0
 
 		ContrailEndColor: A8A8A8
-		ContrailEndColorOuter: A8A8A8
 		ContrailEndColorAlpha: 0 #64
-		ContrailEndColorAlphaOuter: 0
 
 		ContrailWidthFadeRate: 0
 		ContrailDelay: 0

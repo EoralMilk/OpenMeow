@@ -74,7 +74,7 @@ namespace OpenRA.Meow.RPG.Mechanics
 		INotifyEquip[] equipNotifiers = Array.Empty<INotifyEquip>();
 		RenderMeshes renderMeshes;
 		WithSkeleton withSkeleton;
-		int boneId;
+		int boneId = -1;
 		Func<mat4> slotGetRenderMatrix;
 
 		public Item Item { get; private set; }
@@ -136,6 +136,14 @@ namespace OpenRA.Meow.RPG.Mechanics
 			}
 
 			autoEquip = null;
+		}
+
+		void ToggleEquipBoneUpdate(bool update)
+		{
+			if (boneId != -1 && slotGetRenderMatrix != null)
+			{
+				withSkeleton.SetBoneRenderUpdate(boneId, update);
+			}
 		}
 
 		bool INotifyInventory.TryAdd(Actor self, Item item)
@@ -238,6 +246,7 @@ namespace OpenRA.Meow.RPG.Mechanics
 				}
 			}
 
+			ToggleEquipBoneUpdate(true);
 			return true;
 		}
 
@@ -269,6 +278,7 @@ namespace OpenRA.Meow.RPG.Mechanics
 				}
 			}
 
+			ToggleEquipBoneUpdate(false);
 			return true;
 		}
 

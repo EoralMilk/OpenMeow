@@ -140,6 +140,11 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 				return -1;
 		}
 
+		public void SetBoneRenderUpdate(int id, bool update)
+		{
+			Skeleton.Bones[id].NeedUpdateWhenRender = update;
+		}
+
 		public WPos GetWPosFromBoneId(int id)
 		{
 			CallForUpdate(id);

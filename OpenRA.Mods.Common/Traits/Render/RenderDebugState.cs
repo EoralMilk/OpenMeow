@@ -87,7 +87,7 @@ namespace OpenRA.Mods.Common.Traits.Render
 			move = self.TraitOrDefault<IMove>();
 			if (move != null)
 			{
-				yield return new TextAnnotationRenderable(font, self.CenterPosition - 2 * offset, 0, color, new string("Speed: " + move.CurrentSpeed));
+				yield return new TextAnnotationRenderable(font, self.CenterPosition - 2 * offset, 0, color, new string("Speed: " + move.CurrentVelocity));
 			}
 
 			// Get the AI squad that this actor belongs to.

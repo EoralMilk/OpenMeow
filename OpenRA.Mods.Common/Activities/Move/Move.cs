@@ -184,7 +184,7 @@ namespace OpenRA.Mods.Common.Activities
 				QueueChild(new Turn(self, firstFacing));
 				mobile.TurnToMove = true;
 				if (mobile.Info.MovementMode == MovementMode.TurnInPlace)
-					mobile.AcceleratedDelta = 0;
+					mobile.CurrentSpeedAccDelta = 0;
 
 				return false;
 			}
@@ -447,7 +447,7 @@ namespace OpenRA.Mods.Common.Activities
 					var currentSpeed = mobile.MovementSpeedForCell(mobile.ToCell);
 					progress += currentSpeed;
 
-					mobile.AcceleratedDelta += mobile.Info.SpeedAccleration;
+					mobile.CurrentSpeedAccDelta += mobile.Info.SpeedAccleration;
 				}
 
 				if (progress >= Distance)

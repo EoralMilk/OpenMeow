@@ -478,7 +478,7 @@ namespace OpenRA.Meow.RPG.Mechanics
 				guardTick++;
 			}
 
-			if (move.CurrentSpeed != WVec.Zero)
+			if (move.CurrentVelocity != WVec.Zero)
 			{
 				//moveSwitch.SetFlag(true);
 				lerpSpeed = lerpSpeed < FP.One ? lerpSpeed + (FP.One / info.Stand2WalkTick) : FP.One;
