@@ -57,11 +57,17 @@ namespace OpenRA.Mods.AS.Traits
 		{
 			supportPowerManager = player.PlayerActor.Trait<SupportPowerManager>();
 			foreach (var decision in Info.Decisions)
-				powerDecisions.Add(decision.OrderName, decision);
+			{
+				if (!powerDecisions.ContainsKey(decision.OrderName))
+					powerDecisions.Add(decision.OrderName, decision);
+			}
 		}
 
 		void IBotTick.BotTick(IBot bot)
 		{
+			if (IsTraitDisabled)
+				return;
+
 			foreach (var sp in supportPowerManager.Powers.Values)
 			{
 				if (sp.Disabled)
