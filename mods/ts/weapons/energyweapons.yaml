@@ -29,6 +29,16 @@
 		ContrailWidthFadeRate: 0
 		ContrailDelay: 0
 		ContrailBlendMode: Additive
+
+		TrailImage: fxring
+		TrailSequences: sonicburst
+		TrailDelay: 0
+		TrailInterval: 1
+		TrailLikeSmokeRing: true
+		TrailScaleAnimStart: 0.2
+		TrailScaleAnimEnd: 2
+
+
 		Speed: 1550
 		Inaccuracy: 0
 		UseVerticalInaccuracy: true
@@ -94,6 +104,14 @@ EmpLineDamage:
 		Condition: empdisable
 		Duration: 30
 
+MechEmpLineDamage:
+	Inherits: EmpLineDamage
+	Warhead@1Dam: Spread3DDamage
+		Range: 0, 32
+		Falloff: 100, 100
+		ValidRelationships: Neutral, Enemy
+		Damage: 10000
+
 LtRail:
 	Inherits: ^Railgun
 	# InvalidTargets: Infantry
@@ -108,6 +126,9 @@ MechRailgun:
 	Projectile: Bullet
 		ContrailLength: 18
 		ContrailWidth: 335
+		TrailScaleAnimStart: 0.2
+		TrailScaleAnimEnd: 2.3
+		LineWeapon: MechEmpLineDamage
 	Warhead@1Dam: Spread3DDamage
 		Damage: 20000
 		Condition: empdisable

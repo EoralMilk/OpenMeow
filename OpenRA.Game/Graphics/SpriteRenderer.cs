@@ -199,6 +199,13 @@ namespace OpenRA.Graphics
 			nv += 6;
 		}
 
+		public void DrawNmlDirBoardSprite(Sprite s, PaletteReference pal, in WPos wPos, in vec3 viewOffset, in vec3 left, in vec3 up, float scale, in float3 tint, float alpha, float rotation = 0f)
+		{
+			var samplers = SetRenderStateForSprite(s);
+			Util.FastCreateNormalBoard(vertices, wPos, viewOffset, left, up, s, samplers, ResolveTextureIndex(s, pal), scale, tint, alpha, nv, rotation);
+			nv += 6;
+		}
+
 		public void DrawDirectionSprite(Sprite s, PaletteReference pal,
 			in float3 leftTop, in float3 rightTop, in float3 leftBottom, in float3 rightBottom,
 			in float3 tint, float alpha, in float3 endTint, float endAlpha,

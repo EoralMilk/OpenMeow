@@ -49,23 +49,25 @@ namespace OpenRA.Graphics
 			this.paused = paused;
 		}
 
+		public float CurrentPlayRatio => CurrentSequence.Length > 0 ? (float)frame / CurrentSequence.Length : 0;
+
 		public int CurrentFrame => backwards ? CurrentSequence.Length - frame - 1 : frame;
 
 		public Sprite Image => CurrentSequence.GetSprite(CurrentFrame, facingFunc());
 
-		public IRenderable[] Render(WPos pos, in WVec offset, int zOffset, PaletteReference palette, float scaleMul = 1f, bool renderShadow = true)
+		public IRenderable[] Render(WPos pos, in WVec offset, int zOffset, PaletteReference palette, float scaleMul = 1f, bool renderShadow = true, WVec? nmlDir = null)
 		{
 			var tintModifiers = CurrentSequence.IgnoreWorldTint ? TintModifiers.IgnoreWorldTint : TintModifiers.None;
 			var alpha = CurrentSequence.GetAlpha(CurrentFrame);
 			var (image, rotation) = CurrentSequence.GetSpriteWithRotation(CurrentFrame, facingFunc());
 			var imageRenderable = new SpriteRenderable(image, pos, offset, CurrentSequence.ZOffset + zOffset, palette, CurrentSequence.Scale * scaleMul, alpha, float3.Ones, tintModifiers, IsDecoration,
-				rotation);
+				rotation, false, nmlDir);
 
 			if (CurrentSequence.ShadowStart >= 0 && renderShadow)
 			{
 				var shadow = CurrentSequence.GetShadow(CurrentFrame, facingFunc());
 
-				var shadowRenderable = new SpriteRenderable(shadow, pos, offset, CurrentSequence.ShadowZOffset + zOffset, palette, CurrentSequence.Scale * scaleMul, 1f, float3.Ones, tintModifiers, true, rotation, true);
+				var shadowRenderable = new SpriteRenderable(shadow, pos, offset, CurrentSequence.ShadowZOffset + zOffset, palette, CurrentSequence.Scale * scaleMul, 1f, float3.Ones, tintModifiers, true, rotation, true, nmlDir);
 
 				return new IRenderable[] { shadowRenderable, imageRenderable };
 			}

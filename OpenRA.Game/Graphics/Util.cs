@@ -479,6 +479,62 @@ namespace OpenRA.Graphics
 			vertices[nv + 5] = new Vertex(leftTop, r.Left, r.Top, sl, st, paletteTextureIndex, fAttribC, tint, alpha);
 		}
 
+		public static void FastCreateNormalBoard(Vertex[] vertices,
+			in WPos inPos, in vec3 viewOffset, in vec3 leftDir, in vec3 upDir,
+			Sprite r, int2 samplers, float paletteTextureIndex,
+			float scale, in float3 tint, float alpha, int nv, float rotation = 0f)
+		{
+			if (r.HasMeshCreateInfo)
+			{
+				if (!r.UpdateMeshInfo())
+					throw new Exception("invalide create mesh time: sprite has not create mesh data");
+			}
+
+			if (r.SpriteMeshType != SpriteMeshType.Board)
+			{
+				throw new Exception("sprite's mesh type is not board");
+			}
+
+			float2 leftRight = scale * r.LeftRight;
+
+			var position = Game.Renderer.World3DRenderer.Get3DRenderPositionFromWPos(inPos);
+			position += viewOffset;
+
+			var leftTop = position + leftRight.X * leftDir + scale * r.leftTop.Z * upDir;
+			var rightBottom = position - leftRight.X * leftDir - scale * r.leftTop.Z * upDir;
+			var rightTop = new float3(rightBottom.x, rightBottom.y, leftTop.z);
+			var leftBottom = new float3(leftTop.x, leftTop.y, rightBottom.z);
+
+			float sl = 0;
+			float st = 0;
+			float sr = 0;
+			float sb = 0;
+
+			// See combined.vert for documentation on the channel attribute format
+			var attribC = r.Channel == TextureChannel.RGBA ? 0x02 : ((byte)r.Channel) << 1 | 0x01;
+			attribC |= samplers.X << 6;
+			if (r is SpriteWithSecondaryData ss)
+			{
+				sl = ss.SecondaryLeft;
+				st = ss.SecondaryTop;
+				sr = ss.SecondaryRight;
+				sb = ss.SecondaryBottom;
+
+				attribC |= ((byte)ss.SecondaryChannel) << 4 | 0x08;
+				attribC |= samplers.Y << 9;
+			}
+
+			var fAttribC = (float)attribC;
+
+			vertices[nv] = new Vertex(new float3(leftTop), r.Left, r.Top, sl, st, paletteTextureIndex, fAttribC, tint, alpha);
+			vertices[nv + 1] = new Vertex(rightTop, r.Right, r.Top, sr, st, paletteTextureIndex, fAttribC, tint, alpha);
+			vertices[nv + 2] = new Vertex(new float3(rightBottom), r.Right, r.Bottom, sr, sb, paletteTextureIndex, fAttribC, tint, alpha);
+
+			vertices[nv + 3] = new Vertex(new float3(rightBottom), r.Right, r.Bottom, sr, sb, paletteTextureIndex, fAttribC, tint, alpha);
+			vertices[nv + 4] = new Vertex(leftBottom, r.Left, r.Bottom, sl, sb, paletteTextureIndex, fAttribC, tint, alpha);
+			vertices[nv + 5] = new Vertex(new float3(leftTop), r.Left, r.Top, sl, st, paletteTextureIndex, fAttribC, tint, alpha);
+		}
+
 		public static void FastCreateDirection(Vertex[] vertices,
 			in float3 leftTop, in float3 rightTop, in float3 leftBottom, in float3 rightBottom,
 			Sprite r, int2 samplers, float paletteTextureIndex,

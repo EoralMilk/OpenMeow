@@ -27,23 +27,27 @@ namespace OpenRA.Mods.Common.Effects
 		WPos pos;
 		int delay;
 		bool initialized;
+		readonly WVec? nmlDir = null;
+		readonly float scaleMulStart = 1;
+		readonly float scaleMulEnd = 1;
+		readonly bool changeScale;
 
 		// Facing is last on these overloads partially for backwards compatibility with previous main ctor revision
 		// and partially because most effects don't need it. The latter is also the reason for placement of 'delay'.
 		public SpriteEffect(WPos pos, World world, string image, string sequence, string palette,
-			bool visibleThroughFog = false, int delay = 0)
-			: this(() => pos, () => WAngle.Zero, world, image, sequence, palette, visibleThroughFog, delay) { }
+			bool visibleThroughFog = false, int delay = 0, WVec? nmlDir = null, float scaleMulStart = 1, float scaleMulEnd = 1)
+			: this(() => pos, () => WAngle.Zero, world, image, sequence, palette, visibleThroughFog, delay, nmlDir, scaleMulStart, scaleMulEnd) { }
 
 		public SpriteEffect(Actor actor, World world, string image, string sequence, string palette,
-			bool visibleThroughFog = false, int delay = 0)
-			: this(() => actor.CenterPosition, () => WAngle.Zero, world, image, sequence, palette, visibleThroughFog, delay) { }
+			bool visibleThroughFog = false, int delay = 0, WVec? nmlDir = null, float scaleMulStart = 1, float scaleMulEnd = 1)
+			: this(() => actor.CenterPosition, () => WAngle.Zero, world, image, sequence, palette, visibleThroughFog, delay, nmlDir, scaleMulStart, scaleMulEnd) { }
 
 		public SpriteEffect(WPos pos, WAngle facing, World world, string image, string sequence, string palette,
-			bool visibleThroughFog = false, int delay = 0)
-			: this(() => pos, () => facing, world, image, sequence, palette, visibleThroughFog, delay) { }
+			bool visibleThroughFog = false, int delay = 0, WVec? nmlDir = null, float scaleMulStart = 1, float scaleMulEnd = 1)
+			: this(() => pos, () => facing, world, image, sequence, palette, visibleThroughFog, delay, nmlDir, scaleMulStart, scaleMulEnd) { }
 
 		public SpriteEffect(Func<WPos> posFunc, Func<WAngle> facingFunc, World world, string image, string sequence, string palette,
-			bool visibleThroughFog = false, int delay = 0)
+			bool visibleThroughFog = false, int delay = 0, WVec? nmlDir = null, float scaleMulStart = 1, float scaleMulEnd = 1)
 		{
 			this.world = world;
 			this.posFunc = posFunc;
@@ -51,8 +55,12 @@ namespace OpenRA.Mods.Common.Effects
 			this.sequence = sequence;
 			this.visibleThroughFog = visibleThroughFog;
 			this.delay = delay;
+			this.nmlDir = nmlDir;
+			this.scaleMulStart = scaleMulStart;
+			this.scaleMulEnd = scaleMulEnd;
 			pos = posFunc();
 			anim = new Animation(world, image, facingFunc);
+			changeScale = !(scaleMulStart == scaleMulEnd && scaleMulStart == 1);
 		}
 
 		public void Tick(World world)
@@ -80,7 +88,7 @@ namespace OpenRA.Mods.Common.Effects
 			if (!initialized || (!visibleThroughFog && world.FogObscures(pos)))
 				return SpriteRenderable.None;
 
-			return anim.Render(pos, wr.Palette(palette));
+			return anim.Render(pos, WVec.Zero, 0, wr.Palette(palette), scaleMul: changeScale ? float2.Lerp(scaleMulStart, scaleMulEnd, anim.CurrentPlayRatio) : 1, nmlDir: nmlDir);
 		}
 	}
 }

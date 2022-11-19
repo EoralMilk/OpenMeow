@@ -65,6 +65,13 @@ namespace OpenRA.Primitives
 										(float)pos.Z / WDistPerMeter);
 		}
 
+		public static vec3 WVecToVec3(WVec vec)
+		{
+			return new vec3(-(float)vec.X / WDistPerMeter,
+										(float)vec.Y / WDistPerMeter,
+										(float)vec.Z / WDistPerMeter);
+		}
+
 		public static float3 WPosToFloat3(WPos pos)
 		{
 			return new float3(-(float)pos.X / WDistPerMeter,

@@ -83,6 +83,12 @@ namespace OpenRA.Mods.Common.Projectiles
 		[Desc("Loop a randomly chosen sequence of TrailImage from this list while this projectile is moving.")]
 		public readonly string[] TrailSequences = { "idle" };
 
+		public readonly bool TrailLikeSmokeRing = false;
+
+		public readonly float TrailScaleAnimStart = 1;
+
+		public readonly float TrailScaleAnimEnd = 1;
+
 		[Desc("Interval in ticks between each spawned Trail animation.")]
 		public readonly int TrailInterval = 2;
 
@@ -334,7 +340,7 @@ namespace OpenRA.Mods.Common.Projectiles
 
 			if (hasInitPal)
 			{
-				if (info.TrailImage != null && info.TrailCount > 0 && --trailTicks < 0 && renderTrail)
+				if (info.TrailImage != null && info.TrailCount > 0 && --trailTicks <= 0 && renderTrail)
 				{
 					var v = (pos - trailLastPos) / info.TrailCount;
 
@@ -342,7 +348,8 @@ namespace OpenRA.Mods.Common.Projectiles
 					{
 						trailLastPos += v;
 						var ppos = trailLastPos; // delayed pos
-						world.AddFrameEndTask(w => w.Add(new SpriteEffect(ppos, w, info.TrailImage, info.TrailSequences.Random(world.SharedRandom), trailPalette)));
+						world.AddFrameEndTask(w => w.Add(new SpriteEffect(ppos, w, info.TrailImage, info.TrailSequences.Random(world.SharedRandom), trailPalette,
+							nmlDir: info.TrailLikeSmokeRing ? (WVec?)matVec : null, scaleMulStart: info.TrailScaleAnimStart, scaleMulEnd: info.TrailScaleAnimEnd)));
 					}
 
 					trailTicks = info.TrailInterval;

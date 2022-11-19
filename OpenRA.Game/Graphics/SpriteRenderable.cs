@@ -11,6 +11,7 @@
 
 using System;
 using System.Collections.Generic;
+using GlmSharp;
 using OpenRA.Primitives;
 
 namespace OpenRA.Graphics
@@ -21,6 +22,11 @@ namespace OpenRA.Graphics
 
 		public readonly Sprite Sprite;
 		readonly WPos pos;
+
+		/// <summary>
+		/// using for nml board sprite
+		/// </summary>
+		readonly WVec? nmlDir;
 		readonly WVec offset;
 		readonly int zOffset;
 		readonly PaletteReference palette;
@@ -33,7 +39,10 @@ namespace OpenRA.Graphics
 		readonly BlendMode blendMode;
 		public BlendMode BlendMode => blendMode;
 
-		public SpriteRenderable(Sprite sprite, WPos pos, WVec offset, int zOffset, PaletteReference palette, float scale, float alpha, float3 tint, TintModifiers tintModifiers, bool isDecoration, WAngle rotation, bool alphaBlend = false)
+		public SpriteRenderable(Sprite sprite, WPos pos, WVec offset, int zOffset,
+			PaletteReference palette,
+			float scale, float alpha, float3 tint, TintModifiers tintModifiers,
+			bool isDecoration, WAngle rotation, bool forceAlphaBlend = false, WVec? nmlDir = null)
 		{
 			this.Sprite = sprite;
 			this.pos = pos;
@@ -46,7 +55,8 @@ namespace OpenRA.Graphics
 			this.isDecoration = isDecoration;
 			this.tintModifiers = tintModifiers;
 			this.alpha = alpha;
-			if (alphaBlend || (sprite.BlendMode == BlendMode.None && alpha < 1f))
+			this.nmlDir = nmlDir;
+			if (forceAlphaBlend || (sprite.BlendMode == BlendMode.None && alpha < 1f))
 			{
 				sprite.ChangeBlendMode(BlendMode.Alpha);
 			}
@@ -76,32 +86,32 @@ namespace OpenRA.Graphics
 
 		public IPalettedRenderable WithPalette(PaletteReference newPalette)
 		{
-			return new SpriteRenderable(Sprite, pos, offset, zOffset, newPalette, scale, alpha, tint, tintModifiers, isDecoration, rotation);
+			return new SpriteRenderable(Sprite, pos, offset, zOffset, newPalette, scale, alpha, tint, tintModifiers, isDecoration, rotation, BlendMode == BlendMode.Alpha, nmlDir);
 		}
 
 		public IRenderable WithZOffset(int newOffset)
 		{
-			return new SpriteRenderable(Sprite, pos, offset, newOffset, palette, scale, alpha, tint, tintModifiers, isDecoration, rotation);
+			return new SpriteRenderable(Sprite, pos, offset, newOffset, palette, scale, alpha, tint, tintModifiers, isDecoration, rotation, BlendMode == BlendMode.Alpha, nmlDir);
 		}
 
 		public IRenderable OffsetBy(in WVec vec)
 		{
-			return new SpriteRenderable(Sprite, pos + vec, offset, zOffset, palette, scale, alpha, tint, tintModifiers, isDecoration, rotation);
+			return new SpriteRenderable(Sprite, pos + vec, offset, zOffset, palette, scale, alpha, tint, tintModifiers, isDecoration, rotation, BlendMode == BlendMode.Alpha, nmlDir);
 		}
 
 		public IRenderable AsDecoration()
 		{
-			return new SpriteRenderable(Sprite, pos, offset, zOffset, palette, scale, alpha, tint, tintModifiers, true, rotation);
+			return new SpriteRenderable(Sprite, pos, offset, zOffset, palette, scale, alpha, tint, tintModifiers, true, rotation, BlendMode == BlendMode.Alpha, nmlDir);
 		}
 
 		public IModifyableRenderable WithAlpha(float newAlpha)
 		{
-			return new SpriteRenderable(Sprite, pos, offset, zOffset, palette, scale, newAlpha, tint, tintModifiers, isDecoration, rotation);
+			return new SpriteRenderable(Sprite, pos, offset, zOffset, palette, scale, newAlpha, tint, tintModifiers, isDecoration, rotation, BlendMode == BlendMode.Alpha, nmlDir);
 		}
 
 		public IModifyableRenderable WithTint(in float3 newTint, TintModifiers newTintModifiers)
 		{
-			return new SpriteRenderable(Sprite, pos, offset, zOffset, palette, scale, alpha, newTint, newTintModifiers, isDecoration, rotation);
+			return new SpriteRenderable(Sprite, pos, offset, zOffset, palette, scale, alpha, newTint, newTintModifiers, isDecoration, rotation, BlendMode == BlendMode.Alpha, nmlDir);
 		}
 
 		float3 ScreenPosition(WorldRenderer wr)
@@ -150,7 +160,21 @@ namespace OpenRA.Graphics
 					wsr.DrawCardSprite(Sprite, palette, Pos, viewOffset, scale, t, a);
 					break;
 				case SpriteMeshType.Board:
-					wsr.DrawBoardSprite(Sprite, palette, Pos, viewOffset, scale, t, a);
+					if (nmlDir == null)
+						wsr.DrawBoardSprite(Sprite, palette, Pos, viewOffset, scale, t, a);
+					else
+					{
+						// An easy vector to find which is perpendicular vector to forwardStep, with 0 Z component
+						var leftVector = new vec3(0, 0, 1);
+						if (nmlDir.Value.X != 0 || nmlDir.Value.Y != 0)
+						{
+							leftVector = World3DCoordinate.WPosToVec3(new WPos(nmlDir.Value.Y, -nmlDir.Value.X, 0)).Normalized;
+						}
+
+						var upVector = vec3.Cross(World3DCoordinate.WVecToVec3(nmlDir.Value), leftVector).Normalized;
+						wsr.DrawNmlDirBoardSprite(Sprite, palette, Pos, viewOffset, leftVector, upVector, scale, t, a);
+					}
+
 					break;
 				case SpriteMeshType.FloatBoard:
 					wsr.DrawFloatBoardSprite(Sprite, palette, Pos, viewOffset, scale, t, a);
