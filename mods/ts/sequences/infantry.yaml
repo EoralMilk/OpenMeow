@@ -1,3 +1,14 @@
+^hasicon:
+	Defaults:
+		Offset: 0, 0, 16
+		ShadowZOffset: 10
+		ZOffset: 14
+	icon: xxicon
+		Facings: 1
+		Length: 1
+		Start: 0
+		ShadowStart: 0
+
 ^InfantryBase:
 	Defaults:
 		Offset: 0, 0, 16

@@ -153,6 +153,33 @@
 	ExternalCondition@WebDisable:
 		Condition: WebDisable
 
+^HospitalHealable:
+	ChangesHealth@HOSPITAL:
+		Step: 500
+		Delay: 100
+		StartIfBelow: 100
+		DamageCooldown: 125
+		RequiresCondition: hospitalheal
+	GrantConditionOnPrerequisite@HOSPITAL:
+		Condition: hospital
+		Prerequisites: cahosp
+	GrantConditionOnDamageState@HOSPITAL:
+		Condition: damaged
+		ValidDamageStates: Light, Medium, Heavy, Critical
+	GrantCondition@HOSPITAL:
+		RequiresCondition: hospital && damaged
+		Condition: hospitalheal
+	WithDecoration@REDCROSS:
+		RequiresCondition: hospitalheal
+		Position: BottomRight
+		Margin: 3, 4
+		Image: pips
+		Sequence: medic
+		Palette: pips
+		BlinkInterval: 32
+		BlinkPattern: Off, On
+
+
 ^Cloakable:
 	Cloak@EXTERNALCLOAK:
 		RequiresCondition: cloakgenerator || crate-cloak && !WebDisable
@@ -715,6 +742,7 @@
 	Inherits@3: ^SpriteActor
 	Inherits@4: ^Cloakable
 	Inherits@5: ^WebDisable
+	Inherits@hospital: ^HospitalHealable
 	Inherits@CRATESTATS: ^CrateStatModifiers
 	Inherits@selection: ^SelectableCombatUnit
 	Inherits@handicaps: ^PlayerHandicaps
@@ -775,30 +803,6 @@
 	Guard:
 		Voice: Move
 	Guardable:
-	ChangesHealth@HOSPITAL:
-		Step: 500
-		Delay: 100
-		StartIfBelow: 100
-		DamageCooldown: 125
-		RequiresCondition: hospitalheal
-	GrantConditionOnPrerequisite@HOSPITAL:
-		Condition: hospital
-		Prerequisites: cahosp
-	GrantConditionOnDamageState@HOSPITAL:
-		Condition: damaged
-		ValidDamageStates: Light, Medium, Heavy, Critical
-	GrantCondition@HOSPITAL:
-		RequiresCondition: hospital && damaged
-		Condition: hospitalheal
-	WithDecoration@REDCROSS:
-		RequiresCondition: hospitalheal
-		Position: BottomRight
-		Margin: 3, 4
-		Image: pips
-		Sequence: medic
-		Palette: pips
-		BlinkInterval: 32
-		BlinkPattern: Off, On
 	RevealOnFire:
 	EntersTunnels:
 		Voice: Move
@@ -1064,6 +1068,7 @@
 		Voice: Move
 	Guardable:
 	BodyOrientation:
+		UseClassicPerspectiveFudge: False
 		CameraPitch: 85
 	Explodes:
 		Weapon: UnitExplodeSmall

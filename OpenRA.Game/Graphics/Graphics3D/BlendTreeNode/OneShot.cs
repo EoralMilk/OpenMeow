@@ -20,7 +20,10 @@ namespace OpenRA.Graphics
 		public BlendTreeNode InPutNode { get { return inPutNode; } }
 		public BlendTreeNode ShotNode { get { return shot; } }
 
-		public Action ShotEnd;
+		public Action ShotEndAction;
+
+		public Action ShotEndBlendAction;
+
 		public bool Playing { get
 			{
 				return runShot;
@@ -28,15 +31,17 @@ namespace OpenRA.Graphics
 		}
 
 		public int FadeTick = 10;
-		BlendTreeNode inPutNode;
-		LeafNode shot;
+		readonly BlendTreeNode inPutNode;
+		readonly LeafNode shot;
 
 		bool runShot = false;
-		bool justShot = false;
+		bool initShot = false;
+		bool toActEndBlend = false;
+
 		int shotTick = 0;
 		FP fadeBlend = 0.0f;
 
-		ShotEndType shotEndType = ShotEndType.Recover;
+		readonly ShotEndType shotEndType = ShotEndType.Recover;
 
 		public OneShot(string name, uint id, BlendTree blendTree, AnimMask animMask, BlendTreeNode inPutNode, LeafNode shot, ShotEndType shotEndType, int fadeTick)
 			: base(name, id, blendTree, animMask)
@@ -54,7 +59,18 @@ namespace OpenRA.Graphics
 			runShot = true;
 			shotTick = 0;
 			fadeBlend = 0;
-			justShot = true;
+			initShot = true;
+			toActEndBlend = true;
+			interrupted = false;
+		}
+
+		bool interrupted = false;
+		public void Interrupt()
+		{
+			if (runShot && shotTick > 0 && shotEndType == ShotEndType.Recover)
+			{
+				interrupted = true;
+			}
 		}
 
 		public void StopShot()
@@ -62,7 +78,9 @@ namespace OpenRA.Graphics
 			runShot = false;
 			shotTick = 0;
 			fadeBlend = 0;
-			justShot = false;
+			initShot = false;
+			toActEndBlend = false;
+			interrupted = false;
 		}
 
 		public override void UpdateTick(short optick, bool run, int step)
@@ -72,22 +90,24 @@ namespace OpenRA.Graphics
 			tick = optick;
 			updated = false;
 
-			inPutNode.UpdateTick(optick, run, step);
+			inPutNode.UpdateTick(optick, shotTick != FadeTick, step);
 
 			if (runShot && shotEndType == ShotEndType.Recover)
 			{
-				if (shot.KeepingEnd)
+				if (shot.KeepingEnd || interrupted)
 				{
-					shotTick = Math.Max(shotTick - 1, 0);
-					if (justShot)
+					if (initShot)
 					{
-						justShot = false;
-						inPutNode.UpdateTick(optick, false, 0); // start from frame 0
-						if (ShotEnd != null)
+						initShot = false;
+						if (ShotEndAction != null)
 						{
-							ShotEnd();
+							ShotEndAction();
 						}
+
+						// inPutNode.UpdateTick(optick, false, 0); // start from frame 0
 					}
+
+					shotTick = Math.Max(shotTick - 1, 0);
 				}
 				else
 				{
@@ -100,18 +120,18 @@ namespace OpenRA.Graphics
 			{
 				if (shot.KeepingEnd)
 				{
-					fadeBlend = FP.One;
-					shotTick = FadeTick;
-					inPutNode.UpdateTick(optick, false, 0); // keep
-
-					if (justShot)
+					if (initShot)
 					{
-						justShot = false;
-						if (ShotEnd != null)
+						initShot = false;
+						if (ShotEndAction != null)
 						{
-							ShotEnd();
+							ShotEndAction();
 						}
 					}
+
+					fadeBlend = FP.One;
+					shotTick = FadeTick;
+					// inPutNode.UpdateTick(optick, false, 0); // keep
 				}
 				else
 				{
@@ -122,6 +142,9 @@ namespace OpenRA.Graphics
 
 			if (shotTick == 0)
 			{
+				if (toActEndBlend && ShotEndBlendAction != null)
+					ShotEndBlendAction();
+
 				StopShot();
 			}
 

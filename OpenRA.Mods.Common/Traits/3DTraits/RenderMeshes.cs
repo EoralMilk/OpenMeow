@@ -33,6 +33,8 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 		Color remap;
 		bool created = false;
 
+		public float RenderAlpha = 1;
+
 		public RenderMeshes(Actor self, RenderMeshesInfo info)
 		{
 			this.self = self;
@@ -80,7 +82,7 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 			}
 
 			if (created && meshes != null && meshes.Count > 0)
-				yield return new MeshRenderable(meshes, self.CenterPosition, Info.ZOffset, remap, Info.Scale, this);
+				yield return new MeshRenderable(meshes, self.CenterPosition, Info.ZOffset, remap, Info.Scale, RenderAlpha, float3.Ones, TintModifiers.None, this);
 		}
 
 		IEnumerable<Rectangle> IRender.ScreenBounds(Actor self, WorldRenderer wr)

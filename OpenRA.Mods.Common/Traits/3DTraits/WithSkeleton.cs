@@ -35,7 +35,7 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 		public readonly string Name = "body";
 		public readonly bool OnlyUpdateForDraw = false;
 		public readonly bool AxisConvert = true;
-		public override object Create(ActorInitializer init) { return new WithSkeleton(init.Self, this); }
+		public override object Create(ActorInitializer init) { return new WithSkeleton(init, this); }
 	}
 
 	public class WithSkeleton : ConditionalTrait<WithSkeletonInfo>, IWithSkeleton
@@ -55,20 +55,26 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 		readonly RenderMeshes rm;
 		public bool Draw;
 
-		public float Scale = 1;
+		public FP Scale = 1;
 		readonly Actor self;
 		readonly IFacing myFacing;
 		public readonly bool OnlyUpdateForDraw;
 
 		public IBlendTreeHandler BlendTreeHandler;
 
-		public WithSkeleton(Actor self, WithSkeletonInfo info)
+		/// <summary>
+		/// Affects the root migration of the skeleton
+		/// </summary>
+		public WVec SkeletonOffset = WVec.Zero;
+
+		public WithSkeleton(ActorInitializer init, WithSkeletonInfo info)
 			: base(info)
 		{
+			self = init.Self;
 			Name = info.Name;
 			myFacing = self.Trait<IFacing>();
-			this.self = self;
-			this.OnlyUpdateForDraw = info.OnlyUpdateForDraw;
+
+			OnlyUpdateForDraw = info.OnlyUpdateForDraw;
 			rm = self.Trait<RenderMeshes>();
 			Scale = rm.Info.Scale;
 			Image = info.SkeletonDefine == null ? rm.Image : info.SkeletonDefine;
@@ -106,14 +112,14 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 
 		WPos lastSelfPos;
 		WRot lastSelfRot;
-		float lastScale;
+		FP lastScale;
 
 		public void SkeletonTick()
 		{
 			if (BlendTreeHandler != null)
 				BlendTreeHandler.UpdateTick();
 
-			lastSelfPos = self.CenterPosition;
+			lastSelfPos = self.CenterPosition + SkeletonOffset;
 			if (BlendTreeHandler != null)
 				lastSelfRot = BlendTreeHandler.FacingOverride();
 			else

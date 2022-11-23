@@ -37,21 +37,19 @@ namespace OpenRA.Graphics
 		{
 			this.animation = animation;
 			this.frame = 0;
+			blendTree.AddLeaf(this);
 		}
 
 		public void ChangeAnimation(SkeletalAnim animation)
 		{
 			this.animation = animation;
 			frame = 0;
+			KeepingEnd = false;
 		}
 
-		public override void UpdateTick(short optick, bool run, int step)
+		public override void UpdateFrameTick()
 		{
-			if (optick == tick)
-				return;
-			tick = optick;
-
-			if (!run)
+			if (!runThisTick || animation == null)
 			{
 				frame = 0;
 				KeepingEnd = false;
@@ -59,11 +57,11 @@ namespace OpenRA.Graphics
 			else
 			{
 				if (NodePlayType == PlayType.Loop)
-					frame = (frame + step) % animation.Frames.Length;
+					frame = (frame + thisTickStep) % animation.Frames.Length;
 				else if (NodePlayType == PlayType.Once)
 				{
 					KeepingEnd = frame == animation.Frames.Length - 1;
-					frame = Math.Min(frame + step, animation.Frames.Length - 1);
+					frame = Math.Min(frame + thisTickStep, animation.Frames.Length - 1);
 				}
 				else if (NodePlayType == PlayType.PingPong)
 				{
@@ -72,12 +70,12 @@ namespace OpenRA.Graphics
 					// 应该问题不大，而且一般很少用PingPong播放模式
 					if (backwards)
 					{
-						frame = Math.Max(frame - step, 0);
+						frame = Math.Max(frame - thisTickStep, 0);
 						backwards = frame == 0 ? false : true;
 					}
 					else
 					{
-						frame = Math.Min(frame + step, animation.Frames.Length - 1);
+						frame = Math.Min(frame + thisTickStep, animation.Frames.Length - 1);
 						backwards = frame == animation.Frames.Length - 1 ? true : false;
 					}
 				}
@@ -89,6 +87,24 @@ namespace OpenRA.Graphics
 						a();
 					}
 				}
+			}
+
+			runThisTick = false;
+			thisTickStep = 0;
+		}
+
+		bool runThisTick = false;
+		int thisTickStep = 0;
+		public override void UpdateTick(short optick, bool run, int step)
+		{
+			if (optick == tick)
+				return;
+			tick = optick;
+
+			if (run && animation != null)
+			{
+				thisTickStep = step;
+				runThisTick = true;
 			}
 		}
 

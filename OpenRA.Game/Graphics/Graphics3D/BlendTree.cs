@@ -23,10 +23,21 @@ namespace OpenRA.Graphics
 		public BlendTreeNode FinalOutPut { get; private set; } // 最后的输出节点, 也就是根节点
 		public bool RunBlend = true;
 		BlendTreeNodeOutPut lastOutPut;
+		readonly List<LeafNode> leafNodes = new List<LeafNode>();
+		LeafNode[] leaves;
+
 		public BlendTree()
 		{
 			RunBlend = true;
 			currentTick = 0;
+		}
+
+		public void AddLeaf(LeafNode leaf)
+		{
+			if (leaves != null)
+				throw new Exception("This BlendTree has inited");
+
+			leafNodes.Add(leaf);
 		}
 
 		public void InitTree(BlendTreeNode finalOutPut)
@@ -34,6 +45,8 @@ namespace OpenRA.Graphics
 			FinalOutPut = finalOutPut;
 			RunBlend = true;
 			currentTick = 0;
+			leaves = leafNodes.ToArray();
+			leafNodes.Clear();
 		}
 
 		public void UpdateTick(int runTick = 1)
@@ -42,6 +55,11 @@ namespace OpenRA.Graphics
 
 			// step 可以用于跳步，当这一帧滞后时，可以选择跳过几帧动画
 			FinalOutPut.UpdateTick(currentTick, true, runTick);
+
+			foreach (var leaf in leaves)
+			{
+				leaf.UpdateFrameTick();
+			}
 		}
 
 		bool hasOutPut;
@@ -65,7 +83,6 @@ namespace OpenRA.Graphics
 				return inPutValue1;
 
 			var outPut = new Frame(inPutValue1.OutPutFrame.Length);
-			//var outPut = new Transformation[inPutValue1.OutPutTransform.Length];
 
 			for (int i = 0; i < inPutValue1.OutPutFrame.Length; i++)
 			{
@@ -88,11 +105,26 @@ namespace OpenRA.Graphics
 
 	public abstract class BlendTreeNode
 	{
+		/// <summary>
+		/// useless now
+		/// </summary>
 		public string Name { get { return name; } }
+
+		/// <summary>
+		/// useless now
+		/// </summary>
 		public BlendTree BlendTree { get { return blendTree; } }
 
+		/// <summary>
+		/// useless now
+		/// </summary>
 		protected string name;
+
+		/// <summary>
+		/// useless now
+		/// </summary>
 		protected uint id;
+
 		protected BlendTree blendTree;
 		protected AnimMask animMask;
 		protected BlendTreeNodeOutPut outPut;
@@ -141,6 +173,8 @@ namespace OpenRA.Graphics
 
 		public LeafNode(string name, uint id, BlendTree blendTree, AnimMask mask)
 			: base(name, id, blendTree, mask) { }
+
+		public abstract void UpdateFrameTick();
 
 		public virtual int GetCurrentFrameLCM()
 		{

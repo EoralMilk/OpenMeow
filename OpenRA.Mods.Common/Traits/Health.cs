@@ -11,6 +11,7 @@
 
 using System.Collections.Generic;
 using System.Linq;
+using OpenRA.Mods.Common.Activities;
 using OpenRA.Primitives;
 using OpenRA.Traits;
 
@@ -59,6 +60,7 @@ namespace OpenRA.Mods.Common.Traits
 		IDamageModifier[] damageModifiersPlayer;
 		INotifyKilled[] notifyKilled;
 		INotifyKilled[] notifyKilledPlayer;
+		ICheckDeath[] checkDeathTraits;
 
 		[Sync]
 		int hp;
@@ -116,6 +118,7 @@ namespace OpenRA.Mods.Common.Traits
 			damageModifiersPlayer = self.Owner.PlayerActor.TraitsImplementing<IDamageModifier>().ToArray();
 			notifyKilled = self.TraitsImplementing<INotifyKilled>().ToArray();
 			notifyKilledPlayer = self.Owner.PlayerActor.TraitsImplementing<INotifyKilled>().ToArray();
+			checkDeathTraits = self.TraitsImplementing<ICheckDeath>().ToArray();
 		}
 
 		void INotifyOwnerChanged.OnOwnerChanged(Actor self, Player oldOwner, Player newOwner)
@@ -219,6 +222,8 @@ namespace OpenRA.Mods.Common.Traits
 			{
 				foreach (var nd in notifyKilled)
 					nd.Killed(self, ai);
+				foreach (var cd in checkDeathTraits)
+					cd.CheckDeath(self);
 				foreach (var nd in notifyKilledPlayer)
 					nd.Killed(self, ai);
 

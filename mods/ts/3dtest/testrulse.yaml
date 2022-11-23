@@ -1,4 +1,6 @@
 ^WithMeshTest:
+	# WithMesh@axis:
+	# 	Mesh: axis
 	WithMeshBody@body:
 		SkeletonBinded: body
 	WithMesh@hair:
@@ -72,6 +74,237 @@
 	# 	BoneAttach: a-s-Rig_Hand.R
 	Targetable@Rutest:
 		TargetTypes: Rutest
+
+^InfantryBody:
+	WithMeshBody@body:
+		SkeletonBinded: body
+		DisableIfDeath: false
+	WithMesh@hair:
+		Mesh: hair
+		SkeletonBinded: body
+		DisableIfDeath: false
+	WithMesh@cater:
+		Mesh: cater
+		SkeletonBinded: body
+	WithSkeleton:
+		Name: body
+		DisableIfDeath: false
+	RenderMeshes:
+		Image: rumya
+		ZOffset: 15
+		Scale: 3
+		DisableIfDeath: false
+	InfantryBlendTree:
+		SkeletonToUse: body
+		# anims
+		Stand: loop_stand
+		Walk: loop_walk
+		Guard: loop_guard
+		GuardMove: loop_guardmove
+		StandToGuard: s2g
+		GuardToStand: g2s
+		Prone: loop_prone
+		Crawl: loop_crawl
+		Attack: act_attack
+		ProneAttack: act_prone-attack
+		StandToProne: s2p
+		ProneToStand: p2s
+		DieStand: die_front
+		DieProne: die_prone
+		IdleActions: idle_1
+		GuardTick: 90
+		StopMoveBlendTick: 5
+		GuardBlendTick: 15
+		UpperMask: upper
+		LowerMask: lower
+		# take cover
+		CanProne: True
+		ProneDuration: 100
+		ProneSpeedModifier: 50
+		ProneDamageTriggers: TriggerProne
+		ProneDamageModifiers:
+			Prone50Percent: 50
+			Prone60Percent: 60
+			Prone70Percent: 70
+			Prone80Percent: 80
+			Prone100Percent: 100
+			Prone350Percent: 350
+		ProneCondition: takecover
+		DeathBodyRemain: 100
+		DeathFadeVec: 0,0,-3
+
+^CommonInfantry:
+	Inherits@2: ^ExistsInWorld
+	Inherits@4: ^Cloakable
+	Inherits@body: ^InfantryBody
+	Inherits@hospital: ^HospitalHealable
+	Inherits@CRATESTATS: ^CrateStatModifiers
+	Inherits@selection: ^SelectableCombatUnit
+	Inherits@handicaps: ^PlayerHandicaps
+	Huntable:
+	OwnerLostAction:
+		Action: Kill
+		DeathTypes: BulletDeath
+	Health:
+		HP: 5000
+	Armor:
+		Type: None
+	Valued:
+		Cost: 10
+	RevealsShroud:
+		RequiresCondition: !inside-tunnel
+		Range: 5c512
+		MaxHeightDelta: 1100
+	Mobile:
+		Voice: Move
+		TurnSpeed: 100
+		Speed: 50
+		MaxSpeed: 71
+		SpeedAccleration: 5
+		Locomotor: foot
+		MovementMode: Universal
+		TerrainOrientationAdjustmentMargin: -1
+	TurnOnIdle:
+	Selectable:
+		DecorationBounds: 452, 1387, 0, -543
+		Bounds: 724, 1448, 0, -543
+	Voiced:
+		VoiceSet: Infantry
+	AttackMove:
+		Voice: Move
+	Passenger:
+		CargoType: Infantry
+		Voice: Move
+	HiddenUnderFog:
+	ActorLostNotification:
+		TextNotification: Unit lost.
+	Guard:
+		Voice: Move
+	Guardable:
+	# RevealOnFire:
+	EntersTunnels:
+		Voice: Move
+	Crushable:
+		CrushSound: squish6.aud
+	Targetable@Crushable:
+		TargetTypes: Crushable
+	DamagedByTerrain@Tiberium:
+		Terrain: Tiberium, BlueTiberium
+		Damage: 200
+		DamageInterval: 16
+		DamageTypes: TiberiumDeath
+		RequiresCondition: !inside-tunnel
+	Targetable:
+		RequiresCondition: !inside-tunnel
+		TargetTypes: Ground, Infantry
+	Targetable@HEAL:
+		RequiresCondition: !inside-tunnel && damaged
+		TargetTypes: Heal
+	GrantConditionOnDamageState@DAMAGED:
+		Condition: damaged
+		ValidDamageStates: Light, Medium, Heavy, Critical
+	HitShape@prone:
+		TargetableOffsets: 0,0,32
+		RequiresCondition: takecover || critical || WebDisable
+		Type: Circle
+			Radius: 168
+			VerticalTopOffset: 64
+	HitShape:
+		TargetableOffsets: 0,0,300
+		RequiresCondition: !takecover && !critical
+		Type: Circle
+			Radius: 128
+			VerticalTopOffset: 575
+			VerticalBottomOffset: 0
+	MapEditorData:
+		Categories: Infantry
+	GrantConditionOnTunnelLayer:
+		Condition: inside-tunnel
+	WithDecoration@UNDERGROUND:
+		RequiresCondition: inside-tunnel
+		Position: Center
+		Image: typeglyphs
+		Sequence: infantry
+		Palette: player
+		IsPlayerPalette: true
+	BodyOrientation:
+		UseClassicPerspectiveFudge: False
+		CameraPitch: 85
+		QuantizedFacings: 0
+	RenderSprites:
+		Image: vehicle
+
+
+PFIND:
+	Inherits: ^CommonInfantry
+	Inherits@EXPERIENCE: ^GainsExperience
+	Inherits@AUTOTARGET: ^AutoTargetGroundAssaultMove
+	Inherits@bounty: ^GlobalBounty
+	Valued:
+		Cost: 500
+	Tooltip:
+		Name: Pathfinder
+	UpdatesPlayerStatistics:
+		AddToArmyValue: true
+	Buildable:
+		Queue: Infantry
+		BuildPaletteOrder: 40
+		Prerequisites: ~barracks, ~techlevel.low
+		Description: test
+	Health:
+		HP: 42500
+	GrantConditionOnMovement@sniperSightDisable:
+		Condition: moving.sniper
+	RevealsShroud@sniper:
+		Range: 9c512
+		MaxHeightDelta: 1100
+		RequiresCondition: !moving.sniper
+	RevealsShroud:
+		Range: 7c0
+		RequiresCondition: moving.sniper
+	AttackFrontal:
+		Voice: Attack
+		FacingTolerance: 16
+	# Armament:
+	# 	LocalOffset: 111,200,255, 111,-220,255
+	# 	BurstsPerFire: 2
+	# 	UseBlindage: true
+	# 	Weapon: AssaultVulcan
+	Voiced:
+		VoiceSet: Oxanna
+	Selectable:
+		Bounds: 603, 1930, 0, -482
+
+	InfantryBlendTree:
+		AttackFrame: 3
+		ProneAttackFrame: 17
+	SlotArmament:
+		Weapon: DummyWeapon
+		Turret: primary
+		SlotBind: MainWeapon
+		LocalOffset: 768,0,1112
+
+	EquipmentSlot@cloth:
+		Name: Cloth
+		SlotType: Cloth
+		InitEquipment: clothitem
+		DisableIfDeath: false
+	EquipmentSlot@weapon:
+		Name: MainWeapon
+		SlotType: MainWeapon
+		InitEquipment: railgun_item
+		EquipmentSkeleton: body
+		EquipmentBone: e_Hand.R
+		DisableIfDeath: false
+	EquipmentSlot@item2:
+		Name: ItemSlot2
+		SlotType: Item
+	Inventory:
+		Name: test
+		InitItems: clothitem, railgun_item
+	# PickUpItem:
+	# 	TargetCursor: undeploy
+	# 	Voice: Move
 
 
 RUTEST:
@@ -211,6 +444,9 @@ RUTEST2:
 		Name: ItemSlot
 		SlotType: Item
 		InitEquipment: rutestmissile
+	EquipmentSlot@item2:
+		Name: ItemSlot2
+		SlotType: Item
 	EquipmentSlot@extra:
 		Name: ExtraSlot
 		SlotType: Item

@@ -12,6 +12,7 @@
 using System;
 using System.ComponentModel;
 using System.Reflection;
+using OpenRA.Graphics;
 using OpenRA.Mods.Common.Traits;
 using OpenRA.Traits;
 

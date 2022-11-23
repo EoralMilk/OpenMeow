@@ -17,7 +17,7 @@ namespace OpenRA.Graphics
 		bool flag = false;
 		public FP BlendValue { get => blendValue; }
 		FP blendValue = FP.Zero;
-		public int SwitchTick = 10;
+		public int SwitchTick = 1;
 		readonly BlendTreeNode inPutNode1;
 		readonly BlendTreeNode inPutNode2;
 

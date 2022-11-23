@@ -209,9 +209,9 @@ namespace OpenRA.Graphics
 			ik.InitIK(ref Bones[id].CurrentPose);
 		}
 
-		public void SetOffset(WPos wPos, WRot wRot, float scale)
+		public void SetOffset(WPos wPos, WRot wRot, FP scale)
 		{
-			offsetScale = FP.FromFloat(scale);
+			offsetScale = scale;
 			scaleMat = TSMatrix4x4.Scale(offsetScale);
 			offsetVec = World3DCoordinate.WPosToTSVec3(wPos);
 			translateMat = TSMatrix4x4.Translate(offsetVec);
@@ -220,9 +220,9 @@ namespace OpenRA.Graphics
 			Offset = translateMat * (scaleMat * rotMat);
 		}
 
-		public void SetOffsetNoConvert(WPos wPos, WRot wRot, float scale)
+		public void SetOffsetNoConvert(WPos wPos, WRot wRot, FP scale)
 		{
-			offsetScale = FP.FromFloat(scale);
+			offsetScale = scale;
 			scaleMat = TSMatrix4x4.Scale(offsetScale);
 			offsetVec = World3DCoordinate.WPosToTSVec3(wPos);
 			translateMat = TSMatrix4x4.Translate(offsetVec);
@@ -948,6 +948,14 @@ namespace OpenRA.Graphics
 
 		public SkeletalAnim GetSkeletalAnim(in string unit, in string sequence)
 		{
+			if (string.IsNullOrEmpty(unit) || string.IsNullOrEmpty(sequence))
+			{
+				if (string.IsNullOrEmpty(unit))
+					throw new Exception("Unit (Or we call Image) is Null Or Empty");
+				else
+					throw new Exception("Sequence is Null Or Empty");
+			}
+
 			if (!AnimationsRef.ContainsKey(unit))
 			{
 				throw new Exception("Unit " + unit + " has no any sequence defined");

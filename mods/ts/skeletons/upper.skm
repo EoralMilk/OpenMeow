@@ -1,3 +1,7 @@
+a-Rig_Spine:
+	Using: True
+a-Rig_Chest:
+	Using: True
 a-Rig_UpperChest:
 	Using: True
 a-Rig_Neck:
@@ -12,24 +16,6 @@ a-Rig_LowerArm.L:
 	Using: True
 a-s-Rig_Hand.L:
 	Using: True
-a-s-Rig_Index1.L:
-	Using: True
-a-s-Rig_Index2.L:
-	Using: True
-a-s-Rig_Index3.L:
-	Using: True
-a-s-Rig_Middle1.L:
-	Using: True
-a-s-Rig_Middle2.L:
-	Using: True
-a-s-Rig_Middle3.L:
-	Using: True
-a-s-Rig_Thumb1.L:
-	Using: True
-a-s-Rig_Thumb2.L:
-	Using: True
-a-s-Rig_Thumb3.L:
-	Using: True
 a-s-Rig_Shoulder.R:
 	Using: True
 a-Rig_UpperArm.R:
@@ -38,21 +24,5 @@ a-Rig_LowerArm.R:
 	Using: True
 a-s-Rig_Hand.R:
 	Using: True
-a-s-Rig_Index1.R:
-	Using: True
-a-s-Rig_Index2.R:
-	Using: True
-a-s-Rig_Index3.R:
-	Using: True
-a-s-Rig_Middle1.R:
-	Using: True
-a-s-Rig_Middle2.R:
-	Using: True
-a-s-Rig_Middle3.R:
-	Using: True
-a-s-Rig_Thumb1.R:
-	Using: True
-a-s-Rig_Thumb2.R:
-	Using: True
-a-s-Rig_Thumb3.R:
+e_Hand.R:
 	Using: True

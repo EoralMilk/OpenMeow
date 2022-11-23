@@ -41,13 +41,16 @@ gunitem:
 		Type: MainWeapon
 		ThumbnailImage: items
 		ThumbnailSequence: ioncannon
-		Weapon: KittenProtonPulse
+		Weapon: KittenRailGun
 		LocalOffset: 433,0,155
 	RenderMeshes:
 		Image: rumya
 	ItemMesh@test:
 		Mesh: w_rail
-
+	# RenderMeshes:
+	# 	Image: mmr-test
+	# ItemMesh@test:
+	# 	Mesh: axis
 
 testitem:
 	Item:
@@ -57,3 +60,18 @@ testitem:
 		ThumbnailPalette: player
 		ThumbnailPaletteIsPlayerPalette: true
 		Condition: visl
+
+
+
+railgun_item:
+	WeaponItem:
+		Name: RailGun
+		Type: MainWeapon
+		ThumbnailImage: items
+		ThumbnailSequence: ioncannon
+		Weapon: KittenRailGun
+		LocalOffset: 433,0,155
+	RenderMeshes:
+		Image: rumya
+	ItemMesh@test:
+		Mesh: w_rail

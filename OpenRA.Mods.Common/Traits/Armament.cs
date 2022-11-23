@@ -180,6 +180,8 @@ namespace OpenRA.Mods.Common.Traits
 
 		public bool IgnoreAirborne = false;
 
+		public Func<int> OverrideFireDelay = () => -1;
+
 		public Armament(Actor self, ArmamentInfo info, bool replaceBarrel = false)
 			: base(info)
 		{
@@ -523,7 +525,7 @@ namespace OpenRA.Mods.Common.Traits
 
 			// Lambdas can't use 'in' variables, so capture a copy for later
 			var delayedTarget = target;
-			ScheduleDelayedAction(Info.FireDelay, Burst, (burst) =>
+			ScheduleDelayedAction(OverrideFireDelay() >= 0 ? OverrideFireDelay() : Info.FireDelay, Burst, (burst) =>
 			{
 				if (args.Weapon.Projectile != null)
 				{

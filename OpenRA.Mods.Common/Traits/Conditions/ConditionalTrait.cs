@@ -10,6 +10,7 @@
 #endregion
 
 using System.Collections.Generic;
+using OpenRA.Mods.Common.Activities;
 using OpenRA.Support;
 using OpenRA.Traits;
 
@@ -21,6 +22,8 @@ namespace OpenRA.Mods.Common.Traits
 		[ConsumedConditionReference]
 		[Desc("Boolean expression defining the condition to enable this trait.")]
 		public readonly BooleanExpression RequiresCondition = null;
+
+		public readonly bool DisableIfDeath = true;
 
 		// HACK: A shim for all the ActorPreview code that used to query UpgradeMinEnabledLevel directly
 		// This can go away after we introduce an InitialConditions ActorInit and have the traits query the
@@ -38,7 +41,7 @@ namespace OpenRA.Mods.Common.Traits
 	/// Requires basing *Info on ConditionalTraitInfo and using base(info) constructor.
 	/// TraitEnabled will be called at creation if the trait starts enabled or does not use conditions.
 	/// </summary>
-	public abstract class ConditionalTrait<InfoType> : IObservesVariables, IDisabledTrait, INotifyCreated, ISync where InfoType : ConditionalTraitInfo
+	public abstract class ConditionalTrait<InfoType> : IObservesVariables, IDisabledTrait, INotifyCreated, ICheckDeath, ISync where InfoType : ConditionalTraitInfo
 	{
 		public readonly InfoType Info;
 
@@ -73,9 +76,26 @@ namespace OpenRA.Mods.Common.Traits
 		{
 			if (Info.RequiresCondition == null)
 				return;
+			if (self.IsDead && Info.DisableIfDeath)
+				return;
 
 			var wasDisabled = IsTraitDisabled;
 			IsTraitDisabled = !Info.RequiresCondition.Evaluate(conditions);
+
+			if (IsTraitDisabled != wasDisabled)
+			{
+				if (wasDisabled)
+					TraitEnabled(self);
+				else
+					TraitDisabled(self);
+			}
+		}
+
+		public virtual void CheckDeath(Actor self)
+		{
+			var wasDisabled = IsTraitDisabled;
+			if (self.IsDead && Info.DisableIfDeath)
+				IsTraitDisabled = true;
 
 			if (IsTraitDisabled != wasDisabled)
 			{

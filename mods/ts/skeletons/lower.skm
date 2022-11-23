@@ -1,8 +1,6 @@
+a-Position:
+	Using: True
 a-Rig_Hips:
-	Using: True
-a-Rig_Spine:
-	Using: True
-a-Rig_Chest:
 	Using: True
 a-Rig_UpperLeg.L:
 	Using: True

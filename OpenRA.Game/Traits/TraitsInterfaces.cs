@@ -152,6 +152,9 @@ namespace OpenRA.Traits
 	public interface INotifyCreated { void Created(Actor self); }
 
 	[RequireExplicitImplementation]
+	public interface ICheckDeath { void CheckDeath(Actor self); }
+
+	[RequireExplicitImplementation]
 	public interface INotifyAddedToWorld { void AddedToWorld(Actor self); }
 	[RequireExplicitImplementation]
 	public interface INotifyRemovedFromWorld { void RemovedFromWorld(Actor self); }

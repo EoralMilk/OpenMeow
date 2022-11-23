@@ -27,6 +27,29 @@ rumya:
 			backwardLeftAnim: Rifle_BackLeft
 
 			catidle: catidle_Skeleton_CommonBody
+
+			loop_stand: Stand_PF俯身站立.ska
+			loop_walk: Move_PF前进.ska
+			loop_guard: Guard_PF警戒.ska
+			loop_guardmove: Move_PFGuard举枪前进.ska
+
+			s2g: StG_PF举起狙击枪.ska
+			g2s: GtS_PF放下狙击枪.ska
+
+			loop_prone: Crawl_PF匍匐idle.ska
+			loop_crawl: Crawl_PF匍匐爬行.ska
+
+			act_attack: Guard_PF狙击枪射击.ska
+			act_prone-attack: Crawl_PF狙击枪射击.ska
+
+			s2p: StC_PF飞扑进入匍匐.ska
+			p2s: CtS_PF站起.ska
+
+			die_front: DIE_PF正面受击侧翻身死亡.ska
+			die_prone: DIE_PF匍匐时受击死亡.ska
+
+			idle_1: Action_PF放下枪查看地图.ska
+
 	Meshes:
 		face_addon: face_addon_DT_0
 			UseDQBSkin: true
@@ -97,7 +120,8 @@ rumya:
 			Material: none
 		w_rail: w_rail
 			Material: w_rail
-
+		axis: Axis
+			Material: misc01
 
 # rumya-2:
 # 	Inherits@defaults: rumya
@@ -129,6 +153,8 @@ mmr-test:
 	Meshes:
 		dummy: dummy
 			Material: black
+		axis: Axis
+			Material: misc01
 
 missile:
 	Meshes:
