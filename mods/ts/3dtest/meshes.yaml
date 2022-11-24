@@ -124,6 +124,35 @@ rumya:
 		axis: Axis
 			Material: misc01
 
+		hair_s1: lp-hair_s1
+			Material: hair_s1
+			FaceCullFunc: None
+			Shader: CharacterHair
+		hair_s2: lp-hair_s2
+			Material: hair_s2
+			FaceCullFunc: None
+			Shader: CharacterHair
+		hair_pt1: lp-hair_pt1
+			Material: hair_pt1
+			FaceCullFunc: None
+			Shader: CharacterHair
+		hair_pt2: lp-hair_pt2
+			Material: hair_pt2
+			FaceCullFunc: None
+			Shader: CharacterHair
+		hair_dpt1: lp-hair_dpt1
+			Material: hair_dpt1
+			FaceCullFunc: None
+			Shader: CharacterHair
+		hair_dpt2: lp-hair_dpt2
+			Material: hair_dpt2
+			FaceCullFunc: None
+			Shader: CharacterHair
+
+		head01: Face01
+			UseDQBSkin: true
+			Material: face01
+
 cattail:
 	Skeleton: Skeleton_CatTail
 		UseDynamicAdjBonePose: false

@@ -1,0 +1,5 @@
+face01:
+	DiffuseMap: face01.png
+	Specular: 0.3
+	Shininess: 16
+

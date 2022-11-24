@@ -255,7 +255,7 @@ void main()
 
 	vec4 fragP = mMatrix * vec4(aVertexPos, 1.0f);
 	vRemap = vec3(float(iRemap.x) / 255.0f, float(iRemap.y) / 255.0f, float(iRemap.z) / 255.0f);
-	vTint = iTint;
+	vTint = iTint; // instance tint as vert tint
 	gl_Position = projection * view * fragP;
 	FragPos = fragP.xyz;
 	TexCoords = aTexCoords;

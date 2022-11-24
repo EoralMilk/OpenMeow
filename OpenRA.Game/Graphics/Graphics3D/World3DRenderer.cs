@@ -210,6 +210,12 @@ namespace OpenRA.Graphics
 				if (m.DrawId() == -2)
 					continue;
 
+				var remapcolor = remap;
+				if (m.GetRemap != null)
+				{
+					remapcolor = m.GetRemap();
+				}
+
 				if (m.UseMatrix)
 				{
 					if (m.Matrix == null)
@@ -222,7 +228,7 @@ namespace OpenRA.Graphics
 																(float)t.m20, (float)t.m21, (float)t.m22, (float)t.m23,
 																(float)t.m30, (float)t.m31, (float)t.m32, (float)t.m33,
 																tint.X, tint.Y, tint.Z, alpha,
-																remap.R, remap.G, remap.B,
+																remapcolor.R, remapcolor.G, remapcolor.B,
 					};
 
 					var mat = m.Material.GetParams();
@@ -246,7 +252,7 @@ namespace OpenRA.Graphics
 															t[8], t[9], t[10], t[11],
 															t[12], t[13], t[14], t[15],
 															tint.X, tint.Y, tint.Z, alpha,
-															remap.R, remap.G, remap.B,
+															remapcolor.R, remapcolor.G, remapcolor.B,
 					};
 
 					var mat = m.Material.GetParams();

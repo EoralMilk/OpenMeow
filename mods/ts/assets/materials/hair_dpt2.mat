@@ -1,0 +1,5 @@
+Hair-dpt2:
+	DiffuseMap: hair-dpt2.png
+	# DiffuseTint: 1.0, 1.0,0.5
+	Specular: 0.8
+	Shininess: 32.0

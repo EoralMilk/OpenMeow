@@ -22,6 +22,7 @@ namespace OpenRA.Graphics
 
 		public Func<int> DrawId;
 		public IMaterial Material;
+		public Func<Color> GetRemap;
 		public MeshInstance(IOrderedMesh mesh, Func<WPos> offset, Func<WRot> rotation, Func<bool> isVisible, string skeleton = null)
 		{
 			OrderedMesh = mesh;
@@ -29,6 +30,7 @@ namespace OpenRA.Graphics
 			RotationFunc = rotation;
 			IsVisible = isVisible;
 			DrawId = () => -1;
+			GetRemap = null;
 			SkeletonBinded = skeleton;
 			Material = OrderedMesh.DefaultMaterial;
 		}
@@ -40,6 +42,7 @@ namespace OpenRA.Graphics
 			Matrix = matrix;
 			IsVisible = isVisible;
 			DrawId = () => -1;
+			GetRemap = null;
 			SkeletonBinded = skeleton;
 			Material = OrderedMesh.DefaultMaterial;
 		}
@@ -52,6 +55,7 @@ namespace OpenRA.Graphics
 			IsVisible = () => false;
 			DrawId = () => -1;
 			SkeletonBinded = null;
+			GetRemap = null;
 			Material = OrderedMesh.DefaultMaterial;
 		}
 
@@ -275,6 +279,7 @@ namespace OpenRA.Graphics
 	{
 		Common,
 		CharacterBody,
+		CharacterHair,
 	}
 
 	public class OrderedMesh : IOrderedMesh
@@ -327,6 +332,10 @@ namespace OpenRA.Graphics
 				Shader = Game.Renderer.GetOrCreateShader<CharacterBodyMeshShaderBindings>("CharacterBodyMeshShaderBindings");
 				if (baseMaterial == null)
 					throw new Exception("CharacterBody Mesh must have base material");
+			}
+			else if (shader == MeshShaderType.CharacterHair)
+			{
+				Shader = Game.Renderer.GetOrCreateShader<CharacterHairMeshShaderBindings>("CharacterHairMeshShaderBindings");
 			}
 		}
 

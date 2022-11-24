@@ -357,7 +357,7 @@ namespace OpenRA.Graphics
 
 		public MeshShaderBindings()
 		{
-			string name = "common";
+			string name = "3d_common";
 			vertexShaderName = name;
 			fragmentShaderName = name;
 		}
@@ -390,8 +390,17 @@ namespace OpenRA.Graphics
 	{
 		public CharacterBodyMeshShaderBindings()
 		{
-			vertexShaderName = "common";
-			fragmentShaderName = "characterbody";
+			vertexShaderName = "3d_common";
+			fragmentShaderName = "3d_characterbody";
+		}
+	}
+
+	public class CharacterHairMeshShaderBindings : MeshShaderBindings
+	{
+		public CharacterHairMeshShaderBindings()
+		{
+			vertexShaderName = "3d_common";
+			fragmentShaderName = "3d_characterhair";
 		}
 	}
 }

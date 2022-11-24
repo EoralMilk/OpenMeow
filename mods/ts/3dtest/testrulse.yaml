@@ -3,6 +3,7 @@
 	# 	Mesh: axis
 	WithMeshBody@body:
 		SkeletonBinded: body
+		FaceAddonMesh: face_addon
 	WithMesh@hair:
 		Mesh: hair
 		SkeletonBinded: body
@@ -78,10 +79,10 @@
 ^InfantryBody:
 	WithMeshBody@body:
 		SkeletonBinded: body
-		DisableIfDeath: false
-	WithMesh@hair:
-		Mesh: hair
-		SkeletonBinded: body
+		# FaceAddonMesh: face_addon
+		HeadMesh: head01
+		HairMeshs: hair_s1, hair_s2, hair_pt1, hair_pt2, hair_dpt1, hair_dpt2
+		HairColors: FFE99B, 99FF84, 94E3FF, 807D7A, FFFFFF, 7A7A7A, 807D7A, FFACC2, FF7545, FFCDFD, BEFF76
 		DisableIfDeath: false
 	WithMesh@cater:
 		Mesh: cater
@@ -184,7 +185,7 @@
 		Voice: Move
 		TurnSpeed: 100
 		Speed: 50
-		MaxSpeed: 71
+		MaxSpeed: 66
 		SpeedAccleration: 5
 		Locomotor: foot
 		MovementMode: Universal
@@ -277,8 +278,11 @@ PFIND:
 		BuildPaletteOrder: 40
 		Prerequisites: ~barracks, ~techlevel.low
 		Description: test
+	Mobile:
+		Speed: 50
+		MaxSpeed: 64
 	Health:
-		HP: 42500
+		HP: 15000
 	GrantConditionOnMovement@sniperSightDisable:
 		Condition: moving.sniper
 	RevealsShroud@sniper:
@@ -291,11 +295,6 @@ PFIND:
 	AttackFrontal:
 		Voice: Attack
 		FacingTolerance: 16
-	# Armament:
-	# 	LocalOffset: 111,200,255, 111,-220,255
-	# 	BurstsPerFire: 2
-	# 	UseBlindage: true
-	# 	Weapon: AssaultVulcan
 	Voiced:
 		VoiceSet: Oxanna
 	Selectable:
@@ -305,6 +304,7 @@ PFIND:
 		AttackFrame: 3
 		ProneAttackFrame: 17
 		ProneOffset: 0,0,-555
+		ProneSpeedModifier: 40
 	SlotArmament:
 		Weapon: DummyWeapon
 		Turret: primary

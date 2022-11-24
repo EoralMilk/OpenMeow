@@ -5,6 +5,7 @@ using System.Numerics;
 using System.Threading.Tasks;
 using OpenRA.Graphics;
 using OpenRA.Meow.RPG.Mechanics;
+using OpenRA.Primitives;
 using OpenRA.Traits;
 
 namespace OpenRA.Mods.Common.Traits.Trait3D
@@ -158,7 +159,9 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 		public readonly string SkeletonBinded = null;
 		public readonly string Image = null;
 
-		public readonly string FaceAddonMesh = "face_addon";
+		public readonly Color[] HairColors = null;
+		public readonly string[] HairMeshs = null;
+		public readonly string FaceAddonMesh = null;
 
 		public readonly string HeadMesh = "body-head";
 		public readonly string TorsoMesh = "body-torso";
@@ -185,6 +188,9 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 		protected readonly RenderMeshes RenderMeshes;
 
 		protected MeshInstance faceAddon;
+		protected MeshInstance hair;
+		readonly Color haircolor;
+
 		protected string[] bodyMeshSequences;
 		protected MeshInstance[] bodyMeshInstances;
 
@@ -409,6 +415,7 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 				RenderMeshes.Add(bodyMeshInstances[i]);
 			}
 
+			if (!string.IsNullOrEmpty(info.FaceAddonMesh))
 			{
 				var faceAddonMesh = self.World.MeshCache.GetMeshSequence(image, info.FaceAddonMesh);
 				faceAddon = new MeshInstance(faceAddonMesh,
@@ -417,6 +424,23 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 					() => !IsTraitDisabled && drawFlags[(int)BodyMask.Head],
 					info.SkeletonBinded);
 				RenderMeshes.Add(faceAddon);
+			}
+
+			if (info.HairMeshs != null && info.HairMeshs.Length > 0)
+			{
+				var hairMesh = self.World.MeshCache.GetMeshSequence(image, info.HairMeshs[self.World.SharedRandom.Next(0, info.HairMeshs.Length)]);
+				hair = new MeshInstance(hairMesh,
+					() => self.CenterPosition,
+					() => facing == null ? body?.QuantizeOrientation(self.Orientation) ?? self.Orientation : facing.Orientation,
+					() => !IsTraitDisabled,
+					info.SkeletonBinded);
+				if (info.HairColors != null && info.HairColors.Length > 0)
+				{
+					haircolor = info.HairColors[self.World.SharedRandom.Next(0, info.HairColors.Length)];
+					hair.GetRemap = () => haircolor;
+				}
+
+				RenderMeshes.Add(hair);
 			}
 		}
 	}
