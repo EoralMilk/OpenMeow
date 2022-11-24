@@ -92,7 +92,7 @@
 	RenderMeshes:
 		Image: rumya
 		ZOffset: 15
-		Scale: 3
+		Scale: 2
 		DisableIfDeath: false
 	InfantryBlendTree:
 		SkeletonToUse: body
@@ -117,6 +117,7 @@
 		GuardBlendTick: 15
 		UpperMask: upper
 		LowerMask: lower
+		FullMask: full
 		# take cover
 		CanProne: True
 		ProneDuration: 100
@@ -132,6 +133,30 @@
 		ProneCondition: takecover
 		DeathBodyRemain: 100
 		DeathFadeVec: 0,0,-3
+		# KeepGuardStateWhenMoving: true
+	
+	WithSkeleton@tail:
+		Name: tail
+		SkeletonDefine: cattail
+		DisableIfDeath: false
+		OnlyUpdateForDraw: true
+	MeshAttachment@tail:
+		SkeletonBinded: body
+		AttachingBone: a-Rig_Hips
+		AttachmentSkeleton: tail
+		Mesh: mdx-tail
+		Image: cattail
+		DisableIfDeath: false
+	CatTailBlendTree:
+		SkeletonToUse: tail
+		Stand: pose1
+		Walk: swapdown
+		Guard: pose2
+		Prone: pose1
+		Crawl: swapup1
+		Die: messy
+		DieProne: messy
+		CanProne: true
 
 ^CommonInfantry:
 	Inherits@2: ^ExistsInWorld
@@ -165,6 +190,7 @@
 		MovementMode: Universal
 		TerrainOrientationAdjustmentMargin: -1
 	TurnOnIdle:
+		IdleTurnSpeed: 20
 	Selectable:
 		DecorationBounds: 452, 1387, 0, -543
 		Bounds: 724, 1448, 0, -543
@@ -232,7 +258,7 @@
 		CameraPitch: 85
 		QuantizedFacings: 0
 	RenderSprites:
-		Image: vehicle
+		Image: pfind
 
 
 PFIND:
@@ -278,11 +304,12 @@ PFIND:
 	InfantryBlendTree:
 		AttackFrame: 3
 		ProneAttackFrame: 17
+		ProneOffset: 0,0,-555
 	SlotArmament:
 		Weapon: DummyWeapon
 		Turret: primary
 		SlotBind: MainWeapon
-		LocalOffset: 768,0,1112
+		LocalOffset: 768,0,666
 
 	EquipmentSlot@cloth:
 		Name: Cloth
@@ -305,7 +332,11 @@ PFIND:
 	# PickUpItem:
 	# 	TargetCursor: undeploy
 	# 	Voice: Move
-
+	RenderSprites:
+		Image: pfind
+	UnitDisplayInfo:
+		IconSequence: pic
+		IconScale: 1
 
 RUTEST:
 	Inherits: ^Vehicle

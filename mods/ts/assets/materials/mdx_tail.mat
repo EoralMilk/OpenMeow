@@ -1,0 +1,5 @@
+Hair-mdx:
+	DiffuseMap: tail.png
+	# DiffuseTint: 1.0, 1.0,0.5
+	Specular: 1
+	Shininess: 32.0

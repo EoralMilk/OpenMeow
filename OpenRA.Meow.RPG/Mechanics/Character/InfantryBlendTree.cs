@@ -49,13 +49,14 @@ namespace OpenRA.Meow.RPG.Mechanics
 		// die prone
 		public readonly string DieProne = null;
 
-		public readonly int AttackFrame = 0;
-		public readonly int ProneAttackFrame = 0;
-
 		public readonly string[] IdleActions = null;
+
+		public readonly int MinIdleDelay = 30;
+		public readonly int MaxIdleDelay = 110;
 
 		public readonly string UpperMask = null;
 		public readonly string LowerMask = null;
+		public readonly string FullMask = null;
 
 		public readonly int StopMoveBlendTick = 5;
 		public readonly int GuardBlendTick = 5;
@@ -84,6 +85,10 @@ namespace OpenRA.Meow.RPG.Mechanics
 
 		[Desc("It attempts to modify the FireDelay of these Armament using the AttackFrame and ProneAttackFrame")]
 		public readonly string[] ArmamentsToDelay = { "primary" };
+
+		public readonly int AttackFrame = 0;
+		public readonly int ProneAttackFrame = 0;
+		public readonly WVec ProneOffset = WVec.Zero;
 
 		[Desc("How long the body remains after death.")]
 		public readonly int DeathBodyRemain = 50;
@@ -127,6 +132,9 @@ namespace OpenRA.Meow.RPG.Mechanics
 
 		readonly SkeletalAnim die;
 		readonly SkeletalAnim dieProne;
+
+		readonly SkeletalAnim[] idleActions;
+
 		#endregion
 		#region nodes
 		readonly AnimationNode animStop;
@@ -170,8 +178,14 @@ namespace OpenRA.Meow.RPG.Mechanics
 			ProneToStand,
 		}
 
+		public PoseState CurrentPose => currentPose;
+		public InfantryState CurrentState => currentState;
+
 		PoseState currentPose = PoseState.Stand;
 		InfantryState currentState = InfantryState.Idle;
+
+		public bool PlayingIdleAction => playingIdleAction;
+		bool playingIdleAction = false;
 
 		[Sync]
 		int guardTick = 9999;
@@ -179,7 +193,9 @@ namespace OpenRA.Meow.RPG.Mechanics
 		int proneRemainingDuration = 0;
 		int proneConditionToken = Actor.InvalidConditionToken;
 
-		Armament[] armamentsToDelay;
+		Armament[] armamentsToModify;
+		TurnOnIdle turnOnIdle;
+		int nextIdleActionTick = 0;
 
 		int GetBoneId(string name)
 		{
@@ -228,14 +244,26 @@ namespace OpenRA.Meow.RPG.Mechanics
 				dieProne = withSkeleton.OrderedSkeleton.SkeletonAsset.GetSkeletalAnim(withSkeleton.Image, info.DieProne);
 			}
 
+			idleActions = new SkeletalAnim[info.IdleActions.Length];
+
+			for (int i = 0 ; i < idleActions.Length; i++)
+			{
+				idleActions[i] = withSkeleton.OrderedSkeleton.SkeletonAsset.GetSkeletalAnim(withSkeleton.Image, info.IdleActions[i]);
+			}
+
+			var allvalidmask = withSkeleton.OrderedSkeleton.SkeletonAsset.AllValidMask;
+
 			if (info.UpperMask == null)
 				throw new Exception("Need UpperrMask");
 			if (info.LowerMask == null)
 				throw new Exception("Need LowerMask");
+			if (info.FullMask != null)
+			{
+				allvalidmask = withSkeleton.OrderedSkeleton.SkeletonAsset.GetAnimMask(withSkeleton.Image, info.FullMask);
+			}
 
 			var uppermask = withSkeleton.OrderedSkeleton.SkeletonAsset.GetAnimMask(withSkeleton.Image, info.UpperMask);
 			var lowermask = withSkeleton.OrderedSkeleton.SkeletonAsset.GetAnimMask(withSkeleton.Image, info.LowerMask);
-			var allvalidmask = withSkeleton.OrderedSkeleton.SkeletonAsset.AllValidMask;
 
 			blendTree = new BlendTree();
 
@@ -244,7 +272,7 @@ namespace OpenRA.Meow.RPG.Mechanics
 			animStop = new AnimationNode("Stop", id++, blendTree, allvalidmask, stand);
 			animMove = new AnimationNode("Move", id++, blendTree, allvalidmask, walk);
 			animGuard = new AnimationNode("Guard", id++, blendTree, allvalidmask, guard);
-			animGuardMove = new AnimationNode("GuardMove", id++, blendTree, allvalidmask, walk);
+			animGuardMove = new AnimationNode("GuardMove", id++, blendTree, allvalidmask, guardMove);
 
 			// the override node and die node should handle with trait
 			animOverride = new AnimationNode("Override", id++, blendTree, allvalidmask, die)
@@ -280,15 +308,20 @@ namespace OpenRA.Meow.RPG.Mechanics
 
 			blendTree.InitTree(shotDie);
 			withSkeleton.BlendTreeHandler = this;
+
+			nextIdleActionTick = self.World.SharedRandom.Next(info.MinIdleDelay, info.MaxIdleDelay);
 		}
 
 		public void Created(Actor self)
 		{
-			armamentsToDelay = self.TraitsImplementing<Armament>().Where(a => info.ArmamentsToDelay.Contains(a.Info.Name)).ToArray();
-			foreach (var a in armamentsToDelay)
+			armamentsToModify = self.TraitsImplementing<Armament>().Where(a => info.ArmamentsToDelay.Contains(a.Info.Name)).ToArray();
+			foreach (var a in armamentsToModify)
 			{
+				a.AdditionalLocalOffset = () => currentPose == PoseState.Prone ? info.ProneOffset : WVec.Zero;
 				a.OverrideFireDelay = () => currentPose == PoseState.Prone ? info.ProneAttackFrame : info.AttackFrame;
 			}
+
+			turnOnIdle = self.TraitOrDefault<TurnOnIdle>();
 		}
 
 		public BlendTreeNodeOutPut GetResult()
@@ -395,6 +428,9 @@ namespace OpenRA.Meow.RPG.Mechanics
 
 		public void Tick(Actor self)
 		{
+			if (turnOnIdle != null)
+				turnOnIdle.HoldTurn = true;
+
 			if (deathFade)
 			{
 				deathFadeAlpha -= info.DeathFadeSpeed;
@@ -410,7 +446,9 @@ namespace OpenRA.Meow.RPG.Mechanics
 			}
 
 			if (currentState == InfantryState.Die)
+			{
 				return;
+			}
 
 			if (proneRemainingDuration > 0 && currentState != InfantryState.Action && currentPose == PoseState.Stand)
 			{
@@ -454,7 +492,7 @@ namespace OpenRA.Meow.RPG.Mechanics
 				// prone pose must be guard
 				currentState = InfantryState.Guard;
 				switchStopGuard.SwitchTick = 1;
-				switchMoveGuard.SwitchTick = 1;
+				// switchMoveGuard.SwitchTick = 1;
 				switchStopGuard.SetFlag(true);
 				switchMoveGuard.SetFlag(true);
 
@@ -483,7 +521,7 @@ namespace OpenRA.Meow.RPG.Mechanics
 						shotUpper.ShotEndAction = () =>
 						{
 							switchStopGuard.SwitchTick = 1;
-							switchMoveGuard.SwitchTick = 1;
+							// switchMoveGuard.SwitchTick = 1;
 							switchStopGuard.SetFlag(false);
 							switchMoveGuard.SetFlag(false);
 							shotUpper.ShotEndAction = null;
@@ -499,7 +537,7 @@ namespace OpenRA.Meow.RPG.Mechanics
 					else
 					{
 						switchStopGuard.SwitchTick = info.GuardBlendTick;
-						switchMoveGuard.SwitchTick = info.GuardBlendTick;
+						// switchMoveGuard.SwitchTick = info.GuardBlendTick;
 						switchStopGuard.SetFlag(false);
 						switchMoveGuard.SetFlag(false);
 					}
@@ -523,7 +561,7 @@ namespace OpenRA.Meow.RPG.Mechanics
 						shotUpper.ShotEndAction = () =>
 						{
 							switchStopGuard.SwitchTick = 1;
-							switchMoveGuard.SwitchTick = 1;
+							// switchMoveGuard.SwitchTick = 1;
 							switchStopGuard.SetFlag(true);
 							switchMoveGuard.SetFlag(true);
 							shotUpper.ShotEndAction = null;
@@ -539,7 +577,7 @@ namespace OpenRA.Meow.RPG.Mechanics
 					else
 					{
 						switchStopGuard.SwitchTick = info.GuardBlendTick;
-						switchMoveGuard.SwitchTick = info.GuardBlendTick;
+						// switchMoveGuard.SwitchTick = info.GuardBlendTick;
 						switchStopGuard.SetFlag(true);
 						switchMoveGuard.SetFlag(true);
 					}
@@ -559,11 +597,52 @@ namespace OpenRA.Meow.RPG.Mechanics
 			{
 				switchMoveLower.SetFlag(true);
 				switchMoveUpper.SetFlag(true);
+
+				if (playingIdleAction)
+					shotFullOverride.Interrupt();
 			}
 			else
 			{
 				switchMoveLower.SetFlag(false);
 				switchMoveUpper.SetFlag(false);
+
+				// idle action
+				if (idleActions.Length > 0)
+				{
+					if (currentState == InfantryState.Idle && self.IsIdle && self.IsInWorld && currentPose == PoseState.Stand && move.CurrentMovementTypes == MovementType.None)
+					{
+						if (turnOnIdle != null && !playingIdleAction)
+							turnOnIdle.HoldTurn = false;
+
+						if (!playingIdleAction && nextIdleActionTick-- <= 0)
+						{
+							playingIdleAction = true;
+							animFullOverride.ChangeAnimation(idleActions[self.World.SharedRandom.Next(0, idleActions.Length - 1)]);
+							shotFullOverride.ShotEndAction = () =>
+							{
+								playingIdleAction = false;
+							};
+							shotFullOverride.StartShot();
+							nextIdleActionTick = self.World.SharedRandom.Next(info.MinIdleDelay, info.MaxIdleDelay);
+						}
+					}
+					else
+					{
+						if (playingIdleAction)
+							shotFullOverride.Interrupt();
+						else
+						{
+							nextIdleActionTick = Math.Max(nextIdleActionTick, info.MinIdleDelay);
+						}
+					}
+				}
+				else
+				{
+					if (turnOnIdle != null &&
+						currentState == InfantryState.Idle && self.IsIdle && self.IsInWorld &&
+						currentPose == PoseState.Stand && move.CurrentMovementTypes == MovementType.None)
+						turnOnIdle.HoldTurn = false;
+				}
 			}
 
 		}
@@ -607,6 +686,8 @@ namespace OpenRA.Meow.RPG.Mechanics
 			animDie.ChangeAnimation(!info.CanProne || currentPose == PoseState.Stand ? die : dieProne);
 
 			currentState = InfantryState.Die;
+
+			self.CancelActivity();
 
 			var me = self;
 

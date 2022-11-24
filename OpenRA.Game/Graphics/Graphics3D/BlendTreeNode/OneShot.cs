@@ -67,10 +67,7 @@ namespace OpenRA.Graphics
 		bool interrupted = false;
 		public void Interrupt()
 		{
-			if (runShot && shotTick > 0 && shotEndType == ShotEndType.Recover)
-			{
-				interrupted = true;
-			}
+			interrupted = true;
 		}
 
 		public void StopShot()

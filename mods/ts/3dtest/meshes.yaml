@@ -9,6 +9,7 @@ rumya:
 		Masks:
 			upper: upper
 			lower: lower
+			full: all
 		Anims:
 			stand: stand_Skeleton_CommonBody
 			walk: catwalk_Skeleton_CommonBody
@@ -122,6 +123,26 @@ rumya:
 			Material: w_rail
 		axis: Axis
 			Material: misc01
+
+cattail:
+	Skeleton: Skeleton_CatTail
+		UseDynamicAdjBonePose: false
+		Anims:
+			swapup1: Tail_SwapUp01.ska
+			swapup2: Tail_SwapUp02.ska
+			swapdown: Tail_SwapDown.ska
+			swap: Tail_Swap.ska
+
+			pose1: Tail_Pose01.ska
+			pose2: Tail_Pose02.ska
+
+			messy: Tail_Messy.ska
+	Meshes:
+		mdx-tail: mdx-Tail
+			Material: mdx_tail
+
+
+
 
 # rumya-2:
 # 	Inherits@defaults: rumya

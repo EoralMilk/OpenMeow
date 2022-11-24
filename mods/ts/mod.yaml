@@ -60,7 +60,12 @@ Packages:
 	ts|bits/effects
 	ts|bits/projectiles
 	ts|bits/miscs
-
+	ts|assets
+	ts|assets/skeletons
+	ts|assets/animations
+	ts|assets/meshes
+	ts|assets/materials
+	ts|assets/textures
 
 	ts|terrain
 	ts|terrain/temperate
@@ -68,10 +73,6 @@ Packages:
 
 
 	ts|uibits
-	ts|meshes
-	ts|materials
-	ts|textures
-	ts|skeletons
 	ts|3dtest
 	
 	# ts|tstest
@@ -141,7 +142,7 @@ Sequences:
 	ts|sequences/trees.yaml
 	ts|sequences/bridges.yaml
 	ts|sequences/critters.yaml
-
+	ts|sequences/test.yaml
 	ts|rpgtest/rpgmisc.yaml
 
 	# ts|tstest/localtestseq.yaml

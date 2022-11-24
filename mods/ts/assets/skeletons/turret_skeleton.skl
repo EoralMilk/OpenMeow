@@ -1,0 +1,42 @@
+firepose:
+	ID: 0
+	Parent: a-s-Barrel
+	ParentID: 2
+	RestPoseScale: 1, 1, 1
+	RestPoseRotation: 0.707107, -2.21972e-07, -2.21972e-07, -0.707107
+	RestPoseTranslation: -1.63635e-09, 0.314895, -0.00260634
+	RestPoseInvScale: 1, 1, 1
+	RestPoseInvRotation: 0.707107, -2.21972e-07, -2.21972e-07, 0.707107
+	RestPoseInvTranslation: 2.32037e-14, -0.00260631, -0.314895
+	BindPoseScale: 1, 1, 1
+	BindPoseRotation: 9.85435e-14, -1.11146e-16, -2.19055e-29, 1
+	BindPoseTranslation: -2.65526e-17, -0.0622183, -0.379994
+a-s-Base:
+	ID: 1
+	Skin: true
+	Anim: true
+	Parent: NO_Parent
+	RestPoseScale: 1, 1, 1
+	RestPoseRotation: 0, 0, 0, 1
+	RestPoseTranslation: 0, 0, 0
+	RestPoseInvScale: 1, 1, 1
+	RestPoseInvRotation: 0, 0, 0, 1
+	RestPoseInvTranslation: -0, 0, -0
+	BindPoseScale: 1, 1, 1
+	BindPoseRotation: 0, 0, 0, 1
+	BindPoseTranslation: -0, 0, -0
+a-s-Barrel:
+	ID: 2
+	Skin: true
+	Anim: true
+	Parent: a-s-Base
+	ParentID: 1
+	RestPoseScale: 1, 1, 1
+	RestPoseRotation: 0.707107, -2.21972e-07, -2.21972e-07, 0.707107
+	RestPoseTranslation: -5.11178e-18, 0.0596119, 0.0650988
+	RestPoseInvScale: 1, 1, 1
+	RestPoseInvRotation: 0.707107, -2.21972e-07, -2.21972e-07, -0.707107
+	RestPoseInvTranslation: 3.74263e-08, -0.0650988, 0.0596119
+	BindPoseScale: 1, 1, 1
+	BindPoseRotation: -0.707107, 2.21972e-07, 2.21972e-07, 0.707107
+	BindPoseTranslation: 3.74263e-08, -0.0650988, 0.0596119

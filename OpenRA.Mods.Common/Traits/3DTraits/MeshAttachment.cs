@@ -45,6 +45,9 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 			if (AttachBoneId == -1)
 				throw new Exception("can't find bone " + info.AttachingBone + " in skeleton.");
 
+			if (AttachmentSkeleton != null)
+				AttachmentSkeleton.SetParent(MainSkeleton, AttachBoneId, Scale);
+
 			if (Info.Image != null)
 			{
 				image = Info.Image;
@@ -52,7 +55,6 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 			else if (AttachmentSkeleton != null)
 			{
 				image = AttachmentSkeleton.Image;
-				AttachmentSkeleton.SetParent(MainSkeleton, AttachBoneId, Scale);
 			}
 			else if (info.SkeletonBinded != null)
 			{

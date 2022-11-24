@@ -1,0 +1,9 @@
+pfind:
+	icon: pathfinder_icon.png
+		UseTilesetCode: false
+	 	AddExtension: false
+		Offset: 0, 0, 0
+	pic: pathfinder_pic.png
+		UseTilesetCode: false
+	 	AddExtension: false
+		Offset: 0, 0, 0

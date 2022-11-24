@@ -1054,8 +1054,9 @@ namespace OpenRA.Mods.Common.Traits
 				var from = (FromCell.Layer == 0 ? self.World.Map.CenterOfCell(FromCell) :
 					self.World.GetCustomMovementLayers()[FromCell.Layer].CenterOfCell(FromCell)) +
 					self.World.Map.Grid.OffsetOfSubCell(FromSubCell);
-				if (CenterPosition != from)
-					self.QueueActivity(LocalMove(self, CenterPosition, from));
+
+				//if (CenterPosition != from)
+				//	self.QueueActivity(LocalMove(self, CenterPosition, from));
 
 				self.QueueActivity(order.Queued, WrapMove(new Move(self, cell, WDist.FromCells(8), null, true, Info.TargetLineColor)));
 				self.ShowTargetLines();

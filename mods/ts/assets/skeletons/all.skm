@@ -1,0 +1,46 @@
+a-Rig_Hips:
+	Using: True
+a-Rig_Spine:
+	Using: True
+a-Rig_Chest:
+	Using: True
+a-Rig_UpperChest:
+	Using: True
+a-Rig_Neck:
+	Using: True
+a-s-Rig_Head:
+	Using: True
+a-s-Rig_Shoulder.L:
+	Using: True
+a-Rig_UpperArm.L:
+	Using: True
+a-Rig_LowerArm.L:
+	Using: True
+a-s-Rig_Hand.L:
+	Using: True
+a-s-Rig_Shoulder.R:
+	Using: True
+a-Rig_UpperArm.R:
+	Using: True
+a-Rig_LowerArm.R:
+	Using: True
+a-s-Rig_Hand.R:
+	Using: True
+e_Hand.R:
+	Using: True
+a-Rig_UpperLeg.L:
+	Using: True
+a-Rig_LowerLeg.L:
+	Using: True
+a-s-Rig_Foot.L:
+	Using: True
+a-s-Rig_ToeBase.L:
+	Using: True
+a-Rig_UpperLeg.R:
+	Using: True
+a-Rig_LowerLeg.R:
+	Using: True
+a-s-Rig_Foot.R:
+	Using: True
+a-s-Rig_ToeBase.R:
+	Using: True

@@ -20,6 +20,7 @@ namespace OpenRA.Meow.RPG.Mechanics
 	public class SlotArmamentInfo : ArmamentInfo, Requires<EquipmentSlotInfo>
 	{
 		[FieldLoader.Require]
+		[Desc("The EquipmentSlot to bind, which the weapon item should be equiped at")]
 		public readonly string SlotBind = null;
 
 		public override object Create(ActorInitializer init) { return new SlotArmament(init.Self, this); }
@@ -57,7 +58,7 @@ namespace OpenRA.Meow.RPG.Mechanics
 		protected override WPos CalculateMuzzleWPos(Actor self, Barrel b)
 		{
 			// Weapon offset in turret coordinates
-			var localOffset = b.Offset + new WVec(-Recoil, WDist.Zero, WDist.Zero);
+			var localOffset = b.Offset + AdditionalLocalOffset() + new WVec(-Recoil, WDist.Zero, WDist.Zero);
 
 			if (slot.Item != null && slot.Item is WeaponItem)
 			{

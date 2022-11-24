@@ -182,6 +182,8 @@ namespace OpenRA.Mods.Common.Traits
 
 		public Func<int> OverrideFireDelay = () => -1;
 
+		public Func<WVec> AdditionalLocalOffset = () => WVec.Zero;
+
 		public Armament(Actor self, ArmamentInfo info, bool replaceBarrel = false)
 			: base(info)
 		{
@@ -588,7 +590,7 @@ namespace OpenRA.Mods.Common.Traits
 		protected virtual WPos CalculateMuzzleWPos(Actor self, Barrel b)
 		{
 			// Weapon offset in turret coordinates
-			var localOffset = b.Offset + new WVec(-Recoil, WDist.Zero, WDist.Zero);
+			var localOffset = b.Offset + AdditionalLocalOffset() + new WVec(-Recoil, WDist.Zero, WDist.Zero);
 
 			// Turret coordinates to body coordinates
 			var bodyOrientation = coords.QuantizeOrientation(self.Orientation);

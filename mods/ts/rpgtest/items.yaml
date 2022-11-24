@@ -70,7 +70,7 @@ railgun_item:
 		ThumbnailImage: items
 		ThumbnailSequence: ioncannon
 		Weapon: KittenRailGun
-		LocalOffset: 433,0,155
+		LocalOffset: 0,0,0
 	RenderMeshes:
 		Image: rumya
 	ItemMesh@test:

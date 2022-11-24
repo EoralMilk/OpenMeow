@@ -14,7 +14,7 @@ using OpenRA.Traits;
 namespace OpenRA.Mods.Common.Traits
 {
 	[Desc("Turns actor randomly when idle.")]
-	class TurnOnIdleInfo : ConditionalTraitInfo, Requires<MobileInfo>
+	public class TurnOnIdleInfo : ConditionalTraitInfo, Requires<MobileInfo>
 	{
 		[Desc("Minimum amount of ticks the actor will wait before the turn.")]
 		public readonly int MinDelay = 400;
@@ -22,14 +22,18 @@ namespace OpenRA.Mods.Common.Traits
 		[Desc("Maximum amount of ticks the actor will wait before the turn.")]
 		public readonly int MaxDelay = 800;
 
+		public readonly WAngle IdleTurnSpeed = WAngle.Zero;
+
 		public override object Create(ActorInitializer init) { return new TurnOnIdle(init, this); }
 	}
 
-	class TurnOnIdle : ConditionalTrait<TurnOnIdleInfo>, INotifyIdle
+	public class TurnOnIdle : ConditionalTrait<TurnOnIdleInfo>, INotifyIdle
 	{
 		int currentDelay;
 		WAngle targetFacing;
 		readonly Mobile mobile;
+		readonly WAngle turnSpeed;
+		public bool HoldTurn = false;
 
 		public TurnOnIdle(ActorInitializer init, TurnOnIdleInfo info)
 			: base(info)
@@ -37,11 +41,12 @@ namespace OpenRA.Mods.Common.Traits
 			currentDelay = init.World.SharedRandom.Next(Info.MinDelay, Info.MaxDelay);
 			mobile = init.Self.Trait<Mobile>();
 			targetFacing = mobile.Facing;
+			turnSpeed = info.IdleTurnSpeed;
 		}
 
 		void INotifyIdle.TickIdle(Actor self)
 		{
-			if (IsTraitDisabled)
+			if (IsTraitDisabled || HoldTurn)
 				return;
 
 			if (mobile.IsTraitDisabled || mobile.IsTraitPaused)
@@ -56,7 +61,7 @@ namespace OpenRA.Mods.Common.Traits
 				currentDelay = self.World.SharedRandom.Next(Info.MinDelay, Info.MaxDelay);
 			}
 
-			mobile.Facing = Util.TickFacing(mobile.Facing, targetFacing, mobile.TurnSpeed);
+			mobile.Facing = Util.TickFacing(mobile.Facing, targetFacing, turnSpeed == WAngle.Zero ? mobile.TurnSpeed : turnSpeed);
 		}
 	}
 }

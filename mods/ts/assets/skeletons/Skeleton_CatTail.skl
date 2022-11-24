@@ -1,0 +1,89 @@
+a-s-Rig_TailRoot:
+	ID: 0
+	Skin: True
+	Anim: True
+	Parent: NO_Parent
+	RestPoseScale: 1.000000, 1.000000, 1.000000
+	RestPoseRotation: 0.000000, 0.000000, 0.000000, 1.000000
+	RestPoseTranslation: 0.000000, 0.000000, 0.000000
+	RestPoseInvScale: 1.000000, 1.000000, 1.000000
+	RestPoseInvRotation: 0.000000, 0.000000, 0.000000, 1.000000
+	RestPoseInvTranslation: 0.000000, 0.000000, 0.000000
+	BindPoseScale: 1.000000, 1.000000, 1.000000
+	BindPoseRotation: 0.000000, 0.000000, 0.000000, 1.000000
+	BindPoseTranslation: 0.000000, 0.000000, 0.000000
+a-s-Rig_Tail.001:
+	ID: 1
+	Skin: True
+	Anim: True
+	Parent: a-s-Rig_TailRoot
+	ParentID: 0
+	RestPoseScale: 1.000000, 1.000000, 1.000000
+	RestPoseRotation: -0.679756, 0.000000, 0.000000, 0.733438
+	RestPoseTranslation: 0.000000, 0.071711, -0.070293
+	RestPoseInvScale: 1.000000, 1.000000, 1.000000
+	RestPoseInvRotation: 0.679756, 0.000000, 0.000000, 0.733438
+	RestPoseInvTranslation: 0.000000, -0.075531, -0.066171
+	BindPoseScale: 1.000000, 1.000000, 1.000000
+	BindPoseRotation: 0.679756, 0.000000, 0.000000, 0.733438
+	BindPoseTranslation: 0.000000, -0.075531, -0.066171
+a-s-Rig_Tail.002:
+	ID: 2
+	Skin: True
+	Anim: True
+	Parent: a-s-Rig_Tail.001
+	ParentID: 1
+	RestPoseScale: 1.000000, 1.000000, 1.000000
+	RestPoseRotation: -0.036775, 0.000000, 0.000000, 0.999324
+	RestPoseTranslation: 0.000000, 0.151223, 0.000000
+	RestPoseInvScale: 1.000000, 1.000000, 1.000000
+	RestPoseInvRotation: 0.036775, 0.000000, 0.000000, 0.999324
+	RestPoseInvTranslation: 0.000000, -0.150814, -0.011115
+	BindPoseScale: 1.000000, 1.000000, 1.000000
+	BindPoseRotation: 0.706268, 0.000000, 0.000000, 0.707945
+	BindPoseTranslation: 0.000000, -0.221277, -0.082659
+a-s-Rig_Tail.003:
+	ID: 3
+	Skin: True
+	Anim: True
+	Parent: a-s-Rig_Tail.002
+	ParentID: 2
+	RestPoseScale: 1.000000, 1.000000, 1.000000
+	RestPoseRotation: -0.047099, 0.000000, 0.000000, 0.998890
+	RestPoseTranslation: 0.000000, 0.179780, 0.000000
+	RestPoseInvScale: 1.000000, 1.000000, 1.000000
+	RestPoseInvRotation: 0.047099, 0.000000, 0.000000, 0.998890
+	RestPoseInvTranslation: 0.000000, -0.178982, -0.016916
+	BindPoseScale: 1.000000, 1.000000, 1.000000
+	BindPoseRotation: 0.738828, 0.000000, 0.000000, 0.673894
+	BindPoseTranslation: 0.000000, -0.391500, -0.120029
+a-s-Rig_Tail.004:
+	ID: 4
+	Skin: True
+	Anim: True
+	Parent: a-s-Rig_Tail.003
+	ParentID: 3
+	RestPoseScale: 1.000000, 1.000000, 1.000000
+	RestPoseRotation: -0.024495, 0.000000, 0.000000, 0.999700
+	RestPoseTranslation: 0.000000, 0.149771, 0.000000
+	RestPoseInvScale: 1.000000, 1.000000, 1.000000
+	RestPoseInvRotation: 0.024495, 0.000000, 0.000000, 0.999700
+	RestPoseInvTranslation: 0.000000, -0.149591, -0.007335
+	BindPoseScale: 1.000000, 1.000000, 1.000000
+	BindPoseRotation: 0.755113, 0.000000, 0.000000, 0.655594
+	BindPoseTranslation: 0.000000, -0.534743, -0.146394
+a-s-Rig_Tail.005:
+	ID: 5
+	Skin: True
+	Anim: True
+	Parent: a-s-Rig_Tail.004
+	ParentID: 4
+	RestPoseScale: 1.000000, 1.000000, 1.000000
+	RestPoseRotation: 0.024412, 0.000000, 0.000000, 0.999702
+	RestPoseTranslation: 0.000000, 0.100335, 0.000000
+	RestPoseInvScale: 1.000000, 1.000000, 1.000000
+	RestPoseInvRotation: -0.024412, 0.000000, 0.000000, 0.999702
+	RestPoseInvTranslation: 0.000000, -0.100215, 0.004897
+	BindPoseScale: 1.000000, 1.000000, 1.000000
+	BindPoseRotation: 0.738884, 0.000000, 0.000000, 0.673833
+	BindPoseTranslation: 0.000000, -0.641466, -0.115222

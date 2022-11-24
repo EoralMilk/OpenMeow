@@ -95,7 +95,6 @@ namespace OpenRA.Graphics
 				else
 				{
 					outPut.SetNoneTransform(i);
-					animMask[i] = false;
 				}
 			}
 

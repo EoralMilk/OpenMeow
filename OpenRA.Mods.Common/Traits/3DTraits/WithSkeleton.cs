@@ -274,6 +274,9 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 
 		void UpdateSkeletonRoot()
 		{
+			if (OnlyUpdateForDraw)
+				return;
+
 			if (parent == null)
 			{
 				if (Info.AxisConvert)
@@ -290,6 +293,10 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 			if (!callbyParent && parent != null)
 				return;
 
+			// we update the OnlyDraw Skeleton root here
+			if (callbyParent && OnlyUpdateForDraw)
+				Skeleton.SetOffset(Transformation.MatWithNewScale(TSMatrix4x4.FromMat4(parent.GetRenderMatrixFromBoneId(parentBoneId)), scaleAsChild));
+
 			RenderUpdateSkeletonInner();
 		}
 
@@ -298,14 +305,7 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 		/// </summary>
 		void RenderUpdateSkeletonInner()
 		{
-			if (OnlyUpdateForDraw && Draw)
-			{
-				RenderUpdateDirectly();
-			}
-			else
-			{
-				RenderUpdateDirectly();
-			}
+			RenderUpdateDirectly();
 
 			foreach (var child in children)
 				child.RenderUpdateWholeSkeleton(true);

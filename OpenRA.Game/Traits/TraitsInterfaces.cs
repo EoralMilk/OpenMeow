@@ -13,6 +13,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
+using GlmSharp;
 using OpenRA.Activities;
 using OpenRA.FileSystem;
 using OpenRA.GameRules;
@@ -328,6 +329,8 @@ namespace OpenRA.Traits
 		WRot GetWRotFromBoneId(int id);
 		TSMatrix4x4 GetMatrixFromBoneId(int id);
 		TSQuaternion GetQuatFromBoneId(int id);
+
+		mat4 GetRenderMatrixFromBoneId(int id);
 	}
 
 	public interface IPrepareForAttack
