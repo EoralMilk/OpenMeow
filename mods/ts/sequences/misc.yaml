@@ -189,10 +189,10 @@ explosion:
 		ZOffset: 2048
 	smallpulse_explosion: pulsefx2
 		BlendMode: Additive
-		Tick: 45
+		Tick: 35
 		MeshType: Plane
 		ZOffset: 2048
-		Scale: 0.2
+		Scale: 0.25
 	small_watersplash: h2o_exp2
 		IgnoreWorldTint: False
 		AlphaFade: False

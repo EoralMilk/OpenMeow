@@ -274,9 +274,6 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 
 		void UpdateSkeletonRoot()
 		{
-			if (OnlyUpdateForDraw)
-				return;
-
 			if (parent == null)
 			{
 				if (Info.AxisConvert)
@@ -284,7 +281,7 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 				else
 					Skeleton.SetOffsetNoConvert(lastSelfPos, lastSelfRot, lastScale);
 			}
-			else
+			else if (!OnlyUpdateForDraw) // donot update children skeleton if this skeleton is only update for draw
 				Skeleton.SetOffset(Transformation.MatWithNewScale(parent.GetMatrixFromBoneId(parentBoneId), scaleAsChild));
 		}
 
@@ -294,8 +291,11 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 				return;
 
 			// we update the OnlyDraw Skeleton root here
-			if (callbyParent && OnlyUpdateForDraw)
-				Skeleton.SetOffset(Transformation.MatWithNewScale(TSMatrix4x4.FromMat4(parent.GetRenderMatrixFromBoneId(parentBoneId)), scaleAsChild));
+			if (OnlyUpdateForDraw)
+			{
+				if (callbyParent)
+					Skeleton.SetOffset(Transformation.MatWithNewScale(TSMatrix4x4.FromMat4(parent.GetRenderMatrixFromBoneId(parentBoneId)), scaleAsChild));
+			}
 
 			RenderUpdateSkeletonInner();
 		}

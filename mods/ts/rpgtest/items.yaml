@@ -69,7 +69,7 @@ railgun_item:
 		Type: MainWeapon
 		ThumbnailImage: items
 		ThumbnailSequence: ioncannon
-		Weapon: KittenRailGun
+		Weapon: LtRail
 		LocalOffset: 0,0,0
 	RenderMeshes:
 		Image: rumya

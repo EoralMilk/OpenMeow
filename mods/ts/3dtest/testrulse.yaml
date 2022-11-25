@@ -90,6 +90,7 @@
 	WithSkeleton:
 		Name: body
 		DisableIfDeath: false
+		OnlyUpdateForDraw: true
 	RenderMeshes:
 		Image: rumya
 		ZOffset: 15
