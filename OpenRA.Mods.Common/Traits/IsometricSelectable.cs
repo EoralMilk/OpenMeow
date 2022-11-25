@@ -74,6 +74,8 @@ namespace OpenRA.Mods.Common.Traits
 		readonly IsometricSelectableInfo info;
 		readonly string selectionClass = null;
 		readonly BuildingInfo buildingInfo;
+		bool inited = false;
+		WPos posleft, posright, postop, posbottom;
 
 		public IsometricSelectable(Actor self, IsometricSelectableInfo info)
 		{
@@ -82,7 +84,7 @@ namespace OpenRA.Mods.Common.Traits
 			buildingInfo = self.Info.TraitInfo<BuildingInfo>();
 		}
 
-		Polygon Bounds(Actor self, WorldRenderer wr, int[] bounds, int height)
+		Polygon Bounds(Actor self, WorldRenderer wr, int[] bounds, int height, float scale = 1)
 		{
 			int2 left, right, top, bottom;
 			if (bounds != null)
@@ -90,36 +92,58 @@ namespace OpenRA.Mods.Common.Traits
 				// Convert from WDist to pixels
 				var offset = bounds.Length >= 4 ? new int2(bounds[2] * wr.TileSize.Width / wr.TileScale, bounds[3] * wr.TileSize.Height / wr.TileScale) : int2.Zero;
 				var center = wr.ScreenPxPosition(self.CenterPosition) + offset;
-				left = center - new int2(bounds[0] * wr.TileSize.Width / (2 * wr.TileScale), 0);
-				right = left + new int2(bounds[0] * wr.TileSize.Width / wr.TileScale, 0);
-				top = center - new int2(0, bounds[1] * wr.TileSize.Height / (2 * wr.TileScale));
-				bottom = top + new int2(0, bounds[1] * wr.TileSize.Height / wr.TileScale);
+				left = center - (new float2(bounds[0] * wr.TileSize.Width / (2 * wr.TileScale), 0) * scale).ToInt2();
+				right = left + (new float2(bounds[0] * wr.TileSize.Width / wr.TileScale, 0) * scale).ToInt2();
+				top = center - (new float2(0, bounds[1] * wr.TileSize.Height / (2 * wr.TileScale)) * scale).ToInt2();
+				bottom = top + (new float2(0, bounds[1] * wr.TileSize.Height / wr.TileScale) * scale).ToInt2();
 			}
 			else
 			{
-				var xMin = int.MaxValue;
-				var xMax = int.MinValue;
-				var yMin = int.MaxValue;
-				var yMax = int.MinValue;
-				foreach (var c in buildingInfo.OccupiedTiles(self.Location))
+				if (inited)
 				{
-					xMin = Math.Min(xMin, c.X);
-					xMax = Math.Max(xMax, c.X);
-					yMin = Math.Min(yMin, c.Y);
-					yMax = Math.Max(yMax, c.Y);
+					left = wr.ScreenPxPosition(FloatScale(posleft, scale) + new WVec(self.CenterPosition));
+					right = wr.ScreenPxPosition(FloatScale(posright, scale) + new WVec(self.CenterPosition));
+					top = wr.ScreenPxPosition(FloatScale(postop, scale) + new WVec(self.CenterPosition));
+					bottom = wr.ScreenPxPosition(FloatScale(posbottom, scale) + new WVec(self.CenterPosition));
 				}
+				else
+				{
+					var xMin = int.MaxValue;
+					var xMax = int.MinValue;
+					var yMin = int.MaxValue;
+					var yMax = int.MinValue;
+					foreach (var c in buildingInfo.OccupiedTiles(self.Location))
+					{
+						xMin = Math.Min(xMin, c.X);
+						xMax = Math.Max(xMax, c.X);
+						yMin = Math.Min(yMin, c.Y);
+						yMax = Math.Max(yMax, c.Y);
+					}
 
-				left = wr.ScreenPxPosition(self.World.Map.CenterOfCell(new CPos(xMin, yMax)) - new WVec(768, 0, 0));
-				right = wr.ScreenPxPosition(self.World.Map.CenterOfCell(new CPos(xMax, yMin)) + new WVec(768, 0, 0));
-				top = wr.ScreenPxPosition(self.World.Map.CenterOfCell(new CPos(xMin, yMin)) - new WVec(0, 768, 0));
-				bottom = wr.ScreenPxPosition(self.World.Map.CenterOfCell(new CPos(xMax, yMax)) + new WVec(0, 768, 0));
+					left = wr.ScreenPxPosition(self.World.Map.CenterOfCell(new CPos(xMin, yMax)) - new WVec(768, 0, 0));
+					right = wr.ScreenPxPosition(self.World.Map.CenterOfCell(new CPos(xMax, yMin)) + new WVec(768, 0, 0));
+					top = wr.ScreenPxPosition(self.World.Map.CenterOfCell(new CPos(xMin, yMin)) - new WVec(0, 768, 0));
+					bottom = wr.ScreenPxPosition(self.World.Map.CenterOfCell(new CPos(xMax, yMax)) + new WVec(0, 768, 0));
+
+					posleft = self.World.Map.CenterOfCell(new CPos(xMin, yMax)) - new WVec(768, 0, 0) - new WVec(self.CenterPosition);
+					posright = self.World.Map.CenterOfCell(new CPos(xMax, yMin)) + new WVec(768, 0, 0) - new WVec(self.CenterPosition);
+					postop = self.World.Map.CenterOfCell(new CPos(xMin, yMin)) - new WVec(0, 768, 0) - new WVec(self.CenterPosition);
+					posbottom = self.World.Map.CenterOfCell(new CPos(xMax, yMax)) + new WVec(0, 768, 0) - new WVec(self.CenterPosition);
+
+					inited = true;
+				}
 			}
 
 			if (height == 0)
 				return new Polygon(new[] { top, left, bottom, right });
 
-			var h = new int2(0, height);
+			var h = new int2(0, (int)(height * scale));
 			return new Polygon(new[] { top - h, left - h, left, bottom, right, right - h });
+		}
+
+		WPos FloatScale(WPos pos, float scale)
+		{
+			return new WPos((int)(pos.X * scale),(int)(pos.Y * scale), (int)(pos.Z * scale));
 		}
 
 		public Polygon Bounds(Actor self, WorldRenderer wr)
@@ -127,9 +151,9 @@ namespace OpenRA.Mods.Common.Traits
 			return Bounds(self, wr, info.Bounds, info.Height);
 		}
 
-		public Polygon DecorationBounds(Actor self, WorldRenderer wr)
+		public Polygon DecorationBounds(Actor self, WorldRenderer wr, float scale = 1)
 		{
-			return Bounds(self, wr, info.DecorationBounds ?? info.Bounds, info.DecorationHeight >= 0 ? info.DecorationHeight : info.Height);
+			return Bounds(self, wr, info.DecorationBounds ?? info.Bounds, info.DecorationHeight >= 0 ? info.DecorationHeight : info.Height, scale);
 		}
 
 		Polygon IMouseBounds.MouseoverBounds(Actor self, WorldRenderer wr)

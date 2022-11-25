@@ -66,7 +66,8 @@ namespace OpenRA.Mods.Common.Traits.Render
 
 		protected override IEnumerable<IRenderable> RenderSelectionBox(Actor self, WorldRenderer wr, Color color)
 		{
-			var bounds = selectable.DecorationBounds(self, wr);
+			var bounds = selectable.DecorationBounds(self, wr, BoundsScale);
+
 			yield return new IsometricSelectionBoxAnnotationRenderable(self, bounds, color);
 		}
 
@@ -75,7 +76,7 @@ namespace OpenRA.Mods.Common.Traits.Render
 			if (!displayHealth && !displayExtra)
 				yield break;
 
-			var bounds = selectable.DecorationBounds(self, wr);
+			var bounds = selectable.DecorationBounds(self, wr, BoundsScale);
 			yield return new IsometricSelectionBarsAnnotationRenderable(self, bounds, displayHealth, displayExtra);
 		}
 
@@ -86,7 +87,7 @@ namespace OpenRA.Mods.Common.Traits.Render
 
 		IEnumerable<Rectangle> IRender.ScreenBounds(Actor self, WorldRenderer wr)
 		{
-			yield return selectable.DecorationBounds(self, wr).BoundingRect;
+			yield return selectable.DecorationBounds(self, wr, BoundsScale).BoundingRect;
 		}
 	}
 }

@@ -181,6 +181,8 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 		}
 
 		IWithSkeleton parent = null;
+		public Func<TSMatrix4x4> GetRootOffset = null;
+
 		int parentBoneId = -1;
 		FP scaleAsChild = 1;
 		readonly HashSet<IWithSkeleton> children = new HashSet<IWithSkeleton>();
@@ -274,6 +276,12 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 
 		void UpdateSkeletonRoot()
 		{
+			if (!OnlyUpdateForDraw && GetRootOffset != null)
+			{
+				Skeleton.SetOffset(GetRootOffset());
+				return;
+			}
+
 			if (parent == null)
 			{
 				if (Info.AxisConvert)
@@ -293,7 +301,11 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 			// we update the OnlyDraw Skeleton root here
 			if (OnlyUpdateForDraw)
 			{
-				if (callbyParent)
+				if (GetRootOffset != null)
+				{
+					Skeleton.SetOffset(GetRootOffset());
+				}
+				else if (callbyParent)
 					Skeleton.SetOffset(Transformation.MatWithNewScale(TSMatrix4x4.FromMat4(parent.GetRenderMatrixFromBoneId(parentBoneId)), scaleAsChild));
 			}
 

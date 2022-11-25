@@ -275,30 +275,83 @@ namespace OpenRA.Mods.Common.Traits
 		readonly World world;
 
 		[Sync]
-		readonly CPos topLeft;
+		CPos topLeft;
+
+		readonly CVec topLeftCellOffset;
 
 		readonly Actor self;
 		readonly BuildingInfluence influence;
 
-		readonly (CPos, SubCell)[] occupiedCells;
-		readonly (CPos, SubCell)[] targetableCells;
-		readonly CPos[] transitOnlyCells;
+		(CPos, SubCell)[] occupiedCells;
+		(CPos, SubCell)[] targetableCells;
+		CPos[] transitOnlyCells;
 
 		public CPos TopLeft => topLeft;
 		public WPos CenterPosition { get; private set; }
-		public bool OccupySpace { get; set; }
 
+		bool occupySpace = true;
+		public bool OccupySpace {
+			get
+			{
+				return occupySpace;
+			}
+
+			set
+			{
+				if (OccupySpace && value == false)
+				{
+					RemoveInfluence();
+				}
+				else if (OccupySpace == false && value == true)
+				{
+					RemoveInfluence();
+					influence.AddInfluence(self, Info.Tiles(self.Location));
+				}
+
+				occupySpace = value;
+			}
+		}
+
+		/// <summary>
+		/// update height change
+		/// </summary>
 		public void UpdateCenterPos()
 		{
-			CenterPosition = world.Map.CenterOfCell(topLeft) + Info.CenterOffset(world);
+			if (self.IsInWorld)
+			{
+				topLeft = world.Map.CellContaining(CenterPosition) + topLeftCellOffset;
+				CenterPosition = world.Map.CenterOfCell(topLeft) + Info.CenterOffset(world);
+
+				occupiedCells = Info.OccupiedTiles(TopLeft).Select(c => (c, SubCell.FullCell)).ToArray();
+				targetableCells = Info.FootprintTiles(TopLeft, FootprintCellType.Occupied).Select(c => (c, SubCell.FullCell)).ToArray();
+				transitOnlyCells = Info.TransitOnlyTiles(TopLeft).ToArray();
+				influence.RemoveInfluence(self, Info.Tiles(self.Location));
+				influence.AddInfluence(self, Info.Tiles(self.Location));
+			}
+		}
+
+		public void SetCenterPos(WPos pos)
+		{
+			if (self.IsInWorld)
+			{
+				CenterPosition = pos;
+				topLeft = world.Map.CellContaining(CenterPosition) + topLeftCellOffset;
+			}
+		}
+
+		public void RemoveInfluence()
+		{
+			influence.RemoveInfluence(self, Info.Tiles(self.Location));
 		}
 
 		public Building(ActorInitializer init, BuildingInfo info)
 		{
-			OccupySpace = true;
-			self = init.Self;
-			topLeft = init.GetValue<LocationInit, CPos>();
 			Info = info;
+			self = init.Self;
+			world = init.World;
+			topLeft = init.GetValue<LocationInit, CPos>();
+			CenterPosition = world.Map.CenterOfCell(topLeft) + info.CenterOffset(world);
+			topLeftCellOffset = topLeft - world.Map.CellContaining(CenterPosition);
 			influence = self.World.WorldActor.Trait<BuildingInfluence>();
 
 			occupiedCells = Info.OccupiedTiles(TopLeft)
@@ -308,15 +361,10 @@ namespace OpenRA.Mods.Common.Traits
 				.Select(c => (c, SubCell.FullCell)).ToArray();
 
 			transitOnlyCells = Info.TransitOnlyTiles(TopLeft).ToArray();
-			world = init.World;
-			UpdateCenterPos();
-			// CenterPosition = init.World.Map.CenterOfCell(topLeft) + Info.CenterOffset(init.World);
 		}
 
 		public (CPos, SubCell)[] OccupiedCells()
 		{
-			if (!OccupySpace)
-				return Array.Empty<(CPos, SubCell)>();
 			return occupiedCells;
 		}
 

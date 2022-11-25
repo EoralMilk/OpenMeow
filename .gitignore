@@ -57,6 +57,6 @@ update.log
 
 # test
 mods/ts/tstest/
-OpenRA.Mods.Common/Traits/_Test/
+*/_Test/
 
 MapToPng/
