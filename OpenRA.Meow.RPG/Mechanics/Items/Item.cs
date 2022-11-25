@@ -3,6 +3,7 @@ using OpenRA.Graphics;
 using OpenRA.Mods.Common.Traits;
 using OpenRA.Mods.Common.Traits.Render;
 using OpenRA.Traits;
+using TagLib.Ape;
 
 namespace OpenRA.Meow.RPG.Mechanics
 {
@@ -26,15 +27,19 @@ namespace OpenRA.Meow.RPG.Mechanics
 		[Desc("Custom palette is a player palette BaseName")]
 		public readonly bool ThumbnailPaletteIsPlayerPalette = false;
 
+		public readonly bool CanExistInWorld = true;
+
 		public override object Create(ActorInitializer init)
 		{
 			return new Item(this, init.Self);
 		}
 	}
 
-	public class Item : INotifyKilled
+	public class Item : INotifyKilled, INotifyActorDisposing, INotifyAddedToWorld
 	{
 		public readonly ItemInfo Info;
+
+		public ItemCache ItemCache;
 
 		public string ThumbnailImage
 		{
@@ -100,6 +105,20 @@ namespace OpenRA.Meow.RPG.Mechanics
 			if (Inventory != null)
 			{
 				Inventory.TryRemove(Inventory.InventoryActor, this);
+			}
+		}
+
+		void INotifyActorDisposing.Disposing(Actor self)
+		{
+			ItemCache?.RemvoeItem(ItemActor.ActorID);
+		}
+
+		void INotifyAddedToWorld.AddedToWorld(Actor self)
+		{
+			if (!Info.CanExistInWorld)
+			{
+				self.Kill(self);
+				self.Dispose();
 			}
 		}
 	}

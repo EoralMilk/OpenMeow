@@ -81,7 +81,7 @@ namespace OpenRA.Meow.RPG.Mechanics
 				inventory?.TryRemove(actor, this);
 				actor.World.AddFrameEndTask(w =>
 					{
-						inventory?.ItemCache.RemvoeItem(ItemActor.ActorID);
+						// inventory?.ItemCache.RemvoeItem(ItemActor.ActorID);
 						ItemActor.Kill(actor);
 					}
 				);

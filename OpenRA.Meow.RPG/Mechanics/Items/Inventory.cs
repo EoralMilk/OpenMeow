@@ -53,7 +53,7 @@ namespace OpenRA.Meow.RPG.Mechanics
 		}
 	}
 
-	public class Inventory : INotifyCreated, IDeathActorInitModifier, IResolveOrder, INotifyPickUpItem, INotifyKilled
+	public class Inventory : INotifyCreated, IDeathActorInitModifier, IResolveOrder, INotifyPickUpItem, INotifyKilled, INotifyActorDisposing
 	{
 		public readonly InventoryInfo Info;
 		public readonly Actor InventoryActor;
@@ -172,21 +172,38 @@ namespace OpenRA.Meow.RPG.Mechanics
 			{
 				foreach (var item in items)
 				{
-					w.Add(item.ItemActor);
-					var position = item.ItemActor.TraitOrDefault<IPositionable>();
-					var facing = item.ItemActor.TraitOrDefault<IFacing>();
-					if (position != null)
+					// skip the undroppable equip
+					if (item.EquipmentSlot != null && !item.EquipmentSlot.Info.DisableIfDeath)
 					{
-						position.SetPosition(item.ItemActor, deathPos, true);
-						item.ItemActor.QueueActivity(new FallDown(item.ItemActor, deathPos, 50));
+						continue;
 					}
 
-					if (facing != null)
+					if (TryRemove(self, item))
 					{
-						facing.Facing = deathFace + new WAngle(self.World.SharedRandom.Next(0, 1023));
+						w.Add(item.ItemActor);
+						var position = item.ItemActor.TraitOrDefault<IPositionable>();
+						var facing = item.ItemActor.TraitOrDefault<IFacing>();
+						if (position != null)
+						{
+							position.SetPosition(item.ItemActor, deathPos, true);
+							item.ItemActor.QueueActivity(new FallDown(item.ItemActor, deathPos, 50));
+						}
+
+						if (facing != null)
+						{
+							facing.Facing = deathFace + new WAngle(self.World.SharedRandom.Next(0, 1023));
+						}
 					}
 				}
 			});
+		}
+
+		void INotifyActorDisposing.Disposing(Actor self)
+		{
+			foreach (var item in items)
+			{
+				item.ItemActor.Dispose();
+			}
 		}
 	}
 }

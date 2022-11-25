@@ -32,7 +32,7 @@ namespace OpenRA.Meow.RPG.Mechanics
 		{
 			if (GameItemActors.ContainsKey(itemActor.ActorID))
 				return;
-
+			itemActor.Trait<Item>().ItemCache = this;
 			GameItemActors.Add(itemActor.ActorID, itemActor);
 		}
 
@@ -40,7 +40,7 @@ namespace OpenRA.Meow.RPG.Mechanics
 		{
 			if (GameItemActors.ContainsKey(actorId))
 				throw new Exception("the itemactor id " + actorId + " has already exist");
-
+			itemActor.Trait<Item>().ItemCache = this;
 			GameItemActors.Add(actorId, itemActor);
 		}
 
@@ -51,7 +51,7 @@ namespace OpenRA.Meow.RPG.Mechanics
 			var item = a.TraitOrDefault<Item>();
 			if (item == null)
 				throw new Exception("The actor: " + itemActorInfoName + " does not have Item trait");
-
+			item.ItemCache = this;
 			return item;
 		}
 
@@ -70,10 +70,7 @@ namespace OpenRA.Meow.RPG.Mechanics
 
 		public void RemvoeItem(uint itemActorId)
 		{
-			if (GameItemActors.ContainsKey(itemActorId))
-			{
-				GameItemActors.Remove(itemActorId);
-			}
+			GameItemActors.Remove(itemActorId);
 		}
 
 		public void Dispose()

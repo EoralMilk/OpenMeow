@@ -13,6 +13,7 @@ clothitem:
 		Masks: Torso,Hip,Thigh,Leg,Foot,UpperArm,LowerArm,Hand
 		HipMesh: gear01_body-hip
 		ThighMesh: gear01_body-thigh
+		CanExistInWorld: false
 
 rutestmissile:
 	GearItem:
@@ -24,6 +25,7 @@ rutestmissile:
 		GearOrder: 2
 		CoveringMaterail: mdx_underwear
 		Masks: Torso,Hip,Thigh,Leg
+		CanExistInWorld: false
 
 chemicalitem:
 	WeaponItem:
@@ -34,6 +36,7 @@ chemicalitem:
 		Condition: usechemicalitem
 		Weapon: LaserChainGun
 		LocalOffset: 0,0,0
+		CanExistInWorld: false
 
 gunitem:
 	WeaponItem:
@@ -43,6 +46,8 @@ gunitem:
 		ThumbnailSequence: ioncannon
 		Weapon: KittenRailGun
 		LocalOffset: 433,0,155
+		CanExistInWorld: false
+
 	RenderMeshes:
 		Image: rumya
 	ItemMesh@test:
@@ -60,6 +65,7 @@ testitem:
 		ThumbnailPalette: player
 		ThumbnailPaletteIsPlayerPalette: true
 		Condition: visl
+		CanExistInWorld: false
 
 
 
@@ -71,6 +77,7 @@ railgun_item:
 		ThumbnailSequence: ioncannon
 		Weapon: LtRail
 		LocalOffset: 0,0,0
+		CanExistInWorld: false
 	RenderMeshes:
 		Image: rumya
 	ItemMesh@test:

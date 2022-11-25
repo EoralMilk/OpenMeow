@@ -672,7 +672,13 @@ namespace OpenRA.Meow.RPG.Mechanics
 
 		int ISpeedModifier.GetSpeedModifier()
 		{
+			if (currentState == InfantryState.Die)
+				return 0;
+
 			if (currentPose == PoseState.ProneToStand)
+				return 0;
+
+			if (currentPose == PoseState.Prone && currentState == InfantryState.Action)
 				return 0;
 
 			return currentPose == PoseState.Prone ? info.ProneSpeedModifier : 100;
