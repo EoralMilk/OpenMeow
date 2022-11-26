@@ -178,7 +178,7 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 
 	public class WithMeshBody : ConditionalTrait<WithMeshBodyInfo>, IWithMesh
 	{
-		readonly WithMeshBodyInfo info;
+		public readonly WithMeshBodyInfo Info;
 
 		readonly Actor self;
 		readonly BodyOrientation body;
@@ -189,7 +189,7 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 
 		protected MeshInstance faceAddon;
 		protected MeshInstance hair;
-		readonly Color haircolor;
+		public readonly Color HairColor;
 
 		protected string[] bodyMeshSequences;
 		protected MeshInstance[] bodyMeshInstances;
@@ -242,7 +242,7 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 
 						mesh.PoistionFunc = () => self.CenterPosition;
 						mesh.RotationFunc = () => facing == null ? body?.QuantizeOrientation(self.Orientation) ?? self.Orientation : facing.Orientation;
-						mesh.SkeletonBinded = info.SkeletonBinded;
+						mesh.SkeletonBinded = Info.SkeletonBinded;
 						RenderMeshes.Add(mesh);
 					}
 				}
@@ -260,7 +260,7 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 
 						meshReplace.PoistionFunc = () => self.CenterPosition;
 						meshReplace.RotationFunc = () => facing == null ? body?.QuantizeOrientation(self.Orientation) ?? self.Orientation : facing.Orientation;
-						meshReplace.SkeletonBinded = info.SkeletonBinded;
+						meshReplace.SkeletonBinded = Info.SkeletonBinded;
 						SetPartMesh(mask, meshReplace);
 					}
 				}
@@ -319,7 +319,7 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 
 						meshReplace.PoistionFunc = () => self.CenterPosition;
 						meshReplace.RotationFunc = () => facing == null ? body?.QuantizeOrientation(self.Orientation) ?? self.Orientation : facing.Orientation;
-						meshReplace.SkeletonBinded = info.SkeletonBinded;
+						meshReplace.SkeletonBinded = Info.SkeletonBinded;
 						SetPartMesh(mask, meshReplace);
 					}
 				}
@@ -372,7 +372,7 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 			: base(info)
 		{
 			this.self = self;
-			this.info = info;
+			this.Info = info;
 			SkeletonBinded = info.SkeletonBinded;
 
 			body = self.TraitOrDefault<BodyOrientation>();
@@ -380,9 +380,9 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 			facing = self.TraitOrDefault<IFacing>();
 
 			var image = RenderMeshes.Image;
-			if (Info.Image != null)
+			if (base.Info.Image != null)
 			{
-				image = Info.Image;
+				image = base.Info.Image;
 			}
 
 			for (int i = 0; i < drawFlags.Length; i++)
@@ -436,8 +436,8 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 					info.SkeletonBinded);
 				if (info.HairColors != null && info.HairColors.Length > 0)
 				{
-					haircolor = info.HairColors[self.World.SharedRandom.Next(0, info.HairColors.Length)];
-					hair.GetRemap = () => haircolor;
+					HairColor = info.HairColors[self.World.SharedRandom.Next(0, info.HairColors.Length)];
+					hair.GetRemap = () => HairColor;
 				}
 
 				RenderMeshes.Add(hair);

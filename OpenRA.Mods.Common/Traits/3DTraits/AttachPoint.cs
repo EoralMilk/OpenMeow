@@ -4,6 +4,7 @@ using System.Linq;
 using OpenRA.Graphics;
 using OpenRA.Mods.Common.Activities;
 using OpenRA.Traits;
+using TrueSync;
 
 namespace OpenRA.Mods.Common.Traits.Trait3D
 {
@@ -173,7 +174,7 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 			if (attachmentAM != null)
 			{
 				attachmentSkeleton = attachmentAM.MainSkeleton;
-				attachmentSkeleton.SetParent(MainSkeleton, attachBoneId);
+				attachmentSkeleton.SetParent(MainSkeleton, attachBoneId, FP.Zero);
 			}
 
 			MainSkeleton.CallForUpdate(attachBoneId);

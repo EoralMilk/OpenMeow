@@ -230,12 +230,26 @@ namespace OpenRA.Graphics
 			return new TSVector(matrix.Column0.xyz.magnitude, matrix.Column1.xyz.magnitude, matrix.Column2.xyz.magnitude);
 		}
 
+		public static vec3 MatScale(in mat4 matrix)
+		{
+			return new vec3(matrix.Column0.xyz.Length, matrix.Column1.xyz.Length, matrix.Column2.xyz.Length);
+		}
+
 		public static TSMatrix4x4 MatWithOutScale(TSMatrix4x4 matrix)
 		{
 			var s = new TSVector(matrix.Column0.xyz.magnitude, matrix.Column1.xyz.magnitude, matrix.Column2.xyz.magnitude);
 			matrix.M11 /= s.x; matrix.M12 /= s.y; matrix.M13 /= s.z;
 			matrix.M21 /= s.x; matrix.M22 /= s.y; matrix.M23 /= s.z;
 			matrix.M31 /= s.x; matrix.M32 /= s.y; matrix.M33 /= s.z;
+			return matrix;
+		}
+
+		public static mat4 MatWithOutScale(mat4 matrix)
+		{
+			var s = new vec4(MatScale(matrix), 1);
+			matrix.Column0 = matrix.Column0 / s;
+			matrix.Column1 = matrix.Column1 / s;
+			matrix.Column2 = matrix.Column2 / s;
 			return matrix;
 		}
 

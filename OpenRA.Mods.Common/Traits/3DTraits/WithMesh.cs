@@ -33,7 +33,7 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 			RenderMeshes = self.Trait<RenderMeshes>();
 
 			var image = RenderMeshes.Image;
-			if (Info.Image != null)
+			if (!string.IsNullOrEmpty(info.Image))
 			{
 				image = Info.Image;
 			}

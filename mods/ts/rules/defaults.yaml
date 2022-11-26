@@ -903,6 +903,11 @@
 		DeathType: FireDeath
 	Targetable@Crushable:
 		TargetTypes: Crushable
+	ConsumableItem:
+		ThumbnailSequence: testdisplay
+		ThumbnailPalette: player
+		ThumbnailPaletteIsPlayerPalette: true
+		Weapon: Consume
 
 ^Soldier:
 	Inherits@1: ^Infantry

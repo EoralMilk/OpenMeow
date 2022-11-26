@@ -313,7 +313,7 @@ namespace OpenRA.Traits
 		int GetBoneId(string boneName);
 		bool HasChild(IWithSkeleton skeleton);
 		void ReleaseFromParent();
-		bool SetParent(IWithSkeleton parent, int boneId, float scaleOverride = 0.0f);
+		bool SetParent(IWithSkeleton parent, int boneId, FP scaleOverride);
 
 		/// <summary>
 		/// must call by IWithSkeleton

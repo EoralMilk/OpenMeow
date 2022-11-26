@@ -84,9 +84,11 @@
 		HairMeshs: hair_s1, hair_s2, hair_pt1, hair_pt2, hair_dpt1, hair_dpt2
 		HairColors: FFE99B, 99FF84, 94E3FF, 807D7A, FFFFFF, 7A7A7A, 807D7A, FFACC2, FF7545, FFCDFD, BEFF76
 		DisableIfDeath: false
-	WithMesh@cater:
+	WithMeshBodyPart@cater:
 		Mesh: cater
+		UseHairColorAsRemap: true
 		SkeletonBinded: body
+		DisableIfDeath: false
 	WithSkeleton:
 		Name: body
 		DisableIfDeath: false
@@ -142,12 +144,13 @@
 		SkeletonDefine: cattail
 		DisableIfDeath: false
 		OnlyUpdateForDraw: true
-	MeshAttachment@tail:
-		SkeletonBinded: body
-		AttachingBone: a-Rig_Hips
-		AttachmentSkeleton: tail
+		ParentSkeleton: body
+		AttachingParentBone: a-Rig_Hips
+	WithMeshBodyPart@tail:
 		Mesh: mdx-tail
 		Image: cattail
+		UseHairColorAsRemap: true
+		SkeletonBinded: tail
 		DisableIfDeath: false
 	CatTailBlendTree:
 		SkeletonToUse: tail
@@ -159,6 +162,13 @@
 		Die: messy
 		DieProne: messy
 		CanProne: true
+	# MeshAttachment@tail:
+	# 	SkeletonBinded: body
+	# 	AttachingBone: a-Rig_Hips
+	# 	AttachmentSkeleton: tail
+	# 	Mesh: mdx-tail
+	# 	Image: cattail
+	# 	DisableIfDeath: false
 
 ^CommonInfantry:
 	Inherits@2: ^ExistsInWorld
@@ -355,7 +365,7 @@ RUTEST:
 		TurnSpeed: 66
 		Speed: 120
 		Locomotor: superwalker
-		# BlockedBy: None #Static
+		BlockedBy: None #Static
 		# CanCrushActor: false
 		PauseOnCondition: being-captured || carried || Jumping
 		# CanMoveBackward: true
@@ -494,9 +504,9 @@ RUTEST2:
 		Speed: 180
 		JumpAngle: 128
 		Voice: Attack
-	PickUpItem:
-		TargetCursor: undeploy
-		Voice: Move
+	# PickUpItem:
+	# 	TargetCursor: undeploy
+	# 	Voice: Move
 
 RUTEST3:
 	Inherits: RUTEST

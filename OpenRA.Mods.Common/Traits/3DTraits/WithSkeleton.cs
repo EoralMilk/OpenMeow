@@ -11,6 +11,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using GlmSharp;
 using OpenRA.Graphics;
 using OpenRA.Mods.Common.Activities;
@@ -35,6 +36,9 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 		public readonly string Name = "body";
 		public readonly bool OnlyUpdateForDraw = false;
 		public readonly bool AxisConvert = true;
+
+		public readonly string ParentSkeleton = null;
+		public readonly string AttachingParentBone = null;
 		public override object Create(ActorInitializer init) { return new WithSkeleton(init, this); }
 	}
 
@@ -62,6 +66,13 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 
 		public IBlendTreeHandler BlendTreeHandler;
 
+		public IWithSkeleton Parent { get; private set; }
+		public Func<TSMatrix4x4> GetRootOffset = null;
+
+		int parentBoneId = -1;
+		FP scaleAsChild = 1;
+		readonly HashSet<IWithSkeleton> children = new HashSet<IWithSkeleton>();
+
 		/// <summary>
 		/// Affects the root migration of the skeleton
 		/// </summary>
@@ -83,6 +94,18 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 				throw new Exception("orderedSkeleton is null");
 
 			Skeleton = OrderedSkeleton.CreateInstance();
+
+			if (!string.IsNullOrEmpty(Info.ParentSkeleton))
+			{
+				var parent = self.TraitsImplementing<WithSkeleton>().Single(w => w.Info.Name == Info.ParentSkeleton);
+				if (parent == null)
+					throw new Exception(self.Info.Name + " Mesh Attachment Can not find main skeleton " + Info.ParentSkeleton);
+				var attachBone = parent.GetBoneId(Info.AttachingParentBone);
+				if (attachBone == -1)
+					throw new Exception("can't find bone " + Info.AttachingParentBone + " in skeleton: " + Info.ParentSkeleton);
+
+				SetParent(parent, attachBone, FP.Zero);
+			}
 		}
 
 		protected override void Created(Actor self)
@@ -96,7 +119,7 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 
 		void UpdateWholeSkeleton(bool callbyParent)
 		{
-			if (!callbyParent && parent != null)
+			if (!callbyParent && Parent != null)
 				return;
 
 			UpdateSkeletonInner();
@@ -180,14 +203,8 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 			return Transformation.MatRotation(Skeleton.BoneOffsetMat(id));
 		}
 
-		IWithSkeleton parent = null;
-		public Func<TSMatrix4x4> GetRootOffset = null;
 
-		int parentBoneId = -1;
-		FP scaleAsChild = 1;
-		readonly HashSet<IWithSkeleton> children = new HashSet<IWithSkeleton>();
-
-		public bool SetParent(IWithSkeleton parent, int boneId, float scaleOverride = 0.0f)
+		public bool SetParent(IWithSkeleton parent, int boneId, FP scaleOverride)
 		{
 			if (HasChild(parent))
 				return false;
@@ -196,9 +213,9 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 
 			ReleaseFromParent();
 
-			this.parent = parent;
+			this.Parent = parent;
 			parentBoneId = boneId;
-			scaleAsChild = scaleOverride == 0.0f ? Scale : scaleOverride;
+			scaleAsChild = scaleOverride == FP.Zero ? Scale : scaleOverride;
 			parent.AddChild(this);
 			return true;
 		}
@@ -215,11 +232,11 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 
 		public void ReleaseFromParent()
 		{
-			if (parent == null)
+			if (Parent == null)
 				return;
 
-			parent.RemoveChild(this);
-			parent = null;
+			Parent.RemoveChild(this);
+			Parent = null;
 			parentBoneId = -1;
 			scaleAsChild = 1;
 		}
@@ -234,7 +251,7 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 				if (ws == skeleton)
 					return true;
 				else
-					ws.HasChild(parent);
+					ws.HasChild(Parent);
 			}
 
 			return false;
@@ -245,9 +262,9 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 			if (OnlyUpdateForDraw)
 				throw new Exception("This WithSkeleton " + Name + " is OnlyUpdateForDraw, Can't CallForUpdate by logic");
 
-			if (parent != null)
+			if (Parent != null)
 			{
-				parent.CallForUpdate(parentBoneId);
+				Parent.CallForUpdate(parentBoneId);
 			}
 
 			if (BlendTreeHandler != null)
@@ -282,7 +299,7 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 				return;
 			}
 
-			if (parent == null)
+			if (Parent == null)
 			{
 				if (Info.AxisConvert)
 					Skeleton.SetOffset(lastSelfPos, lastSelfRot, lastScale);
@@ -290,12 +307,12 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 					Skeleton.SetOffsetNoConvert(lastSelfPos, lastSelfRot, lastScale);
 			}
 			else if (!OnlyUpdateForDraw) // donot update children skeleton if this skeleton is only update for draw
-				Skeleton.SetOffset(Transformation.MatWithNewScale(parent.GetMatrixFromBoneId(parentBoneId), scaleAsChild));
+				Skeleton.SetOffset(Transformation.MatWithNewScale(Parent.GetMatrixFromBoneId(parentBoneId), scaleAsChild));
 		}
 
 		public void RenderUpdateWholeSkeleton(bool callbyParent)
 		{
-			if (!callbyParent && parent != null)
+			if (!callbyParent && Parent != null)
 				return;
 
 			// we update the OnlyDraw Skeleton root here
@@ -306,7 +323,7 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 					Skeleton.SetOffset(GetRootOffset());
 				}
 				else if (callbyParent)
-					Skeleton.SetOffset(Transformation.MatWithNewScale(TSMatrix4x4.FromMat4(parent.GetRenderMatrixFromBoneId(parentBoneId)), scaleAsChild));
+					Skeleton.SetOffset(Transformation.MatWithNewScale(TSMatrix4x4.FromMat4(Parent.GetRenderMatrixFromBoneId(parentBoneId)), scaleAsChild));
 			}
 
 			RenderUpdateSkeletonInner();
@@ -335,7 +352,7 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 
 		public void UpdateDrawInfo(bool callbyParent)
 		{
-			if (!callbyParent && parent != null)
+			if (!callbyParent && Parent != null)
 				return;
 
 			UpdateDrawInfoInner(Draw);

@@ -866,6 +866,11 @@ namespace TrueSync
 			return new TSVector4(this.x, this.y, this.z, FP.One);
 		}
 
+		public vec3 ToVec3()
+		{
+			return new vec3((float)x, (float)y, (float)z);
+		}
+
 		public TSVector(in vec3 vec)
 		{
 			x = vec.x;

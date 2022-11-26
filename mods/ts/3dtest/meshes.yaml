@@ -1,11 +1,15 @@
 rumya:
 	Skeleton: Skeleton_CommonBody #testArmature
-		UseDynamicAdjBonePose: false
+		# if true, each actor update the adjust bone itself, 
+		# else they will use the same adjust bone pose which bake as bindpose
+		UseDynamicAdjBonePose: true #false
 		Bones:
 			s-Adj_Belly:
 				LastPoseScale: 2.7, 2.2, 3.9
 				LastPoseRotation: 0.0, 0.0, 0.0, 1.0
 				LastPoseTranslation: 0.0, 0.0, 0.0
+			# a-Rig_Spine:
+			# 	RestPoseModifyScale: 1.0, 2.0, 1.0
 		Masks:
 			upper: upper
 			lower: lower
@@ -100,11 +104,7 @@ rumya:
 			BaseMaterial: body
 			UseDQBSkin: true
 			Material: none
-		hair: mdx-hair
-			Material: mdx_hair
-			FaceCullFunc: None
-		cater: mdx-ear
-			Material: mdx_hair
+
 		gear01: gear01
 			Material: gear01
 			UseDQBSkin: true
@@ -119,6 +119,7 @@ rumya:
 			BaseMaterial: body
 			UseDQBSkin: true
 			Material: none
+		
 		w_rail: w_rail
 			Material: w_rail
 		axis: Axis
@@ -149,6 +150,14 @@ rumya:
 			FaceCullFunc: None
 			Shader: CharacterHair
 
+		hair: mdx-hair
+			Material: mdx_hair
+			FaceCullFunc: None
+			Shader: CharacterHair
+		cater: mdx-ear
+			Material: mdx_hair
+			Shader: CharacterHair
+
 		head01: Face01
 			UseDQBSkin: true
 			Material: face01
@@ -169,6 +178,7 @@ cattail:
 	Meshes:
 		mdx-tail: mdx-Tail
 			Material: mdx_tail
+			Shader: CharacterHair
 
 
 
