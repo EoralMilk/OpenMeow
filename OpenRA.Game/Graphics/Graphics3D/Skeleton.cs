@@ -448,7 +448,7 @@ namespace OpenRA.Graphics
 		{
 			if (InstanceID == -1 || !hasUpdatedAll)
 				return;
-			int dataWidth = SkeletonAsset.SkinBonesIndices.Length * 16;
+			int dataWidth = SkeletonAsset.SkinBonesIndices.Length * 12;
 			int start = OrderedSkeleton.AnimTransformDataIndex;
 			if ((start + dataWidth) >= OrderedSkeleton.AnimTransformData.Length)
 				throw new Exception("ProcessManagerData: Skeleton Instance drawId out of range: might be too many skeleton to draw!");
@@ -456,7 +456,7 @@ namespace OpenRA.Graphics
 			AnimTexoffset = start;
 			int i = 0;
 
-			for (int x = 0; x < dataWidth; x += 16)
+			for (int x = 0; x < dataWidth; x += 12)
 			{
 				int id = SkeletonAsset.SkinBonesIndices[i];
 				if (skipUpdateAdjBonePose)
@@ -466,22 +466,26 @@ namespace OpenRA.Graphics
 				var c1 = mat4.Column1;
 				var c2 = mat4.Column2;
 				var c3 = mat4.Column3;
+
+				// the last row always be 0,0,0,1
+				// so we only need to save 12 float
+				// save as row vector
 				OrderedSkeleton.AnimTransformData[start + x + 0] = c0.x;
-				OrderedSkeleton.AnimTransformData[start + x + 1] = c0.y;
-				OrderedSkeleton.AnimTransformData[start + x + 2] = c0.z;
-				OrderedSkeleton.AnimTransformData[start + x + 3] = c0.w;
-				OrderedSkeleton.AnimTransformData[start + x + 4] = c1.x;
-				OrderedSkeleton.AnimTransformData[start + x + 5] = c1.y;
-				OrderedSkeleton.AnimTransformData[start + x + 6] = c1.z;
-				OrderedSkeleton.AnimTransformData[start + x + 7] = c1.w;
-				OrderedSkeleton.AnimTransformData[start + x + 8] = c2.x;
-				OrderedSkeleton.AnimTransformData[start + x + 9] = c2.y;
-				OrderedSkeleton.AnimTransformData[start + x + 10] = c2.z;
-				OrderedSkeleton.AnimTransformData[start + x + 11] = c2.w;
-				OrderedSkeleton.AnimTransformData[start + x + 12] = c3.x;
-				OrderedSkeleton.AnimTransformData[start + x + 13] = c3.y;
-				OrderedSkeleton.AnimTransformData[start + x + 14] = c3.z;
-				OrderedSkeleton.AnimTransformData[start + x + 15] = c3.w;
+				OrderedSkeleton.AnimTransformData[start + x + 1] = c1.x; // c0.y;
+				OrderedSkeleton.AnimTransformData[start + x + 2] = c2.x; // c0.z;
+				OrderedSkeleton.AnimTransformData[start + x + 3] = c3.x; // c0.w;
+				OrderedSkeleton.AnimTransformData[start + x + 4] = c0.y; // c1.x;
+				OrderedSkeleton.AnimTransformData[start + x + 5] = c1.y; // c1.y;
+				OrderedSkeleton.AnimTransformData[start + x + 6] = c2.y; // c1.z;
+				OrderedSkeleton.AnimTransformData[start + x + 7] = c3.y; // c1.w;
+				OrderedSkeleton.AnimTransformData[start + x + 8] = c0.z; // c2.x;
+				OrderedSkeleton.AnimTransformData[start + x + 9] = c1.z; // c2.y;
+				OrderedSkeleton.AnimTransformData[start + x + 10] = c2.z; // c2.z;
+				OrderedSkeleton.AnimTransformData[start + x + 11] = c3.z; // c2.w;
+				// OrderedSkeleton.AnimTransformData[start + x + 12] = c3.x;
+				// OrderedSkeleton.AnimTransformData[start + x + 13] = c3.y;
+				// OrderedSkeleton.AnimTransformData[start + x + 14] = c3.z;
+				// OrderedSkeleton.AnimTransformData[start + x + 15] = c3.w;
 				i++;
 				if (i >= SkeletonAsset.SkinBonesIndices.Length)
 				{

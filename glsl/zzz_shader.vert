@@ -9,6 +9,7 @@ precision mediump float;
 in vec3 aVertexPos;
 in vec3 aNormal;
 in vec2 aTexCoords;
+in uint aDrawPart;
 in ivec4 aBoneId;
 in vec4 aBoneWeights;
 
@@ -19,14 +20,17 @@ in vec4 iModelV4;
 in vec4 iTint;
 in vec3 iRemap;
 in int iDrawId;
-in ivec4 iMaterial;
+in uint iDrawMask;
 
 out vec2 TexCoords;
 out vec3 Normal;
 out vec3 FragPos;
+
 out vec3 vRemap;
 out vec4 vTint;
-flat out ivec4 fMaterial;
+
+flat out uint drawPart;
+flat out int isDraw;
 
 uniform mat4 view;
 uniform mat4 projection;
@@ -51,24 +55,20 @@ mat4 GetMat4ById(int id){
 	if (id < 0)
 		return mat4(1.0);
 
-	int y = (animTexoffset + id * 3) / skinBoneTexWidth;
-	int x = (animTexoffset + id * 3) % skinBoneTexWidth;
-	vec4 r1 = texelFetch(boneAnimTexture, ivec2(x, y), 0);
-	y = (animTexoffset + id * 3 + 1) / skinBoneTexWidth;
-	x = (animTexoffset + id * 3 + 1) % skinBoneTexWidth;
-	vec4 r2 = texelFetch(boneAnimTexture, ivec2(x, y), 0);
-	y = (animTexoffset + id * 3 + 2) / skinBoneTexWidth;
-	x = (animTexoffset + id * 3 + 2) % skinBoneTexWidth;
-	vec4 r3 = texelFetch(boneAnimTexture, ivec2(x, y), 0);
-	// y = (animTexoffset + id * 4 + 3) / skinBoneTexWidth;
-	// x = (animTexoffset + id * 4 + 3) % skinBoneTexWidth;
-	// vec4 c4 = texelFetch(boneAnimTexture, ivec2(x, y), 0);
+	int y = (animTexoffset + id * 4) / skinBoneTexWidth;
+	int x = (animTexoffset + id * 4) % skinBoneTexWidth;
+	vec4 c1 = texelFetch(boneAnimTexture, ivec2(x, y), 0);
+	y = (animTexoffset + id * 4 + 1) / skinBoneTexWidth;
+	x = (animTexoffset + id * 4 + 1) % skinBoneTexWidth;
+	vec4 c2 = texelFetch(boneAnimTexture, ivec2(x, y), 0);
+	y = (animTexoffset + id * 4 + 2) / skinBoneTexWidth;
+	x = (animTexoffset + id * 4 + 2) % skinBoneTexWidth;
+	vec4 c3 = texelFetch(boneAnimTexture, ivec2(x, y), 0);
+	y = (animTexoffset + id * 4 + 3) / skinBoneTexWidth;
+	x = (animTexoffset + id * 4 + 3) % skinBoneTexWidth;
+	vec4 c4 = texelFetch(boneAnimTexture, ivec2(x, y), 0);
 
-	return  mat4(
-		vec4(r1.x, r2.x, r3.x, 0),
-		vec4(r1.y, r2.y, r3.y, 0),
-		vec4(r1.z, r2.z, r3.z, 0),
-		vec4(r1.w, r2.w, r3.w, 1)) * BindTransformData[id];
+	return  mat4(c1,c2,c3,c4) * BindTransformData[id];
 }
 
 // extract quaternion from matrix
@@ -133,6 +133,9 @@ vec4 ExtractRotation(const mat4 mm, const vec3 scale)
 	}
 }
 
+
+
+
 vec4 NormaliseQuat(vec4 q)
 {
 	float len = length(q);
@@ -145,6 +148,7 @@ vec4 NormaliseQuat(vec4 q)
 		return vec4(0.0, 0.0, 0.0, 1.0);
 	}
 }
+
 
 vec4 QuatMultiply(const vec4 left, const vec4 right)
 {
@@ -223,9 +227,22 @@ mat4 GetSkinMatrix()
 
 void main()
 {
+	if ((aDrawPart & iDrawMask) == uint(0)|| iDrawId == -2)
+	{
+		isDraw = 0;
+		return;
+	}
+	else{
+		isDraw = 1;
+	}
+
+	drawPart = aDrawPart;
+
+	mat4 scaleMatrix = mat4(0.0f);
+
 	if (iDrawId != -1 && aBoneId[0] != -1 && aBoneWeights[0] != 0.0f)
 	{
-		animTexoffset = iDrawId;
+		animTexoffset = iDrawId;//iDrawId * skinBoneCount * 4;
 		if (useDQB){
 			// dqbs Skin
 			m1 = GetMat4ById(aBoneId[0]);
@@ -238,7 +255,6 @@ void main()
 			s4 = vec3(length(m4[0]), length(m4[1]), length(m4[2]));
 
 			vec3 scale = s1 * aBoneWeights[0] + s2 * aBoneWeights[1] + s3 * aBoneWeights[2] + s4 * aBoneWeights[3];
-			mat4 scaleMatrix = mat4(0.0f);
 
 			scaleMatrix[0][0] = scale[0];
 			scaleMatrix[1][1] = scale[1];
@@ -250,21 +266,36 @@ void main()
 			// LBS Skin
 			for (int i = 0; i < MAX_BONE_LENGTH; i++)
 				mMatrix += GetMat4ById(aBoneId[i]) * aBoneWeights[i];
+
+			// vec3 scale = vec3(length(mMatrix[0].xyz), length(mMatrix[1].xyz), length(mMatrix[2].xyz));
+			// scaleMatrix[0][0] = scale[0];
+			// scaleMatrix[1][1] = scale[1];
+			// scaleMatrix[2][2] = scale[2];
+			// scaleMatrix[3][3] = 1.0f;
 		}
 	}
 	else
 	{
 		mMatrix =  mat4(iModelV1, iModelV2, iModelV3, iModelV4);
+		// mMatrix = mMatrix * rotationFix;
 	}
-
 	vec4 fragP = mMatrix * vec4(aVertexPos, 1.0f);
 	vRemap = vec3(float(iRemap.x) / 255.0f, float(iRemap.y) / 255.0f, float(iRemap.z) / 255.0f);
-	vTint = iTint; // instance tint as vert tint
+	vTint = iTint;
 	gl_Position = projection * view * fragP;
 	FragPos = fragP.xyz;
 	TexCoords = aTexCoords;
 	Normal = normalize(inverse(transpose(mat3(mMatrix))) * aNormal);
-	fMaterial = iMaterial;
+	// mMatrix[3][0] = 0.0;
+	// mMatrix[3][1] = 0.0;
+	// mMatrix[3][2] = 0.0;
+	// mMatrix[0] = mMatrix[0] / scaleMatrix[0][0];
+	// mMatrix[1] = mMatrix[1] / scaleMatrix[1][1];
+	// mMatrix[2] = mMatrix[2] / scaleMatrix[2][2];
+	// Normal = normalize(inverse(transpose(mat3(scaleMatrix))) * aNormal);
+	// Normal = mat3(mMatrix) * aNormal;
+	// ExtractRotation(mMatrix, vec3(length(mMatrix[0].xyz), length(mMatrix[1].xyz), length(mMatrix[2].xyz)));
+	// Normal = normalize(mat3(mMatrix) * aNormal);
 }
 
 
