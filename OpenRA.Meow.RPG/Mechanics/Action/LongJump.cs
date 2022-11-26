@@ -162,7 +162,9 @@ namespace OpenRA.Meow.RPG.Mechanics
 
 				var cell = self.World.Map.CellContaining(order.Target.CenterPosition);
 				if (maxDistance != null)
-					self.QueueActivity(move.MoveWithinRange(order.Target, WDist.FromCells(maxDistance.Value), targetLineColor: Info.TargetLineColor));
+					self.QueueActivity(move.MoveWithinRange(
+						Target.FromCell(self.World, self.World.Map.CellContaining(order.Target.CenterPosition)),
+						WDist.FromCells(maxDistance.Value), targetLineColor: Info.TargetLineColor));
 				self.QueueActivity(new JumpTo(self, info, order.Target.CenterPosition));
 				self.QueueActivity(new FallDown(self, WPos.Zero, info.Speed.Length,
 					 0, Info.LandingWeapon, 0, 0, 0, default));

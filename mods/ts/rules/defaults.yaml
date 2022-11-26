@@ -1024,7 +1024,7 @@
 		Modifier: 50
 		RequiresCondition: empdisable
 	Mobile:
-		PauseOnCondition: empdisable || being-captured || carried || carring
+		PauseOnCondition: empdisable || being-captured || carried || carring || Jumping
 		Locomotor: wheeled
 		TurnSpeed: 20
 		Voice: Move

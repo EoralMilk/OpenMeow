@@ -841,7 +841,7 @@ namespace OpenRA.Mods.Common.Traits
 				{
 					self.World.ActorMap.RemoveInfluence(self, this);
 					landingCells = currentPos;
-					if (Info.TakeUpCellWhenLand)
+					if (Info.TakeUpCellWhenLand && OccupySpace)
 						self.World.ActorMap.AddInfluence(self, this);
 				}
 			}
@@ -896,7 +896,7 @@ namespace OpenRA.Mods.Common.Traits
 
 		public void AddInfluence((CPos, SubCell)[] landingCells)
 		{
-			if (!Info.TakeUpCellWhenLand)
+			if (!Info.TakeUpCellWhenLand || !OccupySpace)
 				return;
 
 			if (HasInfluence())
@@ -910,7 +910,7 @@ namespace OpenRA.Mods.Common.Traits
 
 		public void AddInfluence(CPos landingCell)
 		{
-			if (Info.TakeUpCellWhenLand)
+			if (Info.TakeUpCellWhenLand && OccupySpace)
 				AddInfluence(new[] { (landingCell, SubCell.FullCell) });
 		}
 

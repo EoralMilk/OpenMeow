@@ -13,6 +13,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using OpenRA.Graphics;
+using OpenRA.Server;
 using OpenRA.Traits;
 
 namespace OpenRA.Mods.Common.Traits
@@ -298,14 +299,14 @@ namespace OpenRA.Mods.Common.Traits
 
 			set
 			{
-				if (OccupySpace && value == false)
+				if (occupySpace && value == false)
 				{
 					RemoveInfluence();
 				}
-				else if (OccupySpace == false && value == true)
+				else if (occupySpace == false && value == true)
 				{
 					RemoveInfluence();
-					influence.AddInfluence(self, Info.Tiles(self.Location));
+					AddInfluence();
 				}
 
 				occupySpace = value;
@@ -313,23 +314,28 @@ namespace OpenRA.Mods.Common.Traits
 		}
 
 		/// <summary>
-		/// update height change
+		/// update pos change
 		/// </summary>
 		public void UpdateCenterPos()
 		{
 			if (self.IsInWorld)
 			{
+				RemoveInfluence();
+
 				topLeft = world.Map.CellContaining(CenterPosition) + topLeftCellOffset;
 				CenterPosition = world.Map.CenterOfCell(topLeft) + Info.CenterOffset(world);
 
 				occupiedCells = Info.OccupiedTiles(TopLeft).Select(c => (c, SubCell.FullCell)).ToArray();
 				targetableCells = Info.FootprintTiles(TopLeft, FootprintCellType.Occupied).Select(c => (c, SubCell.FullCell)).ToArray();
 				transitOnlyCells = Info.TransitOnlyTiles(TopLeft).ToArray();
-				influence.RemoveInfluence(self, Info.Tiles(self.Location));
-				influence.AddInfluence(self, Info.Tiles(self.Location));
+
+				AddInfluence();
 			}
 		}
 
+		/// <summary>
+		/// will not update influence
+		/// </summary>
 		public void SetCenterPos(WPos pos)
 		{
 			if (self.IsInWorld)
@@ -339,9 +345,18 @@ namespace OpenRA.Mods.Common.Traits
 			}
 		}
 
-		public void RemoveInfluence()
+		public virtual void RemoveInfluence()
 		{
+			world.ActorMap.RemoveInfluence(self, this);
+			world.ActorMap.RemovePosition(self, this);
 			influence.RemoveInfluence(self, Info.Tiles(self.Location));
+		}
+
+		public virtual void AddInfluence()
+		{
+			world.ActorMap.AddInfluence(self, this);
+			world.ActorMap.AddPosition(self, this);
+			influence.AddInfluence(self, Info.Tiles(self.Location));
 		}
 
 		public Building(ActorInitializer init, BuildingInfo info)
@@ -366,6 +381,11 @@ namespace OpenRA.Mods.Common.Traits
 		public (CPos, SubCell)[] OccupiedCells()
 		{
 			return occupiedCells;
+
+			//if (occupySpace)
+			//	return occupiedCells;
+			//else
+			//	return Array.Empty<(CPos, SubCell)>();
 		}
 
 		public CPos[] TransitOnlyCells() { return transitOnlyCells; }
@@ -405,8 +425,8 @@ namespace OpenRA.Mods.Common.Traits
 			}
 
 			UpdateCenterPos();
-			self.World.AddToMaps(self, this);
-			influence.AddInfluence(self, Info.Tiles(self.Location));
+			//self.World.AddToMaps(self, this);
+			//influence.AddInfluence(self, Info.Tiles(self.Location));
 		}
 
 		void INotifyRemovedFromWorld.RemovedFromWorld(Actor self)

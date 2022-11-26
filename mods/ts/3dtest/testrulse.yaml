@@ -355,7 +355,7 @@ RUTEST:
 		TurnSpeed: 66
 		Speed: 120
 		Locomotor: superwalker
-		BlockedBy: None #Static
+		# BlockedBy: None #Static
 		# CanCrushActor: false
 		PauseOnCondition: being-captured || carried || Jumping
 		# CanMoveBackward: true
