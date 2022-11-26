@@ -339,7 +339,7 @@ PFIND:
 		SlotType: Item
 	Inventory:
 		Name: test
-		InitItems: clothitem, railgun_item
+		InitItems: clothitem, railgun_item, type38_item
 	# PickUpItem:
 	# 	TargetCursor: undeploy
 	# 	Voice: Move

@@ -82,3 +82,17 @@ railgun_item:
 		Image: rumya
 	ItemMesh@test:
 		Mesh: w_rail
+
+type38_item:
+	WeaponItem:
+		Name: Type38
+		Type: MainWeapon
+		ThumbnailImage: items
+		ThumbnailSequence: ioncannon
+		Weapon: Sniper
+		LocalOffset: 0,0,0
+		CanExistInWorld: false
+	RenderMeshes:
+		Image: rumya
+	ItemMesh@test:
+		Mesh: w_type38

@@ -169,8 +169,8 @@ MapGrid:
 	DefaultSubCell: 2
 
 WorldViewportSizes:
-	ZoomScale: 0.5
-	MaxZoomScale: 3
+	ZoomScale: 0.35
+	MaxZoomScale: 5
 
 Cursors:
 	ts|cursors.yaml

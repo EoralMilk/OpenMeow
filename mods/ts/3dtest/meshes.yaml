@@ -122,6 +122,8 @@ rumya:
 		
 		w_rail: w_rail
 			Material: w_rail
+		w_type38: w_type38
+			Material: w_type38
 		axis: Axis
 			Material: misc01
 
