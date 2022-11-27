@@ -23,12 +23,15 @@ namespace OpenRA.Meow.RPG.Mechanics
 		[Desc("The EquipmentSlot to bind, which the weapon item should be equiped at")]
 		public readonly string SlotBind = null;
 
+		public readonly bool UseSlotDefaultWeapon = false;
+
 		public override object Create(ActorInitializer init) { return new SlotArmament(init.Self, this); }
 
 	}
 
 	public class SlotArmament : Armament, INotifyEquip
 	{
+		readonly SlotArmamentInfo info;
 		readonly WeaponInfo defaultWeapon;
 		readonly EquipmentSlot slot;
 		public SlotArmament(Actor self, SlotArmamentInfo info)
@@ -36,6 +39,7 @@ namespace OpenRA.Meow.RPG.Mechanics
 		{
 			defaultWeapon = Weapon;
 			slot = self.TraitsImplementing<EquipmentSlot>().First(slot => slot.Name == info.SlotBind);
+			this.info = info;
 		}
 
 		protected override void Created(Actor self)
@@ -49,7 +53,7 @@ namespace OpenRA.Meow.RPG.Mechanics
 
 		public override bool IsValidForArmamentChoose(in Target target, World world)
 		{
-			if (Weapon == defaultWeapon)
+			if (Weapon == defaultWeapon && !info.UseSlotDefaultWeapon)
 				return false;
 
 			return base.IsValidForArmamentChoose(target, world);

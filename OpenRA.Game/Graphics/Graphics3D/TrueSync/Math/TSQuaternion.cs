@@ -701,5 +701,10 @@ namespace TrueSync
 		public TSQuaternion(in quat quat)
 			: this(quat.x, quat.y, quat.z, quat.w) { }
 
+		public quat ToQuat()
+		{
+			return new quat((float)x, (float)y, (float)z, (float)w);
+		}
+
 	}
 }

@@ -32,6 +32,14 @@ namespace OpenRA.Graphics
 			}
 		}
 
+		public void ClearFrameAction(int frame)
+		{
+			if (frameActions.ContainsKey(frame))
+			{
+				frameActions[frame].Clear();
+			}
+		}
+
 		public AnimationNode(string name, uint id, BlendTree blendTree, AnimMask animMask, SkeletalAnim animation)
 			: base(name, id, blendTree, animMask)
 		{

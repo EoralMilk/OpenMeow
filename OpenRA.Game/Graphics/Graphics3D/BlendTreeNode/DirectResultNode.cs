@@ -13,6 +13,7 @@ namespace OpenRA.Graphics
 		{
 			this.outPut = outPut;
 			blendTree.AddLeaf(this);
+			KeepingEnd = true;
 		}
 
 		public override void UpdateFrameTick()

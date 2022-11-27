@@ -264,7 +264,7 @@
 		Palette: player
 		VeinholeActors: veinhole
 	WithMesh@dummy:
-		Mesh: dummy
+		Mesh: axis
 	RenderMeshes:
 		Image: mmr-test
 		ZOffset: 15

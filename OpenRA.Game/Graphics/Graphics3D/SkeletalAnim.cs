@@ -43,6 +43,14 @@ namespace OpenRA.Graphics
 
 		public readonly Frame[] Frames;
 
+		public SkeletalAnim(BlendTreeNodeOutPut blendTreeNodeOutPut)
+		{
+			Name = "";
+			Sequence = "";
+			Frames = new Frame[1];
+			Frames[0] = blendTreeNodeOutPut.OutPutFrame;
+		}
+
 		public SkeletalAnim(ModifiedBoneRestPose mb, SkeletonAsset assetBind, string name, string sequence = null)
 		{
 			Name = name;

@@ -7,6 +7,7 @@ using OpenRA.Mods.Common.Traits;
 using OpenRA.Mods.Common.Traits.Trait3D;
 using OpenRA.Primitives;
 using OpenRA.Traits;
+using TagLib.Id3v2;
 using TrueSync;
 
 namespace OpenRA.Meow.RPG.Mechanics
@@ -61,6 +62,9 @@ namespace OpenRA.Meow.RPG.Mechanics
 		public readonly int StopMoveBlendTick = 5;
 		public readonly int GuardBlendTick = 5;
 
+		public readonly string TakeOutItem = null;
+		public readonly string PutAwayItem = null;
+
 		[Desc("If move in Guard state, the Guard timer will not be reduced," +
 			" which means the actor will always be in Guard state when moving")]
 		public readonly bool KeepGuardStateWhenMoving = false;
@@ -103,7 +107,7 @@ namespace OpenRA.Meow.RPG.Mechanics
 	}
 
 	public class InfantryBlendTree : IBlendTreeHandler, IPrepareForAttack, ITick, INotifyCreated, INotifyAttack, INotifyAiming,
-		INotifyDamage, IDamageModifier, ISpeedModifier, INotifyKilled
+		INotifyDamage, IDamageModifier, ISpeedModifier, INotifyKilled, INotifyEquip
 	{
 		readonly BlendTree blendTree;
 		readonly InfantryBlendTreeInfo info;
@@ -115,25 +119,25 @@ namespace OpenRA.Meow.RPG.Mechanics
 		readonly RenderMeshes rm;
 
 		#region animations
-		readonly SkeletalAnim stand;
-		readonly SkeletalAnim walk;
-		readonly SkeletalAnim guard;
-		readonly SkeletalAnim guardMove;
+		SkeletalAnim stand;
+		SkeletalAnim walk;
+		SkeletalAnim guard;
+		SkeletalAnim guardMove;
 
-		readonly SkeletalAnim standToGuard;
-		readonly SkeletalAnim guardToStand;
-		readonly SkeletalAnim attack;
+		SkeletalAnim standToGuard;
+		SkeletalAnim guardToStand;
+		SkeletalAnim attack;
 
-		readonly SkeletalAnim prone;
-		readonly SkeletalAnim crawl;
-		readonly SkeletalAnim proneAttack;
-		readonly SkeletalAnim standToProne;
-		readonly SkeletalAnim proneToStand;
+		SkeletalAnim prone;
+		SkeletalAnim crawl;
+		SkeletalAnim proneAttack;
+		SkeletalAnim standToProne;
+		SkeletalAnim proneToStand;
 
-		readonly SkeletalAnim die;
-		readonly SkeletalAnim dieProne;
+		SkeletalAnim die;
+		SkeletalAnim dieProne;
 
-		readonly SkeletalAnim[] idleActions;
+		SkeletalAnim[] idleActions;
 
 		#endregion
 		#region nodes
@@ -197,6 +201,12 @@ namespace OpenRA.Meow.RPG.Mechanics
 		TurnOnIdle turnOnIdle;
 		int nextIdleActionTick = 0;
 
+		BlendTreeNodeOutPut dieBlendResultOutPut;
+
+		WithEquipmentAnimationInfo replaceAnimsBy;
+
+		int attackFrame, proneAttackFrame;
+
 		int GetBoneId(string name)
 		{
 			var boneid = withSkeleton.GetBoneId(name);
@@ -244,11 +254,14 @@ namespace OpenRA.Meow.RPG.Mechanics
 				dieProne = withSkeleton.OrderedSkeleton.SkeletonAsset.GetSkeletalAnim(withSkeleton.Image, info.DieProne);
 			}
 
-			idleActions = new SkeletalAnim[info.IdleActions.Length];
-
-			for (int i = 0 ; i < idleActions.Length; i++)
+			if (info.IdleActions != null && info.IdleActions.Length > 0)
 			{
-				idleActions[i] = withSkeleton.OrderedSkeleton.SkeletonAsset.GetSkeletalAnim(withSkeleton.Image, info.IdleActions[i]);
+				idleActions = new SkeletalAnim[info.IdleActions.Length];
+
+				for (int i = 0; i < idleActions.Length; i++)
+				{
+					idleActions[i] = withSkeleton.OrderedSkeleton.SkeletonAsset.GetSkeletalAnim(withSkeleton.Image, info.IdleActions[i]);
+				}
 			}
 
 			var allvalidmask = withSkeleton.OrderedSkeleton.SkeletonAsset.AllValidMask;
@@ -310,6 +323,249 @@ namespace OpenRA.Meow.RPG.Mechanics
 			withSkeleton.BlendTreeHandler = this;
 
 			nextIdleActionTick = self.World.SharedRandom.Next(info.MinIdleDelay, info.MaxIdleDelay);
+
+			attackFrame = info.AttackFrame;
+			proneAttackFrame = info.ProneAttackFrame;
+		}
+
+		void ReplaceAnim(WithEquipmentAnimationInfo replaceInfo)
+		{
+			replaceAnimsBy = replaceInfo;
+			var animReplaceDict = replaceInfo.AnimsReplace;
+
+			string name;
+			if (animReplaceDict.TryGetValue("Stand", out name))
+			{
+				stand = withSkeleton.OrderedSkeleton.SkeletonAsset.GetSkeletalAnim(withSkeleton.Image, name);
+			}
+			else
+			{
+				stand = withSkeleton.OrderedSkeleton.SkeletonAsset.GetSkeletalAnim(withSkeleton.Image, info.Stand);
+			}
+
+			if (animReplaceDict.TryGetValue("Walk", out name))
+			{
+				walk = withSkeleton.OrderedSkeleton.SkeletonAsset.GetSkeletalAnim(withSkeleton.Image, name);
+			}
+			else
+			{
+				walk = withSkeleton.OrderedSkeleton.SkeletonAsset.GetSkeletalAnim(withSkeleton.Image, info.Walk);
+			}
+
+			if (animReplaceDict.TryGetValue("Guard", out name))
+			{
+				guard = withSkeleton.OrderedSkeleton.SkeletonAsset.GetSkeletalAnim(withSkeleton.Image, name);
+			}
+			else
+			{
+				guard = withSkeleton.OrderedSkeleton.SkeletonAsset.GetSkeletalAnim(withSkeleton.Image, info.Guard);
+			}
+
+			if (animReplaceDict.TryGetValue("GuardMove", out name))
+			{
+				guardMove = withSkeleton.OrderedSkeleton.SkeletonAsset.GetSkeletalAnim(withSkeleton.Image, name);
+			}
+			else
+			{
+				guardMove = withSkeleton.OrderedSkeleton.SkeletonAsset.GetSkeletalAnim(withSkeleton.Image, info.GuardMove);
+			}
+
+			if (animReplaceDict.TryGetValue("StandToGuard", out name))
+			{
+				standToGuard = withSkeleton.OrderedSkeleton.SkeletonAsset.GetSkeletalAnim(withSkeleton.Image, name);
+			}
+			else if (!string.IsNullOrEmpty(info.StandToGuard))
+			{
+				standToGuard = withSkeleton.OrderedSkeleton.SkeletonAsset.GetSkeletalAnim(withSkeleton.Image, info.StandToGuard);
+			}
+			else
+			{
+				standToGuard = null;
+			}
+
+			if (animReplaceDict.TryGetValue("GuardToStand", out name))
+			{
+				guardToStand = withSkeleton.OrderedSkeleton.SkeletonAsset.GetSkeletalAnim(withSkeleton.Image, name);
+			}
+			else if (!string.IsNullOrEmpty(info.GuardToStand))
+			{
+				guardToStand = withSkeleton.OrderedSkeleton.SkeletonAsset.GetSkeletalAnim(withSkeleton.Image, info.GuardToStand);
+			}
+			else
+			{
+				guardToStand = null;
+			}
+
+			if (animReplaceDict.TryGetValue("Attack", out name))
+			{
+				attack = withSkeleton.OrderedSkeleton.SkeletonAsset.GetSkeletalAnim(withSkeleton.Image, name);
+			}
+			else
+			{
+				attack = withSkeleton.OrderedSkeleton.SkeletonAsset.GetSkeletalAnim(withSkeleton.Image, info.Attack);
+			}
+
+			if (info.CanProne)
+			{
+				if (animReplaceDict.TryGetValue("Prone", out name))
+				{
+					prone = withSkeleton.OrderedSkeleton.SkeletonAsset.GetSkeletalAnim(withSkeleton.Image, name);
+				}
+				else
+				{
+					prone = withSkeleton.OrderedSkeleton.SkeletonAsset.GetSkeletalAnim(withSkeleton.Image, info.Prone);
+				}
+
+				if (animReplaceDict.TryGetValue("Crawl", out name))
+				{
+					crawl = withSkeleton.OrderedSkeleton.SkeletonAsset.GetSkeletalAnim(withSkeleton.Image, name);
+				}
+				else
+				{
+					crawl = withSkeleton.OrderedSkeleton.SkeletonAsset.GetSkeletalAnim(withSkeleton.Image, info.Crawl);
+				}
+
+				if (animReplaceDict.TryGetValue("ProneAttack", out name))
+				{
+					proneAttack = withSkeleton.OrderedSkeleton.SkeletonAsset.GetSkeletalAnim(withSkeleton.Image, name);
+				}
+				else
+				{
+					proneAttack = withSkeleton.OrderedSkeleton.SkeletonAsset.GetSkeletalAnim(withSkeleton.Image, info.ProneAttack);
+				}
+
+				if (animReplaceDict.TryGetValue("StandToProne", out name))
+				{
+					standToProne = withSkeleton.OrderedSkeleton.SkeletonAsset.GetSkeletalAnim(withSkeleton.Image, name);
+				}
+				else
+				{
+					standToProne = withSkeleton.OrderedSkeleton.SkeletonAsset.GetSkeletalAnim(withSkeleton.Image, info.StandToProne);
+				}
+
+				if (animReplaceDict.TryGetValue("ProneToStand", out name))
+				{
+					proneToStand = withSkeleton.OrderedSkeleton.SkeletonAsset.GetSkeletalAnim(withSkeleton.Image, name);
+				}
+				else
+				{
+					proneToStand = withSkeleton.OrderedSkeleton.SkeletonAsset.GetSkeletalAnim(withSkeleton.Image, info.ProneToStand);
+				}
+
+				if (animReplaceDict.TryGetValue("DieProne", out name))
+				{
+					dieProne = withSkeleton.OrderedSkeleton.SkeletonAsset.GetSkeletalAnim(withSkeleton.Image, name);
+				}
+				else
+				{
+					dieProne = withSkeleton.OrderedSkeleton.SkeletonAsset.GetSkeletalAnim(withSkeleton.Image, info.DieProne);
+				}
+			}
+
+			if (animReplaceDict.TryGetValue("DieStand", out name))
+			{
+				die = withSkeleton.OrderedSkeleton.SkeletonAsset.GetSkeletalAnim(withSkeleton.Image, name);
+			}
+			else
+			{
+				die = withSkeleton.OrderedSkeleton.SkeletonAsset.GetSkeletalAnim(withSkeleton.Image, info.DieStand);
+			}
+
+			if (replaceInfo.IdleActions != null && replaceInfo.IdleActions.Length > 0)
+			{
+				idleActions = new SkeletalAnim[replaceInfo.IdleActions.Length];
+
+				for (int i = 0; i < idleActions.Length; i++)
+				{
+					idleActions[i] = withSkeleton.OrderedSkeleton.SkeletonAsset.GetSkeletalAnim(withSkeleton.Image, replaceInfo.IdleActions[i]);
+				}
+			}
+
+			int frame;
+			if (replaceInfo.ActionFrameReplace.TryGetValue("AttackFrame", out frame))
+			{
+				attackFrame = frame;
+			}
+			else
+			{
+				attackFrame = info.AttackFrame;
+			}
+
+			if (replaceInfo.ActionFrameReplace.TryGetValue("ProneAttackFrame", out frame))
+			{
+				proneAttackFrame = frame;
+			}
+			else
+			{
+				proneAttackFrame = info.ProneAttackFrame;
+			}
+
+			SwitchAnim(CurrentPose);
+		}
+
+		void ResetAnim()
+		{
+			replaceAnimsBy = null;
+
+			stand = withSkeleton.OrderedSkeleton.SkeletonAsset.GetSkeletalAnim(withSkeleton.Image, info.Stand);
+
+			walk = withSkeleton.OrderedSkeleton.SkeletonAsset.GetSkeletalAnim(withSkeleton.Image, info.Walk);
+
+			guard = withSkeleton.OrderedSkeleton.SkeletonAsset.GetSkeletalAnim(withSkeleton.Image, info.Guard);
+
+			guardMove = withSkeleton.OrderedSkeleton.SkeletonAsset.GetSkeletalAnim(withSkeleton.Image, info.GuardMove);
+
+			if (!string.IsNullOrEmpty(info.StandToGuard))
+			{
+				standToGuard = withSkeleton.OrderedSkeleton.SkeletonAsset.GetSkeletalAnim(withSkeleton.Image, info.StandToGuard);
+			}
+			else
+			{
+				standToGuard = null;
+			}
+
+			if (!string.IsNullOrEmpty(info.GuardToStand))
+			{
+				guardToStand = withSkeleton.OrderedSkeleton.SkeletonAsset.GetSkeletalAnim(withSkeleton.Image, info.GuardToStand);
+			}
+			else
+			{
+				guardToStand = null;
+			}
+
+			attack = withSkeleton.OrderedSkeleton.SkeletonAsset.GetSkeletalAnim(withSkeleton.Image, info.Attack);
+
+			die = withSkeleton.OrderedSkeleton.SkeletonAsset.GetSkeletalAnim(withSkeleton.Image, info.DieStand);
+
+			if (info.CanProne)
+			{
+				prone = withSkeleton.OrderedSkeleton.SkeletonAsset.GetSkeletalAnim(withSkeleton.Image, info.Prone);
+
+				crawl = withSkeleton.OrderedSkeleton.SkeletonAsset.GetSkeletalAnim(withSkeleton.Image, info.Crawl);
+
+				proneAttack = withSkeleton.OrderedSkeleton.SkeletonAsset.GetSkeletalAnim(withSkeleton.Image, info.ProneAttack);
+
+				standToProne = withSkeleton.OrderedSkeleton.SkeletonAsset.GetSkeletalAnim(withSkeleton.Image, info.StandToProne);
+
+				proneToStand = withSkeleton.OrderedSkeleton.SkeletonAsset.GetSkeletalAnim(withSkeleton.Image, info.ProneToStand);
+
+				dieProne = withSkeleton.OrderedSkeleton.SkeletonAsset.GetSkeletalAnim(withSkeleton.Image, info.DieProne);
+			}
+
+			if (info.IdleActions != null && info.IdleActions.Length > 0)
+			{
+				idleActions = new SkeletalAnim[info.IdleActions.Length];
+
+				for (int i = 0; i < idleActions.Length; i++)
+				{
+					idleActions[i] = withSkeleton.OrderedSkeleton.SkeletonAsset.GetSkeletalAnim(withSkeleton.Image, info.IdleActions[i]);
+				}
+			}
+
+			attackFrame = info.AttackFrame;
+			proneAttackFrame = info.ProneAttackFrame;
+
+			SwitchAnim(CurrentPose);
 		}
 
 		public void Created(Actor self)
@@ -318,7 +574,7 @@ namespace OpenRA.Meow.RPG.Mechanics
 			foreach (var a in armamentsToModify)
 			{
 				a.AdditionalLocalOffset = () => currentPose == PoseState.Prone ? info.ProneOffset : WVec.Zero;
-				a.OverrideFireDelay = () => currentPose == PoseState.Prone ? info.ProneAttackFrame : info.AttackFrame;
+				a.OverrideFireDelay = () => currentPose == PoseState.Prone ? proneAttackFrame : attackFrame;
 			}
 
 			turnOnIdle = self.TraitOrDefault<TurnOnIdle>();
@@ -326,7 +582,12 @@ namespace OpenRA.Meow.RPG.Mechanics
 
 		public BlendTreeNodeOutPut GetResult()
 		{
-			return blendTree.GetOutPut();
+			if (deathFade)
+			{
+				return dieBlendResultOutPut;
+			}
+			else
+				return blendTree.GetOutPut();
 		}
 
 		void IBlendTreeHandler.UpdateTick()
@@ -412,7 +673,7 @@ namespace OpenRA.Meow.RPG.Mechanics
 			if (poseState == PoseState.Stand)
 			{
 				animStop.ChangeAnimation(stand);
-				animMove.ChangeAnimation(walk) ;
+				animMove.ChangeAnimation(walk);
 				animGuard.ChangeAnimation(guard);
 				animGuardMove.ChangeAnimation(guardMove);
 			}
@@ -607,7 +868,7 @@ namespace OpenRA.Meow.RPG.Mechanics
 				switchMoveUpper.SetFlag(false);
 
 				// idle action
-				if (idleActions.Length > 0)
+				if (idleActions != null && idleActions.Length > 0)
 				{
 					if (currentState == InfantryState.Idle && self.IsIdle && self.IsInWorld && currentPose == PoseState.Stand && move.CurrentMovementTypes == MovementType.None)
 					{
@@ -697,9 +958,140 @@ namespace OpenRA.Meow.RPG.Mechanics
 
 			var me = self;
 
-			shotDie.ShotEndAction = () => { deathFade = true; deathFadeTick = info.DeathBodyRemain; };
+			shotDie.ShotEndAction = () =>
+			{
+				dieBlendResultOutPut = GetResult();
+				deathFade = true;
+				deathFadeTick = info.DeathBodyRemain;
+			};
 
 			shotDie.StartShot();
+		}
+
+		bool INotifyEquip.CanEquip(Actor self, Item item)
+		{
+			if (currentState == InfantryState.Die)
+				return false;
+
+			var animRef = item.ItemActor.TraitOrDefault<WithEquipmentAnimation>();
+			if (animRef == null)
+				return true;
+
+			return currentState != InfantryState.Action && currentPose == PoseState.Stand;
+		}
+
+		void INotifyEquip.Equipped(Actor self, Item item)
+		{
+			if (playingIdleAction)
+				shotFullOverride.Interrupt();
+			else
+			{
+				nextIdleActionTick = self.World.SharedRandom.Next(info.MinIdleDelay, info.MaxIdleDelay);
+			}
+
+			if (currentState == InfantryState.Die)
+				return;
+
+			var animRef = item.ItemActor.TraitOrDefault<WithEquipmentAnimation>();
+			if (animRef == null)
+				return;
+
+			ReplaceAnim(animRef.Info);
+
+			if (!string.IsNullOrEmpty(animRef.Info.TakeOutAnim))
+			{
+				// make a smooth blend
+				// get the current blend result than use OneShot to make a smooth Blend
+				var currentAnimBlend = new SkeletalAnim(GetResult());
+				animFullOverride.ChangeAnimation(currentAnimBlend);
+				shotFullOverride.StartShot();
+				shotFullOverride.ForceShotTickToFadeTick();
+
+				// item.EquipmentSlot?.ToggleEquipmentRender(false);
+				var takeOutAnim = withSkeleton.OrderedSkeleton.SkeletonAsset.GetSkeletalAnim(withSkeleton.Image, animRef.Info.TakeOutAnim);
+				animOverride.ChangeAnimation(takeOutAnim);
+				// animOverride.AddFrameAction(animRef.Info.TakeOutFrame, () =>
+				// {
+				// 	self.World.AddFrameEndTask(w => animOverride.ClearFrameAction(animRef.Info.TakeOutFrame));
+				// 	item.EquipmentSlot?.ToggleEquipmentRender(true);
+				// });
+				var lastState = currentState;
+				currentState = InfantryState.Action;
+
+				// shotUpper.ShotEndAction = () =>
+				// {
+				// 	currentState = lastState;
+				// 	shotUpper.ShotEndAction = null;
+				// };
+				shotUpper.ShotEndBlendAction = () =>
+				{
+					currentState = lastState;
+					shotUpper.ShotEndBlendAction = null;
+				};
+
+				shotUpper.StartShot();
+				shotLower.StartShot();
+			}
+		}
+
+		bool INotifyEquip.CanUnequip(Actor self, Item item)
+		{
+			if (currentState == InfantryState.Die)
+				return false;
+
+			var animRef = item.ItemActor.TraitOrDefault<WithEquipmentAnimation>();
+			if (animRef == null)
+				return true;
+
+			return currentState != InfantryState.Action && currentPose == PoseState.Stand;
+		}
+
+		void INotifyEquip.Unequipped(Actor self, Item item)
+		{
+			if (playingIdleAction)
+				shotFullOverride.Interrupt();
+			else
+			{
+				nextIdleActionTick = self.World.SharedRandom.Next(info.MinIdleDelay, info.MaxIdleDelay);
+			}
+
+			if (currentState == InfantryState.Die)
+				return;
+
+			var animRef = item.ItemActor.TraitOrDefault<WithEquipmentAnimation>();
+			if (animRef == null)
+				return;
+
+			ResetAnim();
+
+			if (!string.IsNullOrEmpty(animRef.Info.PutAwayAnim))
+			{
+				// make a smooth blend
+				// get the current blend result than use OneShot to make a smooth Blend
+				var currentAnimBlend = new SkeletalAnim(GetResult());
+				animFullOverride.ChangeAnimation(currentAnimBlend);
+				shotFullOverride.StartShot();
+				shotFullOverride.ForceShotTickToFadeTick();
+
+				var putAwayAnim = withSkeleton.OrderedSkeleton.SkeletonAsset.GetSkeletalAnim(withSkeleton.Image, animRef.Info.PutAwayAnim);
+				animOverride.ChangeAnimation(putAwayAnim);
+				var lastState = currentState;
+				currentState = InfantryState.Action;
+
+				// shotUpper.ShotEndAction = () =>
+				// {
+				// 	currentState = lastState;
+				// 	shotUpper.ShotEndAction = null;
+				// };
+				shotUpper.ShotEndBlendAction = () =>
+				{
+					currentState = lastState;
+					shotUpper.ShotEndBlendAction = null;
+				};
+
+				shotUpper.StartShot();
+				shotLower.StartShot();
+			}
 		}
 	}
 }

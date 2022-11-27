@@ -54,6 +54,11 @@ namespace OpenRA.Graphics
 			FadeTick = fadeTick;
 		}
 
+		public void ForceShotTickToFadeTick()
+		{
+			shotTick = FadeTick;
+		}
+
 		public void StartShot()
 		{
 			runShot = true;

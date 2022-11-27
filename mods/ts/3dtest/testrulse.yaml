@@ -105,8 +105,8 @@
 		Walk: loop_walk
 		Guard: loop_guard
 		GuardMove: loop_guardmove
-		StandToGuard: s2g
-		GuardToStand: g2s
+		# StandToGuard: s2g
+		# GuardToStand: g2s
 		Prone: loop_prone
 		Crawl: loop_crawl
 		Attack: act_attack
@@ -312,27 +312,27 @@ PFIND:
 		Bounds: 603, 1930, 0, -482
 
 	InfantryBlendTree:
-		AttackFrame: 3
-		ProneAttackFrame: 17
 		ProneOffset: 0,0,-555
 		ProneSpeedModifier: 40
 	SlotArmament:
-		Weapon: DummyWeapon
+		Weapon: Fist
 		Turret: primary
 		SlotBind: MainWeapon
 		LocalOffset: 768,0,666
-
-	EquipmentSlot@cloth:
-		Name: Cloth
-		SlotType: Cloth
-		InitEquipment: clothitem
-		DisableIfDeath: false
+		UseSlotDefaultWeapon: true
+		FireDelay: 8
 	EquipmentSlot@weapon:
 		Name: MainWeapon
 		SlotType: MainWeapon
 		InitEquipment: railgun_item
 		EquipmentSkeleton: body
 		EquipmentBone: e_Hand.R
+		DisableIfDeath: false
+
+	EquipmentSlot@cloth:
+		Name: Cloth
+		SlotType: Cloth
+		InitEquipment: clothitem
 		DisableIfDeath: false
 	EquipmentSlot@item2:
 		Name: ItemSlot2
