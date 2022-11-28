@@ -227,7 +227,10 @@ namespace OpenRA.Mods.Common.Traits
 			public override bool Tick(Actor self)
 			{
 				if (cargo.IsDead)
+				{
+					carryall.UnreserveCarryable(self);
 					return true;
+				}
 
 				var dropRange = carryall.Info.DropRange;
 				var destination = carryable.Destination;
