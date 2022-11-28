@@ -288,7 +288,11 @@ namespace OpenRA.Meow.RPG.Traits
 		public virtual void UnreserveAttachCarryable(Actor self)
 		{
 			if (AttachCarryable != null && AttachCarryable.IsInWorld && !AttachCarryable.IsDead)
-				AttachCarryable.Trait<AttachCarryable>().UnReserve();
+			{
+				var carryable = AttachCarryable.Trait<AttachCarryable>();
+				if (carryable.Carrier == self)
+					carryable.UnReserve();
+			}
 
 			AttachCarryable = null;
 			State = AttachCarryallState.Idle;
