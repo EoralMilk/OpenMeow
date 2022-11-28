@@ -171,7 +171,8 @@ namespace OpenRA.Mods.Common.Projectiles
 
 			proximityRange = info.ProximityRange.Length;
 
-			if (args.GuidedTarget.Actor != null && args.GuidedTarget.Actor.IsInWorld && !args.GuidedTarget.Actor.IsDead)
+			if (args.GuidedTarget.Type != OpenRA.Traits.TargetType.Invalid &&
+				args.GuidedTarget.Actor != null && args.GuidedTarget.Actor.IsInWorld && !args.GuidedTarget.Actor.IsDead)
 			{
 				var targetTypes = args.GuidedTarget.Actor.GetEnabledTargetTypes();
 				if (info.LockOnTargetTypes.Overlaps(targetTypes) &&
@@ -262,13 +263,12 @@ namespace OpenRA.Mods.Common.Projectiles
 				new WDist(64), color, BlendMode.None);
 		}
 
-		//protected override IEnumerable<IRenderable> RenderSelf(WorldRenderer wr)
-		//{
-		//	yield return DebugDrawLine(pos, initFacing, Color.Coral);
-
-		//	yield return DebugDrawLine(pos, desireHorizonFacing, Color.Azure);
-		//	yield return DebugDrawLine(pos, currentFacing, Color.Green);
-		//}
+		// protected override IEnumerable<IRenderable> RenderSelf(WorldRenderer wr)
+		// {
+		// 	yield return DebugDrawLine(pos, initFacing, Color.Coral);
+		// 	yield return DebugDrawLine(pos, desireHorizonFacing, Color.Azure);
+		// 	yield return DebugDrawLine(pos, currentFacing, Color.Green);
+		// }
 
 		protected virtual void SelfTick(World world)
 		{
@@ -279,7 +279,7 @@ namespace OpenRA.Mods.Common.Projectiles
 			if (liveTicks > trailDelay)
 				renderTrail = true;
 
-			if (lockOn && liveTicks >= info.LockOnDelay && args.GuidedTarget.Actor.IsInWorld)
+			if (lockOn && liveTicks >= info.LockOnDelay && args.GuidedTarget.Type != OpenRA.Traits.TargetType.Invalid && args.GuidedTarget.Actor.IsInWorld)
 			{
 				if (!args.GuidedTarget.Actor.IsDead)
 				{
@@ -288,7 +288,7 @@ namespace OpenRA.Mods.Common.Projectiles
 			}
 
 			// lost target
-			if (lockOn && (!args.GuidedTarget.Actor.IsInWorld || args.GuidedTarget.Actor.IsDead))
+			if (lockOn && (args.GuidedTarget.Type == OpenRA.Traits.TargetType.Invalid || !args.GuidedTarget.Actor.IsInWorld || args.GuidedTarget.Actor.IsDead))
 			{
 				if (info.ExplodeWhenLostTarget)
 				{
