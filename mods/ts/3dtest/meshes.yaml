@@ -50,7 +50,13 @@ rumya:
 			die_front: Die_FallOverFront.ska
 			die_prone: DIE_PF匍匐时受击死亡.ska
 
-			idle_1: Action_PF放下枪查看地图.ska
+			idle_look: IdleAction_Looking.ska
+			idle_lookhand: IdleAction_LookHand.ska
+			idle_lookself: IdleAction_LookAroundSelf.ska
+			idle_breath: IdleAction_Breathing.ska
+			idle_pray: IdleAction_Praying.ska
+			idle_stretcharm: IdleAction_StretchArm.ska
+
 
 			act_takeout: Action_TakeFromBack.ska
 			act_putaway: Action_PutBack.ska
@@ -79,6 +85,13 @@ rumya:
 			rifle_prone: Prone_RifleIdle.ska
 			rifle_crawl: Crawl_Rifle.ska
 			rifle_prone-attack: Prone_RifleShoot.ska
+
+			rifle_s2p: StP_RifleKneelToProne.ska
+			rifle_p2s: PtS_RifleProneToKneel.ska
+
+			rifle_idle1: IdleAction_RifleIdle1.ska
+			rifle_idle2: IdleAction_RifleIdle2.ska
+
 
 	Meshes:
 		face_addon: face_addon_DT_0

@@ -73,8 +73,8 @@ railgun_item:
 	WeaponItem:
 		Name: RailGun
 		Type: MainWeapon
-		ThumbnailImage: items
-		ThumbnailSequence: ioncannon
+		ThumbnailImage: itemicon
+		ThumbnailSequence: rail_icon
 		Weapon: LtRail
 		LocalOffset: 0,0,0
 		CanExistInWorld: false
@@ -110,9 +110,9 @@ type38_item:
 	WeaponItem:
 		Name: Type38
 		Type: MainWeapon
-		ThumbnailImage: items
-		ThumbnailSequence: ioncannon
-		Weapon: Sniper
+		ThumbnailImage: itemicon
+		ThumbnailSequence: type38_icon
+		Weapon: OldRifle
 		LocalOffset: 0,0,0
 		CanExistInWorld: false
 	RenderMeshes:
@@ -125,7 +125,7 @@ type38_item:
 		TakeOutFrame: 30
 		AnimsReplace:
 			Stand: rifle_stand
-			Walk: sniper_walk
+			Walk: rifle_walk
 			Guard: rifle_guard
 			GuardMove: rifle_guardmove
 			# StandToGuard: sniper_s2g
@@ -134,11 +134,11 @@ type38_item:
 			Crawl: rifle_crawl
 			Attack: rifle_attack
 			ProneAttack: rifle_prone-attack
-			StandToProne: sniper_s2p
-			ProneToStand: sniper_p2s
+			StandToProne: rifle_s2p
+			ProneToStand: rifle_p2s
 			DieStand: sniper_die-front
 			DieProne: sniper_die-prone
-		IdleActions: sniper_idle1
+		IdleActions: rifle_idle1, rifle_idle2
 		ActionFrameReplace:
 			AttackFrame: 0
 			ProneAttackFrame: 0

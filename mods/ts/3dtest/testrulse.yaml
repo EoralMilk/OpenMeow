@@ -115,7 +115,7 @@
 		ProneToStand: p2s
 		DieStand: die_front
 		DieProne: die_prone
-		IdleActions: idle_1
+		IdleActions: idle_look, idle_lookhand, idle_lookself, idle_breath, idle_stretcharm
 		GuardTick: 90
 		StopMoveBlendTick: 5
 		GuardBlendTick: 15
@@ -207,7 +207,7 @@
 		DecorationBounds: 452, 1387, 0, -543
 		Bounds: 724, 1448, 0, -543
 	Voiced:
-		VoiceSet: Infantry
+		VoiceSet: GenericVoice
 	AttackMove:
 		Voice: Move
 	Passenger:
@@ -306,11 +306,8 @@ PFIND:
 	AttackFrontal:
 		Voice: Attack
 		FacingTolerance: 16
-	Voiced:
-		VoiceSet: Oxanna
 	Selectable:
 		Bounds: 603, 1930, 0, -482
-
 	InfantryBlendTree:
 		ProneOffset: 0,0,-555
 		ProneSpeedModifier: 40
@@ -318,9 +315,9 @@ PFIND:
 		Weapon: Fist
 		Turret: primary
 		SlotBind: MainWeapon
-		LocalOffset: 768,0,666
+		LocalOffset: 768,0,600
 		UseSlotDefaultWeapon: true
-		FireDelay: 8
+		FireDelay: 10
 	EquipmentSlot@weapon:
 		Name: MainWeapon
 		SlotType: MainWeapon

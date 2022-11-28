@@ -319,6 +319,30 @@ GSPulseGun:
 	Range: 8c0
 	# ValidTargets: Infantry
 
+OldRifle:
+	Inherits: ^MG
+	Range: 8c0
+	ReloadDelay: 40
+	Burst: 1
+	Report: chaingn_a.wav, chaingn_b.wav, chaingn_c.wav, chaingn_d.wav
+	Projectile: Bullet
+		LifeTime: 13
+		ContrailLength: 3
+		Inaccuracy: -1
+		Blockable: true
+		Speed: 1120
+	Warhead@1Dam: Spread3DDamage
+		Spread: 36
+		Damage: 10000
+		Versus:
+			None: 100
+			Wood: 5
+			Light: 25
+			Heavy: 5
+			Concrete: 5
+		DamageTypes: Prone100Percent, TriggerProne, BulletDeath
+		TestDrawTerrain: true
+
 Sniper:
 	Inherits: ^MG
 	MinRange: 0c128

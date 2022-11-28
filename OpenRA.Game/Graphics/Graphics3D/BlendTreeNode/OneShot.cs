@@ -158,7 +158,11 @@ namespace OpenRA.Graphics
 			if (!resolve)
 				return outPut;
 
-			outPut = blendTree.Blend(inPutNode.UpdateOutPut(optick, resolve), shot.UpdateOutPut(optick, runShot && resolve), fadeBlend, animMask);
+			if (runShot)
+				outPut = blendTree.Blend(inPutNode.UpdateOutPut(optick, resolve), shot.UpdateOutPut(optick, runShot && resolve), fadeBlend, animMask);
+			else
+				outPut = inPutNode.UpdateOutPut(optick, resolve);
+
 			updated = true;
 			return outPut;
 		}

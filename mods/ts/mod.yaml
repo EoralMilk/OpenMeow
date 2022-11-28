@@ -66,6 +66,7 @@ Packages:
 	ts|assets/meshes
 	ts|assets/materials
 	ts|assets/textures
+	ts|assets/voice
 
 	ts|terrain
 	ts|terrain/temperate
@@ -244,6 +245,8 @@ Translations:
 
 Voices:
 	ts|audio/voices.yaml
+	ts|audio/voices_ta.yaml
+
 
 	# ts|tstest/localtestvoices.yaml
 

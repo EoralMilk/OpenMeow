@@ -16,3 +16,11 @@ items:
 		ShadowStart: 90
 		Tick: 80
 		Offset: 0, 0, 16
+
+itemicon:
+	Defaults:
+		UseTilesetCode: false
+	 	AddExtension: false
+		Offset: 0, 0, 0
+	rail_icon: rail_icon.png
+	type38_icon: type38_icon.png

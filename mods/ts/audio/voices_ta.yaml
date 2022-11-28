@@ -1,0 +1,46 @@
+
+^CommonVoice:
+	DefaultVariant: .wav
+	Voices:
+		Select: Awaiting orders,Ready and waiting,Reporting,Yes sir
+		Move: Acknowledge,Affirmative,Not a problem,Right away sir,Roger,Roger that,You've got it,Moving out,Advancing,Pushin forward,Over and out
+		Attack: Acknowledge,Affirmative,Not a problem,Roger,Roger that,Engage,Over and out,Target identified
+		Unload: Acknowledge,Affirmative,Over and out
+		Feedback: Get me out of here
+		Action: Acknowledge,Affirmative,Not a problem,Roger,Roger that,Engage,Over and out
+
+GenericVoice:
+	DefaultVariant: .wav
+	Voices:
+		Select: Awaiting orders,Ready and waiting,Reporting,Yes sir,Infantry reporting
+		Move: Acknowledge,Affirmative,Not a problem,Right away sir,Roger,Roger that,You've got it,Moving out,Advancing,Pushin forward,Over and out
+		Attack: Acknowledge,Affirmative,Not a problem,Roger,Roger that,Engage,Over and out
+		Die: death_01,death_02,death_03,death_04,death_05,death_06,death_07,death_08,death_09,death_10,death_11,death_12
+		Action: Acknowledge,Affirmative,Not a problem,Roger,Roger that
+		Burned: death_10,death_11,death_12
+		Zapped: death_01,death_02,death_03,death_04
+		Poisoned: death_01,death_02,death_03,death_04
+	DisableVariants: Die, Burned, Zapped, Poisoned
+
+VehicleVoice:
+	Inherits: ^CommonVoice
+	Voices:
+		Action: Acknowledge,Affirmative,Not a problem,Roger,Roger that,Engage,Over and out
+		Select: Awaiting orders,Ready and waiting,Reporting,Yes sir,Vehicle reporting,Unit reporting
+
+AircraftVoice:
+	Inherits: ^CommonVoice
+	Voices:
+		Die: Get me out of here
+		Select: Awaiting orders,Ready and waiting,Reporting,Yes sir,Aircraft reporting
+
+GunBoatVoice:
+	Inherits: ^CommonVoice
+	Voices:
+		Select: Awaiting orders,Ready and waiting,Reporting,Yes sir,Unit reporting
+
+MCVVoice:
+	Inherits: ^CommonVoice
+	Voices:
+		Select: Awaiting orders,Ready and waiting,Reporting,Unit reporting,Mobile Construction Vehicle
+
