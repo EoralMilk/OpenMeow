@@ -7,6 +7,18 @@ using TagLib.Ape;
 
 namespace OpenRA.Meow.RPG.Mechanics
 {
+	public interface INotifyBeingEquiped
+	{
+		void EquipedBy(Actor user, EquipmentSlot slot);
+		void UnequipedBy(Actor user, EquipmentSlot slot);
+	}
+
+	public interface ITickByItem
+	{
+		void TickByItem(Item item);
+	}
+
+
 	public class ItemInfo : TraitInfo
 	{
 		public readonly string Name = null;
@@ -35,7 +47,7 @@ namespace OpenRA.Meow.RPG.Mechanics
 		}
 	}
 
-	public class Item : INotifyKilled, INotifyActorDisposing, INotifyAddedToWorld
+	public class Item : INotifyKilled, INotifyActorDisposing, INotifyAddedToWorld, INotifyCreated
 	{
 		public readonly ItemInfo Info;
 
@@ -67,6 +79,9 @@ namespace OpenRA.Meow.RPG.Mechanics
 		// This is managed by the EquipmentSlot class.
 		public EquipmentSlot EquipmentSlot;
 
+		protected INotifyBeingEquiped[] beingEquipeds;
+		protected ITickByItem[] tickByItems;
+
 		public string Name
 		{
 			get
@@ -92,8 +107,21 @@ namespace OpenRA.Meow.RPG.Mechanics
 			this.ItemActor = self;
 		}
 
-		public virtual void EquipingEffect(Actor actor) { }
-		public virtual void UnequipingEffect(Actor actor) { }
+		public virtual void EquipingEffect(Actor slotActor, EquipmentSlot slot)
+		{
+			foreach (var notify in beingEquipeds)
+			{
+				notify.EquipedBy(slotActor, slot);
+			}
+		}
+
+		public virtual void UnequipingEffect(Actor slotActor, EquipmentSlot slot)
+		{
+			foreach (var notify in beingEquipeds)
+			{
+				notify.UnequipedBy(slotActor, slot);
+			}
+		}
 
 		public virtual void Killed(Actor self, AttackInfo e)
 		{
@@ -119,6 +147,20 @@ namespace OpenRA.Meow.RPG.Mechanics
 			{
 				self.Kill(self);
 				self.Dispose();
+			}
+		}
+
+		public virtual void Created(Actor self)
+		{
+			beingEquipeds = self.TraitsImplementing<INotifyBeingEquiped>().ToArray();
+			tickByItems = self.TraitsImplementing<ITickByItem>().ToArray();
+		}
+
+		public virtual void TickItem()
+		{
+			foreach (var tick in tickByItems)
+			{
+				tick.TickByItem(this);
 			}
 		}
 	}

@@ -164,16 +164,16 @@ namespace OpenRA.Meow.RPG.Mechanics
 			}
 		}
 
-		public override void EquipingEffect(Actor actor)
+		public override void EquipingEffect(Actor actor, EquipmentSlot slot)
 		{
-			base.EquipingEffect(actor);
+			base.EquipingEffect(actor, slot);
 			Active = true;
 			actor.TraitOrDefault<WithMeshBody>()?.AddCloth(ItemActor, this);
 		}
 
-		public override void UnequipingEffect(Actor actor)
+		public override void UnequipingEffect(Actor actor, EquipmentSlot slot)
 		{
-			base.UnequipingEffect(actor);
+			base.UnequipingEffect(actor, slot);
 			Active = false;
 			actor.TraitOrDefault<WithMeshBody>()?.RemoveCloth(ItemActor);
 		}

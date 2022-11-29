@@ -33,7 +33,20 @@ namespace OpenRA.Mods.Common.Traits
 		WAngle targetFacing;
 		readonly Mobile mobile;
 		readonly WAngle turnSpeed;
-		public bool HoldTurn = false;
+		bool holdTurn = false;
+		public bool HoldTurn
+		{
+			get
+			{
+				return holdTurn;
+			}
+			set
+			{
+				currentDelay = Info.MinDelay;
+				targetFacing = mobile.Facing;
+				holdTurn = value;
+			}
+		}
 
 		public TurnOnIdle(ActorInitializer init, TurnOnIdleInfo info)
 			: base(info)

@@ -264,13 +264,13 @@ namespace OpenRA
 		public void FlushSkeletonLogicPose()
 		{
 			foreach (var s in skeletons)
-				s.FlushLogicPose();
+				s.FlushLogicPose(false);
 		}
 
 		public void FlushSkeletonRenderPose()
 		{
 			foreach (var s in skeletons)
-				s.FlushRenderPose();
+				s.FlushRenderPose(false);
 		}
 
 		public void UpdateSkeleton()
@@ -278,7 +278,7 @@ namespace OpenRA
 			if (!Disposed && IsInWorld)
 			{
 				foreach (var s in skeletons)
-					s.UpdateSkeletonTick();
+					s.UpdateSkeletonTick(false);
 			}
 		}
 

@@ -72,7 +72,8 @@ namespace OpenRA.Graphics
 		bool interrupted = false;
 		public void Interrupt()
 		{
-			interrupted = true;
+			if (runShot)
+				interrupted = true;
 		}
 
 		public void StopShot()

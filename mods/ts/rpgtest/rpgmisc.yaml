@@ -22,5 +22,6 @@ itemicon:
 		UseTilesetCode: false
 	 	AddExtension: false
 		Offset: 0, 0, 0
-	rail_icon: rail_icon.png
-	type38_icon: type38_icon.png
+	rail_icon: w_rail_icon.png
+	type38_icon: w_type38_icon.png
+	gd1_icon: w_gd1_icon.png

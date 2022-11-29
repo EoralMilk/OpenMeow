@@ -42,6 +42,11 @@ namespace OpenRA.Primitives
 			return FromArgb(byte.MaxValue, red, green, blue);
 		}
 
+		public static Color FromArgb(float red, float green, float blue)
+		{
+			return FromArgb(byte.MaxValue, (byte)(red * 255), (byte)(green * 255), (byte)(blue * 255));
+		}
+
 		public static Color FromArgb(int alpha, int red, int green, int blue)
 		{
 			return new Color(((byte)alpha << 24) + ((byte)red << 16) + ((byte)green << 8) + (byte)blue);

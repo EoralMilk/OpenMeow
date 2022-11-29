@@ -546,10 +546,14 @@ namespace OpenRA.Mods.Common.Traits
 					foreach (var na in notifyAttacks)
 						na.Attacking(self, delayedTarget, this, barrel);
 
+					OnFire();
+
 					Recoil = Info.Recoil;
 				}
 			});
 		}
+
+		protected virtual void OnFire() { }
 
 		protected virtual void AfterFire(Actor self, in Target target)
 		{

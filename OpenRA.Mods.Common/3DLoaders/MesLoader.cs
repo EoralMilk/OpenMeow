@@ -83,10 +83,6 @@ namespace OpenRA.Mods.Common.Graphics
 				}
 			}
 
-			var useDQB = ReadYamlInfo.LoadField(info, "UseDQBSkin", false);
-			var cullFunc = ReadYamlInfo.LoadField(info, "FaceCullFunc", FaceCullFunc.Back);
-			var shaderType = ReadYamlInfo.LoadField(info, "Shader", MeshShaderType.Common);
-
 			IMaterial baseMaterial;
 			if (info.ContainsKey("BaseMaterial"))
 			{
@@ -113,7 +109,19 @@ namespace OpenRA.Mods.Common.Graphics
 				baseMaterial = null;
 			}
 
-			mesh = new OrderedMesh(name, meshVertex, material, cullFunc, useDQB, skeleton, baseMaterial, shaderType);
+			OrderedMeshInfo orderedMeshInfo = new OrderedMeshInfo()
+			{
+				UseDQB = ReadYamlInfo.LoadField(info, "UseDQBSkin", false),
+				ShaderType = ReadYamlInfo.LoadField(info, "Shader", MeshShaderType.Common),
+				DefaultMaterial = material,
+				BaseMaterial = baseMaterial,
+				FaceCullFunc = ReadYamlInfo.LoadField(info, "FaceCullFunc", FaceCullFunc.Back),
+				BlendMode = ReadYamlInfo.LoadField(info, "BlendMode", BlendMode.None),
+				HasShadow = ReadYamlInfo.LoadField(info, "HasShadow", true),
+				DrawType = ReadYamlInfo.LoadField(info, "MeshDrawType", MeshDrawType.Actor),
+			};
+
+			mesh = new OrderedMesh(name, meshVertex, skeleton, orderedMeshInfo);
 
 			return true;
 		}

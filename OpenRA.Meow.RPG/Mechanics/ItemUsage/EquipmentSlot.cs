@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using GlmSharp;
+using OpenRA.Graphics;
 using OpenRA.Mods.Common.Traits;
 using OpenRA.Mods.Common.Traits.Trait3D;
 using OpenRA.Primitives;
@@ -66,17 +67,18 @@ namespace OpenRA.Meow.RPG.Mechanics
 		}
 	}
 
-	public class EquipmentSlot : ConditionalTrait<EquipmentSlotInfo>,INotifyCreated, INotifyInventory, IDeathActorInitModifier, IResolveOrder
+	public class EquipmentSlot : ConditionalTrait<EquipmentSlotInfo>,INotifyCreated, INotifyInventory, IDeathActorInitModifier, IResolveOrder,
+		ITick
 	{
 		readonly EquipmentSlotInfo info;
 
 		List<Item> autoEquip;
 		Inventory inventory;
 		INotifyEquip[] equipNotifiers = Array.Empty<INotifyEquip>();
-		RenderMeshes renderMeshes;
-		WithSkeleton withSkeleton;
-		int boneId = -1;
-		Func<mat4> slotGetRenderMatrix;
+		public RenderMeshes RenderMeshes { get; private set; }
+		public WithSkeleton SkeletonBind { get; private set; }
+		public int BoneId { get; private set; }
+		public Func<mat4> SlotGetRenderMatrix { get; private set; }
 
 		public Item Item { get; private set; }
 
@@ -102,7 +104,7 @@ namespace OpenRA.Meow.RPG.Mechanics
 		void INotifyCreated.Created(Actor self)
 		{
 			inventory = self.TraitOrDefault<Inventory>();
-			renderMeshes = self.TraitOrDefault<RenderMeshes>();
+			RenderMeshes = self.TraitOrDefault<RenderMeshes>();
 			equipNotifiers = self.TraitsImplementing<INotifyEquip>().ToArray();
 
 			if (info.EquipmentSkeleton != null)
@@ -110,12 +112,17 @@ namespace OpenRA.Meow.RPG.Mechanics
 				if (info.EquipmentBone == null)
 					throw new Exception("EquipmentBone can not be null if we use EquipmentSkeleton");
 
-				withSkeleton = self.TraitsImplementing<WithSkeleton>().Single(w => w.Info.Name == info.EquipmentSkeleton);
-				if (withSkeleton == null)
+				SkeletonBind = self.TraitsImplementing<WithSkeleton>().Single(w => w.Info.Name == info.EquipmentSkeleton);
+				if (SkeletonBind == null)
 					throw new Exception("Can not find EquipmentSkeleton");
 
-				boneId = withSkeleton.GetBoneId(info.EquipmentBone);
-				slotGetRenderMatrix = () => withSkeleton.GetRenderMatrixFromBoneId(boneId);
+				BoneId = SkeletonBind.GetBoneId(info.EquipmentBone);
+				SlotGetRenderMatrix = () => SkeletonBind.GetRenderMatrixFromBoneId(BoneId);
+			}
+			else
+			{
+				SkeletonBind = null;
+				BoneId = -1;
 			}
 
 			if (info.InitEquipment != null && inventory.Info.InitItems.Contains(info.InitEquipment))
@@ -140,9 +147,9 @@ namespace OpenRA.Meow.RPG.Mechanics
 
 		void ToggleEquipBoneUpdate(bool update)
 		{
-			if (boneId != -1 && slotGetRenderMatrix != null)
+			if (BoneId != -1 && SlotGetRenderMatrix != null)
 			{
-				withSkeleton.SetBoneRenderUpdate(boneId, update);
+				SkeletonBind.SetBoneRenderUpdate(BoneId, update);
 			}
 		}
 
@@ -233,7 +240,7 @@ namespace OpenRA.Meow.RPG.Mechanics
 
 			ToggleEquipmentRender(true);
 
-			Item.EquipingEffect(slotActor);
+			Item.EquipingEffect(slotActor, this);
 
 			foreach (var notifyEquip in equipNotifiers)
 				notifyEquip.Equipped(self, item);
@@ -243,40 +250,7 @@ namespace OpenRA.Meow.RPG.Mechanics
 
 		public void ToggleEquipmentRender(bool toggle)
 		{
-			if (Item != null)
-			{
-				if (toggle == false)
-				{
-					if (renderMeshes != null && slotGetRenderMatrix != null)
-					{
-						var itemMeshes = Item.ItemActor.TraitsImplementing<ItemMesh>();
-						foreach (var im in itemMeshes)
-						{
-							im.MeshInstance.Matrix = null;
-							renderMeshes.Remove(im.MeshInstance);
-						}
-					}
-				}
-				else
-				{
-					if (renderMeshes != null && slotGetRenderMatrix != null)
-					{
-						var itemMeshes = Item.ItemActor.TraitsImplementing<ItemMesh>();
-						foreach (var im in itemMeshes)
-						{
-							im.MeshInstance.Matrix = slotGetRenderMatrix;
-							renderMeshes.Add(im.MeshInstance);
-						}
-					}
-				}
-
-				ToggleEquipBoneUpdate(toggle);
-
-			}
-			else
-			{
-				ToggleEquipBoneUpdate(false);
-			}
+			ToggleEquipBoneUpdate(toggle);
 		}
 
 		public bool TryUnequip(Actor self)
@@ -291,7 +265,7 @@ namespace OpenRA.Meow.RPG.Mechanics
 
 			var item = Item;
 
-			item.UnequipingEffect(slotActor);
+			item.UnequipingEffect(slotActor, this);
 
 			Item.EquipmentSlot = null;
 			Item = null;
@@ -325,6 +299,12 @@ namespace OpenRA.Meow.RPG.Mechanics
 		protected override void TraitDisabled(Actor self)
 		{
 			TryUnequip(self);
+		}
+
+		public void Tick(Actor self)
+		{
+			if (Item != null)
+				Item.TickItem();
 		}
 	}
 }

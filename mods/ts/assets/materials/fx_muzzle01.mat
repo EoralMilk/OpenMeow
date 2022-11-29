@@ -1,0 +1,3 @@
+fx_muzzle01:
+	DiffuseMap: FX_Muzzle1.png
+	Specular: 0

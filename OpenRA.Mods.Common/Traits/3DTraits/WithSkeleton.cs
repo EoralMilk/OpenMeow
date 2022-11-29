@@ -83,7 +83,7 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 		{
 			self = init.Self;
 			Name = info.Name;
-			myFacing = self.Trait<IFacing>();
+			myFacing = self.TraitOrDefault<IFacing>();
 
 			OnlyUpdateForDraw = info.OnlyUpdateForDraw;
 			rm = self.Trait<RenderMeshes>();
@@ -110,7 +110,7 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 
 		protected override void Created(Actor self)
 		{
-			UpdateSkeletonTick();
+			UpdateSkeletonTick(false);
 
 			// init the current pose by rest pose and offset
 			UpdateWholeSkeleton(false);
@@ -145,12 +145,14 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 			lastSelfPos = self.CenterPosition + SkeletonOffset;
 			if (BlendTreeHandler != null)
 				lastSelfRot = BlendTreeHandler.FacingOverride();
-			else
+			else if (myFacing != null)
 				lastSelfRot = myFacing.Orientation;
 			lastScale = Scale;
 
 			foreach (var kv in bonePoseModifiers)
 				kv.Value.UpdateTarget();
+
+			updatedRoot = false;
 		}
 
 		public int GetDrawId()
@@ -202,7 +204,6 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 			CallForUpdate(id);
 			return Transformation.MatRotation(Skeleton.BoneOffsetMat(id));
 		}
-
 
 		public bool SetParent(IWithSkeleton parent, int boneId, FP scaleOverride)
 		{
@@ -267,6 +268,8 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 				Parent.CallForUpdate(parentBoneId);
 			}
 
+			UpdateSkeletonRoot();
+
 			if (BlendTreeHandler != null)
 			{
 				Skeleton.UpdateBone(boneid, BlendTreeHandler.GetResult());
@@ -275,25 +278,47 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 				Skeleton.UpdateBone(boneid);
 		}
 
-		public void FlushLogicPose()
+		public void FlushLogicPose(bool callByParent)
 		{
+			if (Parent != null && !callByParent)
+				return;
+
 			Skeleton.FlushLogicOffset();
+
+			foreach (var child in children)
+				child.FlushLogicPose(true);
 		}
 
-		public void FlushRenderPose()
+		public void FlushRenderPose(bool callByParent)
 		{
+			if (Parent != null && !callByParent)
+				return;
+
 			Skeleton.FlushRenderOffset();
+
+			foreach (var child in children)
+				child.FlushRenderPose(true);
 		}
 
-		public void UpdateSkeletonTick()
+		public void UpdateSkeletonTick(bool callByParent)
 		{
+			if (Parent != null && !callByParent)
+				return;
+
 			SkeletonTick();
-			UpdateSkeletonRoot();
+
+			foreach (var child in children)
+				child.UpdateSkeletonTick(true);
 		}
+
+		bool updatedRoot = false;
 
 		void UpdateSkeletonRoot()
 		{
-			if (!OnlyUpdateForDraw && GetRootOffset != null)
+			if (updatedRoot)
+				return;
+
+			if (GetRootOffset != null)
 			{
 				Skeleton.SetOffset(GetRootOffset());
 				return;
@@ -306,8 +331,32 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 				else
 					Skeleton.SetOffsetNoConvert(lastSelfPos, lastSelfRot, lastScale);
 			}
-			else if (!OnlyUpdateForDraw) // donot update children skeleton if this skeleton is only update for draw
+			else
 				Skeleton.SetOffset(Transformation.MatWithNewScale(Parent.GetMatrixFromBoneId(parentBoneId), scaleAsChild));
+
+			updatedRoot = true;
+		}
+
+		void RenderUpdateSkeletonRoot()
+		{
+			if (updatedRoot)
+				return;
+
+			if (GetRootOffset != null)
+			{
+				Skeleton.SetOffset(GetRootOffset());
+				return;
+			}
+
+			if (Parent == null)
+			{
+				if (Info.AxisConvert)
+					Skeleton.SetOffset(lastSelfPos, lastSelfRot, lastScale);
+				else
+					Skeleton.SetOffsetNoConvert(lastSelfPos, lastSelfRot, lastScale);
+			}
+			else
+				Skeleton.SetOffset(Transformation.MatWithNewScale(TSMatrix4x4.FromMat4(Parent.GetRenderMatrixFromBoneId(parentBoneId)), scaleAsChild));
 		}
 
 		public void RenderUpdateWholeSkeleton(bool callbyParent)
@@ -315,16 +364,7 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 			if (!callbyParent && Parent != null)
 				return;
 
-			// we update the OnlyDraw Skeleton root here
-			if (OnlyUpdateForDraw)
-			{
-				if (GetRootOffset != null)
-				{
-					Skeleton.SetOffset(GetRootOffset());
-				}
-				else if (callbyParent)
-					Skeleton.SetOffset(Transformation.MatWithNewScale(TSMatrix4x4.FromMat4(Parent.GetRenderMatrixFromBoneId(parentBoneId)), scaleAsChild));
-			}
+			RenderUpdateSkeletonRoot();
 
 			RenderUpdateSkeletonInner();
 		}

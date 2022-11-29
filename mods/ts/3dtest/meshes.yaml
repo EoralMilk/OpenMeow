@@ -220,35 +220,6 @@ cattail:
 			Material: mdx_tail
 			Shader: CharacterHair
 
-
-
-
-# rumya-2:
-# 	Inherits@defaults: rumya
-# 	Skeleton: Skeleton_CommonBody
-# 		# Bones:
-# 		Anims:
-# 			stand: catidle_Skeleton_CommonBody
-# 			walk: catcrawl_Skeleton_CommonBody
-# 			guard: catidle_Skeleton_CommonBody
-
-# 			forwardAnim: catcrawl_Skeleton_CommonBody
-# 			forwardRightAnim: catcrawl_Skeleton_CommonBody
-# 			forwardLeftAnim: catcrawl_Skeleton_CommonBody
-# 			strafeRightAnim: catcrawl_Skeleton_CommonBody
-# 			standAnim: catidle_Skeleton_CommonBody
-# 			strafeLeftAnim: catcrawl_Skeleton_CommonBody
-# 			backwardAnim: catcrawl_Skeleton_CommonBody
-# 			backwardRightAnim: catcrawl_Skeleton_CommonBody
-# 			backwardLeftAnim: catcrawl_Skeleton_CommonBody
-# 	Meshes:
-# 		skirt-split: SportShorts
-# 			Material: sportshorts
-# 			UseDQBSkin: true
-# 		hair: lp-hair_pt2
-# 			Material: h-pt2
-
-
 mmr-test:
 	Meshes:
 		dummy: dummy
@@ -267,3 +238,26 @@ missile:
 	Meshes:
 		dummy01: dummy
 			Material: mdx_underwear
+
+w_common:
+	Meshes:
+		muzzle: fx_muzzle01
+			Material: fx_muzzle01
+			BlendMode: Additive
+			HasShadow: false
+			MeshDrawType: Effect
+
+w_type38:
+	Skeleton: ws_type38
+		UseDynamicAdjBonePose: false
+	Meshes:
+		weapon: w_type38
+			Material: w_type38
+
+w_gd1:
+	Skeleton: ws_gd1
+		UseDynamicAdjBonePose: false
+	Meshes:
+		weapon: w_gd1
+			Material: w_gd1
+

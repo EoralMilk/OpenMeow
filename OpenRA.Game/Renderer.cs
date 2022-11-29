@@ -302,7 +302,7 @@ namespace OpenRA
 			worldShadowBuffer.Bind();
 			Context.EnableDepthBuffer(DepthFunc.LessEqual);
 			Game.Renderer.EnableDepthWrite(true);
-			Draw3DMeshesInstance(wr, true);
+			Draw3DMeshesInstance(wr, true, false);
 
 			// MapRenderer.SetCameraParams(World3DRenderer, true);
 			// wr.TerrainRenderer?.RenderTerrainEarly(wr, wr.Viewport);
@@ -346,7 +346,7 @@ namespace OpenRA
 			shader.SetInt("ShadowSampleType", (int)sampleType);
 		}
 
-		public void Draw3DMeshesInstance(WorldRenderer wr, bool sunCamera)
+		public void Draw3DMeshesInstance(WorldRenderer wr, bool sunCamera, bool renderEffect)
 		{
 			// update common shader uniform param
 			foreach (var shader in orderedMeshShaders)
@@ -363,7 +363,7 @@ namespace OpenRA
 			// vxl
 			foreach (var orderedMesh in orderedMeshes)
 			{
-				orderedMesh.Value.DrawInstances(wr.World, sunCamera);
+				orderedMesh.Value.DrawInstances(wr.World, sunCamera, renderEffect ? MeshDrawType.Effect : MeshDrawType.Actor);
 			}
 
 			// update common shader shadow sample type
@@ -376,7 +376,7 @@ namespace OpenRA
 			}
 
 			// mesh
-			wr.World.MeshCache.DrawInstances(wr.World, sunCamera);
+			wr.World.MeshCache.DrawInstances(wr.World, sunCamera, renderEffect ? MeshDrawType.Effect : MeshDrawType.Actor);
 		}
 
 		public void RenderInstance(int start, int numVertices, int numInstance, bool elemented = false)

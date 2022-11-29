@@ -312,11 +312,11 @@ namespace OpenRA.Graphics
 			}
 		}
 
-		public void DrawInstances(World world, bool shadowBuffer = false)
+		public void DrawInstances(World world, bool shadowBuffer, MeshDrawType drawType)
 		{
 			foreach (var orderedMesh in meshes)
 			{
-				orderedMesh.Value.DrawInstances(world, shadowBuffer);
+				orderedMesh.Value.DrawInstances(world, shadowBuffer, drawType);
 			}
 		}
 

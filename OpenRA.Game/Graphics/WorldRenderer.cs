@@ -376,7 +376,7 @@ namespace OpenRA.Graphics
 
 			Game.Renderer.WorldSpriteRenderer.Flush(BlendMode.None);
 
-			Game.Renderer.Draw3DMeshesInstance(this, false);
+			Game.Renderer.Draw3DMeshesInstance(this, false, false);
 
 			Game.Renderer.Context.DisableCullFace();
 
@@ -390,6 +390,9 @@ namespace OpenRA.Graphics
 
 			// diable depth write to render other blend mode
 			Game.Renderer.EnableDepthWrite(false);
+
+			// render effect meshes
+			Game.Renderer.Draw3DMeshesInstance(this, false, true);
 
 			// other blend
 			for (var i = 0; i < preparedBlendRenderables.Count; i++)

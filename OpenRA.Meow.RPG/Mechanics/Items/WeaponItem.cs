@@ -7,6 +7,11 @@ using System;
 
 namespace OpenRA.Meow.RPG.Mechanics
 {
+	public interface INotifyWeaponItemAttack
+	{
+		void OnWeaponItemAttack();
+	}
+
 	public class WeaponItemInfo : ConditionItemInfo, IRulesetLoaded
 	{
 		[FieldLoader.Require]
@@ -43,6 +48,8 @@ namespace OpenRA.Meow.RPG.Mechanics
 
 		int fire = 0;
 
+		INotifyWeaponItemAttack[] notifyWeaponItemAttacks;
+
 		public WeaponInfo WeaponInfo => info.WeaponInfo;
 		public WeaponItem(WeaponItemInfo info, Actor self)
 			: base(info, self)
@@ -59,14 +66,18 @@ namespace OpenRA.Meow.RPG.Mechanics
 			return localOffset;
 		}
 
-		public override void EquipingEffect(Actor actor)
+		public override void Created(Actor self)
 		{
-			base.EquipingEffect(actor);
+			base.Created(self);
+			notifyWeaponItemAttacks = self.TraitsImplementing<INotifyWeaponItemAttack>().ToArray();
 		}
 
-		public override void UnequipingEffect(Actor actor)
+		public virtual void OnAttack()
 		{
-			base.UnequipingEffect(actor);
+			foreach (var notify in notifyWeaponItemAttacks)
+			{
+				notify.OnWeaponItemAttack();
+			}
 		}
 	}
 }

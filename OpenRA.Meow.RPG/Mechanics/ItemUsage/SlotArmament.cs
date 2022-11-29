@@ -34,6 +34,8 @@ namespace OpenRA.Meow.RPG.Mechanics
 		readonly SlotArmamentInfo info;
 		readonly WeaponInfo defaultWeapon;
 		readonly EquipmentSlot slot;
+		WeaponItem weaponItem;
+
 		public SlotArmament(Actor self, SlotArmamentInfo info)
 			: base(self, info, false)
 		{
@@ -84,6 +86,12 @@ namespace OpenRA.Meow.RPG.Mechanics
 			}
 		}
 
+		protected override void OnFire()
+		{
+			if (weaponItem != null)
+				weaponItem.OnAttack();
+		}
+
 		bool INotifyEquip.CanEquip(Actor self, Item item)
 		{
 			return true;
@@ -94,6 +102,7 @@ namespace OpenRA.Meow.RPG.Mechanics
 			if (slot.Item == item && item is WeaponItem)
 			{
 				Weapon = (item as WeaponItem).WeaponInfo;
+				weaponItem = item as WeaponItem;
 			}
 		}
 
@@ -107,6 +116,7 @@ namespace OpenRA.Meow.RPG.Mechanics
 			if (slot.Item == null)
 			{
 				Weapon = defaultWeapon;
+				weaponItem = null;
 			}
 		}
 	}

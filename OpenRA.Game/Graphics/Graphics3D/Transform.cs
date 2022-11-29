@@ -253,12 +253,28 @@ namespace OpenRA.Graphics
 			return matrix;
 		}
 
+		public static mat4 MatWithNewScale(mat4 matrix, float scale)
+		{
+			matrix.Column0 = matrix.Column0.Normalized * scale;
+			matrix.Column1 = matrix.Column1.Normalized * scale;
+			matrix.Column2 = matrix.Column2.Normalized * scale;
+			return matrix;
+		}
+
 		public static TSMatrix4x4 MatWithNewScale(TSMatrix4x4 matrix, FP scale)
 		{
 			var s = new TSVector(matrix.Column0.xyz.magnitude, matrix.Column1.xyz.magnitude, matrix.Column2.xyz.magnitude) / scale;
 			matrix.M11 /= s.x; matrix.M12 /= s.y; matrix.M13 /= s.z;
 			matrix.M21 /= s.x; matrix.M22 /= s.y; matrix.M23 /= s.z;
 			matrix.M31 /= s.x; matrix.M32 /= s.y; matrix.M33 /= s.z;
+			return matrix;
+		}
+
+		public static mat4 MatWithNewScale(mat4 matrix, vec3 scale)
+		{
+			matrix.Column0 = matrix.Column0.Normalized * scale.x;
+			matrix.Column1 = matrix.Column1.Normalized * scale.y;
+			matrix.Column2 = matrix.Column2.Normalized * scale.z;
 			return matrix;
 		}
 

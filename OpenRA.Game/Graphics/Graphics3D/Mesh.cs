@@ -20,9 +20,15 @@ namespace OpenRA.Graphics
 		public bool UseMatrix = false;
 		public string SkeletonBinded = null;
 
+		/// <summary>
+		/// -2 means this instance should not be draw, -1 might means this instance has no skeleton binded
+		/// </summary>
 		public Func<int> DrawId;
 		public IMaterial Material;
 		public Func<Color> GetRemap;
+		public Func<float> GetAlpha;
+		public Func<float3> GetTint;
+
 		public MeshInstance(IOrderedMesh mesh, Func<WPos> offset, Func<WRot> rotation, Func<bool> isVisible, string skeleton = null)
 		{
 			OrderedMesh = mesh;
@@ -31,6 +37,8 @@ namespace OpenRA.Graphics
 			IsVisible = isVisible;
 			DrawId = () => -1;
 			GetRemap = null;
+			GetAlpha = null;
+			GetTint = null;
 			SkeletonBinded = skeleton;
 			Material = OrderedMesh.DefaultMaterial;
 		}
@@ -43,6 +51,8 @@ namespace OpenRA.Graphics
 			IsVisible = isVisible;
 			DrawId = () => -1;
 			GetRemap = null;
+			GetAlpha = null;
+			GetTint = null;
 			SkeletonBinded = skeleton;
 			Material = OrderedMesh.DefaultMaterial;
 		}
@@ -56,6 +66,8 @@ namespace OpenRA.Graphics
 			DrawId = () => -1;
 			SkeletonBinded = null;
 			GetRemap = null;
+			GetAlpha = null;
+			GetTint = null;
 			Material = OrderedMesh.DefaultMaterial;
 		}
 
@@ -70,6 +82,12 @@ namespace OpenRA.Graphics
 		}
 	}
 
+	public enum MeshDrawType
+	{
+		Actor,
+		Effect,
+	}
+
 	public interface IOrderedMesh
 	{
 		string Name { get; }
@@ -77,7 +95,7 @@ namespace OpenRA.Graphics
 		OrderedSkeleton Skeleton { get; set; }
 		void AddInstanceData(in float[] data, int dataCount, in int[] dataInt, int dataIntCount);
 		void Flush();
-		void DrawInstances(World world, bool shadowBuffser);
+		void DrawInstances(World world, bool shadowBuffser, MeshDrawType drawType);
 		void SetPalette(ITexture pal);
 
 		Rectangle BoundingRec { get; }
@@ -282,16 +300,32 @@ namespace OpenRA.Graphics
 		CharacterHair,
 	}
 
+	public struct OrderedMeshInfo
+	{
+		public bool UseDQB;
+		public MeshShaderType ShaderType;
+		public IMaterial DefaultMaterial;
+		public IMaterial BaseMaterial;
+		public FaceCullFunc FaceCullFunc;
+		public BlendMode BlendMode;
+		public bool HasShadow;
+		public MeshDrawType DrawType;
+	}
+
 	public class OrderedMesh : IOrderedMesh
 	{
 		public static readonly int MaxInstanceCount = 4096;
+
+		readonly MeshVertexData renderData;
+		public readonly IShader Shader;
+
 		public OrderedSkeleton Skeleton { get; set; }
 		readonly bool useDQB = false;
-		readonly MeshVertexData renderData;
 
 		public readonly FaceCullFunc FaceCull;
-
-		public readonly IShader Shader;
+		public readonly BlendMode BlendMode = BlendMode.None;
+		public readonly bool HasShadow;
+		public readonly MeshDrawType MeshDrawType;
 
 		/// <summary>
 		/// base material, it should be use for some special shader
@@ -309,31 +343,31 @@ namespace OpenRA.Graphics
 		public IVertexBuffer<MeshInstanceData> InstanceArrayBuffer;
 		public Rectangle BoundingRec => renderData.BoundingRec;
 
-		public OrderedMesh(string name, MeshVertexData data,
-			IMaterial defaultMaterial, FaceCullFunc faceCull,
-			bool useDQB, OrderedSkeleton skeleton,
-			IMaterial baseMaterial, MeshShaderType shader)
+		public OrderedMesh(string name, MeshVertexData data, OrderedSkeleton skeleton, in OrderedMeshInfo orderedMeshInfo)
 		{
 			this.name = name;
-			this.useDQB = useDQB && !Game.Settings.Graphics.ForceLinerBlendSkin;
+			useDQB = orderedMeshInfo.UseDQB && !Game.Settings.Graphics.ForceLinerBlendSkin;
 			Skeleton = skeleton;
 			renderData = data;
 			InstanceArrayBuffer = Game.Renderer.CreateVertexBuffer<MeshInstanceData>(MaxInstanceCount);
 			instancesToDraw = new MeshInstanceData[MaxInstanceCount];
 			instanceCount = 0;
-			FaceCull = faceCull;
-			this.defaultMaterial = defaultMaterial;
+			FaceCull = orderedMeshInfo.FaceCullFunc;
+			BlendMode = orderedMeshInfo.BlendMode;
+			defaultMaterial = orderedMeshInfo.DefaultMaterial;
+			HasShadow = orderedMeshInfo.HasShadow;
+			MeshDrawType = orderedMeshInfo.DrawType;
 
-			this.BaseMaterial = baseMaterial;
-			if (shader == MeshShaderType.Common)
+			BaseMaterial = orderedMeshInfo.BaseMaterial;
+			if (orderedMeshInfo.ShaderType == MeshShaderType.Common)
 				Shader = Game.Renderer.GetOrCreateShader<MeshShaderBindings>("MeshShaderBindings");
-			else if (shader == MeshShaderType.CharacterBody)
+			else if (orderedMeshInfo.ShaderType == MeshShaderType.CharacterBody)
 			{
 				Shader = Game.Renderer.GetOrCreateShader<CharacterBodyMeshShaderBindings>("CharacterBodyMeshShaderBindings");
-				if (baseMaterial == null)
+				if (BaseMaterial == null)
 					throw new Exception("CharacterBody Mesh must have base material");
 			}
-			else if (shader == MeshShaderType.CharacterHair)
+			else if (orderedMeshInfo.ShaderType == MeshShaderType.CharacterHair)
 			{
 				Shader = Game.Renderer.GetOrCreateShader<CharacterHairMeshShaderBindings>("CharacterHairMeshShaderBindings");
 			}
@@ -361,11 +395,16 @@ namespace OpenRA.Graphics
 		{
 		}
 
-		public void DrawInstances(World world, bool shadowBuffser = false)
+		public void DrawInstances(World world, bool shadowBuffer, MeshDrawType drawType)
 		{
+			if (shadowBuffer && !HasShadow)
+				return;
+			if (MeshDrawType != drawType)
+				return;
+
 			if (instanceCount == 0)
 				return;
-			if (shadowBuffser && FaceCull == FaceCullFunc.Back)
+			if (shadowBuffer && FaceCull == FaceCullFunc.Back)
 				Game.Renderer.SetFaceCull(FaceCullFunc.Front);
 			else
 				Game.Renderer.SetFaceCull(FaceCull);
@@ -403,7 +442,7 @@ namespace OpenRA.Graphics
 			renderData.VertexBuffer.Bind();
 			Shader.LayoutAttributes();
 
-			Game.Renderer.SetBlendMode(BlendMode.Alpha);
+			Game.Renderer.SetBlendMode(BlendMode);
 
 			// draw instance, this is elemented
 			Game.Renderer.RenderInstance(0, renderData.Count, instanceCount, true);

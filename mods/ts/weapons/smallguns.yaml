@@ -343,6 +343,17 @@ OldRifle:
 		DamageTypes: Prone100Percent, TriggerProne, BulletDeath
 		TestDrawTerrain: true
 
+Basic_GD-1:
+	Inherits: ^MG
+	ReloadDelay: 24
+	Burst: 5
+	BurstDelays: 2
+	Projectile: Bullet
+		LifeTime: 11
+		Inaccuracy: 110
+	Warhead@1Dam: Spread3DDamage
+		Damage: 1500
+
 Sniper:
 	Inherits: ^MG
 	MinRange: 0c128

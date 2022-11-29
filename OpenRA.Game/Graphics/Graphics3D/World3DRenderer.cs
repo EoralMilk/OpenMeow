@@ -211,9 +211,22 @@ namespace OpenRA.Graphics
 					continue;
 
 				var remapcolor = remap;
+				var replaceAlpha = alpha;
+				var replaceTint = tint;
+
 				if (m.GetRemap != null)
 				{
 					remapcolor = m.GetRemap();
+				}
+
+				if (m.GetAlpha != null)
+				{
+					replaceAlpha = m.GetAlpha();
+				}
+
+				if (m.GetTint != null)
+				{
+					replaceTint = m.GetTint();
 				}
 
 				if (m.UseMatrix)
@@ -227,7 +240,7 @@ namespace OpenRA.Graphics
 																(float)t.m10, (float)t.m11, (float)t.m12, (float)t.m13,
 																(float)t.m20, (float)t.m21, (float)t.m22, (float)t.m23,
 																(float)t.m30, (float)t.m31, (float)t.m32, (float)t.m33,
-																tint.X, tint.Y, tint.Z, alpha,
+																replaceTint.X, replaceTint.Y, replaceTint.Z, replaceAlpha,
 																remapcolor.R, remapcolor.G, remapcolor.B,
 					};
 
@@ -251,7 +264,7 @@ namespace OpenRA.Graphics
 															t[4], t[5], t[6], t[7],
 															t[8], t[9], t[10], t[11],
 															t[12], t[13], t[14], t[15],
-															tint.X, tint.Y, tint.Z, alpha,
+															replaceTint.X, replaceTint.Y, replaceTint.Z, replaceAlpha,
 															remapcolor.R, remapcolor.G, remapcolor.B,
 					};
 

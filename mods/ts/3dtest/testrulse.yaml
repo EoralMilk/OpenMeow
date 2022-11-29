@@ -3,10 +3,16 @@
 	# 	Mesh: axis
 	WithMeshBody@body:
 		SkeletonBinded: body
+		HairMeshs: hair_s1, hair_s2, hair_pt1, hair_pt2, hair_dpt1, hair_dpt2
+		HairColors: FFE99B, 99FF84, 94E3FF, 807D7A, FFFFFF, 7A7A7A, 807D7A, FFACC2, FF7545, FFCDFD, BEFF76
 		FaceAddonMesh: face_addon
-	WithMesh@hair:
-		Mesh: hair
+	WithMeshBodyPart@cater:
+		Mesh: cater
+		UseHairColorAsRemap: true
 		SkeletonBinded: body
+	# WithMesh@hair:
+	# 	Mesh: hair
+	# 	SkeletonBinded: body
 	# WithMesh@cater:
 	# 	Mesh: cater
 	# 	SkeletonBinded: body
@@ -315,17 +321,22 @@ PFIND:
 		Weapon: Fist
 		Turret: primary
 		SlotBind: MainWeapon
-		LocalOffset: 768,0,600
+		LocalOffset: 0,0,600
 		UseSlotDefaultWeapon: true
 		FireDelay: 10
 	EquipmentSlot@weapon:
 		Name: MainWeapon
 		SlotType: MainWeapon
-		InitEquipment: railgun_item
+		# InitEquipment: type38_item
 		EquipmentSkeleton: body
 		EquipmentBone: e_Hand.R
 		DisableIfDeath: false
-
+	InitEquipment@weapon:
+		EquipmentSlotName: MainWeapon
+		ItemPool:
+			type38_item: 5
+			railgun_item: 1
+			gd1_item: 80
 	EquipmentSlot@cloth:
 		Name: Cloth
 		SlotType: Cloth
@@ -334,9 +345,15 @@ PFIND:
 	EquipmentSlot@item2:
 		Name: ItemSlot2
 		SlotType: Item
+		DisableIfDeath: false
 	Inventory:
 		Name: test
-		InitItems: clothitem, railgun_item, type38_item
+		InitItems: clothitem
+	InitEquipment@inventory:
+		InitEquipChance: 50
+		EquipmentSlotName: ItemSlot2
+		ItemPool:
+			testunderwear: 5
 	# PickUpItem:
 	# 	TargetCursor: undeploy
 	# 	Voice: Move
@@ -447,7 +464,7 @@ RUTEST2:
 		SkeletonToUse: body
 		FromBonePose: a-s-Rig_Head
 		FacingTolerance: 512
-		RequiresCondition: userutestmissile
+		RequiresCondition: usetestunderwear
 	SlotArmament@test:
 		Weapon: DummyWeapon
 		Turret: primary
@@ -482,7 +499,7 @@ RUTEST2:
 	EquipmentSlot@item:
 		Name: ItemSlot
 		SlotType: Item
-		InitEquipment: rutestmissile
+		InitEquipment: testunderwear
 	EquipmentSlot@item2:
 		Name: ItemSlot2
 		SlotType: Item
@@ -492,7 +509,7 @@ RUTEST2:
 		RequiresCondition: hascloth
 	Inventory:
 		Name: test
-		InitItems: clothitem, rutestmissile, gunitem, chemicalitem
+		InitItems: clothitem, testunderwear, gunitem, chemicalitem
 	LongJumpSkill:
 		ChargeDelay: 25
 		TargetCursor: ability

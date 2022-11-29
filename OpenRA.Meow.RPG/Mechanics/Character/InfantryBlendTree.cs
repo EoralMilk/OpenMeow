@@ -733,6 +733,9 @@ namespace OpenRA.Meow.RPG.Mechanics
 				return;
 			}
 
+			if (currentState != InfantryState.Action)
+				currentAction = ActionType.None;
+
 			if (idleActions != null && idleActions.Length > 0)
 			{
 				if (currentState == InfantryState.Idle && self.IsIdle && self.IsInWorld &&
@@ -775,6 +778,10 @@ namespace OpenRA.Meow.RPG.Mechanics
 			{
 				animFullOverride.ChangeAnimation(standToProne);
 				currentPose = PoseState.StandToProne;
+				currentState = InfantryState.Action;
+				currentAction = ActionType.Switch;
+				shotLower.Interrupt();
+				shotUpper.Interrupt();
 				shotFullOverride.FadeTick = info.ProneBlendFadeTick;
 				shotFullOverride.ShotEndAction = () =>
 				{
@@ -784,6 +791,8 @@ namespace OpenRA.Meow.RPG.Mechanics
 				shotFullOverride.ShotEndBlendAction = () =>
 				{
 					currentPose = PoseState.Prone;
+					currentAction = ActionType.None;
+					currentState = InfantryState.Guard;
 					shotFullOverride.ShotEndBlendAction = null;
 				};
 
@@ -798,6 +807,10 @@ namespace OpenRA.Meow.RPG.Mechanics
 					animFullOverride.ChangeAnimation(proneToStand);
 					shotFullOverride.FadeTick = info.ProneBlendFadeTick;
 					currentPose = PoseState.ProneToStand;
+					currentState = InfantryState.Action;
+					currentAction = ActionType.Switch;
+					shotLower.Interrupt();
+					shotUpper.Interrupt();
 					shotFullOverride.ShotEndAction = () =>
 					{
 						SwitchAnim(PoseState.Stand);
@@ -807,6 +820,8 @@ namespace OpenRA.Meow.RPG.Mechanics
 					shotFullOverride.ShotEndBlendAction = () =>
 					{
 						currentPose = PoseState.Stand;
+						currentAction = ActionType.None;
+						currentState = InfantryState.Idle;
 						shotFullOverride.ShotEndBlendAction = null;
 					};
 					shotFullOverride.StartShot();
@@ -837,15 +852,15 @@ namespace OpenRA.Meow.RPG.Mechanics
 				if (currentState == InfantryState.Guard)
 				{
 					// convert anim or convert blend should be Action state
-					currentState = InfantryState.Action;
-					currentAction = ActionType.Switch;
 					if (guardToStand != null)
 					{
+						currentState = InfantryState.Action;
+						currentAction = ActionType.Switch;
 						animOverride.ChangeAnimation(guardToStand);
 						shotUpper.ShotEndAction = () =>
 						{
 							switchStopGuard.SwitchTick = 1;
-							// switchMoveGuard.SwitchTick = 1;
+
 							switchStopGuard.SetFlag(false);
 							switchMoveGuard.SetFlag(false);
 							shotUpper.ShotEndAction = null;
@@ -862,15 +877,16 @@ namespace OpenRA.Meow.RPG.Mechanics
 					else
 					{
 						switchStopGuard.SwitchTick = info.GuardBlendTick;
-						// switchMoveGuard.SwitchTick = info.GuardBlendTick;
+						currentState = InfantryState.Idle;
 						switchStopGuard.SetFlag(false);
 						switchMoveGuard.SetFlag(false);
 					}
 				}
 
-				if (switchStopGuard.BlendValue <= FP.Zero)
+				if (guardToStand == null && switchStopGuard.BlendValue <= FP.Zero)
 				{
 					currentState = InfantryState.Idle;
+					currentAction = ActionType.None;
 				}
 			}
 			else if (currentPose == PoseState.Stand)
@@ -879,15 +895,15 @@ namespace OpenRA.Meow.RPG.Mechanics
 				if (currentState != InfantryState.Guard && currentState != InfantryState.Action)
 				{
 					// convert anim or convert blend should be Action state
-					currentState = InfantryState.Action;
-					currentAction = ActionType.Switch;
 					if (currentPose == PoseState.Stand && standToGuard != null)
 					{
+						currentState = InfantryState.Action;
+						currentAction = ActionType.Switch;
 						animOverride.ChangeAnimation(standToGuard);
 						shotUpper.ShotEndAction = () =>
 						{
 							switchStopGuard.SwitchTick = 1;
-							// switchMoveGuard.SwitchTick = 1;
+
 							switchStopGuard.SetFlag(true);
 							switchMoveGuard.SetFlag(true);
 							shotUpper.ShotEndAction = null;
@@ -904,15 +920,15 @@ namespace OpenRA.Meow.RPG.Mechanics
 					else
 					{
 						switchStopGuard.SwitchTick = info.GuardBlendTick;
-						// switchMoveGuard.SwitchTick = info.GuardBlendTick;
 						switchStopGuard.SetFlag(true);
 						switchMoveGuard.SetFlag(true);
 					}
 				}
 
-				if (switchStopGuard.BlendValue >= FP.One)
+				if (standToGuard == null && switchStopGuard.BlendValue >= FP.One)
 				{
 					currentState = InfantryState.Guard;
+					currentAction = ActionType.None;
 				}
 
 				if (!info.KeepGuardStateWhenMoving || (currentState == InfantryState.Guard && move.CurrentMovementTypes == MovementType.None))

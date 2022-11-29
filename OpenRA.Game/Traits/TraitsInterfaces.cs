@@ -302,12 +302,11 @@ namespace OpenRA.Traits
 
 	public interface IWithSkeleton
 	{
-		void FlushLogicPose();
-		void FlushRenderPose();
-		void UpdateSkeletonTick();
+		void FlushLogicPose(bool callByParent);
+		void FlushRenderPose(bool callByParent);
+		void UpdateSkeletonTick(bool callByParent);
 		void RenderUpdateWholeSkeleton(bool callbyParent);
 		void UpdateDrawInfo(bool callbyParent);
-		void SkeletonTick();
 		void CallForUpdate(int boneid);
 		int GetDrawId();
 		int GetBoneId(string boneName);

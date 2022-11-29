@@ -53,14 +53,14 @@ namespace OpenRA.Meow.RPG.Mechanics
 			this.info = info;
 		}
 
-		public override void EquipingEffect(Actor actor)
+		public override void EquipingEffect(Actor actor, EquipmentSlot slot)
 		{
 			var notifies = actor.TraitsImplementing<INotifyConsumeItem>();
 			foreach (var notify in notifies)
 			{
 				if (!notify.CanConsume(this))
 				{
-					base.EquipingEffect(actor);
+					base.EquipingEffect(actor, slot);
 					EquipmentSlot.TryUnequip(actor);
 					return;
 				}
@@ -71,7 +71,7 @@ namespace OpenRA.Meow.RPG.Mechanics
 				Consume(actor);
 			}
 
-			base.EquipingEffect(actor);
+			base.EquipingEffect(actor, slot);
 			EquipmentSlot.TryUnequip(actor);
 
 			if (useTime == 0)
@@ -88,10 +88,6 @@ namespace OpenRA.Meow.RPG.Mechanics
 			}
 		}
 
-		public override void UnequipingEffect(Actor actor)
-		{
-			base.UnequipingEffect(actor);
-		}
 
 		public virtual void Consume(Actor actor)
 		{

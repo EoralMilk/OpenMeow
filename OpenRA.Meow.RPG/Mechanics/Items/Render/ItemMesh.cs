@@ -5,6 +5,7 @@ using OpenRA.Traits;
 using TagLib.Ape;
 using GlmSharp;
 using System;
+using System.Linq;
 
 namespace OpenRA.Meow.RPG.Mechanics
 {
@@ -20,7 +21,7 @@ namespace OpenRA.Meow.RPG.Mechanics
 		}
 	}
 
-	public class ItemMesh
+	public class ItemMesh: INotifyBeingEquiped
 	{
 		public readonly string SkeletonBinded;
 		public readonly MeshInstance MeshInstance;
@@ -44,7 +45,44 @@ namespace OpenRA.Meow.RPG.Mechanics
 			MeshInstance = new MeshInstance(mesh,
 				null,
 				() => MeshInstance.Matrix != null && item.EquipmentSlot != null,
-				SkeletonBinded);
+				SkeletonBinded)
+			{
+				UseMatrix = true
+			};
+		}
+
+		void INotifyBeingEquiped.EquipedBy(Actor user, EquipmentSlot slot)
+		{
+			if (slot.RenderMeshes == null)
+				return;
+
+			if (SkeletonBinded == null)
+			{
+				MeshInstance.Matrix = slot.SlotGetRenderMatrix;
+				MeshInstance.DrawId = () => -1;
+			}
+			else
+			{
+				// we should handle the skeleton binding by ourself
+				// the rendermeshes will not able to use because the item always not in world when equiped
+				var skeleton = item.ItemActor.TraitsImplementing<WithSkeleton>().Single(s => s.Name == SkeletonBinded);
+
+				MeshInstance.DrawId = () => skeleton.GetDrawId();
+				MeshInstance.Matrix = () => skeleton.Skeleton.Offset.ToMat4();
+			}
+
+			slot.RenderMeshes.Add(MeshInstance);
+		}
+
+		void INotifyBeingEquiped.UnequipedBy(Actor user, EquipmentSlot slot)
+		{
+			MeshInstance.Matrix = null;
+			MeshInstance.DrawId = () => -1;
+
+			if (slot.RenderMeshes == null)
+				return;
+
+			slot.RenderMeshes.Remove(MeshInstance);
 		}
 	}
 }

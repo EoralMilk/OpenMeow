@@ -145,6 +145,8 @@ namespace OpenRA.Mods.Cnc.Graphics
 		bool alphaBlend;
 		public Rectangle BoundingRec { get; }
 
+		public readonly MeshDrawType MeshDrawType;
+
 		public OrderedVxlSection(CombinedMeshRenderData data, string name)
 		{
 			renderData = data;
@@ -182,9 +184,11 @@ namespace OpenRA.Mods.Cnc.Graphics
 			palette = pal;
 		}
 
-		public void DrawInstances(World world, bool shadowBuffser = false)
+		public void DrawInstances(World world, bool shadowBuffser, MeshDrawType drawType)
 		{
 			if (instanceCount == 0)
+				return;
+			if (MeshDrawType != drawType)
 				return;
 
 			renderData.Shader.SetTexture("Palette", palette);

@@ -15,12 +15,12 @@ clothitem:
 		ThighMesh: gear01_body-thigh
 		CanExistInWorld: false
 
-rutestmissile:
+testunderwear:
 	GearItem:
 		Name: underwaer
 		ThumbnailImage: items
 		ThumbnailSequence: clustermissile
-		Condition: userutestmissile
+		Condition: usetestunderwear
 		GearType: CloseFitting
 		GearOrder: 2
 		CoveringMaterail: mdx_underwear
@@ -113,12 +113,8 @@ type38_item:
 		ThumbnailImage: itemicon
 		ThumbnailSequence: type38_icon
 		Weapon: OldRifle
-		LocalOffset: 0,0,0
+		LocalOffset: 768,0,0
 		CanExistInWorld: false
-	RenderMeshes:
-		Image: rumya
-	ItemMesh@test:
-		Mesh: w_type38
 	WithEquipmentAnimation:
 		TakeOutAnim: act_takeout
 		PutAwayAnim: act_putaway
@@ -142,3 +138,74 @@ type38_item:
 		ActionFrameReplace:
 			AttackFrame: 0
 			ProneAttackFrame: 0
+	WeaponMuzzleMesh:
+		MuzzleDuration: 5
+		AlphaStartToEnd: 1,0
+		ScaleStartToEnd: 0.35, 3
+		Mesh: muzzle
+		Image: w_common
+		MuzzleSkeleton: item
+		MuzzleBone: Muzzle
+	WithSkeleton:
+		Name: item
+		OnlyUpdateForDraw: true
+	ItemSkeletonHandler:
+		Skeleton: item
+	ItemMesh@test:
+		Mesh: weapon
+		SkeletonBinded: item
+	RenderMeshes:
+		Image: w_type38
+		Scale: 2
+
+gd1_item:
+	WeaponItem:
+		Name: GD-1
+		Type: MainWeapon
+		ThumbnailImage: itemicon
+		ThumbnailSequence: gd1_icon
+		Weapon: Basic_GD-1
+		LocalOffset: 510,0,11
+		CanExistInWorld: false
+	WithEquipmentAnimation:
+		TakeOutAnim: act_takeout
+		PutAwayAnim: act_putaway
+		TakeOutFrame: 30
+		AnimsReplace:
+			Stand: rifle_stand
+			Walk: rifle_walk
+			Guard: rifle_guard
+			GuardMove: rifle_guardmove
+			# StandToGuard: sniper_s2g
+			# GuardToStand: sniper_g2s
+			Prone: rifle_prone
+			Crawl: rifle_crawl
+			Attack: rifle_attack
+			ProneAttack: rifle_prone-attack
+			StandToProne: rifle_s2p
+			ProneToStand: rifle_p2s
+			DieStand: sniper_die-front
+			DieProne: sniper_die-prone
+		IdleActions: rifle_idle1, rifle_idle2
+		ActionFrameReplace:
+			AttackFrame: 0
+			ProneAttackFrame: 0
+	WeaponMuzzleMesh:
+		MuzzleDuration: 5
+		AlphaStartToEnd: 1,0
+		ScaleStartToEnd: 0.7, 2
+		Mesh: muzzle
+		Image: w_common
+		MuzzleSkeleton: item
+		MuzzleBone: Muzzle
+	WithSkeleton:
+		Name: item
+		OnlyUpdateForDraw: true
+	ItemSkeletonHandler:
+		Skeleton: item
+	ItemMesh@test:
+		Mesh: weapon
+		SkeletonBinded: item
+	RenderMeshes:
+		Image: w_gd1
+		Scale: 2
