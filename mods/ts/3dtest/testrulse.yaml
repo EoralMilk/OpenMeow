@@ -300,15 +300,8 @@ PFIND:
 		MaxSpeed: 64
 	Health:
 		HP: 15000
-	GrantConditionOnMovement@sniperSightDisable:
-		Condition: moving.sniper
-	RevealsShroud@sniper:
-		Range: 9c512
-		MaxHeightDelta: 1100
-		RequiresCondition: !moving.sniper
 	RevealsShroud:
 		Range: 7c0
-		RequiresCondition: moving.sniper
 	AttackFrontal:
 		Voice: Attack
 		FacingTolerance: 16
@@ -334,9 +327,15 @@ PFIND:
 	InitEquipment@weapon:
 		EquipmentSlotName: MainWeapon
 		ItemPool:
-			type38_item: 5
+			type38_item: 2
+			sr1_item: 5
 			railgun_item: 1
-			gd1_item: 80
+			gd1_item: 65
+	GrantConditionOnMovement@sniperSightDisable:
+		Condition: moving.sniper
+	RevealsShroudMultiplier@item-telescope:
+		Modifier: 150
+		RequiresCondition: item-telescope && !moving.sniper
 	EquipmentSlot@cloth:
 		Name: Cloth
 		SlotType: Cloth

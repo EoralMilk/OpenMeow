@@ -1,0 +1,27 @@
+a-s-Root:
+	ID: 0
+	Skin: True
+	Anim: True
+	Parent: NO_Parent
+	RestPoseScale: 1.000000, 1.000000, 1.000000
+	RestPoseRotation: 0.000000, 0.000000, 0.000000, 1.000000
+	RestPoseTranslation: 0.000000, 0.000000, 0.000000
+	RestPoseInvScale: 1.000000, 1.000000, 1.000000
+	RestPoseInvRotation: 0.000000, 0.000000, 0.000000, 1.000000
+	RestPoseInvTranslation: 0.000000, 0.000000, 0.000000
+	BindPoseScale: 1.000000, 1.000000, 1.000000
+	BindPoseRotation: 0.000000, 0.000000, 0.000000, 1.000000
+	BindPoseTranslation: 0.000000, 0.000000, 0.000000
+Muzzle:
+	ID: 1
+	Parent: a-s-Root
+	ParentID: 0
+	RestPoseScale: 1.000000, 1.000000, 1.000000
+	RestPoseRotation: 0.000000, 0.000000, 0.703900, 0.710299
+	RestPoseTranslation: -0.610277, 0.070070, 0.000000
+	RestPoseInvScale: 1.000000, 1.000000, 1.000000
+	RestPoseInvRotation: 0.000000, 0.000000, -0.703900, 0.710299
+	RestPoseInvTranslation: -0.064545, -0.610886, 0.000000
+	BindPoseScale: 1.000000, 1.000000, 1.000000
+	BindPoseRotation: 0.000000, 0.000000, -0.703900, 0.710299
+	BindPoseTranslation: -0.064545, -0.610886, 0.000000

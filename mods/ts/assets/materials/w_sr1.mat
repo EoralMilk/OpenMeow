@@ -1,0 +1,4 @@
+W_sr1:
+	DiffuseMap: w_sniper.png
+	Specular: 0.6
+	Shininess: 16

@@ -106,59 +106,7 @@ railgun_item:
 			AttackFrame: 3
 			ProneAttackFrame: 17
 
-type38_item:
-	WeaponItem:
-		Name: Type38
-		Type: MainWeapon
-		ThumbnailImage: itemicon
-		ThumbnailSequence: type38_icon
-		Weapon: OldRifle
-		LocalOffset: 768,0,0
-		CanExistInWorld: false
-	WithEquipmentAnimation:
-		TakeOutAnim: act_takeout
-		PutAwayAnim: act_putaway
-		TakeOutFrame: 30
-		AnimsReplace:
-			Stand: rifle_stand
-			Walk: rifle_walk
-			Guard: rifle_guard
-			GuardMove: rifle_guardmove
-			# StandToGuard: sniper_s2g
-			# GuardToStand: sniper_g2s
-			Prone: rifle_prone
-			Crawl: rifle_crawl
-			Attack: rifle_attack
-			ProneAttack: rifle_prone-attack
-			StandToProne: rifle_s2p
-			ProneToStand: rifle_p2s
-			DieStand: sniper_die-front
-			DieProne: sniper_die-prone
-		IdleActions: rifle_idle1, rifle_idle2
-		ActionFrameReplace:
-			AttackFrame: 0
-			ProneAttackFrame: 0
-	WeaponMuzzleMesh:
-		MuzzleDuration: 5
-		AlphaStartToEnd: 1,0
-		ScaleStartToEnd: 0.35, 3
-		Mesh: muzzle
-		Image: w_common
-		MuzzleSkeleton: item
-		MuzzleBone: Muzzle
-	WithSkeleton:
-		Name: item
-		OnlyUpdateForDraw: true
-	ItemSkeletonHandler:
-		Skeleton: item
-	ItemMesh@test:
-		Mesh: weapon
-		SkeletonBinded: item
-	RenderMeshes:
-		Image: w_type38
-		Scale: 2
-
-gd1_item:
+^guns_item:
 	WeaponItem:
 		Name: GD-1
 		Type: MainWeapon
@@ -209,3 +157,51 @@ gd1_item:
 	RenderMeshes:
 		Image: w_gd1
 		Scale: 2
+
+gd1_item:
+	Inherits: ^guns_item
+
+type38_item:
+	Inherits: ^guns_item
+	WeaponItem:
+		Name: Type38
+		ThumbnailSequence: type38_icon
+		Weapon: OldRifle
+		LocalOffset: 768,0,0
+	WeaponMuzzleMesh:
+		ScaleStartToEnd: 0.35, 3
+	RenderMeshes:
+		Image: w_type38
+
+sr1_item:
+	Inherits: ^guns_item
+	WeaponItem:
+		Name: SR-1
+		ThumbnailSequence: sr1_icon
+		Weapon: Sniper
+		LocalOffset: 710,0,0
+		Condition: item-telescope
+	WithEquipmentAnimation:
+		AnimsReplace:
+			Stand: sniper_stand
+			Walk: sniper_walk
+			Guard: sniper_guard
+			GuardMove: sniper_guardmove
+			StandToGuard: sniper_s2g
+			GuardToStand: sniper_g2s
+			Prone: sniper_prone
+			Crawl: sniper_crawl
+			Attack: sniper_attack
+			ProneAttack: sniper_prone-attack
+			StandToProne: sniper_s2p
+			ProneToStand: sniper_p2s
+			DieStand: sniper_die-front
+			DieProne: sniper_die-prone
+		IdleActions: sniper_idle1
+		ActionFrameReplace:
+			AttackFrame: 3
+			ProneAttackFrame: 17
+	WeaponMuzzleMesh:
+		ScaleStartToEnd: 0.35, 3
+	RenderMeshes:
+		Image: w_sr1

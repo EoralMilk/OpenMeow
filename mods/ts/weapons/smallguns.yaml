@@ -346,11 +346,11 @@ OldRifle:
 Basic_GD-1:
 	Inherits: ^MG
 	ReloadDelay: 24
-	Burst: 5
+	Burst: 4
 	BurstDelays: 2
 	Projectile: Bullet
 		LifeTime: 11
-		Inaccuracy: 110
+		Inaccuracy: 220
 	Warhead@1Dam: Spread3DDamage
 		Damage: 1500
 

@@ -261,3 +261,9 @@ w_gd1:
 		weapon: w_gd1
 			Material: w_gd1
 
+w_sr1:
+	Skeleton: ws_sniper
+		UseDynamicAdjBonePose: false
+	Meshes:
+		weapon: w_sniper
+			Material: w_sr1
