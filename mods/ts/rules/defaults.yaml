@@ -547,11 +547,13 @@
 		UseDeathTypeSuffix: false
 	SpawnActorsOnSell@gdi:
 		ActorTypes: e1, e1, e2, medic, ctech
+		GuaranteedActorTypes: e1
 		MinHpPercent: 0
 		ValuePercent: 40
 		Factions: gdi
 	SpawnActorsOnSell@nod:
 		ActorTypes: e1, e1, e1, e3, e3, ctech
+		GuaranteedActorTypes: e1
 		MinHpPercent: 0
 		ValuePercent: 40
 		Factions: nod
