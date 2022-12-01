@@ -141,7 +141,7 @@ railgun_item:
 	WeaponMuzzleMesh:
 		MuzzleDuration: 5
 		AlphaStartToEnd: 1,0
-		ScaleStartToEnd: 0.7, 2
+		ScaleStartToEnd: 1.4, 2
 		Mesh: muzzle
 		Image: w_common
 		MuzzleSkeleton: item
@@ -169,7 +169,7 @@ type38_item:
 		Weapon: OldRifle
 		LocalOffset: 768,0,0
 	WeaponMuzzleMesh:
-		ScaleStartToEnd: 0.35, 3
+		ScaleStartToEnd: 1.2, 3
 	RenderMeshes:
 		Image: w_type38
 
@@ -202,6 +202,6 @@ sr1_item:
 			AttackFrame: 3
 			ProneAttackFrame: 17
 	WeaponMuzzleMesh:
-		ScaleStartToEnd: 0.35, 3
+		ScaleStartToEnd: 1.35, 3
 	RenderMeshes:
 		Image: w_sr1

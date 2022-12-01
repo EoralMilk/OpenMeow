@@ -299,7 +299,7 @@ PFIND:
 		Speed: 50
 		MaxSpeed: 64
 	Health:
-		HP: 15000
+		HP: 20000
 	RevealsShroud:
 		Range: 7c0
 	AttackFrontal:
@@ -317,6 +317,7 @@ PFIND:
 		LocalOffset: 0,0,600
 		UseSlotDefaultWeapon: true
 		FireDelay: 10
+		RecalculateBeforeDelayFire: true
 	EquipmentSlot@weapon:
 		Name: MainWeapon
 		SlotType: MainWeapon

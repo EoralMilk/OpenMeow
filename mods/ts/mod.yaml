@@ -172,6 +172,7 @@ MapGrid:
 WorldViewportSizes:
 	ZoomScale: 0.35
 	MaxZoomScale: 5
+	MaxZoomWindowHeight: 120
 
 Cursors:
 	ts|cursors.yaml

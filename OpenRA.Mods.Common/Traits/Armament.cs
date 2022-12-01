@@ -60,6 +60,8 @@ namespace OpenRA.Mods.Common.Traits
 		[Desc("Time (in frames) until the weapon can fire again.")]
 		public readonly int FireDelay = 0;
 
+		public readonly bool RecalculateBeforeDelayFire = false;
+
 		[Desc("Muzzle position relative to turret or body, (forward, right, up) triples.",
 			"If weapon Burst = 1, it cycles through all listed offsets, otherwise the offset corresponding to current burst is used.")]
 		public readonly WVec[] LocalOffset = Array.Empty<WVec>();
@@ -309,7 +311,7 @@ namespace OpenRA.Mods.Common.Traits
 				a(b);
 		}
 
-		public virtual WVec AimTargetOn(Actor self, in WPos firePos, in Target target)
+		public virtual WVec AimTargetOn(Actor self, in WPos firePos, in Target target, WeaponInfo weapon)
 		{
 			if (!Info.CalculateTargetMoving)
 				return WVec.Zero;
@@ -317,15 +319,15 @@ namespace OpenRA.Mods.Common.Traits
 			var offset = WVec.Zero;
 
 			// target the lead
-			if (target.Actor != null && target.Actor != self && !target.Actor.IsDead && target.Actor.IsInWorld)
+			if (target.Type == TargetType.Actor && target.Actor != null && target.Actor != self && !target.Actor.IsDead && target.Actor.IsInWorld)
 			{
 				var move = target.Actor.TraitOrDefault<IMove>();
 				if (move != null)
 				{
 					int projSpeed = 0;
-					if (Weapon.Projectile is BulletInfo)
+					if (weapon.Projectile is BulletInfo)
 					{
-						var bullet = Weapon.Projectile as BulletInfo;
+						var bullet = weapon.Projectile as BulletInfo;
 						var speeds = bullet.Speed;
 						if (speeds.Length == 1)
 							projSpeed = speeds[0].Length;
@@ -338,13 +340,13 @@ namespace OpenRA.Mods.Common.Traits
 						if (bullet.Acceleration.Length != 0)
 							projSpeed = (projSpeed + bullet.MaxSpeed.Length) / 2;
 					}
-					else if (Weapon.Projectile is RailgunInfo)
+					else if (weapon.Projectile is RailgunInfo)
 					{
-						projSpeed = (Weapon.Projectile as RailgunInfo).Speed.Length;
+						projSpeed = (weapon.Projectile as RailgunInfo).Speed.Length;
 					}
-					else if (Weapon.Projectile is BlastWaveInfo)
+					else if (weapon.Projectile is BlastWaveInfo)
 					{
-						var speeds = (Weapon.Projectile as BlastWaveInfo).Speed;
+						var speeds = (weapon.Projectile as BlastWaveInfo).Speed;
 						if (speeds.Length == 1)
 							projSpeed = speeds[0].Length;
 						else
@@ -527,12 +529,17 @@ namespace OpenRA.Mods.Common.Traits
 
 			// Lambdas can't use 'in' variables, so capture a copy for later
 			var delayedTarget = target;
-			ScheduleDelayedAction(OverrideFireDelay() >= 0 ? OverrideFireDelay() : Info.FireDelay, Burst, (burst) =>
+			var delayTick = OverrideFireDelay() >= 0 ? OverrideFireDelay() : Info.FireDelay;
+			ScheduleDelayedAction(delayTick, Burst, (burst) =>
 			{
 				if (args.Weapon.Projectile != null)
 				{
-					var targetOffset = AimTargetOn(self, args.Source, delayedTarget);
-					args.PassiveTarget += targetOffset;
+					var targetOffset = AimTargetOn(self, args.Source, delayedTarget, Weapon);
+					if (Info.RecalculateBeforeDelayFire && delayTick != 0 &&
+					delayedTarget.Type == TargetType.Actor && delayedTarget.Actor.IsInWorld && !delayedTarget.Actor.IsDead)
+						args.PassiveTarget = Weapon.TargetActorCenter ? delayedTarget.CenterPosition : delayedTarget.Positions.PositionClosestTo(muzzlePosition()) + targetOffset;
+					else
+						args.PassiveTarget += targetOffset;
 					var projectile = args.Weapon.Projectile.Create(args);
 					if (projectile != null)
 						self.World.Add(projectile);

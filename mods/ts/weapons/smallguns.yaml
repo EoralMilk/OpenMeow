@@ -362,6 +362,8 @@ Sniper:
 	Burst: 1
 	Report: silencer.aud
 	Projectile: Bullet
+		DetectTargetFromLengthPercentage: 90
+		DetectTargetBeforeDist: 5c0
 		LifeTime: 13
 		ContrailLength: 3
 		Inaccuracy: -1

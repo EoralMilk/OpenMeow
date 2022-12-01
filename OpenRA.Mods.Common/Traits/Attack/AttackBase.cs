@@ -273,7 +273,7 @@ namespace OpenRA.Mods.Common.Traits
 				var reloadingStateIsValid = !reloadingIsInvalid || !armament.IsReloading;
 				if (checkIsValid && reloadingStateIsValid && !armament.IsTraitDisabled && armament.WeaponIsValidAgainst(t, self.World, self))
 				{
-					armament.AimTargetOn(self, self.CenterPosition, t);
+					armament.AimTargetOn(self, self.CenterPosition, t, armament.Weapon);
 					return true;
 				}
 			}

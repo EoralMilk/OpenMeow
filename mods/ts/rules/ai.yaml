@@ -143,6 +143,7 @@ Player:
 			e1: 80
 			e2: 30
 			e3: 30
+			pfind: 30
 			cyborg: 30
 			weedguy: 12
 			jumpjetair: 15
@@ -333,7 +334,7 @@ Player:
 	LoadCargoBotModule:
 		RequiresCondition: enable-test-ai
 		Transports: gtdrop, apc, sapc
-		Passengers: e1,e2,e3,cyborg,weedguy,ghost,cyc2,medic,limped,engineer,smech
+		Passengers: e1,e2,e3,cyborg,pfind,weedguy,ghost,cyc2,medic,limped,engineer,smech
 	SendUnitToAttackBotModule:
 		RequiresCondition: enable-test-ai
 		ActorsAndAttackDesire: 
