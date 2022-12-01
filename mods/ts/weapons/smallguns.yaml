@@ -11,7 +11,7 @@
 
 		ContrailZOffset: 22
 		ContrailLength: 3
-		ContrailWidth: 50
+		ContrailWidth: 25
 
 		ContrailUseInnerOuterColor: false
 
@@ -416,7 +416,7 @@ SlavickGun:
 	ReloadDelay: 30
 	Projectile: Bullet
 		LifeTime: 12
-		ContrailWidth: 66
+		ContrailWidth: 44
 		ContrailUseInnerOuterColor: true
 		ContrailStartColor: FF3030
 		ContrailStartColorOuter: DF5050
@@ -451,7 +451,7 @@ OxannaGun:
 	Projectile: Bullet
 		LifeTime: 12
 		ContrailLength: 3
-		ContrailWidth: 88
+		ContrailWidth: 66
 		ContrailUseInnerOuterColor: true
 		ContrailStartColor: FFFE30
 		ContrailStartColorOuter: FFFE30
