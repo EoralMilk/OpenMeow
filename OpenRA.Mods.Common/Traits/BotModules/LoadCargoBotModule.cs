@@ -18,15 +18,26 @@ using OpenRA.Traits;
 
 namespace OpenRA.Mods.Common.Traits
 {
-	[Desc("Manages AI load unit.")]
+	[Desc("Manages AI load unit related with Cargo and Passenger traits.")]
 	public class LoadCargoBotModuleInfo : ConditionalTraitInfo
 	{
+		[Desc("Actor types that can be targeted for load, must have Cargo.")]
 		public readonly HashSet<string> Transports = default;
+
+		[Desc("Actor types that used for loading, must have Passenger.")]
 		public readonly HashSet<string> Passengers = default;
+
+		[Desc("Actor relationship that can be targeted for load.")]
 		public readonly bool OnlyEnterOwnerPlayer = true;
-		public readonly string EnterOrderName = "EnterTransport";
-		public readonly int ScanTick = 300;
+
+		[Desc("Scan suitable actors and target in this interval.")]
+		public readonly int ScanTick = 317;
+
+		[Desc("Don't load passengers to this actor if damage state is worse than this.")]
 		public readonly DamageState ValidDamageState = DamageState.Heavy;
+
+		[Desc("Don't load passengers that are further than this distance to this actor.")]
+		public readonly WDist MaxDistance = WDist.FromCells(20);
 
 		public override object Create(ActorInitializer init) { return new LoadCargoBotModule(init.Self, this); }
 	}
@@ -52,7 +63,7 @@ namespace OpenRA.Mods.Common.Traits
 			if (info.OnlyEnterOwnerPlayer)
 				invalidTransport = a => a == null || a.IsDead || !a.IsInWorld || a.Owner != player;
 			else
-				invalidTransport = a => a == null || a.IsDead || !a.IsInWorld || a.Owner.RelationshipWith(player) == PlayerRelationship.Ally;
+				invalidTransport = a => a == null || a.IsDead || !a.IsInWorld || a.Owner.RelationshipWith(player) != PlayerRelationship.Ally;
 			unitCannotBeOrdered = a => a == null || a.IsDead || !a.IsInWorld || a.Owner != player;
 			unitCannotBeOrderedOrIsBusy = a => unitCannotBeOrdered(a) || (!a.IsIdle && !(a.CurrentActivity is FlyIdle));
 			unitCannotBeOrderedOrIsIdle = a => unitCannotBeOrdered(a) || a.IsIdle || a.CurrentActivity is FlyIdle;
@@ -102,7 +113,7 @@ namespace OpenRA.Mods.Common.Traits
 				var transport = tc.Actor;
 				var spaceTaken = 0;
 
-				var passengers = world.ActorsWithTrait<Passenger>().Where(at => !unitCannotBeOrderedOrIsBusy(at.Actor) && Info.Passengers.Contains(at.Actor.Info.Name) && !stuckPassengers.Contains(at.Actor) && cargo.HasSpace(at.Trait.Info.Weight))
+				var passengers = world.ActorsWithTrait<Passenger>().Where(at => !unitCannotBeOrderedOrIsBusy(at.Actor) && Info.Passengers.Contains(at.Actor.Info.Name) && !stuckPassengers.Contains(at.Actor) && cargo.HasSpace(at.Trait.Info.Weight) && (at.Actor.CenterPosition - transport.CenterPosition).HorizontalLengthSquared <= Info.MaxDistance.LengthSquared)
 					.OrderBy(at => (at.Actor.CenterPosition - transport.CenterPosition).HorizontalLengthSquared);
 
 				var orderedActors = new List<Actor>();
@@ -125,7 +136,7 @@ namespace OpenRA.Mods.Common.Traits
 				}
 
 				if (orderedActors.Count > 0)
-					bot.QueueOrder(new Order(Info.EnterOrderName, null, Target.FromActor(transport), false, groupedActors: orderedActors.ToArray()));
+					bot.QueueOrder(new Order("EnterTransport", null, Target.FromActor(transport), false, groupedActors: orderedActors.ToArray()));
 			}
 		}
 	}
