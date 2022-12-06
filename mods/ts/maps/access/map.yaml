@@ -8,6 +8,8 @@ Author: Westwood Studios
 
 Tileset: TEMPERATE
 
+TileTexSet: Summer
+
 MapSize: 100,200
 
 Bounds: 2,4,96,188

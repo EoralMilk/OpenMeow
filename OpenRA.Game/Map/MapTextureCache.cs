@@ -55,7 +55,11 @@ namespace OpenRA.Graphics
 			AddTexture("MaskCloud", "maskcloud01.png", "MaskCloud", UsageType.Mask);
 
 			// tiles
-			var tileSet = Map.Tileset.ToLowerInvariant() + "-tileset.yaml";
+			string tileSet;
+			if (string.IsNullOrEmpty(Map.TileTexSet) || Map.TileTexSet == "DEFAULT")
+				tileSet = Map.Tileset.ToLowerInvariant() + "-tileset.yaml";
+			else
+				tileSet = Map.TileTexSet.ToLowerInvariant() + "-tileset.yaml";
 
 			if (!map.Exists(tileSet))
 				throw new Exception("Can't Find " + tileSet + " to define tiles texture");

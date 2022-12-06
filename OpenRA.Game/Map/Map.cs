@@ -169,6 +169,7 @@ namespace OpenRA
 			new MapField("Title"),
 			new MapField("Author"),
 			new MapField("Tileset"),
+			new MapField("TileTexSet", required: false, ignoreIfValue: "DEFAULT"),
 			new MapField("MapSize"),
 			new MapField("Bounds"),
 			new MapField("Visibility"),
@@ -196,6 +197,7 @@ namespace OpenRA
 		public string Title;
 		public string Author;
 		public string Tileset;
+		public string TileTexSet;
 		public bool LockPreview;
 		public Rectangle Bounds;
 		public MapVisibility Visibility = MapVisibility.Lobby;
@@ -355,6 +357,7 @@ namespace OpenRA
 
 			MapSize = new int2(size);
 			Tileset = terrainInfo.Id;
+			TileTexSet = "DEFAULT";
 
 			// Empty rules that can be added to by the importers.
 			// Will be dropped on save if nothing is added to it

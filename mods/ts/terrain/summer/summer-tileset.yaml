@@ -1,0 +1,24 @@
+base: SummerClear
+	Scale: 5.5
+water01: clearwater		# 0 water
+	Scale: 5
+cliff01: SummerCliff	# 4 cliff
+	Scale: 4
+conc01: SummerConc		# 2 conc
+	Scale: 4
+grass01: SummerGreen	# 3 grass
+	Scale: 5
+sand01: SummerBeach		# 4 sand
+	Scale: 7.5
+dirt: droad_hardsoil	# 5 dirt road
+	Scale: 6
+gravel: SummerGravel	# 6 gravel
+	Scale: 7
+crack: droad_crack		# 7 crack
+	Scale: 7.5
+clear: SummerClear		# 8 clear
+	Scale: 5.5
+
+
+
+
