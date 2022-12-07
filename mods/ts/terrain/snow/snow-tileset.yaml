@@ -1,23 +1,31 @@
-base: Snow01
-	Scale: 4
-water01: SnowWater01  # 0 water
-	Scale: 5
-cliff01: SnowCliff01  # 4 cliff
-	Scale: 6.5
-conc01: SnowConc01    # 2 conc
-	Scale: 3
-grass01: SnowGrass01  # 3 grass
-	Scale: 4
-icy01: Snow02       	# 4 sand
-	Scale: 3.7
-dirt02: Snow03        # 5 dirt road
-	Scale: 3.5
-dirt01: SnowGrass02   # 6 gravel
-	Scale: 5
-crack: SnowCrack01    # 7 crack
-	Scale: 4.5
-clear: Snow01         # 8 clear
-	Scale: 4
+TypeDefine:
+	base: 1
+		base: Snow01
+			Scale: 4
+	# water: 1
+	# 	water01: SnowWater01  # 0 water
+	# 		Scale: 5
+	cliff: 2
+		cliff01: SnowCliff01  # 4 cliff
+			Scale: 6.5
+	conc: 3
+		conc01: SnowConc01    # 2 conc
+			Scale: 3
+	grass: 4
+		grass01: SnowGrass01  # 3 grass
+			Scale: 4
+	sand: 5
+		icy01: Snow02       	# 4 sand
+			Scale: 3.7
+	dirt: 6
+		dirt02: Snow03        # 5 dirt road
+			Scale: 3.5
+	gravel: 7
+		dirt01: SnowGrass02   # 6 gravel
+			Scale: 5
+	crack: 8
+		crack: SnowCrack01    # 7 crack
+			Scale: 4.5
 
 
 

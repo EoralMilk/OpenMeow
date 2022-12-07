@@ -344,6 +344,23 @@ namespace OpenRA.Graphics
 				  t5, t6, t7, t8)
 		{ }
 
+		public TerrainBlendingVertex(
+							in float2 uv,
+							in float2 maskuv,
+							in mat3 tbn,
+							in float3 tint, float a,
+							TerrainBlendingVertex vert)
+	: this(
+		  uv.X, uv.Y,
+		  maskuv.X, maskuv.Y,
+		  tint.X, tint.Y, tint.Z, a,
+		  tbn.Column0.x, tbn.Column0.y, tbn.Column0.z,
+		  tbn.Column1.x, tbn.Column1.y, tbn.Column1.z,
+		  tbn.Column2.x, tbn.Column2.y, tbn.Column2.z,
+		  vert.TileType1, vert.TileType2, vert.TileType3, vert.TileType4,
+		  vert.TileType5, vert.TileType6, vert.TileType7, vert.TileType8)
+		{ }
+
 		public TerrainBlendingVertex(float u, float v,
 									float masku, float maskv,
 									float r, float g, float b, float a,

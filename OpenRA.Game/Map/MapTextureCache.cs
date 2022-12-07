@@ -26,6 +26,9 @@ namespace OpenRA.Graphics
 		public readonly HashSet<string> TerrainTexturesSet = new HashSet<string>();
 		public readonly HashSet<string> SmudgeTexturesSet = new HashSet<string>();
 
+		public readonly List<string>[] LayerTileTypes = new List<string>[9];
+
+		public readonly Dictionary<string, List<int>> TileTypeTexIndices = new Dictionary<string, List<int>>();
 		public readonly Dictionary<string, (int, float)> TileArrayTextures = new Dictionary<string, (int, float)>();
 		public readonly Dictionary<string, MaskBrush> AllBrushes = new Dictionary<string, MaskBrush>();
 		public readonly ITexture TileTextureArray;
@@ -63,19 +66,54 @@ namespace OpenRA.Graphics
 
 			if (!map.Exists(tileSet))
 				throw new Exception("Can't Find " + tileSet + " to define tiles texture");
-			List<MiniYamlNode> tileNodes = MiniYaml.FromStream(map.Open(tileSet));
 
-			TileTextureArray = Game.Renderer.Context.CreateTextureArray(tileNodes.Count);
-			TileNormalTextureArray = Game.Renderer.Context.CreateTextureArray(tileNodes.Count);
-			foreach (var node in tileNodes)
+			// tile textures
 			{
-				var info = node.Value.ToDictionary();
-				var scale = ReadYamlInfo.LoadField(info, "Scale", 1f);
-				if (!AddTileTexture(node.Key, node.Value.Value, scale))
-					throw new Exception("duplicate " + node.Key + " in " + tileSet);
-			}
+				var nodes = MiniYaml.FromStream(map.Open(tileSet));
+				Dictionary<string ,Dictionary<string, MiniYaml>> typeDefine = new Dictionary<string, Dictionary<string, MiniYaml>>();
+				int texCount = 0;
 
-			Console.WriteLine("TileArrayTextures.Count" + TileArrayTextures.Count);
+				for (int i = 0; i < LayerTileTypes.Length; i++)
+				{
+					LayerTileTypes[i] = new List<string>();
+				}
+
+				foreach (var node in nodes)
+				{
+					if (node.Key == "TypeDefine")
+					{
+						var types = node.Value.ToDictionary();
+						foreach (var (typename, typeYaml) in types)
+						{
+							int layer = Convert.ToInt32(typeYaml.Value);
+							if (layer < 0 || layer > 8)
+								throw new Exception("Layer Index Should be 0 - 8");
+
+							LayerTileTypes[layer].Add(typename);
+
+							var texs = typeYaml.ToDictionary();
+							texCount += texs.Count;
+							typeDefine.Add(typename, texs);
+						}
+					}
+				}
+
+				TileTextureArray = Game.Renderer.Context.CreateTextureArray(texCount);
+				TileNormalTextureArray = Game.Renderer.Context.CreateTextureArray(texCount);
+				foreach (var (typeName, typeTexs) in typeDefine)
+				{
+					foreach (var (texName, texYaml) in typeTexs)
+					{
+						var info = texYaml.ToDictionary();
+						var scale = ReadYamlInfo.LoadField(info, "Scale", 1f);
+						if (!AddTileTexture(typeName + "-" + texName, texYaml.Value, scale, typeName))
+							throw new Exception("duplicate " + typeName + "-" + texName + " in " + tileSet);
+					}
+				}
+
+				Console.WriteLine("TileArrayTextures.Count" + TileArrayTextures.Count);
+
+			}
 
 			// brushes
 			var brushesSet = "brush-set.yaml";
@@ -159,7 +197,7 @@ namespace OpenRA.Graphics
 			return true;
 		}
 
-		public bool AddTileTexture(string name, string filename, float scale)
+		public bool AddTileTexture(string name, string filename, float scale, string type)
 		{
 			if (TileArrayTextures.ContainsKey(name))
 				return false;
@@ -190,6 +228,16 @@ namespace OpenRA.Graphics
 				}
 
 				TileNormalTextureArray.SetData(data, sheet.Size.Width, sheet.Size.Height);
+			}
+
+			if (TileTypeTexIndices.ContainsKey(type))
+			{
+				TileTypeTexIndices[type].Add(TileArrayTextures.Count);
+			}
+			else
+			{
+				TileTypeTexIndices.Add(type, new List<int>());
+				TileTypeTexIndices[type].Add(TileArrayTextures.Count);
 			}
 
 			TileArrayTextures.Add(name, (TileArrayTextures.Count, scale));

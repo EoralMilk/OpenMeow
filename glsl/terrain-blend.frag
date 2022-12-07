@@ -56,8 +56,6 @@ vec3 ProcessNormal(vec3 normal){
 int GetTileIndex(int layer){
 	int tile = 0;
 	switch(layer){
-		case 0: tile = vTileType1234.r;
-		break;
 		case 1: tile = vTileType1234.g;
 		break;
 		case 2: tile = vTileType1234.b;
@@ -72,7 +70,7 @@ int GetTileIndex(int layer){
 		break;
 		case 7: tile = vTileType5678.a;
 		break;
-		default:
+		default: tile = vTileType1234.r; // 1st for clear bse
 		break;
 	}
 	return tile;
@@ -143,13 +141,14 @@ float MaskNoise2(int layer)
 vec4 GetTileColor(int layer)
 {
 	int tileIndex = GetTileIndex(layer);
-	float noiseUV = MaskNoise(layer);
-	float noiseUV2 = MaskNoise(layer+1);
+	// float noiseUV = MaskNoise(layer);
+	// float noiseUV2 = MaskNoise(layer+1);
 
 	float noiseC = MaskNoise2(layer) * 0.25 + 0.85;
 	vec4 color;
 
-	vec2 cuv = (vUV + vec2(noiseUV, noiseUV2)) / TileScales[tileIndex];
+	// vec2 cuv = (vUV + vec2(noiseUV, noiseUV2)) / TileScales[tileIndex];
+	vec2 cuv = vUV / TileScales[tileIndex];
 	// cuv = cuv - vec2(floor(cuv.x), floor(cuv.y));
 	color = texture(Tiles, vec3(cuv, float(tileIndex))) * noiseC;
 
