@@ -9,7 +9,7 @@ Player:
 		RequiresCondition: enable-test-ai
 		HarvesterTypes: harv
 		RefineryTypes: proc
-		scanForIdleHarvestersTicks: 768 ## This module is pref-questionable, set it long enough
+		ScanForIdleHarvestersInterval: 1069 ## This module is pref-questionable, set it long enough
 
 	## Help AI on better plug
 	ProvidesPrerequisite@pluggablevulcan:
