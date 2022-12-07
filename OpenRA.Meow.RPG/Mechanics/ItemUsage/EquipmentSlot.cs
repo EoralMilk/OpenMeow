@@ -150,6 +150,7 @@ namespace OpenRA.Meow.RPG.Mechanics
 			if (BoneId != -1 && SlotGetRenderMatrix != null)
 			{
 				SkeletonBind.SetBoneRenderUpdate(BoneId, update);
+				SkeletonBind.Skeleton.TempUpdateRenderSingle(BoneId);
 			}
 		}
 

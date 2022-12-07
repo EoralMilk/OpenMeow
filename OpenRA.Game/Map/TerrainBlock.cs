@@ -339,14 +339,16 @@ namespace OpenRA
 				tempMaskVertices = new TerrainMaskVertex[Game.Renderer.TempBufferSize];
 				tempMaskBuffer = Game.Renderer.Context.CreateVertexBuffer<TerrainMaskVertex>(Game.Renderer.TempBufferSize);
 
-				Sheet sheet123;
-				if (Map.TextureCache.ReadMapTexture(TopLeft.ToString() + "_Mask123.png", TextureWrap.ClampToEdge, out sheet123))
 				{
-					Map.MaskInitByTexFile = true;
+					Sheet sheet123;
 					Sheet sheet456;
 					Sheet sheet789;
+
+					Map.TextureCache.ReadMapTexture(TopLeft.ToString() + "_Mask123.png", TextureWrap.ClampToEdge, out sheet123);
 					Map.TextureCache.ReadMapTexture(TopLeft.ToString() + "_Mask456.png", TextureWrap.ClampToEdge, out sheet456);
 					Map.TextureCache.ReadMapTexture(TopLeft.ToString() + "_Mask789.png", TextureWrap.ClampToEdge, out sheet789);
+					if (sheet123 != null && sheet456 != null && sheet789 != null)
+						Map.MaskInitByTexFile = true;
 
 					{
 						MaskFramebuffer.Bind();
@@ -357,12 +359,20 @@ namespace OpenRA
 
 						if (sheet123 != null)
 							TerrainMaskShader.SetTexture("InitMask123", sheet123.GetTexture());
+						else
+							TerrainMaskShader.SetTexture("InitMask123", Map.TextureCache.AdditionTextures["Black"].Item2.GetTexture());
 						if (sheet456 != null)
 							TerrainMaskShader.SetTexture("InitMask456", sheet456.GetTexture());
+						else
+							TerrainMaskShader.SetTexture("InitMask456", Map.TextureCache.AdditionTextures["Black"].Item2.GetTexture());
 						if (sheet789 != null)
 							TerrainMaskShader.SetTexture("InitMask789", sheet789.GetTexture());
+						else
+							TerrainMaskShader.SetTexture("InitMask789", Map.TextureCache.AdditionTextures["Black"].Item2.GetTexture());
 
-						TerrainMaskShader.SetBool("InitWithTextures", true);
+						TerrainMaskShader.SetBool("InitWithTextures", Map.MaskInitByTexFile);
+
+						TerrainMaskShader.SetTexture("Brushes", Map.TextureCache.BrushTextureArray);
 
 						Game.Renderer.Context.SetBlendMode(BlendMode.None);
 						TerrainMaskShader.PrepareRender();
@@ -381,6 +391,7 @@ namespace OpenRA
 					sheet456?.Dispose();
 					sheet789?.Dispose();
 				}
+
 			}
 		}
 

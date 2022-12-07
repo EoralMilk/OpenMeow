@@ -1,5 +1,4 @@
 ^ExistsInWorld:
-	AppearsOnRadar:
 	UpdatesPlayerStatistics:
 	CombatDebugOverlay:
 	GivesExperience:
@@ -470,6 +469,7 @@
 	Inherits@3: ^Cloakable
 	Inherits@selection: ^SelectableBuilding
 	Inherits@handicaps: ^PlayerHandicaps
+	AppearsOnRadar:
 	Huntable:
 	Targetable:
 		TargetTypes: Ground, Building, C4
@@ -665,7 +665,6 @@
 	Inherits@2: ^Cloakable
 	CombatDebugOverlay:
 	FrozenUnderFog:
-	AppearsOnRadar:
 	Interactable:
 	OwnerLostAction:
 		Action: ChangeOwner
@@ -752,6 +751,7 @@
 	Inherits@CRATESTATS: ^CrateStatModifiers
 	Inherits@selection: ^SelectableCombatUnit
 	Inherits@handicaps: ^PlayerHandicaps
+	AppearsOnRadar:
 	Huntable:
 	OwnerLostAction:
 		Action: Kill
@@ -1018,6 +1018,7 @@
 	Inherits@CRATESTATS: ^CrateStatModifiers
 	Inherits@selection: ^SelectableCombatUnit
 	Inherits@handicaps: ^PlayerHandicaps
+	AppearsOnRadar:
 	Huntable:
 	OwnerLostAction:
 		Action: Kill
@@ -1423,6 +1424,7 @@
 	Inherits@selection: ^SelectableCombatUnit
 	Inherits@handicaps: ^PlayerHandicaps
 	Inherits@LeaveTib: ^LeaveTiberiumWhenDeath
+	AppearsOnRadar:
 	Huntable:
 	Health:
 	Armor:
@@ -1642,6 +1644,7 @@
 	Inherits@selection: ^SelectableCombatUnit
 	Inherits@handicaps: ^PlayerHandicaps
 	Inherits@renderVoxel: ^VoxelActor
+	AppearsOnRadar:
 	Huntable:
 	RenderSprites:
 	Mobile:
@@ -1937,6 +1940,7 @@
 
 ^NonBuildingStaticActor:
 	Inherits@2: ^ExistsInWorld
+	AppearsOnRadar:
 	Immobile:
 		OccupiesSpace: true
 	BodyOrientation:

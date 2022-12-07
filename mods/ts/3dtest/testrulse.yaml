@@ -186,6 +186,7 @@
 	Inherits@CRATESTATS: ^CrateStatModifiers
 	Inherits@selection: ^SelectableCombatUnit
 	Inherits@handicaps: ^PlayerHandicaps
+	AppearsOnRadar:
 	Huntable:
 	OwnerLostAction:
 		Action: Kill

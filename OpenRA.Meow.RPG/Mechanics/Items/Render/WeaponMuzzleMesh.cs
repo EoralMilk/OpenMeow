@@ -77,6 +77,7 @@ namespace OpenRA.Meow.RPG.Mechanics
 		public void OnWeaponItemAttack()
 		{
 			MuzzleSkeleton.SetBoneRenderUpdate(boneId, true);
+			MuzzleSkeleton.Skeleton.TempUpdateRenderSingle(boneId);
 			renderMuzzle = true;
 			muzzleTick = info.MuzzleDuration;
 			muzzleAlpha = Math.Clamp(info.AlphaStartToEnd.X, 0, 1);

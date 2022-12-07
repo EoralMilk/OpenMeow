@@ -9,7 +9,7 @@ TypeDefine:
 	cliff: 2
 		cliff01: SnowCliff01  # 4 cliff
 			Scale: 6.5
-			FlatSpecular: 0.65
+			FlatSpecular: 0.55
 	conc: 3
 		conc01: SnowConc01    # 2 conc
 			Scale: 3

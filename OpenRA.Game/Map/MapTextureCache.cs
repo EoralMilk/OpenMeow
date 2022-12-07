@@ -41,6 +41,8 @@ namespace OpenRA.Graphics
 			Map = map;
 			//AddTexture("GrassNormal", "GrassNormal.png", "GrassNormal");
 
+			AddTexture("Black", "black.png", "Black");
+
 			CausticsTextures = new Sheet[32];
 
 			for (int i = 0; i < CausticsTextures.Length; i++)
@@ -302,15 +304,14 @@ namespace OpenRA.Graphics
 
 		public bool ReadMapTexture(string filename, TextureWrap textureWrap, out Sheet sheet)
 		{
-			if (!Map.Exists(filename))
+			if (Map.Package.Contains(filename))
 			{
-				sheet = null;
-				return false;
+				sheet = new Sheet(Map.Open(filename), textureWrap);
+				return true;
 			}
 
-			sheet = new Sheet(Map.Open(filename), textureWrap);
-
-			return true;
+			sheet = null;
+			return false;
 		}
 	}
 }

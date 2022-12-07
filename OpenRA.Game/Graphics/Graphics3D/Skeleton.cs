@@ -444,6 +444,11 @@ namespace OpenRA.Graphics
 			UpdateRenderOffset(treeNodeOutPut.OutPutFrame, treeNodeOutPut.AnimMask);
 		}
 
+		public void TempUpdateRenderSingle(int boneId)
+		{
+			RenderUpdateBoneInner(boneId, EmptyFrame, SkeletonAsset.AllValidMask);
+		}
+
 		public void ProcessManagerData()
 		{
 			if (InstanceID == -1 || !hasUpdatedAll)
