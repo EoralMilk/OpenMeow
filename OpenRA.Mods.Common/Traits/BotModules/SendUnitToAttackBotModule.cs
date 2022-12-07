@@ -45,7 +45,7 @@ namespace OpenRA.Mods.Common.Traits
 		public readonly string AttackOrderName = "Attack";
 
 		[Desc("Find target and attack actor in this interval.")]
-		public readonly int ScanTick = 400;
+		public readonly int ScanTick = 457;
 
 		[Desc("The total attack desire increase this amount oer scan")]
 		public readonly int AttackDesireIncreasedPerScan = 10;
