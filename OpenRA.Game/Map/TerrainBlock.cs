@@ -621,7 +621,7 @@ namespace OpenRA
 				TerrainBlendShader.SetTexture("Mask789", EditorCachedMaskFramebuffer.GetTexture(2));
 			}
 
-			var cloud = Map.TextureCache.Textures["MaskCloud"];
+			var cloud = Map.TextureCache.AdditionTextures["MaskCloud"];
 			TerrainBlendShader.SetTexture(cloud.Item1, cloud.Item2.GetTexture());
 
 			TerrainBlendShader.SetTexture("Tiles", Map.TextureCache.TileTextureArray);
@@ -689,13 +689,15 @@ namespace OpenRA
 				TerrainShader.SetTexture("Mask123", EditorCachedMaskFramebuffer.GetTexture(0));
 			}
 
+			TerrainShader.SetTexture("Water",
+							Map.TextureCache.AdditionTextures["Water"].Item2.GetTexture());
 			TerrainShader.SetTexture("WaterNormal",
-							Map.TextureCache.Textures["WaterNormal"].Item2.GetTexture());
+							Map.TextureCache.AdditionTextures["WaterNormal"].Item2.GetTexture());
 
 			TerrainShader.SetTexture("Caustics",
 				Map.TextureCache.CausticsTextures[(Game.LocalTick % (Map.TextureCache.CausticsTextures.Length * 3)) / 3].GetTexture());
 
-			var cloud = Map.TextureCache.Textures["MaskCloud"];
+			var cloud = Map.TextureCache.AdditionTextures["MaskCloud"];
 			TerrainShader.SetTexture(cloud.Item1, cloud.Item2.GetTexture());
 
 			TerrainShader.SetTexture("BakedTerrainTexture", BlendFramebuffer.Texture);

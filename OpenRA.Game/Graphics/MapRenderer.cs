@@ -248,8 +248,8 @@ namespace OpenRA.Graphics
 
 					foreach (var key in world.MapTextureCache.TerrainTexturesSet)
 					{
-						Shader.SetTexture(world.MapTextureCache.Textures[key].Item1,
-							world.MapTextureCache.Textures[key].Item2.GetTexture());
+						Shader.SetTexture(world.MapTextureCache.AdditionTextures[key].Item1,
+							world.MapTextureCache.AdditionTextures[key].Item2.GetTexture());
 					}
 
 					break;
@@ -257,8 +257,8 @@ namespace OpenRA.Graphics
 
 					foreach (var key in world.MapTextureCache.SmudgeTexturesSet)
 					{
-						Shader.SetTexture(world.MapTextureCache.Textures[key].Item1,
-							world.MapTextureCache.Textures[key].Item2.GetTexture());
+						Shader.SetTexture(world.MapTextureCache.AdditionTextures[key].Item1,
+							world.MapTextureCache.AdditionTextures[key].Item2.GetTexture());
 					}
 
 					break;

@@ -2,6 +2,9 @@ TypeDefine:
 	base: 1
 		base: SummerClear
 			Scale: 4
+	# water: 1
+	# 	water01: clearwater
+	# 		Scale: 5
 	cliff: 2
 		cliff01: SummerCliff
 			Scale: 4
@@ -25,6 +28,8 @@ TypeDefine:
 			Scale: 7.5
 
 
-
+WaterDefine:
+	Color: clearwater
+	Normal: clearwater_NORM
 
 

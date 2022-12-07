@@ -28,4 +28,6 @@ TypeDefine:
 			Scale: 4.5
 
 
+WaterDefine:
+	Color: Water01
 

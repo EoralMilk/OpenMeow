@@ -22,7 +22,7 @@ namespace OpenRA.Graphics
 	{
 		public readonly Map Map;
 		public readonly Sheet[] CausticsTextures;
-		public readonly Dictionary<string, (string, Sheet)> Textures = new Dictionary<string, (string, Sheet)>();
+		public readonly Dictionary<string, (string, Sheet)> AdditionTextures = new Dictionary<string, (string, Sheet)>();
 		public readonly HashSet<string> TerrainTexturesSet = new HashSet<string>();
 		public readonly HashSet<string> SmudgeTexturesSet = new HashSet<string>();
 
@@ -39,8 +39,7 @@ namespace OpenRA.Graphics
 		public MapTextureCache(Map map)
 		{
 			Map = map;
-			AddTexture("WaterNormal", "WaterNormal.png", "WaterNormal");
-			AddTexture("GrassNormal", "GrassNormal.png", "GrassNormal");
+			//AddTexture("GrassNormal", "GrassNormal.png", "GrassNormal");
 
 			CausticsTextures = new Sheet[32];
 
@@ -96,6 +95,14 @@ namespace OpenRA.Graphics
 							typeDefine.Add(typename, texs);
 						}
 					}
+					else if (node.Key == "WaterDefine")
+					{
+						var info = node.Value.ToDictionary();
+						var water = ReadYamlInfo.LoadField(info, "Color", "Water") + ".png";
+						var normal = ReadYamlInfo.LoadField(info, "Normal", "WaterNormal") + ".png";
+						AddTexture("Water", water, "WaterNormal");
+						AddTexture("WaterNormal", normal, "WaterNormal");
+					}
 				}
 
 				TileTextureArray = Game.Renderer.Context.CreateTextureArray(texCount);
@@ -139,7 +146,7 @@ namespace OpenRA.Graphics
 		{
 			foreach (var sheet in CausticsTextures)
 				sheet?.RefreshTexture();
-			foreach (var t in Textures.Values)
+			foreach (var t in AdditionTextures.Values)
 			{
 				t.Item2?.RefreshTexture();
 			}
@@ -149,7 +156,7 @@ namespace OpenRA.Graphics
 		{
 			foreach (var sheet in CausticsTextures)
 				sheet?.Dispose();
-			foreach (var t in Textures.Values)
+			foreach (var t in AdditionTextures.Values)
 			{
 				t.Item2?.Dispose();
 			}
@@ -161,7 +168,7 @@ namespace OpenRA.Graphics
 
 		public bool AddTexture(string name, string filename, string uniform, UsageType type = UsageType.Terrain)
 		{
-			if (Textures.ContainsKey(name))
+			if (AdditionTextures.ContainsKey(name))
 			{
 				switch (type)
 				{
@@ -183,7 +190,7 @@ namespace OpenRA.Graphics
 
 			var sheet = new Sheet(Map.Open(filename), TextureWrap.Repeat);
 
-			Textures.Add(name, (uniform, sheet));
+			AdditionTextures.Add(name, (uniform, sheet));
 			switch (type)
 			{
 				case UsageType.Terrain:

@@ -19,7 +19,7 @@ uniform float WaterUVOffset2;
 
 
 uniform sampler2D Caustics;
-
+uniform sampler2D Water;
 uniform sampler2D WaterNormal;
 uniform sampler2D MaskCloud;
 
@@ -139,11 +139,16 @@ vec4 CalcDirLight(DirLight light, vec4 color)
 		vec2 cuv = waterUV / 6.3 + vec2(-WaterUVOffset, 0);
 		cuv = cuv - vec2(floor(cuv.x), floor(cuv.y));
 
+		float causticsBlend = mix(mix(0.66, 0.5, (mask.r - 0.66) / 0.34), mask.r, step(mask.r,0.66));
+
+		// vec4 waterColor = texture(Water, wuv);
+		// color = mix(color,
+		// 			waterColor, 
+		// 			causticsBlend * waterColor.a);
+		
 		normal = mix(texture(BakedTerrainNormalTexture, vTexCoord).rgb, 
 					texture(WaterNormal, wuv).rgb, 
 					mask.r);
-
-		float causticsBlend = mix(mix(0.66, 0.5, (mask.r - 0.66) / 0.34),mask.r,step(mask.r,0.66));
 
 		vec4 caustics = texture(Caustics, cuv);
 		float ci = mix(mix(caustics.r,caustics.g,cm.r), mix(caustics.b,caustics.a,cm.g), cm.b);
