@@ -223,8 +223,7 @@ void main()
 		combines[layer] = mix(combines[layer + 1], GetTileCombines(layer), masks[layer] * tilecolor.a);
 	}
 
-	vec3 tint = vec3(min(vTint.r * 4.0, 1.0), min(vTint.g * 4.0, 1.0), min(vTint.b * 4.0, 1.0));
 	// skip water layer
-	ColorOutPut = vec4(colors[1].rgb * tint,1.0);
+	ColorOutPut = vec4(colors[1].rgb * vTint.rgb,1.0);
 	NormalOutPut = vec4(ProcessNormal(combines[1].rgb),combines[1].a);
 }

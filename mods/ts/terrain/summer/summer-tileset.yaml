@@ -7,19 +7,35 @@ TypeDefine:
 		clear03: SummerClear03
 			Scale: 4
 	cliff: 2
-		cliff01: SummerCliff
-			Scale: 4
-			FlatSpecular: 0.8
+		cliff01: SummerCliff01
+			Scale: 6
+		cliff02: SummerCliff02
+			Scale: 6
 	conc: 3
-		conc01: SummerConc
+		conc01: SummerConc01
 			Scale: 4
-			FlatSpecular: 0.2
+			FlatSpecular: 0.4
+		conc02: SummerConc02
+			Scale: 4
+			FlatSpecular: 0.4
+		conc03: SummerConc03
+			Scale: 4
+			FlatSpecular: 0.4
+		conc04: SummerConc04
+			Scale: 4
+			FlatSpecular: 0.4
 	grass: 4
 		grass01: SummerGreen
 			Scale: 4.5
 			FlatSpecular: 0.4
 	sand: 5
-		sand01: SummerBeach
+		sand01: SummerBeach0
+			Scale: 8.5
+			FlatSpecular: 0.3
+		sand02: SummerBeach1
+			Scale: 8.5
+			FlatSpecular: 0.3
+		sand03: SummerBeach2
 			Scale: 8.5
 			FlatSpecular: 0.3
 	dirt: 6

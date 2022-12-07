@@ -1252,6 +1252,11 @@ namespace OpenRA
 				TerrainVertices[i].UV = new float2(TerrainVertices[i].Pos.X / texScale, TerrainVertices[i].Pos.Y / texScale);
 			}
 
+			// clamp vert color
+			for (int i = 0; i < TerrainVertices.Length; i++)
+			{
+				TerrainVertices[i].Color = float3.Clamp(4.0f * TerrainVertices[i].Color, 0, 1);
+			}
 		}
 
 		public void FlatCellWithHeight(World world, CPos cell, int height)

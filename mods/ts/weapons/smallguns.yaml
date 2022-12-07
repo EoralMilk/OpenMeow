@@ -33,7 +33,7 @@
 		Inaccuracy: 450
 		UseVerticalInaccuracy: true
 		OnlyHitToExplode: true
-		ExplodeUnderThisAltitude: -418
+		ExplodeUnderThisAltitude: -12
 		Blockable: false
 	Warhead@1Dam: Spread3DDamage
 		Damage: 900

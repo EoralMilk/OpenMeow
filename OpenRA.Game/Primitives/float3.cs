@@ -68,5 +68,15 @@ namespace OpenRA
 		public float LengthSquared => X * X + Y * Y + Z * Z;
 		public float Length => MathF.Sqrt(LengthSquared);
 
+		public static float3 Clamp(float3 value, float3 min, float3 max)
+		{
+			return new float3(Math.Clamp(value.X, min.X, max.X) , Math.Clamp(value.Y, min.Y, max.Y), Math.Clamp(value.Z, min.Z, max.Z));
+		}
+
+		public static float3 Clamp(float3 value, float min, float max)
+		{
+			return new float3(Math.Clamp(value.X, min, max), Math.Clamp(value.Y, min, max), Math.Clamp(value.Z, min, max));
+		}
+
 	}
 }
