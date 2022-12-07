@@ -40,7 +40,7 @@ vec4 masknoise2;
 
 float masks[MAX_TERRAIN_LAYER + 2];
 vec4 colors[MAX_TERRAIN_LAYER + 2];
-vec3 norms[MAX_TERRAIN_LAYER + 2];
+vec4 combines[MAX_TERRAIN_LAYER + 2];
 
 
 layout (location = 0) out vec4 ColorOutPut;
@@ -155,21 +155,19 @@ vec4 GetTileColor(int layer)
 	return color;
 }
 
-vec3 GetTileNormal(int layer)
+vec4 GetTileCombines(int layer)
 {
 	int tileIndex = GetTileIndex(layer);
-	float noise = MaskNoise(layer);
-	float noiseB = MaskNoise(layer+1);
+	// float noise = MaskNoise(layer);
+	// float noiseB = MaskNoise(layer+1);
 
-	vec3 normal;
-	vec2 cuv = (vUV + vec2(noise, noiseB)) / TileScales[tileIndex];
+	vec4 combines;
+	// vec2 cuv = (vUV + vec2(noise, noiseB)) / TileScales[tileIndex];
+	vec2 cuv = vUV / TileScales[tileIndex];
 	// cuv = cuv - vec2(floor(cuv.x), floor(cuv.y));
-	normal = texture(TilesNorm, vec3(cuv, float(tileIndex))).rgb;
+	combines = texture(TilesNorm, vec3(cuv, float(tileIndex)));
 
-	if (normal == vec3(0.0))
-		return vec3(0,0,1.0);
-	else
-		return normal;
+	return combines;
 }
 
 void main()
@@ -192,9 +190,9 @@ void main()
 		masks[layer] = LayerMask(layer);
 		if (masks[layer] > 0.993){
 			colors[layer] = GetTileColor(layer);
-			norms[layer] = GetTileNormal(layer);
+			combines[layer] = GetTileCombines(layer);
 			colors[layer+1] = GetTileColor(layer+1);
-			norms[layer+1] = GetTileNormal(layer+1);
+			combines[layer+1] = GetTileCombines(layer+1);
 			break;
 		}
 		layer++;
@@ -202,7 +200,7 @@ void main()
 
 	if (layer >= 9){
 		colors[8] = GetTileColor(-1);
-		norms[8] = GetTileNormal(-1);
+		combines[8] = GetTileCombines(-1);
 		masks[8] = LayerMask(8);
 		layer = 8;
 	}
@@ -214,7 +212,7 @@ void main()
 		if (masks[layer] < 0.005)
 		{
 			colors[layer] = colors[layer + 1];
-			norms[layer] = norms[layer + 1];
+			combines[layer] = combines[layer + 1];
 			continue;
 		}
 
@@ -222,11 +220,11 @@ void main()
 		// if put the mix in the else block and it would not work???
 		vec4 tilecolor = GetTileColor(layer);
 		colors[layer] = vec4(mix(colors[layer + 1].rgb, tilecolor.rgb, masks[layer] * tilecolor.a), 1.0);
-		norms[layer] = mix(norms[layer + 1].rgb, GetTileNormal(layer), masks[layer] * tilecolor.a);
+		combines[layer] = mix(combines[layer + 1], GetTileCombines(layer), masks[layer] * tilecolor.a);
 	}
 
 	vec3 tint = vec3(min(vTint.r * 4.0, 1.0), min(vTint.g * 4.0, 1.0), min(vTint.b * 4.0, 1.0));
 	// skip water layer
 	ColorOutPut = vec4(colors[1].rgb * tint,1.0);
-	NormalOutPut = vec4(ProcessNormal(norms[1]),1.0);
+	NormalOutPut = vec4(ProcessNormal(combines[1].rgb),combines[1].a);
 }

@@ -81,7 +81,7 @@ namespace OpenRA.Graphics
 
 			AmbientColor = new float3(0.45f, 0.45f, 0.45f);
 			SunColor = new float3(1, 1, 1) - AmbientColor;
-			SunSpecularColor = new float3(0.25f, 0.25f, 0.25f);
+			SunSpecularColor = SunColor * new float3(0.66f, 0.66f, 0.66f);
 
 			ModelRenderRotationFix = mat4.Rotate((float)(Math.PI / 2), new vec3(1, 0, 0));
 			WRotRotationFix = new WRot(new WAngle(-256), WAngle.Zero, WAngle.Zero);

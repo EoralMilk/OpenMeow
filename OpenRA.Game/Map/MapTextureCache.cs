@@ -113,7 +113,8 @@ namespace OpenRA.Graphics
 					{
 						var info = texYaml.ToDictionary();
 						var scale = ReadYamlInfo.LoadField(info, "Scale", 1f);
-						if (!AddTileTexture(typeName + "-" + texName, texYaml.Value, scale, typeName))
+						var flatSpec = ReadYamlInfo.LoadField(info, "FlatSpecular", 0.5f);
+						if (!AddTileTexture(typeName + "-" + texName, texYaml.Value, scale, typeName, flatSpec))
 							throw new Exception("duplicate " + typeName + "-" + texName + " in " + tileSet);
 					}
 				}
@@ -204,7 +205,7 @@ namespace OpenRA.Graphics
 			return true;
 		}
 
-		public bool AddTileTexture(string name, string filename, float scale, string type)
+		public bool AddTileTexture(string name, string filename, float scale, string type, float flatSpec)
 		{
 			if (TileArrayTextures.ContainsKey(name))
 				return false;
@@ -218,24 +219,49 @@ namespace OpenRA.Graphics
 
 			TileTextureArray.SetData(sheet.GetData(), sheet.Size.Width, sheet.Size.Height);
 
+			var combinedData = new byte[4 * sheet.Size.Width * sheet.Size.Height];
+
 			if (Map.Exists(filename + "_NORM.png"))
 			{
-				sheet = new Sheet(Map.Open(filename + "_NORM.png"), TextureWrap.Repeat);
-				TileNormalTextureArray.SetData(sheet.GetData(), sheet.Size.Width, sheet.Size.Height);
+				var nmlSheet = new Sheet(Map.Open(filename + "_NORM.png"), TextureWrap.Repeat);
+				var ndata = nmlSheet.GetData();
+
+				for (int i = 0; i < sheet.Size.Width * sheet.Size.Height * 4; i += 4)
+				{
+					combinedData[i] = ndata[i];
+					combinedData[i + 1] = ndata[i + 1];
+					combinedData[i + 2] = ndata[i + 2];
+				}
 			}
 			else
 			{
-				var data = new byte[4 * sheet.Size.Width * sheet.Size.Height];
-				for (int i = 0; i < sheet.Size.Width * sheet.Size.Height; i++)
+				for (int i = 0; i < sheet.Size.Width * sheet.Size.Height * 4; i += 4)
 				{
-					data[i] = 0;
-					data[i + 1] = 0;
-					data[i + 2] = 0;
-					data[i + 3] = 0;
+					combinedData[i] = 0;
+					combinedData[i + 1] = 0;
+					combinedData[i + 2] = byte.MaxValue;
 				}
-
-				TileNormalTextureArray.SetData(data, sheet.Size.Width, sheet.Size.Height);
 			}
+
+			if (Map.Exists(filename + "_SPEC.png"))
+			{
+				var specSheet = new Sheet(Map.Open(filename + "_NORM.png"), TextureWrap.Repeat);
+				var sdata = specSheet.GetData();
+
+				for (int i = 0; i < sheet.Size.Width * sheet.Size.Height * 4; i += 4)
+				{
+					combinedData[i + 3] = sdata[i];
+				}
+			}
+			else
+			{
+				for (int i = 0; i < sheet.Size.Width * sheet.Size.Height * 4; i += 4)
+				{
+					combinedData[i + 3] = (byte)(255 * flatSpec);
+				}
+			}
+
+			TileNormalTextureArray.SetData(combinedData, sheet.Size.Width, sheet.Size.Height);
 
 			if (TileTypeTexIndices.ContainsKey(type))
 			{

@@ -53,8 +53,8 @@ namespace OpenRA.Meow.RPG.Mechanics
 
 		public readonly int IdleBlendFadeTick = 15;
 
-		public readonly int MinIdleDelay = 30;
-		public readonly int MaxIdleDelay = 110;
+		public readonly int MinIdleDelay = 110;
+		public readonly int MaxIdleDelay = 400;
 
 		public readonly string UpperMask = null;
 		public readonly string LowerMask = null;

@@ -2,30 +2,38 @@ TypeDefine:
 	base: 1
 		base: Snow01
 			Scale: 4
+			FlatSpecular: 0.4
 	# water: 1
 	# 	water01: SnowWater01  # 0 water
 	# 		Scale: 5
 	cliff: 2
 		cliff01: SnowCliff01  # 4 cliff
 			Scale: 6.5
+			FlatSpecular: 0.65
 	conc: 3
 		conc01: SnowConc01    # 2 conc
 			Scale: 3
+			FlatSpecular: 0.2
 	grass: 4
 		grass01: SnowGrass01  # 3 grass
 			Scale: 4
+			FlatSpecular: 0.4
 	sand: 5
 		icy01: Snow02       	# 4 sand
 			Scale: 3.7
+			FlatSpecular: 0.8
 	dirt: 6
 		dirt02: Snow03        # 5 dirt road
 			Scale: 3.5
+			FlatSpecular: 0.1
 	gravel: 7
 		dirt01: SnowGrass02   # 6 gravel
 			Scale: 5
+			FlatSpecular: 0.4
 	crack: 8
 		crack: SnowCrack01    # 7 crack
 			Scale: 4.5
+			FlatSpecular: 0.7
 
 
 

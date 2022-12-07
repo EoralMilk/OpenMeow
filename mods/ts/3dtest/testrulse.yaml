@@ -143,6 +143,8 @@
 		ProneCondition: takecover
 		DeathBodyRemain: 100
 		DeathFadeVec: 0,0,-3
+		MinIdleDelay: 100
+		MaxIdleDelay: 500
 		# KeepGuardStateWhenMoving: true
 	
 	WithSkeleton@tail:

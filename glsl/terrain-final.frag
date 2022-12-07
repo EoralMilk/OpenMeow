@@ -129,6 +129,7 @@ vec4 CalcDirLight(DirLight light, vec4 color)
 	vec3 mask = texture(Mask123, vTexCoord).rgb;
 
 	vec3 normal;
+	float specStrength;
 	// water?
 	if (mask.r > 0.0){
 	// if (mask.r < -1.0){
@@ -145,10 +146,11 @@ vec4 CalcDirLight(DirLight light, vec4 color)
 		// color = mix(color,
 		// 			waterColor, 
 		// 			causticsBlend * waterColor.a);
-		
-		normal = mix(texture(BakedTerrainNormalTexture, vTexCoord).rgb, 
-					texture(WaterNormal, wuv).rgb, 
+		vec4 combine = mix(texture(BakedTerrainNormalTexture, vTexCoord), 
+					texture(WaterNormal, wuv), 
 					mask.r);
+		normal = combine.rgb;
+		specStrength = combine.a;
 
 		vec4 caustics = texture(Caustics, cuv);
 		float ci = mix(mix(caustics.r,caustics.g,cm.r), mix(caustics.b,caustics.a,cm.g), cm.b);
@@ -156,7 +158,9 @@ vec4 CalcDirLight(DirLight light, vec4 color)
 		color *= mix(1.0, ci * 1.75 + 0.75, causticsBlend);
 	}
 	else{
-		normal = texture(BakedTerrainNormalTexture, vTexCoord).rgb;
+		vec4 combine = texture(BakedTerrainNormalTexture, vTexCoord);
+		normal = combine.rgb;
+		specStrength = combine.a;
 	}
 
 
@@ -179,7 +183,11 @@ vec4 CalcDirLight(DirLight light, vec4 color)
 	vec3 viewDir = CameraInvFront;
 	vec3 lightDir = -light.direction;
 
-	vec3 specular = vec3(0.0);
+	// vec3 reflectDir = reflect(-lightDir, normal);
+	vec3 halfwayDir = normalize(lightDir + viewDir);
+	float spec = pow(max(dot(normal, halfwayDir), 0.0), 32.0) * specStrength;
+	vec3 specular = light.specular * spec;
+	// vec3 specular = vec3(0.0);
 
 	// diffuse
 	float diff = dot(normal, lightDir);
