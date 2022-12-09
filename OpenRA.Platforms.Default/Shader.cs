@@ -19,6 +19,8 @@ namespace OpenRA.Platforms.Default
 {
 	class Shader : ThreadAffine, IShader
 	{
+		const string IncludeStart = "#Include:";
+		const string IncludeEnd = "#End Include";
 
 		readonly Dictionary<string, int> samplers = new Dictionary<string, int>();
 		readonly Dictionary<int, int> legacySizeUniforms = new Dictionary<int, int>();
@@ -44,6 +46,43 @@ namespace OpenRA.Platforms.Default
 				OpenGL.Profile == GLProfile.Legacy ? "120" : "140";
 
 			code = code.Replace("{VERSION}", version);
+
+			// find shader include
+			if (code.Contains(IncludeStart))
+			{
+				Dictionary<string, string> includeContents = new Dictionary<string, string>();
+				int idx = code.IndexOf(IncludeStart);
+				code = code.Remove(idx, IncludeStart.Length);
+				int last = code.IndexOf(IncludeEnd);
+				code = code.Remove(last, IncludeEnd.Length);
+
+				string[] includes = code.Substring(idx, last - idx).Split('\n');
+				code = code.Remove(idx, last - idx);
+				for (int i = includes.Length - 1; i > -1; i--)
+				{
+					var fname = includes[i].Trim();
+					if (string.IsNullOrEmpty(fname))
+						continue;
+
+					string insert;
+
+					if (Game.ModData != null && Game.ModData.DefaultFileSystem.TryOpen(fname, out var s))
+					{
+						insert = s.ReadAllText();
+						s.Dispose();
+					}
+					else
+						insert = File.ReadAllText(Path.Combine(Platform.EngineDir, "glsl", fname));
+
+					// code = code.Insert(idx, insert + "\n");
+					includeContents.Add(fname, insert);
+				}
+
+				foreach (var (ins, content) in includeContents)
+				{
+					code = code.Replace("{" + ins + "}", content + "\n");
+				}
+			}
 
 			var shader = OpenGL.glCreateShader(type);
 			OpenGL.CheckGLError();
@@ -73,8 +112,8 @@ namespace OpenRA.Platforms.Default
 
 		public Shader(IShaderBindings bindings)
 		{
-			//var vertexShader = CompileShaderObject(OpenGL.GL_VERTEX_SHADER, name);
-			//var fragmentShader = CompileShaderObject(OpenGL.GL_FRAGMENT_SHADER, name);
+			// var vertexShader = CompileShaderObject(OpenGL.GL_VERTEX_SHADER, name);
+			// var fragmentShader = CompileShaderObject(OpenGL.GL_FRAGMENT_SHADER, name);
 			this.bindings = bindings;
 
 			var vertexShader = CompileShaderObject(OpenGL.GL_VERTEX_SHADER, bindings.VertexShaderName);

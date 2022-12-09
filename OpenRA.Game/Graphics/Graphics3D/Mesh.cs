@@ -298,6 +298,7 @@ namespace OpenRA.Graphics
 		Common,
 		CharacterBody,
 		CharacterHair,
+		FlatLight,
 	}
 
 	public struct OrderedMeshInfo
@@ -359,17 +360,24 @@ namespace OpenRA.Graphics
 			MeshDrawType = orderedMeshInfo.DrawType;
 
 			BaseMaterial = orderedMeshInfo.BaseMaterial;
-			if (orderedMeshInfo.ShaderType == MeshShaderType.Common)
-				Shader = Game.Renderer.GetOrCreateShader<MeshShaderBindings>("MeshShaderBindings");
-			else if (orderedMeshInfo.ShaderType == MeshShaderType.CharacterBody)
+			switch (orderedMeshInfo.ShaderType)
 			{
-				Shader = Game.Renderer.GetOrCreateShader<CharacterBodyMeshShaderBindings>("CharacterBodyMeshShaderBindings");
-				if (BaseMaterial == null)
-					throw new Exception("CharacterBody Mesh must have base material");
-			}
-			else if (orderedMeshInfo.ShaderType == MeshShaderType.CharacterHair)
-			{
-				Shader = Game.Renderer.GetOrCreateShader<CharacterHairMeshShaderBindings>("CharacterHairMeshShaderBindings");
+				case MeshShaderType.Common:
+					Shader = Game.Renderer.GetOrCreateShader<MeshShaderBindings>("MeshShaderBindings");
+					break;
+				case MeshShaderType.CharacterBody:
+					{
+						Shader = Game.Renderer.GetOrCreateShader<CharacterBodyMeshShaderBindings>("CharacterBodyMeshShaderBindings");
+						if (BaseMaterial == null)
+							throw new Exception("CharacterBody Mesh must have base material");
+					}
+					break;
+				case MeshShaderType.CharacterHair:
+					Shader = Game.Renderer.GetOrCreateShader<CharacterHairMeshShaderBindings>("CharacterHairMeshShaderBindings");
+					break;
+				case MeshShaderType.FlatLight:
+					Shader = Game.Renderer.GetOrCreateShader<FlatLightShaderBindings>("FlatLightShaderBindings");
+					break;
 			}
 		}
 

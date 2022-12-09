@@ -5,34 +5,17 @@ precision mediump float;
 precision lowp sampler2DArray;
 #endif
 
-struct DirLight {
-	vec3 direction;
+#Include:
+3du_Struct.glsl
+3du_LightHeads.glsl
+3df_Util.glsl
+3df_Shadow.glsl
+#End Include
 
-	vec3 ambient;
-	vec3 diffuse;
-	vec3 specular;
-};  
+{3du_Struct.glsl}
 
-uniform DirLight dirLight;
+{3du_LightHeads.glsl}
 
-uniform bool additionalLayer;
-
-out vec4 FragColor;
-
-in vec3 Normal;
-in vec3 FragPos;
-in vec2 TexCoords;
-in vec4 vTint;
-in vec3 vRemap;
-// x is colormap index, y is combinedmap index, z is Shininess x 100
-// combined texture: r is remap, g is Specular, b is emission
-flat in ivec4 fMaterial;
-
-uniform sampler2DArray Textures64;
-uniform sampler2DArray Textures128;
-uniform sampler2DArray Textures256;
-uniform sampler2DArray Textures512;
-uniform sampler2DArray Textures1024;
 
 uniform bool BaseColorHasTexture;
 uniform bool BaseCombinedHasTexture;
@@ -42,20 +25,11 @@ uniform float BaseShininess;
 uniform sampler2D BaseColorTexture;
 uniform sampler2D BaseCombinedTexture;
 
-uniform vec3 viewPos;
-uniform bool EnableDepthPreview;
-uniform vec2 DepthPreviewParams;
-uniform bool RenderDepthBuffer;
-const float PI = 3.14159265359;
-
-uniform sampler2D ShadowDepthTexture;
-uniform mat4 SunVP;
-uniform mat4 InvCameraVP;
-uniform float ShadowBias;
-uniform int ShadowSampleType;
-uniform float AmbientIntencity;
-
 float additionAlpha = 0.0;
+
+{3df_Shadow.glsl}
+
+{3df_Util.glsl}
 
 vec4 GetColor(){
 	vec4 body, addition;
@@ -120,81 +94,6 @@ vec4 GetCombinedColor(){
 	return mix(body,addition,additionAlpha);
 }
 
-float CalShadow(DirLight light, vec3 normal){
-	vec4 fragPosLightSpace = SunVP * vec4(FragPos, 1.0);
-	vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
-	projCoords = projCoords * 0.5f + 0.5f;
-	float currentDepth = projCoords.z;
-
-	float shadow = 0.0f;
-	float bias = ShadowBias * max(0.02 * (1.0 - dot(normal, light.direction)), 0.0005);
-
-	if(projCoords.z <= 1.0f)
-	{
-		vec2 texelSize;
-		float pcfDepth;
-		switch (ShadowSampleType){
-			case 0: // Directly
-				pcfDepth = texture(ShadowDepthTexture, projCoords.xy).r; 
-				shadow = currentDepth - bias > pcfDepth ? 1.0f : 0.0f;
-				break;
-			case 1: // SlashBlend
-				texelSize = 1.0f / vec2(textureSize(ShadowDepthTexture, 0));
-
-				pcfDepth = texture(ShadowDepthTexture, projCoords.xy + vec2(-1, -1) * texelSize).r; 
-				shadow += currentDepth - bias > pcfDepth ? 1.0f : 0.0f;
-
-				pcfDepth = texture(ShadowDepthTexture, projCoords.xy + vec2(0, 0) * texelSize).r; 
-				shadow += currentDepth - bias > pcfDepth ? 1.0f : 0.0f;
-
-				pcfDepth = texture(ShadowDepthTexture, projCoords.xy + vec2(1, 1) * texelSize).r; 
-				shadow += currentDepth - bias > pcfDepth ? 1.0f : 0.0f;
-
-				shadow /= 3.0f;
-				break;
-			case 2: // CrossBlend
-				texelSize = 1.0f / vec2(textureSize(ShadowDepthTexture, 0));
-
-				pcfDepth = texture(ShadowDepthTexture, projCoords.xy + vec2(-1, 0) * texelSize).r; 
-				shadow += currentDepth - bias > pcfDepth ? 1.0f : 0.0f;
-
-				pcfDepth = texture(ShadowDepthTexture, projCoords.xy + vec2(0, 0) * texelSize).r; 
-				shadow += currentDepth - bias > pcfDepth ? 1.0f : 0.0f;
-
-				pcfDepth = texture(ShadowDepthTexture, projCoords.xy + vec2(1, 0) * texelSize).r; 
-				shadow += currentDepth - bias > pcfDepth ? 1.0f : 0.0f;
-
-				pcfDepth = texture(ShadowDepthTexture, projCoords.xy + vec2(0, 1) * texelSize).r; 
-				shadow += currentDepth - bias > pcfDepth ? 1.0f : 0.0f;
-
-				pcfDepth = texture(ShadowDepthTexture, projCoords.xy + vec2(0, -1) * texelSize).r; 
-				shadow += currentDepth - bias > pcfDepth ? 1.0f : 0.0f;
-
-				shadow /= 5.0f;
-				break;
-			case 3: // TictactoeBlend
-				texelSize = 1.0f / vec2(textureSize(ShadowDepthTexture, 0));
-				for(int x = -1; x <= 1; ++x)
-				{
-					for(int y = -1; y <= 1; ++y)
-					{
-						pcfDepth = texture(ShadowDepthTexture, projCoords.xy + vec2(x, y) * texelSize).r; 
-						shadow += currentDepth - bias > pcfDepth ? 1.0f : 0.0f;        
-					}
-				}
-				shadow /= 9.0f;
-				break;
-			default: // Directly
-				pcfDepth = texture(ShadowDepthTexture, projCoords.xy).r; 
-				shadow = currentDepth - bias > pcfDepth ? 1.0f : 0.0f;
-				break;
-		}
-	}
-
-	return shadow;
-}
-
-
 vec4 CalcDirLight(DirLight light, vec3 normal, vec3 viewDir)
 {
 	vec3 lightDir = normalize(-light.direction);
@@ -210,7 +109,7 @@ vec4 CalcDirLight(DirLight light, vec3 normal, vec3 viewDir)
 
 	// specular
 	vec3 halfwayDir = normalize(lightDir + viewDir);
-	float spec = pow(max(dot(viewDir, halfwayDir), 0.0), mix(BaseShininess,float(fMaterial.z) / 100.0,additionAlpha)) * combined.g;
+	float spec = pow(max(dot(normal, halfwayDir), 0.0), mix(BaseShininess,float(fMaterial.z) / 100.0,additionAlpha)) * combined.g;
 	vec3 specular = light.specular * spec;
 
 	// merge

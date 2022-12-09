@@ -4,6 +4,13 @@ precision mediump float;
 #endif
 
 #define MAX_TERRAIN_LIGHT 64
+
+#Include:
+3du_Struct.glsl
+#End Include
+
+{3du_Struct.glsl}
+
 // keep the non array uniform set at first
 // When the first uniform variable is an array, it cannot be set to count < 1
 uniform float TerrainLightHeightStep;
@@ -30,13 +37,6 @@ in vec3 vFragPos;
 in vec2 vTexCoord;
 
 layout (location = 0) out vec4 fragColor;
-
-struct DirLight {
-	vec3 direction;
-	vec3 ambient;
-	vec3 diffuse;
-	vec3 specular;
-};
 
 uniform DirLight dirLight;
 

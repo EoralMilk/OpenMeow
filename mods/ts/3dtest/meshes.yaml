@@ -162,8 +162,6 @@ rumya:
 			Material: w_rail
 		w_type38: w_type38
 			Material: w_type38
-		axis: Axis
-			Material: misc01
 
 		hair_s1: lp-hair_s1
 			Material: hair_s1
@@ -224,8 +222,12 @@ mmr-test:
 	Meshes:
 		dummy: dummy
 			Material: black
+			HasShadow: false
+			Shader: FlatLight
 		axis: Axis
 			Material: misc01
+			HasShadow: false
+			Shader: FlatLight
 
 missile:
 	Meshes:
@@ -246,6 +248,7 @@ w_common:
 			BlendMode: Additive
 			HasShadow: false
 			MeshDrawType: Effect
+			Shader: FlatLight
 
 w_type38:
 	Skeleton: ws_type38

@@ -403,4 +403,13 @@ namespace OpenRA.Graphics
 			fragmentShaderName = "3d_characterhair";
 		}
 	}
+
+	public class FlatLightShaderBindings : MeshShaderBindings
+	{
+		public FlatLightShaderBindings()
+		{
+			vertexShaderName = "3d_common";
+			fragmentShaderName = "3d_flatlight";
+		}
+	}
 }
