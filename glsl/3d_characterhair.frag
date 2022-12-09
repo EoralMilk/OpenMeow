@@ -36,28 +36,36 @@ vec4 GetColor(){
 	}
 }
 
-vec4 GetCombinedColor(){
-	if (fMaterial.g < 0)
-		return vec4(
-			float((fMaterial.g >> 16) & 255) / 255.0,
-			float((fMaterial.g >> 8) & 255) / 255.0,
-			float(fMaterial.g & 255) / 255.0,
-			1.0);
-	else
-		switch(fMaterial.a){
-			case 64:
-				return texture(Textures64, vec3(TexCoords, float(fMaterial.g)));
-			case 128:
-				return texture(Textures128, vec3(TexCoords, float(fMaterial.g)));
-			case 256:
-				return texture(Textures256, vec3(TexCoords, float(fMaterial.g)));
-			case 512:
-				return texture(Textures512, vec3(TexCoords, float(fMaterial.g)));
-			case 1024:
-				return texture(Textures1024, vec3(TexCoords, float(fMaterial.g)));
-		}
+// vec4 GetCombinedColor(){
+// 	if (fMaterial.g < 0)
+// 		return vec4(
+// 			float((fMaterial.g >> 16) & 255) / 255.0,
+// 			float((fMaterial.g >> 8) & 255) / 255.0,
+// 			float(fMaterial.g & 255) / 255.0,
+// 			1.0);
+// 	else
+// 		switch(fMaterial.a){
+// 			case 64:
+// 				return texture(Textures64, vec3(TexCoords, float(fMaterial.g)));
+// 			case 128:
+// 				return texture(Textures128, vec3(TexCoords, float(fMaterial.g)));
+// 			case 256:
+// 				return texture(Textures256, vec3(TexCoords, float(fMaterial.g)));
+// 			case 512:
+// 				return texture(Textures512, vec3(TexCoords, float(fMaterial.g)));
+// 			case 1024:
+// 				return texture(Textures1024, vec3(TexCoords, float(fMaterial.g)));
+// 		}
 		
+// }
+vec4 GetCombinedColor(){
+	return vec4(
+		float((fMaterial.g >> 16) & 255) / 255.0,
+		float((fMaterial.g >> 8) & 255) / 255.0,
+		float(fMaterial.g & 255) / 255.0,
+		1.0);
 }
+
 
 vec4 CalcDirLight(DirLight light, vec3 normal, vec3 viewDir)
 {

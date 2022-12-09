@@ -97,47 +97,47 @@ rumya:
 		face_addon: face_addon_DT_0
 			UseDQBSkin: true
 			Material: face_addon
-		body-head: body_DT_0
+		body-head: body-remaster_DT_0
+			Shader: CharacterBody
+			BaseMaterial: face01
+			UseDQBSkin: true
+			Material: none
+		body-torso: body-remaster_DT_1
 			Shader: CharacterBody
 			BaseMaterial: body
 			UseDQBSkin: true
 			Material: none
-		body-torso: body_DT_1
+		body-hip: body-remaster_DT_2
 			Shader: CharacterBody
 			BaseMaterial: body
 			UseDQBSkin: true
 			Material: none
-		body-hip: body_DT_2
+		body-thigh: body-remaster_DT_3
 			Shader: CharacterBody
 			BaseMaterial: body
 			UseDQBSkin: true
 			Material: none
-		body-thigh: body_DT_3
+		body-leg: body-remaster_DT_4
 			Shader: CharacterBody
 			BaseMaterial: body
 			UseDQBSkin: true
 			Material: none
-		body-leg: body_DT_4
+		body-foot: body-remaster_DT_5
 			Shader: CharacterBody
 			BaseMaterial: body
 			UseDQBSkin: true
 			Material: none
-		body-foot: body_DT_5
+		body-upperarm: body-remaster_DT_6
 			Shader: CharacterBody
 			BaseMaterial: body
 			UseDQBSkin: true
 			Material: none
-		body-upperarm: body_DT_6
+		body-lowerarm: body-remaster_DT_7
 			Shader: CharacterBody
 			BaseMaterial: body
 			UseDQBSkin: true
 			Material: none
-		body-lowerarm: body_DT_7
-			Shader: CharacterBody
-			BaseMaterial: body
-			UseDQBSkin: true
-			Material: none
-		body-hand: body_DT_8
+		body-hand: body-remaster_DT_8
 			Shader: CharacterBody
 			BaseMaterial: body
 			UseDQBSkin: true
@@ -147,12 +147,12 @@ rumya:
 			Material: gear01
 			UseDQBSkin: true
 			FaceCullFunc: None
-		gear01_body-hip: gear01_body-part_DT_2
+		gear01_body-hip: gear01_leg_DT_2
 			Shader: CharacterBody
 			BaseMaterial: body
 			UseDQBSkin: true
 			Material: none
-		gear01_body-thigh: gear01_body-part_DT_3
+		gear01_body-thigh: gear01_leg_DT_3
 			Shader: CharacterBody
 			BaseMaterial: body
 			UseDQBSkin: true
@@ -196,7 +196,7 @@ rumya:
 			Material: mdx_hair
 			Shader: CharacterHair
 
-		head01: Face01
+		head01: body-remaster_DT_0
 			UseDQBSkin: true
 			Material: face01
 

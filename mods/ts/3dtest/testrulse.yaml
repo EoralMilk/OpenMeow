@@ -5,7 +5,7 @@
 		SkeletonBinded: body
 		HairMeshs: hair_s1, hair_s2, hair_pt1, hair_pt2, hair_dpt1, hair_dpt2
 		HairColors: FFE99B, 99FF84, 94E3FF, 807D7A, FFFFFF, 7A7A7A, 807D7A, FFACC2, FF7545, FFCDFD, BEFF76
-		FaceAddonMesh: face_addon
+		# FaceAddonMesh: face_addon
 	WithMeshBodyPart@cater:
 		Mesh: cater
 		UseHairColorAsRemap: true
@@ -86,7 +86,7 @@
 	WithMeshBody@body:
 		SkeletonBinded: body
 		# FaceAddonMesh: face_addon
-		HeadMesh: head01
+		# HeadMesh: head01
 		HairMeshs: hair_s1, hair_s2, hair_pt1, hair_pt2, hair_dpt1, hair_dpt2
 		HairColors: FFE99B, 99FF84, 94E3FF, 807D7A, FFFFFF, 7A7A7A, 807D7A, FFACC2, FF7545, FFCDFD, BEFF76
 		DisableIfDeath: false
