@@ -1,5 +1,5 @@
 rumya:
-	Skeleton: Skeleton_CommonBody #testArmature
+	Skeleton: Skeleton_CommonBody
 		# if true, each actor update the adjust bone itself, 
 		# else they will use the same adjust bone pose which bake as bindpose
 		UseDynamicAdjBonePose: false
@@ -15,8 +15,8 @@ rumya:
 			lower: lower
 			full: all
 		Anims:
-			stand: stand_Skeleton_CommonBody
-			walk: catwalk_Skeleton_CommonBody
+			stand: Stand_站立.ska
+			walk: Move_CatWalk.ska
 			guard: Rifle_Aim
 			walk-back: WalkBack
 			run-left: RunLeft
@@ -31,7 +31,7 @@ rumya:
 			backwardRightAnim: Rifle_BackRight
 			backwardLeftAnim: Rifle_BackLeft
 
-			catidle: catidle_Skeleton_CommonBody
+			catidle: Prone_CatIdle.ska
 
 			loop_stand: Stand_站立.ska
 			loop_walk: Move_Jog.ska #Move_CatWalk.ska
@@ -67,7 +67,7 @@ rumya:
 			sniper_guardmove: Move_PFGuard举枪前进.ska
 			sniper_s2g: StG_PF举起狙击枪.ska
 			sniper_g2s: GtS_PF放下狙击枪.ska
-			sniper_prone: Crawl_PF匍匐idle.ska
+			sniper_prone: Prone_PF匍匐idle.ska
 			sniper_crawl: Crawl_PF匍匐爬行.ska
 			sniper_attack: Guard_PF狙击枪射击.ska
 			sniper_prone-attack: Crawl_PF狙击枪射击.ska
@@ -158,6 +158,11 @@ rumya:
 			UseDQBSkin: true
 			Material: none
 		
+		stealth02: stealth_2
+			Material: c_stealth2
+			UseDQBSkin: true
+			FaceCullFunc: None
+
 		w_rail: w_rail
 			Material: w_rail
 		w_type38: w_type38
@@ -270,3 +275,10 @@ w_sr1:
 	Meshes:
 		weapon: w_sniper
 			Material: w_sr1
+
+w_laser:
+	Skeleton: ws_laser
+		UseDynamicAdjBonePose: false
+	Meshes:
+		weapon: w_laser
+			Material: w_laser

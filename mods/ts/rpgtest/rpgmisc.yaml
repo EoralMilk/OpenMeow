@@ -26,3 +26,6 @@ itemicon:
 	type38_icon: w_type38_icon.png
 	gd1_icon: w_gd1_icon.png
 	sr1_icon: w_sniper_icon.png
+	lr_icon: w_laser_icon.png
+	c_stealth-b: c_stealth_icon.png
+	c_gear01: c_gear01_icon.png

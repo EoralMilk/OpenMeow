@@ -326,7 +326,7 @@ PFIND:
 		SlotType: MainWeapon
 		# InitEquipment: type38_item
 		EquipmentSkeleton: body
-		EquipmentBone: e_Hand.R
+		EquipmentBone: e_RightHand
 		DisableIfDeath: false
 	InitEquipment@weapon:
 		EquipmentSlotName: MainWeapon
@@ -365,6 +365,58 @@ PFIND:
 	UnitDisplayInfo:
 		IconSequence: pic
 		IconScale: 1
+
+
+STCMMDO:
+	Inherits: PFIND
+	Valued:
+		Cost: 1500
+	Tooltip:
+		Name: Stealth Commando
+	Buildable:
+		Queue: Infantry
+		BuildPaletteOrder: 100
+		Prerequisites: ~barracks, ~techlevel.low
+		Description: test
+	Mobile:
+		Speed: 50
+		MaxSpeed: 74
+	Health:
+		HP: 40000
+	RevealsShroud:
+		Range: 9c0
+	AttackFrontal:
+		Voice: Attack
+		FacingTolerance: 16
+	Selectable:
+		Bounds: 603, 1930, 0, -482
+	InfantryBlendTree:
+		ProneOffset: 0,0,-555
+		ProneSpeedModifier: 40
+	SlotArmament:
+		Weapon: Fist
+		Turret: primary
+		SlotBind: MainWeapon
+		LocalOffset: 0,0,600
+		UseSlotDefaultWeapon: true
+		FireDelay: 10
+		RecalculateBeforeDelayFire: true
+	EquipmentSlot@weapon:
+		InitEquipment: laser-rifle_item
+	-InitEquipment@weapon:
+	EquipmentSlot@cloth:
+		InitEquipment: stealth-suit
+	Inventory:
+		Name: test
+		InitItems: stealth-suit, laser-rifle_item
+	-InitEquipment@inventory:
+
+	RenderSprites:
+		Image: pfind
+	UnitDisplayInfo:
+		IconSequence: pic
+		IconScale: 1
+
 
 RUTEST:
 	Inherits: ^Vehicle
@@ -498,7 +550,7 @@ RUTEST2:
 		SlotType: MainWeapon
 		InitEquipment: gunitem
 		EquipmentSkeleton: body
-		EquipmentBone: e_Hand.R
+		EquipmentBone: e_RightHand
 	EquipmentSlot@item:
 		Name: ItemSlot
 		SlotType: Item

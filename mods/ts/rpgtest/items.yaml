@@ -2,8 +2,8 @@ clothitem:
 	GearItem:
 		Name: gear
 		Type: Cloth
-		ThumbnailImage: items
-		ThumbnailSequence: hunterseeker
+		ThumbnailImage: itemicon
+		ThumbnailSequence: c_gear01
 		Condition: hascloth
 
 		GearType: Replacement
@@ -106,6 +106,22 @@ railgun_item:
 			AttackFrame: 3
 			ProneAttackFrame: 17
 
+stealth-suit:
+	GearItem:
+		Name: stealth suit
+		Type: Cloth
+		ThumbnailImage: itemicon
+		ThumbnailSequence: c_stealth-b
+		Condition: hascloth
+
+		GearType: Replacement
+		GearOrder: 20
+		Image: rumya
+		AddonMeshPart: stealth02
+		Masks: Torso,Hip,Thigh,Leg,Foot,UpperArm,LowerArm,Hand
+		CanExistInWorld: false
+
+
 ^guns_item:
 	WeaponItem:
 		Name: GD-1
@@ -205,3 +221,14 @@ sr1_item:
 		ScaleStartToEnd: 1.35, 3
 	RenderMeshes:
 		Image: w_sr1
+
+laser-rifle_item:
+	Inherits: ^guns_item
+	WeaponItem:
+		Name: Laser Rifle
+		ThumbnailSequence: lr_icon
+		Weapon: LaserChainGun
+		LocalOffset: 558,0,0
+	-WeaponMuzzleMesh:
+	RenderMeshes:
+		Image: w_laser

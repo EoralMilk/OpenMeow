@@ -1,0 +1,4 @@
+W_laser:
+	DiffuseMap: w_nod_lsrr.png
+	Specular: 0.6
+	Shininess: 16

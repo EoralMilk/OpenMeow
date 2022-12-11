@@ -60,6 +60,11 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 		public bool Draw;
 
 		public FP Scale = 1;
+		public FP GetScale()
+		{
+			return Scale;
+		}
+
 		readonly Actor self;
 		readonly IFacing myFacing;
 		public readonly bool OnlyUpdateForDraw;
@@ -332,7 +337,10 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 					Skeleton.SetOffsetNoConvert(lastSelfPos, lastSelfRot, lastScale);
 			}
 			else
-				Skeleton.SetOffset(Transformation.MatWithNewScale(Parent.GetMatrixFromBoneId(parentBoneId), scaleAsChild));
+			{
+				var mat = Parent.GetMatrixFromBoneId(parentBoneId);
+				Skeleton.SetOffset(Transformation.MatWithNewScale(mat, scaleAsChild / Parent.GetScale() * Transformation.MatScale(mat)));
+			}
 
 			updatedRoot = true;
 		}
@@ -356,7 +364,10 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 					Skeleton.SetOffsetNoConvert(lastSelfPos, lastSelfRot, lastScale);
 			}
 			else
-				Skeleton.SetOffset(Transformation.MatWithNewScale(TSMatrix4x4.FromMat4(Parent.GetRenderMatrixFromBoneId(parentBoneId)), scaleAsChild));
+			{
+				var mat = TSMatrix4x4.FromMat4(Parent.GetRenderMatrixFromBoneId(parentBoneId));
+				Skeleton.SetOffset(Transformation.MatWithNewScale(mat, scaleAsChild / Parent.GetScale() * Transformation.MatScale(mat)));
+			}
 		}
 
 		public void RenderUpdateWholeSkeleton(bool callbyParent)

@@ -302,6 +302,7 @@ namespace OpenRA.Traits
 
 	public interface IWithSkeleton
 	{
+		FP GetScale();
 		void FlushLogicPose(bool callByParent);
 		void FlushRenderPose(bool callByParent);
 		void UpdateSkeletonTick(bool callByParent);

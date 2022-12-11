@@ -1,0 +1,5 @@
+c_stealth2:
+	DiffuseMap: c_nod_stealth-B.png
+	CombinedMap: c_nod_stealth-B_CBN.png
+	Shininess: 32.0
+

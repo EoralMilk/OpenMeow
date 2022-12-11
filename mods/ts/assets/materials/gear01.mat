@@ -2,4 +2,3 @@ Gear01:
 	DiffuseMap: gear01_c.png
 	CombinedMap: gear01_combine.png
 	Shininess: 16.0
-	Specular: 0.56
