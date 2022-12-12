@@ -10,6 +10,7 @@ precision lowp sampler2DArray;
 3du_LightHeads.glsl
 3df_Util.glsl
 3df_Shadow.glsl
+3df_LightMain.glsl
 #End Include
 
 {3du_Struct.glsl}
@@ -48,31 +49,4 @@ vec4 CalcDirLight(DirLight light, vec3 normal, vec3 viewDir)
 	return color;
 }
 
-void main()
-{
-	if (RenderDepthBuffer){
-		return;
-	}
-
-	if (EnableDepthPreview)
-	{
-		float intensity = 1.0 - gl_FragCoord.z;
-		FragColor = vec4(vec3(intensity), 1.0);
-	}
-	else{
-		vec4 result;
-		result = CalcDirLight(dirLight, Normal, normalize(viewPos - FragPos));
-
-		if (vTint.a < 0.0f)
-		{
-			result = vec4(vTint.rgb, -vTint.a);
-		}
-		else
-		{
-			result *= vTint;
-		}
-
-		FragColor = result;
-	}
-}
-
+{3df_LightMain.glsl}

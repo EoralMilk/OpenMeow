@@ -32,3 +32,6 @@ uniform mat4 InvCameraVP;
 uniform float ShadowBias;
 uniform int ShadowSampleType;
 uniform float AmbientIntencity;
+
+vec4 color, combined;
+float shininess;

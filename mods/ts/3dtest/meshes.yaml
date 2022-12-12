@@ -92,6 +92,25 @@ rumya:
 			rifle_idle1: IdleAction_RifleIdle1.ska
 			rifle_idle2: IdleAction_RifleIdle2.ska
 
+			cmmdo_stand: CMMDO_stand.ska
+			cmmdo_run: CMMDO_run.ska
+			cmmdo_guard: CMMDO_guard.ska
+			cmmdo_guardmove: CMMDO_run-g.ska
+			cmmdo_crouch: CMMDO_crouch.ska
+			cmmdo_crouch-g: CMMDO_crouch-g.ska
+			cmmdo_atk: CMMDO_atk.ska
+			cmmdo_atk-c: CMMDO_atk-c.ska
+			cmmdo_cvt-cts: CMMDO_cvt-cts.ska
+			cmmdo_cvt-stc: CMMDO_cvt-stc.ska
+			cmmdo_die-01: CMMDO_die-01.ska
+			cmmdo_die-02: CMMDO_die-02.ska
+			cmmdo_die-c01: CMMDO_die-c.ska
+			cmmdo_die-c02: CMMDO_die-c02.ska
+			cmmdo_run-c: CMMDO_run-c.ska
+			cmmdo_run-p: CMMDO_run-p.ska
+			cmmdo_idle-g01: CMMDO_idle_g01.ska
+			cmmdo_idle-g02: CMMDO_idle_g02.ska
+
 
 	Meshes:
 		face_addon: face_addon_DT_0

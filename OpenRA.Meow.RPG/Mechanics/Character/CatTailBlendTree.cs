@@ -125,7 +125,7 @@ namespace OpenRA.Meow.RPG.Mechanics
 				switchCrawl = new Switch("ProneCrawl", 1, blendTree, allvalidmask, animProne, animCrawl, info.BlendTick);
 
 				// set the lerp tick as 1, need handle it in trait
-				switchProne = new Switch("ProneState", 1, blendTree, allvalidmask, switchWalk, switchCrawl, 1);
+				switchProne = new Switch("ProneState", 1, blendTree, allvalidmask, switchWalk, switchCrawl, info.BlendTick);
 				shotDie = new OneShot("Die", 1, blendTree, allvalidmask, switchProne, animDie, OneShot.ShotEndType.Keep, info.BlendTick);
 			}
 			else

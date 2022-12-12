@@ -10,6 +10,8 @@ precision lowp sampler2DArray;
 3du_LightHeads.glsl
 3df_Util.glsl
 3df_Shadow.glsl
+3df_LightCal.glsl
+3df_LightMain.glsl
 #End Include
 
 {3du_Struct.glsl}
@@ -62,65 +64,17 @@ vec4 GetCombinedColor(){
 			case 1024:
 				return texture(Textures1024, vec3(TexCoords, float(fMaterial.g)));
 		}
-		
+	
 }
 
-vec4 CalcDirLight(DirLight light, vec3 normal, vec3 viewDir)
-{
-	vec3 lightDir = normalize(-light.direction);
-	// diffuse
-	float diff = max(dot(normal, lightDir), 0.0);
-
-	vec4 color = GetColor();
-	if (color.a == 0.0)
-		discard;
-	
-	vec4 combined = GetCombinedColor();
-
-	vec3 col = mix(color.rgb,
+void CalResultColor(){
+	shininess = float(fMaterial.z) / 100.0;
+	color = vec4(mix(color.rgb,
 		ApplyRemap(color.rgb, vRemap),
-		combined.r);
-
-	// specular
-	vec3 halfwayDir = normalize(lightDir + viewDir);
-	float spec = pow(max(dot(normal, halfwayDir), 0.0), float(fMaterial.z) / 100.0) * combined.g * 2.0;
-	vec3 specular = light.specular * spec;
-
-	// merge
-	vec3 ambient  = light.ambient * col;
-	vec3 diffuse  = light.diffuse * diff * col;
-	
-	// shadow
-	diffuse = diffuse * (1.0f - max(CalShadow(light, normal) - AmbientIntencity, 0.0f));
-
-	return vec4(mix((ambient + diffuse + specular),col,combined.b), color.a);
+		combined.r), color.a);
 }
 
-void main()
-{
-	if (RenderDepthBuffer){
-		return;
-	}
+{3df_LightCal.glsl}
 
-	if (EnableDepthPreview)
-	{
-		float intensity = 1.0 - gl_FragCoord.z;
-		FragColor = vec4(vec3(intensity), 1.0);
-	}
-	else{
-		vec4 result;
-		result = CalcDirLight(dirLight, Normal, normalize(viewPos - FragPos));
-
-		if (vTint.a < 0.0f)
-		{
-			result = vec4(vTint.rgb, -vTint.a);
-		}
-		else
-		{
-			result *= vTint;
-		}
-
-		FragColor = result;
-	}
-}
+{3df_LightMain.glsl}
 

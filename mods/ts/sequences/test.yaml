@@ -7,3 +7,13 @@ pfind:
 		UseTilesetCode: false
 	 	AddExtension: false
 		Offset: 0, 0, 0
+
+bhcmmdo:
+	icon: bhcmmdo_icon.png
+		UseTilesetCode: false
+	 	AddExtension: false
+		Offset: 0, 0, 0
+	pic: bhcmmdo_pic.png
+		UseTilesetCode: false
+	 	AddExtension: false
+		Offset: 0, 0, 0

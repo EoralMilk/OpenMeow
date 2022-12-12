@@ -482,6 +482,30 @@ TurretLaserFireHyper:
 	Inherits: TurretLaserFire
 	ReloadDelay: 15
 
+LaserRifleFire:
+	Inherits: ^SpriteLaser
+	ReloadDelay: 3
+	Range: 8c512
+	Report: lastur1.aud
+	Projectile: LaserZap
+		Inaccuracy: 555
+		Width: 176
+		Color: FF4444
+		Sequences: laser
+		Blockable: true
+	Warhead@1Dam: Spread3DDamage
+		Damage: 2800
+		Versus:
+			None: 155
+			Wood: 40
+			Light: 100
+			Heavy: 40
+			Concrete: 20
+	Warhead@2Eff: CreateEffect
+		Explosions: laserburningsmall
+	Warhead@3Smu: LeaveSmudge
+		SizePerSmudge: 567, 774
+
 LaserFence:
 	TargetActorCenter: true
 	Projectile: InstantHit

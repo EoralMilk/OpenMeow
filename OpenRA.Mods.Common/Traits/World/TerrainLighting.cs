@@ -151,6 +151,33 @@ namespace OpenRA.Mods.Common.Traits
 			}
 		}
 
+		float3 ITerrainLighting.NoGlobalLightTintAt(WPos pos)
+		{
+			using (new PerfSample("terrain_lighting"))
+			{
+				var uv = map.CellContaining(pos).ToMPos(map);
+				var tint = float3.Ones;
+				if (!map.CellInfos.Contains(uv))
+					return tint;
+
+				if (lightSources.Count > 0)
+				{
+					foreach (var source in partitionedLightSources.At(new int2(pos.X, pos.Y)))
+					{
+						var range = source.Range.Length;
+						var distance = (source.Pos - pos).Length;
+						if (distance > range)
+							continue;
+
+						var falloff = (range - distance) * 1f / range;
+						tint += falloff * source.Tint;
+					}
+				}
+
+				return tint;
+			}
+		}
+
 		const int MaxLightCount = 64;
 		bool firstRender = true;
 		float heightStep = 0;

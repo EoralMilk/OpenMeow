@@ -125,7 +125,7 @@ namespace OpenRA.Mods.Common.Graphics
 			var wrsr = Game.Renderer.WorldRgbaSpriteRenderer;
 			var t = model.tint;
 			if (wr.TerrainLighting != null && (model.tintModifiers & TintModifiers.IgnoreWorldTint) == 0)
-				t *= wr.TerrainLighting.TintAt(model.pos);
+				t *= wr.TerrainLighting.NoGlobalLightTintAt(model.pos);
 
 			// Shader interprets negative alpha as a flag to use the tint colour directly instead of multiplying the sprite colour
 			var a = model.alpha;

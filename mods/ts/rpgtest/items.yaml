@@ -112,7 +112,7 @@ stealth-suit:
 		Type: Cloth
 		ThumbnailImage: itemicon
 		ThumbnailSequence: c_stealth-b
-		Condition: hascloth
+		# Condition: cloakgenerator
 
 		GearType: Replacement
 		GearOrder: 20
@@ -227,8 +227,26 @@ laser-rifle_item:
 	WeaponItem:
 		Name: Laser Rifle
 		ThumbnailSequence: lr_icon
-		Weapon: LaserChainGun
-		LocalOffset: 558,0,0
+		Weapon: LaserRifleFire
+		LocalOffset: 538,0,0
 	-WeaponMuzzleMesh:
+	WithEquipmentAnimation:
+		AnimsReplace:
+			Stand: cmmdo_stand
+			Walk: cmmdo_run
+			Guard: cmmdo_guard
+			GuardMove: cmmdo_guardmove
+			Prone: cmmdo_crouch-g
+			Crawl: cmmdo_run-p
+			Attack: cmmdo_atk
+			ProneAttack: cmmdo_atk-c
+			StandToProne: cmmdo_cvt-stc
+			ProneToStand: cmmdo_cvt-cts
+			DieStand: cmmdo_die-01
+			DieProne: cmmdo_die-c02
+		IdleActions: cmmdo_idle-g01, cmmdo_idle-g02
+		ActionFrameReplace:
+			AttackFrame: 0
+			ProneAttackFrame: 0
 	RenderMeshes:
 		Image: w_laser

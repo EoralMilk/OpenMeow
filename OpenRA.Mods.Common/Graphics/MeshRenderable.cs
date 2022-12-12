@@ -87,7 +87,7 @@ namespace OpenRA.Mods.Common.Graphics
 			// RenderMeshes.CallWhenInSceen();
 			var t = renderable.tint;
 			if (wr.TerrainLighting != null && (renderable.tintModifiers & TintModifiers.IgnoreWorldTint) == 0)
-				t *= wr.TerrainLighting.TintAt(renderable.pos);
+				t *= wr.TerrainLighting.NoGlobalLightTintAt(renderable.pos);
 
 			// Shader interprets negative alpha as a flag to use the tint colour directly instead of multiplying the sprite colour
 			var a = renderable.alpha;

@@ -154,7 +154,7 @@ namespace OpenRA.Graphics
 				// light params
 				AmbientColor = wr.TerrainLighting.GetGlobalAmbient();
 				SunColor = wr.TerrainLighting.GetGlobalDirectLight();
-				SunSpecularColor = SunColor * new float3(0.66f, 0.66f, 0.66f);
+				SunSpecularColor = SunColor * new float3(0.88f, 0.88f, 0.88f);
 				AmbientIntencity = wr.TerrainLighting.GetGlobalAmbientIntencity();
 				FrameShadowBias = 1.0f / heightMeter;
 

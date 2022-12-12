@@ -369,6 +369,9 @@ PFIND:
 
 STCMMDO:
 	Inherits: PFIND
+	WithMeshBody@body:
+		HairMeshs: hair_s1, hair_s2, hair_pt1, hair_pt2
+		HairColors: FFB6C1, FFC0CB, FFF0F5
 	Valued:
 		Cost: 1500
 	Tooltip:
@@ -391,13 +394,13 @@ STCMMDO:
 	Selectable:
 		Bounds: 603, 1930, 0, -482
 	InfantryBlendTree:
-		ProneOffset: 0,0,-555
+		ProneOffset: 0,0,-222
 		ProneSpeedModifier: 40
 	SlotArmament:
 		Weapon: Fist
 		Turret: primary
 		SlotBind: MainWeapon
-		LocalOffset: 0,0,600
+		LocalOffset: 0,0,500
 		UseSlotDefaultWeapon: true
 		FireDelay: 10
 		RecalculateBeforeDelayFire: true
@@ -410,9 +413,8 @@ STCMMDO:
 		Name: test
 		InitItems: stealth-suit, laser-rifle_item
 	-InitEquipment@inventory:
-
 	RenderSprites:
-		Image: pfind
+		Image: bhcmmdo
 	UnitDisplayInfo:
 		IconSequence: pic
 		IconScale: 1
