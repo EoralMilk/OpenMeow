@@ -101,10 +101,6 @@ BIKE:
 		Voice: Attack
 		PauseOnCondition: empdisable
 		FacingTolerance: 16
-	DamagedByTerrain@VEINS:
-		RequiresCondition: !inside-tunnel && !rank-elite
-	LeavesTrails@VEINS:
-		RequiresCondition: !inside-tunnel && !rank-elite
 	-DamagedByTerrain@VEINS:
 	-LeavesTrails@VEINS:
 
@@ -535,6 +531,10 @@ SAPC:
 		UndeployTicks: 0
 		DeployTrigger: Damage
 	-RevealOnFire:
+	DamagedByTerrain@VEINS:
+		RequiresCondition: !inside-tunnel && !submerged
+	LeavesTrails@VEINS:
+		RequiresCondition: !inside-tunnel && !submerged
 
 SUBTANK:
 	Inherits: ^Tank
@@ -601,6 +601,10 @@ SUBTANK:
 		RequiresCondition: !inside-tunnel && !submerged && (damaged-state || critical-state)
 	WithIdleOverlay@DAMAGED3:
 		RequiresCondition: !inside-tunnel && !submerged && (damaged-state || critical-state)
+	DamagedByTerrain@VEINS:
+		RequiresCondition: !inside-tunnel && !submerged
+	LeavesTrails@VEINS:
+		RequiresCondition: !inside-tunnel && !submerged
 
 STNK:
 	Inherits: ^Tank

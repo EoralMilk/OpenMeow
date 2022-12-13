@@ -390,6 +390,11 @@ STCMMDO:
 		MaxSpeed: 74
 	Health:
 		HP: 40000
+	ChangesHealth@cmmdo:
+		Step: 200
+		Delay: 100
+		StartIfBelow: 100
+		DamageCooldown: 125
 	RevealsShroud:
 		Range: 9c0
 	AttackFrontal:
