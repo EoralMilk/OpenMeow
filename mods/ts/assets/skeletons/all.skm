@@ -34,13 +34,13 @@ a-Rig_LowerLeg.L:
 	Using: True
 a-s-Rig_Foot.L:
 	Using: True
-# a-s-Rig_ToeBase.L:
-# 	Using: True
 a-Rig_UpperLeg.R:
 	Using: True
 a-Rig_LowerLeg.R:
 	Using: True
 a-s-Rig_Foot.R:
 	Using: True
-# a-s-Rig_ToeBase.R:
-# 	Using: True
+a-s-Rig_ToeBase.L:
+	Using: True
+a-s-Rig_ToeBase.R:
+	Using: True

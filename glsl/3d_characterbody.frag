@@ -98,7 +98,11 @@ vec4 GetCombinedColor(){
 
 void CalResultColor(){
 	shininess = mix(BaseShininess,float(fMaterial.z) / 100.0,additionAlpha);
-	color = vec4(mix(color.rgb, vRemap, combined.r), color.a);
+	// color = vec4(mix(color.rgb, vRemap, combined.r), color.a);
+
+	color = vec4(mix(color.rgb,
+		ApplyRemap(color.rgb, vRemap),
+		combined.r), color.a);
 }
 
 

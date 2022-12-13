@@ -845,7 +845,7 @@ namespace OpenRA.Graphics
 					AnimBonesIndices[b.AnimId] = b.Id;
 			}
 
-			AllValidMask = new AnimMask("all", Bones.Length);
+			AllValidMask = new AnimMask("all", BoneNameAnimIndex.Count);
 		}
 
 		int FindAdjParent(int id)

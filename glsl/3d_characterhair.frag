@@ -50,7 +50,8 @@ void CalResultColor(){
 	shininess = float(fMaterial.z) / 100.0;
 	// vec3 col = mix(color.rgb, vRemap, combined.r);
 	// vRemap is hair color
-	color = vec4(vec3(color.r) * vRemap + vec3(color.g) * 0.15, color.a);
+	color = vec4(ApplyRemap(color.rgb, vRemap), color.a);
+	// color = vec4(vec3(color.r) * vRemap + vec3(color.g) * 0.15, color.a);
 }
 
 {3df_LightCal.glsl}
