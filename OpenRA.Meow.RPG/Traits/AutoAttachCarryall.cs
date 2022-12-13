@@ -164,7 +164,12 @@ namespace OpenRA.Meow.RPG.Traits
 				if (!AircraftInfo.MoveIntoShroud && !self.Owner.Shroud.IsExplored(cell))
 					return;
 
-				underAutoCommand = false;
+				if (underAutoCommand)
+				{
+					underAutoCommand = false;
+					self.CancelActivity();
+				}
+
 				busy = true;
 				self.QueueActivity(order.Queued, new DeliverAttachedUnit(self, order.Target, Info.DropRange, Info.TargetLineColor));
 				self.ShowTargetLines();
@@ -174,7 +179,12 @@ namespace OpenRA.Meow.RPG.Traits
 				if (!order.Queued && !CanUnload())
 					return;
 
-				underAutoCommand = false;
+				if (underAutoCommand)
+				{
+					underAutoCommand = false;
+					self.CancelActivity();
+				}
+
 				busy = true;
 				self.QueueActivity(order.Queued, new DeliverAttachedUnit(self, Info.DropRange, Info.TargetLineColor));
 			}
@@ -183,7 +193,11 @@ namespace OpenRA.Meow.RPG.Traits
 				if (order.Target.Type != TargetType.Actor)
 					return;
 
-				underAutoCommand = false;
+				if (underAutoCommand)
+				{
+					underAutoCommand = false;
+					self.CancelActivity();
+				}
 				busy = true;
 				self.QueueActivity(order.Queued, new PickupAttachedUnit(self, order.Target.Actor, Info.BeforeLoadDelay, Info.TargetLineColor));
 				self.ShowTargetLines();
