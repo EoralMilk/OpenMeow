@@ -11,10 +11,10 @@ TypeDefine:
 			FlatSpecular: 0.3
 	cliff: 2
 		cliff01: SummerCliff01
-			Scale: 6
+			Scale: 8
 			FlatSpecular: 0.4
 		cliff02: SummerCliff02
-			Scale: 6
+			Scale: 8
 			FlatSpecular: 0.4
 	conc: 3
 		conc01: SummerConc01
