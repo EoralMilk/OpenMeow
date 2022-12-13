@@ -117,7 +117,7 @@ stealth-suit:
 		GearType: Replacement
 		GearOrder: 20
 		Image: rumya
-		AddonMeshPart: stealth02
+		AddonMeshPart: stealth03
 		Masks: Torso,Hip,Thigh,Leg,Foot,UpperArm,LowerArm,Hand
 		CanExistInWorld: false
 
@@ -242,7 +242,7 @@ laser-rifle_item:
 			ProneAttack: cmmdo_atk-c
 			StandToProne: cmmdo_cvt-stc
 			ProneToStand: cmmdo_cvt-cts
-			DieStand: cmmdo_die-01
+			DieStand: cmmdo_die-02
 			DieProne: cmmdo_die-c02
 		IdleActions: cmmdo_idle-g01, cmmdo_idle-g02
 		ActionFrameReplace:

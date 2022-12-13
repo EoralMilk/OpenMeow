@@ -181,6 +181,10 @@ rumya:
 			Material: c_stealth2
 			UseDQBSkin: true
 			FaceCullFunc: None
+		stealth03: stealth_3
+			Material: c_stealth3
+			UseDQBSkin: true
+			FaceCullFunc: None
 
 		w_rail: w_rail
 			Material: w_rail

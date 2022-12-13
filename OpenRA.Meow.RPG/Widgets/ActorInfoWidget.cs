@@ -705,7 +705,7 @@ namespace OpenRA.Meow.RPG.Widgets
 						{
 							var cell = worldRenderer.Viewport.ViewToWorld(currentMouseInput.Location);
 							mPos = worldRenderer.Viewport.ViewToWorldPos(currentMouseInput.Location, cell);
-							mPos = new WPos(mPos, world.Map.HeightOfTerrain(mPos) + 128);
+							mPos = new WPos(mPos, world.Map.HeightOfTerrain(mPos));
 						}
 
 						var order = new Order("Controler:Mi1Down", TooltipUnit.Actor, Target.FromPos(mPos), false);

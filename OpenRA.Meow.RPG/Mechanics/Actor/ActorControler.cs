@@ -126,7 +126,7 @@ namespace OpenRA.Meow.RPG
 			bool turnFacing = false;
 			WAngle attackFace = WAngle.Zero;
 			int range = 0;
-
+			var hoffset = 0;
 			// determine if we should turn turrets or faceing
 			if (attacks != null)
 			{
@@ -136,11 +136,14 @@ namespace OpenRA.Meow.RPG
 						continue;
 
 					a.IsAiming = true;
-
+					var thisZoffset = 0;
 					foreach (var arm in a.Armaments)
 					{
 						arm.IgnoreAirborne = true;
+						thisZoffset += arm.AdditionalLocalOffset().Z + arm.Barrels[0].Offset.Z;
 					}
+
+					hoffset += thisZoffset / a.Armaments.Count();
 
 					if (!(a is AttackFollow))
 					{
@@ -151,12 +154,15 @@ namespace OpenRA.Meow.RPG
 					range = Math.Max(range, a.GetMiniArmMaximumRange(attackTarget).Length);
 				}
 
+				hoffset /= attacks.Length;
+
 				// re-calculate target
-				var dir = attackTarget.CenterPosition - self.CenterPosition;
+				var firecenter = (self.CenterPosition + new WVec(0, 0, hoffset));
+				var dir = attackTarget.CenterPosition - firecenter;
 				var dist = dir.Length;
 				if (range < dist && range > 1)
 				{
-					var tPos = self.CenterPosition + ((range - 1) * dir / dist);
+					var tPos = firecenter + ((range - 1) * dir / dist);
 
 					// tPos = new WPos(tPos, self.World.Map.HeightOfTerrain(tPos));
 					attackTarget = Target.FromPos(tPos);

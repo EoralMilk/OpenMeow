@@ -124,7 +124,7 @@
 		IdleActions: idle_look, idle_lookhand, idle_lookself, idle_breath, idle_stretcharm
 		GuardTick: 90
 		StopMoveBlendTick: 5
-		GuardBlendTick: 15
+		GuardBlendTick: 8
 		UpperMask: upper
 		LowerMask: lower
 		FullMask: full
@@ -372,6 +372,10 @@ STCMMDO:
 	WithMeshBody@body:
 		HairMeshs: hair_s1, hair_s2, hair_pt1, hair_pt2
 		HairColors: FFB6C1, FFC0CB, FFF0F5
+	InfantryBlendTree:
+		GuardTick: 90
+		StopMoveBlendTick: 5
+		GuardBlendTick: 4
 	Valued:
 		Cost: 1500
 	Tooltip:
