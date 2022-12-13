@@ -5,6 +5,9 @@ vec4 CalcDirLight(DirLight light, vec3 normal, vec3 viewDir)
 	// diffuse
 	float diff = max(dot(normal, lightDir), 0.0);
 
+	// test
+	// diff = linearRemap(0.21, 0.7, diff, 0.15, 1.0);
+
 	color = GetColor();
 	if (color.a == 0.0)
 		discard;

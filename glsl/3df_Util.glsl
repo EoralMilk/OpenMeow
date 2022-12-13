@@ -43,3 +43,11 @@ vec3 HSVtoRGB(in vec3 HSV)
 	vec3  RGB = clamp( vec3(R,G,B), 0.0, 1.0 );
 	return ((RGB - 1.0) * HSV.y + 1.0) * HSV.z;
 }
+
+float linearRemap(float a, float b, float t){
+	return clamp((t- a) / (b - a), 0.0, 1.0);
+}
+
+float linearRemap(float a, float b, float t, float bottom, float top){
+	return clamp((t- a) / (b - a), bottom, top);
+}

@@ -398,7 +398,7 @@ STCMMDO:
 	Selectable:
 		Bounds: 603, 1930, 0, -482
 	InfantryBlendTree:
-		ProneOffset: 0,0,-222
+		ProneOffset: 0,0,-180
 		ProneSpeedModifier: 40
 	SlotArmament:
 		Weapon: Fist

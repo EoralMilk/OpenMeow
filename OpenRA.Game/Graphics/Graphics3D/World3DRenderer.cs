@@ -160,7 +160,9 @@ namespace OpenRA.Graphics
 
 				var sunRelativePos = heightMeter * 1.2f * SunPosOne;
 				UpdateSunPos(sunRelativePos, viewPoint);
-				UpdateSunProject(MathF.Sqrt(ortho.Item1 * ortho.Item1 * 6));
+
+				// hack: the sun project calculation should not be this
+				UpdateSunProject(MathF.Sqrt(ortho.Item1 * ortho.Item1 * 2f) * viewport.Zoom);
 
 				if (ShowDebugInfo)
 				{

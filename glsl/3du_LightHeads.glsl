@@ -9,7 +9,7 @@ in vec3 FragPos;
 in vec2 TexCoords;
 in vec4 vTint;
 in vec3 vRemap;
-// x is colormap index, y is combinedmap index, z is Shininess x 100
+// x is colormap index, y is combinedmap index, z is Shininess x 100, w is texture size
 // combined texture: r is remap, g is Specular, b is emission
 flat in ivec4 fMaterial;
 
