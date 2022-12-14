@@ -419,11 +419,14 @@ namespace OpenRA.Graphics
 			if (Skeleton != null)
 			{
 				Shader.SetBool("useDQB", useDQB);
-				Shader.SetInt("skinBoneCount", Skeleton.SkeletonAsset.SkinBonesIndices.Length);
+				// Shader.SetInt("skinBoneCount", Skeleton.SkeletonAsset.SkinBonesIndices.Length);
 				Shader.SetInt("skinBoneTexWidth", SkeletonAsset.AnimTextureWidth);
 
 				Shader.SetTexture("boneAnimTexture", OrderedSkeleton.BoneAnimTexture);
-				Shader.SetMatrix("BindTransformData", Skeleton.BindTransformData, 128);
+				Shader.SetBool("FixedBindTransform", Skeleton.UseDynamicAdjBonePose);
+				Shader.SetInt("BoneTexOffset", Skeleton.UseDynamicAdjBonePose ? 3 : 6);
+				if (Skeleton.UseDynamicAdjBonePose)
+					Shader.SetMatrix("BindTransformData", Skeleton.BindTransformData, 128);
 			}
 
 			BaseMaterial?.SetShaderAsBaseMaterial(Shader);

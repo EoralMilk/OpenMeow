@@ -5,11 +5,47 @@ rumya:
 		UseDynamicAdjBonePose: false
 		Bones:
 			s-Adj_Belly:
-				LastPoseScale: 2.7, 2.2, 3.9
+				LastPoseScale: 4.114929676055908, 6.5613932609558105, 3.1533732414245605
+				LastPoseRotation: 0.09916038066148758, 2.2712643499289698e-07, 5.340063466974243e-07, 0.9950714707374573
+				LastPoseTranslation: -1.2045376251990092e-07, 0.010435503907501698, 0.01792874000966549
+
+			s-Adj_Spine:
+				LastPoseScale: 1.521375060081482, 1.0, 1.0
 				LastPoseRotation: 0.0, 0.0, 0.0, 1.0
-				LastPoseTranslation: 0.0, 0.0, 0.0
-			# a-Rig_Spine:
-			# 	RestPoseModifyScale: 1.0, 2.0, 1.0
+				LastPoseTranslation: 1.1368683772161603e-13, 9.313225746154785e-10, 0.0
+			s-Adj_LowerLeg.L:
+				LastPoseScale: 1.2083759307861328, 1.0, 1.208376169204712
+				LastPoseRotation: 1.2817143215215765e-05, 0.000998524366877973, 0.020824506878852844, 0.9997826218605042
+				LastPoseTranslation: 0.014103120192885399, -0.0001800734462449327, 1.2359341106105148e-08
+			s-Adj_UpperLeg.L:
+				LastPoseScale: 1.2508403062820435, 1.0000001192092896, 1.250840425491333
+				LastPoseRotation: -2.607962983347534e-07, 0.0004122990067116916, 0.014161059632897377, 0.9998997449874878
+				LastPoseTranslation: 0.023013748228549957, 1.1324882507324219e-05, 9.499490261077881e-08
+			s-Adj_LowerLeg.R:
+				LastPoseScale: 1.2083759307861328, 1.0, 1.208376169204712
+				LastPoseRotation: 1.2817142305721063e-05, -0.0009985242504626513, -0.020824505016207695, 0.9997826814651489
+				LastPoseTranslation: -0.014103120192885399, -0.0001800734462449327, 1.2359341106105148e-08
+			s-Adj_UpperLeg.R:
+				LastPoseScale: 1.2508403062820435, 1.0000001192092896, 1.250840425491333
+				LastPoseRotation: -2.607962983347534e-07, -0.0004122990067116916, -0.014161059632897377, 0.9998997449874878
+				LastPoseTranslation: -0.023013748228549957, 1.1324882507324219e-05, 9.499490261077881e-08
+			s-Adj_Hips:
+				LastPoseScale: 1.428932785987854, 1.1654638051986694, 0.9999998807907104
+				LastPoseRotation: 0.0, 0.0, 0.0, 1.0
+				LastPoseTranslation: 5.523013157926471e-10, -0.00782763957977295, 0.0011559724807739258
+			s-Adj_HipsThickness:
+				LastPoseScale: 0.950461745262146, 0.9999997615814209, 0.9999998807907104
+				LastPoseRotation: 0.0, 0.0, -1.168088080416834e-14, 1.0
+				LastPoseTranslation: -2.842170943040401e-14, -9.313225746154785e-10, 5.960464477539063e-08
+			s-Adj_Butt.L:
+				LastPoseScale: 1.5495984554290771, 3.1181955337524414, 1.9509730339050293
+				LastPoseRotation: 0.03227413818240166, -1.164735252690008e-10, 1.5662203978195066e-08, 0.9994790554046631
+				LastPoseTranslation: 0.008192528039216995, 0.0002642910403665155, 0.010823319666087627
+			s-Adj_Butt.R:
+				LastPoseScale: 1.5495984554290771, 3.1181955337524414, 1.9509730339050293
+				LastPoseRotation: 0.03227413818240166, 1.164735252690008e-10, -1.5662203978195066e-08, 0.9994790554046631
+				LastPoseTranslation: -0.008192528039216995, 0.0002642910403665155, 0.010823319666087627
+
 		Masks:
 			upper: upper
 			lower: lower
@@ -114,76 +150,76 @@ rumya:
 
 	Meshes:
 		face_addon: face_addon_DT_0
-			UseDQBSkin: true
+			# UseDQBSkin: true
 			Material: face_addon
 		body-head: body-remaster_DT_0
 			Shader: CharacterBody
 			BaseMaterial: face01
-			UseDQBSkin: true
+			# UseDQBSkin: true
 			Material: none
 		body-torso: body-remaster_DT_1
 			Shader: CharacterBody
 			BaseMaterial: body
-			UseDQBSkin: true
+			# UseDQBSkin: true
 			Material: none
 		body-hip: body-remaster_DT_2
 			Shader: CharacterBody
 			BaseMaterial: body
-			UseDQBSkin: true
+			# UseDQBSkin: true
 			Material: none
 		body-thigh: body-remaster_DT_3
 			Shader: CharacterBody
 			BaseMaterial: body
-			UseDQBSkin: true
+			# UseDQBSkin: true
 			Material: none
 		body-leg: body-remaster_DT_4
 			Shader: CharacterBody
 			BaseMaterial: body
-			UseDQBSkin: true
+			# UseDQBSkin: true
 			Material: none
 		body-foot: body-remaster_DT_5
 			Shader: CharacterBody
 			BaseMaterial: body
-			UseDQBSkin: true
+			# UseDQBSkin: true
 			Material: none
 		body-upperarm: body-remaster_DT_6
 			Shader: CharacterBody
 			BaseMaterial: body
-			UseDQBSkin: true
+			# UseDQBSkin: true
 			Material: none
 		body-lowerarm: body-remaster_DT_7
 			Shader: CharacterBody
 			BaseMaterial: body
-			UseDQBSkin: true
+			# UseDQBSkin: true
 			Material: none
 		body-hand: body-remaster_DT_8
 			Shader: CharacterBody
 			BaseMaterial: body
-			UseDQBSkin: true
+			# UseDQBSkin: true
 			Material: none
 
 		gear01: gear01
 			Material: gear01
-			UseDQBSkin: true
+			# UseDQBSkin: true
 			FaceCullFunc: None
 		gear01_body-hip: gear01_leg_DT_2
 			Shader: CharacterBody
 			BaseMaterial: body
-			UseDQBSkin: true
+			# UseDQBSkin: true
 			Material: none
 		gear01_body-thigh: gear01_leg_DT_3
 			Shader: CharacterBody
 			BaseMaterial: body
-			UseDQBSkin: true
+			# UseDQBSkin: true
 			Material: none
 		
 		stealth02: stealth_2
 			Material: c_stealth2
-			UseDQBSkin: true
+			# UseDQBSkin: true
 			FaceCullFunc: None
 		stealth03: stealth_3
 			Material: c_stealth3
-			UseDQBSkin: true
+			# UseDQBSkin: true
 			FaceCullFunc: None
 
 		w_rail: w_rail
@@ -225,7 +261,7 @@ rumya:
 			Shader: CharacterHair
 
 		head01: body-remaster_DT_0
-			UseDQBSkin: true
+			# UseDQBSkin: true
 			Material: face01
 
 cattail:

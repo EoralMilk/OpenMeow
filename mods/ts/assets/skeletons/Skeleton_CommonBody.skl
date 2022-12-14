@@ -380,14 +380,14 @@ s-Adj_Spine:
 	Parent: a-Rig_Spine
 	ParentID: 2
 	RestPoseScale: 1.000000, 1.000000, 1.000000
-	RestPoseRotation: 0.705009, 0.000001, 0.000001, 0.709198
+	RestPoseRotation: -0.000797, 0.000001, 0.000000, 1.000000
 	RestPoseTranslation: 0.000000, 0.001339, 0.000159
 	RestPoseInvScale: 1.000000, 1.000000, 1.000000
-	RestPoseInvRotation: -0.705009, -0.000001, -0.000001, 0.709198
-	RestPoseInvTranslation: 0.000000, -0.000167, 0.001338
+	RestPoseInvRotation: 0.000797, -0.000001, 0.000000, 1.000000
+	RestPoseInvTranslation: 0.000000, -0.001339, -0.000161
 	BindPoseScale: 1.000000, 1.000000, 1.000000
-	BindPoseRotation: -0.716318, -0.000001, -0.000001, 0.697774
-	BindPoseTranslation: -0.000002, 0.008649, 0.943457
+	BindPoseRotation: -0.015277, -0.000001, 0.000000, 0.999883
+	BindPoseTranslation: 0.000000, -0.943411, 0.012735
 s-Adj_Belly:
 	ID: 27
 	Skin: True
@@ -395,14 +395,14 @@ s-Adj_Belly:
 	Parent: s-Adj_Spine
 	ParentID: 26
 	RestPoseScale: 1.000000, 1.000000, 1.000000
-	RestPoseRotation: 0.706915, 0.000000, -0.000001, 0.707299
-	RestPoseTranslation: 0.000000, 0.065238, -0.001503
+	RestPoseRotation: 0.703372, 0.000002, 0.000002, 0.710822
+	RestPoseTranslation: 0.000000, 0.001786, 0.065231
 	RestPoseInvScale: 1.000000, 1.000000, 1.000000
-	RestPoseInvRotation: -0.706915, 0.000000, 0.000001, 0.707299
-	RestPoseInvTranslation: 0.000000, 0.001468, 0.065239
+	RestPoseInvRotation: -0.703372, -0.000002, -0.000002, 0.710822
+	RestPoseInvTranslation: 0.000000, -0.065246, 0.001098
 	BindPoseScale: 1.000000, 1.000000, 1.000000
-	BindPoseRotation: 0.999918, 0.000002, 0.000000, 0.012841
-	BindPoseTranslation: -0.000003, 0.944929, 0.057102
+	BindPoseRotation: -0.714150, -0.000003, -0.000001, 0.699993
+	BindPoseTranslation: -0.000005, -0.062450, 0.944591
 a-Rig_UpperLeg.L:
 	ID: 28
 	Anim: True
@@ -585,15 +585,15 @@ s-Adj_Hips:
 	Adjust: True
 	Parent: a-Rig_Hips
 	ParentID: 1
-	RestPoseScale: 1.000000, 1.000000, 1.000007
-	RestPoseRotation: 0.999998, 0.000000, 0.000000, 0.001878
+	RestPoseScale: 1.000000, 1.000000, 1.000000
+	RestPoseRotation: 0.000000, 0.000000, 0.000000, 1.000000
 	RestPoseTranslation: 0.000000, 0.000000, 0.000000
-	RestPoseInvScale: 1.000000, 1.000000, 0.999993
-	RestPoseInvRotation: -0.999998, 0.000000, 0.000000, 0.001878
+	RestPoseInvScale: 1.000000, 1.000000, 1.000000
+	RestPoseInvRotation: 0.000000, 0.000000, 0.000000, 1.000000
 	RestPoseInvTranslation: 0.000000, 0.000000, 0.000000
-	BindPoseScale: 1.000000, 1.000000, 0.999993
-	BindPoseRotation: 0.997314, 0.000000, 0.000000, 0.073244
-	BindPoseTranslation: 0.000000, 0.852033, -0.122212
+	BindPoseScale: 1.000000, 1.000000, 1.000000
+	BindPoseRotation: -0.075117, 0.000000, 0.000000, 0.997175
+	BindPoseTranslation: 0.000000, -0.851568, 0.125412
 s-Adj_HipsThickness:
 	ID: 41
 	Skin: True
@@ -601,14 +601,14 @@ s-Adj_HipsThickness:
 	Parent: s-Adj_Hips
 	ParentID: 40
 	RestPoseScale: 1.000000, 1.000000, 1.000000
-	RestPoseRotation: 0.653416, 0.000000, 0.000000, 0.756999
-	RestPoseTranslation: 0.000000, 0.053110, -0.007321
+	RestPoseRotation: -0.758224, 0.000000, 0.000000, 0.651994
+	RestPoseTranslation: 0.000000, -0.053082, 0.007521
 	RestPoseInvScale: 1.000000, 1.000000, 1.000000
-	RestPoseInvRotation: -0.653416, 0.000000, 0.000000, 0.756999
+	RestPoseInvRotation: 0.758224, 0.000000, 0.000000, 0.651994
 	RestPoseInvTranslation: 0.000000, -0.000516, 0.053610
-	BindPoseScale: 1.000000, 1.000000, 0.999993
-	BindPoseRotation: 0.707107, 0.000000, 0.000000, 0.707107
-	BindPoseTranslation: 0.000000, 0.003061, -0.807136
+	BindPoseScale: 1.000000, 1.000000, 1.000000
+	BindPoseRotation: 0.707106, 0.000000, 0.000000, 0.707107
+	BindPoseTranslation: 0.000000, 0.003059, -0.807136
 s-Adj_Butt.L:
 	ID: 42
 	Skin: True
@@ -617,13 +617,13 @@ s-Adj_Butt.L:
 	ParentID: 41
 	RestPoseScale: 1.000000, 1.000000, 1.000000
 	RestPoseRotation: 0.000000, 0.000000, 0.000000, 1.000000
-	RestPoseTranslation: 0.074743, 0.070381, 0.061860
+	RestPoseTranslation: 0.074743, 0.070382, 0.061860
 	RestPoseInvScale: 1.000000, 1.000000, 1.000000
 	RestPoseInvRotation: 0.000000, 0.000000, 0.000000, 1.000000
-	RestPoseInvTranslation: -0.074743, -0.070381, -0.061860
-	BindPoseScale: 1.000000, 1.000000, 0.999993
-	BindPoseRotation: 0.707107, 0.000000, 0.000000, 0.707107
-	BindPoseTranslation: -0.074742, -0.067321, -0.868997
+	RestPoseInvTranslation: -0.074743, -0.070382, -0.061860
+	BindPoseScale: 1.000000, 1.000000, 1.000000
+	BindPoseRotation: 0.707106, 0.000000, 0.000000, 0.707107
+	BindPoseTranslation: -0.074742, -0.067323, -0.868997
 s-Adj_Butt.R:
 	ID: 43
 	Skin: True
@@ -632,13 +632,13 @@ s-Adj_Butt.R:
 	ParentID: 41
 	RestPoseScale: 1.000000, 1.000000, 1.000000
 	RestPoseRotation: 0.000000, 0.000000, 0.000000, 1.000000
-	RestPoseTranslation: -0.074743, 0.070381, 0.061860
+	RestPoseTranslation: -0.074743, 0.070382, 0.061860
 	RestPoseInvScale: 1.000000, 1.000000, 1.000000
 	RestPoseInvRotation: 0.000000, 0.000000, 0.000000, 1.000000
-	RestPoseInvTranslation: 0.074743, -0.070381, -0.061860
-	BindPoseScale: 1.000000, 1.000000, 0.999993
-	BindPoseRotation: 0.707107, 0.000000, 0.000000, 0.707107
-	BindPoseTranslation: 0.074742, -0.067321, -0.868997
+	RestPoseInvTranslation: 0.074743, -0.070382, -0.061860
+	BindPoseScale: 1.000000, 1.000000, 1.000000
+	BindPoseRotation: 0.707106, 0.000000, 0.000000, 0.707107
+	BindPoseTranslation: 0.074742, -0.067323, -0.868997
 e_RightHand:
 	ID: 44
 	Anim: True

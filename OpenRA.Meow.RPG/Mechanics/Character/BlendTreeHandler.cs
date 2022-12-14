@@ -145,6 +145,8 @@ namespace OpenRA.Meow.RPG.Mechanics
 		readonly int[] bellyBones;
 		readonly HashSet<int> hashBellyBones;
 		readonly ModifiedBoneRestPose[] bellyScalesMb;
+		readonly ModifiedBoneRestPose[] otherScalesMb;
+
 
 		int GetBoneId(string name)
 		{
@@ -183,6 +185,8 @@ namespace OpenRA.Meow.RPG.Mechanics
 			}
 
 			List<ModifiedBoneRestPose> tempBellyScale = new List<ModifiedBoneRestPose>();
+			List<ModifiedBoneRestPose> tempOtherScale = new List<ModifiedBoneRestPose>();
+
 			foreach (var kv in withSkeleton.OrderedSkeleton.ModifiedBoneRestPoses)
 			{
 				if (kv.Value.OnlyRestPose)
@@ -192,9 +196,14 @@ namespace OpenRA.Meow.RPG.Mechanics
 				{
 					tempBellyScale.Add(kv.Value);
 				}
+				else
+				{
+					tempOtherScale.Add(kv.Value);
+				}
 			}
 
 			bellyScalesMb = tempBellyScale.ToArray();
+			otherScalesMb = tempOtherScale.ToArray();
 
 			walk = withSkeleton.OrderedSkeleton.SkeletonAsset.GetSkeletalAnim(withSkeleton.Image, info.Walk);
 			guard = withSkeleton.OrderedSkeleton.SkeletonAsset.GetSkeletalAnim(withSkeleton.Image, info.Guard);
@@ -419,6 +428,7 @@ namespace OpenRA.Meow.RPG.Mechanics
 
 		FP maxStomachSize = 10;
 		FP stomachSize = 0;
+		FP fat = 0;
 		int churnTick = 0;
 		public void Consume(Item item)
 		{
@@ -457,6 +467,19 @@ namespace OpenRA.Meow.RPG.Mechanics
 					if (emptySound != null)
 						Game.Sound.Play(SoundType.World, emptySound, self.CenterPosition, 1f);
 				}
+
+				fat += 0.002f;
+			}
+			else
+				fat -= 0.002f;
+
+			fat = TSMath.Clamp(fat, 0, 1);
+
+			// other mb
+			foreach (var bg in otherScalesMb)
+			{
+				withSkeleton.Skeleton.Bones[bg.Id].SetRestPose(
+					Transformation.LerpMatrix(bg.FirstTransform, bg.LastTransform, fat));
 			}
 
 			if (playOverideBlend || (carryable != null && carryable.Reserved))

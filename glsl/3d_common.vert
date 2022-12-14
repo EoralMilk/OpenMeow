@@ -1,6 +1,7 @@
 #version {VERSION}
 
 #define MAX_BONE_LENGTH 4
+#define BONE_TEX_OFFSET 6
 
 #ifdef GL_ES
 precision mediump float;
@@ -36,10 +37,12 @@ uniform bool useDQB;
 
 // bind pose might contains modified adjust bone's rest pose from rig bone
 // but there is no different to shader anyway.
+uniform bool FixedBindTransform;
+uniform int BoneTexOffset;
 uniform mat4 BindTransformData[128];
 
 uniform sampler2D boneAnimTexture;
-uniform int skinBoneCount;
+// uniform int skinBoneCount;
 uniform int skinBoneTexWidth;
 
 // mat2x4 bindDq1, bindDq2, bindDq3, bindDq4;
@@ -50,21 +53,36 @@ mat4 mMatrix = mat4(0.0f);
 
 int animTexoffset;
 mat4 GetMat4ById(int id){
-	if (id < 0)
-		return mat4(1.0);
-
-	int y = (animTexoffset + id * 3) / skinBoneTexWidth;
-	int x = (animTexoffset + id * 3) % skinBoneTexWidth;
+	int y = (animTexoffset + id * BoneTexOffset) / skinBoneTexWidth;
+	int x = (animTexoffset + id * BoneTexOffset) % skinBoneTexWidth;
 	vec4 r1 = texelFetch(boneAnimTexture, ivec2(x, y), 0);
-	y = (animTexoffset + id * 3 + 1) / skinBoneTexWidth;
-	x = (animTexoffset + id * 3 + 1) % skinBoneTexWidth;
+	y = (animTexoffset + id * BoneTexOffset + 1) / skinBoneTexWidth;
+	x = (animTexoffset + id * BoneTexOffset + 1) % skinBoneTexWidth;
 	vec4 r2 = texelFetch(boneAnimTexture, ivec2(x, y), 0);
-	y = (animTexoffset + id * 3 + 2) / skinBoneTexWidth;
-	x = (animTexoffset + id * 3 + 2) % skinBoneTexWidth;
+	y = (animTexoffset + id * BoneTexOffset + 2) / skinBoneTexWidth;
+	x = (animTexoffset + id * BoneTexOffset + 2) % skinBoneTexWidth;
 	vec4 r3 = texelFetch(boneAnimTexture, ivec2(x, y), 0);
-	// y = (animTexoffset + id * 4 + 3) / skinBoneTexWidth;
-	// x = (animTexoffset + id * 4 + 3) % skinBoneTexWidth;
-	// vec4 c4 = texelFetch(boneAnimTexture, ivec2(x, y), 0);
+
+	return  mat4(
+		vec4(r1.x, r2.x, r3.x, 0),
+		vec4(r1.y, r2.y, r3.y, 0),
+		vec4(r1.z, r2.z, r3.z, 0),
+		vec4(r1.w, r2.w, r3.w, 1));
+}
+
+mat4 GetBindMat4ById(int id){
+	if (FixedBindTransform)
+		return BindTransformData[id];
+
+	int y = (animTexoffset + id * BoneTexOffset + 3) / skinBoneTexWidth;
+	int x = (animTexoffset + id * BoneTexOffset + 3) % skinBoneTexWidth;
+	vec4 r1 = texelFetch(boneAnimTexture, ivec2(x, y), 0);
+	y = (animTexoffset + id * BoneTexOffset + 4) / skinBoneTexWidth;
+	x = (animTexoffset + id * BoneTexOffset + 4) % skinBoneTexWidth;
+	vec4 r2 = texelFetch(boneAnimTexture, ivec2(x, y), 0);
+	y = (animTexoffset + id * BoneTexOffset + 5) / skinBoneTexWidth;
+	x = (animTexoffset + id * BoneTexOffset + 5) % skinBoneTexWidth;
+	vec4 r3 = texelFetch(boneAnimTexture, ivec2(x, y), 0);
 
 	return  mat4(
 		vec4(r1.x, r2.x, r3.x, 0),
@@ -277,10 +295,10 @@ void main()
 		animTexoffset = iDrawId;
 		if (useDQB){
 			// dqbs Skin
-			m1 = GetMat4ById(aBoneId[0]) * BindTransformData[aBoneId[0]];
-			m2 = GetMat4ById(aBoneId[1]) * BindTransformData[aBoneId[1]];
-			m3 = GetMat4ById(aBoneId[2]) * BindTransformData[aBoneId[2]];
-			m4 = GetMat4ById(aBoneId[3]) * BindTransformData[aBoneId[3]];
+			m1 = GetMat4ById(aBoneId[0]) * GetBindMat4ById(aBoneId[0]);
+			m2 = GetMat4ById(aBoneId[1]) * GetBindMat4ById(aBoneId[1]);
+			m3 = GetMat4ById(aBoneId[2]) * GetBindMat4ById(aBoneId[2]);
+			m4 = GetMat4ById(aBoneId[3]) * GetBindMat4ById(aBoneId[3]);
 			s1 = ExtractScale(m1);// vec3(length(m1[0]), length(m1[1]), length(m1[2]));
 			s2 = ExtractScale(m2);// vec3(length(m2[0]), length(m2[1]), length(m2[2]));
 			s3 = ExtractScale(m3);// vec3(length(m3[0]), length(m3[1]), length(m3[2]));
@@ -305,7 +323,7 @@ void main()
 		else{
 			// LBS Skin
 			for (int i = 0; i < MAX_BONE_LENGTH; i++)
-				mMatrix += (GetMat4ById(aBoneId[i]) * BindTransformData[aBoneId[i]]) * aBoneWeights[i];
+				mMatrix += (GetMat4ById(aBoneId[i]) * GetBindMat4ById(aBoneId[i])) * aBoneWeights[i];
 		}
 	}
 	else
