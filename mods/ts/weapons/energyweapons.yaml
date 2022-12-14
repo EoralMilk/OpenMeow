@@ -488,7 +488,7 @@ LaserRifleFire:
 	Range: 8c512
 	Report: lastur1.aud
 	Projectile: LaserZap
-		Inaccuracy: 555
+		Inaccuracy: 200
 		Width: 176
 		Color: FF4444
 		Sequences: laser

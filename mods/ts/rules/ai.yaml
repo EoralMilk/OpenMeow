@@ -144,6 +144,7 @@ Player:
 			e2: 30
 			e3: 30
 			pfind: 30
+			stcmmdo: 6
 			cyborg: 30
 			weedguy: 12
 			jumpjetair: 15
@@ -179,6 +180,7 @@ Player:
 			icbm: 1
 			engineer: 1
 		UnitLimits:
+			stcmmdo: 1
 			harv: 4
 			weed: 3
 			medic: 14

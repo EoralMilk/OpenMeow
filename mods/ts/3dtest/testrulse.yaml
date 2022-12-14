@@ -203,7 +203,7 @@
 		MaxHeightDelta: 1100
 	Mobile:
 		Voice: Move
-		TurnSpeed: 100
+		TurnSpeed: 120
 		Speed: 50
 		MaxSpeed: 66
 		SpeedAccleration: 5
@@ -211,7 +211,7 @@
 		MovementMode: Universal
 		TerrainOrientationAdjustmentMargin: -1
 	TurnOnIdle:
-		IdleTurnSpeed: 20
+		IdleTurnSpeed: 45
 	Selectable:
 		DecorationBounds: 452, 1387, 0, -543
 		Bounds: 724, 1448, 0, -543
@@ -383,7 +383,7 @@ STCMMDO:
 	Buildable:
 		Queue: Infantry
 		BuildPaletteOrder: 100
-		Prerequisites: ~barracks, ~techlevel.low
+		Prerequisites: ~barracks, tech, ~techlevel.high
 		Description: test
 	Mobile:
 		Speed: 50
