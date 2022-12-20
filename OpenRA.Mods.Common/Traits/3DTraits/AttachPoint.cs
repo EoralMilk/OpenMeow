@@ -3,80 +3,95 @@ using System.Collections.Generic;
 using System.Linq;
 using OpenRA.Graphics;
 using OpenRA.Mods.Common.Activities;
+using OpenRA.Mods.Common.Traits.Render;
+using OpenRA.Primitives;
 using OpenRA.Traits;
 using TrueSync;
 
 namespace OpenRA.Mods.Common.Traits.Trait3D
 {
-	public class AttachManagerInfo : TraitInfo, Requires<WithSkeletonInfo>
+	public class AttachManagerInfo : RejectsOrdersInfo
 	{
-		public readonly string MainSkeleton = "body";
+		public readonly string MainSkeleton = null;
+		public readonly string AttachingBone = null;
+
+		[GrantedConditionReference]
+		[Desc("Condition to grant when equiped.")]
+		public readonly string Condition = null;
 		public override object Create(ActorInitializer init) { return new AttachManager(init.Self, this); }
 	}
 
-	public class AttachManager
+	public class AttachManager: RejectsOrders
 	{
 		readonly Actor self;
 		public readonly WithSkeleton MainSkeleton;
 		public readonly AttachManagerInfo Info;
+		public readonly int BoneId = -1;
 		readonly List<Actor> attachments = new List<Actor>();
 		Actor parent;
+		public readonly string Condition;
+		int conditionToken = Actor.InvalidConditionToken;
+
 		public bool HasParent { get => parent != null; }
 
+		public override bool Rejecting => HasParent;
+
 		public AttachManager(Actor self, AttachManagerInfo info)
+			: base(info)
 		{
 			this.self = self;
 			Info = info;
-			MainSkeleton = self.TraitsImplementing<WithSkeleton>().Single(w => w.Info.Name == info.MainSkeleton);
+			Condition = info.Condition;
+			if (!string.IsNullOrEmpty(info.MainSkeleton))
+			{
+				MainSkeleton = self.TraitsImplementing<WithSkeleton>().Single(w => w.Info.Name == info.MainSkeleton);
+
+				BoneId = MainSkeleton.GetBoneId(info.AttachingBone);
+			}
+
+		}
+
+		void ApplyParent(Actor p)
+		{
+			if (Condition != null && self != null)
+			{
+				if (p != null && conditionToken == Actor.InvalidConditionToken)
+					conditionToken = self.GrantCondition(Condition);
+				else if (p == null && conditionToken != Actor.InvalidConditionToken)
+					conditionToken = self.RevokeCondition(conditionToken);
+			}
+
+			parent = p;
 		}
 
 		public bool AddAttachment(Actor attachment)
 		{
-			//if (attachment.TraitOrDefault<AttachManager>() == null)
-			//	return false;
-
-			if (IsParent(attachment))
+			if (IsMyParent(attachment))
 				return false;
 
 			attachments.Add(attachment);
-			//var occupySpace = attachment.TraitOrDefault<IOccupySpace>();
-			//if (occupySpace != null)
-			//	occupySpace.OccupySpace = false;
-			var mobile = attachment.TraitOrDefault<Mobile>();
-			if (mobile != null)
-			{
-				mobile.TerrainOrientationAdjustmentMargin = -1;
-				mobile.CurrentMovementTypes = MovementType.None;
-			}
 
+			attachment.CancelActivity();
 			var am = attachment.TraitOrDefault<AttachManager>();
 			if (am != null)
-				am.parent = self;
+				am.ApplyParent(self);
 			return true;
 		}
 
 		public bool ReleaseAttachment(Actor attachment)
 		{
 			if (attachment == null)
-				throw new Exception("the attachment " + attachment.Info.Name + attachment.ActorID + " to release is null");
+				return true;
 
 			attachments.Remove(attachment);
-			//var occupySpace = attachment.TraitOrDefault<IOccupySpace>();
-			//if (occupySpace != null)
-			//	occupySpace.OccupySpace = true;
-			var mobile = attachment.TraitOrDefault<Mobile>();
-			if (mobile != null)
-			{
-				mobile.TerrainOrientationAdjustmentMargin = mobile.Info.TerrainOrientationAdjustmentMargin.Length;
-			}
 
 			var am = attachment.TraitOrDefault<AttachManager>();
 			if (am != null)
-				am.parent = null;
+				am.ApplyParent(null);
 			return true;
 		}
 
-		public bool IsParent(Actor actor)
+		public bool IsMyParent(Actor actor)
 		{
 			if (parent == null)
 				return false;
@@ -87,25 +102,35 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 			{
 				var am = parent.TraitOrDefault<AttachManager>();
 				if (am != null)
-					return am.IsParent(actor);
+					return am.IsMyParent(actor);
 				else
 				{
-					Console.WriteLine("Actor " + parent.Info.Name + parent.ActorID + " is the parent of " + self.Info.Name + self.ActorID + " but it has no AttachPointManager");
+					Console.WriteLine("Actor " + parent.Info.Name + parent.ActorID + " is the parent of " + self.Info.Name + self.ActorID + " but it has no AttachManager");
 					return false;
 				}
 			}
 		}
 	}
 
-	public class AttachPointInfo : ConditionalTraitInfo, Requires<AttachManagerInfo>, Requires<WithSkeletonInfo>
+	public class AttachPointInfo : ConditionalTraitInfo, Requires<AttachManagerInfo>
 	{
 		public readonly string Name = "point";
-		public readonly string Skeleton = "body";
+		public readonly string Skeleton = null;
 		public readonly string BoneAttach = null;
+
+		// or use offset
+		public readonly WVec Offset = WVec.Zero;
+		public readonly string Turret = null;
+
+		public readonly bool LockFacing = true;
+
+		public readonly bool ConveyAttackAction = true;
+
 		public override object Create(ActorInitializer init) { return new AttachPoint(init.Self, this); }
 	}
 
-	public class AttachPoint : ConditionalTrait<AttachPointInfo>, ITick, INotifyAttack, INotifyKilled
+	public class AttachPoint : ConditionalTrait<AttachPointInfo>, ITick, IIssueOrder, IResolveOrder, INotifyToAttack,
+		INotifyKilled
 	{
 		readonly int attachBoneId = -1;
 		public readonly WithSkeleton MainSkeleton;
@@ -117,28 +142,63 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 		readonly Actor self;
 		readonly IFacing myFacing;
 		readonly BodyOrientation body;
+		IMove move;
+		ITurreted turret;
 
 		Actor attachmentActor;
 		IPositionable attachmentPositionable;
+		IMove attachmentMove;
 		IFacing attachmentFacing;
-		AttachManager attachmentAM;
 		WithSkeleton attachmentSkeleton;
+		AttachManager attachmentAM;
+		AttackBase[] attachmentAttackBases;
+
 		readonly AttachManager manager;
 		World3DRenderer w3dr;
 		public AttachPoint(Actor self, AttachPointInfo info)
 			: base(info)
 		{
 			body = self.Trait<BodyOrientation>();
-			myFacing = self.Trait<IFacing>();
+			myFacing = self.TraitOrDefault<IFacing>();
 			Name = info.Name;
 			this.self = self;
-			MainSkeleton = self.TraitsImplementing<WithSkeleton>().Single(w => w.Info.Name == info.Skeleton);
-			attachBoneId = MainSkeleton.GetBoneId(Info.BoneAttach);
-			if (attachBoneId == -1)
-				throw new Exception("can't find bone " + info.BoneAttach + " in skeleton.");
+			if (!string.IsNullOrEmpty(info.Skeleton))
+			{
+				MainSkeleton = self.TraitsImplementing<WithSkeleton>().Single(w => w.Info.Name == info.Skeleton);
+				attachBoneId = MainSkeleton.GetBoneId(Info.BoneAttach);
+				if (attachBoneId == -1)
+					throw new Exception("can't find bone " + info.BoneAttach + " in skeleton.");
+			}
 
 			manager = self.Trait<AttachManager>();
 			w3dr = Game.Renderer.World3DRenderer;
+		}
+
+		public IEnumerable<IOrderTargeter> Orders
+		{
+			get
+			{
+				if (IsTraitDisabled)
+					yield break;
+
+				yield return new AttachOrderTargeter();
+			}
+		}
+
+		public Order IssueOrder(Actor self, IOrderTargeter order, in Target target, bool queued)
+		{
+			if (order.OrderID == "AttachActor")
+				return new Order(order.OrderID, self, target, queued);
+
+			return null;
+		}
+
+		public void ResolveOrder(Actor self, Order order)
+		{
+			if (order.OrderString == "AttachActor" && order.Target.Type == TargetType.Actor)
+			{
+				AttachActor(order.Target.Actor);
+			}
 		}
 
 		void ITick.Tick(Actor self)
@@ -150,16 +210,22 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 		{
 			if (attachmentActor != null && !attachmentActor.IsDead && attachmentActor.IsInWorld)
 				TickAttach();
+			else
+			{
+				FlushAttachmentTrits();
+			}
 		}
 
-		void INotifyAttack.Attacking(Actor self, in Target target, Armament a, Barrel barrel)
+		protected override void Created(Actor self)
 		{
-			//AttachActor(target.Actor);
+			base.Created(self);
+			turret = self.TraitsImplementing<ITurreted>().FirstOrDefault(t => t.Name == Info.Turret);
+			move = self.TraitOrDefault<IMove>();
 		}
 
 		public bool AttachActor(Actor target)
 		{
-			if (target == null || target.IsDead || !target.IsInWorld || attachBoneId == -1)
+			if (target == null || target.IsDead || !target.IsInWorld)
 				return false;
 
 			ReleaseAttach();
@@ -169,57 +235,250 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 
 			attachmentActor = target;
 			attachmentPositionable = attachmentActor.TraitOrDefault<IPositionable>();
+			attachmentMove = attachmentActor.TraitOrDefault<IMove>();
 			attachmentFacing = attachmentActor.TraitOrDefault<IFacing>();
 			attachmentAM = attachmentActor.TraitOrDefault<AttachManager>();
-			if (attachmentAM != null)
+			attachmentAttackBases = attachmentActor.TraitsImplementing<AttackBase>().ToArray();
+			if (attachmentAM != null && MainSkeleton != null)
 			{
 				attachmentSkeleton = attachmentAM.MainSkeleton;
-				attachmentSkeleton.SetParent(MainSkeleton, attachBoneId, FP.Zero);
+				attachmentSkeleton?.SetParent(MainSkeleton, attachBoneId, attachmentSkeleton.Scale);
+
+				attachmentPositionable?.BindPoseTo(() =>
+				{
+					if (MainSkeleton == null)
+					{
+						attachmentPositionable?.BindPoseTo(null);
+						return attachmentPositionable.CenterPosition;
+					}
+
+					return World3DCoordinate.TSVec3ToWPos(Transformation.MatPosition(MainSkeleton.GetMatrixFromBoneId(attachBoneId)));
+				}
+				);
 			}
 
-			MainSkeleton.CallForUpdate(attachBoneId);
+			if (attachmentPositionable != null)
+			{
+				if (attachmentMove is Mobile)
+				{
+					(attachmentMove as Mobile).RemoveInfluence();
+					(attachmentMove as Mobile).TerrainOrientationIgnore = true;
+					(attachmentMove as Mobile).ForceDisabled = true;
+				}
+				else if ((attachmentMove is Aircraft))
+				{
+					(attachmentMove as Aircraft).RemoveInfluence();
+					(attachmentMove as Aircraft).ForceDisabled = true;
+				}
+
+				attachmentMove.SteadyBinding = true;
+				attachmentPositionable.OccupySpace = false;
+			}
+
 			return true;
 		}
 
 		void TickAttach()
 		{
-			attachmentPositionable?.SetPosition(attachmentActor, MainSkeleton.GetWPosFromBoneId(attachBoneId), true);
-			if (attachmentFacing != null)
-				attachmentFacing.Orientation = MainSkeleton.GetWRotFromBoneId(attachBoneId);
+			if (MainSkeleton != null)
+			{
+				var mat = MainSkeleton.GetMatrixFromBoneId(attachBoneId);
+				var pos = World3DCoordinate.TSVec3ToWPos(Transformation.MatPosition(mat));
+				var rot = World3DCoordinate.GetWRotFromMatrix(mat);
+				attachmentPositionable?.SetPosition(attachmentActor, pos, true);
+				if (attachmentFacing != null)
+				{
+					if (Info.LockFacing)
+					{
+						attachmentFacing.Orientation = rot;
+					}
+				}
+			}
+			else
+			{
+				// Weapon offset in turret coordinates
+				var localOffset =Info.Offset;
+
+				// Turret coordinates to body coordinates
+				var bodyOrientation = body.QuantizeOrientation(self.Orientation);
+				var pos = self.CenterPosition;
+				if (turret != null)
+				{
+					localOffset = localOffset.Rotate(turret.WorldOrientation) + turret.Offset.Rotate(bodyOrientation);
+					pos += body.LocalToWorld(localOffset);
+					attachmentPositionable?.SetPosition(attachmentActor, pos, true);
+					if (attachmentFacing != null)
+					{
+						if (Info.LockFacing)
+						{
+							attachmentFacing.Orientation = turret.WorldOrientation;
+						}
+					}
+				}
+				else
+				{
+					localOffset = localOffset.Rotate(bodyOrientation);
+
+					pos += body.LocalToWorld(localOffset);
+					attachmentPositionable?.SetPosition(attachmentActor, pos, true);
+					if (attachmentFacing != null)
+					{
+						if (Info.LockFacing)
+						{
+							attachmentFacing.Orientation = self.Orientation;
+						}
+					}
+				}
+			}
+
 		}
 
 		void ReleaseAttach()
 		{
 			if (attachmentActor == null || attachmentActor.IsDead || !attachmentActor.IsInWorld)
+			{
+				FlushAttachmentTrits();
 				return;
+			}
 
 			if (manager.ReleaseAttachment(attachmentActor))
 			{
 				TickAttach();
-				if (attachmentFacing != null)
-					attachmentFacing.Orientation = WRot.None.WithYaw(MainSkeleton.GetWRotFromBoneId(attachBoneId).Yaw);
+
+				if (attachmentPositionable != null)
+				{
+					if (attachmentMove is Mobile)
+					{
+						(attachmentMove as Mobile).ForceDisabled = false;
+						(attachmentMove as Mobile).TerrainOrientationIgnore = false;
+					}
+					else if ((attachmentMove is Aircraft))
+					{
+						(attachmentMove as Aircraft).ForceDisabled = false;
+					}
+
+					attachmentMove.SteadyBinding = false;
+					attachmentPositionable.OccupySpace = true;
+				}
 
 				if (attachmentSkeleton != null)
 				{
 					attachmentSkeleton.ReleaseFromParent();
 				}
 
+				attachmentActor.CancelActivity();
+
 				if (attachmentActor.World.Map.DistanceAboveTerrain(attachmentActor.CenterPosition) > WDist.Zero)
 				{
-					attachmentActor.QueueActivity(new Parachute(attachmentActor));
+					var fall = new FallDown(attachmentActor, attachmentActor.CenterPosition, 0, true);
+					fall.BaseVelocity = move != null ? move.CurrentVelocity : WVec.Zero;
+					fall.BrutalLand = self.IsDead;
+					attachmentActor.QueueActivity(fall);
+
+					// attachmentActor.QueueActivity(new Parachute(attachmentActor));
 				}
 
-				attachmentActor = null;
+				FlushAttachmentTrits();
 			}
-		}
-
-		void INotifyAttack.PreparingAttack(Actor self, in Target target, Armament a, Barrel barrel)
-		{
 		}
 
 		void INotifyKilled.Killed(Actor self, AttackInfo e)
 		{
 			ReleaseAttach();
+		}
+
+		void FlushAttachmentTrits()
+		{
+			attachmentActor = null;
+			attachmentMove = null;
+			attachmentPositionable = null;
+			attachmentFacing = null;
+			attachmentAM = null;
+			attachmentSkeleton = null;
+			// if (attachmentAttackBases != null && attachmentAttackBases.Length > 0)
+			// {
+			// 	foreach (var attack in attachmentAttackBases)
+			// 	{
+			// 		attack.IsAiming = false;
+			// 	}
+			// }
+			attachmentAttackBases = null;
+		}
+
+		void INotifyToAttack.ToAttack(in Target target, AttackSource source, bool queued, bool allowMove, bool forceAttack, Color? targetLineColor)
+		{
+			if (!Info.ConveyAttackAction)
+				return;
+
+			if (attachmentActor == null || attachmentActor.IsDead || !attachmentActor.IsInWorld)
+			{
+				FlushAttachmentTrits();
+				return;
+			}
+
+			if (attachmentAttackBases != null && attachmentAttackBases.Length > 0)
+			{
+				foreach (var attack in attachmentAttackBases)
+				{
+					//if (attack is AttackFollow)
+					//	(attack as AttackFollow).SetRequestedTarget(target, true);
+					//else
+					//{
+					//	// attack.IsAiming = true;
+					//	attack.DoAttack(attachmentActor, target);
+					//}
+					attack.AttackTarget(target, source, queued, false, forceAttack, null);
+				}
+			}
+		}
+
+		void INotifyToAttack.OnStopOrder(Actor self)
+		{
+			if (!Info.ConveyAttackAction)
+				return;
+
+			if (attachmentActor == null || attachmentActor.IsDead || !attachmentActor.IsInWorld)
+			{
+				FlushAttachmentTrits();
+				return;
+			}
+
+			if (attachmentAttackBases != null && attachmentAttackBases.Length > 0)
+			{
+				foreach (var attack in attachmentAttackBases)
+				{
+					attack.OnStopOrder(self);
+				}
+			}
+
+			attachmentActor.CancelActivity();
+		}
+
+	}
+
+	class AttachOrderTargeter : IOrderTargeter
+	{
+		public string OrderID => "AttachActor";
+		public int OrderPriority => 7;
+		public bool IsQueued { get; protected set; }
+		public bool TargetOverridesSelection(Actor self, in Target target, List<Actor> actorsAt, CPos xy, TargetModifiers modifiers) { return true; }
+
+		public bool CanTarget(Actor self, in Target target, ref TargetModifiers modifiers, ref string cursor)
+		{
+			if (!modifiers.HasModifier(TargetModifiers.ForceMove) ||
+				target.Type != TargetType.Actor ||
+				target.Actor == null || target.Actor.IsDead || !target.Actor.IsInWorld || target.Actor == self ||
+				target.Actor.TraitOrDefault<AttachManager>() == null)
+				return false;
+
+			var xy = self.World.Map.CellContaining(target.CenterPosition);
+			IsQueued = modifiers.HasModifier(TargetModifiers.ForceQueue);
+			if (self.IsInWorld && self.Owner.Shroud.IsExplored(xy))
+			{
+				return true;
+			}
+
+			return false;
 		}
 	}
 }

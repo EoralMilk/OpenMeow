@@ -48,6 +48,8 @@ namespace OpenRA.Graphics
 		public readonly TSMatrix4x4 BaseRestPoseInv;
 		public readonly mat4 RenderBaseRestPoseInv;
 
+		public Dictionary<ModifiedBoneRestPose, FP> modifiers = new Dictionary<ModifiedBoneRestPose, FP>();
+
 		public TSMatrix4x4 RestPose { get; private set; }
 		public TSMatrix4x4 CurrentPose;
 		public mat4 RenderRestPose { get; private set; }
@@ -65,7 +67,7 @@ namespace OpenRA.Graphics
 
 			RestPose = asset.RestPose;
 			RenderRestPose = RestPose.ToMat4();
-			if (!Skeleton.OrdererSkeleton.UseDynamicAdjBonePose && Skeleton.SkeletonAsset.Bones[Id].IsAdjBone && Skeleton.SkeletonAsset.Bones[Id].SkinId > -1)
+			if (!Skeleton.OrderedSkeleton.UseDynamicAdjBonePose && Skeleton.SkeletonAsset.Bones[Id].IsAdjBone && Skeleton.SkeletonAsset.Bones[Id].SkinId > -1)
 			{
 				BindPose = InitApplyRestPose(Id) * asset.BindPose;
 			}
@@ -87,10 +89,32 @@ namespace OpenRA.Graphics
 		{
 			RestPose = pos;
 			RenderRestPose = RestPose.ToMat4();
-			if (!Skeleton.OrdererSkeleton.UseDynamicAdjBonePose && Skeleton.SkeletonAsset.Bones[Id].IsAdjBone && Skeleton.SkeletonAsset.Bones[Id].SkinId > -1)
+			if (!Skeleton.OrderedSkeleton.UseDynamicAdjBonePose && Skeleton.SkeletonAsset.Bones[Id].IsAdjBone && Skeleton.SkeletonAsset.Bones[Id].SkinId > -1)
 			{
 				BindPose = ApplyRestPose(Id) * Skeleton.SkeletonAsset.Bones[Id].BindPose;
 			}
+
+			ModifiedRest = true;
+		}
+
+		public TSMatrix4x4 ApplyModifier(ModifiedBoneRestPose modifiedBoneRestPose, FP t)
+		{
+			if (modifiers.ContainsKey(modifiedBoneRestPose))
+			{
+				modifiers[modifiedBoneRestPose] = t;
+			}
+			else
+			{
+				modifiers.Add(modifiedBoneRestPose, t);
+			}
+
+			var mat = Skeleton.SkeletonAsset.Bones[Id].RestPose;
+			foreach (var mbkv in modifiers)
+			{
+				mat = mat * Transformation.LerpMatrix(mbkv.Key.FirstTransform, mbkv.Key.LastTransform, mbkv.Value);
+			}
+
+			return mat;
 		}
 
 		/// <summary>
@@ -155,6 +179,17 @@ namespace OpenRA.Graphics
 		}
 	}
 
+	public class SkeletonRestPoseModifier
+	{
+		public readonly string Name;
+		public readonly Dictionary<int, ModifiedBoneRestPose> BoneModifiers = new Dictionary<int, ModifiedBoneRestPose>();
+
+		public SkeletonRestPoseModifier(string name)
+		{
+			Name = name;
+		}
+	}
+
 	public class ModifiedBoneRestPose
 	{
 		public readonly string Name;
@@ -203,13 +238,13 @@ namespace OpenRA.Graphics
 		bool hasUpdatedAll = false;
 
 		public readonly SkeletonAsset SkeletonAsset;
-		public readonly OrderedSkeleton OrdererSkeleton;
+		public readonly OrderedSkeleton OrderedSkeleton;
 
 		readonly int boneSize;
 		readonly bool[] renderUpdateFlags;
 		readonly bool[] updateFlags;
 
-		bool SkipUpdateAdjBonePose => !OrdererSkeleton.UseDynamicAdjBonePose;
+		bool SkipUpdateAdjBonePose => !OrderedSkeleton.UseDynamicAdjBonePose;
 		public TSMatrix4x4 Offset { get; private set; }
 		public int InstanceID = -1;
 		public int AnimTexoffset { get; private set; }
@@ -225,6 +260,15 @@ namespace OpenRA.Graphics
 		readonly Dictionary<int, IBonePoseModifier> inverseKinematics = new Dictionary<int, IBonePoseModifier>();
 		IBonePoseModifier currentIK;
 		public static Frame EmptyFrame = new Frame(0);
+
+		public void ApplySkeletonModifier(SkeletonRestPoseModifier m, FP t)
+		{
+			foreach (var mbkv in m.BoneModifiers)
+			{
+				Bones[mbkv.Key].SetRestPose(Bones[mbkv.Key].ApplyModifier(mbkv.Value, t));
+			}
+		}
+
 		public void AddInverseKinematic(int id ,in IBonePoseModifier ik)
 		{
 			inverseKinematics.Add(id, ik);
@@ -300,7 +344,7 @@ namespace OpenRA.Graphics
 		public SkeletonInstance(in BoneAsset[] boneAssets, in SkeletonAsset asset, in OrderedSkeleton skeleton)
 		{
 			this.SkeletonAsset = asset;
-			this.OrdererSkeleton = skeleton;
+			this.OrderedSkeleton = skeleton;
 			boneSize = boneAssets.Length;
 			renderUpdateFlags = new bool[boneSize];
 			updateFlags = new bool[boneSize];
@@ -311,11 +355,11 @@ namespace OpenRA.Graphics
 				Bones[i] = new BoneInstance(boneAssets[i], this);
 			}
 
-			foreach (var mb in skeleton.ModifiedBoneRestPoses)
-			{
-				Bones[mb.Value.Id].ModifiedRest = true;
-				Bones[mb.Value.Id].SetRestPose(mb.Value.RestPose);
-			}
+			//foreach (var mb in skeleton.ModifiedBoneRestPoses)
+			//{
+			//	Bones[mb.Value.Id].ModifiedRest = true;
+			//	Bones[mb.Value.Id].SetRestPose(mb.Value.RestPose);
+			//}
 
 			FlushRenderOffset();
 			FlushLogicOffset();
@@ -550,7 +594,8 @@ namespace OpenRA.Graphics
 	{
 		public readonly string Name;
 		public readonly Dictionary<int, ModifiedBoneRestPose> ModifiedBoneRestPoses = new Dictionary<int, ModifiedBoneRestPose>();
-
+		public readonly Dictionary<string, SkeletonRestPoseModifier> SkeletonRestPoseModifiers = new Dictionary<string, SkeletonRestPoseModifier>();
+		public readonly Dictionary<int, List<SkeletonRestPoseModifier>> BoneModifiedBy = new Dictionary<int, List<SkeletonRestPoseModifier>>();
 		/// <summary>
 		/// update each tick, by actor skeleton trait.
 		/// </summary>
@@ -577,23 +622,66 @@ namespace OpenRA.Graphics
 			var info = skeletonDefine.ToDictionary();
 			if (info.ContainsKey("Bones"))
 			{
-				var bonesInfo = info["Bones"].ToDictionary();
-				foreach (var boneDefine in bonesInfo)
+				//var bonesInfo = info["BoneRests"].ToDictionary();
+				//foreach (var boneDefine in bonesInfo)
+				//{
+				//	if (asset.BonesDict.ContainsKey(boneDefine.Key))
+				//	{
+				//		var boneInfo = boneDefine.Value.ToDictionary();
+				//		var firstIsRest = ReadYamlInfo.LoadField(boneInfo, "FirstPoseAsRestPose", false);
+				//		var restPose = asset.BonesDict[boneDefine.Key].RestPose * ReadYamlInfo.LoadTransformation(boneInfo, "RestPoseModify").Matrix;
+				//		var lastPose = asset.BonesDict[boneDefine.Key].RestPose * ReadYamlInfo.LoadTransformation(boneInfo, "LastPose").Matrix;
+				//		var firstPose = asset.BonesDict[boneDefine.Key].RestPose * ReadYamlInfo.LoadTransformation(boneInfo, "FirstPose").Matrix;
+				//		var mb = new ModifiedBoneRestPose(asset.BonesDict[boneDefine.Key], firstIsRest ? firstPose : restPose, firstPose, lastPose);
+				//		ModifiedBoneRestPoses.Add(asset.BonesDict[boneDefine.Key].Id, mb);
+				//	}
+				//	else
+				//	{
+				//		throw new InvalidDataException("Skeleton " + asset.Name + " has no bone: " + boneDefine.Key);
+				//	}
+				//}
+			}
+
+			if (info.ContainsKey("BoneModifiers"))
+			{
+				var bonesInfo = info["BoneModifiers"].ToDictionary();
+				foreach (var kv in bonesInfo)
 				{
-					if (asset.BonesDict.ContainsKey(boneDefine.Key))
+					SkeletonRestPoseModifier modifier = new SkeletonRestPoseModifier(kv.Key);
+
+					var modifierInfo = kv.Value.ToDictionary();
+
+					foreach (var boneM in modifierInfo)
 					{
-						var boneInfo = boneDefine.Value.ToDictionary();
-						var firstIsRest = ReadYamlInfo.LoadField(boneInfo, "FirstPoseAsRestPose", false);
-						var restPose = asset.BonesDict[boneDefine.Key].RestPose * ReadYamlInfo.LoadTransformation(boneInfo, "RestPoseModify").Matrix;
-						var lastPose = asset.BonesDict[boneDefine.Key].RestPose * ReadYamlInfo.LoadTransformation(boneInfo, "LastPose").Matrix;
-						var firstPose = asset.BonesDict[boneDefine.Key].RestPose * ReadYamlInfo.LoadTransformation(boneInfo, "FirstPose").Matrix;
-						var mb = new ModifiedBoneRestPose(asset.BonesDict[boneDefine.Key], firstIsRest ? firstPose : restPose, firstPose, lastPose);
-						ModifiedBoneRestPoses.Add(asset.BonesDict[boneDefine.Key].Id, mb);
+						if (asset.BonesDict.ContainsKey(boneM.Key))
+						{
+							if (BoneModifiedBy.ContainsKey(asset.BonesDict[boneM.Key].Id))
+							{
+								if (BoneModifiedBy[asset.BonesDict[boneM.Key].Id] == null)
+									BoneModifiedBy[asset.BonesDict[boneM.Key].Id] = new List<SkeletonRestPoseModifier>();
+								BoneModifiedBy[asset.BonesDict[boneM.Key].Id].Add(modifier);
+							}
+							else
+							{
+								BoneModifiedBy.Add(asset.BonesDict[boneM.Key].Id, new List<SkeletonRestPoseModifier>());
+								BoneModifiedBy[asset.BonesDict[boneM.Key].Id].Add(modifier);
+							}
+
+							var boneInfo = boneM.Value.ToDictionary();
+							var firstIsRest = ReadYamlInfo.LoadField(boneInfo, "FirstPoseAsRestPose", false);
+							var restPose = ReadYamlInfo.LoadTransformation(boneInfo, "RestPoseModify").Matrix;
+							var lastPose = ReadYamlInfo.LoadTransformation(boneInfo, "LastPose").Matrix;
+							var firstPose = ReadYamlInfo.LoadTransformation(boneInfo, "FirstPose").Matrix;
+							var mb = new ModifiedBoneRestPose(asset.BonesDict[boneM.Key], firstIsRest ? firstPose : restPose, firstPose, lastPose);
+							modifier.BoneModifiers.Add(asset.BonesDict[boneM.Key].Id, mb);
+						}
+						else
+						{
+							throw new InvalidDataException("Skeleton " + asset.Name + " has no bone: " + boneM.Key);
+						}
 					}
-					else
-					{
-						throw new InvalidDataException("Skeleton " + asset.Name + " has no bone: " + boneDefine.Key);
-					}
+
+					SkeletonRestPoseModifiers.Add(modifier.Name, modifier);
 				}
 			}
 
@@ -717,11 +805,6 @@ namespace OpenRA.Graphics
 		public SkeletonInstance CreateInstance()
 		{
 			SkeletonInstance skeletonInstance = new SkeletonInstance(SkeletonAsset.Bones, SkeletonAsset, this);
-
-			foreach (var newPose in ModifiedBoneRestPoses)
-			{
-				skeletonInstance.Bones[newPose.Value.Id].SetRestPose(newPose.Value.RestPose);
-			}
 
 			return skeletonInstance;
 		}

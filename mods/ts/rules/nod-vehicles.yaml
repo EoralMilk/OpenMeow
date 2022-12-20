@@ -52,6 +52,19 @@ BGGY:
 	-DamagedByTerrain@VEINS:
 	-LeavesTrails@VEINS:
 
+BGGYTEST:
+	Inherits: BGGY
+	Tooltip:
+		Name: Test Buggy
+	RenderSprites:
+		Image: bggy
+	RenderModels:
+		Image: bggy
+	AttachPoint@TEST:
+		Offset: -215,0,533
+		# Offset: 0,0,456
+		LockFacing: True
+		# Turret: primary
 
 BIKE:
 	Inherits: ^Vehicle

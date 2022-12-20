@@ -1,4 +1,5 @@
-﻿using OpenRA.GameRules;
+﻿using System.Linq;
+using OpenRA.GameRules;
 using OpenRA.Graphics;
 using OpenRA.Mods.Common.Warheads;
 using OpenRA.Traits;
@@ -11,31 +12,22 @@ namespace OpenRA.Meow.RPG.Mechanics
 		void Consume(Item item);
 	}
 
-	public class ConsumableItemInfo : ConditionItemInfo, IRulesetLoaded
+	public interface IConsumeAction
 	{
-		public readonly int CanUse = 1;
+		void OnConsumeBy(Item selfItem, Actor user);
+	}
 
-		[WeaponReference]
-		[Desc("Has to be defined in weapons.yaml as well.")]
-		public readonly string Weapon = null;
+	public class ConsumableItemInfo : ConditionItemInfo
+	{
+		public readonly string UseAnim = null;
+
+		public readonly int UseFrame = 0;
+
+		public readonly string PutAwayAnim = null;
 
 		public override object Create(ActorInitializer init)
 		{
 			return new ConsumableItem(this, init.Self);
-		}
-
-		public WeaponInfo WeaponInfo { get; private set; }
-
-		public void RulesetLoaded(Ruleset rules, ActorInfo ai)
-		{
-			if (string.IsNullOrEmpty(Weapon))
-				return;
-
-			var weaponToLower = Weapon.ToLowerInvariant();
-			if (!rules.Weapons.TryGetValue(weaponToLower, out var weaponInfo))
-				throw new YamlException($"Weapons Ruleset does not contain an entry '{weaponToLower}'");
-
-			WeaponInfo = weaponInfo;
 		}
 	}
 
@@ -44,63 +36,70 @@ namespace OpenRA.Meow.RPG.Mechanics
 	/// </summary>
 	public class ConsumableItem : ConditionItem
 	{
-		int useTime = 0;
 		readonly ConsumableItemInfo info;
+		IConsumeAction[] consumeActions;
+		public string UseAnim => info.UseAnim;
+		public int UseFrame => info.UseFrame;
+
+		bool consuming = false;
+
+		public bool IsBeingConsumed => consuming;
+
 		public ConsumableItem(ConsumableItemInfo info, Actor self)
 			: base(info, self)
 		{
-			useTime = info.CanUse;
 			this.info = info;
 		}
 
-		public override void EquipingEffect(Actor actor, EquipmentSlot slot)
+		public override void Created(Actor self)
 		{
-			var notifies = actor.TraitsImplementing<INotifyConsumeItem>();
-			foreach (var notify in notifies)
-			{
-				if (!notify.CanConsume(this))
-				{
-					base.EquipingEffect(actor, slot);
-					EquipmentSlot.TryUnequip(actor);
-					return;
-				}
-			}
-
-			if (useTime-- > 0)
-			{
-				Consume(actor);
-			}
-
-			base.EquipingEffect(actor, slot);
-			EquipmentSlot.TryUnequip(actor);
-
-			if (useTime == 0)
-			{
-				var inventory = Inventory;
-
-				inventory?.TryRemove(actor, this);
-				actor.World.AddFrameEndTask(w =>
-					{
-						// inventory?.ItemCache.RemvoeItem(ItemActor.ActorID);
-						ItemActor.Kill(actor);
-					}
-				);
-			}
+			base.Created(self);
+			consumeActions = self.TraitsImplementing<IConsumeAction>().ToArray();
 		}
 
-
-		public virtual void Consume(Actor actor)
+		public override void EquipingEffect(Actor slotActor, EquipmentSlot slot)
 		{
-			if (info.WeaponInfo != null)
-			{
-				info.WeaponInfo.Impact(Target.FromActor(actor), ItemActor);
-			}
+			StartConsume(slotActor);
 
-			var notifies = actor.TraitsImplementing<INotifyConsumeItem>();
+			base.EquipingEffect(slotActor, slot);
+		}
+
+		public virtual void StartConsume(Actor user)
+		{
+			consuming = true;
+			ItemActor.CancelActivity();
+
+			var notifies = user.TraitsImplementing<INotifyConsumeItem>();
 			foreach (var notify in notifies)
 			{
 				notify.Consume(this);
 			}
+
+			if (!ItemActor.IsInWorld)
+			{
+				user.World.Add(ItemActor);
+			}
 		}
+
+		public void ConsumeAction(Actor user)
+		{
+			consuming = false;
+			ItemActor.TraitOrDefault<ItemSkeletonHandler>()?.ReleaseFrom(user, EquipmentSlot);
+
+			if (ItemActor == null || ItemActor.IsDead || user.IsDead)
+				return;
+
+			foreach (var consume in consumeActions)
+			{
+				consume.OnConsumeBy(this, user);
+			}
+		}
+
+		public void StopConsume(Actor user)
+		{
+			consuming = false;
+			ItemActor.TraitOrDefault<ItemSkeletonHandler>()?.ReleaseFrom(user, EquipmentSlot);
+		}
+
 	}
 }

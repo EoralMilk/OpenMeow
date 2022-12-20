@@ -117,7 +117,8 @@ VISC_SML:
 		ThumbnailSequence: idle
 		ThumbnailPalette: player
 		ThumbnailPaletteIsPlayerPalette: true
-		Weapon: Consume
+		UseAnim: act_putaway
+		UseFrame: 24
 
 VISC_LRG:
 	Inherits: ^Visceroid
@@ -170,7 +171,8 @@ VISC_LRG:
 		ThumbnailSequence: idle
 		ThumbnailPalette: player
 		ThumbnailPaletteIsPlayerPalette: true
-		Weapon: Consume
+		UseAnim: act_putaway
+		UseFrame: 24
 
 JFISH:
 	Inherits: ^Visceroid
@@ -236,7 +238,8 @@ JFISH:
 		ThumbnailSequence: idle
 		ThumbnailPalette: player
 		ThumbnailPaletteIsPlayerPalette: true
-		Weapon: Consume
+		UseAnim: act_putaway
+		UseFrame: 24
 
 MINIVEIN:
 	Inherits: ^NonBuildingStaticActor

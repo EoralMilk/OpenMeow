@@ -276,8 +276,9 @@ namespace OpenRA.Mods.Common.Traits
 		WVec currentSpeed = WVec.Zero;
 		readonly WVec initSpeed;
 		public WVec InitSpeed => initSpeed;
-		public WVec CurrentVelocity => currentSpeed;
+		public WVec CurrentVelocity => SteadyBinding ? WVec.Zero : currentSpeed;
 
+		public bool SteadyBinding { get; set; }
 		public WAngle GetTurnSpeed(bool isIdleTurn)
 		{
 			// A MovementSpeed of zero indicates either a speed modifier of zero percent or that the trait is paused or disabled.
@@ -822,9 +823,17 @@ namespace OpenRA.Mods.Common.Traits
 			SetPosition(self, self.World.Map.CenterOfCell(cell) + new WVec(0, 0, CenterPosition.Z));
 		}
 
+		Func<WPos> bindTarget = null;
+		public void BindPoseTo(Func<WPos> bindTarget)
+		{
+			this.bindTarget = bindTarget;
+		}
+
 		public void SetPosition(Actor self, WPos pos, bool useCenterPose = false)
 		{
 			CenterPosition = pos;
+			if (bindTarget != null)
+				CenterPosition = bindTarget();
 
 			if (!self.IsInWorld)
 				return;
@@ -988,7 +997,7 @@ namespace OpenRA.Mods.Common.Traits
 
 		public MovementType CurrentMovementTypes
 		{
-			get => movementTypes;
+			get => SteadyBinding ? MovementType.None : movementTypes;
 
 			set
 			{

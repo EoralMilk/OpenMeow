@@ -43,8 +43,6 @@ namespace OpenRA.Meow.RPG.Mechanics
 		public readonly int FootDownFrameLeft = 10;
 		public readonly int FootDownFrameRight = 22;
 
-		public readonly string[] BellyBones = Array.Empty<string>();
-
 		public readonly string[] ChurnSounds = Array.Empty<string>();
 		public readonly float ChurnMinSoundScale = 0.2f;
 		public readonly float ChurnMaxSoundScale = 3f;
@@ -77,7 +75,7 @@ namespace OpenRA.Meow.RPG.Mechanics
 	}
 
 	public class BlendTreeHandler : IBlendTreeHandler, IPrepareForAttack, ITick, INotifyCreated,
-		INotifyLongJump, INotifyPickUpItem, INotifyConsumeItem
+		INotifyLongJump, INotifyPickUpItem
 	{
 		readonly BlendTree blendTree;
 		readonly BlendTreeHandlerInfo info;
@@ -142,11 +140,6 @@ namespace OpenRA.Meow.RPG.Mechanics
 		IEnumerable<int> damageModifiers;
 
 		readonly int footLId, footRId;
-		readonly int[] bellyBones;
-		readonly HashSet<int> hashBellyBones;
-		readonly ModifiedBoneRestPose[] bellyScalesMb;
-		readonly ModifiedBoneRestPose[] otherScalesMb;
-
 
 		int GetBoneId(string name)
 		{
@@ -171,39 +164,6 @@ namespace OpenRA.Meow.RPG.Mechanics
 
 			footLId = GetBoneId(info.LeftFootBone);
 			footRId = GetBoneId(info.RightFootBone);
-
-			if (info.BellyBones.Length == 0)
-				throw new Exception("Belly bones length can not be zero");
-			bellyBones = new int[info.BellyBones.Length];
-			hashBellyBones = new HashSet<int>();
-			for (int i = 0; i < bellyBones.Length; i++)
-			{
-				bellyBones[i] = GetBoneId(info.BellyBones[i]);
-				hashBellyBones.Add(bellyBones[i]);
-				if (!withSkeleton.OrderedSkeleton.ModifiedBoneRestPoses.ContainsKey(bellyBones[i]))
-					throw new Exception("bellyBones  " + info.BellyBones[i] + " has no modifyer");
-			}
-
-			List<ModifiedBoneRestPose> tempBellyScale = new List<ModifiedBoneRestPose>();
-			List<ModifiedBoneRestPose> tempOtherScale = new List<ModifiedBoneRestPose>();
-
-			foreach (var kv in withSkeleton.OrderedSkeleton.ModifiedBoneRestPoses)
-			{
-				if (kv.Value.OnlyRestPose)
-					continue;
-
-				if (hashBellyBones.Contains(kv.Key))
-				{
-					tempBellyScale.Add(kv.Value);
-				}
-				else
-				{
-					tempOtherScale.Add(kv.Value);
-				}
-			}
-
-			bellyScalesMb = tempBellyScale.ToArray();
-			otherScalesMb = tempOtherScale.ToArray();
 
 			walk = withSkeleton.OrderedSkeleton.SkeletonAsset.GetSkeletalAnim(withSkeleton.Image, info.Walk);
 			guard = withSkeleton.OrderedSkeleton.SkeletonAsset.GetSkeletalAnim(withSkeleton.Image, info.Guard);
@@ -426,62 +386,8 @@ namespace OpenRA.Meow.RPG.Mechanics
 			playOverideBlend = false;
 		}
 
-		FP maxStomachSize = 10;
-		FP stomachSize = 0;
-		FP fat = 0;
-		int churnTick = 0;
-		public void Consume(Item item)
-		{
-			stomachSize = TSMath.Clamp(stomachSize + 1, 0, maxStomachSize);
-		}
-
-		public bool CanConsume(Item item)
-		{
-			return stomachSize <= (maxStomachSize - 1);
-		}
-
 		public void Tick(Actor self)
 		{
-			if (stomachSize > 0)
-			{
-				if (churnTick++ >= info.ChurnInterval)
-				{
-					var churnSound = info.ChurnSounds.RandomOrDefault(self.World.LocalRandom);
-					if (churnSound != null)
-						Game.Sound.Play(SoundType.World, churnSound, self.CenterPosition, float2.Lerp(info.ChurnMinSoundScale, info.ChurnMaxSoundScale, (float)(stomachSize / maxStomachSize)));
-					health.InflictDamage(self, self, new Damage(-health.MaxHP / 100 * info.ChurnHealthPercentage), true);
-					churnTick = 0;
-				}
-
-				foreach (var bg in bellyScalesMb)
-				{
-					withSkeleton.Skeleton.Bones[bg.Id].SetRestPose(
-						Transformation.LerpMatrix(bg.FirstTransform, bg.LastTransform, stomachSize / maxStomachSize));
-				}
-
-				stomachSize -= info.DigestionSpeed;
-				if (stomachSize <= 0)
-				{
-					stomachSize = 0;
-					var emptySound = info.EmptySounds.RandomOrDefault(self.World.LocalRandom);
-					if (emptySound != null)
-						Game.Sound.Play(SoundType.World, emptySound, self.CenterPosition, 1f);
-				}
-
-				fat += 0.002f;
-			}
-			else
-				fat -= 0.002f;
-
-			fat = TSMath.Clamp(fat, 0, 1);
-
-			// other mb
-			foreach (var bg in otherScalesMb)
-			{
-				withSkeleton.Skeleton.Bones[bg.Id].SetRestPose(
-					Transformation.LerpMatrix(bg.FirstTransform, bg.LastTransform, fat));
-			}
-
 			if (playOverideBlend || (carryable != null && carryable.Reserved))
 			{
 				overideSwitch.SetFlag(true);

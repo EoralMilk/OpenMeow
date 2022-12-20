@@ -149,9 +149,18 @@ namespace OpenRA.Mods.Common.Traits
 
 		public void SetPosition(Actor self, CPos cell, SubCell subCell = SubCell.Any) { SetPosition(self, self.World.Map.CenterOfCell(cell)); }
 
+		Func<WPos> bindTarget = null;
+		public void BindPoseTo(Func<WPos> bindTarget)
+		{
+			this.bindTarget = bindTarget;
+		}
+
 		public void SetCenterPosition(Actor self, WPos pos)
 		{
+			if (bindTarget != null)
+				pos = bindTarget();
 			CenterPosition = pos;
+
 			self.World.ScreenMap.AddOrUpdate(self);
 
 			// This can be called from the constructor before notifyCenterPositionChanged is assigned.
@@ -163,7 +172,10 @@ namespace OpenRA.Mods.Common.Traits
 		public void SetPosition(Actor self, WPos pos, bool useCenterPose = false)
 		{
 			self.World.ActorMap.RemoveInfluence(self, this);
+			if (bindTarget != null)
+				pos = bindTarget();
 			CenterPosition = pos;
+
 			TopLeft = self.World.Map.CellContaining(pos);
 			self.World.ActorMap.AddInfluence(self, this);
 

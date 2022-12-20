@@ -44,6 +44,7 @@ namespace OpenRA.Mods.Common.Traits
 	public abstract class ConditionalTrait<InfoType> : IObservesVariables, IDisabledTrait, INotifyCreated, ICheckDeath, ISync where InfoType : ConditionalTraitInfo
 	{
 		public readonly InfoType Info;
+		Actor self;
 
 		// Overrides must call `base.GetVariableObservers()` to avoid breaking RequiresCondition.
 		public virtual IEnumerable<VariableObserver> GetVariableObservers()
@@ -53,15 +54,40 @@ namespace OpenRA.Mods.Common.Traits
 		}
 
 		[Sync]
-		public bool IsTraitDisabled { get; private set; }
+		public bool IsTraitDisabled => isTraitDisabled && !ForceDisabled;
+
+		bool isTraitDisabled;
+		bool forceDisabled;
+		public bool ForceDisabled
+		{
+			get
+			{
+				return forceDisabled;
+			}
+			set
+			{
+				if (forceDisabled != value)
+				{
+					var wasDisabled = isTraitDisabled;
+					forceDisabled = value;
+					if (isTraitDisabled != wasDisabled)
+					{
+						if (wasDisabled)
+							TraitEnabled(self);
+						else
+							TraitDisabled(self);
+					}
+				}
+			}
+		}
 
 		public ConditionalTrait(InfoType info)
 		{
 			Info = info;
-
+			forceDisabled = false;
 			// Conditional traits will be enabled (if appropriate) by the Actor
 			// calling ConditionConsumers after INotifyCreated runs.
-			IsTraitDisabled = Info.RequiresCondition != null;
+			isTraitDisabled = Info.RequiresCondition != null;
 		}
 
 		protected virtual void Created(Actor self)
@@ -70,7 +96,10 @@ namespace OpenRA.Mods.Common.Traits
 				TraitEnabled(self);
 		}
 
-		void INotifyCreated.Created(Actor self) { Created(self); }
+		void INotifyCreated.Created(Actor self) {
+			this.self = self;
+			Created(self);
+		}
 
 		void RequiredConditionsChanged(Actor self, IReadOnlyDictionary<string, int> conditions)
 		{
@@ -79,10 +108,10 @@ namespace OpenRA.Mods.Common.Traits
 			if (self.IsDead && Info.DisableIfDeath)
 				return;
 
-			var wasDisabled = IsTraitDisabled;
-			IsTraitDisabled = !Info.RequiresCondition.Evaluate(conditions);
+			var wasDisabled = isTraitDisabled;
+			isTraitDisabled = !Info.RequiresCondition.Evaluate(conditions);
 
-			if (IsTraitDisabled != wasDisabled)
+			if (isTraitDisabled != wasDisabled)
 			{
 				if (wasDisabled)
 					TraitEnabled(self);
@@ -91,13 +120,13 @@ namespace OpenRA.Mods.Common.Traits
 			}
 		}
 
-		public virtual void CheckDeath(Actor self)
+		public void CheckDeath(Actor self)
 		{
-			var wasDisabled = IsTraitDisabled;
+			var wasDisabled = isTraitDisabled;
 			if (self.IsDead && Info.DisableIfDeath)
-				IsTraitDisabled = true;
+				isTraitDisabled = true;
 
-			if (IsTraitDisabled != wasDisabled)
+			if (isTraitDisabled != wasDisabled)
 			{
 				if (wasDisabled)
 					TraitEnabled(self);

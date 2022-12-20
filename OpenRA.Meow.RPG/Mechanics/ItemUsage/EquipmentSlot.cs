@@ -75,6 +75,7 @@ namespace OpenRA.Meow.RPG.Mechanics
 		List<Item> autoEquip;
 		Inventory inventory;
 		INotifyEquip[] equipNotifiers = Array.Empty<INotifyEquip>();
+		INotifyConsumeItem[] consumeNotifiers = Array.Empty<INotifyConsumeItem>();
 		public RenderMeshes RenderMeshes { get; private set; }
 		public WithSkeleton SkeletonBind { get; private set; }
 		public int BoneId { get; private set; }
@@ -106,6 +107,7 @@ namespace OpenRA.Meow.RPG.Mechanics
 			inventory = self.TraitOrDefault<Inventory>();
 			RenderMeshes = self.TraitOrDefault<RenderMeshes>();
 			equipNotifiers = self.TraitsImplementing<INotifyEquip>().ToArray();
+			consumeNotifiers = self.TraitsImplementing<INotifyConsumeItem>().ToArray();
 
 			if (info.EquipmentSkeleton != null)
 			{
@@ -208,6 +210,9 @@ namespace OpenRA.Meow.RPG.Mechanics
 			if (equipNotifiers.Any(notifyEquip => !notifyEquip.CanEquip(self, item)))
 				return false;
 
+			if (item is ConsumableItem && consumeNotifiers.Any(notify => !notify.CanConsume(item)))
+				return false;
+
 			if (Item != null && !CanUnequip(self))
 				return false;
 
@@ -276,6 +281,15 @@ namespace OpenRA.Meow.RPG.Mechanics
 
 			return true;
 		}
+
+		public void RemoveItem(Actor self)
+		{
+			if (Item == null)
+				return;
+			Item.EquipmentSlot = null;
+			Item = null;
+		}
+
 
 		public void ResolveOrder(Actor self, Order order)
 		{

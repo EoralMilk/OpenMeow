@@ -32,6 +32,8 @@ namespace OpenRA.Mods.Common.Traits
 		public HashSet<string> Reject => Info.Reject;
 		public HashSet<string> Except => Info.Except;
 
+		public virtual bool Rejecting => true;
+
 		public RejectsOrders(RejectsOrdersInfo info)
 			: base(info) { }
 	}
@@ -40,7 +42,7 @@ namespace OpenRA.Mods.Common.Traits
 	{
 		public static bool AcceptsOrder(this Actor self, string orderString)
 		{
-			var rejectsOrdersTraits = self.TraitsImplementing<RejectsOrders>().Where(t => !t.IsTraitDisabled).ToArray();
+			var rejectsOrdersTraits = self.TraitsImplementing<RejectsOrders>().Where(t => !t.IsTraitDisabled && t.Rejecting).ToArray();
 			if (rejectsOrdersTraits.Length == 0)
 				return true;
 

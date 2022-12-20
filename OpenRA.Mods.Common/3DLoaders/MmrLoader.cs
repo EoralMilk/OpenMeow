@@ -315,7 +315,7 @@ namespace OpenRA.Mods.Common.Graphics
 							}
 					}
 
-					float allWeight = boneWeights[0].Item2 + boneWeights[1].Item2 + boneWeights[2].Item2 + boneWeights[3].Item2;
+					float allWeight = boneWeights[0].Item2 + boneWeights[1].Item2 + boneWeights[2].Item2 + boneWeights[3].Item2 + float.Epsilon;
 					boneWeights[0] = (boneWeights[0].Item1, boneWeights[0].Item2 / allWeight);
 					boneWeights[1] = (boneWeights[1].Item1, boneWeights[1].Item2 / allWeight);
 					boneWeights[2] = (boneWeights[2].Item1, boneWeights[2].Item2 / allWeight);

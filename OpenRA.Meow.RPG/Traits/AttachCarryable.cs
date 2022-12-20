@@ -122,6 +122,7 @@ namespace OpenRA.Meow.RPG.Traits
 			Mobile.RemoveInfluence();
 			Mobile.OccupySpace = false;
 			Mobile.TerrainOrientationIgnore = true;
+			Mobile.ForceDisabled = true;
 
 			if (carriedToken == Actor.InvalidConditionToken)
 				carriedToken = Self.GrantCondition(Info.CarriedCondition);
@@ -132,7 +133,7 @@ namespace OpenRA.Meow.RPG.Traits
 		{
 			if (!attached)
 				return;
-
+			Mobile.ForceDisabled = false;
 			Mobile.OccupySpace = true;
 			Mobile.AddInfluence();
 			Mobile.TerrainOrientationIgnore = false;

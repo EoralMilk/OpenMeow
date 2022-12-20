@@ -87,6 +87,7 @@ namespace OpenRA.Mods.Common.Traits
 		protected INotifyAiming[] notifyAiming;
 		protected Func<IEnumerable<Armament>> getArmaments;
 		protected IPrepareForAttack[] prepareForAttacks;
+		protected INotifyToAttack[] notifyToAttacks;
 		readonly Actor self;
 
 		bool wasAiming;
@@ -102,6 +103,7 @@ namespace OpenRA.Mods.Common.Traits
 			facing = self.TraitOrDefault<IFacing>();
 			positionable = self.TraitOrDefault<IPositionable>();
 			notifyAiming = self.TraitsImplementing<INotifyAiming>().ToArray();
+			notifyToAttacks = self.TraitsImplementing<INotifyToAttack>().ToArray();
 			prepareForAttacks = self.TraitsImplementing<IPrepareForAttack>().ToArray();
 			getArmaments = InitializeGetArmaments(self);
 
@@ -242,6 +244,11 @@ namespace OpenRA.Mods.Common.Traits
 		// Some 3rd-party mods rely on this being public
 		public virtual void OnStopOrder(Actor self)
 		{
+			foreach (var nta in notifyToAttacks)
+			{
+				nta.OnStopOrder(self);
+			}
+
 			// We don't want Stop orders from traits other than Mobile or Aircraft to cancel Resupply activity.
 			// Resupply is always either the main activity or a child of ReturnToBase.
 			// TODO: This should generally only cancel activities queued by this trait.
@@ -457,6 +464,10 @@ namespace OpenRA.Mods.Common.Traits
 			var activity = GetAttackActivity(self, source, target, allowMove, forceAttack, targetLineColor);
 			self.QueueActivity(queued, activity);
 			OnResolveAttackOrder(self, activity, target, queued, forceAttack);
+			foreach (var nta in notifyToAttacks)
+			{
+				nta.ToAttack(target, source, queued, allowMove, forceAttack, targetLineColor);
+			}
 		}
 
 		public virtual void OnResolveAttackOrder(Actor self, Activity activity, in Target target, bool queued, bool forceAttack) { }

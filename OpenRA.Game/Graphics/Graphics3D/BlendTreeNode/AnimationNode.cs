@@ -16,7 +16,7 @@ namespace OpenRA.Graphics
 		bool backwards;
 		SkeletalAnim animation;
 		readonly Dictionary<int, List<Action>> frameActions = new Dictionary<int, List<Action>>();
-
+		Action FallbackAction = null;
 		public void AddFrameAction(int frame, in Action action)
 		{
 			if (frameActions.ContainsKey(frame))
@@ -40,6 +40,11 @@ namespace OpenRA.Graphics
 			}
 		}
 
+		public void ChangeFallbackAcition(Action act)
+		{
+			FallbackAction = act;
+		}
+
 		public AnimationNode(string name, uint id, BlendTree blendTree, AnimMask animMask, SkeletalAnim animation)
 			: base(name, id, blendTree, animMask)
 		{
@@ -53,6 +58,9 @@ namespace OpenRA.Graphics
 			this.animation = animation;
 			frame = 0;
 			KeepingEnd = false;
+			frameActions.Clear();
+			if (FallbackAction != null)
+				FallbackAction();
 		}
 
 		public override void UpdateFrameTick()

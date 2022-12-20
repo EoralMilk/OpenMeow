@@ -22,11 +22,12 @@ namespace OpenRA.Mods.Common.Activities
 		readonly IPositionable pos;
 
 		WVec fallVector;
-		readonly int maxVelocity;
-
-		readonly int gravityChangeInterval;
-		readonly int maxGravity;
-		readonly int gravityAcceleration;
+		int speed = 0;
+		readonly int maxVelocity = 512;
+		readonly int gravityChangeInterval = 5;
+		int gravity = 0;
+		readonly int maxGravity = 18;
+		readonly int gravityAcceleration = 1;
 
 		readonly WeaponInfo weapon;
 		readonly BitSet<DamageType> fallDamageTypes;
@@ -34,13 +35,14 @@ namespace OpenRA.Mods.Common.Activities
 		readonly WPos dropPosition;
 		WPos currentPosition;
 		bool triggered = false;
-		int gravity = 0;
-		int gravityTick = 0;
-		int speed = 0;
 
-		public FallDown(Actor self, WPos dropPosition, int fallRate)
+		int gravityTick = 0;
+
+		public WVec BaseVelocity = WVec.Zero;
+		public bool BrutalLand = true;
+		public FallDown(Actor self, WPos dropPosition, int fallRate, bool advanced = false)
 		{
-			enableAdvanceFallDown = false;
+			enableAdvanceFallDown = advanced;
 			pos = self.TraitOrDefault<IPositionable>();
 			IsInterruptible = false;
 			fallVector = new WVec(0, 0, fallRate);
@@ -88,7 +90,7 @@ namespace OpenRA.Mods.Common.Activities
 					weapon.Impact(Target.FromPos(self.CenterPosition), self);
 
 				var health = self.TraitOrDefault<Health>();
-				if (health != null && maxVelocity > 0)
+				if (health != null && maxVelocity > 0 && BrutalLand)
 				{
 					var damage = health.MaxHP * speed / maxVelocity;
 					health.InflictDamage(self, self, new Damage(damage, fallDamageTypes), true);
@@ -123,7 +125,7 @@ namespace OpenRA.Mods.Common.Activities
 				}
 
 				speed = speed >= maxVelocity ? maxVelocity : speed + gravity;
-				fallVector = new WVec(0, 0, speed);
+				fallVector = -BaseVelocity + new WVec(0, 0, speed);
 			}
 
 			pos.SetCenterPosition(self, currentPosition);

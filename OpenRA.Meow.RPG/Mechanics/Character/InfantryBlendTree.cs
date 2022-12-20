@@ -4,6 +4,7 @@ using System.Linq;
 using OpenRA.Graphics;
 using OpenRA.Mods.Common;
 using OpenRA.Mods.Common.Traits;
+using OpenRA.Mods.Common.Traits.Render;
 using OpenRA.Mods.Common.Traits.Trait3D;
 using OpenRA.Primitives;
 using OpenRA.Traits;
@@ -109,7 +110,7 @@ namespace OpenRA.Meow.RPG.Mechanics
 	}
 
 	public class InfantryBlendTree : IBlendTreeHandler, IPrepareForAttack, ITick, INotifyCreated, INotifyAttack, INotifyAiming,
-		INotifyDamage, IDamageModifier, ISpeedModifier, INotifyKilled, INotifyEquip
+		INotifyDamage, IDamageModifier, ISpeedModifier, INotifyKilled, INotifyEquip, INotifyConsumeItem
 	{
 		readonly BlendTree blendTree;
 		readonly InfantryBlendTreeInfo info;
@@ -331,6 +332,8 @@ namespace OpenRA.Meow.RPG.Mechanics
 			shotUpper = new OneShot("Upper", id++, blendTree, uppermask, switchMoveUpper, animOverride, OneShot.ShotEndType.Recover, 5);
 
 			merge = new Blend2("Merge", id++, blendTree, allvalidmask, switchMoveLower, shotUpper);
+
+			merge.BlendValue = FP.One;
 
 			shotIdleOverride = new OneShot("IdleOverride", id++, blendTree, allvalidmask, merge, animIdleOverride, OneShot.ShotEndType.Recover, info.IdleBlendFadeTick);
 
@@ -983,7 +986,7 @@ namespace OpenRA.Meow.RPG.Mechanics
 			if (currentPose == PoseState.Prone && currentState == InfantryState.Action)
 				return 0;
 
-			return currentPose == PoseState.Prone ? info.ProneSpeedModifier : 100;
+			return currentPose != PoseState.Stand ? info.ProneSpeedModifier : 100;
 		}
 
 		bool deathFade = false;
@@ -1086,6 +1089,11 @@ namespace OpenRA.Meow.RPG.Mechanics
 			if (currentState == InfantryState.Die)
 				return true;
 
+			if (item is ConsumableItem && (item as ConsumableItem).IsBeingConsumed == true)
+			{
+				return false;
+			}
+
 			var animRef = item.ItemActor.TraitOrDefault<WithEquipmentAnimation>();
 			if (animRef == null)
 				return true;
@@ -1133,6 +1141,80 @@ namespace OpenRA.Meow.RPG.Mechanics
 				// 	currentState = lastState;
 				// 	shotUpper.ShotEndAction = null;
 				// };
+				shotUpper.ShotEndBlendAction = () =>
+				{
+					currentState = lastState;
+					currentAction = ActionType.None;
+					shotUpper.ShotEndBlendAction = null;
+				};
+
+				shotUpper.StartShot();
+				shotLower.StartShot();
+			}
+		}
+
+		public bool CanConsume(Item item)
+		{
+			if (currentState == InfantryState.Die)
+				return false;
+
+			return currentAction != ActionType.Switch && currentPose != PoseState.ProneToStand && currentPose != PoseState.StandToProne;
+		}
+
+		public void Consume(Item item)
+		{
+			var anim = (item as ConsumableItem).UseAnim;
+			var useFrame = (item as ConsumableItem).UseFrame;
+			if (!string.IsNullOrEmpty(anim))
+			{
+				// make a smooth blend
+				// get the current blend result than use OneShot to make a smooth Blend
+				var currentAnimBlend = new SkeletalAnim(GetResult());
+				animFullOverride.ChangeAnimation(currentAnimBlend);
+				shotFullOverride.FadeTick = info.CommonBlendFadeTick;
+				shotFullOverride.StartShot();
+				shotFullOverride.ForceShotTickToFadeTick();
+
+				// item.EquipmentSlot?.ToggleEquipmentRender(false);
+				var takeOutAnim = withSkeleton.OrderedSkeleton.SkeletonAsset.GetSkeletalAnim(withSkeleton.Image, anim);
+				animOverride.ChangeAnimation(takeOutAnim);
+				bool hasConsumed = false;
+				animOverride.AddFrameAction(useFrame, () =>
+				{
+					self.World.AddFrameEndTask(w => animOverride.ClearFrameAction(useFrame));
+					(item as ConsumableItem).ConsumeAction(self);
+					item.EquipmentSlot?.RemoveItem(item.EquipmentSlot.SlotOwnerActor); // directly remove, avoid the render toggle
+					item.Inventory?.TryRemove(item.Inventory.InventoryActor, item);
+					hasConsumed = true;
+				});
+				animOverride.ChangeFallbackAcition(() =>
+				{
+					animOverride.ChangeFallbackAcition(null);
+					(item as ConsumableItem).StopConsume(self);
+					item.EquipmentSlot?.RemoveItem(item.EquipmentSlot.SlotOwnerActor);
+					item.Inventory?.TryRemove(item.Inventory.InventoryActor, item);
+					hasConsumed = true;
+				});
+				var lastState = currentState;
+				if (lastState == InfantryState.Action)
+					lastState = InfantryState.Idle;
+
+				currentAction = ActionType.Switch;
+				currentState = InfantryState.Action;
+
+				shotUpper.ShotEndAction = () =>
+				{
+					shotUpper.ShotEndAction = null;
+					self.World.AddFrameEndTask(w => animOverride.ClearFrameAction(useFrame));
+					animOverride.ChangeFallbackAcition(null);
+					if (!hasConsumed)
+					{
+						(item as ConsumableItem).StopConsume(self);
+						item.EquipmentSlot?.RemoveItem(item.EquipmentSlot.SlotOwnerActor);
+						item.Inventory?.TryRemove(item.Inventory.InventoryActor, item);
+					}
+				};
+
 				shotUpper.ShotEndBlendAction = () =>
 				{
 					currentState = lastState;

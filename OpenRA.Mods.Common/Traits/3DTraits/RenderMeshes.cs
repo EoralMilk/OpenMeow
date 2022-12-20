@@ -8,6 +8,11 @@ using OpenRA.Traits;
 
 namespace OpenRA.Mods.Common.Traits.Trait3D
 {
+	public interface IRenderMeshesUpdate
+	{
+		void RenderUpdateMeshes(Actor self);
+	}
+
 	public class RenderMeshesInfo : TraitInfo
 	{
 		[Desc("Defaults to the actor name.")]
@@ -25,13 +30,14 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 	{
 		public readonly RenderMeshesInfo Info;
 		readonly List<MeshInstance> meshes = new List<MeshInstance>();
-
 		public readonly World3DRenderer W3dr;
 		bool hasSkeleton;
 		readonly Dictionary<string, WithSkeleton> withSkeletons = new Dictionary<string, WithSkeleton>();
 		readonly Actor self;
 		Color remap;
 		bool created = false;
+
+		IRenderMeshesUpdate[] renderMeshesUpdates;
 
 		public float RenderAlpha = 1;
 
@@ -44,6 +50,8 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 
 		public void Created(Actor self)
 		{
+			renderMeshesUpdates = self.TraitsImplementing<IRenderMeshesUpdate>().ToArray();
+
 			foreach (var ws in self.TraitsImplementing<WithSkeleton>())
 			{
 				withSkeletons.Add(ws.Name, ws);
@@ -80,6 +88,9 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 				remap = self.Owner.Color;
 				initializePalettes = false;
 			}
+
+			foreach (var ru in renderMeshesUpdates)
+				ru.RenderUpdateMeshes(self);
 
 			if (created && meshes != null && meshes.Count > 0)
 				yield return new MeshRenderable(meshes, self.CenterPosition, Info.ZOffset, remap, Info.Scale, RenderAlpha, float3.Ones, TintModifiers.None, this);

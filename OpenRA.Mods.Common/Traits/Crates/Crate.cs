@@ -187,6 +187,12 @@ namespace OpenRA.Mods.Common.Traits
 		public WPos CenterPosition { get; private set; }
 		public bool OccupySpace { get; set; }
 
+		Func<WPos> bindTarget = null;
+		public void BindPoseTo(Func<WPos> bindTarget)
+		{
+			this.bindTarget = bindTarget;
+		}
+
 		// Sets the location (Location) and position (CenterPosition)
 		public void SetPosition(Actor self, WPos pos, bool useCenterPose = false)
 		{
@@ -208,6 +214,9 @@ namespace OpenRA.Mods.Common.Traits
 		// Sets only the CenterPosition
 		public void SetCenterPosition(Actor self, WPos pos)
 		{
+			if (bindTarget != null)
+				pos = bindTarget();
+
 			CenterPosition = pos;
 			self.World.UpdateMaps(self, this);
 

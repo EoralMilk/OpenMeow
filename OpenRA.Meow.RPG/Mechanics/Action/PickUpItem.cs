@@ -101,6 +101,51 @@ namespace OpenRA.Meow.RPG.Mechanics
 			}
 		}
 
+		public bool FindItemToPick(Actor self, string itemType, WDist range)
+		{
+			var targetsInRange = self.World.FindActorsInCircle(self.CenterPosition, range)
+				.Where(a => {
+					var item = a.TraitOrDefault<Item>();
+					return item != null && item.Type == itemType;
+				});
+
+			if (!targetsInRange.Any())
+				return false;
+
+			Actor target = targetsInRange.First();
+			if (targetsInRange.Count() > 1)
+			{
+				var dist = (target.CenterPosition - self.CenterPosition).LengthSquared;
+				foreach (var a in targetsInRange)
+				{
+					var cdist = (a.CenterPosition - self.CenterPosition).LengthSquared;
+					if (cdist < dist)
+					{
+						target = a;
+						dist = cdist;
+					}
+				}
+			}
+
+			self.CancelActivity();
+			var maxDistance = Info.HasDistanceLimit ? Info.MaxDistance : (int?)null;
+			if (maxDistance != null)
+				self.QueueActivity(move.MoveWithinRange(Target.FromActor(target), WDist.FromCells(maxDistance.Value), targetLineColor: Info.TargetLineColor));
+			self.QueueActivity(new PickUp(self, info, target));
+			self.ShowTargetLines();
+			return true;
+		}
+
+		public void PickUp(Actor target)
+		{
+			self.CancelActivity();
+			var maxDistance = Info.HasDistanceLimit ? Info.MaxDistance : (int?)null;
+			if (maxDistance != null)
+				self.QueueActivity(move.MoveWithinRange(Target.FromActor(target), WDist.FromCells(maxDistance.Value), targetLineColor: Info.TargetLineColor));
+			self.QueueActivity(new PickUp(self, info, target));
+			self.ShowTargetLines();
+		}
+
 		string IOrderVoice.VoicePhraseForOrder(Actor self, Order order)
 		{
 			return order.OrderString == "PickUpItem" ? Info.Voice : null;
@@ -170,9 +215,9 @@ namespace OpenRA.Meow.RPG.Mechanics
 			}
 
 			var facingToTarget = true;
+			facing.Facing = Util.TickFacing(facing.Facing, desiredFacing, facing.TurnSpeed);
 			if (desiredFacing != facing.Facing)
 			{
-				facing.Facing = Util.TickFacing(facing.Facing, desiredFacing, facing.TurnSpeed);
 				facingToTarget = false;
 			}
 
@@ -241,15 +286,13 @@ namespace OpenRA.Meow.RPG.Mechanics
 			if (modifiers.HasModifier(TargetModifiers.ForceAttack) ||
 				modifiers.HasModifier(TargetModifiers.ForceMove) ||
 				target.Type != TargetType.Actor ||
-				target.Actor == null || target.Actor.IsDead || !target.Actor.IsInWorld ||
+				target.Actor == null || target.Actor.IsDead || !target.Actor.IsInWorld || target.Actor == self ||
 				target.Actor.TraitOrDefault<Item>() == null)
 				return false;
 
 			var xy = self.World.Map.CellContaining(target.CenterPosition);
 			IsQueued = modifiers.HasModifier(TargetModifiers.ForceQueue);
-			var positionable = self.Info.TraitInfo<IPositionableInfo>();
-			if (self.IsInWorld && self.Owner.Shroud.IsExplored(xy) &&
-				positionable.CanEnterCell(self.World, null, xy))
+			if (self.IsInWorld && self.Owner.Shroud.IsExplored(xy))
 			{
 				cursor = info.TargetCursor;
 				return true;

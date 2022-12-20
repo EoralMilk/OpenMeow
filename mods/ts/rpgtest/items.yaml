@@ -18,6 +18,7 @@ clothitem:
 testunderwear:
 	GearItem:
 		Name: underwaer
+		Type: UnderWear
 		ThumbnailImage: items
 		ThumbnailSequence: clustermissile
 		Condition: usetestunderwear

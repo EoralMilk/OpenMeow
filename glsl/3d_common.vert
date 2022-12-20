@@ -47,8 +47,9 @@ uniform int skinBoneTexWidth;
 
 // mat2x4 bindDq1, bindDq2, bindDq3, bindDq4;
 // vec3 bindS1, bindS2, bindS3, bindS4;
-mat4 m1, m2, m3 ,m4;
-vec3 s1, s2, s3, s4;
+mat4 m[4];
+vec3 s[4];
+mat2x4 dq[4];
 mat4 mMatrix = mat4(0.0f);
 
 int animTexoffset;
@@ -231,25 +232,22 @@ mat2x4 DualQuaternionMultiply(mat2x4 dq1, mat2x4 dq2)
 
 mat2x4 GetBoneTransform(vec4 weights)
 {
-	float sum_weight = weights.x + weights.y + weights.z + weights.w;
+	float sum_weight = weights[0] + weights[1] + weights[2] + weights[3];
 
 	// Fetch bones
-	mat2x4 dq0 = GetDualQuat(m1, s1);// DualQuaternionFromMat4(m1, s1);
-	mat2x4 dq1 = GetDualQuat(m2, s2);// DualQuaternionFromMat4(m2, s2);
-	mat2x4 dq2 = GetDualQuat(m3, s3);// DualQuaternionFromMat4(m3, s3);
-	mat2x4 dq3 = GetDualQuat(m4, s4);// DualQuaternionFromMat4(m4, s4);
+	for (int i = 0; i < MAX_BONE_LENGTH; i++)
+		dq[i] = GetDualQuat(m[i], s[i]);// DualQuaternionFromMat4(m1, s1);
 
 	// Ensure all bone transforms are in the same neighbourhood
-	weights.y *= signnozero(dot(dq0[0], dq1[0]));
-	weights.z *= signnozero(dot(dq0[0], dq2[0]));
-	weights.w *= signnozero(dot(dq0[0], dq3[0]));
+	for (int i = 1; i < MAX_BONE_LENGTH; i++)
+		weights[i] *= signnozero(dot(dq[0][0], dq[i][0]));
+	// weights.z *= signnozero(dot(dq[0][0], dq[2][0]));
+	// weights.w *= signnozero(dot(dq[0][0], dq[3][0]));
 
 	// Blend
-	mat2x4 result =
-		weights.x * dq0 +
-		weights.y * dq1 +
-		weights.z * dq2 +
-		weights.w * dq3;
+	mat2x4 result = weights[0] * dq[0];
+	for (int i = 1; i < MAX_BONE_LENGTH; i++)
+		result += weights[i] * dq[i];
 
 	result[0][3] += float(int(sum_weight < 1.0f)) * (1.0f - sum_weight);
 
@@ -295,20 +293,14 @@ void main()
 		animTexoffset = iDrawId;
 		if (useDQB){
 			// dqbs Skin
-			m1 = GetMat4ById(aBoneId[0]) * GetBindMat4ById(aBoneId[0]);
-			m2 = GetMat4ById(aBoneId[1]) * GetBindMat4ById(aBoneId[1]);
-			m3 = GetMat4ById(aBoneId[2]) * GetBindMat4ById(aBoneId[2]);
-			m4 = GetMat4ById(aBoneId[3]) * GetBindMat4ById(aBoneId[3]);
-			s1 = ExtractScale(m1);// vec3(length(m1[0]), length(m1[1]), length(m1[2]));
-			s2 = ExtractScale(m2);// vec3(length(m2[0]), length(m2[1]), length(m2[2]));
-			s3 = ExtractScale(m3);// vec3(length(m3[0]), length(m3[1]), length(m3[2]));
-			s4 = ExtractScale(m4);// vec3(length(m4[0]), length(m4[1]), length(m4[2]));
+			for (int i = 0; i < MAX_BONE_LENGTH; i++){
+				m[i] = GetMat4ById(aBoneId[i]) * GetBindMat4ById(aBoneId[i]);
+				s[i] = ExtractScale(m[i]);
+			}
 
-			vec3 scale = 
-				s1 * aBoneWeights[0] + 
-				s2 * aBoneWeights[1] +
-				s3 * aBoneWeights[2] +
-				s4 * aBoneWeights[3];
+			vec3 scale = s[0] * aBoneWeights[0];
+			for (int i = 1; i < MAX_BONE_LENGTH; i++)
+				scale += s[i] * aBoneWeights[i];
 			
 			mat4 scaleMatrix = mat4(0.0f);
 

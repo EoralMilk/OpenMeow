@@ -9,6 +9,7 @@
  */
 #endregion
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using OpenRA.Activities;
@@ -91,7 +92,9 @@ namespace OpenRA.Mods.Cnc.Traits
 
 		WPos lastPos, currentPos;
 		WVec currentSpeed = WVec.Zero;
-		public WVec CurrentVelocity => currentSpeed;
+		public WVec CurrentVelocity => SteadyBinding ? WVec.Zero : currentSpeed;
+
+		public bool SteadyBinding { get; set; }
 
 		public TDGunboat(ActorInitializer init, TDGunboatInfo info)
 		{
@@ -134,6 +137,12 @@ namespace OpenRA.Mods.Cnc.Traits
 		void INotifyRemovedFromWorld.RemovedFromWorld(Actor self)
 		{
 			self.World.RemoveFromMaps(self, this);
+		}
+
+		Func<WPos> bindTarget = null;
+		public void BindPoseTo(Func<WPos> bindTarget)
+		{
+			this.bindTarget = bindTarget;
 		}
 
 		void ITick.Tick(Actor self)
@@ -208,6 +217,10 @@ namespace OpenRA.Mods.Cnc.Traits
 				self.World.ActorMap.RemoveInfluence(self, this);
 
 			CenterPosition = pos;
+			if (bindTarget != null)
+			{
+				CenterPosition = bindTarget();
+			}
 
 			if (!self.IsInWorld)
 				return;
@@ -243,7 +256,7 @@ namespace OpenRA.Mods.Cnc.Traits
 		public CPos NearestMoveableCell(CPos cell) { return cell; }
 
 		// Actors with TDGunboat always move
-		public MovementType CurrentMovementTypes { get => MovementType.Horizontal; set { } }
+		public MovementType CurrentMovementTypes { get => SteadyBinding ? MovementType.None : MovementType.Horizontal; set { } }
 
 		public bool CanEnterTargetNow(Actor self, in Target target)
 		{

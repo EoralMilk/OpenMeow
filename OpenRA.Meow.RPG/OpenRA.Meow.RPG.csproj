@@ -3,6 +3,12 @@
 	<PropertyGroup>
 		<TargetFramework>net6.0</TargetFramework>
 	</PropertyGroup>
+
+	<ItemGroup>
+	  <Compile Remove="Mechanics\Character\新文件夹\**" />
+	  <EmbeddedResource Remove="Mechanics\Character\新文件夹\**" />
+	  <None Remove="Mechanics\Character\新文件夹\**" />
+	</ItemGroup>
 	
   <ItemGroup>
     <ProjectReference Include="..\OpenRA.Game\OpenRA.Game.csproj">

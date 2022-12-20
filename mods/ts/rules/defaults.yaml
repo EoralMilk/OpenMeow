@@ -22,6 +22,8 @@
 	Targetable@avoidtarget:
 		RequiresCondition: avoidtarget
 		TargetTypes: Ignored
+	AttachManager:
+		Condition: attaching
 
 ^SpriteActor:
 	BodyOrientation:
@@ -903,11 +905,6 @@
 		DeathType: FireDeath
 	Targetable@Crushable:
 		TargetTypes: Crushable
-	ConsumableItem:
-		ThumbnailSequence: testdisplay
-		ThumbnailPalette: player
-		ThumbnailPaletteIsPlayerPalette: true
-		Weapon: Consume
 
 ^Soldier:
 	Inherits@1: ^Infantry

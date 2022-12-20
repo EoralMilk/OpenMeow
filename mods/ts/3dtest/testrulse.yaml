@@ -98,7 +98,7 @@
 	WithSkeleton:
 		Name: body
 		DisableIfDeath: false
-		OnlyUpdateForDraw: true
+		# OnlyUpdateForDraw: true
 	RenderMeshes:
 		Image: rumya
 		ZOffset: 15
@@ -280,7 +280,49 @@
 		QuantizedFacings: 0
 	RenderSprites:
 		Image: pfind
-
+	EquipmentSlot@item:
+		Name: Item
+		SlotType: Item
+		EquipmentSkeleton: body
+		EquipmentBone: e_RightHand
+		DisableIfDeath: false
+	Inventory:
+		Name: test
+		InitItems: clothitem
+	PickUpItem:
+		TargetCursor: undeploy
+		Voice: Move
+	# Stomach:
+	# 	BellyScaleModifier: BellyScale
+	# 	SkeletonToUse: body
+	# 	MaxCapacity: 200
+	# 	ScaleCapacity: 200
+	# 	MinAcidStrength: 0
+	# 	AcidStrengthChangeRate: 2
+	# 	MaxAcidStrength: 300
+	# BodyFat:
+	# 	SkeletonToUse: body
+	# 	InitFatValue: 0, 5000
+	# 	MaxNutritionCapacity: 20000
+	# 	BodyFatModifiers: HipScale, BustScale
+	# EquipmentSlot@eat:
+	# 	Name: Eat
+	# 	SlotType: Food
+	# 	EquipmentSkeleton: body
+	# 	EquipmentBone: e_RightHand
+	# 	DisableIfDeath: false
+	# Food:
+	# 	Size: 200
+	# 	Value: 20000
+	# 	DigestResistance: 10
+	# 	HealthResistance: 5
+	# ItemSkeletonHandler:
+	# 	Skeleton: body
+	# ConsumableItem:
+	# 	ThumbnailSequence: none
+	# 	ThumbnailImage: items
+	# 	UseAnim: act_putaway
+	# 	UseFrame: 24
 
 PFIND:
 	Inherits: ^CommonInfantry
@@ -345,21 +387,15 @@ PFIND:
 		SlotType: Cloth
 		InitEquipment: clothitem
 		DisableIfDeath: false
-	EquipmentSlot@item2:
-		Name: ItemSlot2
-		SlotType: Item
+	EquipmentSlot@underwear:
+		Name: UnderWearSlot
+		SlotType: UnderWear
 		DisableIfDeath: false
-	Inventory:
-		Name: test
-		InitItems: clothitem
 	InitEquipment@inventory:
 		InitEquipChance: 50
-		EquipmentSlotName: ItemSlot2
+		EquipmentSlotName: UnderWearSlot
 		ItemPool:
 			testunderwear: 5
-	# PickUpItem:
-	# 	TargetCursor: undeploy
-	# 	Voice: Move
 	RenderSprites:
 		Image: pfind
 	UnitDisplayInfo:
@@ -427,7 +463,6 @@ STCMMDO:
 	UnitDisplayInfo:
 		IconSequence: pic
 		IconScale: 1
-
 
 RUTEST:
 	Inherits: ^Vehicle
@@ -584,9 +619,9 @@ RUTEST2:
 		Speed: 180
 		JumpAngle: 128
 		Voice: Attack
-	# PickUpItem:
-	# 	TargetCursor: undeploy
-	# 	Voice: Move
+	PickUpItem:
+		TargetCursor: undeploy
+		Voice: Move
 
 RUTEST3:
 	Inherits: RUTEST

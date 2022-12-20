@@ -119,7 +119,7 @@ namespace OpenRA.Mods.Common.Traits
 		public readonly string AirborneCondition = null;
 
 		[Desc("Minimum altitude where this unit is considered airborne.")]
-		public readonly int MinAirborneAltitude = 256;
+		public readonly int MinAirborneAltitude = 648;
 
 		IEnumerable<ActorInit> IActorPreviewInitInfo.ActorPreviewInits(ActorInfo ai, ActorPreviewType type)
 		{
@@ -213,7 +213,7 @@ namespace OpenRA.Mods.Common.Traits
 		MovementType movementTypes;
 		public MovementType CurrentMovementTypes
 		{
-			get => movementTypes;
+			get => SteadyBinding ? MovementType.None : movementTypes;
 
 			set
 			{
@@ -310,7 +310,9 @@ namespace OpenRA.Mods.Common.Traits
 
 		WPos lastPos, currentPos;
 		WVec currentVelocity = WVec.Zero;
-		public WVec CurrentVelocity => currentVelocity;
+		public WVec CurrentVelocity => SteadyBinding ? WVec.Zero : currentVelocity;
+
+		public bool SteadyBinding { get; set; }
 
 		public Mobile(ActorInitializer init, MobileInfo info)
 			: base(info)
@@ -552,6 +554,12 @@ namespace OpenRA.Mods.Common.Traits
 			return preferred;
 		}
 
+		Func<WPos> bindTarget = null;
+		public void BindPoseTo(Func<WPos> bindTarget)
+		{
+			this.bindTarget = bindTarget;
+		}
+
 		// Sets the location (fromCell, toCell, FromSubCell, ToSubCell) and CenterPosition
 		public void SetPosition(Actor self, CPos cell, SubCell subCell = SubCell.Any)
 		{
@@ -577,6 +585,9 @@ namespace OpenRA.Mods.Common.Traits
 		// Sets the location (fromCell, toCell, FromSubCell, ToSubCell) and CenterPosition
 		public void SetPosition(Actor self, WPos pos, bool useCenterPose = false)
 		{
+			if (bindTarget != null)
+				pos = bindTarget();
+
 			var cell = self.World.Map.CellContaining(pos);
 			SetLocation(cell, FromSubCell, cell, FromSubCell);
 			if (useCenterPose)
@@ -589,6 +600,9 @@ namespace OpenRA.Mods.Common.Traits
 		// Sets only the CenterPosition
 		public void SetCenterPosition(Actor self, WPos pos)
 		{
+			if (bindTarget != null)
+				pos = bindTarget();
+
 			CenterPosition = pos;
 			self.World.UpdateMaps(self, this);
 

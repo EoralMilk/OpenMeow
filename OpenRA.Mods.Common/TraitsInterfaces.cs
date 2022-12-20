@@ -128,6 +128,13 @@ namespace OpenRA.Mods.Common.Traits
 	}
 
 	[RequireExplicitImplementation]
+	public interface INotifyToAttack
+	{
+		void ToAttack(in Target target, AttackSource source, bool queued, bool allowMove, bool forceAttack = false, Color? targetLineColor = null);
+		void OnStopOrder(Actor self);
+	}
+
+	[RequireExplicitImplementation]
 	public interface INotifyDamageStateChanged { void DamageStateChanged(Actor self, AttackInfo e); }
 
 	[RequireExplicitImplementation]
@@ -453,6 +460,9 @@ namespace OpenRA.Mods.Common.Traits
 	public interface IMove
 	{
 		WVec CurrentVelocity { get; }
+
+		bool SteadyBinding { get; set; }
+
 		Activity MoveTo(CPos cell, int nearEnough = 0, Actor ignoreActor = null,
 		 	bool evaluateNearestMovableCell = false, Color? targetLineColor = null);
 		Activity MoveWithinRange(in Target target, WDist range,
@@ -829,6 +839,7 @@ namespace OpenRA.Mods.Common.Traits
 
 	public interface IPositionable : IOccupySpace
 	{
+		void BindPoseTo(Func<WPos> bindTarget);
 		bool CanExistInCell(CPos location);
 		bool IsLeavingCell(CPos location, SubCell subCell = SubCell.Any);
 		bool CanEnterCell(CPos location, Actor ignoreActor = null, BlockedByActor check = BlockedByActor.All);
