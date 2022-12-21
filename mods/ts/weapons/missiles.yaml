@@ -393,14 +393,44 @@ Hellfire:
 			Heavy: 100
 			Concrete: 30
 
-VectorHellfire.Assult:
+PulseHellfire:
 	Inherits: VectorHellfire
-	ReloadDelay: 10000
-	Burst: 8
-	BurstDelays: 4
+	ReloadDelay: 100
+	Burst: 6
+	BurstDelays: 5
 	Range: 9c512
+	Projectile: VectorBooster
+		ContrailStartColor: 33DDFF
+		HorizonRotationRate: 8
+		VerticalRotationRate: 8
+		Acceleration: 8
+		Speed: 210
+		LockOnDelay: 15
+		IgnitionDelay: 0
+		LaunchAngle: -16
+		LifeTime: 55
+		MeshScale: 1.4
+		ProximityRange: 222
+		Inaccuracy: 0c512
+		UseVerticalInaccuracy: true
 	Warhead@1Dam: Spread3DDamage
 		Spread: 220
+		Damage: 5000
+		Condition: empdisable
+		Duration: 100
+		ValidTargets: Ground, Water, Air
+		Versus:
+			None: 70
+			Wood: 65
+			Light: 150
+			Heavy: 100
+			Concrete: 30
+	Warhead@empEff: CreateEffect
+		Explosions: smallpulse_explosion2
+		ExplosionPalette: effectcyan
+		ImpactSounds: expnew12.aud
+		ValidTargets: Ground, Air
+
 
 VectorHellfire:
 	Inherits: ^VectorBooster

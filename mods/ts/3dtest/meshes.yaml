@@ -325,6 +325,10 @@ mmr-test:
 			Material: misc01
 			HasShadow: false
 			Shader: FlatLight
+		axisb: Axis
+			Material: black
+			HasShadow: false
+			Shader: FlatLight
 
 missile:
 	Meshes:

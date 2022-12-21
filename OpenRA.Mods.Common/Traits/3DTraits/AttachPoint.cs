@@ -32,6 +32,8 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 		public readonly string Condition;
 		int conditionToken = Actor.InvalidConditionToken;
 
+		public AttachPoint[] AttachPoints { get; private set; }
+
 		public bool HasParent { get => parent != null; }
 
 		public override bool Rejecting => HasParent;
@@ -49,6 +51,12 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 				BoneId = MainSkeleton.GetBoneId(info.AttachingBone);
 			}
 
+		}
+
+		protected override void Created(Actor self)
+		{
+			base.Created(self);
+			AttachPoints = self.TraitsImplementing<AttachPoint>().ToArray();
 		}
 
 		void ApplyParent(Actor p)
@@ -129,7 +137,7 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 		public override object Create(ActorInitializer init) { return new AttachPoint(init.Self, this); }
 	}
 
-	public class AttachPoint : ConditionalTrait<AttachPointInfo>, ITick, IIssueOrder, IResolveOrder, INotifyToAttack,
+	public class AttachPoint : ConditionalTrait<AttachPointInfo>, ILaterTick, IIssueOrder, IResolveOrder, INotifyToAttack,
 		INotifyKilled
 	{
 		readonly int attachBoneId = -1;
@@ -201,15 +209,25 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 			}
 		}
 
-		void ITick.Tick(Actor self)
+		void ILaterTick.LaterTick(Actor self)
 		{
-			SelfTick();
+			UpdateAttachment(false);
 		}
 
-		void SelfTick()
+		public void UpdateAttachment(bool callByParent)
 		{
+			if (!callByParent && manager.HasParent)
+				return;
+
 			if (attachmentActor != null && !attachmentActor.IsDead && attachmentActor.IsInWorld)
+			{
 				TickAttach();
+
+				foreach (var atpoint in attachmentAM.AttachPoints)
+				{
+					atpoint.UpdateAttachment(true);
+				}
+			}
 			else
 			{
 				FlushAttachmentTrits();
@@ -395,13 +413,6 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 			attachmentFacing = null;
 			attachmentAM = null;
 			attachmentSkeleton = null;
-			// if (attachmentAttackBases != null && attachmentAttackBases.Length > 0)
-			// {
-			// 	foreach (var attack in attachmentAttackBases)
-			// 	{
-			// 		attack.IsAiming = false;
-			// 	}
-			// }
 			attachmentAttackBases = null;
 		}
 

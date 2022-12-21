@@ -1064,6 +1064,11 @@ ORCA.ASSULT:
 	-SelectionDecorations:
 	-UpdatesPlayerStatistics:
 	-MapEditorData:
+	RevealsShroud@airborne:
+		RequiresCondition: attacking
+	GrantConditionOnAttack:
+		Condition: attacking
+		RevokeDelay: 100
 	RejectsOrders:
 	Interactable:
 	Aircraft:
@@ -1090,7 +1095,7 @@ ORCA.ASSULT:
 		FacingTolerance: 512
 		FacingFullOnTarget: true
 	Armament:
-		Weapon: VectorHellfire.Assult
+		Weapon: PulseHellfire
 		LocalOffset: 300,195,70, 300,-195,70
 		LocalYaw: -110, 110
 	RenderSprites:

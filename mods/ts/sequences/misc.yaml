@@ -193,6 +193,12 @@ explosion:
 		MeshType: Plane
 		ZOffset: 2048
 		Scale: 0.25
+	smallpulse_explosion2: pulsefx2
+		BlendMode: Additive
+		Tick: 35
+		MeshType: Plane
+		ZOffset: 2048
+		Scale: 0.33
 	small_watersplash: h2o_exp2
 		IgnoreWorldTint: False
 		AlphaFade: False

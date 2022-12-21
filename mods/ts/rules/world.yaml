@@ -263,12 +263,12 @@
 		Name: Veins
 		Palette: player
 		VeinholeActors: veinhole
-	WithMesh@dummy:
-		Mesh: axis
-	RenderMeshes:
-		Image: mmr-test
-		ZOffset: 15
-		Scale: 10
+	# WithMesh@dummy:
+	# 	Mesh: axis
+	# RenderMeshes:
+	# 	Image: mmr-test
+	# 	ZOffset: 15
+	# 	Scale: 5
 	ItemCache:
 	WidgetSkinManager:
 	IngameCursorManager:

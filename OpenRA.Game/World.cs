@@ -452,10 +452,17 @@ namespace OpenRA
 					{
 						a.FlushSkeletonLogicPose();
 						a.Tick();
-						a.UpdateSkeleton();
+						// a.UpdateSkeleton();
 					}
 
 				ApplyToActorsWithTraitTimed<ITick>((actor, trait) => trait.Tick(actor), "Trait");
+				ApplyToActorsWithTraitTimed<ILaterTick>((actor, trait) => trait.LaterTick(actor), "Trait");
+
+				using (new PerfSample("tick_actors"))
+					foreach (var a in actors.Values)
+					{
+						a.UpdateSkeleton();
+					}
 
 				effects.DoTimed(e => e.Tick(this), "Effect");
 			}

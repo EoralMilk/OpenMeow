@@ -683,7 +683,7 @@ GAPLUG:
 		Name: Orca Assult
 		SquadSize: 3
 		SquadOffset: -1536, 768, -1524
-		Description: An Orca Fighter assult in bound and attack your target.
+		Description: Dispatch a group of Orca fighter to launch an air strike on the target location with EMPulse AG Rockets
 		SelectTargetSpeechNotification: SelectTarget
 		SelectTargetTextNotification: Select target.
 		CameraActor: camera
