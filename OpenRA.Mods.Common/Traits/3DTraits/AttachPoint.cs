@@ -148,7 +148,6 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 		public bool Attached = false;
 
 		readonly Actor self;
-		readonly IFacing myFacing;
 		readonly BodyOrientation body;
 		IMove move;
 		ITurreted turret;
@@ -167,7 +166,6 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 			: base(info)
 		{
 			body = self.Trait<BodyOrientation>();
-			myFacing = self.TraitOrDefault<IFacing>();
 			Name = info.Name;
 			this.self = self;
 			if (!string.IsNullOrEmpty(info.Skeleton))
@@ -431,13 +429,6 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 			{
 				foreach (var attack in attachmentAttackBases)
 				{
-					//if (attack is AttackFollow)
-					//	(attack as AttackFollow).SetRequestedTarget(target, true);
-					//else
-					//{
-					//	// attack.IsAiming = true;
-					//	attack.DoAttack(attachmentActor, target);
-					//}
 					attack.AttackTarget(target, source, queued, false, forceAttack, null);
 				}
 			}

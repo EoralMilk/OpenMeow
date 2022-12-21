@@ -63,12 +63,17 @@ namespace OpenRA.Meow.RPG.Mechanics
 
 		protected override WPos CalculateMuzzleWPos(Actor self, Barrel b)
 		{
+			if (slot.Item != null && slot.Item == weaponItem && weaponItem.UsingMuzzle != null)
+			{
+				return weaponItem.UsingMuzzle.MuzzleSkeleton.GetWPosFromBoneId(weaponItem.UsingMuzzle.MuzzleBoneId);
+			}
+
 			// Weapon offset in turret coordinates
 			var localOffset = b.Offset + AdditionalLocalOffset() + new WVec(-Recoil, WDist.Zero, WDist.Zero);
 
-			if (slot.Item != null && slot.Item is WeaponItem)
+			if (slot.Item != null && slot.Item == weaponItem)
 			{
-				localOffset += (slot.Item as WeaponItem).GetMuzzleOffset();
+				localOffset += weaponItem.GetMuzzleOffset();
 			}
 
 			// Turret coordinates to body coordinates

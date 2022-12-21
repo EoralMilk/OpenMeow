@@ -4,6 +4,7 @@ using OpenRA.Graphics;
 using OpenRA.Mods.Common.Traits;
 using OpenRA.Traits;
 using System;
+using OpenRA.Mods.Common.Traits.Trait3D;
 
 namespace OpenRA.Meow.RPG.Mechanics
 {
@@ -14,10 +15,9 @@ namespace OpenRA.Meow.RPG.Mechanics
 
 	public class WeaponItemInfo : ConditionItemInfo, IRulesetLoaded
 	{
-		[FieldLoader.Require]
 		[Desc("Muzzle position relative to turret or body, (forward, right, up) triples.",
 			"If weapon Burst = 1, it cycles through all listed offsets, otherwise the offset corresponding to current burst is used.")]
-		public readonly WVec[] LocalOffset = Array.Empty<WVec>();
+		public readonly WVec[] LocalOffset = new WVec[1] {WVec.Zero};
 
 		[WeaponReference]
 		[FieldLoader.Require]
@@ -45,6 +45,7 @@ namespace OpenRA.Meow.RPG.Mechanics
 	public class WeaponItem : ConditionItem
 	{
 		readonly WeaponItemInfo info;
+		public WeaponItemMuzzle UsingMuzzle;
 
 		int fire = 0;
 

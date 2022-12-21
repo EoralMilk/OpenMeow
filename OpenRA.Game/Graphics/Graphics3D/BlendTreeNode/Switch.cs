@@ -67,30 +67,49 @@ namespace OpenRA.Graphics
 			}
 		}
 
-		public override BlendTreeNodeOutPut UpdateOutPut(short optick, bool resolve = true)
+		public override BlendTreeNodeOutPut GetOutPut(short optick)
 		{
-			if (!resolve || updated)
+			if (updated)
 				return outPut;
 
 			if (blendValue >= FP.One)
 			{
-				outPut = inPutNode2.UpdateOutPut(optick, resolve);
-				inPutNode1.UpdateOutPut(optick, resolve);
+				outPut = inPutNode2.GetOutPut(optick);
 			}
 			else if (blendValue <= FP.Zero)
 			{
-				outPut = inPutNode1.UpdateOutPut(optick, resolve);
-				inPutNode2.UpdateOutPut(optick, resolve);
+				outPut = inPutNode1.GetOutPut(optick);
 			}
 			else
 			{
-				var inPutValue1 = inPutNode1.UpdateOutPut(optick, resolve);
-				var inPutValue2 = inPutNode2.UpdateOutPut(optick, resolve);
+				var inPutValue1 = inPutNode1.GetOutPut(optick);
+				var inPutValue2 = inPutNode2.GetOutPut(optick);
 				outPut = blendTree.Blend(inPutValue1, inPutValue2, blendValue, animMask);
 			}
 
 			updated = true;
 			return outPut;
+		}
+
+		public override BlendTreeNodeOutPutOne GetOutPutOnce(int animId, short tick)
+		{
+			if (updated)
+				return new BlendTreeNodeOutPutOne(outPut.OutPutFrame[animId], outPut.AnimMask);
+
+			if (blendValue >= FP.One)
+			{
+				return inPutNode2.GetOutPutOnce(animId, tick);
+			}
+			else if (blendValue <= FP.Zero)
+			{
+				return inPutNode1.GetOutPutOnce(animId, tick);
+			}
+			else
+			{
+				var inPutValue1 = inPutNode1.GetOutPutOnce(animId, tick);
+				var inPutValue2 = inPutNode2.GetOutPutOnce(animId, tick);
+				return blendTree.Blend(inPutValue1, inPutValue2, blendValue, animMask, animId);
+			}
 		}
 	}
 }

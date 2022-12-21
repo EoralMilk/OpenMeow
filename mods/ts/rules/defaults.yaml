@@ -905,6 +905,18 @@
 		DeathType: FireDeath
 	Targetable@Crushable:
 		TargetTypes: Crushable
+	# Food:
+	# 	Size: 100
+	# 	Value: 10000
+	# 	DigestResistance: 10
+	# 	HealthResistance: 5
+	# ItemSkeletonHandler:
+	# ConsumableItem:
+	# 	ThumbnailSequence: none
+	# 	ThumbnailImage: items
+	# 	UseAnim: act_putaway
+	# 	UseFrame: 24
+	# 	Type: Food
 
 ^Soldier:
 	Inherits@1: ^Infantry

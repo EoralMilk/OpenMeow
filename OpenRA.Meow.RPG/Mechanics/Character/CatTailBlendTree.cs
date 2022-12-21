@@ -147,6 +147,11 @@ namespace OpenRA.Meow.RPG.Mechanics
 			return blendTree.GetOutPut();
 		}
 
+		public BlendTreeNodeOutPutOne GetOneAnimTrans(int animId)
+		{
+			return blendTree.GetOutPutOnce(animId);
+		}
+
 		void IBlendTreeHandler.UpdateTick()
 		{
 			blendTree.UpdateTick();

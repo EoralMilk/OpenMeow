@@ -67,14 +67,19 @@ namespace OpenRA.Graphics
 		{
 			if (resolve)
 			{
-				lastOutPut = FinalOutPut.UpdateOutPut(currentTick, true);
+				lastOutPut = FinalOutPut.GetOutPut(currentTick);
 				hasOutPut = true;
 			}
 
 			if (!hasOutPut)
-				lastOutPut = FinalOutPut.UpdateOutPut(currentTick, true);
+				lastOutPut = FinalOutPut.GetOutPut(currentTick);
 
 			return lastOutPut;
+		}
+
+		public BlendTreeNodeOutPutOne GetOutPutOnce(int animId)
+		{
+			return FinalOutPut.GetOutPutOnce(animId, currentTick);
 		}
 
 		public BlendTreeNodeOutPut Blend(in BlendTreeNodeOutPut inPutValue1, in BlendTreeNodeOutPut inPutValue2, FP t, in AnimMask animMask)
@@ -100,6 +105,26 @@ namespace OpenRA.Graphics
 
 			return new BlendTreeNodeOutPut(outPut, animMask);
 		}
+
+		public BlendTreeNodeOutPutOne Blend(in BlendTreeNodeOutPutOne inPutValue1, in BlendTreeNodeOutPutOne inPutValue2, FP t, in AnimMask animMask, int animId)
+		{
+			if (!RunBlend)
+				return inPutValue1;
+			Transformation result;
+			if (inPutValue1.AnimMask[animId] && inPutValue2.AnimMask[animId])
+				result = Transformation.Blend(inPutValue1.Trans, inPutValue2.Trans, t);
+			else if (inPutValue1.AnimMask[animId])
+				result = inPutValue1.Trans;
+			else if (inPutValue2.AnimMask[animId])
+				result = inPutValue2.Trans;
+			else
+			{
+				result = Transformation.Identity;
+			}
+
+			return new BlendTreeNodeOutPutOne(result, animMask);
+		}
+
 	}
 
 	public abstract class BlendTreeNode
@@ -141,7 +166,14 @@ namespace OpenRA.Graphics
 
 		public abstract void UpdateTick(short tick, bool run, int step);
 
-		public abstract BlendTreeNodeOutPut UpdateOutPut(short tick, bool resolve = true);
+		public abstract BlendTreeNodeOutPut GetOutPut(short tick);
+
+		/// <summary>
+		/// Should Check id at first
+		/// </summary>
+		/// <param name="id">AnimId</param>
+		public abstract BlendTreeNodeOutPutOne GetOutPutOnce(int animId, short tick);
+
 	}
 
 	/// <summary>
@@ -218,6 +250,35 @@ namespace OpenRA.Graphics
 		public BlendTreeNodeOutPut(in Frame srts, in AnimMask animMask)
 		{
 			OutPutFrame = srts;
+			AnimMask = animMask;
+		}
+	}
+
+	/// <summary>
+	/// 节点输出：单个骨骼
+	/// </summary>
+	public struct BlendTreeNodeOutPutOne
+	{
+		public Transformation Trans;
+		public AnimMask AnimMask;
+
+		// 到这个输出为止，全部动画长度的最小公倍数
+		// public int FrameLCM;
+		// public bool UpdateLCM;
+
+		// 复制构造函数
+		public BlendTreeNodeOutPutOne(BlendTreeNodeOutPutOne op)
+		{
+			Trans = op.Trans;
+			AnimMask = op.AnimMask;
+
+			// FrameLCM = op.FrameLCM;
+			// UpdateLCM = op.UpdateLCM;
+		}
+
+		public BlendTreeNodeOutPutOne(in Transformation trans, in AnimMask animMask)
+		{
+			Trans = trans;
 			AnimMask = animMask;
 		}
 	}

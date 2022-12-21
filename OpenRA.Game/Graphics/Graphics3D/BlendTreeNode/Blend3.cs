@@ -39,14 +39,14 @@ namespace OpenRA.Graphics
 			inPutNodeLow.UpdateTick(optick, run, step);
 		}
 
-		public override BlendTreeNodeOutPut UpdateOutPut(short optick, bool resolve = true)
+		public override BlendTreeNodeOutPut GetOutPut(short optick)
 		{
-			if (!resolve || updated)
+			if (updated)
 				return outPut;
 
-			var inPutValueMid = inPutNodeMid.UpdateOutPut(optick, resolve);
-			var inPutValueHigh = inPutNodeHigh.UpdateOutPut(optick, resolve);
-			var inPutValueLow = inPutNodeLow.UpdateOutPut(optick, resolve);
+			var inPutValueMid = inPutNodeMid.GetOutPut(optick);
+			var inPutValueHigh = inPutNodeHigh.GetOutPut(optick);
+			var inPutValueLow = inPutNodeLow.GetOutPut(optick);
 
 			if (BlendValue > 0)
 				outPut = blendTree.Blend(inPutValueMid, inPutValueHigh, BlendValue, animMask);
@@ -54,6 +54,21 @@ namespace OpenRA.Graphics
 				outPut = blendTree.Blend(inPutValueMid, inPutValueLow, -BlendValue, animMask);
 			updated = true;
 			return outPut;
+		}
+
+		public override BlendTreeNodeOutPutOne GetOutPutOnce(int animId, short tick)
+		{
+			if (updated)
+				return new BlendTreeNodeOutPutOne(outPut.OutPutFrame[animId], outPut.AnimMask);
+
+			var inPutValueMid = inPutNodeMid.GetOutPutOnce(animId, tick);
+			var inPutValueHigh = inPutNodeHigh.GetOutPutOnce(animId, tick);
+			var inPutValueLow = inPutNodeLow.GetOutPutOnce(animId, tick);
+
+			if (BlendValue > 0)
+				return blendTree.Blend(inPutValueMid, inPutValueHigh, BlendValue, animMask, animId);
+			else
+				return blendTree.Blend(inPutValueMid, inPutValueLow, -BlendValue, animMask, animId);
 		}
 	}
 }

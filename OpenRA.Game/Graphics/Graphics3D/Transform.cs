@@ -225,6 +225,11 @@ namespace OpenRA.Graphics
 			return new TSVector(matrix.Column3.x, matrix.Column3.y, matrix.Column3.z);
 		}
 
+		public static vec3 MatPosition(in mat4 matrix)
+		{
+			return new vec3(matrix.Column3.x, matrix.Column3.y, matrix.Column3.z);
+		}
+
 		public static TSVector MatScale(in TSMatrix4x4 matrix)
 		{
 			return new TSVector(matrix.Column0.xyz.magnitude, matrix.Column1.xyz.magnitude, matrix.Column2.xyz.magnitude);

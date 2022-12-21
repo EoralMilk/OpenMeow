@@ -366,32 +366,26 @@ namespace OpenRA.Graphics
 			AnimTexoffset = -1;
 		}
 
-		public void UpdateBone(int id, in BlendTreeNodeOutPut treeNodeOutPut)
+		public bool HasUpdateBone(int id)
+		{
+			return updateFlags[id];
+		}
+
+		public void UpdateBone(int id, in BlendTreeNodeOutPutOne treeNodeOutPut)
 		{
 			if (updateFlags[id])
 				return;
-			UpdateBoneInner(id, treeNodeOutPut.OutPutFrame, treeNodeOutPut.AnimMask);
+			UpdateBoneInner(id, treeNodeOutPut.Trans, treeNodeOutPut.AnimMask);
 		}
 
 		public void UpdateBone(int id)
 		{
 			if (updateFlags[id])
 				return;
-			UpdateBoneInner(id, EmptyFrame, SkeletonAsset.AllValidMask);
+			UpdateBoneInner(id, Transformation.Identity, SkeletonAsset.AllValidMask);
 		}
 
-		public void UpdateAll()
-		{
-			// init update the current pose
-			for (int i = 0; i < boneSize; i++)
-			{
-				if (SkipUpdateAdjBonePose && SkeletonAsset.Bones[i].IsAdjBone)
-					continue;
-				UpdateBoneInner(i, EmptyFrame, SkeletonAsset.AllValidMask);
-			}
-		}
-
-		void UpdateBoneInner(int id, in Frame animFrame, in AnimMask animMask)
+		void UpdateBoneInner(int id, in Transformation animTrans, in AnimMask animMask)
 		{
 			if (updateFlags[id] == true)
 				return;
@@ -399,8 +393,8 @@ namespace OpenRA.Graphics
 			if (Bones[id].ParentId == -1)
 			{
 				// animMask length should be same as frame length (&& animMask.Length > Bones[id].AnimId) no need
-				if (Bones[id].AnimId != -1 && animFrame.Length > Bones[id].AnimId && animMask[Bones[id].AnimId])
-					Bones[id].UpdateOffset(Offset, animFrame[Bones[id].AnimId].Matrix);
+				if (Bones[id].AnimId != -1 && animMask[Bones[id].AnimId])
+					Bones[id].UpdateOffset(Offset, animTrans.Matrix);
 				else
 					Bones[id].UpdateOffset(Offset);
 
@@ -413,11 +407,11 @@ namespace OpenRA.Graphics
 			}
 			else
 			{
-				UpdateBoneInner(Bones[id].ParentId, animFrame, animMask);
+				UpdateBoneInner(Bones[id].ParentId, animTrans, animMask);
 
 				// animMask length should be same as frame length
-				if (Bones[id].AnimId != -1 && animFrame.Length > Bones[id].AnimId && animFrame.HasTransformation[Bones[id].AnimId] && animMask[Bones[id].AnimId])
-					Bones[id].UpdateOffset(Bones[Bones[id].ParentId].CurrentPose, animFrame[Bones[id].AnimId].Matrix);
+				if (Bones[id].AnimId != -1 && animMask[Bones[id].AnimId])
+					Bones[id].UpdateOffset(Bones[Bones[id].ParentId].CurrentPose, animTrans.Matrix);
 				else
 					Bones[id].UpdateOffset(Bones[Bones[id].ParentId].CurrentPose);
 

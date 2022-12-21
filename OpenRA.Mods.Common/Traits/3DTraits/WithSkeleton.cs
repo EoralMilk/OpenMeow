@@ -25,6 +25,8 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 	public interface IBlendTreeHandler
 	{
 		BlendTreeNodeOutPut GetResult();
+		BlendTreeNodeOutPutOne GetOneAnimTrans(int animId);
+
 		void UpdateTick();
 
 		WRot FacingOverride();
@@ -118,24 +120,7 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 			UpdateSkeletonTick(false);
 
 			// init the current pose by rest pose and offset
-			UpdateWholeSkeleton(false);
 			RenderUpdateWholeSkeleton(false);
-		}
-
-		void UpdateWholeSkeleton(bool callbyParent)
-		{
-			if (!callbyParent && Parent != null)
-				return;
-
-			UpdateSkeletonInner();
-		}
-
-		void UpdateSkeletonInner()
-		{
-			Skeleton.UpdateAll();
-
-			foreach (var child in children)
-				child.RenderUpdateWholeSkeleton(true);
 		}
 
 		WPos lastSelfPos;
@@ -275,9 +260,12 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 
 			UpdateSkeletonRoot();
 
-			if (BlendTreeHandler != null)
+			if (Skeleton.HasUpdateBone(boneid))
+				return;
+
+			if (BlendTreeHandler != null && OrderedSkeleton.SkeletonAsset.Bones[boneid].AnimId != -1)
 			{
-				Skeleton.UpdateBone(boneid, BlendTreeHandler.GetResult());
+				Skeleton.UpdateBone(boneid, BlendTreeHandler.GetOneAnimTrans(OrderedSkeleton.SkeletonAsset.Bones[boneid].AnimId));
 			}
 			else
 				Skeleton.UpdateBone(boneid);

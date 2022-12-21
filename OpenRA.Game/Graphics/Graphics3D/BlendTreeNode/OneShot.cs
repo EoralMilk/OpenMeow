@@ -154,18 +154,29 @@ namespace OpenRA.Graphics
 			shot.UpdateTick(optick, runShot, step);
 		}
 
-		public override BlendTreeNodeOutPut UpdateOutPut(short optick, bool resolve = true)
+		public override BlendTreeNodeOutPut GetOutPut(short optick)
 		{
-			if (!resolve)
+			if (updated)
 				return outPut;
 
 			if (runShot)
-				outPut = blendTree.Blend(inPutNode.UpdateOutPut(optick, resolve), shot.UpdateOutPut(optick, runShot && resolve), fadeBlend, animMask);
+				outPut = blendTree.Blend(inPutNode.GetOutPut(optick), shot.GetOutPut(optick), fadeBlend, animMask);
 			else
-				outPut = inPutNode.UpdateOutPut(optick, resolve);
+				outPut = inPutNode.GetOutPut(optick);
 
 			updated = true;
 			return outPut;
+		}
+
+		public override BlendTreeNodeOutPutOne GetOutPutOnce(int animId, short tick)
+		{
+			if (updated)
+				return new BlendTreeNodeOutPutOne(outPut.OutPutFrame[animId], outPut.AnimMask);
+
+			if (runShot)
+				return blendTree.Blend(inPutNode.GetOutPutOnce(animId, tick), shot.GetOutPutOnce(animId, tick), fadeBlend, animMask, animId);
+			else
+				return inPutNode.GetOutPutOnce(animId, tick);
 		}
 	}
 }

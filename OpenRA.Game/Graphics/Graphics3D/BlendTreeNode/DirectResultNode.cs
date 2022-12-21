@@ -26,9 +26,14 @@ namespace OpenRA.Graphics
 			return;
 		}
 
-		public override BlendTreeNodeOutPut UpdateOutPut(short optick, bool resolve = true)
+		public override BlendTreeNodeOutPut GetOutPut(short optick)
 		{
 			return outPut;
+		}
+
+		public override BlendTreeNodeOutPutOne GetOutPutOnce(int animId, short tick)
+		{
+			return new BlendTreeNodeOutPutOne(outPut.OutPutFrame[animId], outPut.AnimMask);
 		}
 
 		public override int GetLength()

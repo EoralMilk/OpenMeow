@@ -10,12 +10,12 @@ using Microsoft.VisualBasic;
 
 namespace OpenRA.Meow.RPG.Mechanics
 {
-	public class WeaponMuzzleMeshInfo : TraitInfo, Requires<RenderMeshesInfo>, Requires<WeaponItemInfo>, Requires<WithSkeletonInfo>
+	public class WeaponItemMuzzleInfo : TraitInfo, Requires<RenderMeshesInfo>, Requires<WeaponItemInfo>, Requires<WithSkeletonInfo>
 	{
 		public readonly int MuzzleDuration = 5;
 		public readonly float2 AlphaStartToEnd = new float2(1, 0);
 		public readonly float2 ScaleStartToEnd = new float2(0.25f, 1);
-		public readonly string Mesh = "muzzle";
+		public readonly string MuzzleFlashMesh = "muzzle";
 		public readonly string Image = null;
 		[FieldLoader.Require]
 		public readonly string MuzzleSkeleton = null;
@@ -23,34 +23,45 @@ namespace OpenRA.Meow.RPG.Mechanics
 		public readonly string MuzzleBone = null;
 		public override object Create(ActorInitializer init)
 		{
-			return new WeaponMuzzleMesh(init.Self, this);
+			return new WeaponItemMuzzle(init.Self, this);
 		}
 	}
 
-	public class WeaponMuzzleMesh : INotifyBeingEquiped, ITickByItem, INotifyWeaponItemAttack
+	public class WeaponItemMuzzle : INotifyBeingEquiped, ITickByItem, INotifyWeaponItemAttack
 	{
-		readonly WeaponMuzzleMeshInfo info;
+		readonly WeaponItemMuzzleInfo info;
 		public readonly WithSkeleton MuzzleSkeleton;
-		public readonly MeshInstance MeshInstance;
+		public readonly int MuzzleBoneId = -1;
+		public readonly MeshInstance MuzzleFlashMeshInstance;
 		public readonly RenderMeshes RenderMeshes;
 		public readonly WeaponItem WeaponItem;
-		readonly int boneId;
 		bool renderMuzzle;
 		bool meshAdded;
 		int muzzleTick = -1;
 		float muzzleAlpha = 1;
 		float muzzleScale = 1;
 
-		public WeaponMuzzleMesh(Actor self, WeaponMuzzleMeshInfo info)
+		public WeaponItemMuzzle(Actor self, WeaponItemMuzzleInfo info)
 		{
 			this.info = info;
 			if (info.MuzzleDuration <= 0)
 				throw new Exception("MuzzleDuration Can't be 0 or negative value");
 
-			MuzzleSkeleton = self.TraitsImplementing<WithSkeleton>().Single(s => s.Name == info.MuzzleSkeleton);
-
 			RenderMeshes = self.Trait<RenderMeshes>();
 			WeaponItem = self.Trait<WeaponItem>();
+			WeaponItem.UsingMuzzle = this;
+
+			if (!string.IsNullOrEmpty(info.MuzzleSkeleton))
+			{
+				MuzzleSkeleton = self.TraitsImplementing<WithSkeleton>().Single(s => s.Name == info.MuzzleSkeleton);
+
+				MuzzleBoneId = MuzzleSkeleton.GetBoneId(info.MuzzleBone);
+
+				if (MuzzleBoneId == -1)
+					throw new Exception("Can't find MuzzleBone:" + info.MuzzleBone);
+			}
+			else
+				throw new Exception("The WeaponItemMuzzle need to have a skeleton");
 
 			var image = RenderMeshes.Image;
 			if (info.Image != null)
@@ -58,26 +69,27 @@ namespace OpenRA.Meow.RPG.Mechanics
 				image = info.Image;
 			}
 
-			boneId = MuzzleSkeleton.GetBoneId(info.MuzzleBone);
-
-			if (boneId == -1)
-				throw new Exception("Can't find MuzzleBone:" + info.MuzzleBone);
-
-			var mesh = self.World.MeshCache.GetMeshSequence(image, info.Mesh);
-			MeshInstance = new MeshInstance(mesh,
-				() => Transformation.MatWithNewScale(MuzzleSkeleton.GetRenderMatrixFromBoneId(boneId), muzzleScale),
-				() => meshAdded && renderMuzzle,
-				null)
+			if (!string.IsNullOrEmpty(info.MuzzleFlashMesh))
 			{
-				GetAlpha = () => muzzleAlpha,
-				GetTint = () => new float3(muzzleAlpha, muzzleAlpha, muzzleAlpha),
-			};
+				var mesh = self.World.MeshCache.GetMeshSequence(image, info.MuzzleFlashMesh);
+				MuzzleFlashMeshInstance = new MeshInstance(mesh,
+					() => Transformation.MatWithNewScale(MuzzleSkeleton.GetRenderMatrixFromBoneId(MuzzleBoneId), muzzleScale),
+					() => meshAdded && renderMuzzle,
+					null)
+				{
+					GetAlpha = () => muzzleAlpha,
+					GetTint = () => new float3(muzzleAlpha, muzzleAlpha, muzzleAlpha),
+				};
+			}
 		}
 
 		public void OnWeaponItemAttack()
 		{
-			MuzzleSkeleton.SetBoneRenderUpdate(boneId, true);
-			MuzzleSkeleton.Skeleton.TempUpdateRenderSingle(boneId);
+			if (MuzzleFlashMeshInstance == null)
+				return;
+
+			MuzzleSkeleton.SetBoneRenderUpdate(MuzzleBoneId, true);
+			MuzzleSkeleton.Skeleton.TempUpdateRenderSingle(MuzzleBoneId);
 			renderMuzzle = true;
 			muzzleTick = info.MuzzleDuration;
 			muzzleAlpha = Math.Clamp(info.AlphaStartToEnd.X, 0, 1);
@@ -86,6 +98,9 @@ namespace OpenRA.Meow.RPG.Mechanics
 
 		public void TickByItem(Item item)
 		{
+			if (MuzzleFlashMeshInstance == null)
+				return;
+
 			if (--muzzleTick >= 0)
 			{
 				muzzleAlpha = Math.Clamp(float2.Lerp(info.AlphaStartToEnd.Y, info.AlphaStartToEnd.X, (float)muzzleTick / info.MuzzleDuration), 0, 1);
@@ -97,31 +112,37 @@ namespace OpenRA.Meow.RPG.Mechanics
 			}
 			else
 			{
-				MuzzleSkeleton.SetBoneRenderUpdate(boneId, false);
+				MuzzleSkeleton.SetBoneRenderUpdate(MuzzleBoneId, false);
 				renderMuzzle = false;
 			}
 		}
 
 		void INotifyBeingEquiped.EquipedBy(Actor user, EquipmentSlot slot)
 		{
+			if (MuzzleFlashMeshInstance == null)
+				return;
+
 			if (slot.RenderMeshes == null)
 				return;
 
 			meshAdded = true;
 
-			slot.RenderMeshes.Add(MeshInstance);
+			slot.RenderMeshes.Add(MuzzleFlashMeshInstance);
 		}
 
 		void INotifyBeingEquiped.UnequipedBy(Actor user, EquipmentSlot slot)
 		{
+			if (MuzzleFlashMeshInstance == null)
+				return;
+
 			meshAdded = false;
 			renderMuzzle = false;
 			muzzleTick = -1;
-			MuzzleSkeleton.SetBoneRenderUpdate(boneId, false);
+			MuzzleSkeleton.SetBoneRenderUpdate(MuzzleBoneId, false);
 			if (slot.RenderMeshes == null)
 				return;
 
-			slot.RenderMeshes.Remove(MeshInstance);
+			slot.RenderMeshes.Remove(MuzzleFlashMeshInstance);
 		}
 	}
 }

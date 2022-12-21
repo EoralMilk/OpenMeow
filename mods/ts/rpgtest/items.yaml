@@ -155,17 +155,17 @@ stealth-suit:
 		ActionFrameReplace:
 			AttackFrame: 0
 			ProneAttackFrame: 0
-	WeaponMuzzleMesh:
+	WeaponItemMuzzle:
 		MuzzleDuration: 5
 		AlphaStartToEnd: 1,0
 		ScaleStartToEnd: 1.4, 2
-		Mesh: muzzle
+		MuzzleFlashMesh: muzzle
 		Image: w_common
 		MuzzleSkeleton: item
 		MuzzleBone: Muzzle
 	WithSkeleton:
 		Name: item
-		OnlyUpdateForDraw: true
+		# OnlyUpdateForDraw: true
 	ItemSkeletonHandler:
 		Skeleton: item
 	ItemMesh@test:
@@ -185,7 +185,7 @@ type38_item:
 		ThumbnailSequence: type38_icon
 		Weapon: OldRifle
 		LocalOffset: 768,0,0
-	WeaponMuzzleMesh:
+	WeaponItemMuzzle:
 		ScaleStartToEnd: 1.2, 3
 	RenderMeshes:
 		Image: w_type38
@@ -218,7 +218,7 @@ sr1_item:
 		ActionFrameReplace:
 			AttackFrame: 3
 			ProneAttackFrame: 17
-	WeaponMuzzleMesh:
+	WeaponItemMuzzle:
 		ScaleStartToEnd: 1.35, 3
 	RenderMeshes:
 		Image: w_sr1
@@ -230,7 +230,9 @@ laser-rifle_item:
 		ThumbnailSequence: lr_icon
 		Weapon: LaserRifleFire
 		LocalOffset: 538,0,0
-	-WeaponMuzzleMesh:
+	WeaponItemMuzzle:
+		MuzzleFlashMesh:
+		
 	WithEquipmentAnimation:
 		AnimsReplace:
 			Stand: cmmdo_stand
