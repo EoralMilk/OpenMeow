@@ -4,6 +4,7 @@ using System.IO;
 using GlmSharp;
 using OpenRA.FileSystem;
 using OpenRA.Primitives;
+using OpenRA.Traits;
 using TrueSync;
 
 namespace OpenRA.Graphics
@@ -338,7 +339,7 @@ namespace OpenRA.Graphics
 		/// </summary>
 		public WRot BoneWRot(int id)
 		{
-			return World3DCoordinate.GetWRotFromMatrix(Bones[id].CurrentPose);
+			return World3DCoordinate.GetWRotFromBoneMatrix(Bones[id].CurrentPose);
 		}
 
 		public SkeletonInstance(in BoneAsset[] boneAssets, in SkeletonAsset asset, in OrderedSkeleton skeleton)
@@ -371,30 +372,32 @@ namespace OpenRA.Graphics
 			return updateFlags[id];
 		}
 
-		public void UpdateBone(int id, in BlendTreeNodeOutPutOne treeNodeOutPut)
+		public void UpdateBone(int id, IBlendTreeHandler blendTreeHandler)
 		{
 			if (updateFlags[id])
 				return;
-			UpdateBoneInner(id, treeNodeOutPut.Trans, treeNodeOutPut.AnimMask);
+			UpdateBoneInner(id, blendTreeHandler);
 		}
 
 		public void UpdateBone(int id)
 		{
 			if (updateFlags[id])
 				return;
-			UpdateBoneInner(id, Transformation.Identity, SkeletonAsset.AllValidMask);
+			UpdateBoneInner(id, null);
 		}
 
-		void UpdateBoneInner(int id, in Transformation animTrans, in AnimMask animMask)
+		void UpdateBoneInner(int id, IBlendTreeHandler blendTreeHandler)
 		{
 			if (updateFlags[id] == true)
 				return;
+			var br = Bones[id].AnimId == -1 ? null : blendTreeHandler?.GetOneAnimTrans(Bones[id].AnimId);
+			bool hasAnim = br != null && br.Value.AnimMask[Bones[id].AnimId];
 
 			if (Bones[id].ParentId == -1)
 			{
 				// animMask length should be same as frame length (&& animMask.Length > Bones[id].AnimId) no need
-				if (Bones[id].AnimId != -1 && animMask[Bones[id].AnimId])
-					Bones[id].UpdateOffset(Offset, animTrans.Matrix);
+				if (hasAnim)
+					Bones[id].UpdateOffset(Offset, br.Value.Trans.Matrix);
 				else
 					Bones[id].UpdateOffset(Offset);
 
@@ -407,11 +410,11 @@ namespace OpenRA.Graphics
 			}
 			else
 			{
-				UpdateBoneInner(Bones[id].ParentId, animTrans, animMask);
+				UpdateBoneInner(Bones[id].ParentId, blendTreeHandler);
 
 				// animMask length should be same as frame length
-				if (Bones[id].AnimId != -1 && animMask[Bones[id].AnimId])
-					Bones[id].UpdateOffset(Bones[Bones[id].ParentId].CurrentPose, animTrans.Matrix);
+				if (hasAnim)
+					Bones[id].UpdateOffset(Bones[Bones[id].ParentId].CurrentPose, br.Value.Trans.Matrix);
 				else
 					Bones[id].UpdateOffset(Bones[Bones[id].ParentId].CurrentPose);
 

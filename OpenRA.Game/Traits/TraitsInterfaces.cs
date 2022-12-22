@@ -336,6 +336,14 @@ namespace OpenRA.Traits
 		mat4 GetRenderMatrixFromBoneId(int id);
 	}
 
+	public interface IBlendTreeHandler
+	{
+		BlendTreeNodeOutPut GetResult();
+		BlendTreeNodeOutPutOne GetOneAnimTrans(int animId);
+		void UpdateTick();
+		WRot FacingOverride();
+	}
+
 	public interface IPrepareForAttack
 	{
 		bool PrepareForAttack(in Target target);

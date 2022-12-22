@@ -22,16 +22,6 @@ using TrueSync;
 
 namespace OpenRA.Mods.Common.Traits.Trait3D
 {
-	public interface IBlendTreeHandler
-	{
-		BlendTreeNodeOutPut GetResult();
-		BlendTreeNodeOutPutOne GetOneAnimTrans(int animId);
-
-		void UpdateTick();
-
-		WRot FacingOverride();
-	}
-
 	public class WithSkeletonInfo : ConditionalTraitInfo, Requires<RenderMeshesInfo>
 	{
 		public readonly string SkeletonDefine = null;
@@ -263,9 +253,9 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 			if (Skeleton.HasUpdateBone(boneid))
 				return;
 
-			if (BlendTreeHandler != null && OrderedSkeleton.SkeletonAsset.Bones[boneid].AnimId != -1)
+			if (BlendTreeHandler != null)
 			{
-				Skeleton.UpdateBone(boneid, BlendTreeHandler.GetOneAnimTrans(OrderedSkeleton.SkeletonAsset.Bones[boneid].AnimId));
+				Skeleton.UpdateBone(boneid, BlendTreeHandler);
 			}
 			else
 				Skeleton.UpdateBone(boneid);

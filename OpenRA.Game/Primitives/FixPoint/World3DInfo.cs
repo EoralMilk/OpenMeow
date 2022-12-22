@@ -113,14 +113,10 @@ namespace OpenRA.Primitives
 										(int)(matrix.M34 * WDistPerMeter));
 		}
 
-		public static WRot GetWRotFromMatrix(in TSMatrix4x4 matrix)
+		public static WRot GetWRotFromBoneMatrix(in TSMatrix4x4 matrix)
 		{
 			var q = Transformation.MatRotation(in matrix);
-			var v = q.eulerAngles;
-			return new WRot(
-				new WAngle(0 + (int)(v.y * 512 / 180)),
-				new WAngle(256 + (int)(v.x * 512 / 180)),
-				new WAngle(0 + (int)(v.z * 512 / 180)));
+			return WRot.FromBoneQuat(q);
 		}
 
 		public static TSQuaternion Get3DRotationFromWRot(in WRot rot)

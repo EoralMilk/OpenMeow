@@ -13,6 +13,10 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 	public class AttachManagerInfo : RejectsOrdersInfo
 	{
 		public readonly string MainSkeleton = null;
+
+		/// <summary>
+		/// currently useless
+		/// </summary>
 		public readonly string AttachingBone = null;
 
 		[GrantedConditionReference]
@@ -24,11 +28,12 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 	public class AttachManager: RejectsOrders
 	{
 		readonly Actor self;
-		public readonly WithSkeleton MainSkeleton;
-		public readonly AttachManagerInfo Info;
-		public readonly int BoneId = -1;
+		public WithSkeleton MainSkeleton { get; private set; }
+		readonly AttachManagerInfo info;
+
 		readonly List<Actor> attachments = new List<Actor>();
 		Actor parent;
+
 		public readonly string Condition;
 		int conditionToken = Actor.InvalidConditionToken;
 
@@ -42,20 +47,18 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 			: base(info)
 		{
 			this.self = self;
-			Info = info;
+			this.info = info;
 			Condition = info.Condition;
-			if (!string.IsNullOrEmpty(info.MainSkeleton))
-			{
-				MainSkeleton = self.TraitsImplementing<WithSkeleton>().Single(w => w.Info.Name == info.MainSkeleton);
-
-				BoneId = MainSkeleton.GetBoneId(info.AttachingBone);
-			}
-
 		}
 
 		protected override void Created(Actor self)
 		{
 			base.Created(self);
+			if (!string.IsNullOrEmpty(info.MainSkeleton))
+			{
+				MainSkeleton = self.TraitsImplementing<WithSkeleton>().Single(w => w.Info.Name == info.MainSkeleton);
+			}
+
 			AttachPoints = self.TraitsImplementing<AttachPoint>().ToArray();
 		}
 
@@ -259,18 +262,6 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 			{
 				attachmentSkeleton = attachmentAM.MainSkeleton;
 				attachmentSkeleton?.SetParent(MainSkeleton, attachBoneId, attachmentSkeleton.Scale);
-
-				attachmentPositionable?.BindPoseTo(() =>
-				{
-					if (MainSkeleton == null)
-					{
-						attachmentPositionable?.BindPoseTo(null);
-						return attachmentPositionable.CenterPosition;
-					}
-
-					return World3DCoordinate.TSVec3ToWPos(Transformation.MatPosition(MainSkeleton.GetMatrixFromBoneId(attachBoneId)));
-				}
-				);
 			}
 
 			if (attachmentPositionable != null)
@@ -300,7 +291,7 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 			{
 				var mat = MainSkeleton.GetMatrixFromBoneId(attachBoneId);
 				var pos = World3DCoordinate.TSVec3ToWPos(Transformation.MatPosition(mat));
-				var rot = World3DCoordinate.GetWRotFromMatrix(mat);
+				var rot = World3DCoordinate.GetWRotFromBoneMatrix(mat);
 				attachmentPositionable?.SetPosition(attachmentActor, pos, true);
 				if (attachmentFacing != null)
 				{
@@ -312,10 +303,7 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 			}
 			else
 			{
-				// Weapon offset in turret coordinates
-				var localOffset =Info.Offset;
-
-				// Turret coordinates to body coordinates
+				var localOffset = Info.Offset;
 				var bodyOrientation = body.QuantizeOrientation(self.Orientation);
 				var pos = self.CenterPosition;
 				if (turret != null)
@@ -365,6 +353,8 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 				{
 					if (attachmentMove is Mobile)
 					{
+						attachmentFacing.Orientation = WRot.None;
+						attachmentFacing.Facing = attachmentFacing.Facing;
 						(attachmentMove as Mobile).ForceDisabled = false;
 						(attachmentMove as Mobile).TerrainOrientationIgnore = false;
 					}

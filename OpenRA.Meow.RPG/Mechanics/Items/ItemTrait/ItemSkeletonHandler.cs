@@ -70,7 +70,7 @@ namespace OpenRA.Meow.RPG.Mechanics
 
 				if (itemFacing != null)
 				{
-					itemFacing.Orientation = World3DCoordinate.GetWRotFromMatrix(mat);
+					itemFacing.Orientation = World3DCoordinate.GetWRotFromBoneMatrix(mat);
 				}
 
 				var modelScale = Transformation.MatScale(mat) / item.EquipmentSlot.SkeletonBind.GetScale();

@@ -80,15 +80,18 @@ namespace OpenRA
 			return new quat((float)rot.x / 1024, (float)rot.y / 1024, (float)rot.z / 1024, (float)rot.w / 1024);
 		}
 
-		public static WRot FromQuat(in TSQuaternion quat)
+		public static WRot FromBoneQuat(in TSQuaternion quat)
 		{
-			var v = quat.eulerAngles;
-			return new WRot(
-				new WAngle((int)(v.x * 512 / 180)),
-				
-				new WAngle((int)(v.y * 512 / 180)),
-				new WAngle((int)(v.z * 512 / 180))
-				);
+			//var v = quat.eulerAngles;
+			//return new WRot(
+			//	new WAngle((int)(v.x * 512 / 180)),
+			//	new WAngle((int)(v.y * 512 / 180)),
+			//	new WAngle((int)(v.z * 512 / 180))
+			//	);
+
+			var prot = new WRot((int)(quat.x * 1024), (int)(quat.y * 1024), (int)(quat.z * 1024), (int)(quat.w * 1024));
+			prot = new WRot(prot.Pitch, new WAngle(256) + prot.Roll, -prot.Yaw);
+			return prot;
 		}
 
 		/// <summary>
