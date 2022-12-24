@@ -246,7 +246,7 @@ namespace OpenRA
 		public CellLayer<TerrainTile> Tiles { get; private set; }
 		public CellLayer<ResourceTile> Resources { get; private set; }
 		public CellLayer<byte> HeightStep { get; private set; }
-		public CellLayer<byte> Ramp { get; private set; }
+		protected CellLayer<byte> Ramp { get; private set; }
 		public CellLayer<byte> CustomTerrain { get; private set; }
 
 		public CellLayer<CellInfo> CellInfos { get; private set; }
@@ -284,6 +284,8 @@ namespace OpenRA
 		CellLayer<List<MPos>> inverseCellProjection;
 		CellLayer<byte> projectedHeight;
 		Rectangle projectionSafeBounds;
+
+		const string TerrainMeshFileName = "Terrain.tm";
 
 		internal Translation Translation;
 
@@ -375,12 +377,19 @@ namespace OpenRA
 			if (Grid.MaximumTerrainHeight > 0)
 			{
 				Tiles.CellEntryChanged += UpdateRamp;
-				Tiles.CellEntryChanged += UpdateProjection;
-				HeightStep.CellEntryChanged += UpdateProjection;
 			}
 
 			PostInit();
 			CalculateTileVertexInfo();
+
+			if (Grid.MaximumTerrainHeight > 0)
+			{
+				CellInfos.CellEntryChanged += UpdateProjection;
+				Tiles.CellEntryChanged += UpdateProjection;
+				HeightStep.CellEntryChanged += UpdateProjection;
+			}
+
+			InitializeCellProjection();
 		}
 
 		public Map(ModData modData, IReadOnlyPackage package)
@@ -458,12 +467,22 @@ namespace OpenRA
 			if (Grid.MaximumTerrainHeight > 0)
 			{
 				Tiles.CellEntryChanged += UpdateRamp;
+			}
+
+			PostInit();
+			if (Package.Contains(TerrainMeshFileName))
+				ImportVertexInfo();
+			else
+				CalculateTileVertexInfo();
+
+			if (Grid.MaximumTerrainHeight > 0)
+			{
+				CellInfos.CellEntryChanged += UpdateProjection;
 				Tiles.CellEntryChanged += UpdateProjection;
 				HeightStep.CellEntryChanged += UpdateProjection;
 			}
 
-			PostInit();
-			CalculateTileVertexInfo();
+			InitializeCellProjection();
 
 			Uid = ComputeUID(Package, MapFormat);
 		}
@@ -734,95 +753,173 @@ namespace OpenRA
 
 		#region Terrain Vertex
 
-		//public void ImportVertexInfo()
-		//{
-		//	VertexArrayWidth = MapSize.X * 2 + 2;
-		//	VertexArrayHeight = MapSize.Y + 2;
+		public void ImportVertexInfo()
+		{
+			VertexArrayWidth = MapSize.X * 2 + 2;
+			VertexArrayHeight = MapSize.Y + 2;
 
-		//	TerrainVertices = new TerrainVertex[VertexArrayHeight * VertexArrayWidth];
-		//	MiniCells = new MiniCell[(VertexArrayHeight - 1), (VertexArrayWidth - 1)];
+			TerrainVertices = new TerrainVertex[VertexArrayHeight * VertexArrayWidth];
+			MiniCells = new MiniCell[(VertexArrayHeight - 1), (VertexArrayWidth - 1)];
+			var vertexNmlCaled = new bool[VertexArrayWidth * VertexArrayHeight];
+			//var vertexNml = new vec3[VertexArrayWidth * VertexArrayHeight];
 
-		//	for (var y = 0; y < MapSize.Y; y++)
-		//	{
-		//		for (var x = 0; x < MapSize.X; x++)
-		//		{
-		//			var uv = new MPos(x, y);
+			using (var s = Package.GetStream(TerrainMeshFileName))
+			{
+				var width = s.ReadInt32();
+				var height = s.ReadInt32();
+				if (width != MapSize.X || height != MapSize.Y)
+					throw new InvalidDataException("Invalid terrain mesh data: map size is " + MapSize + " and data size is " + width + ", " + height);
 
-		//			int2 mid;
-		//			if (y % 2 == 0)
-		//			{
-		//				mid = new int2(2 * x + 1, y + 1);
-		//			}
-		//			else
-		//			{
-		//				mid = new int2(2 * x + 2, y + 1);
-		//			}
+				for (var i = 0; i < TerrainVertices.Length; i++)
+				{
+					TerrainVertices[i].LogicPos = new WPos(s.ReadInt32(), s.ReadInt32(), Math.Max(s.ReadInt32(), 0));
+					TerrainVertices[i].Color = new float3(s.ReadFloat(), s.ReadFloat(), s.ReadFloat());
+					//vertexNml[i] = new vec3(s.ReadFloat(), s.ReadFloat(), s.ReadFloat());
+					TerrainVertices[i].UpdatePos();
+				}
+			}
 
-		//			var ramp = Ramp[uv];
+			for (var y = 0; y < MapSize.Y; y++)
+			{
+				for (var x = 0; x < MapSize.X; x++)
+				{
+					var uv = new MPos(x, y);
 
-		//			int im, it, ib, il, ir;
-		//			im = mid.Y * VertexArrayWidth + mid.X;
-		//			it = (mid.Y - 1) * VertexArrayWidth + mid.X;
-		//			ib = (mid.Y + 1) * VertexArrayWidth + mid.X;
-		//			il = mid.Y * VertexArrayWidth + mid.X - 1;
-		//			ir = mid.Y * VertexArrayWidth + mid.X + 1;
+					int2 mid;
+					if (y % 2 == 0)
+					{
+						mid = new int2(2 * x + 1, y + 1);
+					}
+					else
+					{
+						mid = new int2(2 * x + 2, y + 1);
+					}
 
-		//			WPos wposm = TerrainVertices[im].LogicPos;
-		//			WPos wpost = TerrainVertices[it].LogicPos;
-		//			WPos wposb = TerrainVertices[ib].LogicPos;
-		//			WPos wposl = TerrainVertices[il].LogicPos;
-		//			WPos wposr = TerrainVertices[ir].LogicPos;
+					var ramp = Ramp[uv];
 
-		//			var tlNml = CellInfo.CalLogicNml(wposm, wpost, wposl);
-		//			var trNml = CellInfo.CalLogicNml(wposm, wposr, wpost);
-		//			var blNml = CellInfo.CalLogicNml(wposm, wposl, wposb);
-		//			var brNml = CellInfo.CalLogicNml(wposm, wposb, wposl);
+					int im, it, ib, il, ir;
+					im = mid.Y * VertexArrayWidth + mid.X;
+					it = (mid.Y - 1) * VertexArrayWidth + mid.X;
+					ib = (mid.Y + 1) * VertexArrayWidth + mid.X;
+					il = mid.Y * VertexArrayWidth + mid.X - 1;
+					ir = mid.Y * VertexArrayWidth + mid.X + 1;
 
-		//			var itl = (mid.Y - 1) * VertexArrayWidth + mid.X - 1;
-		//			var itr = (mid.Y - 1) * VertexArrayWidth + mid.X + 1;
-		//			var ibl = (mid.Y + 1) * VertexArrayWidth + mid.X - 1;
-		//			var ibr = (mid.Y + 1) * VertexArrayWidth + mid.X + 1;
-		//			MiniCells[mid.Y - 1, mid.X - 1] = new MiniCell(itl, it, il, im, MiniCellType.TLBR); // tl
-		//			MiniCells[mid.Y - 1, mid.X] = new MiniCell(it, itr, im, ir, MiniCellType.TRBL); // tr
-		//			MiniCells[mid.Y, mid.X - 1] = new MiniCell(il, im, ibl, ib, MiniCellType.TLBR); // bl
-		//			MiniCells[mid.Y, mid.X] = new MiniCell(im, ir, ib, ibr, MiniCellType.TRBL); // br
+					float3 pm, pt, pb, pl, pr;
+					float2 uvm, uvt, uvb, uvl, uvr;
 
-		//			bool flatCell = false;
-		//			if (TerrainVertices[im].LogicPos.Z == TerrainVertices[it].LogicPos.Z &&
-		//				TerrainVertices[im].LogicPos.Z == TerrainVertices[ib].LogicPos.Z &&
-		//				TerrainVertices[im].LogicPos.Z == TerrainVertices[ir].LogicPos.Z &&
-		//				TerrainVertices[im].LogicPos.Z == TerrainVertices[il].LogicPos.Z)
-		//				flatCell = true;
+					pt = TerrainVertices[it].Pos;
+					pb = TerrainVertices[ib].Pos;
+					pl = TerrainVertices[il].Pos;
+					pr = TerrainVertices[ir].Pos;
+					pm = TerrainVertices[im].Pos;
 
-		//			CellInfo cellInfo = new CellInfo(TerrainVertices[im].LogicPos, Math.Min(
-		//				Math.Min(
-		//					Math.Min(
-		//						Math.Min(TerrainVertices[im].LogicPos.Z,
-		//							TerrainVertices[it].LogicPos.Z),
-		//						TerrainVertices[ib].LogicPos.Z),
-		//					TerrainVertices[ir].LogicPos.Z),
-		//				TerrainVertices[il].LogicPos.Z),
-		//				im, it, ib, il, ir,
-		//				new int2(mid.X - 1, mid.Y - 1), new int2(mid.X, mid.Y - 1),
-		//				new int2(mid.X - 1, mid.Y), new int2(mid.X, mid.Y), flatCell, ramp == 0,
-		//				tlNml, trNml, blNml, brNml);
+					uvm = new float2(0.5f, 0.5f);
+					uvt = new float2(CellInfo.TU, CellInfo.TV);
+					uvb = new float2(CellInfo.BU, CellInfo.BV);
+					uvl = new float2(CellInfo.LU, CellInfo.LV);
+					uvr = new float2(CellInfo.RU, CellInfo.RV);
 
-		//			CellInfos[uv.ToCPos(this)] = cellInfo;
-		//		}
-		//	}
+					var tlm = CellInfo.CalTBN(pt, pl, pm, uvt, uvl, uvm);
+					var tmr = CellInfo.CalTBN(pt, pm, pr, uvt, uvm, uvr);
+					var mlb = CellInfo.CalTBN(pm, pl, pb, uvm, uvl, uvb);
+					var mbr = CellInfo.CalTBN(pm, pb, pr, uvm, uvb, uvr);
 
-		//	for (int i = 0; i < TerrainVertices.Length; i++)
-		//	{
-		//		TerrainVertices[i].TBN = CellInfo.NormalizeTBN(TerrainVertices[i].TBN);
-		//	}
+					TerrainVertices[im].TBN = (tlm * 0.25f + tmr * 0.25f + mlb * 0.25f + mbr * 0.25f);
 
-		//	// uv retarget
-		//	float texScale = 1f;
-		//	for (int i = 0; i < TerrainVertices.Length; i++)
-		//	{
-		//		TerrainVertices[i].UV = new float2(TerrainVertices[i].Pos.X / texScale, TerrainVertices[i].Pos.Y / texScale);
-		//	}
-		//}
+					if (vertexNmlCaled[it])
+						TerrainVertices[it].TBN = 0.25f * (tlm * 0.5f + tmr * 0.5f) + TerrainVertices[it].TBN;
+					else
+						TerrainVertices[it].TBN = 0.25f * (tlm * 0.5f + tmr * 0.5f);
+
+					if (vertexNmlCaled[ib])
+						TerrainVertices[ib].TBN = 0.25f * (mlb * 0.5f + mbr * 0.5f) + TerrainVertices[ib].TBN;
+					else
+						TerrainVertices[ib].TBN = 0.25f * (mlb * 0.5f + mbr * 0.5f);
+
+					if (vertexNmlCaled[il])
+						TerrainVertices[il].TBN = 0.25f * (mlb * 0.5f + tlm * 0.5f) + TerrainVertices[il].TBN;
+					else
+						TerrainVertices[il].TBN = 0.25f * (mlb * 0.5f + tlm * 0.5f);
+
+					if (vertexNmlCaled[ir])
+						TerrainVertices[ir].TBN = 0.25f * (tmr * 0.5f + mbr * 0.5f) + TerrainVertices[ir].TBN;
+					else
+						TerrainVertices[ir].TBN = 0.25f * (tmr * 0.5f + mbr * 0.5f);
+
+					vertexNmlCaled[im] = true;
+					vertexNmlCaled[it] = true;
+					vertexNmlCaled[ib] = true;
+					vertexNmlCaled[il] = true;
+					vertexNmlCaled[ir] = true;
+
+					WPos wposm = TerrainVertices[im].LogicPos;
+					WPos wpost = TerrainVertices[it].LogicPos;
+					WPos wposb = TerrainVertices[ib].LogicPos;
+					WPos wposl = TerrainVertices[il].LogicPos;
+					WPos wposr = TerrainVertices[ir].LogicPos;
+
+					var tlNml = CellInfo.CalLogicNml(wposm, wpost, wposl);
+					var trNml = CellInfo.CalLogicNml(wposm, wposr, wpost);
+					var blNml = CellInfo.CalLogicNml(wposm, wposl, wposb);
+					var brNml = CellInfo.CalLogicNml(wposm, wposb, wposl);
+
+					var itl = (mid.Y - 1) * VertexArrayWidth + mid.X - 1;
+					var itr = (mid.Y - 1) * VertexArrayWidth + mid.X + 1;
+					var ibl = (mid.Y + 1) * VertexArrayWidth + mid.X - 1;
+					var ibr = (mid.Y + 1) * VertexArrayWidth + mid.X + 1;
+					MiniCells[mid.Y - 1, mid.X - 1] = new MiniCell(itl, it, il, im, MiniCellType.TRBL); // tl
+					MiniCells[mid.Y - 1, mid.X] = new MiniCell(it, itr, im, ir, MiniCellType.TLBR); // tr
+					MiniCells[mid.Y, mid.X - 1] = new MiniCell(il, im, ibl, ib, MiniCellType.TLBR); // bl
+					MiniCells[mid.Y, mid.X] = new MiniCell(im, ir, ib, ibr, MiniCellType.TRBL); // br
+
+					bool flatCell = false;
+					if (TerrainVertices[im].LogicPos.Z == TerrainVertices[it].LogicPos.Z &&
+						TerrainVertices[im].LogicPos.Z == TerrainVertices[ib].LogicPos.Z &&
+						TerrainVertices[im].LogicPos.Z == TerrainVertices[ir].LogicPos.Z &&
+						TerrainVertices[im].LogicPos.Z == TerrainVertices[il].LogicPos.Z)
+						flatCell = true;
+
+					CellInfo cellInfo = new CellInfo(TerrainVertices[im].LogicPos, Math.Min(
+						Math.Min(
+							Math.Min(
+								Math.Min(TerrainVertices[im].LogicPos.Z,
+									TerrainVertices[it].LogicPos.Z),
+								TerrainVertices[ib].LogicPos.Z),
+							TerrainVertices[ir].LogicPos.Z),
+						TerrainVertices[il].LogicPos.Z),
+						im, it, ib, il, ir,
+						new int2(mid.X - 1, mid.Y - 1), new int2(mid.X, mid.Y - 1),
+						new int2(mid.X - 1, mid.Y), new int2(mid.X, mid.Y), flatCell, ramp == 0,
+						tlNml, trNml, blNml, brNml);
+
+					CellInfos[uv.ToCPos(this)] = cellInfo;
+				}
+			}
+
+			for (int i = 0; i < TerrainVertices.Length; i++)
+			{
+				TerrainVertices[i].TBN = CellInfo.NormalizeTBN(TerrainVertices[i].TBN);
+			}
+
+			// uv retarget
+			float texScale = 1f;
+			for (int i = 0; i < TerrainVertices.Length; i++)
+			{
+				TerrainVertices[i].UV = new float2(TerrainVertices[i].Pos.X / texScale, TerrainVertices[i].Pos.Y / texScale);
+			}
+
+			// clamp vert color
+			for (int i = 0; i < TerrainVertices.Length; i++)
+			{
+				TerrainVertices[i].Color = float3.Clamp(TerrainVertices[i].Color, 0, 1);
+			}
+
+			// update heightStep
+			foreach (var c in AllCellsArray)
+			{
+				HeightStep[c] = CellInfos[c].CellCenterPos.Z > 0 ? (byte)((CellInfos[c].CellCenterPos.Z + 1) / MapGrid.MapHeightStep) : (byte)(0);
+			}
+		}
 
 		public void CalculateTileVertexInfo()
 		{
@@ -836,6 +933,7 @@ namespace OpenRA
 			var vertexNmlCaled = new bool[VertexArrayWidth * VertexArrayHeight];
 			var vertexCliffCaled = new bool[VertexArrayWidth * VertexArrayHeight];
 
+			// pos and color
 			for (var y = 0; y < MapSize.Y; y++)
 			{
 				for (var x = 0; x < MapSize.X; x++)
@@ -1152,6 +1250,7 @@ namespace OpenRA
 				}
 			}
 
+			// nml
 			for (var y = 0; y < MapSize.Y; y++)
 			{
 				for (var x = 0; x < MapSize.X; x++)
@@ -1303,8 +1402,10 @@ namespace OpenRA
 						new int2(mid.X - 1, mid.Y - 1), new int2(mid.X, mid.Y - 1),
 						new int2(mid.X - 1, mid.Y), new int2(mid.X, mid.Y), flatCell, ramp == 0,
 						tlNml, trNml, blNml, brNml);
-
-					CellInfos[uv.ToCPos(this)] = cellInfo;
+					var cpos = uv.ToCPos(this);
+					cellInfo.TileType = Tiles[cpos].Type;
+					cellInfo.TerrainType = Rules.TerrainInfo.GetTerrainInfo(Tiles[cpos]).TerrainType;
+					CellInfos[cpos] = cellInfo;
 				}
 			}
 
@@ -1353,6 +1454,12 @@ namespace OpenRA
 			for (int i = 0; i < TerrainVertices.Length; i++)
 			{
 				TerrainVertices[i].Color = float3.Clamp(4.0f * TerrainVertices[i].Color, 0, 1);
+			}
+
+			// update heightStep
+			foreach (var c in AllCellsArray)
+			{
+				HeightStep[c] = CellInfos[c].CellCenterPos.Z > 0 ? (byte)((CellInfos[c].CellCenterPos.Z + 1) / MapGrid.MapHeightStep) : (byte)(0);
 			}
 		}
 
@@ -1527,9 +1634,8 @@ namespace OpenRA
 
 			foreach (var uv in MapCells)
 			{
-				var type = Rules.TerrainInfo.GetTerrainInfo(Tiles[uv]);
-				var typename = Rules.TerrainInfo.TerrainTypes[type.TerrainType].Type;
-				var id = Tiles[uv].Type;
+				var typename = Rules.TerrainInfo.TerrainTypes[CellInfos[uv].TerrainType].Type;
+				var id = CellInfos[uv].TileType;
 				int layer = 8;
 
 				switch (typename)
@@ -1616,21 +1722,11 @@ namespace OpenRA
 
 			foreach (var uv in MapCells)
 			{
-				var type = Rules.TerrainInfo.GetTerrainInfo(Tiles[uv]);
-				var typename = Rules.TerrainInfo.TerrainTypes[type.TerrainType].Type;
-				var id = Tiles[uv].Type;
-
 				if (!CellInfos[uv].Flat)
 				{
 					// TerrainRenderBlock.PaintAt(this, waterBrush, CenterOfCell(uv), waterBrush.DefaultSize, WATER, -255);
 					TerrainRenderBlock.PaintAt(this, brush, CenterOfCell(uv), brush.DefaultSize, WATER, -255);
 				}
-
-				// else if (id >= 108 && id <= 149 && typename != "Water")
-				// {
-				// 	// TerrainRenderBlock.PaintAt(this, waterBrush, CenterOfCell(uv), waterBrush.DefaultSize, WATER, -200);
-				// 	// TerrainRenderBlock.PaintAt(this, brush, CenterOfCell(uv), brush.DefaultSize * random.Next(10, 15) / random.Next(30, 45), WATER, -random.Next(64, 175));
-				// }
 			}
 
 			Console.WriteLine("Completed");

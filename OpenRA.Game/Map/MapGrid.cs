@@ -24,10 +24,42 @@ namespace OpenRA
 
 	public readonly struct CellRamp
 	{
+		public readonly static CellRamp FlatRamp = new CellRamp(MapGridType.Rectangular);
+		public readonly static CellRamp FlatRampIso = new CellRamp(MapGridType.RectangularIsometric);
+
+
 		public readonly int CenterHeightOffset;
 		public readonly WVec[] Corners;
 		public readonly WVec[][] Polygons;
 		public readonly WRot Orientation;
+
+		CellRamp(MapGridType type)
+		{
+			CenterHeightOffset = 0;
+			Orientation = WRot.None;
+			if (type == MapGridType.RectangularIsometric)
+			{
+				Corners = new[]
+				{
+					new WVec(0, -724, 0),
+					new WVec(724, 0, 0),
+					new WVec(0, 724, 0),
+					new WVec(-724, 0, 0),
+				};
+			}
+			else
+			{
+				Corners = new[]
+				{
+					new WVec(-512, -512, 0),
+					new WVec(512, -512, 0),
+					new WVec(512, 512, 0),
+					new WVec(-512, 512, 0)
+				};
+			}
+
+			Polygons = new[] { Corners };
+		}
 
 		public CellRamp(MapGridType type, WRot orientation, RampCornerHeight tl = RampCornerHeight.Low, RampCornerHeight tr = RampCornerHeight.Low, RampCornerHeight br = RampCornerHeight.Low,  RampCornerHeight bl = RampCornerHeight.Low, RampSplit split = RampSplit.Flat)
 		{

@@ -54,6 +54,9 @@ namespace OpenRA
 
 		public readonly int M, T, B, L, R;
 
+		public ushort TileType;
+		public byte TerrainType;
+
 		public bool Flat;
 		public bool AlmostFlat;
 
@@ -203,6 +206,11 @@ namespace OpenRA
 
 		public static mat3 CalTBN(float3 a, float3 b, float3 c, float2 uva, float2 uvb, float2 uvc)
 		{
+			return CalTBN(a, b, c, uva, uvb, uvc, CalNormal(a, b, c));
+		}
+
+		public static mat3 CalTBN(float3 a, float3 b, float3 c, float2 uva, float2 uvb, float2 uvc, vec3 nm)
+		{
 			// positions
 			vec3 pos1 = World3DCoordinate.Float3toVec3(a);
 			vec3 pos2 = World3DCoordinate.Float3toVec3(b);
@@ -212,9 +220,6 @@ namespace OpenRA
 			vec2 uv1 = new vec2(uva.X, uva.Y);
 			vec2 uv2 = new vec2(uvb.X, uvb.Y);
 			vec2 uv3 = new vec2(uvc.X, uvc.Y);
-
-			// normal vector
-			vec3 nm = CalNormal(a, b, c);
 
 			vec3 edge1 = pos2 - pos1;
 			vec3 edge2 = pos3 - pos1;

@@ -309,7 +309,7 @@ namespace OpenRA.Graphics
 					}
 					else
 					{
-						var ramp = map.Grid.Ramps[map.Ramp.Contains(uv) ? map.Ramp[uv] : 0];
+						var ramp = map.Grid.Type == MapGridType.RectangularIsometric ? CellRamp.FlatRampIso : CellRamp.FlatRamp;
 						var pos = map.CenterOfCell(uv);
 						pos = new WPos(pos.X, pos.Y, map.MiniHeightOfCell(uv));
 						var screen = ramp.Corners.Select(c => worldRenderer.ScreenPxPosition(pos + c)).ToArray();

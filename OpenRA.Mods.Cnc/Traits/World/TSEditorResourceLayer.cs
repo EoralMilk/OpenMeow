@@ -65,8 +65,8 @@ namespace OpenRA.Mods.Cnc.Traits
 				return false;
 
 			// Resources are allowed on flat terrain and cardinal slopes
-			if (Map.Ramp[cell] > 4)
-				return false;
+			// if (Map.Ramp[cell] > 4)
+			//	 return false;
 
 			if (!info.ResourceTypes.TryGetValue(resourceType, out var resourceInfo))
 				return false;
