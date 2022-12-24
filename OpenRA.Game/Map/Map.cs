@@ -733,6 +733,97 @@ namespace OpenRA
 		}
 
 		#region Terrain Vertex
+
+		//public void ImportVertexInfo()
+		//{
+		//	VertexArrayWidth = MapSize.X * 2 + 2;
+		//	VertexArrayHeight = MapSize.Y + 2;
+
+		//	TerrainVertices = new TerrainVertex[VertexArrayHeight * VertexArrayWidth];
+		//	MiniCells = new MiniCell[(VertexArrayHeight - 1), (VertexArrayWidth - 1)];
+
+		//	for (var y = 0; y < MapSize.Y; y++)
+		//	{
+		//		for (var x = 0; x < MapSize.X; x++)
+		//		{
+		//			var uv = new MPos(x, y);
+
+		//			int2 mid;
+		//			if (y % 2 == 0)
+		//			{
+		//				mid = new int2(2 * x + 1, y + 1);
+		//			}
+		//			else
+		//			{
+		//				mid = new int2(2 * x + 2, y + 1);
+		//			}
+
+		//			var ramp = Ramp[uv];
+
+		//			int im, it, ib, il, ir;
+		//			im = mid.Y * VertexArrayWidth + mid.X;
+		//			it = (mid.Y - 1) * VertexArrayWidth + mid.X;
+		//			ib = (mid.Y + 1) * VertexArrayWidth + mid.X;
+		//			il = mid.Y * VertexArrayWidth + mid.X - 1;
+		//			ir = mid.Y * VertexArrayWidth + mid.X + 1;
+
+		//			WPos wposm = TerrainVertices[im].LogicPos;
+		//			WPos wpost = TerrainVertices[it].LogicPos;
+		//			WPos wposb = TerrainVertices[ib].LogicPos;
+		//			WPos wposl = TerrainVertices[il].LogicPos;
+		//			WPos wposr = TerrainVertices[ir].LogicPos;
+
+		//			var tlNml = CellInfo.CalLogicNml(wposm, wpost, wposl);
+		//			var trNml = CellInfo.CalLogicNml(wposm, wposr, wpost);
+		//			var blNml = CellInfo.CalLogicNml(wposm, wposl, wposb);
+		//			var brNml = CellInfo.CalLogicNml(wposm, wposb, wposl);
+
+		//			var itl = (mid.Y - 1) * VertexArrayWidth + mid.X - 1;
+		//			var itr = (mid.Y - 1) * VertexArrayWidth + mid.X + 1;
+		//			var ibl = (mid.Y + 1) * VertexArrayWidth + mid.X - 1;
+		//			var ibr = (mid.Y + 1) * VertexArrayWidth + mid.X + 1;
+		//			MiniCells[mid.Y - 1, mid.X - 1] = new MiniCell(itl, it, il, im, MiniCellType.TLBR); // tl
+		//			MiniCells[mid.Y - 1, mid.X] = new MiniCell(it, itr, im, ir, MiniCellType.TRBL); // tr
+		//			MiniCells[mid.Y, mid.X - 1] = new MiniCell(il, im, ibl, ib, MiniCellType.TLBR); // bl
+		//			MiniCells[mid.Y, mid.X] = new MiniCell(im, ir, ib, ibr, MiniCellType.TRBL); // br
+
+		//			bool flatCell = false;
+		//			if (TerrainVertices[im].LogicPos.Z == TerrainVertices[it].LogicPos.Z &&
+		//				TerrainVertices[im].LogicPos.Z == TerrainVertices[ib].LogicPos.Z &&
+		//				TerrainVertices[im].LogicPos.Z == TerrainVertices[ir].LogicPos.Z &&
+		//				TerrainVertices[im].LogicPos.Z == TerrainVertices[il].LogicPos.Z)
+		//				flatCell = true;
+
+		//			CellInfo cellInfo = new CellInfo(TerrainVertices[im].LogicPos, Math.Min(
+		//				Math.Min(
+		//					Math.Min(
+		//						Math.Min(TerrainVertices[im].LogicPos.Z,
+		//							TerrainVertices[it].LogicPos.Z),
+		//						TerrainVertices[ib].LogicPos.Z),
+		//					TerrainVertices[ir].LogicPos.Z),
+		//				TerrainVertices[il].LogicPos.Z),
+		//				im, it, ib, il, ir,
+		//				new int2(mid.X - 1, mid.Y - 1), new int2(mid.X, mid.Y - 1),
+		//				new int2(mid.X - 1, mid.Y), new int2(mid.X, mid.Y), flatCell, ramp == 0,
+		//				tlNml, trNml, blNml, brNml);
+
+		//			CellInfos[uv.ToCPos(this)] = cellInfo;
+		//		}
+		//	}
+
+		//	for (int i = 0; i < TerrainVertices.Length; i++)
+		//	{
+		//		TerrainVertices[i].TBN = CellInfo.NormalizeTBN(TerrainVertices[i].TBN);
+		//	}
+
+		//	// uv retarget
+		//	float texScale = 1f;
+		//	for (int i = 0; i < TerrainVertices.Length; i++)
+		//	{
+		//		TerrainVertices[i].UV = new float2(TerrainVertices[i].Pos.X / texScale, TerrainVertices[i].Pos.Y / texScale);
+		//	}
+		//}
+
 		public void CalculateTileVertexInfo()
 		{
 			VertexArrayWidth = MapSize.X * 2 + 2;
@@ -1188,8 +1279,8 @@ namespace OpenRA
 					var itr = (mid.Y - 1) * VertexArrayWidth + mid.X + 1;
 					var ibl = (mid.Y + 1) * VertexArrayWidth + mid.X - 1;
 					var ibr = (mid.Y + 1) * VertexArrayWidth + mid.X + 1;
-					MiniCells[mid.Y - 1, mid.X - 1] = new MiniCell(itl, it, il, im, MiniCellType.TLBR); // tl
-					MiniCells[mid.Y - 1, mid.X] = new MiniCell(it, itr, im, ir, MiniCellType.TRBL); // tr
+					MiniCells[mid.Y - 1, mid.X - 1] = new MiniCell(itl, it, il, im, MiniCellType.TRBL); // tl
+					MiniCells[mid.Y - 1, mid.X] = new MiniCell(it, itr, im, ir, MiniCellType.TLBR); // tr
 					MiniCells[mid.Y, mid.X - 1] = new MiniCell(il, im, ibl, ib, MiniCellType.TLBR); // bl
 					MiniCells[mid.Y, mid.X] = new MiniCell(im, ir, ib, ibr, MiniCellType.TRBL); // br
 

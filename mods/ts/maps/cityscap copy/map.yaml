@@ -1,0 +1,100 @@
+MapFormat: 12
+
+RequiresMod: ts
+
+Title: Cityscape No Actor
+
+Author: Westwood Studios
+
+Tileset: TEMPERATE
+
+TileTexSet: Summer
+
+MapSize: 160,250
+
+Bounds: 5,6,149,236
+
+Visibility: Lobby
+
+Categories: Conquest
+
+Players:
+	PlayerReference@Neutral:
+		Name: Neutral
+		OwnsWorld: True
+		NonCombatant: True
+		Faction: Random
+	PlayerReference@Creeps:
+		Name: Creeps
+		NonCombatant: True
+		Faction: Random
+		Enemies: Multi0, Multi1, Multi2, Multi3, Multi4, Multi5
+	PlayerReference@Multi0:
+		Name: Multi0
+		Playable: True
+		Faction: Random
+		Enemies: Creeps
+	PlayerReference@Multi1:
+		Name: Multi1
+		Playable: True
+		Faction: Random
+		Enemies: Creeps
+	PlayerReference@Multi2:
+		Name: Multi2
+		Playable: True
+		Faction: Random
+		Enemies: Creeps
+	PlayerReference@Multi3:
+		Name: Multi3
+		Playable: True
+		Faction: Random
+		Enemies: Creeps
+	PlayerReference@Multi4:
+		Name: Multi4
+		Playable: True
+		Faction: Random
+		Enemies: Creeps
+	PlayerReference@Multi5:
+		Name: Multi5
+		Playable: True
+		Faction: Random
+		Enemies: Creeps
+
+Actors:
+	Actor472: mpspawn
+		Location: 171,38
+		Owner: Neutral
+	Actor473: mpspawn
+		Location: 211,-8
+		Owner: Neutral
+	Actor474: mpspawn
+		Location: 210,-79
+		Owner: Neutral
+	Actor475: mpspawn
+		Location: 135,-97
+		Owner: Neutral
+	Actor476: mpspawn
+		Location: 69,-21
+		Owner: Neutral
+	Actor477: mpspawn
+		Location: 88,66
+		Owner: Neutral
+
+Rules:
+	^BaseWorld:
+		TerrainLighting:
+			Intensity: 0.93
+	INGRNLMP:
+		TerrainLightSource:
+			Range: 7c832
+			Intensity: 0.36
+			RedTint: 0.01
+			GreenTint: 0.7
+			BlueTint: 0.01
+	INBLULMP:
+		TerrainLightSource:
+			Range: 9c784
+			Intensity: 0.36
+			RedTint: 0.01
+			GreenTint: 0.01
+			BlueTint: 0.7

@@ -21,6 +21,13 @@ namespace OpenRA
 										(float)LogicPos.Y / 256,
 										(float)LogicPos.Z / 256);
 		}
+
+		public void UpdatePos()
+		{
+			Pos = new float3(-(float)LogicPos.X / 256,
+										(float)LogicPos.Y / 256,
+										(float)LogicPos.Z / 256);
+		}
 	}
 
 	public class CellInfo
@@ -167,6 +174,12 @@ namespace OpenRA
 				AlmostFlat = true;
 				Flat = true;
 			}
+
+			map.TerrainVertices[M].UpdatePos();
+			map.TerrainVertices[T].UpdatePos();
+			map.TerrainVertices[L].UpdatePos();
+			map.TerrainVertices[B].UpdatePos();
+			map.TerrainVertices[R].UpdatePos();
 
 			UpdateNml(map);
 		}
