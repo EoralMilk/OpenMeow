@@ -143,7 +143,7 @@ namespace OpenRA.Graphics
 			  tbn.Column1.x, tbn.Column1.y, tbn.Column1.z,
 			  tbn.Column2.x, tbn.Column2.y, tbn.Column2.z,
 			  tuv.X, tuv.Y, 100)
-			{ }
+		{ }
 
 		public MapVertex(in float3 xyz,
 							in mat3 tbn,
@@ -166,7 +166,7 @@ namespace OpenRA.Graphics
 		: this(vertex.X, vertex.Y, vertex.Z,
 		  0, 0, 0, 0,
 		  0, 0,
-		  0,0,0,a,
+		  0, 0, 0, a,
 		  vertex.TX, vertex.TY, vertex.TZ,
 		  vertex.BX, vertex.BY, vertex.BZ,
 		  vertex.NX, vertex.NY, vertex.NZ,
@@ -312,6 +312,7 @@ namespace OpenRA.Graphics
 
 	public struct TerrainBlendingVertex
 	{
+		public readonly float X, Y;
 		public readonly float U, V;
 		public readonly float MaskU, MaskV;
 
@@ -327,6 +328,7 @@ namespace OpenRA.Graphics
 		public readonly int TileType5, TileType6, TileType7, TileType8;
 
 		public TerrainBlendingVertex(
+									in float2 xy,
 									in float2 uv,
 									in float2 maskuv,
 									in mat3 tbn,
@@ -334,6 +336,7 @@ namespace OpenRA.Graphics
 									int t1 = 1, int t2 = 2, int t3 = 3, int t4 = 4,
 									int t5 = 5, int t6 = 6, int t7 = 7, int t8 = 8)
 			: this(
+				  xy.X, xy.Y,
 				  uv.X, uv.Y,
 				  maskuv.X, maskuv.Y,
 				  tint.X, tint.Y, tint.Z, a,
@@ -345,23 +348,27 @@ namespace OpenRA.Graphics
 		{ }
 
 		public TerrainBlendingVertex(
+							in float2 xy,
 							in float2 uv,
 							in float2 maskuv,
 							in mat3 tbn,
 							in float3 tint, float a,
 							TerrainBlendingVertex vert)
 	: this(
-		  uv.X, uv.Y,
-		  maskuv.X, maskuv.Y,
-		  tint.X, tint.Y, tint.Z, a,
-		  tbn.Column0.x, tbn.Column0.y, tbn.Column0.z,
-		  tbn.Column1.x, tbn.Column1.y, tbn.Column1.z,
-		  tbn.Column2.x, tbn.Column2.y, tbn.Column2.z,
-		  vert.TileType1, vert.TileType2, vert.TileType3, vert.TileType4,
-		  vert.TileType5, vert.TileType6, vert.TileType7, vert.TileType8)
+			xy.X, xy.Y,
+			uv.X, uv.Y,
+			maskuv.X, maskuv.Y,
+			tint.X, tint.Y, tint.Z, a,
+			tbn.Column0.x, tbn.Column0.y, tbn.Column0.z,
+			tbn.Column1.x, tbn.Column1.y, tbn.Column1.z,
+			tbn.Column2.x, tbn.Column2.y, tbn.Column2.z,
+			vert.TileType1, vert.TileType2, vert.TileType3, vert.TileType4,
+			vert.TileType5, vert.TileType6, vert.TileType7, vert.TileType8)
 		{ }
 
-		public TerrainBlendingVertex(float u, float v,
+		public TerrainBlendingVertex(
+									float x, float y,
+									float u, float v,
 									float masku, float maskv,
 									float r, float g, float b, float a,
 									float tx, float ty, float tz,
@@ -370,6 +377,7 @@ namespace OpenRA.Graphics
 									int t1, int t2, int t3, int t4,
 									int t5, int t6, int t7, int t8)
 		{
+			X = x; Y = y;
 			U = u; V = v;
 			MaskU = masku; MaskV = maskv;
 			R = r; G = g; B = b; A = a;
