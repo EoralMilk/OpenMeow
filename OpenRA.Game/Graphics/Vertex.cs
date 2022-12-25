@@ -291,7 +291,6 @@ namespace OpenRA.Graphics
 		}
 	}
 
-
 	public readonly struct TerrainMaskVertex
 	{
 		public readonly float X, Y;

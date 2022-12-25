@@ -12,14 +12,21 @@ uniform sampler2D Mask456;
 uniform sampler2D Mask789;
 
 uniform sampler2D MaskCloud;
+uniform sampler2D MapColorTint;
 
 uniform sampler2DArray Tiles;
 uniform sampler2DArray TilesNorm;
+
+uniform bool UseMapTint;
+
+uniform vec2 Offset;
+uniform vec2 Range;
 
 uniform float TileScales[MAX_TILES];
 
 in vec2 vUV;
 in vec2 vMaskUV;
+in vec2 vMapUV;
 in vec4 vTint;
 in vec3 vTangent;
 in vec3 vBitangent;
@@ -224,6 +231,11 @@ void main()
 	}
 
 	// skip water layer
-	ColorOutPut = vec4(colors[1].rgb * vTint.rgb,1.0);
+	if (UseMapTint)
+		// ColorOutPut = vec4(colors[1].rgb * vec3(vMapUV, 0).rgb,1.0);
+		// ColorOutPut = vec4(colors[1].rgb * clamp(texture(MapColorTint, vMapUV).rgb * 3.5, 0.0, 1.0),1.0);
+		ColorOutPut = vec4(colors[1].rgb * clamp(texture(MapColorTint, mix(Offset, Offset + Range, vMaskUV)).rgb * 3.5, 0.0, 1.0),1.0);
+	else
+		ColorOutPut = vec4(colors[1].rgb * vTint.rgb,1.0);
 	NormalOutPut = vec4(ProcessNormal(combines[1].rgb),combines[1].a);
 }

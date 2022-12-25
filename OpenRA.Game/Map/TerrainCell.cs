@@ -12,6 +12,7 @@ namespace OpenRA
 		public WPos LogicPos;
 		public mat3 TBN;
 		public float2 UV;
+		public float2 MapUV;
 		public float3 Color;
 
 		public void UpdatePosHeight(int h)

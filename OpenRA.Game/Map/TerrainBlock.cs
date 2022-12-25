@@ -343,12 +343,25 @@ namespace OpenRA
 					Sheet sheet123;
 					Sheet sheet456;
 					Sheet sheet789;
+					bool useWholeMap = false;
 
 					Map.TextureCache.ReadMapTexture(TopLeft.ToString() + "_Mask123.png", TextureWrap.ClampToEdge, out sheet123);
 					Map.TextureCache.ReadMapTexture(TopLeft.ToString() + "_Mask456.png", TextureWrap.ClampToEdge, out sheet456);
 					Map.TextureCache.ReadMapTexture(TopLeft.ToString() + "_Mask789.png", TextureWrap.ClampToEdge, out sheet789);
 					if (sheet123 != null && sheet456 != null && sheet789 != null)
 						Map.MaskInitByTexFile = true;
+					else
+					{
+						Map.TextureCache.ReadMapTexture("Map_Mask123.png", TextureWrap.ClampToEdge, out sheet123);
+						Map.TextureCache.ReadMapTexture("Map_Mask456.png", TextureWrap.ClampToEdge, out sheet456);
+						Map.TextureCache.ReadMapTexture("Map_Mask789.png", TextureWrap.ClampToEdge, out sheet789);
+
+						if (sheet123 != null && sheet456 != null && sheet789 != null)
+						{
+							Map.MaskInitByTexFile = true;
+							useWholeMap = true;
+						}
+					}
 
 					{
 						MaskFramebuffer.Bind();
@@ -356,6 +369,8 @@ namespace OpenRA
 						Game.Renderer.SetFaceCull(FaceCullFunc.None);
 						Game.Renderer.EnableDepthWrite(false);
 						Game.Renderer.DisableDepthTest();
+
+						TerrainMaskShader.SetBool("Init", true);
 
 						if (sheet123 != null)
 							TerrainMaskShader.SetTexture("InitMask123", sheet123.GetTexture());
@@ -371,8 +386,16 @@ namespace OpenRA
 							TerrainMaskShader.SetTexture("InitMask789", Map.TextureCache.AdditionTextures["Black"].Item2.GetTexture());
 
 						TerrainMaskShader.SetBool("InitWithTextures", Map.MaskInitByTexFile);
+						TerrainMaskShader.SetBool("InitWithMapMask", useWholeMap);
 
 						TerrainMaskShader.SetTexture("Brushes", Map.TextureCache.BrushTextureArray);
+
+						TerrainMaskShader.SetVec("Offset",
+							topLeftOffset.X,
+							topLeftOffset.Y);
+						TerrainMaskShader.SetVec("Range",
+							bottomRightOffset.X - topLeftOffset.X,
+							bottomRightOffset.Y - topLeftOffset.Y);
 
 						Game.Renderer.Context.SetBlendMode(BlendMode.None);
 						TerrainMaskShader.PrepareRender();
@@ -428,8 +451,10 @@ namespace OpenRA
 				Game.Renderer.EnableDepthWrite(false);
 				Game.Renderer.DisableDepthTest();
 
+				TerrainMaskShader.SetBool("Init", false);
 				TerrainMaskShader.SetTexture("Brushes", Map.TextureCache.BrushTextureArray);
 				TerrainMaskShader.SetBool("InitWithTextures", false);
+				TerrainMaskShader.SetBool("InitWithMapMask", false);
 
 				Game.Renderer.Context.SetBlendMode(BlendMode.None);
 				TerrainMaskShader.PrepareRender();
@@ -480,11 +505,14 @@ namespace OpenRA
 				Game.Renderer.EnableDepthWrite(false);
 				Game.Renderer.DisableDepthTest();
 
+				TerrainMaskShader.SetBool("Init", true);
+
 				TerrainMaskShader.SetTexture("InitMask123", MaskFramebuffer.GetTexture(0));
 				TerrainMaskShader.SetTexture("InitMask456", MaskFramebuffer.GetTexture(1));
 				TerrainMaskShader.SetTexture("InitMask789", MaskFramebuffer.GetTexture(2));
 
 				TerrainMaskShader.SetBool("InitWithTextures", true);
+				TerrainMaskShader.SetBool("InitWithMapMask", false);
 
 				Game.Renderer.Context.SetBlendMode(BlendMode.None);
 				TerrainMaskShader.PrepareRender();
@@ -509,8 +537,10 @@ namespace OpenRA
 				Game.Renderer.EnableDepthWrite(false);
 				Game.Renderer.DisableDepthTest();
 
+				TerrainMaskShader.SetBool("Init", false);
 				TerrainMaskShader.SetTexture("Brushes", Map.TextureCache.BrushTextureArray);
 				TerrainMaskShader.SetBool("InitWithTextures", false);
+				TerrainMaskShader.SetBool("InitWithMapMask", false);
 
 				Game.Renderer.Context.SetBlendMode(BlendMode.None);
 				TerrainMaskShader.PrepareRender();
@@ -634,6 +664,18 @@ namespace OpenRA
 
 			var cloud = Map.TextureCache.AdditionTextures["MaskCloud"];
 			TerrainBlendShader.SetTexture(cloud.Item1, cloud.Item2.GetTexture());
+
+			if (Map.TextureCache.AdditionTextures.TryGetValue("MapColorTint", out var colortint))
+			{
+				TerrainBlendShader.SetBool("UseMapTint", true);
+				TerrainBlendShader.SetTexture(colortint.Item1, colortint.Item2.GetTexture());
+			}
+			else
+			{
+				TerrainBlendShader.SetBool("UseMapTint", false);
+				colortint = Map.TextureCache.AdditionTextures["Black"];
+				TerrainBlendShader.SetTexture(colortint.Item1, colortint.Item2.GetTexture());
+			}
 
 			TerrainBlendShader.SetTexture("Tiles", Map.TextureCache.TileTextureArray);
 			TerrainBlendShader.SetTexture("TilesNorm", Map.TextureCache.TileNormalTextureArray);
@@ -781,56 +823,56 @@ namespace OpenRA
 
 			if (cell.Type == MiniCellType.TRBL)
 			{
-				block.blendVertices[index + 0] = new TerrainBlendingVertex(vertTR.UV,
+				block.blendVertices[index + 0] = new TerrainBlendingVertex(vertTR.MapUV, vertTR.UV,
 					new float2(block.blendVertices[index + 0].MaskU, block.blendVertices[index + 0].MaskV),
 					vertTR.TBN, vertTR.Color, 1.0f,
 					block.blendVertices[index + 0]);
-				block.blendVertices[index + 1] = new TerrainBlendingVertex(vertBL.UV,
+				block.blendVertices[index + 1] = new TerrainBlendingVertex(vertBL.MapUV, vertBL.UV,
 					new float2(block.blendVertices[index + 1].MaskU, block.blendVertices[index + 1].MaskV),
 					vertBL.TBN, vertBL.Color, 1.0f,
 					block.blendVertices[index + 1]);
-				block.blendVertices[index + 2] = new TerrainBlendingVertex(vertBR.UV,
+				block.blendVertices[index + 2] = new TerrainBlendingVertex(vertBR.MapUV, vertBR.UV,
 					new float2(block.blendVertices[index + 2].MaskU, block.blendVertices[index + 2].MaskV),
 					vertBR.TBN, vertBR.Color, 1.0f,
 					block.blendVertices[index + 2]);
 
-				block.blendVertices[index + 3] = new TerrainBlendingVertex(vertTR.UV,
+				block.blendVertices[index + 3] = new TerrainBlendingVertex(vertTR.MapUV, vertTR.UV,
 					new float2(block.blendVertices[index + 3].MaskU, block.blendVertices[index + 3].MaskV),
 					vertTR.TBN, vertTR.Color, 1.0f,
 					block.blendVertices[index + 3]);
-				block.blendVertices[index + 4] = new TerrainBlendingVertex(vertTL.UV,
+				block.blendVertices[index + 4] = new TerrainBlendingVertex(vertTL.MapUV, vertTL.UV,
 					new float2(block.blendVertices[index + 4].MaskU, block.blendVertices[index + 4].MaskV),
 					vertTL.TBN, vertTL.Color, 1.0f,
 					block.blendVertices[index + 4]);
-				block.blendVertices[index + 5] = new TerrainBlendingVertex(vertBL.UV,
+				block.blendVertices[index + 5] = new TerrainBlendingVertex(vertBL.MapUV, vertBL.UV,
 					new float2(block.blendVertices[index + 5].MaskU, block.blendVertices[index + 5].MaskV),
 					vertBL.TBN, vertBL.Color, 1.0f,
 					block.blendVertices[index + 5]);
 			}
 			else
 			{
-				block.blendVertices[index + 0] = new TerrainBlendingVertex(vertTL.UV,
+				block.blendVertices[index + 0] = new TerrainBlendingVertex(vertTL.MapUV, vertTL.UV,
 					new float2(block.blendVertices[index + 0].MaskU, block.blendVertices[index + 0].MaskV),
 					vertTL.TBN, vertTL.Color, 1.0f,
 					block.blendVertices[index + 0]);
-				block.blendVertices[index + 1] = new TerrainBlendingVertex(vertBL.UV,
+				block.blendVertices[index + 1] = new TerrainBlendingVertex(vertBL.MapUV, vertBL.UV,
 					new float2(block.blendVertices[index + 1].MaskU, block.blendVertices[index + 1].MaskV),
 					vertBL.TBN, vertBL.Color, 1.0f,
 					block.blendVertices[index + 1]);
-				block.blendVertices[index + 2] = new TerrainBlendingVertex(vertBR.UV,
+				block.blendVertices[index + 2] = new TerrainBlendingVertex(vertBR.MapUV, vertBR.UV,
 					new float2(block.blendVertices[index + 2].MaskU, block.blendVertices[index + 2].MaskV),
 					vertBR.TBN, vertBR.Color, 1.0f,
 					block.blendVertices[index + 2]);
 
-				block.blendVertices[index + 3] = new TerrainBlendingVertex(vertTR.UV,
+				block.blendVertices[index + 3] = new TerrainBlendingVertex(vertTR.MapUV, vertTR.UV,
 					new float2(block.blendVertices[index + 3].MaskU, block.blendVertices[index + 3].MaskV),
 					vertTR.TBN, vertTR.Color, 1.0f,
 					block.blendVertices[index + 3]);
-				block.blendVertices[index + 4] = new TerrainBlendingVertex(vertTL.UV,
+				block.blendVertices[index + 4] = new TerrainBlendingVertex(vertTL.MapUV, vertTL.UV,
 					new float2(block.blendVertices[index + 4].MaskU, block.blendVertices[index + 4].MaskV),
 					vertTL.TBN, vertTL.Color, 1.0f,
 					block.blendVertices[index + 4]);
-				block.blendVertices[index + 5] = new TerrainBlendingVertex(vertBR.UV,
+				block.blendVertices[index + 5] = new TerrainBlendingVertex(vertBR.MapUV, vertBR.UV,
 					new float2(block.blendVertices[index + 5].MaskU, block.blendVertices[index + 5].MaskV),
 					vertBR.TBN, vertBR.Color, 1.0f,
 					block.blendVertices[index + 5]);
@@ -925,34 +967,34 @@ namespace OpenRA
 
 					if (cell.Type == MiniCellType.TRBL)
 					{
-						blendVertices[index + 0] = new TerrainBlendingVertex(vertTR.UV, maskuvTR, vertTR.TBN, vertTR.Color, 1.0f,
+						blendVertices[index + 0] = new TerrainBlendingVertex(vertTR.MapUV, vertTR.UV, maskuvTR, vertTR.TBN, vertTR.Color, 1.0f,
 							indexs[1], indexs[2], indexs[3], indexs[4], indexs[5], indexs[6], indexs[7], indexs[8]);
-						blendVertices[index + 1] = new TerrainBlendingVertex(vertBL.UV, maskuvBL, vertBL.TBN, vertBL.Color, 1.0f,
+						blendVertices[index + 1] = new TerrainBlendingVertex(vertBL.MapUV, vertBL.UV, maskuvBL, vertBL.TBN, vertBL.Color, 1.0f,
 							indexs[1], indexs[2], indexs[3], indexs[4], indexs[5], indexs[6], indexs[7], indexs[8]);
-						blendVertices[index + 2] = new TerrainBlendingVertex(vertBR.UV, maskuvBR, vertBR.TBN, vertBR.Color, 1.0f,
+						blendVertices[index + 2] = new TerrainBlendingVertex(vertBR.MapUV, vertBR.UV, maskuvBR, vertBR.TBN, vertBR.Color, 1.0f,
 							indexs[1], indexs[2], indexs[3], indexs[4], indexs[5], indexs[6], indexs[7], indexs[8]);
 
-						blendVertices[index + 3] = new TerrainBlendingVertex(vertTR.UV, maskuvTR, vertTR.TBN, vertTR.Color, 1.0f,
+						blendVertices[index + 3] = new TerrainBlendingVertex(vertTR.MapUV, vertTR.UV, maskuvTR, vertTR.TBN, vertTR.Color, 1.0f,
 							indexs[1], indexs[2], indexs[3], indexs[4], indexs[5], indexs[6], indexs[7], indexs[8]);
-						blendVertices[index + 4] = new TerrainBlendingVertex(vertTL.UV, maskuvTL, vertTL.TBN, vertTL.Color, 1.0f,
+						blendVertices[index + 4] = new TerrainBlendingVertex(vertTL.MapUV, vertTL.UV, maskuvTL, vertTL.TBN, vertTL.Color, 1.0f,
 							indexs[1], indexs[2], indexs[3], indexs[4], indexs[5], indexs[6], indexs[7], indexs[8]);
-						blendVertices[index + 5] = new TerrainBlendingVertex(vertBL.UV, maskuvBL, vertBL.TBN, vertBL.Color, 1.0f,
+						blendVertices[index + 5] = new TerrainBlendingVertex(vertBL.MapUV, vertBL.UV, maskuvBL, vertBL.TBN, vertBL.Color, 1.0f,
 							indexs[1], indexs[2], indexs[3], indexs[4], indexs[5], indexs[6], indexs[7], indexs[8]);
 					}
 					else
 					{
-						blendVertices[index + 0] = new TerrainBlendingVertex(vertTL.UV, maskuvTL, vertTL.TBN, vertTL.Color, 1.0f,
+						blendVertices[index + 0] = new TerrainBlendingVertex(vertTL.MapUV, vertTL.UV, maskuvTL, vertTL.TBN, vertTL.Color, 1.0f,
 							indexs[1], indexs[2], indexs[3], indexs[4], indexs[5], indexs[6], indexs[7], indexs[8]);
-						blendVertices[index + 1] = new TerrainBlendingVertex(vertBL.UV, maskuvBL, vertBL.TBN, vertBL.Color, 1.0f,
+						blendVertices[index + 1] = new TerrainBlendingVertex(vertBL.MapUV, vertBL.UV, maskuvBL, vertBL.TBN, vertBL.Color, 1.0f,
 							indexs[1], indexs[2], indexs[3], indexs[4], indexs[5], indexs[6], indexs[7], indexs[8]);
-						blendVertices[index + 2] = new TerrainBlendingVertex(vertBR.UV, maskuvBR, vertBR.TBN, vertBR.Color, 1.0f,
+						blendVertices[index + 2] = new TerrainBlendingVertex(vertBR.MapUV, vertBR.UV, maskuvBR, vertBR.TBN, vertBR.Color, 1.0f,
 							indexs[1], indexs[2], indexs[3], indexs[4], indexs[5], indexs[6], indexs[7], indexs[8]);
 
-						blendVertices[index + 3] = new TerrainBlendingVertex(vertTR.UV, maskuvTR, vertTR.TBN, vertTR.Color, 1.0f,
+						blendVertices[index + 3] = new TerrainBlendingVertex(vertTR.MapUV, vertTR.UV, maskuvTR, vertTR.TBN, vertTR.Color, 1.0f,
 							indexs[1], indexs[2], indexs[3], indexs[4], indexs[5], indexs[6], indexs[7], indexs[8]);
-						blendVertices[index + 4] = new TerrainBlendingVertex(vertTL.UV, maskuvTL, vertTL.TBN, vertTL.Color, 1.0f,
+						blendVertices[index + 4] = new TerrainBlendingVertex(vertTL.MapUV, vertTL.UV, maskuvTL, vertTL.TBN, vertTL.Color, 1.0f,
 							indexs[1], indexs[2], indexs[3], indexs[4], indexs[5], indexs[6], indexs[7], indexs[8]);
-						blendVertices[index + 5] = new TerrainBlendingVertex(vertBR.UV, maskuvBR, vertBR.TBN, vertBR.Color, 1.0f,
+						blendVertices[index + 5] = new TerrainBlendingVertex(vertBR.MapUV, vertBR.UV, maskuvBR, vertBR.TBN, vertBR.Color, 1.0f,
 							indexs[1], indexs[2], indexs[3], indexs[4], indexs[5], indexs[6], indexs[7], indexs[8]);
 					}
 

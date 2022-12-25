@@ -906,6 +906,7 @@ namespace OpenRA
 			for (int i = 0; i < TerrainVertices.Length; i++)
 			{
 				TerrainVertices[i].UV = new float2(TerrainVertices[i].Pos.X / texScale, TerrainVertices[i].Pos.Y / texScale);
+				TerrainVertices[i].MapUV = new float2((float)(i % VertexArrayWidth) / VertexArrayWidth, (float)(i / VertexArrayHeight) / VertexArrayHeight);
 			}
 
 			// clamp vert color
@@ -1448,6 +1449,7 @@ namespace OpenRA
 			for (int i = 0; i < TerrainVertices.Length; i++)
 			{
 				TerrainVertices[i].UV = new float2(TerrainVertices[i].Pos.X / texScale, TerrainVertices[i].Pos.Y / texScale);
+				TerrainVertices[i].MapUV = new float2((float)(i % VertexArrayWidth) / VertexArrayWidth, (float)(i / VertexArrayHeight) / VertexArrayHeight);
 			}
 
 			// clamp vert color

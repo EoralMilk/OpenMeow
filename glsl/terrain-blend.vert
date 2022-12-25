@@ -8,7 +8,7 @@ precision mediump float;
 #define DT_NONE -1
 
 
-
+in vec2 aMapUV;
 in vec2 aVertexUV;
 in vec2 aVertexMaskUV;
 in vec4 aVertexTint;
@@ -21,6 +21,7 @@ in ivec4 aTileType5678;
 
 out vec2 vUV;
 out vec2 vMaskUV;
+out vec2 vMapUV;
 out vec4 vTint;
 out vec3 vTangent;
 out vec3 vBitangent;
@@ -33,6 +34,7 @@ flat out ivec4 vTileType5678;
 void main()
 {
 	gl_Position = vec4(aVertexMaskUV.x * 2.0 - 1.0, aVertexMaskUV.y * 2.0 - 1.0, 0.0, 1.0);
+	vMapUV = aMapUV;
 	vUV = aVertexUV;
 	vMaskUV = aVertexMaskUV;
 	vTint = aVertexTint;

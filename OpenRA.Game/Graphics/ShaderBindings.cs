@@ -202,6 +202,7 @@ namespace OpenRA.Graphics
 		{
 			new ShaderVertexAttribute("aPosition", 0, 2, 0),
 			new ShaderVertexAttribute("aTexCoords", 1, 2, 2 * sizeof(float)),
+
 			new ShaderVertexAttribute("aBrushType", 2, 3, 4 * sizeof(float), AttributeType.Int32),
 		};
 
@@ -232,20 +233,21 @@ namespace OpenRA.Graphics
 		public string FragmentShaderName => fragmentShaderName;
 
 		public string GeometryShaderName => null;
-		public int Stride => (25 * sizeof(float));
+		public int Stride => (27 * sizeof(float));
 
 		public IEnumerable<ShaderVertexAttribute> Attributes { get; } = new[]
 		{
-			new ShaderVertexAttribute("aVertexUV", 0, 2, 0),
-			new ShaderVertexAttribute("aVertexMaskUV", 1, 2, 2 * sizeof(float)),
-			new ShaderVertexAttribute("aVertexTint", 2, 4, 4 * sizeof(float)),
+			new ShaderVertexAttribute("aMapUV", 0, 2, 0),
+			new ShaderVertexAttribute("aVertexUV", 1, 2, 2 * sizeof(float)),
+			new ShaderVertexAttribute("aVertexMaskUV", 2, 2, 4 * sizeof(float)),
+			new ShaderVertexAttribute("aVertexTint", 3, 4, 6 * sizeof(float)),
 
-			new ShaderVertexAttribute("aVertexTangent", 3, 3, 8 * sizeof(float)),
-			new ShaderVertexAttribute("aVertexBitangent", 4, 3, 11 * sizeof(float)),
-			new ShaderVertexAttribute("aVertexNormal", 5, 3, 14 * sizeof(float)),
+			new ShaderVertexAttribute("aVertexTangent", 4, 3, 10 * sizeof(float)),
+			new ShaderVertexAttribute("aVertexBitangent", 5, 3, 13 * sizeof(float)),
+			new ShaderVertexAttribute("aVertexNormal", 6, 3, 16 * sizeof(float)),
 
-			new ShaderVertexAttribute("aTileType1234", 6, 4, 17 * sizeof(float), AttributeType.Int32),
-			new ShaderVertexAttribute("aTileType5678", 7, 4, 21 * sizeof(float), AttributeType.Int32),
+			new ShaderVertexAttribute("aTileType1234", 7, 4, 19 * sizeof(float), AttributeType.Int32),
+			new ShaderVertexAttribute("aTileType5678", 8, 4, 23 * sizeof(float), AttributeType.Int32),
 		};
 
 		public bool Instanced => false;

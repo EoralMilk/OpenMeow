@@ -101,7 +101,7 @@ namespace OpenRA.Graphics
 		{
 			var halfView = radius * SunCos;
 			var far = radius * SunSin + SunPos.z / SunCos;
-			SunProjection = mat4.Ortho(-halfView, halfView, -halfView, halfView, far / 8, far);
+			SunProjection = mat4.Ortho(-halfView, halfView, -halfView, halfView, 0, far);
 		}
 
 		public static float CameraRotTest = 0;
@@ -126,7 +126,7 @@ namespace OpenRA.Graphics
 
 				var heightMeter = ortho.Item4 / SinCameraPitch + (MaxTerrainHeight - (ortho.Item4 / TanCameraPitch * CosCameraPitch));
 				var far = heightMeter / CosCameraPitch + TanCameraPitch * ortho.Item4 + 100f;
-				Projection = mat4.Ortho(ortho.Item1, ortho.Item2, ortho.Item3, ortho.Item4, far / 8, far);
+				Projection = mat4.Ortho(ortho.Item1, ortho.Item2, ortho.Item3, ortho.Item4, 0, far);
 
 				viewPoint = viewport.ViewPoint;// new vec3((float)viewport.CenterPosition.X / WPosPerMeter, (float)viewport.CenterPosition.Y / WPosPerMeter, 0);
 

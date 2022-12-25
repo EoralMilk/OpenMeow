@@ -18,7 +18,12 @@ uniform sampler2D InitMask789;
 
 uniform sampler2DArray Brushes;
 
+uniform bool Init;
 uniform bool InitWithTextures;
+uniform bool InitWithMapMask; // whole map use one texture
+
+uniform vec2 Offset;
+uniform vec2 Range;
 
 
 void main()
@@ -26,9 +31,19 @@ void main()
 	vec4 none = vec4(0.0, 0.0, 0.0, 1.0);
 
 	// init
-	if (BrushType.x == -1){
-		if (InitWithTextures)
+	if (Init){
+		if (InitWithTextures && InitWithMapMask)
 		{
+			vec4 m123 = texture(InitMask123, mix(Offset, Offset + Range, TexCoords));
+			vec4 m456 = texture(InitMask456, mix(Offset, Offset + Range, TexCoords));
+			vec4 m789 = texture(InitMask789, mix(Offset, Offset + Range, TexCoords));
+
+			BakedMask123 = vec4(m123.r, m123.g, m123.b, 1.0);
+			BakedMask456 = vec4(m456.r, m456.g, m456.b, 1.0);
+			BakedMask789 = vec4(m789.r, m789.g, m789.b, 1.0);
+			return;
+		}
+		else if (InitWithTextures){
 			vec4 m123 = texture(InitMask123, TexCoords);
 			vec4 m456 = texture(InitMask456, TexCoords);
 			vec4 m789 = texture(InitMask789, TexCoords);

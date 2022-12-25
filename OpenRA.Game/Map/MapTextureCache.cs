@@ -58,6 +58,15 @@ namespace OpenRA.Graphics
 
 			AddTexture("MaskCloud", "maskcloud01.png", "MaskCloud", UsageType.Mask);
 
+			// map color tint
+			if (Map.Package.Contains("MapColorTint.png"))
+			{
+				AddTexture("MapColorTint", "MapColorTint.png", "MapColorTint", UsageType.Mask);
+				Console.WriteLine("Has MapColorTint");
+			}
+			else
+				Console.WriteLine("No MapColorTint");
+
 			// tiles
 			string tileSet;
 			if (string.IsNullOrEmpty(Map.TileTexSet) || Map.TileTexSet == "DEFAULT")
