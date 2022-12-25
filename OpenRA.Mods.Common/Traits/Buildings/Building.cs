@@ -354,8 +354,8 @@ namespace OpenRA.Mods.Common.Traits
 
 		public virtual void AddInfluence()
 		{
-			world.ActorMap.AddInfluence(self, this);
-			world.ActorMap.AddPosition(self, this);
+			// also update screen map
+			self.World.AddToMaps(self, this);
 			influence.AddInfluence(self, Info.Tiles(self.Location));
 		}
 
@@ -425,8 +425,6 @@ namespace OpenRA.Mods.Common.Traits
 			}
 
 			UpdateCenterPos();
-			//self.World.AddToMaps(self, this);
-			//influence.AddInfluence(self, Info.Tiles(self.Location));
 		}
 
 		void INotifyRemovedFromWorld.RemovedFromWorld(Actor self)

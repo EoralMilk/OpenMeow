@@ -654,6 +654,10 @@ namespace OpenRA.Meow.RPG.Mechanics
 		void INotifyAttack.Attacking(Actor self, in Target target, Armament a, Barrel barrel)
 		{
 			guardTick = 0;
+			if (currentPose == PoseState.Prone)
+			{
+				proneRemainingDuration = info.ProneDuration;
+			}
 		}
 
 		void INotifyAiming.StartedAiming(Actor self, AttackBase attack)
@@ -743,6 +747,8 @@ namespace OpenRA.Meow.RPG.Mechanics
 
 			if (currentState == InfantryState.Die)
 			{
+				if (rotToLayOnGround)
+					moblie.Orientation = WRot.TickRot(dieRot, dieLayRot, new WAngle(4));
 				return;
 			}
 
@@ -1002,6 +1008,13 @@ namespace OpenRA.Meow.RPG.Mechanics
 		bool deathFade = false;
 		float deathFadeAlpha = 1;
 		int deathFadeTick = 0;
+
+		// make the infantry influenced by terrain ramp when die
+		Mobile moblie;
+		WRot dieRot = WRot.None;
+		WRot dieLayRot = WRot.None;
+		bool rotToLayOnGround = false;
+
 		void INotifyKilled.Killed(Actor self, AttackInfo e)
 		{
 			animDie.ChangeAnimation(!info.CanProne || currentPose == PoseState.Stand ? die : dieProne);
@@ -1020,6 +1033,18 @@ namespace OpenRA.Meow.RPG.Mechanics
 			};
 
 			shotDie.StartShot();
+
+			if (move is Mobile && self.IsInWorld)
+			{
+				moblie = (move as Mobile);
+				if (moblie.TerrainOrientationAdjustmentMargin < 0)
+				{
+					rotToLayOnGround = true;
+					dieRot = self.Orientation;
+					dieLayRot = self.World.Map.TerrainOrientation(self.CenterPosition);
+				}
+
+			}
 		}
 
 		bool INotifyEquip.CanEquip(Actor self, Item item)

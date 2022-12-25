@@ -2,38 +2,38 @@ TypeDefine:
 	base: 1
 		clear: dirt        		#8 clear
 			Scale: 4.5
-			FlatSpecular: 0.2
+			FlatSpecular: 0.1
 	# water: 1
 	# 	water01: Water01    	#0 water
 	# 		Scale: 5
 	cliff: 2
 		cliff01: TileCliff1 	#1 cliff
 			Scale: 7
-			FlatSpecular: 0.5
+			FlatSpecular: 0.45
 	conc: 3
 		conc01: TileConc1  		#2 road
 			Scale: 2.5
-			FlatSpecular: 0.3
+			FlatSpecular: 0.1
 	grass: 4
 		grass01: TileGrass1 	#3 grass
 			Scale: 1.7
-			FlatSpecular: 0.4
+			FlatSpecular: 0.1
 	sand: 5
 		sand01: TileSand1   	#4 sand
 			Scale: 3.8
-			FlatSpecular: 0.4
+			FlatSpecular: 0.15
 	dirt: 6
 		dirt02: TileDirt2   	#5 dirt road
 			Scale: 5
-			FlatSpecular: 0.23
+			FlatSpecular: 0.13
 	gravel: 7
 		rough01: TileGrass2  	#6 gravel
 			Scale: 6
-			FlatSpecular: 0.4
+			FlatSpecular: 0.3
 	crack: 8
 		crack: crack        	#7 crack
 			Scale: 4.5
-			FlatSpecular: 0.3
+			FlatSpecular: 0.22
 
 
 WaterDefine:

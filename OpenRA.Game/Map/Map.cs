@@ -2270,6 +2270,33 @@ namespace OpenRA
 				return WRot.None;
 		}
 
+		public WRot TerrainOrientation(WPos pos)
+		{
+			var cell = CellContaining(pos);
+			if (CellInfos.Contains(cell))
+			{
+				if (pos.X == CellInfos[cell].CellCenterPos.X && pos.Y == CellInfos[cell].CellCenterPos.Y)
+					return CellInfos[cell].TerrainOrientationM;
+
+				if (pos.X < CellInfos[cell].CellCenterPos.X)
+				{
+					if (pos.Y < CellInfos[cell].CellCenterPos.Y)
+						return CellInfos[cell].TerrainOrientationTL;
+					else
+						return CellInfos[cell].TerrainOrientationBL;
+				}
+				else
+				{
+					if (pos.Y < CellInfos[cell].CellCenterPos.Y)
+						return CellInfos[cell].TerrainOrientationTR;
+					else
+						return CellInfos[cell].TerrainOrientationBR;
+				}
+			}
+			else
+				return WRot.None;
+		}
+
 		/// <summary>
 		/// calculate WRot of TerrainOrientation from fix point normal
 		/// </summary>

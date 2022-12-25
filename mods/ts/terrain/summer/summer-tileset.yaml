@@ -2,13 +2,13 @@ TypeDefine:
 	base: 1
 		clear01: SummerClear01
 			Scale: 4
-			FlatSpecular: 0.3
+			FlatSpecular: 0.1
 		clear02: SummerClear02
 			Scale: 4
-			FlatSpecular: 0.3
+			FlatSpecular: 0.1
 		clear03: SummerClear03
 			Scale: 4
-			FlatSpecular: 0.3
+			FlatSpecular: 0.1
 	cliff: 2
 		cliff01: SummerCliff01
 			Scale: 8
@@ -19,44 +19,44 @@ TypeDefine:
 	conc: 3
 		conc01: SummerConc01
 			Scale: 4
-			FlatSpecular: 0.4
+			FlatSpecular: 0.1
 		conc02: SummerConc02
 			Scale: 4
-			FlatSpecular: 0.4
+			FlatSpecular: 0.1
 		conc03: SummerConc03
 			Scale: 4
-			FlatSpecular: 0.4
+			FlatSpecular: 0.1
 		conc04: SummerConc04
 			Scale: 4
-			FlatSpecular: 0.4
+			FlatSpecular: 0.1
 	grass: 4
 		grass01: SummerGreen
 			Scale: 4.5
-			FlatSpecular: 0.4
+			FlatSpecular: 0
 	sand: 5
 		sand01: SummerBeach0
 			Scale: 8.5
-			FlatSpecular: 0.3
+			FlatSpecular: 0.15
 		sand02: SummerBeach1
 			Scale: 8.5
-			FlatSpecular: 0.3
+			FlatSpecular: 0.15
 		sand03: SummerBeach2
 			Scale: 8.5
-			FlatSpecular: 0.3
+			FlatSpecular: 0.15
 	dirt: 6
 		dirt: droad_hardsoil
 			Scale: 6
-			FlatSpecular: 0.2
+			FlatSpecular: 0.1
 	gravel: 7
 		# gravel: SummerGravel
 		# 	Scale: 7
 		gravel: TDirt_Aus03
 			Scale: 5
-			FlatSpecular: 0.7
+			FlatSpecular: 0.4
 	crack: 8
 		crack: droad_crack
 			Scale: 7.5
-			FlatSpecular: 0.2
+			FlatSpecular: 0.1
 
 
 WaterDefine:

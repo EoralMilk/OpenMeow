@@ -200,7 +200,7 @@ namespace OpenRA.Mods.Common.Activities
 				(map.Grid.OffsetOfSubCell(mobile.FromSubCell) + map.Grid.OffsetOfSubCell(mobile.ToSubCell)) / 2;
 
 			WRot? toTerrainOrientation = null;
-			var margin = mobile.Info.TerrainOrientationAdjustmentMargin.Length;
+			var margin = mobile.TerrainOrientationAdjustmentMargin;
 			if (margin >= 0)
 				toTerrainOrientation = WRot.SLerp(map.TerrainOrientation(mobile.FromCell), map.TerrainOrientation(mobile.ToCell), 1, 2);
 
@@ -547,7 +547,7 @@ namespace OpenRA.Mods.Common.Activities
 					{
 						var nextSubcellOffset = map.Grid.OffsetOfSubCell(nextCell.Value.SubCell);
 						WRot? nextToTerrainOrientation = null;
-						var margin = mobile.Info.TerrainOrientationAdjustmentMargin.Length;
+						var margin = mobile.TerrainOrientationAdjustmentMargin;
 						if (margin >= 0)
 							nextToTerrainOrientation = WRot.SLerp(map.TerrainOrientation(mobile.ToCell), map.TerrainOrientation(nextCell.Value.Cell), 1, 2);
 
@@ -589,7 +589,7 @@ namespace OpenRA.Mods.Common.Activities
 					mobile.Facing,
 					ToTerrainOrientation,
 					null,
-					mobile.Info.TerrainOrientationAdjustmentMargin.Length,
+					mobile.TerrainOrientationAdjustmentMargin,
 					progress - Distance,
 					MovingOnGroundLayer);
 
