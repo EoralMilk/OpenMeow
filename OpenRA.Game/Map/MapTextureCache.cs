@@ -223,12 +223,29 @@ namespace OpenRA.Graphics
 
 			if (!Map.Exists(filename + ".png"))
 			{
-				throw new Exception(filename + " Can not find texture " + name);
+				throw new Exception(name + " Can not find texture " + filename);
 			}
 
 			var sheet = new Sheet(Map.Open(filename + ".png"), TextureWrap.Repeat);
+			var colorData = sheet.GetData();
 
-			TileTextureArray.SetData(sheet.GetData(), sheet.Size.Width, sheet.Size.Height);
+			// replace Alpha with height
+			if (Map.Exists(filename + "_DISP.png"))
+			{
+				var dispSheet = new Sheet(Map.Open(filename + "_DISP.png"), TextureWrap.Repeat);
+				var hdata = dispSheet.GetData();
+
+				for (int i = 0; i < sheet.Size.Width * sheet.Size.Height * 4; i += 4)
+				{
+					colorData[i + 3] = hdata[i];
+				}
+			}
+			else
+			{
+				throw new Exception(name + " Can not find texture " + filename + "_DISP.png");
+			}
+
+			TileTextureArray.SetData(colorData, sheet.Size.Width, sheet.Size.Height);
 
 			var combinedData = new byte[4 * sheet.Size.Width * sheet.Size.Height];
 

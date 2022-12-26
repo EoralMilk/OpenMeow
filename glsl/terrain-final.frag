@@ -184,10 +184,11 @@ vec4 CalcDirLight(DirLight light, vec4 color)
 	vec3 lightDir = -light.direction;
 
 	// vec3 reflectDir = reflect(-lightDir, normal);
+	// float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32.0) * specStrength;
+
 	vec3 halfwayDir = normalize(lightDir + viewDir);
 	float spec = pow(max(dot(normal, halfwayDir), 0.0), 32.0) * specStrength;
 	vec3 specular = light.specular * spec;
-	// vec3 specular = vec3(0.0);
 
 	// diffuse
 	float diff = dot(normal, lightDir);

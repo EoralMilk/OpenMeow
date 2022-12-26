@@ -145,6 +145,7 @@ float MaskNoise2(int layer)
 	return mask;
 }
 
+// alpha channel use for height map
 vec4 GetTileColor(int layer)
 {
 	int tileIndex = GetTileIndex(layer);
@@ -157,7 +158,8 @@ vec4 GetTileColor(int layer)
 	// vec2 cuv = (vUV + vec2(noiseUV, noiseUV2)) / TileScales[tileIndex];
 	vec2 cuv = vUV / TileScales[tileIndex];
 	// cuv = cuv - vec2(floor(cuv.x), floor(cuv.y));
-	color = texture(Tiles, vec3(cuv, float(tileIndex))) * noiseC;
+	color = texture(Tiles, vec3(cuv, float(tileIndex)));
+	color.rgb *= noiseC;
 
 	return color;
 }
@@ -175,6 +177,12 @@ vec4 GetTileCombines(int layer)
 	combines = texture(TilesNorm, vec3(cuv, float(tileIndex)));
 
 	return combines;
+}
+
+vec4 Blend2Tiles(vec4 col1, vec4 col2, float mask){
+	float a1 = col1.a * (1.0 - mask);
+	float a2 = mask * col2.a;
+	return vec4(mix(col1, col2, step(a1, a2) * 0.6 + (a2 / (a1 + a2)) * 0.4));
 }
 
 void main()
@@ -226,8 +234,10 @@ void main()
 		// there is a super strange bug???
 		// if put the mix in the else block and it would not work???
 		vec4 tilecolor = GetTileColor(layer);
-		colors[layer] = vec4(mix(colors[layer + 1].rgb, tilecolor.rgb, masks[layer] * tilecolor.a), 1.0);
-		combines[layer] = mix(combines[layer + 1], GetTileCombines(layer), masks[layer] * tilecolor.a);
+		colors[layer] = Blend2Tiles(colors[layer + 1], tilecolor, masks[layer]);
+		combines[layer] = Blend2Tiles(combines[layer + 1], GetTileCombines(layer), masks[layer]);
+		// colors[layer] = vec4(mix(colors[layer + 1], tilecolor, step(colors[layer + 1].a * (1 - masks[layer]), masks[layer] * tilecolor.a)));
+		// combines[layer] = mix(combines[layer + 1], GetTileCombines(layer), step(colors[layer + 1].a * (1 - masks[layer]), masks[layer] * tilecolor.a));
 	}
 
 	// skip water layer
