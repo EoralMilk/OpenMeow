@@ -54,7 +54,7 @@ namespace OpenRA.Mods.Cnc.Traits
 			//	return false;
 
 			var terrainInfo = Map.Rules.TerrainInfo;
-			var terrainType = terrainInfo.TerrainTypes[terrainInfo.GetTerrainInfo(Map.Tiles[neighbour]).TerrainType].Type;
+			var terrainType = terrainInfo.TerrainTypes[Map.CellInfos[neighbour].TerrainType].Type;
 			return info.ResourceTypes[info.VeinType].AllowedTerrainTypes.Contains(terrainType);
 		}
 
@@ -73,7 +73,7 @@ namespace OpenRA.Mods.Cnc.Traits
 
 			// Ignore custom terrain types when spawning resources in the editor
 			var terrainInfo = Map.Rules.TerrainInfo;
-			var terrainType = terrainInfo.TerrainTypes[terrainInfo.GetTerrainInfo(Map.Tiles[cell]).TerrainType].Type;
+			var terrainType = terrainInfo.TerrainTypes[Map.CellInfos[cell].TerrainType].Type;
 			if (!resourceInfo.AllowedTerrainTypes.Contains(terrainType))
 				return false;
 

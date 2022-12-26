@@ -125,6 +125,19 @@ namespace OpenRA.Primitives
 			return (r, g, b);
 		}
 
+		public static Color FromFloat3(float3 f3)
+		{
+			// Apply gamma correction and pre-multiplied alpha
+			//return FromArgb(
+			//	(byte)Math.Round(LinearToSrgb(f3.X)),
+			//	(byte)Math.Round(LinearToSrgb(f3.Y)),
+			//	(byte)Math.Round(LinearToSrgb(f3.Z)));
+			return FromArgb(
+				(byte)Math.Round(255 * (f3.X)),
+				(byte)Math.Round(255 * (f3.Y)),
+				(byte)Math.Round(255 * (f3.Z)));
+		}
+
 		public static Color FromLinear(byte a, float r, float g, float b)
 		{
 			// Apply gamma correction and pre-multiplied alpha

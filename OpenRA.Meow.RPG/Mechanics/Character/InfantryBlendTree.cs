@@ -805,13 +805,13 @@ namespace OpenRA.Meow.RPG.Mechanics
 				shotFullOverride.ShotEndAction = () =>
 				{
 					SwitchAnim(PoseState.Prone);
+					currentPose = PoseState.Prone;
+					currentAction = ActionType.None;
+					currentState = InfantryState.Guard;
 					shotFullOverride.ShotEndAction = null;
 				};
 				shotFullOverride.ShotEndBlendAction = () =>
 				{
-					currentPose = PoseState.Prone;
-					currentAction = ActionType.None;
-					currentState = InfantryState.Guard;
 					shotFullOverride.ShotEndBlendAction = null;
 				};
 
@@ -833,14 +833,14 @@ namespace OpenRA.Meow.RPG.Mechanics
 					shotFullOverride.ShotEndAction = () =>
 					{
 						SwitchAnim(PoseState.Stand);
+						currentPose = PoseState.Stand;
+						currentAction = ActionType.None;
+						currentState = InfantryState.Idle;
 						proneRemainingDuration = 0;
 						shotFullOverride.ShotEndAction = null;
 					};
 					shotFullOverride.ShotEndBlendAction = () =>
 					{
-						currentPose = PoseState.Stand;
-						currentAction = ActionType.None;
-						currentState = InfantryState.Idle;
 						shotFullOverride.ShotEndBlendAction = null;
 					};
 					shotFullOverride.StartShot();

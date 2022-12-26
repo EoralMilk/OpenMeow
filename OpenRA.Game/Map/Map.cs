@@ -761,7 +761,14 @@ namespace OpenRA
 			TerrainVertices = new TerrainVertex[VertexArrayHeight * VertexArrayWidth];
 			MiniCells = new MiniCell[(VertexArrayHeight - 1), (VertexArrayWidth - 1)];
 			var vertexNmlCaled = new bool[VertexArrayWidth * VertexArrayHeight];
-			//var vertexNml = new vec3[VertexArrayWidth * VertexArrayHeight];
+			// var vertexNml = new vec3[VertexArrayWidth * VertexArrayHeight];
+			var vertexTerrType = new int[VertexArrayWidth * VertexArrayHeight];
+
+			Dictionary<string, byte> terrainTypeNameIndex = new Dictionary<string, byte>();
+			for (int i = 0; i < Rules.TerrainInfo.TerrainTypes.Length; i++) 
+			{
+				terrainTypeNameIndex.Add(Rules.TerrainInfo.TerrainTypes[i].Type, (byte)i);
+			}
 
 			using (var s = Package.GetStream(TerrainMeshFileName))
 			{
@@ -774,6 +781,7 @@ namespace OpenRA
 				{
 					TerrainVertices[i].LogicPos = new WPos(s.ReadInt32(), s.ReadInt32(), Math.Max(s.ReadInt32(), 0));
 					TerrainVertices[i].Color = new float3(s.ReadFloat(), s.ReadFloat(), s.ReadFloat());
+					vertexTerrType[i] = s.ReadInt32();
 					//vertexNml[i] = new vec3(s.ReadFloat(), s.ReadFloat(), s.ReadFloat());
 					TerrainVertices[i].UpdatePos();
 				}
@@ -890,8 +898,54 @@ namespace OpenRA
 						im, it, ib, il, ir,
 						new int2(mid.X - 1, mid.Y - 1), new int2(mid.X, mid.Y - 1),
 						new int2(mid.X - 1, mid.Y), new int2(mid.X, mid.Y), flatCell, ramp == 0,
-						tlNml, trNml, blNml, brNml);
+						tlNml, trNml, blNml, brNml, this);
+					var cpos = uv.ToCPos(this);
+					cellInfo.TileType = Tiles[cpos].Type;
+					string terrTypeName;
+					switch (vertexTerrType[im])
+					{
+						case 0:
+							terrTypeName = "Water";
+							break;
+						case 1:
+							terrTypeName = "Cliff";
+							break;
+						case 2:
+							terrTypeName = "Road";
+							break;
+						case 3:
+							terrTypeName = "Rough";
+							break;
+						case 4:
+							terrTypeName = "Rough";
+							break;
+						case 5:
+							terrTypeName = "DirtRoad";
+							break;
+						case 7:
+							terrTypeName = "Rough";
+							break;
+						case 8:
+							terrTypeName = "Rough";
+							break;
+						case 11:
+							terrTypeName = "Rail";
+							break;
+						case 12:
+							terrTypeName = "Impassable";
+							break;
+						case 13:
+							terrTypeName = "Rock";
+							break;
+						case 14:
+							terrTypeName = "Bridge";
+							break;
+						default:
+							terrTypeName = "Clear";
+							break;
+					}
 
+					cellInfo.TerrainType = terrainTypeNameIndex[terrTypeName];
 					CellInfos[uv.ToCPos(this)] = cellInfo;
 				}
 			}
@@ -1402,7 +1456,7 @@ namespace OpenRA
 						im, it, ib, il, ir,
 						new int2(mid.X - 1, mid.Y - 1), new int2(mid.X, mid.Y - 1),
 						new int2(mid.X - 1, mid.Y), new int2(mid.X, mid.Y), flatCell, ramp == 0,
-						tlNml, trNml, blNml, brNml);
+						tlNml, trNml, blNml, brNml, this);
 					var cpos = uv.ToCPos(this);
 					cellInfo.TileType = Tiles[cpos].Type;
 					cellInfo.TerrainType = Rules.TerrainInfo.GetTerrainInfo(Tiles[cpos]).TerrainType;
@@ -1887,21 +1941,29 @@ namespace OpenRA
 			return dataStream.ToArray();
 		}
 
-		public (Color Left, Color Right) GetTerrainColorPair(MPos uv)
+		public (Color Left, Color Right) GetTerrainColorPair(MPos uv, bool fromTile = false)
 		{
-			var terrainInfo = Rules.TerrainInfo;
-			var type = terrainInfo.GetTerrainInfo(Tiles[uv]);
-			var left = type.GetColor(Game.CosmeticRandom);
-			var right = type.GetColor(Game.CosmeticRandom);
-
-			if (terrainInfo.MinHeightColorBrightness != 1.0f || terrainInfo.MaxHeightColorBrightness != 1.0f)
+			if (fromTile)
 			{
-				var scale = float2.Lerp(terrainInfo.MinHeightColorBrightness, terrainInfo.MaxHeightColorBrightness, HeightStep[uv] * 1f / Grid.MaximumTerrainHeight);
-				left = Color.FromArgb((int)(scale * left.R).Clamp(0, 255), (int)(scale * left.G).Clamp(0, 255), (int)(scale * left.B).Clamp(0, 255));
-				right = Color.FromArgb((int)(scale * right.R).Clamp(0, 255), (int)(scale * right.G).Clamp(0, 255), (int)(scale * right.B).Clamp(0, 255));
+				var terrainInfo = Rules.TerrainInfo;
+				var type = terrainInfo.GetTerrainInfo(Tiles[uv]);
+				var left = type.GetColor(Game.CosmeticRandom);
+				var right = type.GetColor(Game.CosmeticRandom);
+
+				if (terrainInfo.MinHeightColorBrightness != 1.0f || terrainInfo.MaxHeightColorBrightness != 1.0f)
+				{
+					var scale = float2.Lerp(terrainInfo.MinHeightColorBrightness, terrainInfo.MaxHeightColorBrightness, HeightStep[uv] * 1f / Grid.MaximumTerrainHeight);
+					left = Color.FromArgb((int)(scale * left.R).Clamp(0, 255), (int)(scale * left.G).Clamp(0, 255), (int)(scale * left.B).Clamp(0, 255));
+					right = Color.FromArgb((int)(scale * right.R).Clamp(0, 255), (int)(scale * right.G).Clamp(0, 255), (int)(scale * right.B).Clamp(0, 255));
+				}
+
+				return (left, right);
+			}
+			else
+			{
+				return (CellInfos[uv].ColorA, CellInfos[uv].ColorB);
 			}
 
-			return (left, right);
 		}
 
 		public byte[] SavePreview()
@@ -1974,7 +2036,7 @@ namespace OpenRA
 					// FirstOrDefault will return a (MPos.Zero, Color.Transparent) if positions is empty
 					var actorColor = positions.FirstOrDefault(ap => ap.Position == uv).Color;
 					if (actorColor.A == 0)
-						terrainColor = GetTerrainColorPair(uv);
+						terrainColor = GetTerrainColorPair(uv, true);
 
 					if (isRectangularIsometric)
 					{
@@ -2525,7 +2587,7 @@ namespace OpenRA
 			if (terrainIndex == InvalidCachedTerrainIndex)
 			{
 				var custom = CustomTerrain[uv];
-				terrainIndex = cachedTerrainIndexes[uv] = custom != byte.MaxValue ? custom : Rules.TerrainInfo.GetTerrainInfo(Tiles[uv]).TerrainType;
+				terrainIndex = cachedTerrainIndexes[uv] = custom != byte.MaxValue ? custom : CellInfos[uv].TerrainType;
 			}
 
 			return (byte)terrainIndex;
@@ -2739,7 +2801,7 @@ namespace OpenRA
 				foreach (var offset in Grid.TilesByDistance[i])
 				{
 					var t = offset + center;
-					if (allowOutsideBounds ? Tiles.Contains(t) : Contains(t))
+					if (allowOutsideBounds ? CellInfos.Contains(t) : Contains(t))
 						yield return t;
 				}
 			}

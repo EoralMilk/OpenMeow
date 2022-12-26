@@ -55,6 +55,9 @@ namespace OpenRA
 
 		public readonly int M, T, B, L, R;
 
+		public Color ColorA;
+		public Color ColorB;
+
 		public ushort TileType;
 		public byte TerrainType;
 
@@ -75,7 +78,7 @@ namespace OpenRA
 
 		public CellInfo(WPos center, int miniHeight,
 			int m, int t, int b, int l, int r, int2 ctl, int2 ctr, int2 cbl, int2 cbr, bool flat, bool almostFlat,
-			TSVector tlnml, TSVector trnml, TSVector blnml, TSVector brnml)
+			TSVector tlnml, TSVector trnml, TSVector blnml, TSVector brnml, Map map)
 		{
 			CellCenterPos = center;
 			CellMiniHeight = miniHeight;
@@ -104,6 +107,9 @@ namespace OpenRA
 			TerrainOrientationBL = Map.NormalToTerrainOrientation(LogicNmlBL);
 			TerrainOrientationBR = Map.NormalToTerrainOrientation(LogicNmlBR);
 			TerrainOrientationM = Map.NormalToTerrainOrientation(LogicNml);
+
+			ColorA = Color.FromFloat3(0.3f * map.TerrainVertices[T].Color + 0.3f * map.TerrainVertices[L].Color + 0.4f * map.TerrainVertices[M].Color);
+			ColorB = Color.FromFloat3(0.3f * map.TerrainVertices[B].Color + 0.3f * map.TerrainVertices[R].Color + 0.4f * map.TerrainVertices[M].Color);
 		}
 
 		void UpdateNml(Map map)

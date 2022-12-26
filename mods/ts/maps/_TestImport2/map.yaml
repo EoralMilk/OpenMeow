@@ -6,9 +6,9 @@ Title: _TestImport2
 
 Author: OpenMeow
 
-Tileset: TEMPERATE
+Tileset: SNOW #TEMPERATE
 
-TileTexSet:
+TileTexSet: Snow
 
 MapSize: 102,218
 
