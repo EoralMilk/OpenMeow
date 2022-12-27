@@ -53,6 +53,10 @@ namespace OpenRA.Mods.Common.Widgets.Logic
 
 		public readonly Dictionary<string, int> LayerIndex = new Dictionary<string, int>();
 
+		protected readonly ScrollPanelWidget TypePanel;
+		protected readonly ScrollItemWidget TypeItemTemplate;
+		protected readonly TerrainTypeInfo[] allTypes;
+
 		[ObjectCreator.UseCtor]
 		public TerrainBrushSelectorLogic(Widget widget, ModData modData, World world, WorldRenderer worldRenderer)
 			: base(widget, modData, world, worldRenderer, "TERRAINBRUSH_TEMPLATELIST", "TERRAINBRUSH_TEMPLATE")
@@ -68,6 +72,25 @@ namespace OpenRA.Mods.Common.Widgets.Logic
 			sizeLabel = settings.Get<LabelWidget>("SIZE_LABEL");
 			alphaLabel.GetText = () => { return " Alpha : " + GetBrushAlpha().ToString(); };
 			sizeLabel.GetText = () => { return " Size : " + GetBrushSize().ToString(); };
+
+			// type list
+			TypePanel = settings.Get<ScrollPanelWidget>("CELLTYPE_TEMPLATELIST");
+			TypeItemTemplate = TypePanel.Get<ScrollItemWidget>("CELLTYPE_TEMPLATE");
+			allTypes = world.Map.Rules.TerrainInfo.TerrainTypes;
+			for (int i = 0; i < allTypes.Length; i++)
+			{
+				int index = i;
+				var item = ScrollItemWidget.Setup(TypeItemTemplate,
+					() => editorCursor.Type == EditorCursorType.Brush && editorCursor.CellType == index,
+					() => editorCursor.CellType = index);
+
+				var typeLabel = item.Get<LabelWidget>("CELLTYPE");
+				typeLabel.GetText = () => allTypes[index].Type;
+				item.IsVisible = () => true;
+				item.GetTooltipText = () => allTypes[index].Type;
+
+				TypePanel.AddChild(item);
+			}
 
 			allTemplates = textureCache.AllBrushes.Values.Select(t => new TerrainBrushSelectorTemplate(t)).ToArray();
 			editorCursor = world.WorldActor.Trait<EditorCursorLayer>();

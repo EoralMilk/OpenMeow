@@ -160,7 +160,6 @@ vec4 GetTileColor(int layer)
 	// cuv = cuv - vec2(floor(cuv.x), floor(cuv.y));
 	color = texture(Tiles, vec3(cuv, float(tileIndex)));
 	color.rgb *= noiseC;
-
 	return color;
 }
 
@@ -182,7 +181,7 @@ vec4 GetTileCombines(int layer)
 vec4 Blend2Tiles(vec4 col1, vec4 col2, float mask){
 	float a1 = col1.a * (1.0 - mask);
 	float a2 = mask * col2.a;
-	return vec4(mix(col1, col2, step(a1, a2) * 0.6 + (a2 / (a1 + a2)) * 0.4));
+	return vec4(mix(col1, col2, step(a1, a2) * 0.4 + (a2 / (a1 + a2)) * 0.6));
 }
 
 void main()
@@ -244,7 +243,7 @@ void main()
 	if (UseMapTint)
 		// ColorOutPut = vec4(colors[1].rgb * vec3(vMapUV, 0).rgb,1.0);
 		// ColorOutPut = vec4(colors[1].rgb * clamp(texture(MapColorTint, vMapUV).rgb * 3.5, 0.0, 1.0),1.0);
-		ColorOutPut = vec4(colors[1].rgb * clamp(texture(MapColorTint, mix(Offset, Offset + Range, vMaskUV)).rgb * 3.5, 0.0, 1.0),1.0);
+		ColorOutPut = vec4(colors[1].rgb * clamp(texture(MapColorTint, mix(Offset, Offset + Range, vMaskUV)).rgb * 1.75, 0.15, 1.25),1.0);
 	else
 		ColorOutPut = vec4(colors[1].rgb * vTint.rgb,1.0);
 	NormalOutPut = vec4(ProcessNormal(combines[1].rgb),combines[1].a);

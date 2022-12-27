@@ -19,7 +19,7 @@ editor-overlay:
 		Offset: 0, -12, 1
 		ZOffset: -2
 		ZRamp: 1
-		MeshType: Plane
+		MeshType: Cell
 	copy:
 	paste:
 		Start: 1

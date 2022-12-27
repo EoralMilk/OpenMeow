@@ -48,6 +48,7 @@ namespace OpenRA.Mods.Common.Traits
 		bool actorSharesCell;
 
 		public MaskBrush Brush { get; private set; }
+		public int CellType;
 		public Func<float> GetBrushSize;
 		public Func<int> GetBrushAlpha;
 		public bool DrawBrushCell = false;

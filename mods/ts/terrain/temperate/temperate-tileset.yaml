@@ -1,7 +1,7 @@
 TypeDefine:
 	base: 1
 		clear: dirt        		#8 clear
-			Scale: 4.5
+			Scale: 6
 			FlatSpecular: 0.1
 	# water: 1
 	# 	water01: Water01    	#0 water
@@ -9,7 +9,7 @@ TypeDefine:
 	cliff: 2
 		cliff01: TileCliff1 	#1 cliff
 			Scale: 7
-			FlatSpecular: 0.45
+			FlatSpecular: 0.55
 	conc: 3
 		conc01: TileConc1  		#2 road
 			Scale: 2.5

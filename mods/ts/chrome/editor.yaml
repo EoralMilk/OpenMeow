@@ -206,6 +206,7 @@ Container@EDITOR_WORLD_ROOT:
 	Logic: LoadIngamePerfLogic, MapEditorLogic, ActorEditLogic, MapOverlaysLogic
 		ToggleGridOverlayKey: EditorToggleGridOverlay
 		ToggleBuildableOverlayKey: EditorToggleBuildableOverlay
+		ToggleCellTypeOverlayKey: EditorToggleCellTypeOverlayKey
 	Children:
 		LogicKeyListener@OVERLAY_KEYHANDLER:
 		Container@PERF_ROOT:
@@ -422,6 +423,23 @@ Container@EDITOR_WORLD_ROOT:
 									Value: 1
 									MinimumValue: 0.1
 									MaximumValue: 5
+								ScrollPanel@CELLTYPE_TEMPLATELIST:
+									Y: 98
+									Width: PARENT_RIGHT
+									Height: PARENT_BOTTOM - 100
+									TopBottomSpacing: 4
+									ItemSpacing: 4
+									Children:
+										ScrollItem@CELLTYPE_TEMPLATE:
+											Visible: false
+											Height: 15
+											Width: PARENT_RIGHT - 4
+											TooltipContainer: TOOLTIP_CONTAINER
+											Children:
+												Label@CELLTYPE:
+													Height: 15
+													Width: PARENT_RIGHT - 2
+													ClickThrough: true
 						ScrollPanel@TERRAINBRUSH_TEMPLATELIST:
 							X: 145
 							Y: 82
@@ -754,7 +772,7 @@ ScrollPanel@COPY_FILTER_PANEL:
 
 ScrollPanel@OVERLAY_PANEL:
 	Width: 140
-	Height: 55
+	Height: 80
 	ItemSpacing: 5
 	TopBottomSpacing: 0
 	Children:

@@ -49,3 +49,8 @@ EditorToggleBuildableOverlay: F2
 	Description: Buildable Terrain Overlay
 	Types: Editor
 	Contexts: Editor
+
+EditorToggleCellTypeOverlayKey: F3
+	Description: Cell Overlay
+	Types: Editor
+	Contexts: Editor

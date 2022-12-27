@@ -138,6 +138,12 @@ namespace OpenRA.Primitives
 				(byte)Math.Round(255 * (f3.Z)));
 		}
 
+
+		public static float3 ToFloat3(Color color)
+		{
+			return new float3((float)color.R / 255, (float)color.G / 255, (float)color.B / 255);
+		}
+
 		public static Color FromLinear(byte a, float r, float g, float b)
 		{
 			// Apply gamma correction and pre-multiplied alpha

@@ -901,51 +901,10 @@ namespace OpenRA
 						tlNml, trNml, blNml, brNml, this);
 					var cpos = uv.ToCPos(this);
 					cellInfo.TileType = Tiles[cpos].Type;
-					string terrTypeName;
-					switch (vertexTerrType[im])
-					{
-						case 0:
-							terrTypeName = "Water";
-							break;
-						case 1:
-							terrTypeName = "Cliff";
-							break;
-						case 2:
-							terrTypeName = "Road";
-							break;
-						case 3:
-							terrTypeName = "Rough";
-							break;
-						case 4:
-							terrTypeName = "Rough";
-							break;
-						case 5:
-							terrTypeName = "DirtRoad";
-							break;
-						case 7:
-							terrTypeName = "Rough";
-							break;
-						case 8:
-							terrTypeName = "Rough";
-							break;
-						case 11:
-							terrTypeName = "Rail";
-							break;
-						case 12:
-							terrTypeName = "Impassable";
-							break;
-						case 13:
-							terrTypeName = "Rock";
-							break;
-						case 14:
-							terrTypeName = "Bridge";
-							break;
-						default:
-							terrTypeName = "Clear";
-							break;
-					}
+					string terrtype = "Clear";
+					terrtype = GetTerrainType(vertexTerrType[im]);
 
-					cellInfo.TerrainType = terrainTypeNameIndex[terrTypeName];
+					cellInfo.TerrainType = terrainTypeNameIndex[terrtype];
 					CellInfos[uv.ToCPos(this)] = cellInfo;
 				}
 			}
@@ -974,6 +933,54 @@ namespace OpenRA
 			{
 				HeightStep[c] = CellInfos[c].CellCenterPos.Z > 0 ? (byte)((CellInfos[c].CellCenterPos.Z + 1) / MapGrid.MapHeightStep) : (byte)(0);
 			}
+		}
+
+		string GetTerrainType(int t)
+		{
+			string terrTypeName;
+			switch (t)
+			{
+				case 0:
+					terrTypeName = "Water";
+					break;
+				case 1:
+					terrTypeName = "Cliff";
+					break;
+				case 2:
+					terrTypeName = "Road";
+					break;
+				case 3:
+					terrTypeName = "Rough";
+					break;
+				case 4:
+					terrTypeName = "Rough";
+					break;
+				case 5:
+					terrTypeName = "DirtRoad";
+					break;
+				case 7:
+					terrTypeName = "Rough";
+					break;
+				case 8:
+					terrTypeName = "Rough";
+					break;
+				case 11:
+					terrTypeName = "Rail";
+					break;
+				case 12:
+					terrTypeName = "Impassable";
+					break;
+				case 13:
+					terrTypeName = "Rock";
+					break;
+				case 14:
+					terrTypeName = "Bridge";
+					break;
+				default:
+					terrTypeName = "Clear";
+					break;
+			}
+			return terrTypeName;
 		}
 
 		public void CalculateTileVertexInfo()
@@ -2036,7 +2043,7 @@ namespace OpenRA
 					// FirstOrDefault will return a (MPos.Zero, Color.Transparent) if positions is empty
 					var actorColor = positions.FirstOrDefault(ap => ap.Position == uv).Color;
 					if (actorColor.A == 0)
-						terrainColor = GetTerrainColorPair(uv, true);
+						terrainColor = GetTerrainColorPair(uv);
 
 					if (isRectangularIsometric)
 					{
