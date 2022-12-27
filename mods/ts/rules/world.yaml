@@ -491,4 +491,5 @@ EditorWorld:
 		Palette: ra
 		Alpha: 0.35
 	CellTypeOverlay:
-		FootprintAlpha: 0.5
+		FootprintAlpha: 0.75
+		Sequence: cellsparse

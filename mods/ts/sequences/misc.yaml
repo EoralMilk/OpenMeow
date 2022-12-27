@@ -16,13 +16,17 @@ overlay:
 
 editor-overlay:
 	Defaults: place
-		Offset: 0, -12, 1
 		ZOffset: -2
 		ZRamp: 1
 		MeshType: Cell
-	copy:
-	paste:
-		Start: 1
+		UseTilesetCode: false
+	 	AddExtension: false
+		Offset: 0, 0, 0
+	cell: cell.png
+	cellsparse: cellsparse.png
+	cellgrid: cellgrid.png
+	copy: cellgridgreen.png
+	paste: cellgridred.png
 
 poweroff:
 	offline:

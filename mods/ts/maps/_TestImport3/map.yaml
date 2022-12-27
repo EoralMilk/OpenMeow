@@ -468,9 +468,6 @@ Actors:
 	Actor242: tree25
 		Owner: Neutral
 		Location: 121,8
-	Actor243: fona12
-		Owner: Neutral
-		Location: 121,4
 	Actor244: fona13
 		Owner: Neutral
 		Location: 126,0
@@ -537,9 +534,6 @@ Actors:
 	Actor265: srock02
 		Owner: Neutral
 		Location: 61,-32
-	Actor266: srock04
-		Owner: Neutral
-		Location: 54,-40
 	Actor268: srock03
 		Owner: Neutral
 		Location: 125,-49
@@ -1420,3 +1414,6 @@ Actors:
 	Actor543: tree22
 		Owner: Neutral
 		Location: 53,-17
+	Actor266: srock04
+		Owner: Neutral
+		Location: 54,-40

@@ -354,7 +354,8 @@ Container@EDITOR_WORLD_ROOT:
 					X: WINDOW_RIGHT - 320
 					Y: 360
 					Width: 310
-					Height: WINDOW_BOTTOM - 452
+					# Height: WINDOW_BOTTOM - 452
+					Height: WINDOW_BOTTOM - 390
 					Children:
 						Label@SEARCH_LABEL:
 							Y: 12
@@ -436,6 +437,9 @@ Container@EDITOR_WORLD_ROOT:
 											Width: PARENT_RIGHT - 4
 											TooltipContainer: TOOLTIP_CONTAINER
 											Children:
+												GradientColorBlock@CELLTYPECOLOR:
+													Height: 15
+													Width: PARENT_RIGHT - 2
 												Label@CELLTYPE:
 													Height: 15
 													Width: PARENT_RIGHT - 2

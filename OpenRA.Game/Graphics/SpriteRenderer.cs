@@ -240,7 +240,7 @@ namespace OpenRA.Graphics
 		public void DrawCellSprite(Sprite s, PaletteReference pal, in WPos wPos, in vec3 viewOffset, float scale, in float3 tint, float alpha, Map map, float rotation = 0f)
 		{
 			var cPos = map.CellContaining(wPos);
-			if (!map.Contains(cPos))
+			if (!map.CellInfos.Contains(cPos))
 				return;
 
 			var samplers = SetRenderStateForSprite(s);

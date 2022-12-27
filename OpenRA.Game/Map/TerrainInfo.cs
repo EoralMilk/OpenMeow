@@ -64,7 +64,9 @@ namespace OpenRA
 		public readonly BitSet<TargetableType> TargetTypes;
 		public readonly HashSet<string> AcceptsSmudgeType = new HashSet<string>();
 		public readonly Color Color;
+		public readonly Color EditorColor = Color.Black;
 		public readonly bool RestrictPlayerColor = false;
+		public readonly bool UseInEditor = true;
 
 		public TerrainTypeInfo(MiniYaml my) { FieldLoader.Load(this, my); }
 	}

@@ -16,73 +16,90 @@ Terrain:
 		Color: 745537
 		TargetTypes: Ground
 		RestrictPlayerColor: true
+		EditorColor: F5F58A
 	TerrainType@Road:
 		Type: Road
 		AcceptsSmudgeType: SmallScorch, MediumScorch, LargeScorch
 		Color: 745537
 		TargetTypes: Ground
+		EditorColor: FFFFFF
 	TerrainType@Bridge:
 		Type: Bridge
 		Color: 403C34
 		TargetTypes: Ground
+		UseInEditor: False
 	TerrainType@Rail:
 		Type: Rail
 		AcceptsSmudgeType: SmallScorch, MediumScorch, LargeScorch
 		Color: 745537
 		TargetTypes: Ground
+		UseInEditor: False
+		EditorColor: 2F2F33
 	TerrainType@Impassable:
 		Type: Impassable
 		Color: 745537
 		TargetTypes: Ground
+		EditorColor: 4F0000
 	TerrainType@Water:
 		Type: Water
 		Color: 745537
 		TargetTypes: Water
 		RestrictPlayerColor: true
+		EditorColor: 2050FF
 	TerrainType@DirtRoad:
 		Type: DirtRoad
 		AcceptsSmudgeType: SmallCrater, MediumCrater, LargeCrater, SmallScorch, MediumScorch, LargeScorch
 		Color: 745537
 		TargetTypes: Ground
+		EditorColor: FFFF22
 	TerrainType@Rough:
 		Type: Rough
 		AcceptsSmudgeType: SmallCrater, MediumCrater, LargeCrater, SmallScorch, MediumScorch, LargeScorch
 		Color: 745537
 		TargetTypes: Ground
+		EditorColor: 3CFF3C
 	TerrainType@Cliff:
 		Type: Cliff
 		Color: 745537
 		TargetTypes: Ground
+		EditorColor: FF7F00
 	TerrainType@Tiberium:
 		Type: Tiberium
 		AcceptsSmudgeType: SmallCrater, MediumCrater, LargeCrater, SmallScorch, MediumScorch, LargeScorch
 		Color: 009000
 		TargetTypes: Ground, Tiberium
 		RestrictPlayerColor: true
+		UseInEditor: False
 	TerrainType@BlueTiberium:
 		Type: BlueTiberium
 		AcceptsSmudgeType: SmallCrater, MediumCrater, LargeCrater, SmallScorch, MediumScorch, LargeScorch
 		Color: 202080
 		TargetTypes: Ground, BlueTiberium
 		RestrictPlayerColor: true
+		UseInEditor: False
 	TerrainType@Veins:
 		Type: Veins
 		Color: CD6600
 		TargetTypes: Ground
+		UseInEditor: False
 	TerrainType@Tree:
 		Type: Tree
 		TargetTypes: Ground
 		Color: 1C2024
+		UseInEditor: False
 	TerrainType@Rock:
 		Type: Rock
 		TargetTypes: Ground
 		Color: 44443C
+		UseInEditor: False
 	TerrainType@Subterranean:
 		Type: Subterranean
 		Color: 745537
+		UseInEditor: False
 	TerrainType@Jumpjet:
 		Type: Jumpjet
 		Color: 745537
+		UseInEditor: False
 
 # Automatically generated. DO NOT EDIT!
 Templates:

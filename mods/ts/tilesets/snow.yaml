@@ -15,69 +15,86 @@ Terrain:
 		Color: C7C9FA
 		TargetTypes: Ground
 		RestrictPlayerColor: true
+		EditorColor: E0F5F5
 	TerrainType@Road:
 		Type: Road
 		Color: 2D2B28
 		TargetTypes: Ground
+		EditorColor: 3D3D3D
 	TerrainType@Bridge:
 		Type: Bridge
 		Color: 5A5C5A
 		TargetTypes: Ground
+		UseInEditor: False
 	TerrainType@Rail:
 		Type: Rail
 		Color: 363739
 		TargetTypes: Ground
+		UseInEditor: False
+		EditorColor: 2F2F33
 	TerrainType@Impassable:
 		Type: Impassable
 		Color: 666D76
 		TargetTypes: Ground
+		EditorColor: FF2222
 	TerrainType@Water:
 		Type: Water
 		Color: 3D4148
 		TargetTypes: Water
 		RestrictPlayerColor: true
+		EditorColor: 2060FF
 	TerrainType@DirtRoad:
 		Type: DirtRoad
 		Color: 82838F
 		TargetTypes: Ground
+		EditorColor: FFFF88
 	TerrainType@Rough:
 		Type: Rough
 		Color: 7A7E8B
 		TargetTypes: Ground
+		EditorColor: 3CFF3C
 	TerrainType@Cliff:
 		Type: Cliff
 		Color: 676E76
 		TargetTypes: Ground
+		EditorColor: FF7F50
 	TerrainType@Tiberium:
 		Type: Tiberium
 		AcceptsSmudgeType: SmallCrater, MediumCrater, LargeCrater, SmallScorch, MediumScorch, LargeScorch
 		Color: 009000
 		TargetTypes: Ground, Tiberium
 		RestrictPlayerColor: true
+		UseInEditor: False
 	TerrainType@BlueTiberium:
 		Type: BlueTiberium
 		AcceptsSmudgeType: SmallCrater, MediumCrater, LargeCrater, SmallScorch, MediumScorch, LargeScorch
 		Color: 202080
 		TargetTypes: Ground, BlueTiberium
 		RestrictPlayerColor: true
+		UseInEditor: False
 	TerrainType@Veins:
 		Type: Veins
 		Color: CD6600
 		TargetTypes: Ground
+		UseInEditor: False
 	TerrainType@Tree:
 		Type: Tree
 		TargetTypes: Ground
 		Color: 1C2024
+		UseInEditor: False
 	TerrainType@Rock:
 		Type: Rock
 		TargetTypes: Ground
 		Color: 44443C
+		UseInEditor: False
 	TerrainType@Subterranean:
 		Type: Subterranean
 		Color: C7C9FA
+		UseInEditor: False
 	TerrainType@Jumpjet:
 		Type: Jumpjet
 		Color: C7C9FA
+		UseInEditor: False
 
 # Automatically generated. DO NOT EDIT!
 Templates:

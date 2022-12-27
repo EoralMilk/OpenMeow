@@ -35,7 +35,11 @@ namespace OpenRA.Mods.Common.Traits
 
 		[SequenceReference(nameof(Image))]
 		[Desc("Sequence to use for the copy overlay.")]
-		public readonly string Sequence = "copy";
+		public readonly string Sequence = "cell";
+
+		[SequenceReference(nameof(Image))]
+		[Desc("Sequence to use for the copy overlay.")]
+		public readonly string BoundCellSequence = "cellgrid";
 
 		public override object Create(ActorInitializer init) { return new CellTypeOverlay(this); }
 	}
@@ -47,8 +51,8 @@ namespace OpenRA.Mods.Common.Traits
 		Map map;
 		TerrainTypeInfo[] allTypes;
 		Color[] typeColors;
-		Sprite tileSprite;
-		float tileAlpha;
+		Sprite cellSprite, bcellSprite;
+		float cellAlpha, bcellAlpha;
 		PaletteReference palette;
 
 		public CellTypeOverlay(CellTypeOverlayInfo info)
@@ -61,14 +65,17 @@ namespace OpenRA.Mods.Common.Traits
 		{
 			map = w.Map;
 			var seq = map.Rules.Sequences.GetSequence(info.Image, info.Sequence);
-			tileSprite = seq.GetSprite(0);
-			tileAlpha = seq.GetAlpha(0);
+			cellSprite = seq.GetSprite(0);
+			cellAlpha = seq.GetAlpha(0);
+			var seqb = map.Rules.Sequences.GetSequence(info.Image, info.BoundCellSequence);
+			bcellSprite = seqb.GetSprite(0);
+			bcellAlpha = seqb.GetAlpha(0);
 
 			allTypes = map.Rules.TerrainInfo.TerrainTypes;
 			typeColors = new Color[allTypes.Length];
 			for (int i = 0; i < allTypes.Length; i++)
 			{
-				typeColors[i] = Color.FromAhsv((float)i / allTypes.Length, 1.0f, 1.0f);
+				typeColors[i] = allTypes[i].EditorColor != Color.Black ? allTypes[i].EditorColor : Color.FromAhsv((float)i / allTypes.Length, 1.0f, 1.0f);
 			}
 
 			palette = wr.Palette(info.Palette);
@@ -83,13 +90,17 @@ namespace OpenRA.Mods.Common.Traits
 
 			foreach (var uv in wr.Viewport.AllVisibleCells.CandidateMapCoords)
 			{
-				if (!map.CellInfos.Contains(uv) || self.World.ShroudObscures(uv))
+				if (!map.CellInfos.Contains(uv))
 					continue;
 
 				var cellinfo = map.CellInfos[uv];
 
-				yield return new SpriteRenderable(tileSprite, wr.World.Map.CenterOfCell(uv),
-							WVec.Zero, 0, palette, 1f, tileAlpha * info.FootprintAlpha, Color.ToFloat3(typeColors[cellinfo.TerrainType]), TintModifiers.IgnoreWorldTint, true);
+				if (!map.Contains(uv))
+					yield return new SpriteRenderable(bcellSprite, wr.World.Map.CenterOfCell(uv),
+							WVec.Zero, 0, palette, 1f, bcellAlpha * info.FootprintAlpha, Color.ToFloat3(typeColors[cellinfo.TerrainType]), TintModifiers.IgnoreWorldTint, true);
+				else
+					yield return new SpriteRenderable(cellSprite, wr.World.Map.CenterOfCell(uv),
+							WVec.Zero, 0, palette, 1f, cellAlpha * info.FootprintAlpha, Color.ToFloat3(typeColors[cellinfo.TerrainType]), TintModifiers.IgnoreWorldTint, true);
 			}
 		}
 

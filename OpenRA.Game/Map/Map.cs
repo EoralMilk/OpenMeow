@@ -475,6 +475,9 @@ namespace OpenRA
 			else
 				CalculateTileVertexInfo();
 
+			if (Package.Contains("cell.bin"))
+				ImportCellInfo();
+
 			if (Grid.MaximumTerrainHeight > 0)
 			{
 				CellInfos.CellEntryChanged += UpdateProjection;
@@ -730,6 +733,8 @@ namespace OpenRA
 			toPackage.Update("map.yaml", Encoding.UTF8.GetBytes(s));
 			toPackage.Update("map.bin", SaveBinaryData());
 
+			toPackage.Update("cell.bin", SaveCellData());
+
 			if (TerrainBlocks != null)
 			{
 				foreach (var block in TerrainBlocks)
@@ -752,6 +757,26 @@ namespace OpenRA
 		}
 
 		#region Terrain Vertex
+
+		public void ImportCellInfo()
+		{
+			using (var s = Package.GetStream("cell.bin"))
+			{
+				var width = s.ReadUInt16();
+				var height = s.ReadUInt16();
+				if (width != MapSize.X || height != MapSize.Y)
+					throw new InvalidDataException("Invalid cell data: map size is " + MapSize + " and data size is " + width + ", " + height);
+
+				for (var i = 0; i < MapSize.X; i++)
+				{
+					for (var j = 0; j < MapSize.Y; j++)
+					{
+						CellInfos[new MPos(i, j)].TerrainType = s.ReadUInt8();
+					}
+				}
+			}
+
+		}
 
 		public void ImportVertexInfo()
 		{
@@ -1564,7 +1589,9 @@ namespace OpenRA
 
 				CellInfos[c].UpdateCell(this);
 
-				HeightStep[c] = CellInfos[c].CellCenterPos.Z > 0 ? (byte)((CellInfos[c].CellCenterPos.Z + 1) / MapGrid.MapHeightStep) : (byte)(0);
+				// we don't want the projectcell changed if the cell is not in map
+				if (Contains(c))
+					HeightStep[c] = CellInfos[c].CellCenterPos.Z > 0 ? (byte)((CellInfos[c].CellCenterPos.Z + 1) / MapGrid.MapHeightStep) : (byte)(0);
 
 				if (CellInfos[c].AlmostFlat)
 					Ramp[c] = 0;
@@ -1941,6 +1968,28 @@ namespace OpenRA
 							writer.Write(tile.Type);
 							writer.Write(tile.Index);
 						}
+					}
+				}
+			}
+
+			return dataStream.ToArray();
+		}
+
+		public byte[] SaveCellData()
+		{
+			var dataStream = new MemoryStream();
+			using (var writer = new BinaryWriter(dataStream))
+			{
+				// Size
+				writer.Write((ushort)MapSize.X);
+				writer.Write((ushort)MapSize.Y);
+
+				for (var i = 0; i < MapSize.X; i++)
+				{
+					for (var j = 0; j < MapSize.Y; j++)
+					{
+						var cell = CellInfos[new MPos(i, j)];
+						writer.Write(cell.TerrainType);
 					}
 				}
 			}

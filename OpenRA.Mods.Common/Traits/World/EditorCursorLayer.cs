@@ -105,6 +105,7 @@ namespace OpenRA.Mods.Common.Traits
 						World3DCoordinate.WPosToFloat3(brushPos + normal * 4),
 						new WDist(64), Color.OrangeRed, BlendMode.Alpha
 						);
+
 					brushRenderables[1] = new DebugCircleRenderable(brushPos,
 						10, GetBrushSize == null ? Brush.DefaultSize / 2 : (int)(GetBrushSize() * Brush.DefaultSize / 2),
 						new WDist(64), Color.OrangeRed, Color.Aqua, BlendMode.Alpha, GetBrushAlpha == null ? 255 : GetBrushAlpha());
@@ -193,23 +194,31 @@ namespace OpenRA.Mods.Common.Traits
 				if (!map.CellInfos.Contains(terrainOrResourceCell))
 					return NoRenderables;
 
-				var mapMaxHeight = map.Grid.MaximumTerrainHeight * MapGrid.MapHeightStep;
-				var cellinfo = map.CellInfos[terrainOrResourceCell];
-				var cellCorner = new WPos[5] {
+				var cells = wr.World.Map.FindTilesInCircle(terrainOrResourceCell, (int)(GetBrushSize() * Brush.DefaultSize - 200) / 2048, true);
+
+				IRenderable[] lines = new IRenderable[4 * cells.Count()];
+				int idx = 0;
+				foreach (var cc in cells)
+				{
+					var mapMaxHeight = map.Grid.MaximumTerrainHeight * MapGrid.MapHeightStep;
+					var cellinfo = map.CellInfos[cc];
+					var cellCorner = new WPos[5] {
 					map.TerrainVertices[cellinfo.T].LogicPos,
 					map.TerrainVertices[cellinfo.R].LogicPos,
 					map.TerrainVertices[cellinfo.B].LogicPos,
 					map.TerrainVertices[cellinfo.L].LogicPos,
 					map.TerrainVertices[cellinfo.T].LogicPos};
-				IRenderable[] lines = new IRenderable[cellCorner.Length - 1];
 
-				// Colors change between points, so render separately
-				for (var i = 0; i < cellCorner.Length - 1; i++)
-				{
-					var startColor = Color.FromAhsv((float)cellCorner[i].Z / mapMaxHeight, 1, 1);
-					var endColor = Color.FromAhsv((float)cellCorner[i + 1].Z / mapMaxHeight, 1, 1);
+					// Colors change between points, so render separately
+					for (var i = 0; i < cellCorner.Length - 1; i++)
+					{
+						var startColor = Color.FromAhsv((float)cellCorner[i].Z / mapMaxHeight, 1, 1);
+						var endColor = Color.FromAhsv((float)cellCorner[i + 1].Z / mapMaxHeight, 1, 1);
 
-					lines[i] = new LineAnnotationRenderable(cellCorner[i], cellCorner[i + 1], 3, startColor, endColor);
+						lines[idx * 4 + i] = new LineAnnotationRenderable(cellCorner[i], cellCorner[i + 1], 3, startColor, endColor);
+					}
+
+					idx++;
 				}
 
 				return lines;

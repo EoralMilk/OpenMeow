@@ -18,6 +18,7 @@ using OpenRA.Graphics;
 using OpenRA.Mods.Common.Activities;
 using OpenRA.Mods.Common.Terrain;
 using OpenRA.Mods.Common.Traits;
+using OpenRA.Primitives;
 using OpenRA.Widgets;
 
 namespace OpenRA.Mods.Common.Widgets.Logic
@@ -79,10 +80,25 @@ namespace OpenRA.Mods.Common.Widgets.Logic
 			allTypes = world.Map.Rules.TerrainInfo.TerrainTypes;
 			for (int i = 0; i < allTypes.Length; i++)
 			{
+				if (!allTypes[i].UseInEditor)
+					continue;
+
 				int index = i;
 				var item = ScrollItemWidget.Setup(TypeItemTemplate,
 					() => editorCursor.Type == EditorCursorType.Brush && editorCursor.CellType == index,
-					() => editorCursor.CellType = index);
+					() =>
+					{
+						if (editorCursor.CellType == index)
+							editorCursor.CellType = -1;
+						else
+							editorCursor.CellType = index;
+					});
+
+				var typeColor = item.Get<GradientColorBlockWidget>("CELLTYPECOLOR");
+				typeColor.GetTopLeftColor = () => item.IsSelected() ? Color.Black : Color.FromArgb(255, allTypes[index].EditorColor);
+				typeColor.GetBottomLeftColor = () => Color.FromArgb(255, allTypes[index].EditorColor);
+				typeColor.GetTopRightColor = () => Color.FromArgb(item.IsSelected() ? 255 : 12, allTypes[index].EditorColor);
+				typeColor.GetBottomRightColor = () => item.IsSelected() ? Color.White : Color.FromArgb(12, allTypes[index].EditorColor);
 
 				var typeLabel = item.Get<LabelWidget>("CELLTYPE");
 				typeLabel.GetText = () => allTypes[index].Type;

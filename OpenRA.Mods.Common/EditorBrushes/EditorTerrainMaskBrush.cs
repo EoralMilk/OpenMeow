@@ -113,19 +113,19 @@ namespace OpenRA.Mods.Common.Widgets
 
 			if (mi.Modifiers.HasModifier(Modifiers.Shift))
 			{
-				PaintCell(world.Map.CenterOfCell(cell), isMoving, mi.Modifiers.HasModifier(Modifiers.Ctrl), mi.Modifiers.HasModifier(Modifiers.Alt));
+				PaintCell(cell, world.Map.CenterOfCell(cell), isMoving, mi.Modifiers.HasModifier(Modifiers.Ctrl), mi.Modifiers.HasModifier(Modifiers.Alt));
 			}
 			else
-				PaintCell(pos, isMoving, mi.Modifiers.HasModifier(Modifiers.Ctrl), mi.Modifiers.HasModifier(Modifiers.Alt));
+				PaintCell(cell, pos, isMoving, mi.Modifiers.HasModifier(Modifiers.Ctrl), mi.Modifiers.HasModifier(Modifiers.Alt));
 
 			return true;
 		}
 
-		void PaintCell(WPos pos, bool isMoving, bool erase, bool eraseUpper)
+		void PaintCell(in CPos cell, in WPos pos, bool isMoving, bool erase, bool eraseUpper)
 		{
 			if (action == null)
 			{
-				action = new PaintMaskEditorAction(brush, world.Map,
+				action = new PaintMaskEditorAction(editorCursor, brush, world.Map,
 					pos,
 					getActiveLayers(),
 					(int)(getSize() * brush.DefaultSize),
@@ -137,7 +137,7 @@ namespace OpenRA.Mods.Common.Widgets
 			if (lastPaintPos == pos && !isMoving)
 				return;
 			lastPaintPos = pos;
-			action.UpdatePos(pos);
+			action.UpdatePos(cell, pos);
 		}
 
 		public void Tick() { }
@@ -154,30 +154,54 @@ namespace OpenRA.Mods.Common.Widgets
 		public static int EditorDrawOrderKey = 0;
 		public string Text { get; }
 
+		readonly EditorCursorLayer editorCursor;
 		readonly MaskBrush brush;
 		readonly Map map;
 		readonly WPos pos;
 		readonly bool eraseUpper;
 		readonly int size;
 		readonly int intensity;
+		readonly bool erase;
 		readonly int[] activeLayers;
 		readonly int drawKey;
+
+		/// <summary>
+		/// before type, after type
+		/// </summary>
+		readonly Dictionary<CPos, (int, int)> typeDraws = new Dictionary<CPos, (int, int)>();
 		readonly List<(WPos, int, int, int)> draws = new List<(WPos, int, int, int)>();
-		public PaintMaskEditorAction(MaskBrush brush, Map map, WPos pos, int[] activeLayers, int size, int intensity, bool erase, bool eraseUpper)
+		public PaintMaskEditorAction(EditorCursorLayer editorCursor, MaskBrush brush, Map map, WPos pos, int[] activeLayers, int size, int intensity, bool erase, bool eraseUpper)
 		{
+			this.editorCursor = editorCursor;
 			this.brush = brush;
 			this.map = map;
 			this.pos = pos;
 			this.activeLayers = activeLayers;
 			this.eraseUpper = eraseUpper;
 			this.size = size;
+			this.erase = erase;
 			this.intensity = erase ? -intensity : intensity;
 			Text = $"Paint with {brush.Name} at " + pos;
 			drawKey = EditorDrawOrderKey++;
 		}
 
-		public void UpdatePos(WPos pos)
+		public void UpdatePos(CPos cell, WPos pos)
 		{
+			if (editorCursor.CellType >= 0)
+			{
+				foreach (var c in map.FindTilesInCircle(cell, (size - 200) / 2048, true))
+				{
+					if (map.CellInfos.Contains(c) && !typeDraws.ContainsKey(c))
+					{
+						typeDraws.Add(c, (map.CellInfos[c].TerrainType, editorCursor.CellType));
+						map.CellInfos[c].TerrainType = (byte)editorCursor.CellType;
+					}
+				}
+			}
+
+			if (intensity == 0)
+				return;
+
 			int top = 9;
 			foreach (var layer in activeLayers)
 			{
@@ -204,6 +228,15 @@ namespace OpenRA.Mods.Common.Widgets
 
 		public void Do()
 		{
+			foreach (var draw in typeDraws)
+			{
+				if (map.CellInfos.Contains(draw.Key))
+					map.CellInfos[draw.Key].TerrainType = (byte)draw.Value.Item2;
+			}
+
+			if (intensity == 0)
+				return;
+
 			foreach (var draw in draws)
 			{
 				TerrainRenderBlock.PaintAt(map, brush, draw.Item1, draw.Item2, draw.Item3, draw.Item4, drawKey);
@@ -212,6 +245,15 @@ namespace OpenRA.Mods.Common.Widgets
 
 		public void Undo()
 		{
+			foreach (var draw in typeDraws)
+			{
+				if (map.CellInfos.Contains(draw.Key))
+					map.CellInfos[draw.Key].TerrainType = (byte)draw.Value.Item1;
+			}
+
+			if (intensity == 0)
+				return;
+
 			// TerrainRenderBlock.PaintAt(map, brush, pos, brush.DefaultSize, 0, 255);
 			foreach (var block in map.TerrainBlocks)
 			{
