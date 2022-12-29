@@ -12,11 +12,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using GlmSharp;
+using System.Numerics;
 using OpenRA.Graphics;
-using OpenRA.Mods.Common.Activities;
-using OpenRA.Mods.Common.Graphics;
-using OpenRA.Primitives;
 using OpenRA.Traits;
 using TrueSync;
 
@@ -174,7 +171,7 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 			return Skeleton.BoneOffsetMat(id);
 		}
 
-		public mat4 GetRenderMatrixFromBoneId(int id)
+		public Matrix4x4 GetRenderMatrixFromBoneId(int id)
 		{
 			return Skeleton.BoneRenderOffsetMat(id);
 		}

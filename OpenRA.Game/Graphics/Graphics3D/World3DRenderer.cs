@@ -1,39 +1,37 @@
 ﻿using System;
 using System.Collections.Generic;
-using GlmSharp;
+using System.Numerics;
 using OpenRA.Primitives;
-using OpenRA.Traits;
-using TrueSync;
 
 namespace OpenRA.Graphics
 {
 	public sealed class World3DRenderer : IDisposable
 	{
 		const bool ShowDebugInfo = false;
-		public readonly vec3 WorldUp = new vec3(0, 0, 1);
+		public readonly Vector3 WorldUp = new Vector3(0, 0, 1);
 		public readonly float CameraPitch = 60.0f;
-		public vec3 CameraUp { get; private set; }
-		public vec3 CameraRight { get; private set; }
+		public Vector3 CameraUp { get; private set; }
+		public Vector3 CameraRight { get; private set; }
 
-		public vec3 InverseCameraFront { get; private set; }
-		public vec3 InverseCameraFrontMeterPerWDist { get; private set; }
+		public Vector3 InverseCameraFront { get; private set; }
+		public Vector3 InverseCameraFrontMeterPerWDist { get; private set; }
 
 		public readonly float TanCameraPitch;
 		public readonly float CosCameraPitch;
 		public readonly float SinCameraPitch;
 		public readonly float MaxTerrainHeight;
 
-		public readonly vec3 SunPosOne = new vec3(2.39773f, 1.0f, 3.51021f);
+		public readonly Vector3 SunPosOne = new Vector3(2.39773f, 1.0f, 3.51021f);
 		public readonly float SunCos;
 		public readonly float SunSin;
 
 		public float FrameShadowBias;
-		public vec3 SunPos;
-		public vec3 SunDir;
-		public vec3 SunUp;
-		public vec3 SunRight;
-		public mat4 SunView;
-		public mat4 SunProjection;
+		public Vector3 SunPos;
+		public Vector3 SunDir;
+		public Vector3 SunUp;
+		public Vector3 SunRight;
+		public Matrix4x4 SunView;
+		public Matrix4x4 SunProjection;
 		public float3 AmbientColor;
 		public float AmbientIntencity;
 		public float3 SunColor;
@@ -41,20 +39,85 @@ namespace OpenRA.Graphics
 
 		readonly Renderer renderer;
 
-		public readonly mat4 ModelRenderRotationFix;
+		public readonly Matrix4x4 ModelRenderRotationFix;
 		public readonly WRot WRotRotationFix;
 
-		public vec3 CameraPos { get; private set; }
-		vec3 viewPoint;
-		long lastLerpTime;
+		public Vector3 CameraPos { get; private set; }
+		Vector3 viewPoint;
 
 		public readonly float PixPerMeter;
 		public readonly float MeterPerPix;
 		public readonly int WDistPerPix;
 
 		public readonly float MeterPerPixHalf;
-		public mat4 Projection;
-		public mat4 View;
+		public Matrix4x4 Projection;
+		public Matrix4x4 View;
+
+		/// <summary>
+		/// Why we use this?
+		/// It seems that the system Numeric methods are not suitable for GL coordinate systems
+		/// </summary>
+		public static Matrix4x4 Ortho(float left, float right, float bottom, float top, float zNear, float zFar)
+		{
+			var m = Matrix4x4.Identity;
+			m.M11 = 2 / (right - left);
+			m.M22 = 2 / (top - bottom);
+			m.M33 = -2 / (zFar - zNear);
+			m.M14 = -(right + left) / (right - left);
+			m.M24 = -(top + bottom) / (top - bottom);
+			m.M34 = -(zFar + zNear) / (zFar - zNear);
+			return m;
+		}
+
+		/// <summary>
+		/// Why we use this?
+		/// It seems that the system Numeric methods are not suitable for GL coordinate systems
+		/// </summary>
+		public static Matrix4x4 LookAt(Vector3 eye, Vector3 center, Vector3 up)
+		{
+			var f = Vector3.Normalize(center - eye);
+			var s = Vector3.Normalize(Vector3.Cross(f, up));
+			var u = Vector3.Cross(s, f);
+			var m = Matrix4x4.Identity;
+			m.M11 = s.X;
+			m.M12 = s.Y;
+			m.M13 = s.Z;
+			m.M21 = u.X;
+			m.M22 = u.Y;
+			m.M23 = u.Z;
+			m.M31 = -f.X;
+			m.M32 = -f.Y;
+			m.M33 = -f.Z;
+			m.M14 = -Vector3.Dot(s, eye);
+			m.M24 = -Vector3.Dot(u, eye);
+			m.M34 = Vector3.Dot(f, eye);
+			return m;
+		}
+
+		/// <summary>
+		/// Why we use this?
+		/// It seems that the system Numeric methods are not suitable for GL coordinate systems
+		/// </summary>
+		public static Matrix4x4 FromQuat(Quaternion q)
+		{
+			return new Matrix4x4(1 - 2 * (q.Y * q.Y + q.Z * q.Z),	2 * (q.X * q.Y - q.W * q.Z),		2 * (q.X * q.Z + q.W * q.Y), 0,
+												2 * (q.X * q.Y + q.W * q.Z),		1 - 2 * (q.X * q.X + q.Z * q.Z),	2 * (q.Y * q.Z - q.W * q.X), 0,
+												2 * (q.X * q.Z - q.W * q.Y),		2 * (q.Y * q.Z + q.W * q.X),		1 - 2 * (q.X * q.X + q.Y * q.Y), 0,
+												0,0,0,1);
+		}
+
+		/// <summary>
+		/// Why we use this?
+		/// It seems that the system Numeric methods are not suitable for GL coordinate systems
+		/// </summary>
+		public static Matrix4x4 FromTranslation(Vector3 vector3)
+		{
+			var m = Matrix4x4.Identity;
+			m.M14 = vector3.X;
+			m.M24 = vector3.Y;
+			m.M34 = vector3.Z;
+			return m;
+		}
 
 		public World3DRenderer(Renderer renderer, MapGrid mapGrid)
 		{
@@ -63,48 +126,47 @@ namespace OpenRA.Graphics
 			WDistPerPix = (int)(MeterPerPix * World3DCoordinate.WDistPerMeter);
 			MeterPerPixHalf = MeterPerPix / 2.0f;
 
-			TanCameraPitch = (float)Math.Tan(glm.Radians(CameraPitch));
-			CosCameraPitch = (float)Math.Cos(glm.Radians(CameraPitch));
-			SinCameraPitch = (float)Math.Sin(glm.Radians(CameraPitch));
-			CameraUp = glm.Normalized(new vec3(0, -1, TanCameraPitch));
-			CameraRight = new vec3(1, 0, 0);
-			InverseCameraFront = glm.Normalized(new vec3(0, 1, 1 / TanCameraPitch));
+			TanCameraPitch = (float)Math.Tan(NumericUtil.ToRadians(CameraPitch));
+			CosCameraPitch = (float)Math.Cos(NumericUtil.ToRadians(CameraPitch));
+			SinCameraPitch = (float)Math.Sin(NumericUtil.ToRadians(CameraPitch));
+			CameraUp = Vector3.Normalize(new Vector3(0, -1, TanCameraPitch));
+			CameraRight = new Vector3(1, 0, 0);
+			InverseCameraFront = Vector3.Normalize(new Vector3(0, 1, 1 / TanCameraPitch));
 			InverseCameraFrontMeterPerWDist = InverseCameraFront / World3DCoordinate.WDistPerMeter;
 
 			MaxTerrainHeight = mapGrid.MaximumTerrainHeight * MapGrid.MapHeightStep * 2f / World3DCoordinate.WDistPerMeter;
 
-			UpdateSunPos(SunPosOne, vec3.Zero);
-			var chordPow = (SunPosOne.x * SunPosOne.x + SunPosOne.y * SunPosOne.y) + (SunPosOne.z * SunPosOne.z);
+			UpdateSunPos(SunPosOne, Vector3.Zero);
+			var chordPow = (SunPosOne.X * SunPosOne.X + SunPosOne.Y * SunPosOne.Y) + (SunPosOne.Z * SunPosOne.Z);
 			var chord = MathF.Sqrt(chordPow);
-			SunCos = SunPosOne.z / chord;
-			SunSin = (SunPosOne.x * SunPosOne.x + SunPosOne.y * SunPosOne.y) / chord;
+			SunCos = SunPosOne.Z / chord;
+			SunSin = (SunPosOne.X * SunPosOne.X + SunPosOne.Y * SunPosOne.Y) / chord;
 
 			AmbientColor = new float3(0.45f, 0.45f, 0.45f);
 			SunColor = new float3(1, 1, 1) - AmbientColor;
 			SunSpecularColor = SunColor * new float3(0.66f, 0.66f, 0.66f);
 
-			ModelRenderRotationFix = mat4.Rotate((float)(Math.PI / 2), new vec3(1, 0, 0));
+			ModelRenderRotationFix = Matrix4x4.CreateFromAxisAngle(new Vector3(1, 0, 0), 90f);
 			WRotRotationFix = new WRot(new WAngle(-256), WAngle.Zero, WAngle.Zero);
 			this.renderer = renderer;
 		}
 
-		void UpdateSunPos(in vec3 sunRelativePos, in vec3 groundPos)
+		void UpdateSunPos(in Vector3 sunRelativePos, in Vector3 groundPos)
 		{
 			SunPos = sunRelativePos + groundPos;
-			SunDir = glm.Normalized(-sunRelativePos);
-			SunRight = vec3.Cross(SunDir, WorldUp);
-			SunUp = vec3.Cross(SunRight, SunDir);
-			SunView = mat4.LookAt(SunPos, groundPos, SunUp);
+			SunDir = Vector3.Normalize(-sunRelativePos);
+			SunRight = Vector3.Cross(SunDir, WorldUp);
+			SunUp = Vector3.Cross(SunRight, SunDir);
+			SunView = LookAt(SunPos, groundPos, SunUp);
 		}
 
 		void UpdateSunProject(float radius)
 		{
 			var halfView = radius * SunCos;
-			var far = radius * SunSin + SunPos.z / SunCos;
-			SunProjection = mat4.Ortho(-halfView, halfView, -halfView, halfView, 0, far);
+			var far = radius * SunSin + SunPos.Z / SunCos;
+			SunProjection = Ortho(-halfView, halfView, -halfView, halfView, 0, far);
 		}
 
-		public static float CameraRotTest = 0;
 		public void PrepareToRender(WorldRenderer wr)
 		{
 			// projection and view
@@ -126,30 +188,18 @@ namespace OpenRA.Graphics
 
 				var heightMeter = ortho.Item4 / SinCameraPitch + (MaxTerrainHeight - (ortho.Item4 / TanCameraPitch * CosCameraPitch));
 				var far = heightMeter / CosCameraPitch + TanCameraPitch * ortho.Item4 + 100f;
-				Projection = mat4.Ortho(ortho.Item1, ortho.Item2, ortho.Item3, ortho.Item4, 0, far);
+				Projection = Ortho(ortho.Item1, ortho.Item2, ortho.Item3, ortho.Item4, 0, far);
 
 				viewPoint = viewport.ViewPoint;// new vec3((float)viewport.CenterPosition.X / WPosPerMeter, (float)viewport.CenterPosition.Y / WPosPerMeter, 0);
 
-				CameraPos = new vec3(0, TanCameraPitch * heightMeter, heightMeter);
+				CameraPos = new Vector3(0, TanCameraPitch * heightMeter, heightMeter) + new Vector3(viewPoint.X, viewPoint.Y, 0);
 
-				CameraPos = quat.FromAxisAngle(CameraRotTest, WorldUp) * CameraPos + new vec3(viewPoint.x, viewPoint.y, 0);
+				CameraUp = Vector3.Normalize(new Vector3(0, -1, TanCameraPitch));
+				CameraRight = new Vector3(1, 0, 0);
+				InverseCameraFront = Vector3.Normalize(new Vector3(0, 1, 1 / TanCameraPitch));
+				InverseCameraFrontMeterPerWDist = InverseCameraFront / World3DCoordinate.WDistPerMeter;
 
-				if (CameraRotTest != 0)
-				{
-					InverseCameraFront = (CameraPos - viewPoint).Normalized;
-					CameraRight = vec3.Cross(WorldUp, InverseCameraFront).Normalized;
-					CameraUp = vec3.Cross(InverseCameraFront, CameraRight).Normalized;
-					InverseCameraFrontMeterPerWDist = InverseCameraFront / World3DCoordinate.WDistPerMeter;
-				}
-				else
-				{
-					CameraUp = glm.Normalized(new vec3(0, -1, TanCameraPitch));
-					CameraRight = new vec3(1, 0, 0);
-					InverseCameraFront = glm.Normalized(new vec3(0, 1, 1 / TanCameraPitch));
-					InverseCameraFrontMeterPerWDist = InverseCameraFront / World3DCoordinate.WDistPerMeter;
-				}
-
-				View = mat4.LookAt(CameraPos, viewPoint, CameraUp);
+				View = LookAt(CameraPos, viewPoint, CameraUp);
 
 				// light params
 				AmbientColor = wr.TerrainLighting.GetGlobalAmbient();
@@ -170,35 +220,35 @@ namespace OpenRA.Graphics
 					Console.WriteLine("Ortho: " + ortho.Item1 + ", " + ortho.Item2 + ", " + ortho.Item3 + ", " + ortho.Item4);
 					Console.WriteLine("viewport.CenterPosition: " + viewport.CenterPosition);
 					Console.WriteLine("viewport.Zoom: " + viewport.Zoom);
-					Console.WriteLine("Camera-Position: " + CameraPos.x + ", " + CameraPos.y + ", " + CameraPos.z);
-					Console.WriteLine("Camera-ViewPoint: " + viewPoint.x + ", " + viewPoint.y + ", " + viewPoint.z);
+					Console.WriteLine("Camera-Position: " + CameraPos.X + ", " + CameraPos.Y + ", " + CameraPos.Z);
+					Console.WriteLine("Camera-ViewPoint: " + viewPoint.X + ", " + viewPoint.Y + ", " + viewPoint.Z);
 					Console.WriteLine("~~~~~~~~~~~~~~~~~~~~~~~~~");
 				}
 			}
 		}
 
-		public vec3 Get3DRenderPositionFromFloat3(float3 pos)
+		public Vector3 Get3DRenderPositionFromFloat3(float3 pos)
 		{
-			return new vec3(-pos.X / World3DCoordinate.WDistPerMeter,
+			return new Vector3(-pos.X / World3DCoordinate.WDistPerMeter,
 										pos.Y / World3DCoordinate.WDistPerMeter,
 										pos.Z / World3DCoordinate.WDistPerMeter);
 		}
 
-		public vec3 Get3DRenderPositionFromWPos(WPos pos)
+		public Vector3 Get3DRenderPositionFromWPos(WPos pos)
 		{
-			return new vec3(-(float)pos.X / World3DCoordinate.WDistPerMeter,
+			return new Vector3(-(float)pos.X / World3DCoordinate.WDistPerMeter,
 										(float)pos.Y / World3DCoordinate.WDistPerMeter,
 										(float)pos.Z / World3DCoordinate.WDistPerMeter);
 		}
 
-		public vec3 Get3DRenderVecFromWVec(WVec vec)
+		public Vector3 Get3DRenderVecFromWVec(WVec vec)
 		{
-			return new vec3(-(float)vec.X / World3DCoordinate.WDistPerMeter,
+			return new Vector3(-(float)vec.X / World3DCoordinate.WDistPerMeter,
 										(float)vec.Y / World3DCoordinate.WDistPerMeter,
 										(float)vec.Z / World3DCoordinate.WDistPerMeter);
 		}
 
-		public quat Get3DRenderRotationFromWRot(in WRot rot)
+		public Quaternion Get3DRenderRotationFromWRot(in WRot rot)
 		{
 			return rot.ToRenderQuat();
 		}
@@ -206,7 +256,7 @@ namespace OpenRA.Graphics
 		public void AddMeshInstancesToDraw(float zOffset, IEnumerable<MeshInstance> meshes, float scale,
 			in float3 tint, in float alpha, in Color remap)
 		{
-			var scaleMat = mat4.Scale(scale);
+			var scaleMat = Matrix4x4.CreateScale(scale);
 			var viewOffset = Game.Renderer.World3DRenderer.InverseCameraFrontMeterPerWDist * zOffset;
 			foreach (var m in meshes)
 			{
@@ -239,10 +289,10 @@ namespace OpenRA.Graphics
 
 					var t = m.Matrix();
 
-					float[] data = new float[23] { (float)t.m00, (float)t.m01, (float)t.m02, (float)t.m03,
-																(float)t.m10, (float)t.m11, (float)t.m12, (float)t.m13,
-																(float)t.m20, (float)t.m21, (float)t.m22, (float)t.m23,
-																(float)t.m30, (float)t.m31, (float)t.m32, (float)t.m33,
+					float[] data = new float[23] { t.M11, t.M21, t.M31, t.M41,
+																t.M12, t.M22, t.M32, t.M42,
+																t.M13, t.M23, t.M33, t.M43,
+																t.M14, t.M24, t.M34, t.M44,
 																replaceTint.X, replaceTint.Y, replaceTint.Z, replaceAlpha,
 																remapcolor.R, remapcolor.G, remapcolor.B,
 					};
@@ -257,18 +307,19 @@ namespace OpenRA.Graphics
 					// Convert screen offset to world offset
 					var offsetVec = Get3DRenderPositionFromWPos(m.PoistionFunc());
 					offsetVec += viewOffset;
-					var offsetTransform = mat4.Translate(offsetVec);
+					var offsetTransform = FromTranslation(offsetVec);
 
-					var rotMat = new mat4(Get3DRenderRotationFromWRot(m.RotationFunc()));
+					var rotMat = FromQuat(Get3DRenderRotationFromWRot(m.RotationFunc()));
 
 					var t = offsetTransform * (scaleMat * rotMat);
 
-					float[] data = new float[23] {t[0], t[1], t[2], t[3],
-															t[4], t[5], t[6], t[7],
-															t[8], t[9], t[10], t[11],
-															t[12], t[13], t[14], t[15],
-															replaceTint.X, replaceTint.Y, replaceTint.Z, replaceAlpha,
-															remapcolor.R, remapcolor.G, remapcolor.B,
+					float[] data = new float[23]{
+						t.M11, t.M21, t.M31, t.M41,
+						t.M12, t.M22, t.M32, t.M42,
+						t.M13, t.M23, t.M33, t.M43,
+						t.M14, t.M24, t.M34, t.M44,
+						replaceTint.X, replaceTint.Y, replaceTint.Z, replaceAlpha,
+						remapcolor.R, remapcolor.G, remapcolor.B,
 					};
 
 					var mat = m.Material.GetParams();

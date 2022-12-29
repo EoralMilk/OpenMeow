@@ -11,7 +11,7 @@
 
 using System;
 using System.Collections.Generic;
-using GlmSharp;
+using System.Numerics;
 using OpenRA.Primitives;
 
 namespace OpenRA.Graphics
@@ -165,13 +165,13 @@ namespace OpenRA.Graphics
 					else
 					{
 						// An easy vector to find which is perpendicular vector to forwardStep, with 0 Z component
-						var leftVector = new vec3(0, 0, 1);
+						var leftVector = new Vector3(0, 0, 1);
 						if (nmlDir.Value.X != 0 || nmlDir.Value.Y != 0)
 						{
-							leftVector = World3DCoordinate.WPosToVec3(new WPos(nmlDir.Value.Y, -nmlDir.Value.X, 0)).Normalized;
+							leftVector = Vector3.Normalize(World3DCoordinate.WPosToVec3(new WPos(nmlDir.Value.Y, -nmlDir.Value.X, 0)));
 						}
 
-						var upVector = vec3.Cross(World3DCoordinate.WVecToVec3(nmlDir.Value), leftVector).Normalized;
+						var upVector = Vector3.Normalize(Vector3.Cross(World3DCoordinate.WVecToVec3(nmlDir.Value), leftVector));
 						wsr.DrawNmlDirBoardSprite(Sprite, palette, Pos, viewOffset, leftVector, upVector, scale, t, a);
 					}
 

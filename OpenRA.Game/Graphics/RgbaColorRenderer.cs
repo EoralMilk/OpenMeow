@@ -11,8 +11,8 @@
 
 using System;
 using System.Collections.Generic;
+using System.Numerics;
 using System.Linq;
-using GlmSharp;
 using OpenRA.Primitives;
 
 namespace OpenRA.Graphics
@@ -37,9 +37,9 @@ namespace OpenRA.Graphics
 		{
 			var offset = wr.InverseCameraFrontMeterPerWDist * 10;
 
-			ViewZOffset = new float3(offset.x, offset.y, offset.z);
-			CamUpOffset = new float3(wr.CameraUp.x, wr.CameraUp.y, wr.CameraUp.z);
-			CamRightOffset = new float3(wr.CameraRight.x, wr.CameraRight.y, wr.CameraRight.z);
+			ViewZOffset = new float3(offset.X, offset.Y, offset.Z);
+			CamUpOffset = new float3(wr.CameraUp.X, wr.CameraUp.Y, wr.CameraUp.Z);
+			CamRightOffset = new float3(wr.CameraRight.X, wr.CameraRight.Y, wr.CameraRight.Z);
 		}
 
 		public void DrawScreenLine(in float3 start, in float3 end, float width, Color startColor, Color endColor, BlendMode blendMode = BlendMode.Alpha)
@@ -180,15 +180,14 @@ namespace OpenRA.Graphics
 
 			if (world)
 			{
-				var dir = World3DCoordinate.Float3toVec3(end - start).Normalized;
+				var dir = Vector3.Normalize(World3DCoordinate.Float3toVec3(end - start));
 				var cam = Game.Renderer.World3DRenderer.InverseCameraFront;
-				vec3 cross;
+				Vector3 cross;
 				if (dir == cam)
 					cross = Game.Renderer.World3DRenderer.CameraUp;
 				else
-					cross = vec3.Cross(cam, dir).Normalized;
+					cross = Vector3.Normalize(Vector3.Cross(cam, dir));
 				var widthOffset = World3DCoordinate.Vec3toFloat3(cross * (width / 2));
-				//var widthOffset = (width / 2) * Game.Renderer.World3DRenderer.CameraUp;
 
 				var sup = start + widthOffset;
 				var sdown = start - widthOffset;
@@ -204,13 +203,13 @@ namespace OpenRA.Graphics
 			}
 			else
 			{
-				var dir = World3DCoordinate.Float3toVec3(end - start).Normalized;
-				var cam = new vec3(0, 0, -1);
-				vec3 cross;
+				var dir = Vector3.Normalize(World3DCoordinate.Float3toVec3(end - start));
+				var cam = new Vector3(0, 0, -1);
+				Vector3 cross;
 				if (dir == cam)
-					cross = new vec3(0, 1, 0);
+					cross = new Vector3(0, 1, 0);
 				else
-					cross = vec3.Cross(cam, dir).Normalized;
+					cross = Vector3.Normalize(Vector3.Cross(cam, dir));
 
 				var corner = width / 2 * World3DCoordinate.Vec3toFloat3(cross);
 

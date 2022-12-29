@@ -10,8 +10,8 @@
 #endregion
 
 using System;
+using System.Numerics;
 using System.Collections.Generic;
-using GlmSharp;
 using OpenRA.Primitives;
 
 namespace OpenRA.Graphics
@@ -95,9 +95,9 @@ namespace OpenRA.Graphics
 			shader.SetBool("FrameBufferPosition", true);
 
 			var sunVP = wr.SunProjection * wr.SunView;
-			var invCameraVP = (wr.Projection * wr.View).Inverse;
-			shader.SetMatrix("SunVP", sunVP.Values1D);
-			shader.SetMatrix("InvCameraVP", invCameraVP.Values1D);
+			Matrix4x4.Invert(wr.Projection * wr.View, out var invCameraVP);
+			shader.SetMatrix("SunVP", NumericUtil.MatRenderValues(sunVP));
+			shader.SetMatrix("InvCameraVP", NumericUtil.MatRenderValues(invCameraVP));
 			shader.SetFloat("FrameShadowBias", wr.FrameShadowBias);
 			shader.SetFloat("AmbientIntencity", wr.AmbientIntencity);
 		}

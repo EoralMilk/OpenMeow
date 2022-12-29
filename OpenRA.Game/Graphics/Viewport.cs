@@ -12,7 +12,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using GlmSharp;
+using System.Numerics;
 using OpenRA.Primitives;
 using OpenRA.Traits;
 
@@ -58,7 +58,7 @@ namespace OpenRA.Graphics
 		public int2 TopLeft => CenterLocation - ViewportSize / 2;
 		public int2 BottomRight => CenterLocation + ViewportSize / 2;
 
-		public vec3 ViewPoint { get; private set; }
+		public Vector3 ViewPoint { get; private set; }
 		public WPos CenterPosition => worldRenderer.ProjectedPosition(CenterLocation);
 		public WPos TopLeftPosition => worldRenderer.ProjectedPosition(TopLeft);
 		public WPos BottomRightPosition => worldRenderer.ProjectedPosition(BottomRight);
@@ -205,7 +205,7 @@ namespace OpenRA.Graphics
 				var deltaScale = Math.Max(1, Math.Min(Game.RunTime - lastLerpTime, 25f));
 				lastLerpTime = Game.RunTime;
 				var fpos = new float3(LerpTarget.CenterPosition.X, LerpTarget.CenterPosition.Y - (float)LerpTarget.CenterPosition.Z * Game.Renderer.World3DRenderer.TanCameraPitch, 0);
-				ViewPoint = vec3.Lerp(ViewPoint,
+				ViewPoint = Vector3.Lerp(ViewPoint,
 					Game.Renderer.World3DRenderer.Get3DRenderPositionFromFloat3(fpos),
 					0.5f / deltaScale * 25f);
 
@@ -348,7 +348,7 @@ namespace OpenRA.Graphics
 			var map = worldRenderer.World.Map;
 			var w3dr = Game.Renderer.World3DRenderer;
 			var pos = map.CenterOfCell(cell);
-			var viewOffset = (int)(pos.Z * (w3dr.InverseCameraFront.y / w3dr.InverseCameraFront.z));
+			var viewOffset = (int)(pos.Z * (w3dr.InverseCameraFront.Y / w3dr.InverseCameraFront.Z));
 			return new WPos(dirZero.X, dirZero.Y + viewOffset, pos.Z);
 		}
 

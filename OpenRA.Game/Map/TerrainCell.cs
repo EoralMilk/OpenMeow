@@ -1,16 +1,76 @@
 ﻿using System;
 using System.Runtime.ConstrainedExecution;
-using GlmSharp;
+using System.Numerics;
 using OpenRA.Primitives;
 using TrueSync;
 
 namespace OpenRA
 {
+	public struct Vec3x3
+	{
+		public readonly Vector3 T;
+		public readonly Vector3 B;
+		public readonly Vector3 N;
+		public Vec3x3(Vector3 t, Vector3 b, Vector3 n)
+		{
+			T = t; B = b; N = n;
+		}
+
+		bool Equals(Vec3x3 other)
+		{
+			return T == other.T && B == other.B && N == other.N;
+		}
+
+		public override bool Equals(object obj)
+		{
+			return obj is Vec3x3 x && Equals(x);
+		}
+
+		public override int GetHashCode()
+		{
+			var hashCode = default(HashCode);
+			hashCode.Add(T.GetHashCode());
+			hashCode.Add(B.GetHashCode());
+			hashCode.Add(N.GetHashCode());
+			return hashCode.ToHashCode();
+		}
+
+		public static bool operator ==(in Vec3x3 left, in Vec3x3 right)
+		{
+			return left.Equals(right);
+		}
+
+		public static bool operator !=(in Vec3x3 left, in Vec3x3 right)
+		{
+			return !(left == right);
+		}
+
+		public static Vec3x3 operator +(in Vec3x3 left, in Vec3x3 right)
+		{
+			return new Vec3x3(left.T + right.T, left.B + right.B, left.N + right.N);
+		}
+
+		public static Vec3x3 operator *(in Vec3x3 left, in Vec3x3 right)
+		{
+			return new Vec3x3(left.T * right.T, left.B * right.B, left.N * right.N);
+		}
+
+		public static Vec3x3 operator *(in Vec3x3 left, in float right)
+		{
+			return new Vec3x3(left.T * right, left.B * right, left.N * right);
+		}
+
+		public static Vec3x3 operator *(in float left, in Vec3x3 right)
+		{
+			return new Vec3x3(left * right.T, left * right.B, left * right.N);
+		}
+	}
+
 	public struct TerrainVertex
 	{
 		public float3 Pos;
 		public WPos LogicPos;
-		public mat3 TBN;
+		public Vec3x3 TBN;
 		public float2 UV;
 		public float2 MapUV;
 		public float3 Color;
@@ -211,58 +271,58 @@ namespace OpenRA
 			AlmostFlat = true;
 		}
 
-		public static mat3 CalTBN(float3 a, float3 b, float3 c, float2 uva, float2 uvb, float2 uvc)
+		public static Vec3x3 CalTBN(float3 a, float3 b, float3 c, float2 uva, float2 uvb, float2 uvc)
 		{
 			return CalTBN(a, b, c, uva, uvb, uvc, CalNormal(a, b, c));
 		}
 
-		public static mat3 CalTBN(float3 a, float3 b, float3 c, float2 uva, float2 uvb, float2 uvc, vec3 nm)
+		public static Vec3x3 CalTBN(float3 a, float3 b, float3 c, float2 uva, float2 uvb, float2 uvc, Vector3 nm)
 		{
 			// positions
-			vec3 pos1 = World3DCoordinate.Float3toVec3(a);
-			vec3 pos2 = World3DCoordinate.Float3toVec3(b);
-			vec3 pos3 = World3DCoordinate.Float3toVec3(c);
+			Vector3 pos1 = World3DCoordinate.Float3toVec3(a);
+			Vector3 pos2 = World3DCoordinate.Float3toVec3(b);
+			Vector3 pos3 = World3DCoordinate.Float3toVec3(c);
 
 			// texture coordinates
-			vec2 uv1 = new vec2(uva.X, uva.Y);
-			vec2 uv2 = new vec2(uvb.X, uvb.Y);
-			vec2 uv3 = new vec2(uvc.X, uvc.Y);
+			Vector2 uv1 = new Vector2(uva.X, uva.Y);
+			Vector2 uv2 = new Vector2(uvb.X, uvb.Y);
+			Vector2 uv3 = new Vector2(uvc.X, uvc.Y);
 
-			vec3 edge1 = pos2 - pos1;
-			vec3 edge2 = pos3 - pos1;
-			vec2 deltaUV1 = uv2 - uv1;
-			vec2 deltaUV2 = uv3 - uv1;
+			Vector3 edge1 = pos2 - pos1;
+			Vector3 edge2 = pos3 - pos1;
+			Vector2 deltaUV1 = uv2 - uv1;
+			Vector2 deltaUV2 = uv3 - uv1;
 
-			float f = 1.0f / (deltaUV1.x * deltaUV2.y - deltaUV2.x * deltaUV1.y);
+			float f = 1.0f / (deltaUV1.X * deltaUV2.Y - deltaUV2.X * deltaUV1.Y);
 
-			vec3 tangent = vec3.Zero;
-			tangent.x = f * (deltaUV2.y * edge1.x - deltaUV1.y * edge2.x);
-			tangent.y = f * (deltaUV2.y * edge1.y - deltaUV1.y * edge2.y);
-			tangent.z = f * (deltaUV2.y * edge1.z - deltaUV1.y * edge2.z);
-			tangent = tangent.Normalized;
+			Vector3 tangent = Vector3.Zero;
+			tangent.X = f * (deltaUV2.Y * edge1.X - deltaUV1.Y * edge2.X);
+			tangent.Y = f * (deltaUV2.Y * edge1.Y - deltaUV1.Y * edge2.Y);
+			tangent.Z = f * (deltaUV2.Y * edge1.Z - deltaUV1.Y * edge2.Z);
+			tangent = Vector3.Normalize(tangent);
 
-			vec3 bitangent = vec3.Zero;
-			bitangent.x = f * (-deltaUV2.x * edge1.x + deltaUV1.x * edge2.x);
-			bitangent.y = f * (-deltaUV2.x * edge1.y + deltaUV1.x * edge2.y);
-			bitangent.z = f * (-deltaUV2.x * edge1.z + deltaUV1.x * edge2.z);
-			bitangent = bitangent.Normalized;
+			Vector3 bitangent = Vector3.Zero;
+			bitangent.X = f * (-deltaUV2.X * edge1.X + deltaUV1.X * edge2.X);
+			bitangent.Y = f * (-deltaUV2.X * edge1.Y + deltaUV1.X * edge2.Y);
+			bitangent.Z = f * (-deltaUV2.X * edge1.Z + deltaUV1.X * edge2.Z);
+			bitangent = Vector3.Normalize(bitangent);
 
-			return new mat3(tangent, bitangent, nm);
+			return new Vec3x3(tangent, bitangent, nm);
 		}
 
-		public static vec3 CalNormal(float3 a, float3 b, float3 c)
+		public static Vector3 CalNormal(float3 a, float3 b, float3 c)
 		{
-			var va = new vec3(a.X, a.Y, a.Z);
-			var vb = new vec3(b.X, b.Y, b.Z);
-			var vc = new vec3(c.X, c.Y, c.Z);
+			var va = new Vector3(a.X, a.Y, a.Z);
+			var vb = new Vector3(b.X, b.Y, b.Z);
+			var vc = new Vector3(c.X, c.Y, c.Z);
 			var ab = vb - va;
 			var ac = vc - va;
-			return vec3.Cross(ab, ac).Normalized;
+			return Vector3.Normalize(Vector3.Cross(ab, ac));
 		}
 
-		public static mat3 NormalizeTBN(mat3 tbn)
+		public static Vec3x3 NormalizeTBN(Vec3x3 tbn)
 		{
-			return new mat3(tbn.Column0.NormalizedSafe, tbn.Column1.NormalizedSafe, tbn.Column2.NormalizedSafe);
+			return new Vec3x3(Vector3.Normalize(tbn.T), Vector3.Normalize(tbn.B), Vector3.Normalize(tbn.N));
 		}
 
 		public static TSVector CalLogicNml(WPos a, WPos b, WPos c)

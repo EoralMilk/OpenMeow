@@ -11,8 +11,7 @@
 
 using System;
 using System.Collections.Generic;
-using System.Xml.Linq;
-using GlmSharp;
+using System.Numerics;
 using OpenRA.Primitives;
 using static OpenRA.Graphics.TerrainSpriteLayer;
 
@@ -205,7 +204,7 @@ namespace OpenRA.Graphics
 			}
 		}
 
-		public void DrawTileAdditonSprite(Sprite s, PaletteReference pal, in WPos wPos, in vec3 viewOffset, float scale, in float3 tint, float alpha, Map map, float rotation = 0f)
+		public void DrawTileAdditonSprite(Sprite s, PaletteReference pal, in WPos wPos, in Vector3 viewOffset, float scale, in float3 tint, float alpha, Map map, float rotation = 0f)
 		{
 			var samplers = SetRenderStateForSprite(s);
 
@@ -282,18 +281,18 @@ namespace OpenRA.Graphics
 		{
 			Shader.SetCommonParaments(w3dr, sunCamera);
 			Shader.SetVec("CameraInvFront",
-				Game.Renderer.World3DRenderer.InverseCameraFront.x,
-				Game.Renderer.World3DRenderer.InverseCameraFront.y,
-				Game.Renderer.World3DRenderer.InverseCameraFront.z);
+				Game.Renderer.World3DRenderer.InverseCameraFront.X,
+				Game.Renderer.World3DRenderer.InverseCameraFront.Y,
+				Game.Renderer.World3DRenderer.InverseCameraFront.Z);
 		}
 
 		public void SetRenderShroud(bool flag)
 		{
 			Shader.SetBool("RenderShroud", flag);
 			Shader.SetVec("CameraInvFront",
-				Game.Renderer.World3DRenderer.InverseCameraFront.x,
-				Game.Renderer.World3DRenderer.InverseCameraFront.y,
-				Game.Renderer.World3DRenderer.InverseCameraFront.z);
+				Game.Renderer.World3DRenderer.InverseCameraFront.X,
+				Game.Renderer.World3DRenderer.InverseCameraFront.Y,
+				Game.Renderer.World3DRenderer.InverseCameraFront.Z);
 		}
 
 		public void SetShadowParams()

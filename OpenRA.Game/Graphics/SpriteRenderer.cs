@@ -13,7 +13,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Net;
-using GlmSharp;
+using System.Numerics;
 using OpenRA.Primitives;
 
 namespace OpenRA.Graphics
@@ -167,39 +167,39 @@ namespace OpenRA.Graphics
 		}
 
 		// draw sprite with wpos
-		public void DrawCardSprite(Sprite s, float pal, in WPos wPos, in vec3 viewOffset, float scale, in float3 tint, float alpha, float rotation = 0f)
+		public void DrawCardSprite(Sprite s, float pal, in WPos wPos, in Vector3 viewOffset, float scale, in float3 tint, float alpha, float rotation = 0f)
 		{
 			var samplers = SetRenderStateForSprite(s);
 			nv += Util.FastCreateCard(vertices, wPos, viewOffset, s, samplers, pal, scale, tint, alpha, nv, rotation);
 		}
 
-		public void DrawCardSprite(Sprite s, PaletteReference pal, in WPos wPos, in vec3 viewOffset, float scale, in float3 tint, float alpha, float rotation = 0f)
+		public void DrawCardSprite(Sprite s, PaletteReference pal, in WPos wPos, in Vector3 viewOffset, float scale, in float3 tint, float alpha, float rotation = 0f)
 		{
 			var samplers = SetRenderStateForSprite(s);
 			nv += Util.FastCreateCard(vertices, wPos, viewOffset, s, samplers, ResolveTextureIndex(s, pal), scale, tint, alpha, nv, rotation);
 		}
 
-		public void DrawPlaneSprite(Sprite s, PaletteReference pal, in WPos wPos, in  vec3 viewOffset, float scale, in float3 tint, float alpha, float rotation = 0f)
+		public void DrawPlaneSprite(Sprite s, PaletteReference pal, in WPos wPos, in Vector3 viewOffset, float scale, in float3 tint, float alpha, float rotation = 0f)
 		{
 			var samplers = SetRenderStateForSprite(s);
 			Util.FastCreatePlane(vertices, wPos, viewOffset, s, samplers, ResolveTextureIndex(s, pal), scale, tint, alpha, nv, rotation);
 			nv += 6;
 		}
 
-		public void DrawFloatBoardSprite(Sprite s, PaletteReference pal, in WPos wPos, in vec3 viewOffset, float scale, in float3 tint, float alpha, float rotation = 0f)
+		public void DrawFloatBoardSprite(Sprite s, PaletteReference pal, in WPos wPos, in Vector3 viewOffset, float scale, in float3 tint, float alpha, float rotation = 0f)
 		{
 			var samplers = SetRenderStateForSprite(s);
 			nv += Util.FastCreateFloatBoard(vertices, wPos, viewOffset, s, samplers, ResolveTextureIndex(s, pal), scale, tint, alpha, nv, rotation);
 		}
 
-		public void DrawBoardSprite(Sprite s, PaletteReference pal, in WPos wPos, in vec3 viewOffset, float scale, in float3 tint, float alpha, float rotation = 0f)
+		public void DrawBoardSprite(Sprite s, PaletteReference pal, in WPos wPos, in Vector3 viewOffset, float scale, in float3 tint, float alpha, float rotation = 0f)
 		{
 			var samplers = SetRenderStateForSprite(s);
 			Util.FastCreateBoard(vertices, wPos, viewOffset, s, samplers, ResolveTextureIndex(s, pal), scale, tint, alpha, nv, rotation);
 			nv += 6;
 		}
 
-		public void DrawNmlDirBoardSprite(Sprite s, PaletteReference pal, in WPos wPos, in vec3 viewOffset, in vec3 left, in vec3 up, float scale, in float3 tint, float alpha, float rotation = 0f)
+		public void DrawNmlDirBoardSprite(Sprite s, PaletteReference pal, in WPos wPos, in Vector3 viewOffset, in Vector3 left, in Vector3 up, float scale, in float3 tint, float alpha, float rotation = 0f)
 		{
 			var samplers = SetRenderStateForSprite(s);
 			Util.FastCreateNormalBoard(vertices, wPos, viewOffset, left, up, s, samplers, ResolveTextureIndex(s, pal), scale, tint, alpha, nv, rotation);
@@ -221,7 +221,7 @@ namespace OpenRA.Graphics
 			nv += 6;
 		}
 
-		public void DrawTileOverlaySprite(Sprite s, PaletteReference pal, in WPos wPos, in vec3 viewOffset, float scale, in float3 tint, float alpha, Map map, float rotation = 0f)
+		public void DrawTileOverlaySprite(Sprite s, PaletteReference pal, in WPos wPos, in Vector3 viewOffset, float scale, in float3 tint, float alpha, Map map, float rotation = 0f)
 		{
 			var samplers = SetRenderStateForSprite(s);
 
@@ -237,7 +237,7 @@ namespace OpenRA.Graphics
 			nv += vv.Length;
 		}
 
-		public void DrawCellSprite(Sprite s, PaletteReference pal, in WPos wPos, in vec3 viewOffset, float scale, in float3 tint, float alpha, Map map, float rotation = 0f)
+		public void DrawCellSprite(Sprite s, PaletteReference pal, in WPos wPos, in Vector3 viewOffset, float scale, in float3 tint, float alpha, Map map, float rotation = 0f)
 		{
 			var cPos = map.CellContaining(wPos);
 			if (!map.CellInfos.Contains(cPos))
@@ -344,9 +344,8 @@ namespace OpenRA.Graphics
 			{
 				Shader.SetBool("hasCamera", true);
 				Shader.SetBool("renderScreen", false);
-				Shader.SetMatrix("projection", Game.Renderer.World3DRenderer.Projection.Values1D);
-				Shader.SetMatrix("view", Game.Renderer.World3DRenderer.View.Values1D);
-				//shader.SetVec("viewPos", Game.Renderer.Standalone3DRenderer.CameraPos.x, Game.Renderer.Standalone3DRenderer.CameraPos.y, Game.Renderer.Standalone3DRenderer.CameraPos.z);
+				Shader.SetMatrix("projection", NumericUtil.MatRenderValues(Game.Renderer.World3DRenderer.Projection));
+				Shader.SetMatrix("view", NumericUtil.MatRenderValues(Game.Renderer.World3DRenderer.View));
 			}
 		}
 

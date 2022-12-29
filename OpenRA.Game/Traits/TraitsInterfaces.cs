@@ -13,7 +13,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
-using GlmSharp;
+using System.Numerics;
 using OpenRA.Activities;
 using OpenRA.FileSystem;
 using OpenRA.GameRules;
@@ -333,7 +333,7 @@ namespace OpenRA.Traits
 		TSMatrix4x4 GetMatrixFromBoneId(int id);
 		TSQuaternion GetQuatFromBoneId(int id);
 
-		mat4 GetRenderMatrixFromBoneId(int id);
+		Matrix4x4 GetRenderMatrixFromBoneId(int id);
 	}
 
 	public interface IBlendTreeHandler

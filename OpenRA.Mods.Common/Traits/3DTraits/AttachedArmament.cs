@@ -12,14 +12,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using GlmSharp;
-using OpenRA.GameRules;
-using OpenRA.Graphics;
-using OpenRA.Mods.Common.Graphics;
-using OpenRA.Mods.Common.Projectiles;
-using OpenRA.Mods.Common.Traits.Render;
 using OpenRA.Mods.Common.Traits.Trait3D;
-using OpenRA.Primitives;
 using OpenRA.Traits;
 using TrueSync;
 
@@ -38,10 +31,7 @@ namespace OpenRA.Mods.Common.Traits
 	public class AttachedArmament : Armament
 	{
 		readonly WithSkeleton withSkeleton;
-		new TurretAttachment attachTurret;
-
-		readonly bool hasFacingTolerance;
-		readonly List<(int Ticks, int Burst, Action<int> Func)> delayedActions = new List<(int, int, Action<int>)>();
+		TurretAttachment attachTurret;
 
 		readonly int[] boneIds;
 		public AttachedArmament(Actor self, AttachedArmamentInfo info)
@@ -129,35 +119,35 @@ namespace OpenRA.Mods.Common.Traits
 		}
 
 		public static int FrontX = 0, FrontY = 1, FrontZ = 0;
-		DebugLineRenderable DebugDrawLine(TSMatrix4x4 m, Color color, bool mat)
-		{
-			var startpos = Transformation.MatPosition(m);
-			var start = World3DCoordinate.TSVec3ToVec3(startpos);
-			var end = new vec3();
-			if (mat)
-			{
-				end = new mat3(World3DCoordinate.TSMatrix4x4ToMat4(m)) * (new vec3(FrontX, FrontY, FrontZ) * 5) + start;
-			}
-			else
-			{
-				end = (new quat(World3DCoordinate.TSMatrix4x4ToMat4(Transformation.MatWithOutScale(m)))).Normalized * (new vec3(FrontX, FrontY, FrontZ) * 5) + start;
-			}
+		//DebugLineRenderable DebugDrawLine(TSMatrix4x4 m, Color color, bool mat)
+		//{
+		//	var startpos = Transformation.MatPosition(m);
+		//	var start = World3DCoordinate.TSVec3ToVec3(startpos);
+		//	var end = new vec3();
+		//	if (mat)
+		//	{
+		//		end = new mat3(World3DCoordinate.TSMatrix4x4ToMat4()) * (new vec3(FrontX, FrontY, FrontZ) * 5) + start;
+		//	}
+		//	else
+		//	{
+		//		end = (new quat(World3DCoordinate.TSMatrix4x4ToMat4(Transformation.MatWithOutScale(m)))).Normalized * (new vec3(FrontX, FrontY, FrontZ) * 5) + start;
+		//	}
 
-			return new DebugLineRenderable(World3DCoordinate.TSVec3ToWPos(startpos), 0,
-				World3DCoordinate.Vec3toFloat3(start),
-				World3DCoordinate.Vec3toFloat3(end),
-				new WDist(32), color, BlendMode.None);
-		}
+		//	return new DebugLineRenderable(World3DCoordinate.TSVec3ToWPos(startpos), 0,
+		//		World3DCoordinate.Vec3toFloat3(start),
+		//		World3DCoordinate.Vec3toFloat3(end),
+		//		new WDist(32), color, BlendMode.None);
+		//}
 
-		public DebugLineRenderable DebugDraw1()
-		{
-			return DebugDrawLine(withSkeleton.GetMatrixFromBoneId(boneIds[currentBarrel % boneIds.Length]), Color.Azure, true);
+		//public DebugLineRenderable DebugDraw1()
+		//{
+		//	return DebugDrawLine(withSkeleton.GetMatrixFromBoneId(boneIds[currentBarrel % boneIds.Length]), Color.Azure, true);
 
-		}
+		//}
 
-		public DebugLineRenderable DebugDraw2()
-		{
-			return DebugDrawLine(withSkeleton.GetMatrixFromBoneId(boneIds[currentBarrel % boneIds.Length]), Color.Red, false);
-		}
+		//public DebugLineRenderable DebugDraw2()
+		//{
+		//	return DebugDrawLine(withSkeleton.GetMatrixFromBoneId(boneIds[currentBarrel % boneIds.Length]), Color.Red, false);
+		//}
 	}
 }

@@ -10,6 +10,7 @@
 #endregion
 
 using System;
+using System.Numerics;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -327,7 +328,7 @@ namespace OpenRA
 
 		public void SetLightParams(IShader shader, World3DRenderer w3dr)
 		{
-			shader.SetVec("dirLight.direction", w3dr.SunDir.x, w3dr.SunDir.y, w3dr.SunDir.z);
+			shader.SetVec("dirLight.direction", w3dr.SunDir.X, w3dr.SunDir.Y, w3dr.SunDir.Z);
 			shader.SetVec("dirLight.ambient", w3dr.AmbientColor.X, w3dr.AmbientColor.Y, w3dr.AmbientColor.Z);
 			shader.SetVec("dirLight.diffuse", w3dr.SunColor.X, w3dr.SunColor.Y, w3dr.SunColor.Z);
 			shader.SetVec("dirLight.specular", w3dr.SunSpecularColor.X, w3dr.SunSpecularColor.Y, w3dr.SunSpecularColor.Z);
@@ -337,9 +338,9 @@ namespace OpenRA
 		{
 			shader.SetTexture("ShadowDepthTexture", worldShadowDepthTexture);
 			var sunVP = w3dr.SunProjection * w3dr.SunView;
-			var invCameraVP = (w3dr.Projection * w3dr.View).Inverse;
-			shader.SetMatrix("SunVP", sunVP.Values1D);
-			shader.SetMatrix("InvCameraVP", invCameraVP.Values1D);
+			Matrix4x4.Invert(w3dr.Projection * w3dr.View, out var invCameraVP);
+			shader.SetMatrix("SunVP", NumericUtil.MatRenderValues(sunVP));
+			shader.SetMatrix("InvCameraVP", NumericUtil.MatRenderValues(invCameraVP));
 			shader.SetFloat("ShadowBias", w3dr.FrameShadowBias);
 			shader.SetFloat("AmbientIntencity", w3dr.AmbientIntencity);
 			shader.SetVec("ViewPort", worldBufferSize.Width, worldBufferSize.Height);

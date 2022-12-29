@@ -19,7 +19,6 @@ using System.Reflection;
 using System.Runtime.Intrinsics.X86;
 using System.Text;
 using System.Text.RegularExpressions;
-using GlmSharp;
 using OpenRA.Effects;
 using OpenRA.FileFormats;
 using OpenRA.FileSystem;

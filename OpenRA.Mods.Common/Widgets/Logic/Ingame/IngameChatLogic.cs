@@ -160,13 +160,13 @@ namespace OpenRA.Mods.Common.Widgets.Logic
 								new WPos(posx, posy, 0), size, layer, alpha);
 						}
 					}
-					else if (chatText.Text.StartsWith("cr-"))
-					{
-						var ss = chatText.Text;
-						var deg = float.Parse(ss.Substring(3));
-						var rad = deg / 180f * MathF.PI;
-						World3DRenderer.CameraRotTest = rad;
-					}
+					//else if (chatText.Text.StartsWith("cr-"))
+					//{
+					//	var ss = chatText.Text;
+					//	var deg = float.Parse(ss.Substring(3));
+					//	var rad = deg / 180f * MathF.PI;
+					//	World3DRenderer.CameraRotTest = rad;
+					//}
 
 					if (!chatText.Text.StartsWith("/", StringComparison.Ordinal))
 					{

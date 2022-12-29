@@ -1,8 +1,8 @@
-﻿using GlmSharp;
-using OpenRA.FileFormats;
+﻿using OpenRA.FileFormats;
 using OpenRA.Graphics;
 using OpenRA.Primitives;
 using System;
+using System.Numerics;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -92,7 +92,7 @@ namespace OpenRA
 		public static int MiniCellPix => TextureSize / SizeLimit;
 		public static float2 Range { get; private set; }
 
-		public static vec3 ViewOffset;
+		public static Vector3 ViewOffset;
 
 		public readonly Map Map;
 		public readonly int2 TopLeft;
@@ -772,13 +772,13 @@ namespace OpenRA
 			ViewOffset = Game.Renderer.World3DRenderer.InverseCameraFrontMeterPerWDist * (-17);
 
 			TerrainShader.SetVec("ViewOffset",
-				ViewOffset.x,
-				ViewOffset.y,
-				ViewOffset.z);
+				ViewOffset.X,
+				ViewOffset.Y,
+				ViewOffset.Z);
 			TerrainShader.SetVec("CameraInvFront",
-				Game.Renderer.World3DRenderer.InverseCameraFront.x,
-				Game.Renderer.World3DRenderer.InverseCameraFront.y,
-				Game.Renderer.World3DRenderer.InverseCameraFront.z);
+				Game.Renderer.World3DRenderer.InverseCameraFront.X,
+				Game.Renderer.World3DRenderer.InverseCameraFront.Y,
+				Game.Renderer.World3DRenderer.InverseCameraFront.Z);
 		}
 
 		public static void SetShadowParams(in World3DRenderer w3dr)

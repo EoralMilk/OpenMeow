@@ -1,19 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using GlmSharp;
-using OpenRA.Graphics;
-using OpenRA.Mods.Common.Graphics;
-using OpenRA.Mods.Common.Traits.Trait3D;
+﻿using System.Linq;
 using OpenRA.Mods.Common.Traits;
-using OpenRA.Primitives;
 using OpenRA.Traits;
-using TrueSync;
 using OpenRA.GameRules;
-using TagLib.Ape;
-using static OpenRA.Network.Session;
 
 namespace OpenRA.Meow.RPG.Mechanics
 {

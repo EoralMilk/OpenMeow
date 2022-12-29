@@ -10,7 +10,7 @@
 #endregion
 
 using System;
-using GlmSharp;
+using System.Numerics;
 using OpenRA.Graphics;
 using TrueSync;
 
@@ -73,11 +73,11 @@ namespace OpenRA
 			return new TSQuaternion((FP)rot.x / (FP)1024, (FP)rot.y / (FP)1024, (FP)rot.z / (FP)1024, (FP)rot.w / (FP)1024);
 		}
 
-		public quat ToRenderQuat()
+		public Quaternion ToRenderQuat()
 		{
 			WRot rot = new WRot(Pitch - new WAngle(256), Roll, -Yaw);
 
-			return new quat((float)rot.x / 1024, (float)rot.y / 1024, (float)rot.z / 1024, (float)rot.w / 1024);
+			return new Quaternion((float)rot.x / 1024, (float)rot.y / 1024, (float)rot.z / 1024, (float)rot.w / 1024);
 		}
 
 		public static WRot FromBoneQuat(in TSQuaternion quat)

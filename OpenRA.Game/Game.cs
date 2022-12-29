@@ -682,7 +682,7 @@ namespace OpenRA
 				// Prepare renderables (i.e. render models) before calling BeginFrame
 				using (new PerfSample("render_prepare"))
 				{
-					//Renderer.WorldVxlRenderer.BeginFrame();
+					// Renderer.WorldVxlRenderer.BeginFrame();
 
 					// World rendering is disabled while the loading screen is displayed
 					if (worldRenderer != null && !worldRenderer.World.IsLoadingGameSave)
@@ -692,7 +692,7 @@ namespace OpenRA
 					}
 
 					Ui.PrepareRenderables();
-					//Renderer.WorldVxlRenderer.EndFrame();
+					// Renderer.WorldVxlRenderer.EndFrame();
 				}
 
 				// worldRenderer is null during the initial install/download screen

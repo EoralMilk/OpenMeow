@@ -10,6 +10,7 @@
 #endregion
 
 using System;
+using System.Numerics;
 using OpenRA.Primitives;
 
 namespace OpenRA.Graphics
@@ -39,7 +40,7 @@ namespace OpenRA.Graphics
 			Parent.DrawSprite(s, 0, location, scale, rotation);
 		}
 
-		public void DrawCardSprite(Sprite s, in WPos wpos, in GlmSharp.vec3 offset, float scale, in float3 tint, float alpha, float rotation = 0f)
+		public void DrawCardSprite(Sprite s, in WPos wpos, in Vector3 offset, float scale, in float3 tint, float alpha, float rotation = 0f)
 		{
 			if (s.Channel != TextureChannel.RGBA)
 				throw new InvalidOperationException("DrawRGBASprite requires a RGBA sprite.");

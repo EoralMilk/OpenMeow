@@ -172,7 +172,7 @@ namespace OpenRA.Mods.Common.Traits
 		int ticksSinceLastShot;
 		protected int currentBarrel;
 		protected int barrelCount;
-		readonly bool hasFacingTolerance;
+        protected readonly bool hasFacingTolerance;
 		readonly int[] boneIds;
 		readonly List<(int Ticks, int Burst, Action<int> Func)> delayedActions = new List<(int, int, Action<int>)>();
 

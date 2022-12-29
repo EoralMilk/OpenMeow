@@ -1,5 +1,6 @@
 ﻿using System;
-using GlmSharp;
+using System.Numerics;
+using OpenRA.Primitives;
 using TrueSync;
 
 namespace OpenRA.Graphics
@@ -7,10 +8,10 @@ namespace OpenRA.Graphics
 
 	public struct DualQuaternion
 	{
-		public quat Real;
-		public quat Dual;
+		public Quaternion Real;
+		public Quaternion Dual;
 
-		public DualQuaternion(quat real, quat dual)
+		public DualQuaternion(Quaternion real, Quaternion dual)
 		{
 			Real = real;
 			Dual = dual;
@@ -18,8 +19,8 @@ namespace OpenRA.Graphics
 
 		public static DualQuaternion CombineDualQuaternions(in DualQuaternion a, in DualQuaternion b)
 		{
-			quat real = a.Real * b.Real;
-			quat dual = (a.Real * b.Dual) + (a.Dual * b.Real);
+			Quaternion real = a.Real * b.Real;
+			Quaternion dual = (a.Real * b.Dual) + (a.Dual * b.Real);
 			return new DualQuaternion(real, dual);
 		}
 	}
@@ -27,9 +28,9 @@ namespace OpenRA.Graphics
 	public struct DQTransform
 	{
 		public DualQuaternion DQ;
-		public vec3 Scale;
+		public Vector3 Scale;
 
-		public DQTransform(DualQuaternion dq, vec3 scale)
+		public DQTransform(DualQuaternion dq, Vector3 scale)
 		{
 			DQ = dq;
 			Scale = scale;
@@ -164,12 +165,10 @@ namespace OpenRA.Graphics
 			}
 		}
 
-		public quat DQrot => new quat((float)Rotation.x, (float)Rotation.y, (float)Rotation.z, (float)Rotation.w);
-		public quat DQtrans => new quat((float)Position.x, (float)Position.y, (float)Position.z, 0.0f) * DQrot * 0.5f;
-
-		public DualQuaternion DQ => new DualQuaternion(DQrot, DQtrans);
-
-		public DQTransform DQT => new DQTransform(DQ, new vec3((float)Scale.x, (float)Scale.y, (float)Scale.z));
+		// public quat DQrot => new quat((float)Rotation.x, (float)Rotation.y, (float)Rotation.z, (float)Rotation.w);
+		// public quat DQtrans => new quat((float)Position.x, (float)Position.y, (float)Position.z, 0.0f) * DQrot * 0.5f;
+		// public DualQuaternion DQ => new DualQuaternion(DQrot, DQtrans);
+		// public DQTransform DQT => new DQTransform(DQ, new vec3((float)Scale.x, (float)Scale.y, (float)Scale.z));
 
 		public static Transformation Identity { get { return new Transformation(TSVector.one, TSQuaternion.identity, TSVector.zero); } }
 
@@ -207,8 +206,8 @@ namespace OpenRA.Graphics
 			rotation = new TSQuaternion(dqt.DQ.Real);
 			rotationUpdated = true;
 
-			var v = (2.0f * dqt.DQ.Dual) * new quat(-dqt.DQ.Real.x, -dqt.DQ.Real.y, -dqt.DQ.Real.z, dqt.DQ.Real.w);
-			position = new TSVector(v.x, v.y, v.z);
+			var v = NumericUtil.QuaternionMul(2.0f,dqt.DQ.Dual) * new Quaternion(-dqt.DQ.Real.X, -dqt.DQ.Real.Y, -dqt.DQ.Real.Z, dqt.DQ.Real.W);
+			position = new TSVector(v.X, v.Y, v.Z);
 			positionUpdated = true;
 
 			matrix = TSMatrix4x4.Identity;
@@ -225,9 +224,9 @@ namespace OpenRA.Graphics
 			return new TSVector(matrix.Column3.x, matrix.Column3.y, matrix.Column3.z);
 		}
 
-		public static vec3 MatPosition(in mat4 matrix)
+		public static Vector3 MatPosition(in Matrix4x4 matrix)
 		{
-			return new vec3(matrix.Column3.x, matrix.Column3.y, matrix.Column3.z);
+			return matrix.Translation;
 		}
 
 		public static TSVector MatScale(in TSMatrix4x4 matrix)
@@ -235,9 +234,9 @@ namespace OpenRA.Graphics
 			return new TSVector(matrix.Column0.xyz.magnitude, matrix.Column1.xyz.magnitude, matrix.Column2.xyz.magnitude);
 		}
 
-		public static vec3 MatScale(in mat4 matrix)
+		public static Vector3 MatScale(in Matrix4x4 matrix)
 		{
-			return new vec3(matrix.Column0.xyz.Length, matrix.Column1.xyz.Length, matrix.Column2.xyz.Length);
+			return new Vector3(NumericUtil.Column0xyz(matrix).Length(), NumericUtil.Column1xyz(matrix).Length(), NumericUtil.Column2xyz(matrix).Length());
 		}
 
 		public static TSMatrix4x4 MatWithOutScale(TSMatrix4x4 matrix)
@@ -249,21 +248,27 @@ namespace OpenRA.Graphics
 			return matrix;
 		}
 
-		public static mat4 MatWithOutScale(mat4 matrix)
+		public static Matrix4x4 MatWithOutScale(in Matrix4x4 matrix)
 		{
-			var s = new vec4(MatScale(matrix), 1);
-			matrix.Column0 = matrix.Column0 / s;
-			matrix.Column1 = matrix.Column1 / s;
-			matrix.Column2 = matrix.Column2 / s;
-			return matrix;
+			var s = MatScale(matrix);
+			return new Matrix4x4(
+				matrix.M11 / s.X, matrix.M12 / s.Y, matrix.M13 / s.Z, matrix.M14,
+				matrix.M21 / s.X, matrix.M22 / s.Y, matrix.M23 / s.Z, matrix.M24,
+				matrix.M31 / s.X, matrix.M32 / s.Y, matrix.M33 / s.Z, matrix.M34,
+				matrix.M41, matrix.M42, matrix.M43, matrix.M44);
 		}
 
-		public static mat4 MatWithNewScale(mat4 matrix, float scale)
+		public static Matrix4x4 MatWithNewScale(Matrix4x4 matrix, float scale)
 		{
-			matrix.Column0 = matrix.Column0.Normalized * scale;
-			matrix.Column1 = matrix.Column1.Normalized * scale;
-			matrix.Column2 = matrix.Column2.Normalized * scale;
-			return matrix;
+			var c1 = Vector3.Normalize(NumericUtil.Column0xyz(matrix)) * scale;
+			var c2 = Vector3.Normalize(NumericUtil.Column1xyz(matrix)) * scale;
+			var c3 = Vector3.Normalize(NumericUtil.Column2xyz(matrix)) * scale;
+
+			return new Matrix4x4(
+				c1.X, c2.X, c3.X, matrix.M14,
+				c1.Y, c2.Y, c3.Y, matrix.M24,
+				c1.Z, c2.Z, c3.Z, matrix.M34,
+				matrix.M41, matrix.M42, matrix.M43, matrix.M44);
 		}
 
 		public static TSMatrix4x4 MatWithNewScale(TSMatrix4x4 matrix, FP scale)
@@ -275,12 +280,17 @@ namespace OpenRA.Graphics
 			return matrix;
 		}
 
-		public static mat4 MatWithNewScale(mat4 matrix, vec3 scale)
+		public static Matrix4x4 MatWithNewScale(Matrix4x4 matrix, Vector3 scale)
 		{
-			matrix.Column0 = matrix.Column0.Normalized * scale.x;
-			matrix.Column1 = matrix.Column1.Normalized * scale.y;
-			matrix.Column2 = matrix.Column2.Normalized * scale.z;
-			return matrix;
+			var c1 = Vector3.Normalize(NumericUtil.Column0xyz(matrix)) * scale.X;
+			var c2 = Vector3.Normalize(NumericUtil.Column1xyz(matrix)) * scale.Y;
+			var c3 = Vector3.Normalize(NumericUtil.Column2xyz(matrix)) * scale.Z;
+
+			return new Matrix4x4(
+				c1.X, c2.X, c3.X, matrix.M14,
+				c1.Y, c2.Y, c3.Y, matrix.M24,
+				c1.Z, c2.Z, c3.Z, matrix.M34,
+				matrix.M41, matrix.M42, matrix.M43, matrix.M44);
 		}
 
 		public static TSMatrix4x4 MatWithNewScale(TSMatrix4x4 matrix, TSVector scale)
@@ -363,11 +373,6 @@ namespace OpenRA.Graphics
 		{
 			return LerpMatrix(new Transformation(a), new Transformation(b), t);
 		}
-
-		//public static TSMatrix4x4 LerpMatrix(in TSMatrix4x4 a, in TSMatrix4x4 b, in FP t)
-		//{
-		//	return a + (b - a).MulNum(t);
-		//}
 
 		public static TSMatrix4x4 Mat4by(in Transformation trans)
 		{

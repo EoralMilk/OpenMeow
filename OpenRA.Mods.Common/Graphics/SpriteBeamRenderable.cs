@@ -9,7 +9,7 @@
  */
 #endregion
 
-using GlmSharp;
+using System.Numerics;
 using OpenRA.Graphics;
 using OpenRA.Primitives;
 
@@ -79,13 +79,13 @@ namespace OpenRA.Mods.Common.Graphics
 
 		public static float3 CalSpriteDir(float3 start, float3 end, float width)
 		{
-			var dir = World3DCoordinate.Float3toVec3(end - start).Normalized;
+			var dir = Vector3.Normalize(World3DCoordinate.Float3toVec3(end - start));
 			var cam = Game.Renderer.World3DRenderer.InverseCameraFront;
-			vec3 cross;
+			Vector3 cross;
 			if (dir == cam)
 				cross = Game.Renderer.World3DRenderer.CameraUp;
 			else
-				cross = vec3.Cross(cam, dir).Normalized;
+				cross = Vector3.Normalize(Vector3.Cross(cam, dir));
 			var widthOffset = World3DCoordinate.Vec3toFloat3(cross * (width / 2));
 
 			return widthOffset;

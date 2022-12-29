@@ -10,9 +10,7 @@
 #endregion
 
 using System;
-using System.Dynamic;
-using System.Security.Cryptography.X509Certificates;
-using GlmSharp;
+using System.Numerics;
 using OpenRA.FileFormats;
 using OpenRA.Primitives;
 
@@ -23,9 +21,9 @@ namespace OpenRA.Graphics
 		// yes, our channel order is nuts.
 		static readonly int[] ChannelMasks = { 2, 1, 0, 3 };
 
-		//Meow TODO: use the "rotation" on our graphic 
+		// Meow TODO: use the "rotation" on our graphic 
 		public static int FastCreateCard(Vertex[] vertices,
-			in WPos inPos, in vec3 viewOffset,
+			in WPos inPos, in Vector3 viewOffset,
 			Sprite r, int2 samplers, float paletteTextureIndex, float scale,
 			in float3 tint, float alpha, int nv, float rotation = 0f)
 		{
@@ -56,15 +54,10 @@ namespace OpenRA.Graphics
 			// sprite only has horizental part
 			if (topBottom.X < 0)
 			{
-				//float3 leftBack = new float3(position.x + leftRight.X, position.y - topBottom.X / Game.Renderer.World3DRenderer.CosCameraPitch, position.z);
-				//float3 rightBack = new float3(position.x + leftRight.Y, leftBack.Y, position.z);
-				//float3 leftFront = new float3(leftBack.X, position.y + topBottom.Y / Game.Renderer.World3DRenderer.CosCameraPitch, position.z);
-				//float3 rightFront = new float3(rightBack.X, leftFront.Y, position.z);
-
-				float3 leftBack = new float3(position.x + scale * r.leftBack.X, position.y + scale * r.leftBack.Y, position.z);
-				float3 rightBack = new float3(position.x + leftRight.Y, leftBack.Y, position.z);
-				float3 leftFront = new float3(leftBack.X, position.y + scale * r.leftFront.Y, position.z);
-				float3 rightFront = new float3(rightBack.X, leftFront.Y, position.z);
+				float3 leftBack = new float3(position.X + scale * r.leftBack.X, position.Y + scale * r.leftBack.Y, position.Z);
+				float3 rightBack = new float3(position.X + leftRight.Y, leftBack.Y, position.Z);
+				float3 leftFront = new float3(leftBack.X, position.Y + scale * r.leftFront.Y, position.Z);
+				float3 rightFront = new float3(rightBack.X, leftFront.Y, position.Z);
 
 				float sl = 0;
 				float st = 0;
@@ -97,17 +90,13 @@ namespace OpenRA.Graphics
 
 				return 6;
 			}
-			else if (topBottom.Y < 0) // sprite only has vertical part
+			else if (topBottom.Y < 0)
 			{
-				//float3 leftTop = new float3(position.x + leftRight.X, position.y, position.z + (topBottom.X) / Game.Renderer.World3DRenderer.SinCameraPitch);
-				//float3 rightTop = new float3(position.x + leftRight.Y, position.y, leftTop.Z);
-				//float3 leftBottom = new float3(leftTop.X, position.y, position.z - (topBottom.Y) / Game.Renderer.World3DRenderer.SinCameraPitch);
-				//float3 rightBottom = new float3(rightTop.X, position.y, leftBottom.Z);
-
-				float3 leftTop = new float3(position.x + scale * r.leftTop.X, position.y, position.z + scale * r.leftTop.Z);
-				float3 rightTop = new float3(position.x + leftRight.Y, position.y, leftTop.Z);
-				float3 leftBottom = new float3(leftTop.X, position.y, position.z + scale * r.leftBottom.Z);
-				float3 rightBottom = new float3(rightTop.X, position.y, leftBottom.Z);
+				// sprite only has vertical part
+				float3 leftTop = new float3(position.X + scale * r.leftTop.X, position.Y, position.Z + scale * r.leftTop.Z);
+				float3 rightTop = new float3(position.X + leftRight.Y, position.Y, leftTop.Z);
+				float3 leftBottom = new float3(leftTop.X, position.Y, position.Z + scale * r.leftBottom.Z);
+				float3 rightBottom = new float3(rightTop.X, position.Y, leftBottom.Z);
 
 				float sl = 0;
 				float st = 0;
@@ -142,12 +131,12 @@ namespace OpenRA.Graphics
 			}
 			else
 			{
-				float3 leftTop = new float3(position.x + scale * r.leftTop.X, position.y, position.z + scale * r.leftTop.Z);
-				float3 rightTop = new float3(position.x + leftRight.Y, position.y, leftTop.Z);
-				float3 leftBase = new float3(leftTop.X, position.y, position.z);
-				float3 rightBase = new float3(rightTop.X, position.y, position.z);
-				float3 leftFront = new float3(leftTop.X, position.y + scale * r.leftFront.Y, position.z);
-				float3 rightFront = new float3(rightTop.X, leftFront.Y, position.z);
+				float3 leftTop = new float3(position.X + scale * r.leftTop.X, position.Y, position.Z + scale * r.leftTop.Z);
+				float3 rightTop = new float3(position.X + leftRight.Y, position.Y, leftTop.Z);
+				float3 leftBase = new float3(leftTop.X, position.Y, position.Z);
+				float3 rightBase = new float3(rightTop.X, position.Y, position.Z);
+				float3 leftFront = new float3(leftTop.X, position.Y + scale * r.leftFront.Y, position.Z);
+				float3 rightFront = new float3(rightTop.X, leftFront.Y, position.Z);
 
 				float ycut = topBottom.X / (ssziehalf.Y * 2);
 
@@ -196,7 +185,7 @@ namespace OpenRA.Graphics
 		}
 
 		public static int FastCreateFloatBoard(Vertex[] vertices,
-			in WPos inPos, in vec3 viewOffset,
+			in WPos inPos, in Vector3 viewOffset,
 			Sprite r, int2 samplers, float paletteTextureIndex, float scale,
 			in float3 tint, float alpha, int nv, float rotation = 0f)
 		{
@@ -227,15 +216,10 @@ namespace OpenRA.Graphics
 			// sprite only has horizental part
 			if (topBottom.X < 0)
 			{
-				//float3 leftBack = new float3(position.x + leftRight.X, position.y - topBottom.X / Game.Renderer.World3DRenderer.CosCameraPitch, position.z);
-				//float3 rightBack = new float3(position.x + leftRight.Y, leftBack.Y, position.z);
-				//float3 leftFront = new float3(leftBack.X, position.y + topBottom.Y / Game.Renderer.World3DRenderer.CosCameraPitch, position.z);
-				//float3 rightFront = new float3(rightBack.X, leftFront.Y, position.z);
-
-				float3 leftBack = new float3(position.x + scale * r.leftBack.X, position.y + scale * r.leftBack.Y, position.z);
-				float3 rightBack = new float3(position.x + leftRight.Y, leftBack.Y, position.z);
-				float3 leftFront = new float3(leftBack.X, position.y + scale * r.leftFront.Y, position.z);
-				float3 rightFront = new float3(rightBack.X, leftFront.Y, position.z);
+				float3 leftBack = new float3(position.X + scale * r.leftBack.X, position.Y + scale * r.leftBack.Y, position.Z);
+				float3 rightBack = new float3(position.X + leftRight.Y, leftBack.Y, position.Z);
+				float3 leftFront = new float3(leftBack.X, position.Y + scale * r.leftFront.Y, position.Z);
+				float3 rightFront = new float3(rightBack.X, leftFront.Y, position.Z);
 
 				float sl = 0;
 				float st = 0;
@@ -270,15 +254,15 @@ namespace OpenRA.Graphics
 			}
 			else if (topBottom.Y < 0) // sprite only has vertical part
 			{
-				//float3 leftTop = new float3(position.x + leftRight.X, position.y, position.z + (topBottom.X) / Game.Renderer.World3DRenderer.SinCameraPitch);
-				//float3 rightTop = new float3(position.x + leftRight.Y, position.y, leftTop.Z);
-				//float3 leftBottom = new float3(leftTop.X, position.y, position.z - (topBottom.Y) / Game.Renderer.World3DRenderer.SinCameraPitch);
-				//float3 rightBottom = new float3(rightTop.X, position.y, leftBottom.Z);
+				//float3 leftTop = new float3(position.X + leftRight.X, position.Y, position.Z + (topBottom.X) / Game.Renderer.World3DRenderer.SinCameraPitch);
+				//float3 rightTop = new float3(position.X + leftRight.Y, position.Y, leftTop.Z);
+				//float3 leftBottom = new float3(leftTop.X, position.Y, position.Z - (topBottom.Y) / Game.Renderer.World3DRenderer.SinCameraPitch);
+				//float3 rightBottom = new float3(rightTop.X, position.Y, leftBottom.Z);
 
-				float3 leftTop = new float3(position.x + scale * r.leftTop.X, position.y, position.z + scale * r.leftTop.Z);
-				float3 rightTop = new float3(position.x + leftRight.Y, position.y, leftTop.Z);
-				float3 leftBottom = new float3(leftTop.X, position.y, position.z + scale * r.leftBottom.Z);
-				float3 rightBottom = new float3(rightTop.X, position.y, leftBottom.Z);
+				float3 leftTop = new float3(position.X + scale * r.leftTop.X, position.Y, position.Z + scale * r.leftTop.Z);
+				float3 rightTop = new float3(position.X + leftRight.Y, position.Y, leftTop.Z);
+				float3 leftBottom = new float3(leftTop.X, position.Y, position.Z + scale * r.leftBottom.Z);
+				float3 rightBottom = new float3(rightTop.X, position.Y, leftBottom.Z);
 
 				float sl = 0;
 				float st = 0;
@@ -313,10 +297,10 @@ namespace OpenRA.Graphics
 			}
 			else
 			{
-				float3 leftTop = new float3(position.x + scale * r.leftTop.X, position.y, position.z + scale * r.leftTop.Z);
-				float3 rightTop = new float3(position.x + leftRight.Y, position.y, leftTop.Z);
-				float3 leftFront = new float3(leftTop.X, position.y + scale * r.leftFront.Y, position.z);
-				float3 rightFront = new float3(rightTop.X, leftFront.Y, position.z);
+				float3 leftTop = new float3(position.X + scale * r.leftTop.X, position.Y, position.Z + scale * r.leftTop.Z);
+				float3 rightTop = new float3(position.X + leftRight.Y, position.Y, leftTop.Z);
+				float3 leftFront = new float3(leftTop.X, position.Y + scale * r.leftFront.Y, position.Z);
+				float3 rightFront = new float3(rightTop.X, leftFront.Y, position.Z);
 
 				float sl = 0;
 				float st = 0;
@@ -352,7 +336,7 @@ namespace OpenRA.Graphics
 		}
 
 		public static void FastCreatePlane(Vertex[] vertices,
-			in WPos inPos, in vec3 viewOffset,
+			in WPos inPos, in Vector3 viewOffset,
 			Sprite r, int2 samplers, float paletteTextureIndex, float scale,
 			in float3 tint, float alpha, int nv, float rotation = 0f)
 		{
@@ -380,10 +364,10 @@ namespace OpenRA.Graphics
 			var position = Game.Renderer.World3DRenderer.Get3DRenderPositionFromWPos(inPos);
 			position += viewOffset;
 
-			float3 leftBack = new float3(position.x + leftRight.X, position.y + scale * r.leftBack.Y, position.z);
-			float3 rightBack = new float3(position.x + leftRight.Y, leftBack.Y, position.z);
-			float3 leftFront = new float3(leftBack.X, position.y + scale * r.leftFront.Y, position.z);
-			float3 rightFront = new float3(rightBack.X, leftFront.Y, position.z);
+			float3 leftBack = new float3(position.X + leftRight.X, position.Y + scale * r.leftBack.Y, position.Z);
+			float3 rightBack = new float3(position.X + leftRight.Y, leftBack.Y, position.Z);
+			float3 leftFront = new float3(leftBack.X, position.Y + scale * r.leftFront.Y, position.Z);
+			float3 rightFront = new float3(rightBack.X, leftFront.Y, position.Z);
 
 			float sl = 0;
 			float st = 0;
@@ -416,7 +400,7 @@ namespace OpenRA.Graphics
 		}
 
 		public static void FastCreateBoard(Vertex[] vertices,
-			in WPos inPos, in vec3 viewOffset,
+			in WPos inPos, in Vector3 viewOffset,
 			Sprite r, int2 samplers, float paletteTextureIndex,
 			float scale, in float3 tint, float alpha, int nv, float rotation = 0f)
 		{
@@ -444,10 +428,10 @@ namespace OpenRA.Graphics
 			var position = Game.Renderer.World3DRenderer.Get3DRenderPositionFromWPos(inPos);
 			position += viewOffset;
 
-			float3 leftTop = new float3(position.x + leftRight.X, position.y, position.z + scale * r.leftTop.Z);
-			float3 rightTop = new float3(position.x + leftRight.Y, position.y, leftTop.Z);
-			float3 leftBottom = new float3(leftTop.X, position.y, position.z + scale * r.leftBottom.Z);
-			float3 rightBottom = new float3(rightTop.X, position.y, leftBottom.Z);
+			float3 leftTop = new float3(position.X + leftRight.X, position.Y, position.Z + scale * r.leftTop.Z);
+			float3 rightTop = new float3(position.X + leftRight.Y, position.Y, leftTop.Z);
+			float3 leftBottom = new float3(leftTop.X, position.Y, position.Z + scale * r.leftBottom.Z);
+			float3 rightBottom = new float3(rightTop.X, position.Y, leftBottom.Z);
 
 			float sl = 0;
 			float st = 0;
@@ -480,7 +464,7 @@ namespace OpenRA.Graphics
 		}
 
 		public static void FastCreateNormalBoard(Vertex[] vertices,
-			in WPos inPos, in vec3 viewOffset, in vec3 leftDir, in vec3 upDir,
+			in WPos inPos, in Vector3 viewOffset, in Vector3 leftDir, in Vector3 upDir,
 			Sprite r, int2 samplers, float paletteTextureIndex,
 			float scale, in float3 tint, float alpha, int nv, float rotation = 0f)
 		{
@@ -502,8 +486,8 @@ namespace OpenRA.Graphics
 
 			var leftTop = position + leftRight.X * leftDir + scale * r.leftTop.Z * upDir;
 			var rightBottom = position - leftRight.X * leftDir - scale * r.leftTop.Z * upDir;
-			var rightTop = new float3(rightBottom.x, rightBottom.y, leftTop.z);
-			var leftBottom = new float3(leftTop.x, leftTop.y, rightBottom.z);
+			var rightTop = new float3(rightBottom.X, rightBottom.Y, leftTop.Z);
+			var leftBottom = new float3(leftTop.X, leftTop.Y, rightBottom.Z);
 
 			float sl = 0;
 			float st = 0;
@@ -861,10 +845,10 @@ namespace OpenRA.Graphics
 			Map map, in CellInfo cellinfo,
 			in float3 mColorOffset, in float3 tColorOffset, in float3 bColorOffset, in float3 lColorOffset, in float3 rColorOffset,
 			uint type,
-			Sprite r, int2 samplers, float paletteTextureIndex, in vec3 ZOffset,
+			Sprite r, int2 samplers, float paletteTextureIndex, in Vector3 ZOffset,
 			float alpha, bool rotation = true)
 		{
-			var viewOffset = new float3(ZOffset.x, ZOffset.y, ZOffset.z);
+			var viewOffset = new float3(ZOffset.X, ZOffset.Y, ZOffset.Z);
 
 			var mpos = map.TerrainVertices[cellinfo.M].Pos + viewOffset;
 			var tpos = map.TerrainVertices[cellinfo.T].Pos + viewOffset;
@@ -1060,8 +1044,8 @@ namespace OpenRA.Graphics
 		}
 
 		public static MapVertex[] FastCreateTilePlane(
-				in mat3 tbn,
-				in WPos inPos, in vec3 viewOffset,
+				in Vec3x3 tbn,
+				in WPos inPos, in Vector3 viewOffset,
 				Sprite r, int2 samplers, float paletteTextureIndex, float scale,
 				in float3 colorOffset, float alpha)
 		{
@@ -1086,10 +1070,10 @@ namespace OpenRA.Graphics
 			var position = Game.Renderer.World3DRenderer.Get3DRenderPositionFromWPos(inPos);
 			position += viewOffset;
 
-			float3 leftBack = new float3(position.x + leftRight.X, position.y + scale * r.leftBack.Y, position.z);
-			float3 rightBack = new float3(position.x + leftRight.Y, leftBack.Y, position.z);
-			float3 leftFront = new float3(leftBack.X, position.y + scale * r.leftFront.Y, position.z);
-			float3 rightFront = new float3(rightBack.X, leftFront.Y, position.z);
+			float3 leftBack = new float3(position.X + leftRight.X, position.Y + scale * r.leftBack.Y, position.Z);
+			float3 rightBack = new float3(position.X + leftRight.Y, leftBack.Y, position.Z);
+			float3 leftFront = new float3(leftBack.X, position.Y + scale * r.leftFront.Y, position.Z);
+			float3 rightFront = new float3(rightBack.X, leftFront.Y, position.Z);
 
 			float sl = 0;
 			float st = 0;

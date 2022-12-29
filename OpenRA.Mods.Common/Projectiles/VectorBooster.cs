@@ -12,7 +12,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using GlmSharp;
+using System.Numerics;
 using OpenRA.GameRules;
 using OpenRA.Graphics;
 using OpenRA.Mods.Common.Effects;

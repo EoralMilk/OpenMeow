@@ -10,6 +10,7 @@
 #endregion
 
 using System;
+using System.Numerics;
 using System.Collections.Generic;
 using System.Linq;
 using OpenRA.Primitives;
@@ -219,26 +220,24 @@ namespace OpenRA.Graphics
 			return new VxlRenderProxy(sprite, shadowSprite, screenCorners, -screenLightVector[2] / screenLightVector[1]);
 		}
 
-		GlmSharp.mat4 rotFix = new GlmSharp.mat4(new GlmSharp.quat(new GlmSharp.vec3(0, -0.5f * (float)Math.PI, -0.5f * (float)Math.PI)));
+		Matrix4x4 rotFix = World3DRenderer.FromQuat(Quaternion.CreateFromYawPitchRoll(0, -0.5f * (float)Math.PI, -0.5f * (float)Math.PI));
 
 		public void CreateRenderInstance(
-			WorldRenderer wr, in WPos pos,in GlmSharp.vec3 viewOffset, IEnumerable<ModelAnimation> models, float scale, float lightScale, float ambientScale, float specularScale,
+			WorldRenderer wr, in WPos pos,in Vector3 viewOffset, IEnumerable<ModelAnimation> models, float scale, float lightScale, float ambientScale, float specularScale,
 			in float3 tint, in float alpha, PaletteReference color, PaletteReference normals)
 		{
 			//// Correct for inverted y-axis
-			//var scaleTransform = Util.ScaleMatrix(scale, scale, scale);
-			var scaleMat = GlmSharp.mat4.Scale(scale);
+			var scaleMat = Matrix4x4.CreateScale(scale);
 			var w3dr = Game.Renderer.World3DRenderer;
-			//var ground = Util.MakeFloatMatrix(groundOrientation.AsMatrix());
 
 			foreach (var m in models)
 			{
 				// Convert screen offset to world offset
 				var offsetVec = w3dr.Get3DRenderPositionFromWPos(pos + m.OffsetFunc());
 				offsetVec += viewOffset;
-				var offsetTransform = GlmSharp.mat4.Translate(offsetVec);
+				var offsetTransform = World3DRenderer.FromTranslation(offsetVec);
 
-				var rotMat = new GlmSharp.mat4(w3dr.Get3DRenderRotationFromWRot(m.RotationFunc()));
+				var rotMat = World3DRenderer.FromQuat(w3dr.Get3DRenderRotationFromWRot(m.RotationFunc()));
 
 				var worldTransform = offsetTransform * (scaleMat * rotMat * rotFix) ;
 
@@ -246,7 +245,7 @@ namespace OpenRA.Graphics
 				for (uint i = 0; i < m.Model.Sections; i++)
 				{
 					var t = m.Model.TransformationMatrix(i, frame);
-					t = Util.MatrixMultiply(worldTransform.Values1D, t);
+					t = Util.MatrixMultiply(NumericUtil.MatRenderValues(worldTransform), t);
 
 					// ugly fix normal palette bug temply
 					normals = FixNoramlPalette(wr, m.Model);

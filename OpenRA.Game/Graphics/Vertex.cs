@@ -10,7 +10,6 @@
 #endregion
 
 using System.Runtime.InteropServices;
-using GlmSharp;
 
 namespace OpenRA.Graphics
 {
@@ -101,7 +100,7 @@ namespace OpenRA.Graphics
 		}
 
 		public MapVertex(in float3 xyz,
-									in mat3 tbn,
+									in Vec3x3 tbn,
 									float s, float t, float u, float v,
 									float p, float c,
 									in float3 tint, float a,
@@ -110,55 +109,55 @@ namespace OpenRA.Graphics
 				  s, t, u, v,
 				  p, c,
 				  tint.X, tint.Y, tint.Z, a,
-				  tbn.Column0.x, tbn.Column0.y, tbn.Column0.z,
-				  tbn.Column1.x, tbn.Column1.y, tbn.Column1.z,
-				  tbn.Column2.x, tbn.Column2.y, tbn.Column2.z,
+				  tbn.T.X, tbn.T.Y, tbn.T.Z,
+				  tbn.B.X, tbn.B.Y, tbn.B.Z,
+				  tbn.N.X, tbn.N.Y, tbn.N.Z,
 				  tu, tv, type)
 		{ }
 
 		public MapVertex(in float3 xyz,
-									in mat3 tbn, in float2 tuv,
+									in Vec3x3 tbn, in float2 tuv,
 									float s, float t, float u, float v,
 									float p, float c)
 			: this(xyz.X, xyz.Y, xyz.Z,
 				  s, t, u, v,
 				  p, c,
 				  0, 0, 0, 1,
-				  tbn.Column0.x, tbn.Column0.y, tbn.Column0.z,
-				  tbn.Column1.x, tbn.Column1.y, tbn.Column1.z,
-				  tbn.Column2.x, tbn.Column2.y, tbn.Column2.z,
+				  tbn.T.X, tbn.T.Y, tbn.T.Z,
+				  tbn.B.X, tbn.B.Y, tbn.B.Z,
+				  tbn.N.X, tbn.N.Y, tbn.N.Z,
 				  tuv.X, tuv.Y, 100)
 		{ }
 
 		public MapVertex(in float3 xyz,
-							in mat3 tbn, in float2 tuv,
+							in Vec3x3 tbn, in float2 tuv,
 							float s, float t, float u, float v,
 							float p, float c,
 							in float3 tint, float a)
 		: this(xyz.X, xyz.Y, xyz.Z,
-			  s, t, u, v,
-			  p, c,
-			  tint.X, tint.Y, tint.Z, a,
-			  tbn.Column0.x, tbn.Column0.y, tbn.Column0.z,
-			  tbn.Column1.x, tbn.Column1.y, tbn.Column1.z,
-			  tbn.Column2.x, tbn.Column2.y, tbn.Column2.z,
-			  tuv.X, tuv.Y, 100)
-		{ }
+			s, t, u, v,
+			p, c,
+			tint.X, tint.Y, tint.Z, a,
+			tbn.T.X, tbn.T.Y, tbn.T.Z,
+			tbn.B.X, tbn.B.Y, tbn.B.Z,
+			tbn.N.X, tbn.N.Y, tbn.N.Z,
+			tuv.X, tuv.Y, 100)
+			{ }
 
 		public MapVertex(in float3 xyz,
-							in mat3 tbn,
+							in Vec3x3 tbn,
 							float s, float t, float u, float v,
 							float p, float c,
 							in float3 tint, float a,
 							float2 tuv, uint type)
 	: this(xyz.X, xyz.Y, xyz.Z,
-		  s, t, u, v,
-		  p, c,
-		  tint.X, tint.Y, tint.Z, a,
-		  tbn.Column0.x, tbn.Column0.y, tbn.Column0.z,
-		  tbn.Column1.x, tbn.Column1.y, tbn.Column1.z,
-		  tbn.Column2.x, tbn.Column2.y, tbn.Column2.z,
-		  tuv.X, tuv.Y, type)
+		 s, t, u, v,
+		 p, c,
+		 tint.X, tint.Y, tint.Z, a,
+		 tbn.T.X, tbn.T.Y, tbn.T.Z,
+		 tbn.B.X, tbn.B.Y, tbn.B.Z,
+		 tbn.N.X, tbn.N.Y, tbn.N.Z,
+		 tuv.X, tuv.Y, type)
 		{ }
 
 		public MapVertex(in OverlayVertex vertex,
@@ -250,13 +249,13 @@ namespace OpenRA.Graphics
 		public readonly float NX, NY, NZ;
 
 		public OverlayVertex(in float3 xyz,
-							in mat3 tbn,
+							in Vec3x3 tbn,
 							float2 uv)
 	: this(xyz.X, xyz.Y, xyz.Z,
-		  uv.X, uv.Y,
-		  tbn.Column0.x, tbn.Column0.y, tbn.Column0.z,
-		  tbn.Column1.x, tbn.Column1.y, tbn.Column1.z,
-		  tbn.Column2.x, tbn.Column2.y, tbn.Column2.z)
+			uv.X, uv.Y,
+			tbn.T.X, tbn.T.Y, tbn.T.Z,
+			tbn.B.X, tbn.B.Y, tbn.B.Z,
+			tbn.N.X, tbn.N.Y, tbn.N.Z)
 		{ }
 
 		public OverlayVertex(float x, float y, float z,
@@ -330,7 +329,7 @@ namespace OpenRA.Graphics
 									in float2 xy,
 									in float2 uv,
 									in float2 maskuv,
-									in mat3 tbn,
+									in Vec3x3 tbn,
 									in float3 tint, float a,
 									int t1 = 1, int t2 = 2, int t3 = 3, int t4 = 4,
 									int t5 = 5, int t6 = 6, int t7 = 7, int t8 = 8)
@@ -339,9 +338,9 @@ namespace OpenRA.Graphics
 				  uv.X, uv.Y,
 				  maskuv.X, maskuv.Y,
 				  tint.X, tint.Y, tint.Z, a,
-				  tbn.Column0.x, tbn.Column0.y, tbn.Column0.z,
-				  tbn.Column1.x, tbn.Column1.y, tbn.Column1.z,
-				  tbn.Column2.x, tbn.Column2.y, tbn.Column2.z,
+				  tbn.T.X, tbn.T.Y, tbn.T.Z,
+				  tbn.B.X, tbn.B.Y, tbn.B.Z,
+				  tbn.N.X, tbn.N.Y, tbn.N.Z,
 				  t1, t2, t3, t4,
 				  t5, t6, t7, t8)
 		{ }
@@ -350,7 +349,7 @@ namespace OpenRA.Graphics
 							in float2 xy,
 							in float2 uv,
 							in float2 maskuv,
-							in mat3 tbn,
+							in Vec3x3 tbn,
 							in float3 tint, float a,
 							TerrainBlendingVertex vert)
 	: this(
@@ -358,9 +357,9 @@ namespace OpenRA.Graphics
 			uv.X, uv.Y,
 			maskuv.X, maskuv.Y,
 			tint.X, tint.Y, tint.Z, a,
-			tbn.Column0.x, tbn.Column0.y, tbn.Column0.z,
-			tbn.Column1.x, tbn.Column1.y, tbn.Column1.z,
-			tbn.Column2.x, tbn.Column2.y, tbn.Column2.z,
+			tbn.T.X, tbn.T.Y, tbn.T.Z,
+			tbn.B.X, tbn.B.Y, tbn.B.Z,
+			tbn.N.X, tbn.N.Y, tbn.N.Z,
 			vert.TileType1, vert.TileType2, vert.TileType3, vert.TileType4,
 			vert.TileType5, vert.TileType6, vert.TileType7, vert.TileType8)
 		{ }

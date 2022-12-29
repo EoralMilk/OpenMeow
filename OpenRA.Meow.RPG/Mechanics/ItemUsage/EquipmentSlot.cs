@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using GlmSharp;
+using System.Numerics;
 using OpenRA.Graphics;
 using OpenRA.Mods.Common.Traits;
 using OpenRA.Mods.Common.Traits.Trait3D;
@@ -79,7 +79,7 @@ namespace OpenRA.Meow.RPG.Mechanics
 		public RenderMeshes RenderMeshes { get; private set; }
 		public WithSkeleton SkeletonBind { get; private set; }
 		public int BoneId { get; private set; }
-		public Func<mat4> SlotGetRenderMatrix { get; private set; }
+		public Func<Matrix4x4> SlotGetRenderMatrix { get; private set; }
 
 		public Item Item { get; private set; }
 

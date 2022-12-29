@@ -10,10 +10,10 @@
 #endregion
 
 using System;
+using System.Numerics;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using GlmSharp;
 using OpenRA.Graphics;
 using OpenRA.Primitives;
 using TagLib.Riff;
@@ -49,18 +49,18 @@ namespace OpenRA.Mods.Common.Graphics
 			public float UVOffsetStart;
 			public float UVOffsetEnd;
 
-			public vec3 Start;
-			public vec3 End;
+			public Vector3 Start;
+			public Vector3 End;
 
 			public Color StartColor;
 			public Color EndColor;
 			public Color StartColorOuter;
 			public Color EndColorOuter;
 
-			public vec3 StartUp;
-			public vec3 StartDown;
-			public vec3 EndUp;
-			public vec3 EndDown;
+			public Vector3 StartUp;
+			public Vector3 StartDown;
+			public Vector3 EndUp;
+			public Vector3 EndDown;
 		}
 
 		readonly List<ContrailPart> partToRender = new List<ContrailPart>();
@@ -201,12 +201,12 @@ namespace OpenRA.Mods.Common.Graphics
 					var wfade = (renderLength * 1f - (i - 1) * widthFadeRate) / renderLength;
 					if (wfade > 0 && curPos != nextPos)
 					{
-						vec3 dir = w3dr.Get3DRenderVecFromWVec(nextPos - curPos).Normalized;
-						vec3 cross;
+						Vector3 dir = Vector3.Normalize(w3dr.Get3DRenderVecFromWVec(nextPos - curPos));
+						Vector3 cross;
 						if (dir == cam)
 							cross = Game.Renderer.World3DRenderer.CameraUp;
 						else
-							cross = vec3.Cross(cam, dir).Normalized;
+							cross = Vector3.Normalize(Vector3.Cross(cam, dir));
 						var widthOffset = (screenWidth * wfade / 2) * cross;
 						var start = w3dr.Get3DRenderPositionFromWPos(curPos);
 						var end = w3dr.Get3DRenderPositionFromWPos(nextPos);
@@ -238,10 +238,10 @@ namespace OpenRA.Mods.Common.Graphics
 
 			for (int i = 0; i < partToRender.Count; i++)
 			{
-				var startUp = i == 0 ? partToRender[i].StartUp : vec3.Lerp(partToRender[i - 1].EndUp, partToRender[i].StartUp, 0.5f);
-				var startDown = i == 0 ? partToRender[i].StartDown : vec3.Lerp(partToRender[i - 1].EndDown, partToRender[i].StartDown, 0.5f);
-				var endUp = i == partToRender.Count - 1 ? partToRender[i].EndUp : vec3.Lerp(partToRender[i].EndUp, partToRender[i + 1].StartUp, 0.5f);
-				var endDown = i == partToRender.Count - 1 ? partToRender[i].EndDown : vec3.Lerp(partToRender[i].EndDown, partToRender[i + 1].StartDown, 0.5f);
+				var startUp = i == 0 ? partToRender[i].StartUp : Vector3.Lerp(partToRender[i - 1].EndUp, partToRender[i].StartUp, 0.5f);
+				var startDown = i == 0 ? partToRender[i].StartDown : Vector3.Lerp(partToRender[i - 1].EndDown, partToRender[i].StartDown, 0.5f);
+				var endUp = i == partToRender.Count - 1 ? partToRender[i].EndUp : Vector3.Lerp(partToRender[i].EndUp, partToRender[i + 1].StartUp, 0.5f);
+				var endDown = i == partToRender.Count - 1 ? partToRender[i].EndDown : Vector3.Lerp(partToRender[i].EndDown, partToRender[i + 1].StartDown, 0.5f);
 
 				if (anim != null)
 				{

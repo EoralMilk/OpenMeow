@@ -14,7 +14,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using GlmSharp;
+using System.Numerics;
 using OpenRA.Graphics;
 using OpenRA.Mods.Common.Activities;
 using OpenRA.Mods.Common.Effects;
@@ -267,7 +267,7 @@ namespace OpenRA.Mods.Common.Traits
 
 			public bool InBound(in WPos tr, in WPos br)
 			{
-				var projectY = Pos.Y - Pos.Z * Game.Renderer.World3DRenderer.InverseCameraFront.y / Game.Renderer.World3DRenderer.InverseCameraFront.z;
+				var projectY = Pos.Y - Pos.Z * Game.Renderer.World3DRenderer.InverseCameraFront.Y / Game.Renderer.World3DRenderer.InverseCameraFront.Z;
 				if ((Pos.X + Size > tr.X && Pos.X - Size < br.X) &&
 					(projectY + Size > tr.Y &&
 					projectY - Size < br.Y))
@@ -278,13 +278,13 @@ namespace OpenRA.Mods.Common.Traits
 
 		}
 
-		MapVertex[] CreateTileOverlayVertex(in WPos pos, Map map, int size, in vec3 zOffset,
+		MapVertex[] CreateTileOverlayVertex(in WPos pos, Map map, int size, in Vector3 zOffset,
 			Sprite r, int2 samplers, float paletteTextureIndex)
 		{
 			var width = size;
 			var height = size;
 
-			var viewOffset = new float3(zOffset.x, zOffset.y, zOffset.z);
+			var viewOffset = new float3(zOffset.X, zOffset.Y, zOffset.Z);
 			var w = width / 2;
 			var h = height / 2;
 			var TL = new int2((pos.X - w - MapGrid.MapMiniCellWidth) / MapGrid.MapMiniCellWidth + 1,

@@ -198,9 +198,9 @@ namespace OpenRA.Mods.Common.Traits
 			foreach (var source in partitionedLightSources.InBox(new Rectangle(tl.X, tl.Y, br.X, br.Y)))
 			{
 				var rpos = Game.Renderer.World3DRenderer.Get3DRenderPositionFromWPos(source.Pos);
-				posArray[i] = rpos.x;
-				posArray[i + 1] = rpos.y;
-				posArray[i + 2] = rpos.z;
+				posArray[i] = rpos.X;
+				posArray[i + 1] = rpos.Y;
+				posArray[i + 2] = rpos.Z;
 
 				colorRangeArray[n] = source.Tint.X * source.Intensity;
 				colorRangeArray[n + 1] = source.Tint.Y * source.Intensity;
