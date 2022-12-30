@@ -102,11 +102,14 @@ namespace OpenRA.Graphics
 			shader.SetFloat("AmbientIntencity", wr.AmbientIntencity);
 		}
 
-		public void DrawScreen(ITexture screenTexture, BlendMode blendMode = BlendMode.None)
+		public void DrawScreen(ITexture screenTexture, ITexture additionTexture, BlendMode blendMode = BlendMode.None)
 		{
 			//Console.WriteLine("ScreenLight: " + screenLight + " ScreenTint: " + ScreenTint);
+
 			shader.SetBool("DrawUI", false);
 			shader.SetTexture("screenTexture", screenTexture);
+			shader.SetTexture("addtionTexture", additionTexture);
+
 			renderer.Context.SetBlendMode(blendMode);
 			shader.PrepareRender();
 			renderer.DrawBatch(shader, vBuffer, 0, 6, PrimitiveType.TriangleList);

@@ -340,26 +340,15 @@ IonCannon:
 		Explosions: laserburningbig
 		ValidTargets: Ground
 		InvalidTargets: Vehicle, Building, Wall
-	# Warhead@5Res: DestroyResource
-	# 	Size: 1
-	# 	Delay: 3
-	# 	ResourceAmount: -1
-	# 	ResourceTypes: Tiberium, BlueTiberium
-	# Warhead@6Res: DestroyResource
-	# 	Size: 2
-	# 	Delay: 5
-	# 	ResourceAmount: 4
-	# 	ResourceTypes: Tiberium, BlueTiberium
-	# Warhead@7Res: DestroyResource
-	# 	Size: 3
-	# 	Delay: 7
-	# 	ResourceAmount: 4
-	# 	ResourceTypes: Tiberium, BlueTiberium
 	Warhead@BlueTibChainReact: TerrainReactionInit
 		Delay: 7
 		Weapon: BlueTiberiumChainReaction
 		ValidTargets: BlueTiberium
-
+	Warhead@ShockWave:	ShockWave
+		Delay: 3
+		Radius: 4c0
+		LifeTime: 30
+		Width: 0.14
 
 EMPulseCannon:
 	ReloadDelay: 100
@@ -383,6 +372,10 @@ EMPulseCannon:
 		Duration: 250
 		Condition: empdisable
 		ValidTargets: Ground, Water, Air, Underground
+	Warhead@ShockWave:	ShockWave
+		Radius: 8c0
+		LifeTime: 40
+		Width: 0.2
 
 TestCrystalGrow:
 	Warhead@Res: CreateResource

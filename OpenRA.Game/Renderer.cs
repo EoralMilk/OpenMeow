@@ -38,6 +38,8 @@ namespace OpenRA
 
 		public UITextureRenderer UITextureRenderer { get; private set; }
 
+		public ShockRenderer ShockRenderer { get; private set; }
+
 		public bool WindowHasInputFocus => Window.HasInputFocus;
 		public bool WindowIsSuspended => Window.IsSuspended;
 
@@ -58,6 +60,8 @@ namespace OpenRA
 		Sprite screenSprite;
 
 		Size worldBufferSize;
+		IFrameBuffer worldAdditonalBuffer;
+		ITexture addtitionalTexture;
 		IFrameBuffer worldBuffer;
 		public IFrameBuffer WorldBuffer => worldBuffer;
 		ITexture worldTexture;
@@ -115,6 +119,7 @@ namespace OpenRA
 			RgbaColorRenderer = new RgbaColorRenderer(SpriteRenderer);
 			ScreenRenderer = new ScreenRenderer(this, Context.CreateUnsharedShader<ScreenShaderBindings>());
 			UITextureRenderer = new UITextureRenderer(this, Context.CreateUnsharedShader<UITextureArrayShaderBindings>());
+			ShockRenderer = new ShockRenderer(this);
 			tempBuffer = Context.CreateVertexBuffer<Vertex>(TempBufferSize);
 			tempMapBuffer = Context.CreateVertexBuffer<MapVertex>(TempBufferSize);
 		}
@@ -241,6 +246,7 @@ namespace OpenRA
 			if (worldTexture == null || worldTexture.Size != worldBufferSize)
 			{
 				worldBuffer?.Dispose();
+				worldAdditonalBuffer?.Dispose();
 				worldShadowBuffer?.Dispose();
 
 				worldShadowBuffer = Context.CreateDepthFrameBuffer(new Size(Game.Settings.Graphics.ShadowTextureSize, Game.Settings.Graphics.ShadowTextureSize));
@@ -248,6 +254,9 @@ namespace OpenRA
 
 				// If enableWorldFrameBufferDownscale and the world is more than twice the size of the final output size do we allow it to be downsampled!
 				worldBuffer = Context.CreateFrameBuffer(worldBufferSize);
+				addtitionalTexture?.Dispose();
+				addtitionalTexture = CreateInfoTexture(worldBufferSize);
+				worldAdditonalBuffer = Context.CreateFrameBuffer(worldBufferSize, new ITexture[1] { addtitionalTexture }, 1);
 
 				// Pixel art scaling mode is a customized bilinear sampling
 				worldBuffer.Texture.ScaleFilter = TextureScaleFilter.Linear;
@@ -311,6 +320,30 @@ namespace OpenRA
 			Context.DisableDepthBuffer();
 			worldShadowBuffer.Unbind();
 			worldBuffer.Bind();
+			MapRenderer.SetCameraParams(World3DRenderer, false);
+		}
+
+		public void TestShock()
+		{
+			worldBuffer.Unbind();
+
+			// we don't want to clear the renderer result last bake, just paint on it.
+			worldAdditonalBuffer.Bind();
+
+			Game.Renderer.SetFaceCull(FaceCullFunc.None);
+			Game.Renderer.EnableDepthWrite(true);
+			Game.Renderer.DisableDepthTest();
+
+			// ShockRenderer.DrawShockWave(Game.GetWorldRenderer().Viewport.CenterPosition, (float)(Game.LocalTick % 50 + 1) / 50f, 0.1f, 24);
+
+			ShockRenderer.Render();
+
+			Game.Renderer.EnableDepthBuffer();
+			Game.Renderer.EnableDepthWrite(true);
+
+			worldAdditonalBuffer.Unbind();
+
+			worldBuffer.BindNoClear();
 			MapRenderer.SetCameraParams(World3DRenderer, false);
 		}
 
@@ -393,7 +426,7 @@ namespace OpenRA
 				// Complete world rendering
 				Flush();
 				worldBuffer.Unbind();
-				ScreenRenderer.DrawScreen(worldBuffer.Texture);
+				ScreenRenderer.DrawScreen(worldBuffer.Texture, addtitionalTexture);
 			}
 
 			renderType = RenderType.World;

@@ -484,10 +484,12 @@ namespace OpenRA.Graphics
 			var position = Game.Renderer.World3DRenderer.Get3DRenderPositionFromWPos(inPos);
 			position += viewOffset;
 
-			var leftTop = position + leftRight.X * leftDir + scale * r.leftTop.Z * upDir;
-			var rightBottom = position - leftRight.X * leftDir - scale * r.leftTop.Z * upDir;
-			var rightTop = new float3(rightBottom.X, rightBottom.Y, leftTop.Z);
-			var leftBottom = new float3(leftTop.X, leftTop.Y, rightBottom.Z);
+			var ltoffset = leftRight.X * leftDir + scale * r.leftTop.Z * upDir;
+			var rtoffset = -leftRight.X * leftDir + scale * r.leftTop.Z * upDir;
+			var leftTop = position + ltoffset;
+			var rightBottom = position - ltoffset;
+			var rightTop = position + rtoffset;
+			var leftBottom = position - rtoffset;
 
 			float sl = 0;
 			float st = 0;
@@ -511,11 +513,11 @@ namespace OpenRA.Graphics
 			var fAttribC = (float)attribC;
 
 			vertices[nv] = new Vertex(new float3(leftTop), r.Left, r.Top, sl, st, paletteTextureIndex, fAttribC, tint, alpha);
-			vertices[nv + 1] = new Vertex(rightTop, r.Right, r.Top, sr, st, paletteTextureIndex, fAttribC, tint, alpha);
+			vertices[nv + 1] = new Vertex(new float3(rightTop), r.Right, r.Top, sr, st, paletteTextureIndex, fAttribC, tint, alpha);
 			vertices[nv + 2] = new Vertex(new float3(rightBottom), r.Right, r.Bottom, sr, sb, paletteTextureIndex, fAttribC, tint, alpha);
 
 			vertices[nv + 3] = new Vertex(new float3(rightBottom), r.Right, r.Bottom, sr, sb, paletteTextureIndex, fAttribC, tint, alpha);
-			vertices[nv + 4] = new Vertex(leftBottom, r.Left, r.Bottom, sl, sb, paletteTextureIndex, fAttribC, tint, alpha);
+			vertices[nv + 4] = new Vertex(new float3(leftBottom), r.Left, r.Bottom, sl, sb, paletteTextureIndex, fAttribC, tint, alpha);
 			vertices[nv + 5] = new Vertex(new float3(leftTop), r.Left, r.Top, sl, st, paletteTextureIndex, fAttribC, tint, alpha);
 		}
 

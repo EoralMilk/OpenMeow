@@ -8,6 +8,7 @@ in vec2 TexCoords;
 out vec4 FragColor;
 
 uniform sampler2D screenTexture;
+uniform sampler2D addtionTexture;
 uniform sampler2D screenDepthTexture;
 uniform sampler2D sunDepthTexture;
 
@@ -20,12 +21,16 @@ uniform float FrameShadowBias;
 
 uniform vec3 ScreenLight;
 uniform float AmbientIntencity;
+uniform float TestRadius;
 
 uniform bool DrawUI;
 
 const float offset = 1.0 / 512.0;
 const float blurWeight[5] = float[] (0.227027, 0.1945946, 0.1216216, 0.054054, 0.016216);
 
+const float _Radius = 0.2;
+const float _Width = 0.06;
+const float PI = 3.14159265359;
 
 float ColorLuminance(vec3 rgb){
 	return rgb.r * 0.299f + rgb.b * 0.587f + rgb.b * 0.114f;
@@ -34,12 +39,14 @@ float ColorLuminance(vec3 rgb){
 
 void main()
 {
-	vec4 scolor = texture(screenTexture, TexCoords);
-	if (scolor.a < 0.0001)
-		discard;
-	
+	vec2 UV = TexCoords + texture(addtionTexture, TexCoords).xy;
+	vec4 scolor = texture(screenTexture, UV);
+	// vec4 scolor = vec4(TexCoords + texture(addtionTexture, TexCoords).xy, 0.0, 1.0);
+
 	if (DrawUI)
 	{
+		if (scolor.a < 0.0001)
+			discard;
 		FragColor = scolor;
 		return;
 	}

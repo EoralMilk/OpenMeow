@@ -89,6 +89,10 @@
 		TrailSequences: idle2
 	Warhead@1Dam: Spread3DDamage
 		Damage: 10500
+	Warhead@ShockWave:	ShockWave
+		Radius: 1c512
+		LifeTime: 11
+		Width: 0.11
 
 120mmx:
 	Inherits: ^Cannon
@@ -97,6 +101,10 @@
 	# BurstDelays: 5
 	Warhead@1Dam: Spread3DDamage
 		Damage: 8000
+	Warhead@ShockWave:	ShockWave
+		Radius: 1c256
+		LifeTime: 12
+		Width: 0.11
 
 RPGTower:
 	Inherits: ^Cannon
@@ -134,6 +142,10 @@ RPGTower:
 		Explosions: large_clsn
 	Warhead@BlueTibChainReact: TerrainReactionInit
 		Chance: 40
+	Warhead@ShockWave:	ShockWave
+		Radius: 2c0
+		LifeTime: 12
+		Width: 0.11
 
 TitanRPG:
 	Inherits: RPGTower
@@ -186,6 +198,10 @@ TitanRPG:
 		ImpactSounds: expnew06.aud
 	Warhead@4Smu: LeaveSmudge
 		SmudgeType: LargeCrater
+	Warhead@ShockWave:	ShockWave
+		Radius: 2c0
+		LifeTime: 13
+		Width: 0.11
 
 155mmDeployCheck:
 	Inherits: ^ArtilleryDeployCheck
@@ -213,6 +229,10 @@ Jugg90mm:
 	Warhead@2Eff: CreateEffect
 		Explosions: small_explosion
 		ImpactSounds: expnew13.aud
+	Warhead@ShockWave:	ShockWave
+		Radius: 1c256
+		LifeTime: 11
+		Width: 0.11
 
 Jugg90mmDeployCheck:
 	Inherits: ^ArtilleryDeployCheck

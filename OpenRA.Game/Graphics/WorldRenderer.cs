@@ -388,6 +388,8 @@ namespace OpenRA.Graphics
 
 			Game.Renderer.Flush();
 
+			Game.Renderer.TestShock();
+
 			// diable depth write to render other blend mode
 			Game.Renderer.EnableDepthWrite(false);
 

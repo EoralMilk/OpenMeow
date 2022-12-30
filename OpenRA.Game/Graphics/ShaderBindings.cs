@@ -88,6 +88,43 @@ namespace OpenRA.Graphics
 		}
 	}
 
+	public class AdditionalShaderBindings : IShaderBindings
+	{
+		protected string vertexShaderName;
+		protected string fragmentShaderName;
+
+		public string VertexShaderName => vertexShaderName;
+		public string FragmentShaderName => fragmentShaderName;
+		public string GeometryShaderName => null;
+
+		public int Stride => 7 * sizeof(float);
+
+		public IEnumerable<ShaderVertexAttribute> Attributes { get; } = new[]
+		{
+			new ShaderVertexAttribute("aVertexPosition", 0, 3, 0),
+			new ShaderVertexAttribute("aVertexTexCoord", 1, 2, 3 * sizeof(float)),
+			new ShaderVertexAttribute("aRW", 2, 2, 5 * sizeof(float)),
+
+		};
+
+		public bool Instanced => false;
+
+		public int InstanceStrde => throw new System.NotImplementedException();
+
+		public IEnumerable<ShaderVertexAttribute> InstanceAttributes => throw new System.NotImplementedException();
+
+		public AdditionalShaderBindings()
+		{
+			var name = "additional";
+			vertexShaderName = name;
+			fragmentShaderName = name;
+		}
+
+		public void SetCommonParaments(IShader shader, World3DRenderer w3dr, bool sunCamera)
+		{
+		}
+	}
+
 	public class UITextureArrayShaderBindings : IShaderBindings
 	{
 		protected string vertexShaderName;
