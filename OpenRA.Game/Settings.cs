@@ -223,10 +223,10 @@ namespace OpenRA
 		[Desc("Size of the shadow buffer, must be power of two.")]
 		public readonly int ShadowTextureSize = 1024;
 
-		public readonly ShadowSampleType TerrainShadowType = ShadowSampleType.TictactoeBlend;
-		public readonly ShadowSampleType CombinedShadowType = ShadowSampleType.TictactoeBlend;
-		public readonly ShadowSampleType VoxelShadowType = ShadowSampleType.TictactoeBlend;
-		public readonly ShadowSampleType MeshShadowType = ShadowSampleType.TictactoeBlend;
+		public ShadowSampleType TerrainShadowType = ShadowSampleType.TictactoeBlend;
+		public ShadowSampleType CombinedShadowType = ShadowSampleType.TictactoeBlend;
+		public ShadowSampleType VoxelShadowType = ShadowSampleType.TictactoeBlend;
+		public ShadowSampleType MeshShadowType = ShadowSampleType.TictactoeBlend;
 
 		[Desc("Size of the TerrainRenderBlock buffer, must be power of two.")]
 		public readonly int TerrainBlockTextureSize = 1024;

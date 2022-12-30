@@ -348,6 +348,12 @@ options-target-lines =
     .manual = Manual
     .disabled = Disabled
 
+options-shadow-mode =
+    .directly = Directly
+    .slash = Slash
+    .cross = Cross
+    .tictactoe = Tictactoe
+
 ## InputSettingsLogic
 options-mouse-scroll-type =
     .disabled = Disabled

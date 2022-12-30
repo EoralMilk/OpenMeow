@@ -64,6 +64,18 @@ namespace OpenRA.Mods.Common.Widgets.Logic
 		[TranslationReference]
 		const string Disabled = "options-target-lines.disabled";
 
+		[TranslationReference]
+		const string ShadowSampleDirectly = "options-shadow-mode.directly";
+
+		[TranslationReference]
+		const string ShadowSampleSlashBlend = "options-shadow-mode.slash";
+
+		[TranslationReference]
+		const string ShadowSampleCrossBlend = "options-shadow-mode.cross";
+
+		[TranslationReference]
+		const string ShadowSampleTictactoeBlend = "options-shadow-mode.tictactoe";
+
 		static readonly int OriginalVideoDisplay;
 		static readonly WindowMode OriginalGraphicsMode;
 		static readonly int2 OriginalGraphicsWindowedSize;
@@ -233,6 +245,30 @@ namespace OpenRA.Mods.Common.Widgets.Logic
 			frameLimitCheckbox.IsDisabled = () => ds.CapFramerateToGameFps;
 
 			panel.Get<SliderWidget>("FRAME_LIMIT_SLIDER").IsDisabled = () => !frameLimitCheckbox.IsChecked() || frameLimitGamespeedCheckbox.IsChecked();
+
+			var shadowMode = panel.Get<DropDownButtonWidget>("SHADOWMODE_DROPDOWN");
+			shadowMode.OnMouseDown = _ => ShowShadowModeDropdown(modData, shadowMode, ds, scrollPanel);
+			shadowMode.GetText = () =>
+			{
+				if (ds.TerrainShadowType != ds.CombinedShadowType ||
+				ds.TerrainShadowType != ds.VoxelShadowType ||
+				ds.TerrainShadowType != ds.MeshShadowType)
+					return "---";
+
+				switch (ds.TerrainShadowType)
+				{
+					case ShadowSampleType.Directly:
+						return modData.Translation.GetString(ShadowSampleDirectly);
+					case ShadowSampleType.SlashBlend:
+						return modData.Translation.GetString(ShadowSampleSlashBlend);
+					case ShadowSampleType.CrossBlend:
+						return modData.Translation.GetString(ShadowSampleCrossBlend);
+					case ShadowSampleType.TictactoeBlend:
+						return modData.Translation.GetString(ShadowSampleTictactoeBlend);
+					default:
+						return "---";
+				}
+			};
 
 			// Player profile
 			var ps = Game.Settings.Player;
@@ -562,5 +598,37 @@ namespace OpenRA.Mods.Common.Widgets.Logic
 			var validScales = new[] { 1f, 1.25f, 1.5f, 1.75f, 2f }.Where(x => x <= maxScale);
 			dropdown.ShowDropDown("LABEL_DROPDOWN_TEMPLATE", 500, validScales, setupItem);
 		}
+
+		static void ShowShadowModeDropdown(ModData modData, DropDownButtonWidget dropdown, GraphicSettings s, ScrollPanelWidget scrollPanel)
+		{
+			var options = new Dictionary<string, ShadowSampleType>()
+			{
+				{ modData.Translation.GetString(ShadowSampleDirectly), ShadowSampleType.Directly },
+				{ modData.Translation.GetString(ShadowSampleSlashBlend), ShadowSampleType.SlashBlend },
+				{ modData.Translation.GetString(ShadowSampleCrossBlend), ShadowSampleType.CrossBlend },
+				{ modData.Translation.GetString(ShadowSampleTictactoeBlend), ShadowSampleType.TictactoeBlend },
+
+			};
+
+			Func<string, ScrollItemWidget, ScrollItemWidget> setupItem = (o, itemTemplate) =>
+			{
+				var item = ScrollItemWidget.Setup(itemTemplate,
+						() => s.TerrainShadowType == options[o] && s.CombinedShadowType == options[o] && s.VoxelShadowType == options[o] && s.MeshShadowType == options[o],
+						() =>
+						{
+							s.TerrainShadowType = options[o];
+							s.CombinedShadowType = options[o];
+							s.VoxelShadowType = options[o];
+							s.MeshShadowType = options[o];
+							SettingsUtils.AdjustSettingsScrollPanelLayout(scrollPanel);
+						});
+
+				item.Get<LabelWidget>("LABEL").GetText = () => o;
+				return item;
+			};
+
+			dropdown.ShowDropDown("LABEL_DROPDOWN_TEMPLATE", 500, options.Keys, setupItem);
+		}
+
 	}
 }
