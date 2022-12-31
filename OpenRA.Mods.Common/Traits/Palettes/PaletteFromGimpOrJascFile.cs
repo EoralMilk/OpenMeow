@@ -45,7 +45,7 @@ namespace OpenRA.Mods.Common.Traits
 		public readonly bool AllowModifiers = true;
 
 		[Desc("Index set to be fully transparent/invisible.")]
-		public readonly int TransparentIndex = 0;
+		public readonly int[] TransparentIndex = new int[1] {0};
 
 		[Desc("Whether this palette is available for cursors.")]
 		public readonly bool CursorPalette = false;
@@ -56,6 +56,8 @@ namespace OpenRA.Mods.Common.Traits
 
 		ImmutablePalette IProvidesCursorPaletteInfo.ReadPalette(IReadOnlyFileSystem fileSystem)
 		{
+			var transparentIndices = TransparentIndex.ToHashSet();
+
 			using (var s = fileSystem.Open(Filename))
 			{
 				var colors = new uint[Palette.Size];
@@ -92,7 +94,8 @@ namespace OpenRA.Mods.Common.Traits
 						var noAlpha = rgba.Length > 3 ? !byte.TryParse(rgba[3], out a) : true;
 
 						// Index should be completely transparent/background color
-						if (i == TransparentIndex)
+
+						if (transparentIndices.Contains(i))
 							colors[i] = 0;
 						else if (noAlpha)
 							colors[i] = (uint)Color.FromArgb(r, g, b).ToArgb();

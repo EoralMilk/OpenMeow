@@ -345,7 +345,7 @@ IonCannon:
 		Weapon: BlueTiberiumChainReaction
 		ValidTargets: BlueTiberium
 	Warhead@ShockWave:	CreateEffect #ShockWave
-		Image: shockground
+		Image: twist
 		Explosions: shockground
 		ExplosionPalette: twist
 		ForceDisplayAtGroundLevel: true

@@ -372,10 +372,8 @@ void main()
 	if (RemappingTwist)
 	{
 		// c = srgb2linear(c);
-		c.rgb = (c.rgb - 0.5) * 2.0;
-		c.rgb *= c.a * vTint.a;
-		// c *= vTint.a;
-		// c = vec4(1.0, 0, 0, 0);
+		c.r = (c.r - 0.5) * 2.0;
+		c.r *= c.a * vTint.a;
 
 		#if __VERSION__ == 120
 		gl_FragColor = c;

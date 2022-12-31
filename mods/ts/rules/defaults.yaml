@@ -1551,6 +1551,18 @@
 		Image: fire1
 		Palette: effect
 		RequiresCondition: large-fire
+
+	WithIdleOverlay@SmallFireTwist:
+		Image: fire2
+		Palette: twist
+		Sequence: twist
+		RequiresCondition: small-fire
+	WithIdleOverlay@LargeFireTwist:
+		Image: fire1
+		Palette: twist
+		Sequence: twist
+		RequiresCondition: large-fire
+
 	SpreadsCondition@Fire:
 		RequiresCondition: small-fire || large-fire
 		SpreadCondition: burning

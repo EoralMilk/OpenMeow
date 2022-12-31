@@ -321,7 +321,9 @@
 		Name: blast-green
 		Color: 00BB00
 
-	PaletteFromFile@Twist:
+	PaletteFromGimpOrJascFile@Twist:
 		Name: twist
-		Filename: twist.pal
+		Filename: jascgrey.pal
+		Premultiply: true
 		AllowModifiers: false
+		TransparentIndex: 127, 128, 129

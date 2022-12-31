@@ -43,6 +43,7 @@ namespace OpenRA.Graphics
 		public readonly WRot WRotRotationFix;
 
 		public Vector3 CameraPos { get; private set; }
+		public float2 ViewportSize { get; private set; }
 		Vector3 viewPoint;
 
 		public readonly float PixPerMeter;
@@ -182,9 +183,9 @@ namespace OpenRA.Graphics
 				}
 
 				Viewport viewport = wr.Viewport;
-				var viewPortSize = (1f / viewport.Zoom * new float2(Game.Renderer.NativeResolution));
-				var ortho = (-viewPortSize.X * MeterPerPixHalf, viewPortSize.X * MeterPerPixHalf,
-									-viewPortSize.Y * MeterPerPixHalf, viewPortSize.Y * MeterPerPixHalf);
+				ViewportSize = (1f / viewport.Zoom * new float2(Game.Renderer.NativeResolution));
+				var ortho = (-ViewportSize.X * MeterPerPixHalf, ViewportSize.X * MeterPerPixHalf,
+									-ViewportSize.Y * MeterPerPixHalf, ViewportSize.Y * MeterPerPixHalf);
 
 				var heightMeter = ortho.Item4 / SinCameraPitch + (MaxTerrainHeight - (ortho.Item4 / TanCameraPitch * CosCameraPitch));
 				var far = heightMeter / CosCameraPitch + TanCameraPitch * ortho.Item4 + 100f;

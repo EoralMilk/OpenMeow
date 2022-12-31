@@ -109,6 +109,8 @@ namespace OpenRA.Graphics
 			shader.SetBool("DrawUI", false);
 			shader.SetTexture("screenTexture", screenTexture);
 			shader.SetTexture("addtionTexture", additionTexture);
+			shader.SetFloat("ViewportScale", renderer.World3DRenderer.ViewportSize.X / Game.Renderer.NativeResolution.Width);
+			// Console.WriteLine("viewport.Zoom: " + viewport.Zoom + "  viewport.MinZoom: " + viewport.MinZoom);
 
 			renderer.Context.SetBlendMode(blendMode);
 			shader.PrepareRender();

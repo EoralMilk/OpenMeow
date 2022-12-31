@@ -148,7 +148,7 @@ RPGTower:
 	# 	LifeTime: 12
 	# 	Width: 0.11
 	Warhead@ShockWave:	CreateEffect #ShockWave
-		Image: shockground
+		Image: twist
 		Explosions: shockgroundarti
 		ExplosionPalette: twist
 		ForceDisplayAtGroundLevel: true
@@ -211,7 +211,7 @@ TitanRPG:
 	# 	LifeTime: 13
 	# 	Width: 0.11
 	Warhead@ShockWave:	CreateEffect #ShockWave
-		Image: shockground
+		Image: twist
 		Explosions: shockgroundarti
 		ExplosionPalette: twist
 		ForceDisplayAtGroundLevel: true
@@ -249,7 +249,7 @@ Jugg90mm:
 	# 	LifeTime: 11
 	# 	Width: 0.11
 	Warhead@ShockWave:	CreateEffect #ShockWave
-		Image: shockground
+		Image: twist
 		Explosions: shockgroundcannon
 		ExplosionPalette: twist
 		ForceDisplayAtGroundLevel: true

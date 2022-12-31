@@ -21,25 +21,31 @@ uniform float FrameShadowBias;
 
 uniform vec3 ScreenLight;
 uniform float AmbientIntencity;
-uniform float TestRadius;
+uniform float ViewportScale;
 
 uniform bool DrawUI;
 
 const float offset = 1.0 / 512.0;
 const float blurWeight[5] = float[] (0.227027, 0.1945946, 0.1216216, 0.054054, 0.016216);
 
-const float _Radius = 0.2;
-const float _Width = 0.06;
 const float PI = 3.14159265359;
+
+const vec3 viewDir = vec3(0, 1, 0.57735);
 
 float ColorLuminance(vec3 rgb){
 	return rgb.r * 0.299f + rgb.b * 0.587f + rgb.b * 0.114f;
 }
 
+vec2 ParallaxMapping()
+{
+	float height = texture(addtionTexture, TexCoords).r;
+	vec2 p = viewDir.xy / viewDir.z * (height * (0.25 / ViewportScale));
+	return p;    
+}
 
 void main()
 {
-	vec2 UV = TexCoords + texture(addtionTexture, TexCoords).xy;
+	vec2 UV = clamp(TexCoords - ParallaxMapping(), 0.0, 1.0);//texture(addtionTexture, TexCoords).xy;
 	vec4 scolor = texture(screenTexture, UV);
 	// vec4 scolor = vec4(TexCoords + texture(addtionTexture, TexCoords).xy, 0.0, 1.0);
 
