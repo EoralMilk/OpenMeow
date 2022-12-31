@@ -78,6 +78,8 @@ uniform int ShadowSampleType;
 uniform float AmbientIntencity;
 uniform vec2 ViewPort;
 
+uniform bool RemappingTwist;
+
 float CalShadow(DirLight light){
 	vec4 FragPos = InvCameraVP * vec4(gl_FragCoord.x/ViewPort.x * 2.0 - 1.0, gl_FragCoord.y/ViewPort.y * 2.0 - 1.0, gl_FragCoord.z * 2.0 - 1.0, 1.0);
 	FragPos = FragPos / FragPos.w;
@@ -362,12 +364,30 @@ void main()
 	// Discard any transparent fragments (both color and depth)
 	if (c.a == 0.0)
 		discard;
+
 	if (RenderDepthBuffer){
+		return;
+	}
+	
+	if (RemappingTwist)
+	{
+		// c = srgb2linear(c);
+		c.rgb = (c.rgb - 0.5) * 2.0;
+		c.rgb *= c.a * vTint.a;
+		// c *= vTint.a;
+		// c = vec4(1.0, 0, 0, 0);
+
+		#if __VERSION__ == 120
+		gl_FragColor = c;
+		#else
+		fragColor = c;
+		#endif
 		return;
 	}
 
 	if (vRGBAFraction.r > 0.0 && vTexMetadata.s > 0.0)
 		c = ColorShift(c, vTexMetadata.s);
+
 
 	// float depth = gl_FragCoord.z;
 	// if (length(vDepthMask) > 0.0)

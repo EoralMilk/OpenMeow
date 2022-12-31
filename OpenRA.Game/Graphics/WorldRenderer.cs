@@ -56,6 +56,11 @@ namespace OpenRA.Graphics
 		/// </summary>
 		readonly List<IFinalizedRenderable> preparedBlendRenderables = new List<IFinalizedRenderable>();
 
+		/// <summary>
+		/// screen twist renderables
+		/// </summary>
+		readonly List<IFinalizedRenderable> preparedTwistRenderables = new List<IFinalizedRenderable>();
+
 		readonly List<IFinalizedRenderable> preparedOverlayRenderables = new List<IFinalizedRenderable>();
 		readonly List<IFinalizedRenderable> preparedAnnotationRenderables = new List<IFinalizedRenderable>();
 
@@ -210,6 +215,8 @@ namespace OpenRA.Graphics
 						preparedNoneBlendRenderables.Add(renderable.PrepareRender(this));
 					else if (renderable.BlendMode == BlendMode.Alpha)
 						preparedRenderables.Add(renderable.PrepareRender(this)); // add alpha renderable to sort
+					else if (renderable.BlendMode == BlendMode.Twist)
+						preparedTwistRenderables.Add(renderable.PrepareRender(this));
 					else
 						preparedBlendRenderables.Add(renderable.PrepareRender(this));
 				}
@@ -388,7 +395,7 @@ namespace OpenRA.Graphics
 
 			Game.Renderer.Flush();
 
-			Game.Renderer.TestShock();
+			Game.Renderer.TestShock(preparedTwistRenderables, this);
 
 			// diable depth write to render other blend mode
 			Game.Renderer.EnableDepthWrite(false);
@@ -454,6 +461,8 @@ namespace OpenRA.Graphics
 					preparedRenderables[i].RenderDebugGeometry(this);
 				for (var i = 0; i < preparedBlendRenderables.Count; i++)
 					preparedBlendRenderables[i].RenderDebugGeometry(this);
+				for (var i = 0; i < preparedTwistRenderables.Count; i++)
+					preparedTwistRenderables[i].RenderDebugGeometry(this);
 
 				for (var i = 0; i < preparedOverlayRenderables.Count; i++)
 					preparedOverlayRenderables[i].RenderDebugGeometry(this);
@@ -490,6 +499,7 @@ namespace OpenRA.Graphics
 			preparedRenderables.Clear();
 			preparedMapAdditonRenderables.Clear();
 			preparedBlendRenderables.Clear();
+			preparedTwistRenderables.Clear();
 
 			preparedOverlayRenderables.Clear();
 			preparedAnnotationRenderables.Clear();

@@ -48,6 +48,11 @@ namespace OpenRA
 		Translucent,
 		ScreenAdditive,
 		EffectAlpha,
+
+		/// <summary>
+		/// use for screen twist
+		/// </summary>
+		Twist,
 	}
 
 	public enum DepthFunc : byte

@@ -323,7 +323,7 @@ namespace OpenRA
 			MapRenderer.SetCameraParams(World3DRenderer, false);
 		}
 
-		public void TestShock()
+		public void TestShock(List<IFinalizedRenderable> twistRenderables, WorldRenderer wr)
 		{
 			worldBuffer.Unbind();
 
@@ -331,15 +331,31 @@ namespace OpenRA
 			worldAdditonalBuffer.Bind();
 
 			Game.Renderer.SetFaceCull(FaceCullFunc.None);
-			Game.Renderer.EnableDepthWrite(true);
+			Game.Renderer.EnableDepthWrite(false);
 			Game.Renderer.DisableDepthTest();
+			Game.Renderer.Context.SetBlendMode(BlendMode.Additive);
+			//SpriteRenderer.Shader.SetBool("RemappingTwist", true);
+			WorldSpriteRenderer.Shader.SetBool("RemappingTwist", true);
+
+			for (var i = 0; i < twistRenderables.Count; i++)
+			{
+				twistRenderables[i].Render(wr);
+			}
+
+			//SpriteRenderer.Flush(BlendMode.Additive);
+			WorldSpriteRenderer.Flush(BlendMode.Additive);
+			Flush();
 
 			// ShockRenderer.DrawShockWave(Game.GetWorldRenderer().Viewport.CenterPosition, (float)(Game.LocalTick % 50 + 1) / 50f, 0.1f, 24);
+			// ShockRenderer.Render();
 
-			ShockRenderer.Render();
+			Game.Renderer.Context.SetBlendMode(BlendMode.None);
 
 			Game.Renderer.EnableDepthBuffer();
 			Game.Renderer.EnableDepthWrite(true);
+
+			//SpriteRenderer.Shader.SetBool("RemappingTwist", false);
+			WorldSpriteRenderer.Shader.SetBool("RemappingTwist", false);
 
 			worldAdditonalBuffer.Unbind();
 

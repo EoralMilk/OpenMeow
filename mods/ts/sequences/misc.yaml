@@ -1215,6 +1215,12 @@ fxring:
 		Frames: 0,0,0,0,0,  0,0,0,0,0,  0,0,0,0,0
 		AlphaFade: True
 		Scale: 0.1
+	twistring: FX_twistring.png
+		Frames: 0,0,0,0,0,  0,0,0,0,0,  0,0,0,0,0
+		AlphaFade: True
+		Scale: 0.4
+		BlendMode: Twist
+		ZOffset: 0
 
 lineidle_loop:
 	Defaults:
@@ -1264,3 +1270,82 @@ litning:
 		Frames: 0,1,2, 0,1,2, 0,1,2, 0,1,2
 	litning3: litning3
 		Frames: 0,1,2, 0,1,2, 0,1,2, 0,1,2
+
+shockground:
+	Defaults:
+		Length: *
+		BlendMode: Twist
+		ZOffset: 0
+		Tick: 100
+		IgnoreWorldTint: true
+		MeshType: Board
+		AddExtension: false
+		Alpha: 0.4
+		Combine:
+			shockground0000.png:
+				AddExtension: false
+			shockground0001.png:
+				AddExtension: false
+			shockground0002.png:
+				AddExtension: false
+			shockground0003.png:
+				AddExtension: false
+			shockground0004.png:
+				AddExtension: false
+			shockground0005.png:
+				AddExtension: false
+			shockground0006.png:
+				AddExtension: false
+			shockground0007.png:
+				AddExtension: false
+			shockground0008.png:
+				AddExtension: false
+			shockground0009.png:
+				AddExtension: false
+			shockground0010.png:
+				AddExtension: false
+	shockground:
+	shockgroundcannon:
+		Scale: 0.25
+		Tick: 35
+		Alpha: 0.2
+	shockgroundarti:
+		Scale: 0.4
+		Tick: 45
+		Alpha: 0.3
+
+
+shock:
+	Defaults:
+		Length: *
+		BlendMode: Twist
+		ZOffset: 0
+		Tick: 100
+		IgnoreWorldTint: true
+		MeshType: Board
+		AddExtension: false
+		Alpha: 0.4
+		Combine:
+			shock0000.png:
+				AddExtension: false
+			shock0001.png:
+				AddExtension: false
+			shock0002.png:
+				AddExtension: false
+			shock0003.png:
+				AddExtension: false
+			shock0004.png:
+				AddExtension: false
+			shock0005.png:
+				AddExtension: false
+			shock0006.png:
+				AddExtension: false
+			shock0007.png:
+				AddExtension: false
+			shock0008.png:
+				AddExtension: false
+			shock0009.png:
+				AddExtension: false
+			shock0010.png:
+				AddExtension: false
+	shock:

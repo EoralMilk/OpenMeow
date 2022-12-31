@@ -320,3 +320,8 @@
 		Base: blast-additive
 		Name: blast-green
 		Color: 00BB00
+
+	PaletteFromFile@Twist:
+		Name: twist
+		Filename: twist.pal
+		AllowModifiers: false
