@@ -1276,7 +1276,7 @@ shockground:
 		Length: *
 		BlendMode: Twist
 		ZOffset: 0
-		Tick: 100
+		Tick: 80
 		IgnoreWorldTint: true
 		MeshType: Board
 		AddExtension: false
