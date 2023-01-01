@@ -353,6 +353,20 @@ Container@DISPLAY_PANEL:
 									Height: 25
 									Font: Regular
 									Text: ---
+
+				Container@ROW:
+					Width: PARENT_RIGHT - 24
+					Height: 50
+					Children:
+						Container@FxAA_CHECKBOX_CONTAINER:
+							X: 10
+							Width: PARENT_RIGHT / 2 - 20
+							Children:
+								Checkbox@FxAA_CHECKBOX:
+									Width: PARENT_RIGHT
+									Height: 20
+									Font: Regular
+									Text: Enable FxAA
 				Container@ROW:
 					Width: PARENT_RIGHT - 24
 					Height: 30

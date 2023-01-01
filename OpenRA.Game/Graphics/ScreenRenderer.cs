@@ -78,15 +78,6 @@ namespace OpenRA.Graphics
 			SetScreenLight(Color.White);
 		}
 
-		public void DrawScreen(Sprite screenSprite, BlendMode blendMode = BlendMode.None)
-		{
-			shader.SetTexture("screenTexture", screenSprite.Sheet.GetTexture());
-			renderer.Context.SetBlendMode(blendMode);
-			shader.PrepareRender();
-			renderer.DrawBatch(shader, vBuffer, 0, 6, PrimitiveType.TriangleList);
-			renderer.Context.SetBlendMode(BlendMode.None);
-		}
-
 		public void SetShadowParams(ITexture shadowDepth, ITexture screenDepth, World3DRenderer wr)
 		{
 			shader.SetTexture("screenDepthTexture", screenDepth);
@@ -110,6 +101,9 @@ namespace OpenRA.Graphics
 			shader.SetTexture("screenTexture", screenTexture);
 			shader.SetTexture("addtionTexture", additionTexture);
 			shader.SetFloat("ViewportScale", renderer.World3DRenderer.ViewportSize.X / Game.Renderer.NativeResolution.Width);
+			shader.SetBool("FxAA", Game.Settings.Graphics.FxAA);
+			shader.SetVec("FxAA_texelStep", 1f / renderer.NativeResolution.Width, 1f / renderer.NativeResolution.Height);
+
 			// Console.WriteLine("viewport.Zoom: " + viewport.Zoom + "  viewport.MinZoom: " + viewport.MinZoom);
 
 			renderer.Context.SetBlendMode(blendMode);

@@ -235,6 +235,8 @@ namespace OpenRA
 
 		[Desc("Max Size of the Editor Brush History Cache.")]
 		public readonly int EditorBrushMaxHistoryCache = 32;
+
+		public bool FxAA = false;
 	}
 
 	public enum ShadowSampleType

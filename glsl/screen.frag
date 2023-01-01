@@ -24,6 +24,16 @@ uniform float AmbientIntencity;
 uniform float ViewportScale;
 
 uniform bool DrawUI;
+uniform bool FxAA;
+uniform vec2 FxAA_texelStep;
+// uniform bool FxAADrawEdge;
+const float g_lumaThreshold = 0.5;
+const float g_mulReduceReciprocal = 8.0;
+const float g_minReduceReciprocal = 128.0;
+const float FxAA_lumaThreshold = g_lumaThreshold;
+const float FxAA_mulReduce = 1.0 / g_mulReduceReciprocal;
+const float FxAA_minReduce = 1.0 / g_minReduceReciprocal;
+const float FxAA_maxSpan = 8.0;
 
 const float offset = 1.0 / 512.0;
 const float blurWeight[5] = float[] (0.227027, 0.1945946, 0.1216216, 0.054054, 0.016216);
@@ -45,23 +55,25 @@ vec2 ParallaxMapping()
 
 void main()
 {
-	vec2 UV = clamp(TexCoords - ParallaxMapping(), 0.0, 1.0);//texture(addtionTexture, TexCoords).xy;
-	vec4 scolor = texture(screenTexture, UV);
-	// vec4 scolor = vec4(TexCoords + texture(addtionTexture, TexCoords).xy, 0.0, 1.0);
-
 	if (DrawUI)
 	{
+		vec4 scolor = texture(screenTexture, TexCoords);
 		if (scolor.a < 0.0001)
 			discard;
 		FragColor = scolor;
 		return;
 	}
 
-	vec3 col = scolor.rgb;
+	vec2 UV = clamp(TexCoords - ParallaxMapping(), 0.0, 1.0);//texture(addtionTexture, TexCoords).xy;
 
-	if (FrameBufferShadow || FrameBufferPosition){
-		float depth = texture(screenDepthTexture, TexCoords).r;
+	// vec4 scolor = vec4(TexCoords + texture(addtionTexture, TexCoords).xy, 0.0, 1.0);
 
+
+	if	(FrameBufferShadow || FrameBufferPosition)
+	{
+		vec4 scolor = texture(screenTexture, UV);
+		float depth = texture(screenDepthTexture, UV).r;
+		vec3 col = scolor.rgb;
 		if (depth >= 0.99999)
 			discard;
 
@@ -104,6 +116,93 @@ void main()
 			return;
 		}
 	}
+	else if (!FxAA)
+	{
+		vec4 scolor = texture(screenTexture, UV);
+		FragColor = scolor;
+		return;
+	}
+
+	vec3 rgbM = texture(screenTexture, UV).rgb;
+
+	// Sampling neighbour texels. Offsets are adapted to OpenGL texture coordinates. 
+	vec3 rgbNW = textureOffset(screenTexture, UV, ivec2(-1, 1)).rgb;
+    vec3 rgbNE = textureOffset(screenTexture, UV, ivec2(1, 1)).rgb;
+    vec3 rgbSW = textureOffset(screenTexture, UV, ivec2(-1, -1)).rgb;
+    vec3 rgbSE = textureOffset(screenTexture, UV, ivec2(1, -1)).rgb;
+
+	// see http://en.wikipedia.org/wiki/Grayscale
+	const vec3 toLuma = vec3(0.299, 0.587, 0.114);
+	
+	// Convert from RGB to luma.
+	float lumaNW = dot(rgbNW, toLuma);
+	float lumaNE = dot(rgbNE, toLuma);
+	float lumaSW = dot(rgbSW, toLuma);
+	float lumaSE = dot(rgbSE, toLuma);
+	float lumaM = dot(rgbM, toLuma);
+
+	// Gather minimum and maximum luma.
+	float lumaMin = min(lumaM, min(min(lumaNW, lumaNE), min(lumaSW, lumaSE)));
+	float lumaMax = max(lumaM, max(max(lumaNW, lumaNE), max(lumaSW, lumaSE)));
+	
+	// If contrast is lower than a maximum threshold ...
+	if (lumaMax - lumaMin <= lumaMax * FxAA_lumaThreshold)
+	{
+		// ... do no AA and return.
+		FragColor = vec4(rgbM, 1.0);
+		
+		return;
+	}  
+	
+	// Sampling is done along the gradient.
+	vec2 samplingDirection;	
+	samplingDirection.x = -((lumaNW + lumaNE) - (lumaSW + lumaSE));
+    samplingDirection.y =  ((lumaNW + lumaSW) - (lumaNE + lumaSE));
+    
+    // Sampling step distance depends on the luma: The brighter the sampled texels, the smaller the final sampling step direction.
+    // This results, that brighter areas are less blurred/more sharper than dark areas.  
+    float samplingDirectionReduce = max((lumaNW + lumaNE + lumaSW + lumaSE) * 0.25 * FxAA_mulReduce, FxAA_minReduce);
+
+	// Factor for norming the sampling direction plus adding the brightness influence. 
+	float minSamplingDirectionFactor = 1.0 / (min(abs(samplingDirection.x), abs(samplingDirection.y)) + samplingDirectionReduce);
+    
+    // Calculate final sampling direction vector by reducing, clamping to a range and finally adapting to the texture size. 
+    samplingDirection = clamp(samplingDirection * minSamplingDirectionFactor, vec2(-FxAA_maxSpan), vec2(FxAA_maxSpan)) * FxAA_texelStep;
+	
+	// Inner samples on the tab.
+	vec3 rgbSampleNeg = texture(screenTexture, UV + samplingDirection * (1.0/3.0 - 0.5)).rgb;
+	vec3 rgbSamplePos = texture(screenTexture, UV + samplingDirection * (2.0/3.0 - 0.5)).rgb;
+
+	vec3 rgbTwoTab = (rgbSamplePos + rgbSampleNeg) * 0.5;  
+
+	// Outer samples on the tab.
+	vec3 rgbSampleNegOuter = texture(screenTexture, UV + samplingDirection * (0.0/3.0 - 0.5)).rgb;
+	vec3 rgbSamplePosOuter = texture(screenTexture, UV + samplingDirection * (3.0/3.0 - 0.5)).rgb;
+	
+	vec3 rgbFourTab = (rgbSamplePosOuter + rgbSampleNegOuter) * 0.25 + rgbTwoTab * 0.5;   
+	
+	// Calculate luma for checking against the minimum and maximum value.
+	float lumaFourTab = dot(rgbFourTab, toLuma);
+	
+	// Are outer samples of the tab beyond the edge ... 
+	if (lumaFourTab < lumaMin || lumaFourTab > lumaMax)
+	{
+		// ... yes, so use only two samples.
+		FragColor = vec4(rgbTwoTab, 1.0); 
+	}
+	else
+	{
+		// ... no, so use four samples. 
+		FragColor = vec4(rgbFourTab, 1.0);
+	}
+
+	// Show edges for debug purposes.	
+	// if (u_showEdges != 0)
+	// {
+	// 	FragColor.r = 1.0;
+	// }
+
+	FragColor.rgb *= ScreenLight;
 
 	// Blur the pixels when they are bright enough
 	// float light = ColorLuminance(col);
@@ -194,6 +293,4 @@ void main()
 	// 	1.0f, -8.0f, 1.0f,
 	// 	1.0f, 1.0f, 1.0f
 	// );
-
-	FragColor = vec4(ScreenLight * col, 1.0);
 }
