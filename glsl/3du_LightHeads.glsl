@@ -38,6 +38,7 @@ uniform float AmbientIntencity;
 uniform bool IsTwist;
 uniform float TwistTime;
 uniform float TwistMul;
+uniform vec2 TwistScreenSize;
 
 vec4 color, combined;
 float shininess;

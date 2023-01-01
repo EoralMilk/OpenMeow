@@ -216,6 +216,7 @@ namespace OpenRA.Mods.Cnc.Graphics
 			renderData.Shader.SetBool("IsTwist", drawType == MeshDrawType.Twist);
 			renderData.Shader.SetFloat("TwistTime", Game.Renderer.TwistTime);
 			renderData.Shader.SetFloat("TwistMul", Game.Renderer.TwistMul);
+			renderData.Shader.SetVec("TwistScreenSize", Game.Renderer.TwistScreenSize.X, Game.Renderer.TwistScreenSize.Y);
 
 			renderData.Shader.SetTexture("Palette", palette);
 

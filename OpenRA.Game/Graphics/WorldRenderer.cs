@@ -358,7 +358,9 @@ namespace OpenRA.Graphics
 				Game.Renderer.TwistTime = Game.Renderer.TwistTime * 2.0f;
 			}
 
-			Game.Renderer.TwistMul = float2.Lerp(0.35f, 1f, Game.Renderer.TwistTime);
+			Game.Renderer.TwistMul = float2.Lerp(0.25f, 0.75f, Game.Renderer.TwistTime) * 0.04f;
+
+			Game.Renderer.TwistScreenSize = new float2(Game.Renderer.NativeResolution.Width + 1f, Game.Renderer.NativeResolution.Height + 1f) / 80f;
 
 			debugVis.Value?.UpdateDepthBuffer();
 

@@ -515,6 +515,7 @@ namespace OpenRA
 
 		public float TwistTime = 0;
 		public float TwistMul = 0;
+		public float2 TwistScreenSize = float2.Zero;
 
 		public Size Resolution => Window.EffectiveWindowSize;
 		public Size NativeResolution => Window.NativeWindowSize;

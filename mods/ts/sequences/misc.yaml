@@ -1295,15 +1295,15 @@ twist:
 		IgnoreWorldTint: true
 		MeshType: Plane
 	shockground: shockground
-		Alpha: 0.4
+		Alpha: 0.05
 	shockgroundcannon: shockground
 		Scale: 0.25
 		Tick: 35
-		Alpha: 0.2
+		Alpha: 0.02
 	shockgroundarti: shockground
 		Scale: 0.4
 		Tick: 45
-		Alpha: 0.3
+		Alpha: 0.03
 	cloakshock: shockground
 		Scale: 0.3
 		Tick: 33
