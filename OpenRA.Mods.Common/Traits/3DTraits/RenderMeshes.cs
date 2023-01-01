@@ -104,8 +104,11 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 				}
 			}
 
+			var tint = float3.Ones;
+			if (twist)
+				tint = 0.5f * Color.ToFloat3(remap) + float3.Half;
 			if (created && meshes != null && meshes.Count > 0)
-				yield return new MeshRenderable(meshes, self.CenterPosition, Info.ZOffset, remap, Info.Scale, RenderAlpha, float3.Ones, TintModifiers.None, this, twist);
+				yield return new MeshRenderable(meshes, self.CenterPosition, Info.ZOffset, remap, Info.Scale, RenderAlpha, tint, TintModifiers.None, this, twist);
 		}
 
 		IEnumerable<Rectangle> IRender.ScreenBounds(Actor self, WorldRenderer wr)

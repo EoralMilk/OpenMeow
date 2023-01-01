@@ -60,7 +60,7 @@ uniform float AmbientIntencity;
 uniform vec2 ViewPort;
 uniform bool IsTwist;
 uniform float TwistTime;
-
+uniform float TwistMul;
 
 float CalShadow(DirLight light){
 	// vec4 FragPos = InvCameraVP * vec4(gl_FragCoord.x/ViewPort.x * 2.0 - 1.0, gl_FragCoord.y/ViewPort.y * 2.0 - 1.0, gl_FragCoord.z * 2.0 - 1.0, 1.0);
@@ -197,7 +197,7 @@ void main()
 		fragColor =vec4(result.rgb, color.a);
 
 		if (IsTwist){
-			AdditionFrag = vec4(vec3((snoise(vTexCoord.xy + vec2(TwistTime)) - 0.5) * vTint.a * -0.04 * TwistTime), vTint.a);
+			AdditionFrag = vec4(vec3((snoise(vTexCoord.xy + vec2(TwistTime)) - 0.5) * vTint.a * -0.01 * TwistMul), vTint.a);
 		}
 		else
 		{

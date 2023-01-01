@@ -179,12 +179,16 @@ namespace OpenRA.Mods.Common.Traits.Render
 				}
 			}
 
+			var tint = float3.Ones;
+			if (twist)
+				tint = 0.5f * Color.ToFloat3(self.Owner.Color) + float3.Half;
+
 			return new IRenderable[]
 			{
 				new ModelRenderable(
 					components, self.CenterPosition, Info.ZOffset, camera, ScaleOverride,
 					Info.LightAmbientColor, Info.LightDiffuseColor, Info.LightScale, Info.AmbientScale, Info.SpecularScale,
-					colorPalette, normalsPalette, shadowPalette, twist)
+					colorPalette, normalsPalette, shadowPalette, 1f, tint, TintModifiers.None, twist)
 			};
 		}
 

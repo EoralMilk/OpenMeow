@@ -455,6 +455,7 @@ namespace OpenRA.Graphics
 
 			Shader.SetBool("IsTwist", drawType == MeshDrawType.Twist);
 			Shader.SetFloat("TwistTime", Game.Renderer.TwistTime);
+			Shader.SetFloat("TwistMul", Game.Renderer.TwistMul);
 
 			BaseMaterial?.SetShaderAsBaseMaterial(Shader);
 

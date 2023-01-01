@@ -358,6 +358,8 @@ namespace OpenRA.Graphics
 				Game.Renderer.TwistTime = Game.Renderer.TwistTime * 2.0f;
 			}
 
+			Game.Renderer.TwistMul = float2.Lerp(0.35f, 1f, Game.Renderer.TwistTime);
+
 			debugVis.Value?.UpdateDepthBuffer();
 
 			// var bounds = Viewport.GetScissorBounds(World.Type != WorldType.Editor);

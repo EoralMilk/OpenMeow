@@ -64,6 +64,7 @@ namespace OpenRA
 
 		public static readonly float3 Zero = new float3(0, 0, 0);
 		public static readonly float3 Ones = new float3(1, 1, 1);
+		public static readonly float3 Half = new float3(0.5f, 0.5f, 0.5f);
 
 		public float LengthSquared => X * X + Y * Y + Z * Z;
 		public float Length => MathF.Sqrt(LengthSquared);
