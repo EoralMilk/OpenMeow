@@ -60,7 +60,6 @@ namespace OpenRA
 		Sprite screenSprite;
 
 		Size worldBufferSize;
-		IFrameBuffer worldAdditonalBuffer;
 		ITexture addtitionalTexture;
 		IFrameBuffer worldBuffer;
 		public IFrameBuffer WorldBuffer => worldBuffer;
@@ -246,21 +245,20 @@ namespace OpenRA
 			if (worldTexture == null || worldTexture.Size != worldBufferSize)
 			{
 				worldBuffer?.Dispose();
-				worldAdditonalBuffer?.Dispose();
 				worldShadowBuffer?.Dispose();
 
 				worldShadowBuffer = Context.CreateDepthFrameBuffer(new Size(Game.Settings.Graphics.ShadowTextureSize, Game.Settings.Graphics.ShadowTextureSize));
 				worldShadowDepthTexture = worldShadowBuffer.DepthTexture;
 
 				// If enableWorldFrameBufferDownscale and the world is more than twice the size of the final output size do we allow it to be downsampled!
-				worldBuffer = Context.CreateFrameBuffer(worldBufferSize);
 				addtitionalTexture?.Dispose();
 				addtitionalTexture = CreateInfoTexture(worldBufferSize);
-				worldAdditonalBuffer = Context.CreateFrameBuffer(worldBufferSize, new ITexture[1] { addtitionalTexture }, 1);
+				worldTexture?.Dispose();
+				worldTexture = Context.CreateInfoTexture(worldBufferSize);
+				worldBuffer = Context.CreateFrameBuffer(worldBufferSize, new ITexture[2] {worldTexture , addtitionalTexture}, 2, true);
 
 				// Pixel art scaling mode is a customized bilinear sampling
-				worldBuffer.Texture.ScaleFilter = TextureScaleFilter.Linear;
-				worldTexture = worldBuffer.Texture;
+				// worldBuffer.Texture.ScaleFilter = TextureScaleFilter.Linear;
 
 				// Invalidate cached state to force a shader update
 				lastWorldViewport = Rectangle.Empty;
@@ -312,7 +310,7 @@ namespace OpenRA
 			worldShadowBuffer.Bind();
 			Context.EnableDepthBuffer(DepthFunc.LessEqual);
 			Game.Renderer.EnableDepthWrite(true);
-			Draw3DMeshesInstance(wr, true, false);
+			Draw3DMeshesInstance(wr, true, MeshDrawType.Actor);
 
 			// MapRenderer.SetCameraParams(World3DRenderer, true);
 			// wr.TerrainRenderer?.RenderTerrainEarly(wr, wr.Viewport);
@@ -320,46 +318,6 @@ namespace OpenRA
 			Context.DisableDepthBuffer();
 			worldShadowBuffer.Unbind();
 			worldBuffer.Bind();
-			MapRenderer.SetCameraParams(World3DRenderer, false);
-		}
-
-		public void TestShock(List<IFinalizedRenderable> twistRenderables, WorldRenderer wr)
-		{
-			worldBuffer.Unbind();
-
-			// we don't want to clear the renderer result last bake, just paint on it.
-			worldAdditonalBuffer.Bind();
-
-			Game.Renderer.SetFaceCull(FaceCullFunc.None);
-			Game.Renderer.EnableDepthWrite(false);
-			Game.Renderer.DisableDepthTest();
-			Game.Renderer.Context.SetBlendMode(BlendMode.Additive);
-			//SpriteRenderer.Shader.SetBool("RemappingTwist", true);
-			WorldSpriteRenderer.Shader.SetBool("RemappingTwist", true);
-
-			for (var i = 0; i < twistRenderables.Count; i++)
-			{
-				twistRenderables[i].Render(wr);
-			}
-
-			//SpriteRenderer.Flush(BlendMode.Additive);
-			WorldSpriteRenderer.Flush(BlendMode.Additive);
-			Flush();
-
-			// ShockRenderer.DrawShockWave(Game.GetWorldRenderer().Viewport.CenterPosition, (float)(Game.LocalTick % 50 + 1) / 50f, 0.1f, 24);
-			// ShockRenderer.Render();
-
-			Game.Renderer.Context.SetBlendMode(BlendMode.None);
-
-			Game.Renderer.EnableDepthBuffer();
-			Game.Renderer.EnableDepthWrite(true);
-
-			//SpriteRenderer.Shader.SetBool("RemappingTwist", false);
-			WorldSpriteRenderer.Shader.SetBool("RemappingTwist", false);
-
-			worldAdditonalBuffer.Unbind();
-
-			worldBuffer.BindNoClear();
 			MapRenderer.SetCameraParams(World3DRenderer, false);
 		}
 
@@ -396,7 +354,7 @@ namespace OpenRA
 			shader.SetInt("ShadowSampleType", (int)sampleType);
 		}
 
-		public void Draw3DMeshesInstance(WorldRenderer wr, bool sunCamera, bool renderEffect)
+		public void Draw3DMeshesInstance(WorldRenderer wr, bool sunCamera, MeshDrawType drawType)
 		{
 			// update common shader uniform param
 			foreach (var shader in orderedMeshShaders)
@@ -413,7 +371,7 @@ namespace OpenRA
 			// vxl
 			foreach (var orderedMesh in orderedMeshes)
 			{
-				orderedMesh.Value.DrawInstances(wr.World, sunCamera, renderEffect ? MeshDrawType.Effect : MeshDrawType.Actor);
+				orderedMesh.Value.DrawInstances(wr.World, sunCamera, drawType);
 			}
 
 			// update common shader shadow sample type
@@ -426,7 +384,7 @@ namespace OpenRA
 			}
 
 			// mesh
-			wr.World.MeshCache.DrawInstances(wr.World, sunCamera, renderEffect ? MeshDrawType.Effect : MeshDrawType.Actor);
+			wr.World.MeshCache.DrawInstances(wr.World, sunCamera, drawType);
 		}
 
 		public void RenderInstance(int start, int numVertices, int numInstance, bool elemented = false)
@@ -442,7 +400,7 @@ namespace OpenRA
 				// Complete world rendering
 				Flush();
 				worldBuffer.Unbind();
-				ScreenRenderer.DrawScreen(worldBuffer.Texture, addtitionalTexture);
+				ScreenRenderer.DrawScreen(worldTexture, addtitionalTexture);
 			}
 
 			renderType = RenderType.World;
@@ -555,6 +513,7 @@ namespace OpenRA
 			CurrentBatchRenderer = null;
 		}
 
+		public float TwistTime = 0;
 		public Size Resolution => Window.EffectiveWindowSize;
 		public Size NativeResolution => Window.NativeWindowSize;
 		public float WindowScale => Window.EffectiveWindowScale;
@@ -736,7 +695,7 @@ namespace OpenRA
 
 		public void SaveScreenshot(string path)
 		{
-			var worldsrc = worldBuffer.Texture.GetData();
+			var worldsrc = worldTexture.GetData();
 			var worldsrcWidth = worldTexture.Size.Width;
 			var worldsrcHeight = worldTexture.Size.Height;
 			var worlddestHeight = -worldTexture.Size.Height;

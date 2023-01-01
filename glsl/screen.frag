@@ -64,7 +64,7 @@ void main()
 		return;
 	}
 
-	vec2 UV = clamp(TexCoords - ParallaxMapping(), 0.0, 1.0);//texture(addtionTexture, TexCoords).xy;
+	vec2 UV = clamp(TexCoords - ParallaxMapping(), 0.0, 1.0);
 
 	// vec4 scolor = vec4(TexCoords + texture(addtionTexture, TexCoords).xy, 0.0, 1.0);
 

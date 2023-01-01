@@ -661,6 +661,10 @@ STNK:
 		UncloakOn: Attack, Unload, Infiltrate, Demolish, Damage, Heal
 		PauseOnCondition: cloak-force-disabled || empdisable
 		CloakType: nod-stealth
+		EffectImage: twist
+		CloakEffectSequence: cloakshock
+		UncloakEffectSequence: cloakshock
+		EffectPalette: twist
 	GrantConditionOnDamageState@UNCLOAK:
 		Condition: cloak-force-disabled
 		ValidDamageStates: Critical

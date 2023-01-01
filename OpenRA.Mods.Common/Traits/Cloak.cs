@@ -96,6 +96,7 @@ namespace OpenRA.Mods.Common.Traits
 
 	public class Cloak : PausableConditionalTrait<CloakInfo>, IRenderModifier, INotifyDamage, INotifyUnload, INotifyDemolition, INotifyInfiltration,
 		INotifyAttack, ITick, IVisibilityModifier, IRadarColorModifier, INotifyCreated, INotifyHarvesterAction, INotifyBeingResupplied
+		, ITwistActorMesh
 	{
 		[Sync]
 		int remainingTime;
@@ -134,6 +135,8 @@ namespace OpenRA.Mods.Common.Traits
 		}
 
 		public bool Cloaked => !IsTraitDisabled && !IsTraitPaused && remainingTime <= 0;
+
+		public bool IsTwisting => Cloaked;
 
 		public void Uncloak() { Uncloak(Info.CloakDelay); }
 

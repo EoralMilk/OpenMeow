@@ -9,11 +9,13 @@ precision lowp sampler2DArray;
 3du_Struct.glsl
 3du_LightHeads.glsl
 3df_Util.glsl
-3df_Shadow.glsl
+3df_Noise.glsl
 3df_LightMain.glsl
 #End Include
 
 {3du_Struct.glsl}
+
+{3df_Noise.glsl}
 
 {3du_LightHeads.glsl}
 

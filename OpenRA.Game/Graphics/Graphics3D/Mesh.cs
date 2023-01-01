@@ -6,7 +6,6 @@ using OpenRA.Primitives;
 
 namespace OpenRA.Graphics
 {
-
 	public class MeshInstance
 	{
 		public IOrderedMesh OrderedMesh { get; }
@@ -73,10 +72,10 @@ namespace OpenRA.Graphics
 		{
 			var spos = wr.Screen3DPxPosition(wPos);
 
-			return Rectangle.FromLTRB(	(int)(spos.X + OrderedMesh.BoundingRec.Left * scale),
-															(int)(spos.Y + OrderedMesh.BoundingRec.Top * scale),
-															(int)(spos.X + OrderedMesh.BoundingRec.Right * scale),
-															(int)(spos.Y + OrderedMesh.BoundingRec.Bottom * scale));
+			return Rectangle.FromLTRB((int)(spos.X + OrderedMesh.BoundingRec.Left * scale),
+														(int)(spos.Y + OrderedMesh.BoundingRec.Top * scale),
+														(int)(spos.X + OrderedMesh.BoundingRec.Right * scale),
+														(int)(spos.Y + OrderedMesh.BoundingRec.Bottom * scale));
 		}
 	}
 
@@ -84,6 +83,12 @@ namespace OpenRA.Graphics
 	{
 		Actor,
 		Effect,
+		Twist,
+	}
+
+	public interface ITwistActorMesh
+	{
+		bool IsTwisting { get; }
 	}
 
 	public interface IOrderedMesh
@@ -92,6 +97,8 @@ namespace OpenRA.Graphics
 		IMaterial DefaultMaterial { get; }
 		OrderedSkeleton Skeleton { get; set; }
 		void AddInstanceData(in float[] data, int dataCount, in int[] dataInt, int dataIntCount);
+		void AddTwistInstanceData(in float[] data, int dataCount, in int[] dataInt, int dataIntCount);
+
 		void Flush();
 		void DrawInstances(World world, bool shadowBuffser, MeshDrawType drawType);
 		void SetPalette(ITexture pal);
@@ -141,7 +148,7 @@ namespace OpenRA.Graphics
 		readonly int diffuseTint;
 		readonly int combineTint;
 
-		int texSize;
+		readonly int texSize;
 
 		public CombinedMaterial(string name,
 			Sheet diffuseMap, float3 diffuseTint,
@@ -338,7 +345,10 @@ namespace OpenRA.Graphics
 		public string Name => name;
 
 		readonly MeshInstanceData[] instancesToDraw;
+		readonly MeshInstanceData[] twistInstancesToDraw;
+
 		int instanceCount;
+		int twistInstanceCount;
 		public IVertexBuffer<MeshInstanceData> InstanceArrayBuffer;
 		public Rectangle BoundingRec => renderData.BoundingRec;
 
@@ -350,7 +360,9 @@ namespace OpenRA.Graphics
 			renderData = data;
 			InstanceArrayBuffer = Game.Renderer.CreateVertexBuffer<MeshInstanceData>(MaxInstanceCount);
 			instancesToDraw = new MeshInstanceData[MaxInstanceCount];
+			twistInstancesToDraw = new MeshInstanceData[MaxInstanceCount];
 			instanceCount = 0;
+			twistInstanceCount = 0;
 			FaceCull = orderedMeshInfo.FaceCullFunc;
 			BlendMode = orderedMeshInfo.BlendMode;
 			defaultMaterial = orderedMeshInfo.DefaultMaterial;
@@ -392,9 +404,23 @@ namespace OpenRA.Graphics
 			instanceCount++;
 		}
 
+		public void AddTwistInstanceData(in float[] data, int dataCount, in int[] dataInt, int dataIntCount)
+		{
+			if (twistInstanceCount == MaxInstanceCount)
+				throw new Exception("Instance Count bigger than MaxInstanceCount");
+
+			if (dataCount != 23 || dataIntCount != 5)
+				throw new Exception("AddInstanceData params length unright ");
+
+			MeshInstanceData instanceData = new MeshInstanceData(data, dataInt[0], dataInt[1], dataInt[2], dataInt[3], dataInt[4]);
+			twistInstancesToDraw[twistInstanceCount] = instanceData;
+			twistInstanceCount++;
+		}
+
 		public void Flush()
 		{
 			instanceCount = 0;
+			twistInstanceCount = 0;
 		}
 
 		public void SetPalette(ITexture pal)
@@ -405,11 +431,11 @@ namespace OpenRA.Graphics
 		{
 			if (shadowBuffer && !HasShadow)
 				return;
-			if (MeshDrawType != drawType)
+			if (drawType == MeshDrawType.Twist && twistInstanceCount == 0)
+				return;
+			else if (drawType != MeshDrawType.Twist && (MeshDrawType != drawType || instanceCount == 0))
 				return;
 
-			if (instanceCount == 0)
-				return;
 			if (shadowBuffer && FaceCull == FaceCullFunc.Back)
 				Game.Renderer.SetFaceCull(FaceCullFunc.Front);
 			else
@@ -427,6 +453,9 @@ namespace OpenRA.Graphics
 					Shader.SetMatrix("BindTransformData", Skeleton.BindTransformData, 128);
 			}
 
+			Shader.SetBool("IsTwist", drawType == MeshDrawType.Twist);
+			Shader.SetFloat("TwistTime", Game.Renderer.TwistTime);
+
 			BaseMaterial?.SetShaderAsBaseMaterial(Shader);
 
 			if (world.MeshCache.TextureArray64 != null)
@@ -442,7 +471,10 @@ namespace OpenRA.Graphics
 
 			Shader.PrepareRender();
 
-			InstanceArrayBuffer.SetData(instancesToDraw, instanceCount);
+			if (drawType == MeshDrawType.Twist)
+				InstanceArrayBuffer.SetData(twistInstancesToDraw, twistInstanceCount);
+			else
+				InstanceArrayBuffer.SetData(instancesToDraw, instanceCount);
 			InstanceArrayBuffer.Bind();
 			Shader.LayoutInstanceArray();
 
@@ -454,7 +486,7 @@ namespace OpenRA.Graphics
 			Game.Renderer.SetBlendMode(BlendMode);
 
 			// draw instance, this is elemented
-			Game.Renderer.RenderInstance(0, renderData.Count, instanceCount, true);
+			Game.Renderer.RenderInstance(0, renderData.Count, drawType == MeshDrawType.Twist ? twistInstanceCount : instanceCount, true);
 			Game.Renderer.SetBlendMode(BlendMode.None);
 			Game.Renderer.SetFaceCull(FaceCullFunc.None);
 		}

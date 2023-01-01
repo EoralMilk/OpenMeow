@@ -3,6 +3,12 @@
 precision mediump float;
 #endif
 
+#Include:
+3df_Noise.glsl
+#End Include
+
+{3df_Noise.glsl}
+
 uniform sampler2D Palette, DiffuseTexture;
 // uniform vec2 PaletteRows;
 // uniform vec2 VplInfo;
@@ -29,7 +35,9 @@ in vec4 vTint;
 in vec3 vLightModify;
 in vec3 vFragPos;
 
-out vec4 fragColor;
+// out vec4 fragColor;
+layout (location = 0) out vec4 fragColor;
+layout (location = 1) out vec4 AdditionFrag;
 // #endif
 
 struct DirLight {
@@ -50,6 +58,9 @@ uniform float ShadowBias;
 uniform int ShadowSampleType;
 uniform float AmbientIntencity;
 uniform vec2 ViewPort;
+uniform bool IsTwist;
+uniform float TwistTime;
+
 
 float CalShadow(DirLight light){
 	// vec4 FragPos = InvCameraVP * vec4(gl_FragCoord.x/ViewPort.x * 2.0 - 1.0, gl_FragCoord.y/ViewPort.y * 2.0 - 1.0, gl_FragCoord.z * 2.0 - 1.0, 1.0);
@@ -129,10 +140,16 @@ float CalShadow(DirLight light){
 	return shadow;
 }
 
-
 // Strangely, the VXL is too bright when scale smaller , so make color darker
 vec3 CalcDirLight(DirLight light, vec3 normal, vec3 viewDir, vec3 color)
 {
+	if (vTint.a < 0.0f)
+		fragColor = vec4(vTint.rgb, -vTint.a);
+	else
+	{
+		fragColor *= vTint;
+	}
+
 	vec3 lightDir = -light.direction;
 	// diffuse
 	float diff = max(dot(normal, lightDir), 0.0);
@@ -161,13 +178,6 @@ void main()
 	if (RenderDepthBuffer){
 		return;
 	}
-
-	if (vTint.a < 0.0f)
-		color = vec4(vTint.rgb, -vTint.a);
-	else
-	{
-		color *= vTint;
-	}
 	
 	if (EnableDepthPreview)
 	{
@@ -187,6 +197,14 @@ void main()
 		vec3 result = vec3(0);
 		result = CalcDirLight(dirLight, worldNormal, viewDir, color.xyz);
 		fragColor =vec4(result.rgb, color.a);
+
+		if (IsTwist){
+			AdditionFrag = vec4(vec3((snoise(vTexCoord.xy + vec2(TwistTime)) - 0.5) * vTint.a * -0.04 * TwistTime), vTint.a);
+		}
+		else
+		{
+			AdditionFrag = vec4(0,0,0,1.0);
+		}
 	}
 }
 

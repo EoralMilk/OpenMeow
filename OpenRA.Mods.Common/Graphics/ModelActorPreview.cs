@@ -83,7 +83,7 @@ namespace OpenRA.Mods.Common.Graphics
 		{
 			yield return new ModelRenderable(components, pos + offset, zOffset, camera, scale,
 				lightAmbientColor, lightDiffuseColor, LightScale, AmbientScale, SpecularScale,
-				colorPalette, normalsPalette, shadowPalette);
+				colorPalette, normalsPalette, shadowPalette, false);
 		}
 
 		IEnumerable<Rectangle> IActorPreview.ScreenBounds(WorldRenderer wr, WPos pos)

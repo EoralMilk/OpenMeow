@@ -474,8 +474,22 @@ STCMMDO:
 	UnitDisplayInfo:
 		IconSequence: pic
 		IconScale: 1
-
-
+	Cloak:
+		InitialDelay: 90
+		CloakDelay: 90
+		CloakSound: cloak5.aud
+		UncloakSound: cloak5.aud
+		IsPlayerPalette: true
+		UncloakOn: Attack, Unload, Infiltrate, Demolish, Damage, Heal
+		PauseOnCondition: cloak-force-disabled || empdisable
+		CloakType: nod-stealth
+		EffectImage: twist
+		CloakEffectSequence: cloakshock
+		UncloakEffectSequence: cloakshock
+		EffectPalette: twist
+	GrantConditionOnDamageState@UNCLOAK:
+		Condition: cloak-force-disabled
+		ValidDamageStates: Critical
 
 RUTEST:
 	Inherits: ^Vehicle

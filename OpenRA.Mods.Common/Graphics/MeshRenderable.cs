@@ -23,7 +23,7 @@ namespace OpenRA.Mods.Common.Graphics
 		readonly IEnumerable<MeshInstance> meshes;
 		readonly WPos pos;
 		readonly int zOffset;
-
+		readonly bool twist;
 		readonly Color remap;
 		readonly float scale;
 		readonly float alpha;
@@ -33,13 +33,13 @@ namespace OpenRA.Mods.Common.Graphics
 		public BlendMode BlendMode => BlendMode.None;
 
 		public MeshRenderable(
-			IEnumerable<MeshInstance> meshes, WPos pos, int zOffset, in Color remap, float scale, RenderMeshes renderMeshes)
-			: this(meshes, pos, zOffset, remap, scale, 1f, float3.Ones, TintModifiers.None, renderMeshes)
+			IEnumerable<MeshInstance> meshes, WPos pos, int zOffset, in Color remap, float scale, RenderMeshes renderMeshes, bool twist)
+			: this(meshes, pos, zOffset, remap, scale, 1f, float3.Ones, TintModifiers.None, renderMeshes, twist)
 		{ }
 
 		public MeshRenderable(
 			IEnumerable<MeshInstance> meshes, WPos pos, int zOffset, in Color remap, float scale,
-			float alpha, in float3 tint, TintModifiers tintModifiers, RenderMeshes renderMeshes)
+			float alpha, in float3 tint, TintModifiers tintModifiers, RenderMeshes renderMeshes, bool twist)
 		{
 			this.meshes = meshes;
 			this.pos = pos;
@@ -50,6 +50,7 @@ namespace OpenRA.Mods.Common.Graphics
 			this.tint = tint;
 			this.tintModifiers = tintModifiers;
 			this.RenderMeshes = renderMeshes;
+			this.twist = twist;
 		}
 
 		public WPos Pos => pos;
@@ -61,24 +62,24 @@ namespace OpenRA.Mods.Common.Graphics
 		public TintModifiers TintModifiers => tintModifiers;
 		public IRenderable WithZOffset(int newOffset)
 		{
-			return new MeshRenderable(meshes, pos, newOffset, remap, scale, alpha, tint, tintModifiers, RenderMeshes);
+			return new MeshRenderable(meshes, pos, newOffset, remap, scale, alpha, tint, tintModifiers, RenderMeshes, twist);
 		}
 
 		public IRenderable OffsetBy(in WVec vec)
 		{
-			return new MeshRenderable(meshes, pos + vec, zOffset, remap, scale, alpha, tint, tintModifiers, RenderMeshes);
+			return new MeshRenderable(meshes, pos + vec, zOffset, remap, scale, alpha, tint, tintModifiers, RenderMeshes, twist);
 		}
 
 		public IRenderable AsDecoration() { return this; }
 
 		public IModifyableRenderable WithAlpha(float newAlpha)
 		{
-			return new MeshRenderable(meshes, pos, zOffset, remap, scale, newAlpha, tint, tintModifiers, RenderMeshes);
+			return new MeshRenderable(meshes, pos, zOffset, remap, scale, newAlpha, tint, tintModifiers, RenderMeshes, twist);
 		}
 
 		public IModifyableRenderable WithTint(in float3 newTint, TintModifiers newTintModifiers)
 		{
-			return new MeshRenderable(meshes, pos, zOffset, remap, scale, alpha, newTint, newTintModifiers, RenderMeshes);
+			return new MeshRenderable(meshes, pos, zOffset, remap, scale, alpha, newTint, newTintModifiers, RenderMeshes, twist);
 		}
 
 		public IFinalizedRenderable PrepareRender(WorldRenderer wr)
@@ -98,7 +99,7 @@ namespace OpenRA.Mods.Common.Graphics
 
 			var map = wr.World.Map;
 
-			Game.Renderer.World3DRenderer.AddMeshInstancesToDraw(zOffset, draw, renderable.scale, t, a, remap);
+			Game.Renderer.World3DRenderer.AddMeshInstancesToDraw(zOffset, draw, renderable.scale, t, a, remap, twist);
 
 			return new FinalizedMeshRenderable(wr, this);
 		}

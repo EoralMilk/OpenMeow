@@ -127,7 +127,7 @@ namespace OpenRA.Platforms.Default
 						{
 							var t = (ValueTuple<Size, ITexture[], uint>)tuple;
 							return new ThreadedFrameBuffer(this,
-								context.CreateFrameBuffer(t.Item1, t.Item2, t.Item3));
+								context.CreateFrameBuffer(t.Item1, t.Item2, t.Item3, true));
 						};
 					getCreateDepthFrameBuffer =
 						tuple =>
@@ -501,12 +501,14 @@ namespace OpenRA.Platforms.Default
 
 		public IFrameBuffer CreateFrameBuffer(Size s, Color clearColor, uint renderTargets)
 		{
-			return Send(getCreateFrameBufferMutipleTarget, (s, clearColor, renderTargets));
+			// return Send(getCreateFrameBufferMutipleTarget, (s, clearColor, renderTargets));
+			throw new NotImplementedException();
 		}
 
-		public IFrameBuffer CreateFrameBuffer(Size s, ITexture[] textures, uint renderTargets)
+		public IFrameBuffer CreateFrameBuffer(Size s, ITexture[] textures, uint renderTargets, bool depth)
 		{
-			return Send(getCreateFrameBufferMutipleTargetWithTextureArray, (s, textures, renderTargets));
+			// return Send(getCreateFrameBufferMutipleTargetWithTextureArray, (s, textures, renderTargets));
+			throw new NotImplementedException();
 		}
 
 		public ITexture CreateInfoTexture(Size size)

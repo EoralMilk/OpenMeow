@@ -172,7 +172,7 @@ namespace OpenRA.Platforms.Default
 			OpenGL.CheckGLError();
 		}
 
-		public FrameBuffer(Size size, ITexture[] textures, Color clearColor, uint renderTargets)
+		public FrameBuffer(Size size, ITexture[] textures, Color clearColor, uint renderTargets, bool hasDepth)
 		{
 			onlyDepth = false;
 			this.size = size;
@@ -185,6 +185,15 @@ namespace OpenRA.Platforms.Default
 			OpenGL.glBindFramebuffer(OpenGL.GL_FRAMEBUFFER, framebuffer);
 			OpenGL.CheckGLError();
 
+			if (hasDepth)
+			{
+				depthTexture = new DepthTexture(size);
+				depth = depthTexture.id;
+
+				OpenGL.glFramebufferTexture2D(OpenGL.GL_FRAMEBUFFER, OpenGL.GL_DEPTH_ATTACHMENT, OpenGL.GL_TEXTURE_2D, depth, 0);
+				OpenGL.CheckGLError();
+			}
+
 			this.textures = textures;
 			uint[] attachments = new uint[renderTargets];
 			for (int i = 0; i < renderTargets; i++)
@@ -193,6 +202,8 @@ namespace OpenRA.Platforms.Default
 				OpenGL.glFramebufferTexture2D(OpenGL.GL_FRAMEBUFFER, OpenGL.GL_COLOR_ATTACHMENT0 + i, OpenGL.GL_TEXTURE_2D, (textures[i] as ITextureInternal).ID, 0);
 				OpenGL.CheckGLError();
 			}
+
+			texture = textures[0];
 
 			// - 告诉OpenGL我们将要使用(帧缓冲的)哪种颜色附件来进行渲染
 			unsafe
@@ -216,6 +227,18 @@ namespace OpenRA.Platforms.Default
 			// Restore default buffer
 			OpenGL.glBindFramebuffer(OpenGL.GL_FRAMEBUFFER, 0);
 			OpenGL.CheckGLError();
+		}
+
+		public void ChangeTexture(ITexture texture, uint renderTarget)
+		{
+			OpenGL.glBindFramebuffer(OpenGL.GL_FRAMEBUFFER, framebuffer);
+			OpenGL.CheckGLError();
+			{
+				textures[renderTarget] = texture;
+				var attachment = OpenGL.GL_COLOR_ATTACHMENT0 + (uint)renderTarget;
+				OpenGL.glFramebufferTexture2D(OpenGL.GL_FRAMEBUFFER, OpenGL.GL_COLOR_ATTACHMENT0 + (int)renderTarget, OpenGL.GL_TEXTURE_2D, (textures[renderTarget] as ITextureInternal).ID, 0);
+				OpenGL.CheckGLError();
+			}
 		}
 
 		uint CreateInternalTexture()
@@ -316,6 +339,13 @@ namespace OpenRA.Platforms.Default
 			OpenGL.glBindFramebuffer(OpenGL.GL_FRAMEBUFFER, 0);
 			OpenGL.CheckGLError();
 			OpenGL.glViewport(cv[0], cv[1], cv[2], cv[3]);
+			OpenGL.CheckGLError();
+		}
+
+		public void Flush()
+		{
+			VerifyThreadAffinity();
+			OpenGL.glFlush();
 			OpenGL.CheckGLError();
 		}
 

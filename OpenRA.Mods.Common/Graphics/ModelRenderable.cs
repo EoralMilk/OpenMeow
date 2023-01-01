@@ -35,20 +35,21 @@ namespace OpenRA.Mods.Common.Graphics
 		readonly float alpha;
 		readonly float3 tint;
 		readonly TintModifiers tintModifiers;
+		bool twist;
 		public BlendMode BlendMode => BlendMode.None;
 		public ModelRenderable(
 			IEnumerable<ModelAnimation> models, WPos pos, int zOffset, in WRot camera, float scale,
 			float[] lightAmbientColor, float[] lightDiffuseColor, float lightScale, float ambientScale, float specularScale,
-			PaletteReference color, PaletteReference normals, PaletteReference shadow)
+			PaletteReference color, PaletteReference normals, PaletteReference shadow, bool twist)
 			: this(models, pos, zOffset, camera, scale, lightAmbientColor, lightDiffuseColor, lightScale, ambientScale, specularScale,
 				color, normals, shadow, 1f,
-				float3.Ones, TintModifiers.None) { }
+				float3.Ones, TintModifiers.None, twist) { }
 
 		public ModelRenderable(
 			IEnumerable<ModelAnimation> models, WPos pos, int zOffset, in WRot camera, float scale, float[] lightAmbientColor, float[] lightDiffuseColor,
 			float lightScale, float ambientScale, float specularScale,
 			PaletteReference color, PaletteReference normals, PaletteReference shadow,
-			float alpha, in float3 tint, TintModifiers tintModifiers)
+			float alpha, in float3 tint, TintModifiers tintModifiers, bool twist)
 		{
 			this.models = models;
 			this.pos = pos;
@@ -66,6 +67,7 @@ namespace OpenRA.Mods.Common.Graphics
 			this.alpha = alpha;
 			this.tint = tint;
 			this.tintModifiers = tintModifiers;
+			this.twist = twist;
 		}
 
 		public WPos Pos => pos;
@@ -82,7 +84,7 @@ namespace OpenRA.Mods.Common.Graphics
 			return new ModelRenderable(
 				models, pos, zOffset, camera, scale,
 				lightAmbientColor, lightDiffuseColor,	LightScale, AmbientScale, SpecularScale, 
-				newPalette, normalsPalette, shadowPalette, alpha, tint, tintModifiers);
+				newPalette, normalsPalette, shadowPalette, alpha, tint, tintModifiers, twist);
 		}
 
 		public IRenderable WithZOffset(int newOffset)
@@ -90,7 +92,7 @@ namespace OpenRA.Mods.Common.Graphics
 			return new ModelRenderable(
 				models, pos, newOffset, camera, scale,
 				lightAmbientColor, lightDiffuseColor, LightScale, AmbientScale, SpecularScale,
-				palette, normalsPalette, shadowPalette, alpha, tint, tintModifiers);
+				palette, normalsPalette, shadowPalette, alpha, tint, tintModifiers, twist);
 		}
 
 		public IRenderable OffsetBy(in WVec vec)
@@ -98,7 +100,7 @@ namespace OpenRA.Mods.Common.Graphics
 			return new ModelRenderable(
 				models, pos + vec, zOffset, camera, scale,
 				lightAmbientColor, lightDiffuseColor, LightScale, AmbientScale, SpecularScale,
-				palette, normalsPalette, shadowPalette, alpha, tint, tintModifiers);
+				palette, normalsPalette, shadowPalette, alpha, tint, tintModifiers, twist);
 		}
 
 		public IRenderable AsDecoration() { return this; }
@@ -108,7 +110,7 @@ namespace OpenRA.Mods.Common.Graphics
 			return new ModelRenderable(
 				models, pos, zOffset, camera, scale,
 				lightAmbientColor, lightDiffuseColor, LightScale, AmbientScale, SpecularScale,
-				palette, normalsPalette, shadowPalette, newAlpha, tint, tintModifiers);
+				palette, normalsPalette, shadowPalette, newAlpha, tint, tintModifiers, twist);
 		}
 
 		public IModifyableRenderable WithTint(in float3 newTint, TintModifiers newTintModifiers)
@@ -116,7 +118,7 @@ namespace OpenRA.Mods.Common.Graphics
 			return new ModelRenderable(
 				models, pos, zOffset, camera, scale,
 				lightAmbientColor, lightDiffuseColor, LightScale, AmbientScale, SpecularScale,
-				palette, normalsPalette, shadowPalette, alpha, newTint, newTintModifiers);
+				palette, normalsPalette, shadowPalette, alpha, newTint, newTintModifiers, twist);
 		}
 
 		public IFinalizedRenderable PrepareRender(WorldRenderer wr)
@@ -143,7 +145,7 @@ namespace OpenRA.Mods.Common.Graphics
 				wr, model.pos, viewOffset, draw, model.scale,
 				LightScale, AmbientScale, SpecularScale,
 				t, a,
-				model.palette, model.normalsPalette);
+				model.palette, model.normalsPalette, twist);
 
 			return new FinalizedModelRenderable(wr, this);
 		}

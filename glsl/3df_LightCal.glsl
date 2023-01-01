@@ -1,4 +1,3 @@
-
 vec4 CalcDirLight(DirLight light, vec3 normal, vec3 viewDir)
 {
 	vec3 lightDir = normalize(-light.direction);

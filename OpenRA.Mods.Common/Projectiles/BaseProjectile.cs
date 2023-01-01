@@ -399,7 +399,7 @@ namespace OpenRA.Mods.Common.Projectiles
 				}
 
 				if (renderTickStarted && meshes.Count > 0)
-					yield return new MeshRenderable(meshes, pos, 0, args.SourceActor.Owner.Color, info.MeshScale, null);
+					yield return new MeshRenderable(meshes, pos, 0, args.SourceActor.Owner.Color, info.MeshScale, null, false);
 
 				if (anim != null)
 				{

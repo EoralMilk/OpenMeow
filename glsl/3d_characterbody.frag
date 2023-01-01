@@ -11,6 +11,7 @@ precision lowp sampler2DArray;
 3df_Util.glsl
 3df_Shadow.glsl
 3df_LightCal.glsl
+3df_Noise.glsl
 3df_LightMain.glsl
 #End Include
 
@@ -28,6 +29,8 @@ uniform sampler2D BaseColorTexture;
 uniform sampler2D BaseCombinedTexture;
 
 float additionAlpha = 0.0;
+
+{3df_Noise.glsl}
 
 {3df_Shadow.glsl}
 

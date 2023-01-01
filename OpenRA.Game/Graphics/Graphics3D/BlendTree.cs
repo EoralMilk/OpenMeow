@@ -124,7 +124,6 @@ namespace OpenRA.Graphics
 
 			return new BlendTreeNodeOutPutOne(result, animMask);
 		}
-
 	}
 
 	public abstract class BlendTreeNode
@@ -173,7 +172,6 @@ namespace OpenRA.Graphics
 		/// </summary>
 		/// <param name="id">AnimId</param>
 		public abstract BlendTreeNodeOutPutOne GetOutPutOnce(int animId, short tick);
-
 	}
 
 	/// <summary>
@@ -343,6 +341,5 @@ namespace OpenRA.Graphics
 
 			return lcm;
 		}
-
 	}
 }

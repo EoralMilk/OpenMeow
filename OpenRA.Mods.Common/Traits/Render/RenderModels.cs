@@ -87,7 +87,7 @@ namespace OpenRA.Mods.Common.Traits.Render
 		}
 	}
 
-	public class RenderModels : IRender, ITick, INotifyOwnerChanged
+	public class RenderModels : IRender, ITick, INotifyOwnerChanged, INotifyCreated
 	{
 		public float ScaleOverride = 1;
 
@@ -126,6 +126,7 @@ namespace OpenRA.Mods.Common.Traits.Render
 		readonly WRot camera;
 		readonly WRot lightSource;
 		readonly string faction;
+		public ITwistActorMesh[] AllTwistor;
 
 		public RenderModels(Actor self, RenderModelsInfo info)
 		{
@@ -140,6 +141,11 @@ namespace OpenRA.Mods.Common.Traits.Render
 
 		bool initializePalettes = true;
 		public void OnOwnerChanged(Actor self, Player oldOwner, Player newOwner) { initializePalettes = true; }
+
+		public void Created(Actor self)
+		{
+			AllTwistor = self.TraitsImplementing<ITwistActorMesh>().ToArray();
+		}
 
 		void ITick.Tick(Actor self)
 		{
@@ -163,12 +169,22 @@ namespace OpenRA.Mods.Common.Traits.Render
 				initializePalettes = false;
 			}
 
+			bool twist = false;
+			foreach (var t in AllTwistor)
+			{
+				if (t.IsTwisting)
+				{
+					twist = true;
+					break;
+				}
+			}
+
 			return new IRenderable[]
 			{
 				new ModelRenderable(
 					components, self.CenterPosition, Info.ZOffset, camera, ScaleOverride,
 					Info.LightAmbientColor, Info.LightDiffuseColor, Info.LightScale, Info.AmbientScale, Info.SpecularScale,
-					colorPalette, normalsPalette, shadowPalette)
+					colorPalette, normalsPalette, shadowPalette, twist)
 			};
 		}
 

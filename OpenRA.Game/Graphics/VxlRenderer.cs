@@ -224,7 +224,7 @@ namespace OpenRA.Graphics
 
 		public void CreateRenderInstance(
 			WorldRenderer wr, in WPos pos,in Vector3 viewOffset, IEnumerable<ModelAnimation> models, float scale, float lightScale, float ambientScale, float specularScale,
-			in float3 tint, in float alpha, PaletteReference color, PaletteReference normals)
+			in float3 tint, in float alpha, PaletteReference color, PaletteReference normals, bool twist)
 		{
 			//// Correct for inverted y-axis
 			var scaleMat = Matrix4x4.CreateScale(scale);
@@ -262,7 +262,10 @@ namespace OpenRA.Graphics
 					};
 
 					// vxl instance data needed
-					iom.AddInstanceData(data, 27, Array.Empty<int>(), 0);
+					if (twist)
+						iom.AddTwistInstanceData(data, 27, Array.Empty<int>(), 0);
+					else
+						iom.AddInstanceData(data, 27, Array.Empty<int>(), 0);
 					iom.SetPalette(palette);
 				}
 			}

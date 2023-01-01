@@ -140,7 +140,11 @@ namespace OpenRA.Mods.Cnc.Graphics
 		ITexture palette;
 
 		VxlInstanceData[] instancesToDraw;
+		VxlInstanceData[] twistInstancesToDraw;
+
 		int instanceCount;
+		int twistInstanceCount;
+
 		public IVertexBuffer<VxlInstanceData> InstanceArrayBuffer;
 
 		bool alphaBlend;
@@ -154,7 +158,9 @@ namespace OpenRA.Mods.Cnc.Graphics
 			this.name = name;
 			InstanceArrayBuffer = Game.Renderer.CreateVertexBuffer<VxlInstanceData>(MaxInstanceCount);
 			instancesToDraw = new VxlInstanceData[MaxInstanceCount];
+			twistInstancesToDraw = new VxlInstanceData[MaxInstanceCount];
 			instanceCount = 0;
+			twistInstanceCount = 0;
 		}
 
 		public void AddInstanceData(in float[] data, int dataCount, in int[] dataInt, int dataintCount)
@@ -174,9 +180,24 @@ namespace OpenRA.Mods.Cnc.Graphics
 			instanceCount++;
 		}
 
+		public void AddTwistInstanceData(in float[] data, int dataCount, in int[] dataInt, int dataIntCount)
+		{
+			if (twistInstanceCount == MaxInstanceCount)
+				throw new Exception("Instance Count bigger than MaxInstanceCount");
+
+			if (dataCount != 27)
+				throw new Exception("AddInstanceData params length unright");
+
+			VxlInstanceData instanceData = new VxlInstanceData(data);
+
+			twistInstancesToDraw[twistInstanceCount] = instanceData;
+			twistInstanceCount++;
+		}
+
 		public void Flush()
 		{
 			instanceCount = 0;
+			twistInstanceCount = 0;
 			alphaBlend = false;
 		}
 
@@ -187,10 +208,13 @@ namespace OpenRA.Mods.Cnc.Graphics
 
 		public void DrawInstances(World world, bool shadowBuffser, MeshDrawType drawType)
 		{
-			if (instanceCount == 0)
+			if (drawType == MeshDrawType.Twist && twistInstanceCount == 0)
 				return;
-			if (MeshDrawType != drawType)
+			else if (drawType != MeshDrawType.Twist && (MeshDrawType != drawType || instanceCount == 0))
 				return;
+
+			renderData.Shader.SetBool("IsTwist", drawType == MeshDrawType.Twist);
+			renderData.Shader.SetFloat("TwistTime", Game.Renderer.TwistTime);
 
 			renderData.Shader.SetTexture("Palette", palette);
 
@@ -201,7 +225,10 @@ namespace OpenRA.Mods.Cnc.Graphics
 			renderData.VertexBuffer.Bind();
 			renderData.Shader.LayoutAttributes();
 
-			InstanceArrayBuffer.SetData(instancesToDraw, instanceCount);
+			if (drawType == MeshDrawType.Twist)
+				InstanceArrayBuffer.SetData(twistInstancesToDraw, twistInstanceCount);
+			else
+				InstanceArrayBuffer.SetData(instancesToDraw, instanceCount);
 			InstanceArrayBuffer.Bind();
 			renderData.Shader.LayoutInstanceArray();
 
@@ -211,7 +238,7 @@ namespace OpenRA.Mods.Cnc.Graphics
 				Game.Renderer.SetBlendMode(BlendMode.None);
 
 			// draw instance
-			Game.Renderer.RenderInstance(renderData.Start, renderData.Count, instanceCount);
+			Game.Renderer.RenderInstance(renderData.Start, renderData.Count, drawType == MeshDrawType.Twist ? twistInstanceCount : instanceCount);
 
 			Game.Renderer.SetBlendMode(BlendMode.None);
 		}

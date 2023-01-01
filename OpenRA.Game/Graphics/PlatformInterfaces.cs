@@ -113,7 +113,7 @@ namespace OpenRA
 		IFrameBuffer CreateFrameBuffer(Size s);
 		IFrameBuffer CreateFrameBuffer(Size s, Color clearColor);
 		IFrameBuffer CreateFrameBuffer(Size s, uint renderTargets);
-		IFrameBuffer CreateFrameBuffer(Size s, ITexture[] textures, uint renderTargets);
+		IFrameBuffer CreateFrameBuffer(Size s, ITexture[] textures, uint renderTargets, bool depth);
 
 		IFrameBuffer CreateFrameBuffer(Size s, Color clearColor, uint textureOutput);
 

@@ -37,6 +37,7 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 		Color remap;
 		bool created = false;
 
+		public ITwistActorMesh[] AllTwistor;
 		IRenderMeshesUpdate[] renderMeshesUpdates;
 
 		public float RenderAlpha = 1;
@@ -51,6 +52,7 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 		public void Created(Actor self)
 		{
 			renderMeshesUpdates = self.TraitsImplementing<IRenderMeshesUpdate>().ToArray();
+			AllTwistor = self.TraitsImplementing<ITwistActorMesh>().ToArray();
 
 			foreach (var ws in self.TraitsImplementing<WithSkeleton>())
 			{
@@ -92,8 +94,18 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 			foreach (var ru in renderMeshesUpdates)
 				ru.RenderUpdateMeshes(self);
 
+			bool twist = false;
+			foreach (var t in AllTwistor)
+			{
+				if (t.IsTwisting)
+				{
+					twist = true;
+					break;
+				}
+			}
+
 			if (created && meshes != null && meshes.Count > 0)
-				yield return new MeshRenderable(meshes, self.CenterPosition, Info.ZOffset, remap, Info.Scale, RenderAlpha, float3.Ones, TintModifiers.None, this);
+				yield return new MeshRenderable(meshes, self.CenterPosition, Info.ZOffset, remap, Info.Scale, RenderAlpha, float3.Ones, TintModifiers.None, this, twist);
 		}
 
 		IEnumerable<Rectangle> IRender.ScreenBounds(Actor self, WorldRenderer wr)

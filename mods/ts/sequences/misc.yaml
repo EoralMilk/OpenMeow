@@ -1290,12 +1290,12 @@ twist:
 	Defaults:
 		Length: *
 		BlendMode: Twist
-		ZOffset: 0
+		ZOffset: 2048
 		Tick: 80
 		IgnoreWorldTint: true
-		MeshType: Board
-		Alpha: 0.4
+		MeshType: Plane
 	shockground: shockground
+		Alpha: 0.4
 	shockgroundcannon: shockground
 		Scale: 0.25
 		Tick: 35
@@ -1304,3 +1304,8 @@ twist:
 		Scale: 0.4
 		Tick: 45
 		Alpha: 0.3
+	cloakshock: shockground
+		Scale: 0.3
+		Tick: 33
+		Alpha: 0.02
+		MeshType: Card

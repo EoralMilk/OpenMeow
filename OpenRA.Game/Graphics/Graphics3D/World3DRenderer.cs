@@ -104,7 +104,7 @@ namespace OpenRA.Graphics
 			return new Matrix4x4(1 - 2 * (q.Y * q.Y + q.Z * q.Z),	2 * (q.X * q.Y - q.W * q.Z),		2 * (q.X * q.Z + q.W * q.Y), 0,
 												2 * (q.X * q.Y + q.W * q.Z),		1 - 2 * (q.X * q.X + q.Z * q.Z),	2 * (q.Y * q.Z - q.W * q.X), 0,
 												2 * (q.X * q.Z - q.W * q.Y),		2 * (q.Y * q.Z + q.W * q.X),		1 - 2 * (q.X * q.X + q.Y * q.Y), 0,
-												0,0,0,1);
+												0, 0, 0, 1);
 		}
 
 		/// <summary>
@@ -191,7 +191,7 @@ namespace OpenRA.Graphics
 				var far = heightMeter / CosCameraPitch + TanCameraPitch * ortho.Item4 + 100f;
 				Projection = Ortho(ortho.Item1, ortho.Item2, ortho.Item3, ortho.Item4, 0, far);
 
-				viewPoint = viewport.ViewPoint;// new vec3((float)viewport.CenterPosition.X / WPosPerMeter, (float)viewport.CenterPosition.Y / WPosPerMeter, 0);
+				viewPoint = viewport.ViewPoint; // new vec3((float)viewport.CenterPosition.X / WPosPerMeter, (float)viewport.CenterPosition.Y / WPosPerMeter, 0);
 
 				CameraPos = new Vector3(0, TanCameraPitch * heightMeter, heightMeter) + new Vector3(viewPoint.X, viewPoint.Y, 0);
 
@@ -255,7 +255,7 @@ namespace OpenRA.Graphics
 		}
 
 		public void AddMeshInstancesToDraw(float zOffset, IEnumerable<MeshInstance> meshes, float scale,
-			in float3 tint, in float alpha, in Color remap)
+			in float3 tint, in float alpha, in Color remap, bool twist)
 		{
 			var scaleMat = Matrix4x4.CreateScale(scale);
 			var viewOffset = Game.Renderer.World3DRenderer.InverseCameraFrontMeterPerWDist * zOffset;
@@ -301,7 +301,10 @@ namespace OpenRA.Graphics
 					var mat = m.Material.GetParams();
 					int[] dataint = new int[5] { m.DrawId(), mat[0], mat[1], mat[2], mat[3] };
 
-					m.OrderedMesh.AddInstanceData(data, 23, dataint, dataint.Length);
+					if (twist)
+						m.OrderedMesh.AddTwistInstanceData(data, 23, dataint, dataint.Length);
+					else
+						m.OrderedMesh.AddInstanceData(data, 23, dataint, dataint.Length);
 				}
 				else
 				{
@@ -326,7 +329,10 @@ namespace OpenRA.Graphics
 					var mat = m.Material.GetParams();
 					int[] dataint = new int[5] { m.DrawId(), mat[0], mat[1], mat[2], mat[3] };
 
-					m.OrderedMesh.AddInstanceData(data, 23, dataint, dataint.Length);
+					if (twist)
+						m.OrderedMesh.AddTwistInstanceData(data, 23, dataint, dataint.Length);
+					else
+						m.OrderedMesh.AddInstanceData(data, 23, dataint, dataint.Length);
 				}
 			}
 		}

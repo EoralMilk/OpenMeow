@@ -348,6 +348,16 @@ namespace OpenRA.Graphics
 			if (World.WorldActor.Disposed)
 				return;
 
+			Game.Renderer.TwistTime = (float)(Game.LocalTick % 200) / 200;
+			if (Game.Renderer.TwistTime > 0.5f)
+			{
+				Game.Renderer.TwistTime = 2.0f - Game.Renderer.TwistTime * 2.0f;
+			}
+			else
+			{
+				Game.Renderer.TwistTime = Game.Renderer.TwistTime * 2.0f;
+			}
+
 			debugVis.Value?.UpdateDepthBuffer();
 
 			// var bounds = Viewport.GetScissorBounds(World.Type != WorldType.Editor);
@@ -383,7 +393,10 @@ namespace OpenRA.Graphics
 
 			Game.Renderer.WorldSpriteRenderer.Flush(BlendMode.None);
 
-			Game.Renderer.Draw3DMeshesInstance(this, false, false);
+			Game.Renderer.Draw3DMeshesInstance(this, false, MeshDrawType.Actor);
+
+			// draw twist mesh
+			Game.Renderer.Draw3DMeshesInstance(this, false, MeshDrawType.Twist);
 
 			Game.Renderer.Context.DisableCullFace();
 
@@ -395,13 +408,11 @@ namespace OpenRA.Graphics
 
 			Game.Renderer.Flush();
 
-			Game.Renderer.TestShock(preparedTwistRenderables, this);
-
-			// diable depth write to render other blend mode
+			// disable depth write to render other blend mode
 			Game.Renderer.EnableDepthWrite(false);
 
 			// render effect meshes
-			Game.Renderer.Draw3DMeshesInstance(this, false, true);
+			Game.Renderer.Draw3DMeshesInstance(this, false, MeshDrawType.Effect);
 
 			// other blend
 			for (var i = 0; i < preparedBlendRenderables.Count; i++)
@@ -410,6 +421,19 @@ namespace OpenRA.Graphics
 			}
 
 			Game.Renderer.Flush();
+
+			// twist
+			Game.Renderer.WorldSpriteRenderer.Shader.SetBool("RemappingTwist", true);
+
+			for (var i = 0; i < preparedTwistRenderables.Count; i++)
+			{
+				preparedTwistRenderables[i].Render(this);
+			}
+
+			Game.Renderer.WorldSpriteRenderer.Flush(BlendMode.Additive);
+			Game.Renderer.Flush();
+			Game.Renderer.WorldSpriteRenderer.Shader.SetBool("RemappingTwist", false);
+			// end twist
 
 			Game.Renderer.DisableDepthTest();
 

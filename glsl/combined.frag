@@ -58,7 +58,10 @@ in vec4 vPalettedFraction;
 in vec4 vTint;
 in vec2 vTileUV;
 
-out vec4 fragColor;
+// out vec4 fragColor;
+layout (location = 0) out vec4 fragColor;
+layout (location = 1) out vec4 AdditionFrag;
+
 #endif
 
 
@@ -375,11 +378,7 @@ void main()
 		c.r = (c.r - 0.5) * 2.0;
 		c.r *= c.a * vTint.a;
 
-		#if __VERSION__ == 120
-		gl_FragColor = c;
-		#else
-		fragColor = c;
-		#endif
+		AdditionFrag = c;
 		return;
 	}
 
@@ -421,5 +420,7 @@ void main()
 		#else
 		fragColor = c;
 		#endif
+
+		AdditionFrag = vec4(0,0,0,1.0);
 	}
 }

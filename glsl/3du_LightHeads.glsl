@@ -2,7 +2,9 @@ const float Epsilon = 0.0001;
 
 uniform DirLight dirLight;
 
-out vec4 FragColor;
+// out vec4 FragColor;
+layout (location = 0) out vec4 FragColor;
+layout (location = 1) out vec4 AdditionFrag;
 
 in vec3 Normal;
 in vec3 FragPos;
@@ -32,6 +34,9 @@ uniform mat4 InvCameraVP;
 uniform float ShadowBias;
 uniform int ShadowSampleType;
 uniform float AmbientIntencity;
+
+uniform bool IsTwist;
+uniform float TwistTime;
 
 vec4 color, combined;
 float shininess;
