@@ -256,6 +256,12 @@ LimpetMissile:
 			Light: 100
 			Heavy: 85
 			Concrete: 60
+	Warhead@ShockWave:	CreateEffect
+		Image: twist
+		Explosions: roundshock
+		ExplosionPalette: twist
+		ImpactActors: false
+		ValidTargets: Ground, Water, Air
 
 LurkerAimDummyWeapon:
 	Range: 6c512
@@ -333,6 +339,12 @@ MammothTusk:
 		Explosions: medium_twlt
 		ImpactSounds: expnew07.aud
 	-Warhead@3EffWater:
+	Warhead@ShockWave:	CreateEffect
+		Image: twist
+		Explosions: roundshock
+		ExplosionPalette: twist
+		ImpactActors: false
+		ValidTargets: Ground, Water, Air
 
 MammothTuskMk2:
 	Inherits: MammothTusk
@@ -376,6 +388,12 @@ Dragon:
 	Report: misl1.aud
 	Warhead@1Dam: Spread3DDamage
 		Damage: 4500
+	Warhead@ShockWave:	CreateEffect
+		Image: twist
+		Explosions: roundshock
+		ExplosionPalette: twist
+		ImpactActors: false
+		ValidTargets: Ground, Water, Air
 
 Hellfire:
 	Inherits: ^DefaultMissile
@@ -499,6 +517,12 @@ RedEye2:
 		Explosions: large_grey_explosion
 		ImpactSounds: expnew13.aud
 		ImpactActors: false
+	Warhead@ShockWave:	CreateEffect
+		Image: twist
+		Explosions: roundshock
+		ExplosionPalette: twist
+		ImpactActors: false
+		ValidTargets: Ground, Water, Air
 
 ProtonFlameMissile:
 	Inherits: ^VectorBooster

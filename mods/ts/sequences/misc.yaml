@@ -712,7 +712,7 @@ veins:
 		UseTilesetExtension: true
 		ZOffset: 1023
 		Offset: 0, -12, 24
-		MeshType: Plane
+		MeshType: TileOverlay
 
 # shroud:
 # 	Defaults:
@@ -1306,6 +1306,10 @@ twist:
 		Alpha: 0.03
 	cloakshock: shockground
 		Scale: 0.3
+		Tick: 33
+		Alpha: 0.02
+	roundshock: shock
+		Scale: 0.2
 		Tick: 33
 		Alpha: 0.02
 		MeshType: Card

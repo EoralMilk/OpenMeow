@@ -334,6 +334,8 @@
 
 	AttachManager:
 		MainSkeleton: body
+	DetectCloaked:
+		Range: 1c0
 
 PFIND:
 	Inherits: ^CommonInfantry

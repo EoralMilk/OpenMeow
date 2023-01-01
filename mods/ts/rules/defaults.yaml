@@ -842,6 +842,8 @@
 		UseClassicPerspectiveFudge: False
 		CameraPitch: 85
 		QuantizedFacings: 8
+	DetectCloaked:
+		Range: 1c0
 
 ^RegularInfantryDeath:
 	WithDeathAnimation@normal:
