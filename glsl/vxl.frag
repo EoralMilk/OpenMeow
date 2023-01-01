@@ -143,13 +143,6 @@ float CalShadow(DirLight light){
 // Strangely, the VXL is too bright when scale smaller , so make color darker
 vec3 CalcDirLight(DirLight light, vec3 normal, vec3 viewDir, vec3 color)
 {
-	if (vTint.a < 0.0f)
-		fragColor = vec4(vTint.rgb, -vTint.a);
-	else
-	{
-		fragColor *= vTint;
-	}
-
 	vec3 lightDir = -light.direction;
 	// diffuse
 	float diff = max(dot(normal, lightDir), 0.0);
@@ -196,6 +189,11 @@ void main()
 		vec3 viewDir = normalize(viewPos - FragPos);
 		vec3 result = vec3(0);
 		result = CalcDirLight(dirLight, worldNormal, viewDir, color.xyz);
+		if (vTint.a < 0.0f)
+			result = vTint.rgb;
+		else
+			result *= vTint.rgb;
+
 		fragColor =vec4(result.rgb, color.a);
 
 		if (IsTwist){

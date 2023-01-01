@@ -16,6 +16,7 @@
 		Length: *
 		BlendMode: Additive
 		IgnoreWorldTint: True
+		ZOffset: 512
 
 vehicle:
 	Inherits@defaults: ^VehicleBase
