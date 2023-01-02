@@ -733,3 +733,7 @@ LauncherClusterMissile:
 		Duration: 20
 		Intensity: 5
 		Multiplier: 1,1
+	Warhead@Spawn: SpawnActor
+		Actors: swvisiondummy6
+		Range: 3
+		AirThreshold: 111c0

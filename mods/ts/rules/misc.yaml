@@ -28,6 +28,52 @@ waypoint:
 	MapEditorData:
 		Categories: System
 
+^DUMMYAIRCRAFT:
+	Inherits: ^SpriteActor
+	RevealsShroud:
+		Range: 3c0
+		Type: CenterPosition
+	Aircraft:
+		TurnSpeed: 24
+		Speed: 0
+		CanHover: true
+		IdealSeparation: 300
+		TakeOffOnResupply: true
+		VTOL: true
+		CanSlide: true
+		TakeUpCellWhenLand: false
+		LandableTerrainTypes: Clear, Road, Bridge, Rail, Impassable, Water, DirtRoad, Rough, Cliff, Tiberium, BlueTiberium, Veins, Tree, Rock, Subterranean, Jumpjet, TiberiumGlacier, CivilianBuilding, CivilianProp
+	HiddenUnderFog:
+		Type: CenterPosition
+	Interactable:
+	RenderSprites:
+		Image: dot
+	BodyOrientation:
+		QuantizedFacings: 32
+	OwnerLostAction:
+		Action: Dispose
+
+SWVISIONDUMMY10:
+	Inherits: ^DUMMYAIRCRAFT
+	RevealsShroud:
+		Range: 10c0
+	KillsSelf@TimedLife:
+		Delay: 150
+
+SWVISIONDUMMY8:
+	Inherits: ^DUMMYAIRCRAFT
+	RevealsShroud:
+		Range: 8c0
+	KillsSelf@TimedLife:
+		Delay: 120
+
+SWVISIONDUMMY6:
+	Inherits: ^DUMMYAIRCRAFT
+	RevealsShroud:
+		Range: 6c0
+	KillsSelf@TimedLife:
+		Delay: 80
+
 harv.colorpicker:
 	Inherits: HARV
 	-Buildable:
