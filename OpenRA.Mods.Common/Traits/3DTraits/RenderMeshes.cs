@@ -106,7 +106,10 @@ namespace OpenRA.Mods.Common.Traits.Trait3D
 
 			var tint = float3.Ones;
 			if (twist)
-				tint = 0.75f * Color.ToFloat3(remap) + float3.Half;
+			{
+				tint = float3.Lerp(0.75f * Color.ToFloat3(remap) + float3.Half, tint, Game.Renderer.TwistMul);
+			}
+
 			if (created && meshes != null && meshes.Count > 0)
 				yield return new MeshRenderable(meshes, self.CenterPosition, Info.ZOffset, remap, Info.Scale, RenderAlpha, tint, TintModifiers.None, this, twist);
 		}

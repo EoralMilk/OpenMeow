@@ -193,6 +193,7 @@ VectorBazooka:
 		RangeLimit: 30c0
 		Speed: 120
 		ContrailLength: 10
+		MeshScale: 1.25
 
 Bazooka:
 	Inherits: ^DefaultMissile

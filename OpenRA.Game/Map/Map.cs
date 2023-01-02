@@ -1706,7 +1706,7 @@ namespace OpenRA
 
 			Console.WriteLine("Painting Spot on mask at each cell");
 
-#pragma warning disable IDE1006 // ÃüÃûÑùÊ½
+#pragma warning disable IDE1006 // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê½
 			int WATER = 0;
 			int CLIFF = 1;
 			int CONC = 2;
@@ -1715,7 +1715,7 @@ namespace OpenRA
 			int DIRT = 5;
 			int GRAVEL = 6;
 			int CRACK = 7;
-#pragma warning restore IDE1006 // ÃüÃûÑùÊ½
+#pragma warning restore IDE1006 // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê½
 
 			var brush = TextureCache.AllBrushes.First().Value;
 			var waterBrush = TextureCache.AllBrushes["DefualtWaterBrush"];
@@ -2650,7 +2650,10 @@ namespace OpenRA
 
 		public TerrainTypeInfo GetTerrainInfo(CPos cell)
 		{
-			return Rules.TerrainInfo.TerrainTypes[GetTerrainIndex(cell)];
+			if (!CellInfos.Contains(cell))
+				return Rules.TerrainInfo.TerrainTypes[0];
+
+			return Rules.TerrainInfo.TerrainTypes[CellInfos[cell].TerrainType];
 		}
 
 		public CPos Clamp(CPos cell)

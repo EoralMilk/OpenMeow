@@ -181,8 +181,9 @@ namespace OpenRA.Mods.Common.Traits.Render
 
 			var tint = float3.Ones;
 			if (twist)
-				tint = 0.75f * Color.ToFloat3(self.Owner.Color) + float3.Half;
-
+			{
+				tint = float3.Lerp(0.75f * Color.ToFloat3(self.Owner.Color) + float3.Half, tint, Game.Renderer.TwistMul);
+			}
 			return new IRenderable[]
 			{
 				new ModelRenderable(

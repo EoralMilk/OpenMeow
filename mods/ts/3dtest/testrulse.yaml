@@ -323,14 +323,14 @@
 	# 	ThumbnailImage: items
 	# 	UseAnim: act_putaway
 	# 	UseFrame: 24
-	AttachPoint@TEST:
-		# Offset: -215,0,533
-		# Offset: 0,0,456
-		LockFacing: True
-		# Turret: primary
-		Skeleton: body
-		BoneAttach: a-s-Rig_Head
-		# BoneAttach: a-Position
+	# AttachPoint@TEST:
+	# 	# Offset: -215,0,533
+	# 	# Offset: 0,0,456
+	# 	LockFacing: True
+	# 	# Turret: primary
+	# 	Skeleton: body
+	# 	BoneAttach: a-s-Rig_Head
+	# 	# BoneAttach: a-Position
 
 	AttachManager:
 		MainSkeleton: body
@@ -351,7 +351,7 @@ PFIND:
 	Buildable:
 		Queue: Infantry
 		BuildPaletteOrder: 40
-		Prerequisites: ~barracks, ~techlevel.low
+		Prerequisites: ~none #~barracks, ~techlevel.low
 		Description: test
 	Mobile:
 		Speed: 50
@@ -432,7 +432,7 @@ STCMMDO:
 	Buildable:
 		Queue: Infantry
 		BuildPaletteOrder: 100
-		Prerequisites: ~barracks, tech, ~techlevel.high
+		Prerequisites: ~none #~barracks, tech, ~techlevel.high
 		Description: test
 	Mobile:
 		Speed: 50

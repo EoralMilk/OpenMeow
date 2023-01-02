@@ -14,7 +14,7 @@ MapSize: 60,120
 
 Bounds: 2,4,56,110
 
-Visibility: Lobby
+Visibility: #Lobby
 
 Categories: Test
 
