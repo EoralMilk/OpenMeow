@@ -133,7 +133,7 @@
 		ContrailDelay: 0
 		ContrailBlendMode: Additive
 
-		ExplodeUnderThisAltitude: 0
+		ExplodeUnderThisAltitude: -128
 		UsingScat: false
 		ScatWeapon: Grenade
 		ScatDist: 3c512
@@ -184,6 +184,15 @@ VectorBazooka:
 	ReloadDelay: 60
 	Range: 7c0
 	MinRange: 0c512
+	Report: rketinf1.aud
+	Projectile: VectorBooster
+		LaunchAngle: 128
+		LockOnDelay: 6
+		IgnitionDelay: 5
+		ContrailDelay: 5
+		RangeLimit: 30c0
+		Speed: 120
+		ContrailLength: 10
 
 Bazooka:
 	Inherits: ^DefaultMissile
@@ -481,7 +490,6 @@ VectorHellfire:
 			Concrete: 30
 
 RedEye2:
-	# Inherits: ^DefaultMissile
 	Inherits: ^VectorBooster
 	ReloadDelay: 55
 	Range: 15c0
@@ -501,6 +509,8 @@ RedEye2:
 		Width: 40
 		MeshScale: 3
 		ProximityRange: 289
+		DetectTargetOnCurve: false
+		Blockable: false
 	Warhead@1Dam: Spread3DDamage
 		Spread: 0c128
 		Falloff: 100, 50, 25, 12, 6, 3, 0
