@@ -69,9 +69,6 @@ namespace OpenRA.Meow.RPG.Activities
 
 		public override bool Tick(Actor self)
 		{
-			if (cargo != carryall.AttachCarryable)
-				return true;
-
 			if (IsCanceling)
 			{
 				if (carryall.State == AttachCarryall.AttachCarryallState.Reserved)
@@ -89,10 +86,11 @@ namespace OpenRA.Meow.RPG.Activities
 				return true;
 			}
 
-			if (cargo.IsDead || carryable.IsTraitDisabled || (!carryall.Info.AttachCarryableAnyCamp && !cargo.AppearsFriendlyTo(self)))
+			if (cargo != carryall.AttachCarryable || cargo.IsDead || carryable.IsTraitDisabled || (!carryall.Info.AttachCarryableAnyCamp && !cargo.AppearsFriendlyTo(self)))
 			{
 				carryall.UnreserveAttachCarryable(self);
-				return true;
+				Cancel(self, true);
+				return false;
 			}
 
 			// Wait until we are near the target before we try to lock it
@@ -104,7 +102,10 @@ namespace OpenRA.Meow.RPG.Activities
 			{
 				var lockResponse = carryable.LockForPickup(self);
 				if (lockResponse == LockResponse.Failed)
+				{
 					Cancel(self);
+					return false;
+				}
 				else if (lockResponse == LockResponse.Success)
 				{
 					// Pickup position and facing are now known - swap the fly/wait activity with Land

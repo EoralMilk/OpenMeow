@@ -66,9 +66,6 @@ namespace OpenRA.Mods.Common.Activities
 
 		public override bool Tick(Actor self)
 		{
-			if (cargo != carryall.Carryable)
-				return true;
-
 			if (IsCanceling)
 			{
 				if (carryall.State == Carryall.CarryallState.Reserved)

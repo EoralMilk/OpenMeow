@@ -227,7 +227,10 @@ namespace OpenRA.Meow.RPG.Traits
 			public override bool Tick(Actor self)
 			{
 				if (cargo.IsDead)
+				{
+					carryall.UnreserveAttachCarryable(self);
 					return true;
+				}
 
 				var dropRange = carryall.Info.DropRange;
 				var destination = carryable.Destination;

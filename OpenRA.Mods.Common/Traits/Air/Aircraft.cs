@@ -909,8 +909,7 @@ namespace OpenRA.Mods.Common.Traits
 				return;
 
 			if (HasInfluence())
-				throw new InvalidOperationException(
-					$"Cannot {nameof(AddInfluence)} until previous influence is removed with {nameof(RemoveInfluence)}");
+				self.World.ActorMap.RemoveInfluence(self, this);
 
 			this.landingCells = landingCells;
 			if (self.IsInWorld)
